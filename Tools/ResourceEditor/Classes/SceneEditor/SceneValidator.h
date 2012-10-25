@@ -117,6 +117,7 @@ public:
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
     void ReloadTextures();
+    void ReloadTextures(int32 asFile);
     
     static bool IsTextureChanged(const String &texturePathname);
     

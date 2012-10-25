@@ -592,14 +592,8 @@ void TextureConverterDialog::Update(float32 timeElapsed)
 
 String TextureConverterDialog::GetSrcTexturePath(const String &relativeTexturePath)
 {
-    String ext = FileSystem::GetExtension(relativeTexturePath);
-    if(".pvr" == ext)
-    {   // use src png file
-        String textureWorkingPath = FileSystem::ReplaceExtension(relativeTexturePath, ".png");
-        return textureWorkingPath;
-    }
-
-    return relativeTexturePath;
+    String textureWorkingPath = FileSystem::ReplaceExtension(relativeTexturePath, ".png");
+    return textureWorkingPath;
 }
 
 String TextureConverterDialog::NormalizePath(const String &pathname)

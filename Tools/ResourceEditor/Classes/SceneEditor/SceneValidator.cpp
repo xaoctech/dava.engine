@@ -7,6 +7,9 @@
 #include "Render/TextureDescriptor.h"
 
 #include "../Qt/QtUtils.h"
+#include "../Qt/SceneDataManager.h"
+#include "../Qt/SceneData.h"
+#include "../EditorScene.h"
 
 SceneValidator::SceneValidator()
 {
@@ -410,6 +413,36 @@ void SceneValidator::ReloadTextures()
 	}
 }
 
+void SceneValidator::ReloadTextures(int32 asFile)
+{
+    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
+	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+	{
+		Texture *texture = it->second;
+        if(!texture->isRenderTarget && IsPathCorrectForProject(texture->GetPathname()))
+        {
+            texture->ReloadAs((Texture::TextureFileFormat)asFile);
+        }
+	}
+    
+    int32 count = SceneDataManager::Instance()->ScenesCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
+        EditorScene *scene = sceneData->GetScene();
+
+        LandscapeNode *landscape = scene->GetLandScape(scene);
+        if(landscape)
+        {
+            Texture *fullTiled = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+            if(fullTiled && fullTiled->isRenderTarget)
+            {
+                landscape->UpdateFullTiledTexture();
+            }
+        }
+    }
+}
+
 
 void SceneValidator::FindTexturesForCompression()
 {
@@ -446,7 +479,6 @@ bool SceneValidator::WasTextureChanged(Texture *texture)
     
     return false;
 }
-
 
 
 void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
