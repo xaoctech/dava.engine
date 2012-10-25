@@ -83,9 +83,9 @@ void Image::Resize(int32 newWidth, int32 newHeight)
             newDataSize = newWidth * newHeight * formatSize;
             newData = new uint8[newDataSize];
             
-            int32 currentLine = 0;
-            int32 indexOnLine = 0;
-            int32 indexInOldData = 0;
+            uint32 currentLine = 0;
+            uint32 indexOnLine = 0;
+            uint32 indexInOldData = 0;
             
             for(uint32 i = 0; i < newDataSize; ++i)
             {
@@ -96,10 +96,10 @@ void Image::Resize(int32 newWidth, int32 newHeight)
                 
                 indexOnLine = i - currentLine*newWidth*formatSize;
                 
-                if(currentLine<height)
+                if(currentLine<(uint32)height)
                 {
                     // within height of old image
-                    if(indexOnLine<width*formatSize)
+                    if(indexOnLine<(uint32)(width*formatSize))
                     {
                         // we have data in old image for new image
                         indexInOldData = currentLine*width*formatSize + indexOnLine;
