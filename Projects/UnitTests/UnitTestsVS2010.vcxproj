@@ -23,7 +23,6 @@
     <ClInclude Include="Classes\SoundTest.h" />
     <ClInclude Include="Classes\SplitTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
-    <ClInclude Include="Classes\TextureDescriptorTest.h" />
     <ClInclude Include="Classes\TextureUtils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -38,7 +37,6 @@
     <ClCompile Include="Classes\SoundTest.cpp" />
     <ClCompile Include="Classes\SplitTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
-    <ClCompile Include="Classes\TextureDescriptorTest.cpp" />
     <ClCompile Include="Classes\TextureUtils.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>

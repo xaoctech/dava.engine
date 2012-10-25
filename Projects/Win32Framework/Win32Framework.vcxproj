@@ -415,6 +415,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
@@ -716,6 +717,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
@@ -750,7 +752,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\PolygonGroup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\StaticMesh.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\TexturePVR.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\UberShader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.cpp" />
