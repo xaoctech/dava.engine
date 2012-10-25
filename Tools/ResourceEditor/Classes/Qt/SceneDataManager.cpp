@@ -114,7 +114,7 @@ DAVA::int32 SceneDataManager::ScenesCount()
 
 SceneData *SceneDataManager::GetScene(DAVA::int32 index)
 {
-    DVASSERT((0 <= index) && (index < scenes.size()));
+    DVASSERT((0 <= index) && (index < (int32)scenes.size()));
     
     DAVA::List<SceneData *>::iterator it = scenes.begin();
     std::advance(it, index);
