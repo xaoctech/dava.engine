@@ -32,13 +32,16 @@
 
 using namespace DAVA;
 
+#define SETTINGS_FILE "~res:/Configs/LandscapeAngle.yaml"
+
 NotPassableTerrain::NotPassableTerrain()
     : EditorLandscapeNode()
 {
     SetName(String("Landscape_NotPassable"));
 
-    notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
     notPassableMapSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
+    
+    LoadColorsArray();
 }
 
 NotPassableTerrain::~NotPassableTerrain()
@@ -70,7 +73,6 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 
     DrawFullTiledTexture(notPassableMap, drawRect);
     
-    Color red(1.0f, 0.0f, 0.0f, 1.0f);
     int32 lastY = (int32)(forRect.y + forRect.dy);
     int32 lastX = (int32)(forRect.x + forRect.dx);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
@@ -91,20 +93,23 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
             float32 ydx = y * dx;
             float32 xdx = x * dx;
 
+            RenderManager* renderManager = RenderManager::Instance();
+            RenderHelper* renderHelper = RenderHelper::Instance();
             
-            if(notPassableAngleTan <= tanRight)
-            {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2((xdx + dx), ydx));
-            }
+            Color color;
 
-            if(notPassableAngleTan <= tanBottom)
+            if(PickColor(tanRight, color))
             {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2(xdx, (ydx + dx)));
+                renderManager->SetColor(color);
+                renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx + dx), ydx));
             }
+            
+            if(PickColor(tanBottom, color))
+            {
+                renderManager->SetColor(color);
+                renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx + dx)));
+            }
+            
         }
     }
 
@@ -120,4 +125,57 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 void NotPassableTerrain::SetDisplayedTexture()
 {
     SetTexture(LandscapeNode::TEXTURE_TILE_FULL, notPassableMapSprite->GetTexture());
+}
+
+void NotPassableTerrain::LoadColorsArray()
+{
+    YamlParser* parser = YamlParser::Create(SETTINGS_FILE);
+    
+    if (parser != 0)
+    {
+        YamlNode* rootNode = parser->GetRootNode();
+        int32 anglesCount = rootNode->GetCount();
+        
+        for (int32 i = 0; i < anglesCount; ++i)
+        {
+            YamlNode* node = rootNode->Get(i);
+            if (!node || node->GetCount() != 3)
+                continue;
+            
+            int32 angle1 = node->Get(0)->AsInt();
+            int32 angle2 = node->Get(1)->AsInt();
+            
+            angle1 = Min(angle1, 89);
+            angle2 = Min(angle2, 89);
+            
+            float32 tangentMin = tan(DegToRad(angle1));
+            float32 tangentMax = tan(DegToRad(angle2));
+            
+            YamlNode* colorNode = node->Get(2);
+            if (!colorNode || colorNode->GetCount() != 4)
+                continue;
+            
+            Logger::Instance()->Debug("%d\n", colorNode->GetCount());
+            
+            Color color(colorNode->Get(0)->AsFloat(),
+                        colorNode->Get(1)->AsFloat(),
+                        colorNode->Get(2)->AsFloat(),
+                        colorNode->Get(3)->AsFloat());
+        }
+    }
+
+    SafeRelease(parser);
+}
+
+bool NotPassableTerrain::PickColor(float32 tan, Color& color) const
+{
+    for (int i = 0; i < angleColor.size(); ++i)
+    {
+		if(tan >= angleColor[i].angleRange.x && tan < angleColor[i].angleRange.y)
+        {
+            color = angleColor[i].color;
+            return true;
+		}
+	}
+    return false;
 }
