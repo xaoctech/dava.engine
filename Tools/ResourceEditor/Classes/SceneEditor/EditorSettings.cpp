@@ -230,3 +230,13 @@ bool EditorSettings::GetEnableImposters()
 	return settings->GetBool("enableImposters", true);
 }
 
+int32 EditorSettings::GetTextureViewFileFormat()
+{
+    return settings->GetInt32(String("TextureViewFileFormat"), Texture::PNG_FILE);
+}
+void EditorSettings::SetTextureViewFileFormat(int32 format)
+{
+    settings->SetInt32(String("TextureViewFileFormat"), format);
+}
+
+

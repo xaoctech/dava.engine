@@ -70,6 +70,10 @@ public:
 	void SetEnableImposters(bool enableImposters);
 	bool GetEnableImposters();
     
+    int32 GetTextureViewFileFormat();
+    void SetTextureViewFileFormat(int32 forma);
+    
+    
 protected:
 
     KeyedArchive *settings;
