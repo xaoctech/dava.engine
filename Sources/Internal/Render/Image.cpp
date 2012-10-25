@@ -87,7 +87,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
             int32 indexOnLine = 0;
             int32 indexInOldData = 0;
             
-            for(int32 i = 0; i < newDataSize; ++i)
+            for(uint32 i = 0; i < newDataSize; ++i)
             {
                 if((currentLine+1)*newWidth*formatSize<=i)
                 {

@@ -1392,9 +1392,9 @@ void Texture::GenerateID()
 }
 
 #if defined (__DAVAENGINE_OPENGL__)
-GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
+GLfloat Texture::HWglConvertWrapMode(TextureWrap wrap)
 {
-    GLint glWrap = 0;
+    GLfloat glWrap = 0;
     switch(wrap)
     {
         case WRAP_CLAMP_TO_EDGE:
