@@ -610,6 +610,9 @@ Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textu
     if(TEXTURE_TILE_FULL == level)
     {
         //must not zero only for finalized maps
+        if(textureName.empty())
+            return NULL;
+        
         return Texture::PureCreate(textureName);
     }
 
@@ -1404,7 +1407,7 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         if(TEXTURE_DETAIL == k) continue;
         
         String textureName = archive->GetString(Format("tex_%d", k));
-        String absPath = sceneFile->RelativeToAbsolute(textureName);
+        String absPath = (textureName.empty()) ? String(""): sceneFile->RelativeToAbsolute(textureName);
         if(sceneFile->DebugLogEnabled())
             Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
