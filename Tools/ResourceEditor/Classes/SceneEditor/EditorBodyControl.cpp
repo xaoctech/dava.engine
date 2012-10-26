@@ -817,17 +817,22 @@ void EditorBodyControl::ToggleSceneInfo()
 
 void EditorBodyControl::PackLightmaps()
 {
+	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
+	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
+	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
+
 	LightmapsPacker packer;
-	packer.SetInputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
+	packer.SetInputDir(inputDir);
 
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
-	packer.SetOutputDir(sceneData->GetScenePathname() + "_lightmaps/");
-
+	packer.SetOutputDir(outputDir);
 	packer.Pack();
 	packer.Compress();
 	packer.ParseSpriteDescriptors();
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
+
+	FileSystem::Instance()->MoveFile("test_landscape.png", outputDir+"landscape.png");
 }
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
