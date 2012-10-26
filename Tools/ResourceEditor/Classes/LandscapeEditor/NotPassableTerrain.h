@@ -36,12 +36,6 @@
 class LandscapeRenderer;
 class NotPassableTerrain: public EditorLandscapeNode
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
-
-    
 public:	
 	NotPassableTerrain();
 	virtual ~NotPassableTerrain();
