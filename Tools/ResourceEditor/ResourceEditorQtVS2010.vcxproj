@@ -188,6 +188,8 @@
     <ClCompile Include=".GeneratedQt\SceneGraphItem_moc.cpp" />
     <ClCompile Include=".GeneratedQt\SceneGraphModel_moc.cpp" />
     <ClCompile Include=".GeneratedQt\ScenePreviewDialog_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
     <ClCompile Include=".GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
     <ClCompile Include=".GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
     <ClCompile Include=".GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
@@ -380,6 +382,9 @@
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureCache.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertor.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertorWork.cpp" />
     <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp" />
     <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp" />
     <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp" />
@@ -757,6 +762,9 @@
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureCache.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertor.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertorWork.h" />
     <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h" />
     <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h" />
     <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h" />
