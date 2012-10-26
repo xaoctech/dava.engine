@@ -2,29 +2,56 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsProxyWidget>
 #include <QApplication>
 #include <QWheelEvent>
 #include <QScrollBar>
 #include <QPainter>
 #include <QImage>
 #include <QPixmap>
+#include <QMovie>
+#include <QLabel>
 
 TextureScrollArea::TextureScrollArea(QWidget* parent/* =0 */)
 	: QGraphicsView(parent)
 	, textureColorMask((int) ChannelAll)
 	, mouseInMoveState(false)
 	, textureScene(NULL)
+	, textureBorder(NULL)
 	, zoomFactor(1.0)
 {
-	textureScene = new QGraphicsScene();
+	// create brush for background
+	QPixmap bgPix(20, 20);
+	QPainter p(&bgPix);
+	p.setBrush(QBrush(QColor(150,150,150)));
+	p.setPen(Qt::NoPen);
+	p.drawRect(QRect(0,0,20,20));
+	p.setBrush(QBrush(QColor(200,200,200)));
+	p.drawRect(QRect(0,0,10,10));
+	p.drawRect(QRect(10,10,10,10));
+	bgMask = QBrush(bgPix);
 
+	// create and setup scene
+	textureScene = new QGraphicsScene();
 	setRenderHints((QPainter::RenderHints) 0);
 	setScene(textureScene);
 
-	textureScene->setBackgroundBrush(QBrush(QColor(0,0,0)));
+	// add items to scene
 	texturePixmap = textureScene->addPixmap(QPixmap());
+	textureBorder = textureScene->addRect(0, 0, 10, 10, QPen(QColor(255, 255, 0, 255)), QBrush(Qt::NoBrush));
 
-	//translate(0.5, 0.5);
+	// add waitbar to scene
+	QLabel *loadingLabel = new QLabel();
+	QMovie *loadingMovie = new QMovie(":/QtImages/loading.gif");
+	loadingLabel->setMovie(loadingMovie);
+	loadingMovie->start();
+	waitBar = textureScene->addWidget(loadingLabel);
+
+	adjustWaitBarPos();
+
+	borderVisible(false);
+	bgMaskVisible(false);
+	waitbarVisible(false);
 }
 
 TextureScrollArea::~TextureScrollArea()
@@ -32,12 +59,12 @@ TextureScrollArea::~TextureScrollArea()
 
 void TextureScrollArea::setImage(const QImage &image)
 {
-	textureZoom(1.0);
-	texturePos(QPoint(0,0));
-
 	currentTextureImage = image;
+	QImage::Format imgFormat = image.format();
 
 	applyCurrentImageToScenePixmap();
+	applyCurrentImageBorder();
+	adjustWaitBarPos();
 }
 
 void TextureScrollArea::setColorChannel(int mask)
@@ -51,24 +78,65 @@ void TextureScrollArea::setScene(QGraphicsScene *scene)
 	QGraphicsView::setScene(scene);
 }
 
-float TextureScrollArea::getZoom()
+float TextureScrollArea::getTextureZoom()
 {
 	return zoomFactor;
 }
 
-int TextureScrollArea::getZoomPercent()
+QColor TextureScrollArea::getPixelColor(QPoint pos)
 {
-	return 0;
+	QRgb rgb = 0;
+
+	if(pos.x() >= 0 && pos.x() < currentTextureImage.width() &&
+		pos.y() >= 0 && pos.y() < currentTextureImage.height())
+	{
+		rgb = currentTextureImage.pixel(pos);
+	}
+
+	return QColor::fromRgba(rgb);
 }
 
-void TextureScrollArea::setZoomPercent()
+void TextureScrollArea::resetTexturePosZoom()
 {
-
+	textureZoom(1.0);
+	texturePos(QPoint(0,0));
 }
 
-void TextureScrollArea::fitZoom()
+void TextureScrollArea::borderVisible(bool visible)
 {
+	if(visible)
+	{
+		textureBorder->show();
+	}
+	else
+	{
+		textureBorder->hide();
+	}
+}
 
+void TextureScrollArea::bgMaskVisible(bool visible)
+{
+	if(visible)
+	{
+		textureScene->setBackgroundBrush(bgMask);
+	}
+	else
+	{
+		textureScene->setBackgroundBrush(QBrush(QColor(0, 0, 0)));
+	}
+}
+
+void TextureScrollArea::waitbarVisible(bool visible)
+{
+	if(visible)
+	{
+		waitBar->show();
+		adjustWaitBarPos();
+	}
+	else
+	{
+		waitBar->hide();
+	}
 }
 
 void TextureScrollArea::textureZoom(const float &zoom)
@@ -81,6 +149,8 @@ void TextureScrollArea::textureZoom(const float &zoom)
 		resetTransform();
 		scale(zoomFactor, zoomFactor);
 		emit textureZoomChanged(zoomFactor);
+
+		adjustWaitBarPos();
 	}
 }
 
@@ -98,14 +168,7 @@ void TextureScrollArea::scrollContentsBy(int dx, int dy)
 
 void TextureScrollArea::wheelEvent(QWheelEvent * e)
 {
-	if(e->delta() > 0)
-	{
-		textureZoom(getZoom() * 1.1);
-	}
-	else
-	{
-		textureZoom(getZoom() / 1.1);
-	}
+	emit mouseWheel(e->delta());
 }
 
 void TextureScrollArea::mouseMoveEvent(QMouseEvent *event)
@@ -119,6 +182,11 @@ void TextureScrollArea::mouseMoveEvent(QMouseEvent *event)
 
 		horizontalScrollBar()->setValue(mousePressScrollPos.x() - mouseDx);
 		verticalScrollBar()->setValue(mousePressScrollPos.y() - mouseDy);
+	}
+	else
+	{
+		QPointF scenePos = mapToScene(event->pos().x(), event->pos().y());
+		emit mouseOverPixel(QPoint((int) scenePos.x(), (int) scenePos.y()));
 	}
 }
 
@@ -138,7 +206,7 @@ void TextureScrollArea::mouseReleaseEvent(QMouseEvent *event)
 	QGraphicsView::mouseReleaseEvent(event);
 
 	mouseInMoveState = false;
-	viewport()->setProperty("cursor", QVariant(QCursor(Qt::OpenHandCursor)));
+	viewport()->setProperty("cursor", QVariant(QCursor(Qt::ArrowCursor)));
 }
 
 void TextureScrollArea::applyCurrentImageToScenePixmap()
@@ -195,4 +263,31 @@ void TextureScrollArea::applyCurrentImageToScenePixmap()
 		textureScene->setSceneRect(pixmap.rect());
 		texturePixmap->setPixmap(pixmap);
 	}
+}
+
+void TextureScrollArea::applyCurrentImageBorder()
+{
+	QRectF r(currentTextureImage.rect());
+
+	if(r.width() != 0 && r.height() != 0)
+	{
+		r.adjust(-0.1, -0.1, 0.1, 0.1);
+	}
+
+	textureBorder->setRect(r);
+	r.adjust(0, 0, 1, 1);
+	textureScene->setSceneRect(r);
+}
+
+void TextureScrollArea::adjustWaitBarPos()
+{
+	// apply to waitBar inverted transform - so it will be always same size
+	waitBar->setTransform(transform().inverted());
+
+	// calculate new waitBar pos
+	QRectF wbRect = waitBar->sceneBoundingRect();
+	QPointF viewCenter = mapToScene(width() / 2.0, height() / 2.0);
+	qreal x = viewCenter.x() - wbRect.width() / 2.0;
+	qreal y = viewCenter.x() - wbRect.height() / 2.0;
+	waitBar->setPos(x, y);
 }
