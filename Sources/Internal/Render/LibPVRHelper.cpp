@@ -2202,7 +2202,7 @@ uint32 LibPVRHelper::GetMipMapLevelsCount(File *file)
 }
 
     
-bool LibPVRHelper::ReadFile(File *file, Vector<Image *> imageSet)
+bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet)
 {
     uint32 fileSize = file->GetSize();
     uint8 *fileData = new uint8[fileSize];
