@@ -43,26 +43,6 @@ class Vector4;
 struct Matrix2;
 struct Matrix3;
 struct Matrix4;
-
-#define TYPENAME_UNKNOWN    "unknown"
-#define TYPENAME_BOOLEAN    "bool"
-#define TYPENAME_INT32      "int32"
-#define TYPENAME_UINT32     "uint32"
-#define TYPENAME_INT64      "int64"
-#define TYPENAME_UINT64     "uint64"
-
-#define TYPENAME_FLOAT      "float"
-#define TYPENAME_STRING     "string"
-#define TYPENAME_WIDESTRING "wideString"
-#define TYPENAME_BYTE_ARRAY "byteArray"
-#define TYPENAME_KEYED_ARCHIVE "keyedArchive"
-#define TYPENAME_VECTOR2    "Vector2"
-#define TYPENAME_VECTOR3    "Vector3"
-#define TYPENAME_VECTOR4    "Vector4"
-#define TYPENAME_MATRIX2    "Matrix2"
-#define TYPENAME_MATRIX3    "Matrix3"
-#define TYPENAME_MATRIX4    "Matrix4"
-
     
 /**
  \ingroup filesystem
@@ -71,6 +51,26 @@ struct Matrix4;
 class VariantType
 {
 public:
+
+    static const String TYPENAME_UNKNOWN;   // "unknown";
+    static const String TYPENAME_BOOLEAN;   // "bool";
+    static const String TYPENAME_INT32;     // "int32"
+    static const String TYPENAME_UINT32;    // "uint32"
+    static const String TYPENAME_INT64;     // "int64"
+    static const String TYPENAME_UINT64;    // "uint64"
+
+    static const String TYPENAME_FLOAT;     // "float"
+    static const String TYPENAME_STRING;    // "string"
+    static const String TYPENAME_WIDESTRING;// "wideString"
+    static const String TYPENAME_BYTE_ARRAY;// "byteArray"
+    static const String TYPENAME_KEYED_ARCHIVE;// "keyedArchive"
+    static const String TYPENAME_VECTOR2;   // "Vector2"
+    static const String TYPENAME_VECTOR3;   // "Vector3"
+    static const String TYPENAME_VECTOR4;   // "Vector4"
+    static const String TYPENAME_MATRIX2;   // "Matrix2"
+    static const String TYPENAME_MATRIX3;   //  "Matrix3"
+    static const String TYPENAME_MATRIX4;   // "Matrix4"
+
 	VariantType();
     VariantType(const VariantType &var);
 	~VariantType();

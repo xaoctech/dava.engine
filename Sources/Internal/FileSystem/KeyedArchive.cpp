@@ -31,8 +31,8 @@
 #include "FileSystem/File.h"
 #include "Utils/Utils.h"
 #include "FileSystem/DynamicMemoryFile.h"
-#include "YamlParser.h"
-#include "VariantType.h"
+#include "FileSystem/YamlParser.h"
+#include "FileSystem/VariantType.h"
 
 namespace DAVA 
 {
@@ -150,6 +150,7 @@ bool KeyedArchive::LoadFromYamlFile(const String & pathName)
 	YamlParser	*parser	= YamlParser::Create(pathName);
     if(NULL == parser)
     {
+      	SafeRelease(archive);
         return false;
     }
 	
@@ -169,8 +170,7 @@ bool KeyedArchive::LoadFromYamlNode(YamlNode* rootNode)
         return  false;
     }
 
-    const String tmp = TYPENAME_KEYED_ARCHIVE;
-    Vector<YamlNode*> &rootVector = rootNode->Get(tmp)->AsVector();
+    Vector<YamlNode*> &rootVector = rootNode->Get(VariantType::TYPENAME_KEYED_ARCHIVE)->AsVector();
     
     for (Vector<YamlNode*>::const_iterator it = rootVector.begin(); it != rootVector.end(); ++it)
     {
