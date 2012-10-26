@@ -399,25 +399,6 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
     infoControl->SetRenderStats(sceneStats);
 }
 
-void SceneValidator::ReloadTextures()
-{
-    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
-	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *texture = it->second;
-        
-        if(WasTextureChanged(texture))
-        {
-            //TODO: need correct code for different formates
-            Image *image = CreateTopLevelImage(texture->relativePathname);
-            if(image)
-            {
-                texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
-                SafeRelease(image);
-            }
-        }
-	}
-}
 
 void SceneValidator::ReloadTextures(int32 asFile)
 {
