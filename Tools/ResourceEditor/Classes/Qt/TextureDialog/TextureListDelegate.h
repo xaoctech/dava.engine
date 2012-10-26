@@ -5,6 +5,8 @@
 #include <QFont>
 #include <QFontMetrics>
 
+#include "DAVAEngine.h"
+
 class QPainter;
 
 class TextureListDelegate : public QAbstractItemDelegate
@@ -17,12 +19,20 @@ public:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index ) const;
 
+private slots:
+	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);
+
+signals:
+	void needRedraw(const DAVA::Texture *texture);
+
 private:
 	QFont nameFont;
 	QFontMetrics nameFontMetrics;
-	mutable QMap<QString, QImage> cachedImages;
 
+	/*
+	mutable QMap<QString, QImage> cachedImages;
 	QImage getImage(const QString path) const;
+	*/
 };
 
 #endif // __TEXTURE_LIST_DELEGATE_H__

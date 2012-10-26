@@ -174,9 +174,19 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 	reactOnPropertyChange = true;
 }
 
+DAVA::Texture* TextureProperties::getTexture()
+{
+	return curTexture;
+}
+
+DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
+{
+	return curTextureDescriptor;
+}
+
 void TextureProperties::propertyChanged(QtProperty * property)
 {
-	if(reactOnPropertyChange)
+	if(reactOnPropertyChange && NULL != curTextureDescriptor)
 	{
 		if(property == enumPVRFormat)
 		{
@@ -197,6 +207,14 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		else if(property == boolDXTFlipVertical)
 		{
 			curTextureDescriptor->dxtCompression.flipVertically = propertiesBool->value(boolDXTFlipVertical);
+		}
+		else if(property == intBasePVRMipmapLevel)
+		{
+			curTextureDescriptor->pvrCompression.baseMipMapLevel = propertiesInt->value(intBasePVRMipmapLevel);
+		}
+		else if(property == intBaseDXTMipmapLevel)
+		{
+			curTextureDescriptor->dxtCompression.baseMipMapLevel = propertiesInt->value(intBaseDXTMipmapLevel);
 		}
 		else if(property == boolGenerateMipMaps)
 		{
@@ -256,5 +274,8 @@ QStringList TextureProperties::enumPropertiesHelper::keyList()
 
 void TextureProperties::Save()
 {
-
+	if(NULL != curTextureDescriptor)
+	{
+		curTextureDescriptor->Save();
+	}
 }

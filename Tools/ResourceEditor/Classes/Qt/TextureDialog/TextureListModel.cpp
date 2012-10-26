@@ -16,7 +16,7 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 {
 	if(index.isValid())
 	{
-		DAVA::Texture *curTexture = texturesFiltredSorted[index.row()];
+		const DAVA::Texture *curTexture = texturesFiltredSorted[index.row()];
 
 		switch(role)
 		{
@@ -45,7 +45,7 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-DAVA::Texture* TextureListModel::texture(const QModelIndex &index) const
+DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 {
 	DAVA::Texture *ret = NULL;
 
@@ -55,6 +55,12 @@ DAVA::Texture* TextureListModel::texture(const QModelIndex &index) const
 	}
 
 	return ret;
+}
+
+void TextureListModel::dataReady(const DAVA::Texture *texture)
+{
+	int i = texturesFiltredSorted.indexOf((DAVA::Texture * const) texture);
+	emit dataChanged(this->index(i), this->index(i));
 }
 
 void TextureListModel::setFilter(QString filter)

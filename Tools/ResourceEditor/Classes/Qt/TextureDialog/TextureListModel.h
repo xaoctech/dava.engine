@@ -2,6 +2,7 @@
 #define __TEXTURE_LIST_MODEL_H__
 
 #include <QAbstractListModel>
+#include <QVector>
 #include "DAVAEngine.h"
 
 class TextureListModel : public QAbstractListModel
@@ -33,12 +34,13 @@ public:
 
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-	DAVA::Texture* texture(const QModelIndex &index) const;
+	DAVA::Texture* getTexture(const QModelIndex &index) const;
+	void dataReady(const DAVA::Texture *texture);
 
 private:
 	DAVA::Scene *scene;
-	DAVA::Vector<DAVA::Texture *> texturesAll;
-	DAVA::Vector<DAVA::Texture *> texturesFiltredSorted;
+	QVector<DAVA::Texture *> texturesAll;
+	QVector<DAVA::Texture *> texturesFiltredSorted;
 
 	TextureListSortMode curSortMode;
 	QString	curFilter;
