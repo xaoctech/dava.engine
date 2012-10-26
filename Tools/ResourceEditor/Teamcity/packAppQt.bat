@@ -13,4 +13,4 @@ xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.dll app\1\2\3
 xcopy ..\..\..\..\dava.resourceeditor.beast\beast\bin\beast32.dll app\1\2\3
 xcopy /e ..\..\..\..\dava.resourceeditor.beast\*.* app\dava.resourceeditor.beast
 
-wzzip -p -r ResourceEditor_win.zip app\*.*	
+wzzip -p -r ResourceEditor_win_%1.zip app\*.*	
