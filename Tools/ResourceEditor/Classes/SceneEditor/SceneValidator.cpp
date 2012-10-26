@@ -439,7 +439,6 @@ void SceneValidator::FindTexturesForCompression()
     const Map<String, Texture*> textureMap = Texture::GetTextureMap();
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
-        String name = it->first;
 		Texture *texture = it->second;
         if(WasTextureChanged(texture))
         {

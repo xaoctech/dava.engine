@@ -110,6 +110,7 @@ void CommandNewScene::Execute()
     if(screen)
     {
         screen->NewScene();
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 
