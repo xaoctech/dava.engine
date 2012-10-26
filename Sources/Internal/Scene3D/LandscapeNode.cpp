@@ -1612,7 +1612,7 @@ void LandscapeNode::UpdateFullTiledTexture()
     {
 		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
-//        t->GenerateMipmaps();
+        t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
 		RenderManager::Instance()->UnlockNonMain();
