@@ -68,16 +68,6 @@ SceneData::~SceneData()
 }
 
 
-void SceneData::SetScene(EditorScene *newScene)
-{
-    ReleaseScene();
-    
-    scene = SafeRetain(newScene);
-    sceneGraphModel->SetScene(scene);
-    cameraController->SetScene(scene);
-    landscapesController->SetScene(scene);
-}
-
 void SceneData::RebuildSceneGraph()
 {
     sceneGraphModel->Rebuild();
@@ -180,6 +170,16 @@ CameraController * SceneData::GetCameraController()
     return cameraController;
 }
 
+void SceneData::SetScene(EditorScene *newScene)
+{
+    ReleaseScene();
+    
+    scene = SafeRetain(newScene);
+    sceneGraphModel->SetScene(scene);
+    cameraController->SetScene(scene);
+    landscapesController->SetScene(scene);
+}
+
 void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
@@ -211,7 +211,6 @@ void SceneData::CreateScene(bool createEditorCameras)
         createdScene->AddNode(cam);
         createdScene->AddCamera(cam);
         createdScene->SetCurrentCamera(cam);
-        cameraController->SetScene(createdScene);
         
         SafeRelease(cam);
         
@@ -230,6 +229,7 @@ void SceneData::CreateScene(bool createEditorCameras)
     }
     
     SetScene(createdScene);
+    SafeRelease(createdScene);
 }
 
 void SceneData::AddScene(const String &scenePathname)
