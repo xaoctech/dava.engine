@@ -144,7 +144,7 @@ protected:
     bool NodeRemovingDisabled(SceneNode *node);
     
     bool WasTextureChanged(Texture *texture);
-    bool IsPathCorrectForProject(const String pathname);
+    bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);
 	String ConvertTexturePathToDescriptorPath(const String &path);

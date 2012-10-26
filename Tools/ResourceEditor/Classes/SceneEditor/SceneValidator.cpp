@@ -11,6 +11,9 @@
 #include "../Qt/SceneData.h"
 #include "../EditorScene.h"
 
+#include "PVRConverter.h"
+
+
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
@@ -438,6 +441,7 @@ void SceneValidator::FindTexturesForCompression()
     const Map<String, Texture*> textureMap = Texture::GetTextureMap();
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
+        String name = it->first;
 		Texture *texture = it->second;
         if(WasTextureChanged(texture))
         {
@@ -450,6 +454,13 @@ void SceneValidator::FindTexturesForCompression()
 	{
 		Texture *texture = *it;
         //TODO: compress texture
+        TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texture->GetPathname());
+        if(descriptor)
+        {
+            String sourcePathname = FileSystem::Instance()->ReplaceExtension(texture->GetPathname(), ".png");
+            PVRConverter::Instance()->ConvertPngToPvr(sourcePathname, descriptor->pvrCompression.format, descriptor->GetGenerateMipMaps());
+            SafeRelease(descriptor);
+        }
         
         SafeRelease(texture);
 	}
@@ -602,7 +613,7 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     return pathIsCorrect;
 }
 
-bool SceneValidator::IsPathCorrectForProject(const String pathname)
+bool SceneValidator::IsPathCorrectForProject(const String &pathname)
 {
     String normalizedPath = FileSystem::NormalizePath(pathname);
     String::size_type foundPos = normalizedPath.find(pathForChecking);
