@@ -36,10 +36,31 @@
 #include "Math/Matrix2.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "Utils.h"
+#include "Utils/Utils.h"
 
-namespace DAVA 
+namespace DAVA
 {
+    const String VariantType::TYPENAME_UNKNOWN = "unknown";
+    const String VariantType::TYPENAME_BOOLEAN = "bool";
+    const String VariantType::TYPENAME_INT32   = "int32";
+    const String VariantType::TYPENAME_UINT32  = "uint32";
+    const String VariantType::TYPENAME_INT64   = "int64";
+    const String VariantType::TYPENAME_UINT64  = "uint64";
+    
+    const String VariantType::TYPENAME_FLOAT   = "float";
+    const String VariantType::TYPENAME_STRING  = "string";
+    const String VariantType::TYPENAME_WIDESTRING = "wideString";
+    const String VariantType::TYPENAME_BYTE_ARRAY = "byteArray";
+    const String VariantType::TYPENAME_KEYED_ARCHIVE = "keyedArchive";
+    const String VariantType::TYPENAME_VECTOR2 = "Vector2";
+    const String VariantType::TYPENAME_VECTOR3 = "Vector3";
+    const String VariantType::TYPENAME_VECTOR4 = "Vector4";
+    const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
+    const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
+    const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
+    
+    
+    
     const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
     VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN),
@@ -95,12 +116,12 @@ VariantType::VariantType(const VariantType &var) : pointerValue(NULL)
             break;	
 		case TYPE_STRING:
 		{
-            stringValue = var.stringValue;
+            stringValue = new String(var.AsString());
 		}
             break;	
 		case TYPE_WIDE_STRING:
 		{ 
-            wideStringValue = var.wideStringValue;
+            wideStringValue = new WideString(var.AsWideString());
 		}
             break;
 		case TYPE_BYTE_ARRAY:
