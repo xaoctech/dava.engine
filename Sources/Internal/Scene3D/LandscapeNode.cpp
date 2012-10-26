@@ -583,8 +583,6 @@ const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
-//    Image::EnableAlphaPremultiplication(false);
-
     SafeRelease(textures[level]);
     textureNames[level] = String("");
     
@@ -592,8 +590,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     if (texture)
     {
         textureNames[level] = textureName;
-//        texture->GenerateMipmaps();
-//        texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
     }
     textures[level] = texture;
     
@@ -601,8 +597,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     {
         UpdateFullTiledTexture();
     }
-
-//    Image::EnableAlphaPremultiplication(true);
 }
     
 Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textureName)
@@ -1618,7 +1612,7 @@ void LandscapeNode::UpdateFullTiledTexture()
     {
 		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
-        t->GenerateMipmaps();
+//        t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
 		RenderManager::Instance()->UnlockNonMain();

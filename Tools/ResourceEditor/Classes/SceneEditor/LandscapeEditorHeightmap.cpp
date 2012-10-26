@@ -238,8 +238,10 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 if(tex)
                 {
                     tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData(), 0);
+                    //TODO: is code useful?
                     tex->GenerateMipmaps();
                     tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+                    //ENDOFTODO
                 }
             }
         }

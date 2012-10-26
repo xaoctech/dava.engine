@@ -442,12 +442,6 @@ void TextureConverterDialog::SetupTexturePreview()
     Texture *workingTexture = GetTextureForIndex(selectedItem);
     String workingTexturePath = workingTexture->relativePathname;
 
-//    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
-//
-//    Image::EnableAlphaPremultiplication(false);
-//    Texture::DisableMipmapGeneration();   
-
     if(FileSystem::GetExtension(workingTexturePath) == ".png")
     {
         srcTexture = Texture::CreateFromFile(workingTexturePath);
@@ -472,13 +466,6 @@ void TextureConverterDialog::SetupTexturePreview()
     {
         dstTexture->GeneratePixelesation();
     }
-    
-//    if(isMipmaps)
-//    {
-//        Texture::EnableMipmapGeneration();
-//    }
-//    Image::EnableAlphaPremultiplication(isEnabled);
-    
     
     SetupZoomedPreview(srcTexture, srcPreview, srcZoomPreview);
     SetupZoomedPreview(dstTexture, dstPreview, dstZoomPreview);

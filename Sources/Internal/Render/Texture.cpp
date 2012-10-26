@@ -412,18 +412,6 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
     RenderManager::Instance()->UnlockNonMain();
 }
 	
-//bool Texture::isMipmapGenerationEnabled = false;
-//	
-//void Texture::EnableMipmapGeneration()
-//{
-//	isMipmapGenerationEnabled = true;
-//}
-//
-//void Texture::DisableMipmapGeneration()
-//{
-//	isMipmapGenerationEnabled = false;
-//}
-
 void Texture::GenerateMipmaps()
 {
     if((FORMAT_PVR2 == format) || (FORMAT_PVR4 == format))
@@ -431,9 +419,6 @@ void Texture::GenerateMipmaps()
     
 	RenderManager::Instance()->LockNonMain();
     
-//    //TODO: need be stored in descriptor. Can't be changed this way
-//    descriptor->isMipMapTexture = true;
-
 #if defined(__DAVAENGINE_OPENGL__)
 
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
@@ -458,9 +443,6 @@ void Texture::GenerateMipmaps()
 void Texture::GeneratePixelesation()
 {
 	RenderManager::Instance()->LockNonMain();
-    
-//    //TODO: need be stored in descriptor. Can't be changed this way
-//    descriptor->isMipMapTexture = false;
 
 #if defined(__DAVAENGINE_OPENGL__)
     
@@ -1112,10 +1094,6 @@ void Texture::Invalidate()
 
     RenderManager::Instance()->LockNonMain();
 
-    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
-    
-//    Image::EnableAlphaPremultiplication(descriptor->isAlphaPremultiplied);
-    
 	if(isRenderTarget)
 	{
 		//////////////////////////////////////////////////////////////////////////
@@ -1180,8 +1158,6 @@ void Texture::Invalidate()
 		InvalidateFromFile();
 	}
 
-    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
-    
 	RenderManager::Instance()->UnlockNonMain();
 }
 
