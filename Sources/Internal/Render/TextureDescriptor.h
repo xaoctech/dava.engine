@@ -54,7 +54,6 @@ class TextureDescriptor: public BaseObject
         COMPRESSED_FILE = 0x00EEEE00,
         NOTCOMPRESSED_FILE = 0x00EE00EE
     };
-    
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
 
