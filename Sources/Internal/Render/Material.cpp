@@ -568,12 +568,14 @@ void Material::PrepareRenderState()
 	{
 		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
 		//Dizz: temporary solution
-		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode(blendSrc, blendDst);
 	}
 	else
 	{
+		//Dizz: temporary solution
+		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 
