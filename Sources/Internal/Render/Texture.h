@@ -174,8 +174,8 @@ public:
 
 	static void	DumpTextures();
 
-	inline int32 GetWidth() { return width; }
-	inline int32 GetHeight() { return height; }
+	inline int32 GetWidth() const { return width; }
+	inline int32 GetHeight() const { return height; }
 	
 //	static void EnableMipmapGeneration();
 //	static void DisableMipmapGeneration();

@@ -91,9 +91,13 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 	Sprite * spr = forPointer;
 	
 	int pos = (int)spriteName.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+	if(pos < 0)
+	{
+		return NULL;
+	}
+
 	String scaledName = spriteName.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	String scaledPath = scaledName + ".txt";
-	
 	
 	Map<String, Sprite*>::iterator it;
 	it = spriteMap.find(scaledPath);

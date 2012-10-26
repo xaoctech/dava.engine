@@ -70,16 +70,18 @@ Texture * Texture::CreateFromPVR(File *file, TextureDescriptor *descriptor)
         Logger::Error("Failed to read data from PVR texture file");
         return 0;
     }
+
+	RenderManager::Instance()->LockNonMain();
     
     Texture * newTexture = UnpackPVRData(bytes, fileSize, 0);
+	SafeDeleteArray(bytes);
+
     if (!newTexture)
     {
         Logger::Error("Failed to parse PVR texture");
+		return NULL;
     }
     
-    SafeDeleteArray(bytes);
-    
-    RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
     int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
     RenderManager::Instance()->HWglBindTexture(newTexture->id);

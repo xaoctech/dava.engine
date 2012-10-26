@@ -1161,25 +1161,19 @@ Image * Texture::ReadDataToImage()
     RenderManager::Instance()->LockNonMain();
     
     int32 saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-
     int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-    RenderManager::Instance()->HWglBindTexture(id);
-    
-    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-    
+
+	RenderManager::Instance()->HWglBindTexture(id);
     
     DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     if(FORMAT_INVALID != format)
     {
+		RENDER_VERIFY(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
         RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)imageData));
     }
 
     RenderManager::Instance()->HWglBindFBO(saveFBO);
-    
-    if (saveId != 0)
-    {
-        RenderManager::Instance()->HWglBindTexture(saveId);
-    }
+    RenderManager::Instance()->HWglBindTexture(saveId);
     
     RenderManager::Instance()->UnlockNonMain();
     
@@ -1207,7 +1201,8 @@ Image * Texture::CreateImageFromMemory()
         Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
-        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
+		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
+
         drawTexture->SetPosition(0, 0);
         drawTexture->Draw();
 
@@ -1282,24 +1277,24 @@ PixelFormatDescriptor Texture::pixelDescriptors[FORMAT_COUNT];
 void Texture::InitializePixelFormatDescriptors()
 {
     SetPixelDescription(FORMAT_INVALID, String("WRONG FORMAT"), 0, 0, 0, 0);
-    SetPixelDescription(FORMAT_RGBA8888, String("FORMAT_RGBA8888"), 32, GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA);
-    SetPixelDescription(FORMAT_RGBA5551, String("FORMAT_RGBA5551"), 16, GL_UNSIGNED_SHORT_5_5_5_1, GL_RGBA, GL_RGBA);
-    SetPixelDescription(FORMAT_RGBA4444, String("FORMAT_RGBA4444"), 16, GL_UNSIGNED_SHORT_4_4_4_4, GL_RGBA, GL_RGBA);
-    SetPixelDescription(FORMAT_RGB888, String("FORMAT_RGB888"), 24, GL_UNSIGNED_BYTE, GL_RGB, GL_RGB);
-    SetPixelDescription(FORMAT_RGB565, String("FORMAT_RGB565"), 16, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, GL_RGB);
-    SetPixelDescription(FORMAT_A8, String("FORMAT_A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
-    SetPixelDescription(FORMAT_A16, String("FORMAT_A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
+    SetPixelDescription(FORMAT_RGBA8888, String("RGBA8888"), 32, GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA5551, String("RGBA5551"), 16, GL_UNSIGNED_SHORT_5_5_5_1, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA4444, String("RGBA4444"), 16, GL_UNSIGNED_SHORT_4_4_4_4, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGB888, String("RGB888"), 24, GL_UNSIGNED_BYTE, GL_RGB, GL_RGB);
+    SetPixelDescription(FORMAT_RGB565, String("RGB565"), 16, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, GL_RGB);
+    SetPixelDescription(FORMAT_A8, String("A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
+    SetPixelDescription(FORMAT_A16, String("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
     
 #if defined (__DAVAENGINE_IPHONE__)
-    SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
-    SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
+    SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
+    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
 #else //#if defined (__DAVAENGINE_IPHONE__)
-    SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, 0, 0, 0);
-    SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, 0, 0, 0);
+    SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, 0, 0, 0);
+    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);
 #endif //#if defined (__DAVAENGINE_IPHONE__)
     
-    SetPixelDescription(FORMAT_RGBA16161616, String("FORMAT_RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
-    SetPixelDescription(FORMAT_RGBA32323232, String("FORMAT_RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA16161616, String("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA32323232, String("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
