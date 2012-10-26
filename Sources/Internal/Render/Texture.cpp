@@ -700,12 +700,6 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
 {
     String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, TextureDescriptor::GetDefaultExtension());
     TextureDescriptor *descriptor = new TextureDescriptor();
-    if(!descriptor)
-    {
-        Logger::Error("[Texture::CreateDescriptorForTexture]: Cannot allocate TextureDescriptor");
-        return NULL;
-    }
-
     bool loaded = descriptor->Load(descriptorPathname);
     if(!loaded)
     {
