@@ -140,11 +140,11 @@ void NotPassableTerrain::LoadColorsArray()
             if (!node || node->GetCount() != 3)
                 continue;
             
-            int32 angle1 = node->Get(0)->AsInt();
-            int32 angle2 = node->Get(1)->AsInt();
+            float32 angle1 = node->Get(0)->AsFloat();
+            float32 angle2 = node->Get(1)->AsFloat();
             
-            angle1 = Min(angle1, 89);
-            angle2 = Min(angle2, 89);
+            angle1 = Min(angle1, 89.f);
+            angle2 = Min(angle2, 89.f);
             
             float32 tangentMin = tan(DegToRad(angle1));
             float32 tangentMax = tan(DegToRad(angle2));
@@ -152,9 +152,7 @@ void NotPassableTerrain::LoadColorsArray()
             YamlNode* colorNode = node->Get(2);
             if (!colorNode || colorNode->GetCount() != 4)
                 continue;
-            
-            Logger::Instance()->Debug("%d\n", colorNode->GetCount());
-            
+         
             Color color(colorNode->Get(0)->AsFloat()/255.f,
                         colorNode->Get(1)->AsFloat()/255.f,
                         colorNode->Get(2)->AsFloat()/255.f,
@@ -169,7 +167,7 @@ void NotPassableTerrain::LoadColorsArray()
 
 bool NotPassableTerrain::PickColor(float32 tan, Color& color) const
 {
-    for (int i = 0; i < angleColor.size(); ++i)
+    for (uint32 i = 0; i < angleColor.size(); ++i)
     {
 		if(tan >= angleColor[i].angleRange.x && tan < angleColor[i].angleRange.y)
         {
