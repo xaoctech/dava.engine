@@ -1038,6 +1038,21 @@
     <ClCompile Include=".GeneratedQt\TextureDialog\TextureProperties_moc.cpp">
       <Filter>QtGenerated\TextureDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertor.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureConvertor_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertorWork.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureCache.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureCache_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1941,6 +1956,15 @@
       <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertor.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertorWork.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureCache.h">
       <Filter>Sources\Qt\TextureDialog</Filter>
     </ClInclude>
   </ItemGroup>
