@@ -32,8 +32,6 @@
 
 using namespace DAVA;
 
-#define SETTINGS_FILE "~res:/Configs/LandscapeAngle.yaml"
-
 NotPassableTerrain::NotPassableTerrain()
     : EditorLandscapeNode()
 {
@@ -129,7 +127,7 @@ void NotPassableTerrain::SetDisplayedTexture()
 
 void NotPassableTerrain::LoadColorsArray()
 {
-    YamlParser* parser = YamlParser::Create(SETTINGS_FILE);
+    YamlParser* parser = YamlParser::Create("~res:/Configs/LandscapeAngle.yaml");
     
     if (parser != 0)
     {
@@ -157,10 +155,12 @@ void NotPassableTerrain::LoadColorsArray()
             
             Logger::Instance()->Debug("%d\n", colorNode->GetCount());
             
-            Color color(colorNode->Get(0)->AsFloat(),
-                        colorNode->Get(1)->AsFloat(),
-                        colorNode->Get(2)->AsFloat(),
-                        colorNode->Get(3)->AsFloat());
+            Color color(colorNode->Get(0)->AsFloat()/255.f,
+                        colorNode->Get(1)->AsFloat()/255.f,
+                        colorNode->Get(2)->AsFloat()/255.f,
+                        colorNode->Get(3)->AsFloat()/255.f);
+            
+            angleColor.push_back(TerrainColor(Vector2(tangentMin, tangentMax), color));
         }
     }
 
