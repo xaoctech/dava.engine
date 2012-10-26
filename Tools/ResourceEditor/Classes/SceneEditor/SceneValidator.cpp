@@ -304,6 +304,12 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
     int32 lightmapCont = meshNode->GetLightmapCount();
     for(int32 iLight = 0; iLight < lightmapCont; ++iLight)
     {
+        DAVA::String lightmapName = meshNode->GetLightmapDataForIndex(iLight)->lightmapName;
+		if(!IsTextureDescriptorPath(lightmapName))
+		{
+			meshNode->GetLightmapDataForIndex(iLight)->lightmapName = ConvertTexturePathToDescriptorPath(lightmapName);
+		}
+        
         ValidateTexture(meshNode->GetLightmapDataForIndex(iLight)->lightmap, errorsLog);
     }
 }
