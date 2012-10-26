@@ -270,11 +270,9 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 
 void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)
 {
-//    Texture::EnableMipmapGeneration();
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
     landscape->SetTexture(level, texturePathname);
     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
-//    Texture::DisableMipmapGeneration();
 
     if(LandscapeNode::TEXTURE_TILE_FULL != level)
     {
@@ -333,10 +331,8 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
                 if(landscape)
                 {
-//                    Texture::EnableMipmapGeneration();
                     landscape->SetTexture(LandscapeNode::TEXTURE_COLOR, resultPath);
                     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_COLOR));
-//                    Texture::DisableMipmapGeneration();
                 }
             }
         }

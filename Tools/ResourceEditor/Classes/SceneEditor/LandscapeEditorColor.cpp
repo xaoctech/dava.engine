@@ -320,14 +320,13 @@ void LandscapeEditorColor::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-//        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoTilemask();
-        
-//        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
+        //ENDOFTODO
+        
         CreateMaskFromTexture(tex);
     }
 }
@@ -337,13 +336,12 @@ void LandscapeEditorColor::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-//        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->RedoTilemask();
-        
-//        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        //ENDOFTODO
 
         CreateMaskFromTexture(tex);
     }

@@ -64,14 +64,15 @@ public:
 	inline int32 GetHeight();
 	inline uint8 * GetData();
 	inline PixelFormat GetPixelFormat();
-	inline bool  IsAlphaPremultiplied();
 
-	void ConvertToFormat(PixelFormat format, bool isAlphaPremultiplied = true);
+    
 	
     // changes size of image to required size, if new size is bigger, sets 0 to all new pixels
     void Resize(int32 newWidth, int32 newHeight);
     
     /*
+     //	void ConvertToFormat(PixelFormat format);
+
         \todo extract all image format conversion functions to separate functions to allow to use them in different places, like textures.
         enum eAlphaAction
         {  
