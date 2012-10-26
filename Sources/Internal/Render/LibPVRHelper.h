@@ -110,7 +110,7 @@ public:
     static bool IsPvrFile(File *file);
     static uint32 GetMipMapLevelsCount(File *file);
     
-    static bool ReadFile(File *file, Vector<Image *> imageSet);
+    static bool ReadFile(File *file, const Vector<Image *> &imageSet);
     
     static PixelFormat GetPixelFormat(const String &filePathname);
     static uint32 GetDataLength(const String &filePathname);
