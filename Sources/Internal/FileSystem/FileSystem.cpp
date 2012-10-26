@@ -444,8 +444,10 @@ bool FileSystem::SetCurrentWorkingDirectory(const String & newWorkingDirectory)
   
 bool FileSystem::IsFile(const String & pathToCheck)
 {
+    String pathname = SystemPathForFrameworkPath(pathToCheck);
+    
     struct stat s;
-    if(stat(pathToCheck.c_str(),&s) == 0)
+    if(stat(pathname.c_str(),&s) == 0)
     {
         return (0 != (s.st_mode & S_IFREG));
     }
@@ -454,8 +456,10 @@ bool FileSystem::IsFile(const String & pathToCheck)
 	  
 bool FileSystem::IsDirectory(const String & pathToCheck)
 {
+    String pathname = SystemPathForFrameworkPath(pathToCheck);
+    
     struct stat s;
-    if( stat(pathToCheck.c_str(),&s) == 0 )
+    if( stat(pathname.c_str(),&s) == 0 )
     {
         return (0 != (s.st_mode & S_IFDIR));
     }
