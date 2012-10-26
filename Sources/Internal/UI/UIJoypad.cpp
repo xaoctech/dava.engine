@@ -52,7 +52,6 @@ UIJoypad::~UIJoypad()
     SafeRelease(stick);
 }
 
-
 const Vector2 &UIJoypad::GetDigitalPosition()
 {
 //	if(needRecalcDigital)
@@ -117,6 +116,31 @@ void UIJoypad::CreateStickControl()
         AddControl(stick);
     }
 }
+    
+float32 UIJoypad::GetStickAngle() const
+{
+    const Vector2 &v = currentPos;
+
+	const float32 len = sqrtf(v.x*v.x + v.y*v.y);
+	float32 ang = asinf(v.x / len);
+	
+    if(v.y > 0)
+	{
+		ang = PI - ang;
+	}
+	
+    if(ang < 0)
+	{
+		ang += PI*2;
+	}
+	
+    if(ang > PI*2)
+	{
+		ang -= PI*2;
+	}
+    
+    return ang;
+}
 
 void UIJoypad::RecalcDigitalPosition()
 {
@@ -128,23 +152,7 @@ void UIJoypad::RecalcDigitalPosition()
 		return;
 	}
 
-	Vector2 v;
-	v.x = currentPos.x;
-	v.y = currentPos.y;
-	float len = sqrtf(v.x*v.x + v.y*v.y);
-	float ang = asinf(v.x / len);
-	if(v.y > 0)
-	{
-		ang = PI - ang;
-	}
-	if(ang < 0)
-	{
-		ang += PI*2;
-	}
-	if(ang > PI*2)
-	{
-		ang -= PI*2;
-	}
+	float ang = GetStickAngle();
 	
 	if(ang > PI/8 && ang < PI - PI/8)
 	{
@@ -158,6 +166,7 @@ void UIJoypad::RecalcDigitalPosition()
 	{
 		digitalVector.x = 0;
 	}
+    
 	if(ang < PI/2 - PI/8 || ang > PI*2 - PI/2 + PI/8)
 	{
 		digitalVector.y = -1.0f;
