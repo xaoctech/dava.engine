@@ -334,7 +334,7 @@ namespace DAVA
 		}
 		if(parent)
 		{
-			absolutePosition = relativePosition + parent->GetGeometricData().position;
+			absolutePosition = GetGeometricData().position;
 			return absolutePosition;
 		}
 		if(!needToRecalcFromAbsoluteCoordinates)
