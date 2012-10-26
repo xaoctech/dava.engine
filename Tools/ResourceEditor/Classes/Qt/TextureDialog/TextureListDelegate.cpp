@@ -1,5 +1,6 @@
 #include "TextureListDelegate.h"
 #include "TextureListModel.h"
+#include "TextureCache.h"
 #include <QPainter>
 
 #define TEXTURE_PREVIEW_SIZE 100
@@ -14,18 +15,18 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFont("Arial", 10, QFont::Bold)
 	, nameFontMetrics(nameFont)
 {
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::Texture *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::Texture *, const QImage &)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	const QAbstractItemModel *curModel = index.model();
+	const TextureListModel *curModel = (TextureListModel *) index.model();
 
+	DAVA::Texture *curTexture = curModel->getTexture(index);
 	QVariant texturePath = curModel->data(index, TextureListModel::TexturePath);
 	QVariant textureName = curModel->data(index, TextureListModel::TextureName);
 	QVariant textureDimension = curModel->data(index, TextureListModel::TextureDimension);
 	QVariant textureDataSize = curModel->data(index, TextureListModel::TextureDataSize);
-
-	QImage img = getImage(texturePath.toString());
 
 	painter->save();
 	painter->setClipRect(option.rect);
@@ -36,6 +37,8 @@ void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 	painter->setPen(BORDER_COLOR);
 	painter->drawRect(borderRect);
 
+	QImage img = TextureCache::Instance()->getOriginal(curTexture);
+
 	// draw image preview
 	if(!img.isNull())
 	{
@@ -44,6 +47,12 @@ void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 		int imageX =  option.rect.x() + (TEXTURE_PREVIEW_SIZE - imageSize.width())/2;
 		int imageY =  option.rect.y() + (TEXTURE_PREVIEW_SIZE - imageSize.height())/2;
 		painter->drawImage(QRect(QPoint(imageX, imageY), imageSize), img);
+	}
+	else
+	{
+		// there is no image for this texture in cache
+		// so load it async
+		TextureConvertor::Instance()->loadOriginal(curTexture);
 	}
 
 	// draw text info
@@ -91,6 +100,7 @@ QSize TextureListDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 	return QSize(option.rect.x(), TEXTURE_PREVIEW_SIZE);
 }
 
+/*
 QImage TextureListDelegate::getImage(const QString path) const
 {
 	if(!cachedImages.contains(path))
@@ -99,4 +109,14 @@ QImage TextureListDelegate::getImage(const QString path) const
 	}
 
 	return cachedImages.value(path);
+}
+*/
+
+void TextureListDelegate::textureReadyOriginal(const DAVA::Texture *texture, const QImage &image)
+{
+	if(NULL != texture)
+	{
+		TextureCache::Instance()->setOriginal(texture, image);
+		emit needRedraw(texture);
+	}
 }

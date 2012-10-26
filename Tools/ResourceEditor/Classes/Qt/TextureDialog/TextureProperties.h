@@ -28,6 +28,9 @@ public:
 
 	void setTexture(DAVA::Texture *texture);
 
+	DAVA::Texture* getTexture();
+	DAVA::TextureDescriptor* getTextureDescriptor();
+
 signals:
 	void formatChangedPVR(const DAVA::PixelFormat &newFormat);
 	void formatChangedDXT(const DAVA::PixelFormat &newFormat);
