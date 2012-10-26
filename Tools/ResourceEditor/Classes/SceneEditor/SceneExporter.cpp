@@ -317,7 +317,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
                 descriptor->pvrCompression.format = FORMAT_PVR4;
             }
             
-            String descriptorPathname = FileSystem::Instance()->ReplaceExtension(workingPathname, TextureDescriptor::GetDefaultExtension());
+            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(workingPathname);
             descriptor->Save(dataFolder + descriptorPathname);
             SafeRelease(descriptor);
             
@@ -439,7 +439,7 @@ bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &er
 
 void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
 {
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, TextureDescriptor::GetDefaultExtension());
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
     DVASSERT(descriptor && "Decriptors mast be created for all textures");
     

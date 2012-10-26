@@ -551,7 +551,7 @@ bool TexturePacker::WriteDefinition(const char * excludeFolder, const char * out
 	
 	fprintf(fp, "%d\n", 1);
 	
-	String textureExtension = TextureDescriptor::GetDefaultExtension();
+	String textureExtension = TextureDescriptor::GetDescriptorExtension();
 	fprintf(fp, "%s%s\n", textureName.c_str(), textureExtension.c_str());
 	
 	fprintf(fp, "%d %d\n", defFile->spriteWidth, defFile->spriteHeight);
@@ -587,7 +587,7 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 	std::string textureName = _textureName;
 //	replace(textureName, std::string(excludeFolder), std::string(""));
 	
-	String textureExtension = TextureDescriptor::GetDefaultExtension();
+	String textureExtension = TextureDescriptor::GetDescriptorExtension();
 	
 	std::vector<int> packerIndexArray;
 	packerIndexArray.resize(defFile->frameCount);
@@ -680,12 +680,11 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
     
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(exportedPathname, TextureDescriptor::GetDefaultExtension());
 #if defined TEXTURE_SPLICING_ENABLED
     //TODO: need to enable texture splicing of 2D resources
     //        descriptor->ExportAndSlice(descriptorPathname, texturePathname);
 #else //#if defined TEXTURE_SPLICING_ENABLED
-    descriptor->Export(descriptorPathname);
+    descriptor->Export(TextureDescriptor::GetDescriptorPathname(exportedPathname));
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     SafeRelease(descriptor);

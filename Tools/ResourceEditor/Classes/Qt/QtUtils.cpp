@@ -65,7 +65,7 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
 
 DAVA::String GetTextureFileExtensions()
 {
-	String extensions = String(".png;.pvr;") + TextureDescriptor::GetDefaultExtension();
+	String extensions = String(".png;.pvr;") + TextureDescriptor::GetDescriptorExtension();
 	return extensions;
 }
 
