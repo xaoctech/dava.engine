@@ -30,6 +30,7 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 #include "Render/Texture.h"
 
@@ -293,11 +294,31 @@ bool TextureDescriptor::GetGenerateMipMaps()
     return (OPTION_DISABLED != generateMipMaps);
 }
     
+    
+String TextureDescriptor::GetSourceTexturePathname()
+{
+    if(pathname.empty())
+    {
+        return String("");
+    }
+    
+    return FileSystem::Instance()->ReplaceExtension(pathname, GetSourceTextureExtension());
+}
 
-String TextureDescriptor::GetDefaultExtension()
+String TextureDescriptor::GetDescriptorPathname(const String &texturePathname)
+{
+    return FileSystem::Instance()->ReplaceExtension(texturePathname, GetDescriptorExtension());
+}
+
+
+String TextureDescriptor::GetDescriptorExtension()
 {
     return String(".tex");
 }
     
+String TextureDescriptor::GetSourceTextureExtension()
+{
+    return String(".png");
+}
     
 };

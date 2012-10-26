@@ -261,8 +261,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
 		if(!IsTextureDescriptorPath(landTexName))
 		{
-			landTexName = ConvertTexturePathToDescriptorPath(landTexName);
-			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, landTexName);
+			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
 		}
         
         ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
@@ -310,7 +309,7 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
         DAVA::String lightmapName = meshNode->GetLightmapDataForIndex(iLight)->lightmapName;
 		if(!IsTextureDescriptorPath(lightmapName))
 		{
-			meshNode->GetLightmapDataForIndex(iLight)->lightmapName = ConvertTexturePathToDescriptorPath(lightmapName);
+            meshNode->GetLightmapDataForIndex(iLight)->lightmapName = TextureDescriptor::GetDescriptorPathname(lightmapName);
 		}
         
         ValidateTexture(meshNode->GetLightmapDataForIndex(iLight)->lightmap, errorsLog);
@@ -341,8 +340,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
             String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
             if(!IsTextureDescriptorPath(matTexName))
             {
-                matTexName = ConvertTexturePathToDescriptorPath(matTexName);
-                material->SetTexture((Material::eTextureLevel)iTex, matTexName);
+                material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
             }
             
             /*
@@ -573,7 +571,7 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 
 void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 {
-	String descriptorPathname = FileSystem::Instance()->ReplaceExtension(forPathname, TextureDescriptor::GetDefaultExtension());
+	String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 	bool fileExists = FileSystem::Instance()->IsFile(descriptorPathname);
 	if(!fileExists)
 	{
@@ -676,13 +674,10 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname)
 bool SceneValidator::IsTextureDescriptorPath(const String &path)
 {
 	String ext = FileSystem::GetExtension(path);
-	return (ext == TextureDescriptor::GetDefaultExtension());
+	return (ext == TextureDescriptor::GetDescriptorExtension());
 }
 
-String SceneValidator::ConvertTexturePathToDescriptorPath(const String &path)
-{
-	return FileSystem::ReplaceExtension(path, TextureDescriptor::GetDefaultExtension());
-}
+
 
 void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 {

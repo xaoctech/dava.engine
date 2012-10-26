@@ -147,7 +147,6 @@ protected:
     bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);
-	String ConvertTexturePathToDescriptorPath(const String &path);
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;

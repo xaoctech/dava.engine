@@ -86,7 +86,11 @@ public:
 
     bool GetGenerateMipMaps();
 
-    static String GetDefaultExtension();
+    String GetSourceTexturePathname();
+    static String GetSourceTextureExtension();
+
+    static String GetDescriptorPathname(const String &texturePathname);
+    static String GetDescriptorExtension();
     
 protected:
     

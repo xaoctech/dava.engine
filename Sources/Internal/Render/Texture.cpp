@@ -657,7 +657,7 @@ Texture * Texture::PureCreate(const String & pathName)
     
 	// TODO: add check that pathName
 	String extension = FileSystem::GetExtension(pathName);
-    if(TextureDescriptor::GetDefaultExtension() == extension)
+    if(TextureDescriptor::GetDescriptorExtension() == extension)
     {
 		texture = CreateFromDescriptor(pathName, descriptor);
     }
@@ -698,7 +698,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 	
 TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
 {
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, TextureDescriptor::GetDefaultExtension());
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
     bool loaded = descriptor->Load(descriptorPathname);
     if(!loaded)
