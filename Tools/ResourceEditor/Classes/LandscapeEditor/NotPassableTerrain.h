@@ -58,19 +58,19 @@ protected:
     bool PickColor(DAVA::float32 tan, DAVA::Color& color) const;
 
 private:
-    struct terrainColor
+    struct TerrainColor
     {
         DAVA::Color color;
         DAVA::Vector2 angleRange;
         
-        terrainColor(const DAVA::Vector2& angle, const DAVA::Color& color)
+        TerrainColor(const DAVA::Vector2& angle, const DAVA::Color& color)
         {
             this->color = color;
             this->angleRange = angle;
         }
     };
     
-    DAVA::Vector<terrainColor> angleColor;
+    DAVA::Vector<TerrainColor> angleColor;
 };
 
 
