@@ -155,10 +155,10 @@ void NotPassableTerrain::LoadColorsArray()
             
             Logger::Instance()->Debug("%d\n", colorNode->GetCount());
             
-            Color color(colorNode->Get(0)->AsFloat(),
-                        colorNode->Get(1)->AsFloat(),
-                        colorNode->Get(2)->AsFloat(),
-                        colorNode->Get(3)->AsFloat());
+            Color color(colorNode->Get(0)->AsFloat()/255.f,
+                        colorNode->Get(1)->AsFloat()/255.f,
+                        colorNode->Get(2)->AsFloat()/255.f,
+                        colorNode->Get(3)->AsFloat()/255.f);
             
             angleColor.push_back(TerrainColor(Vector2(tangentMin, tangentMax), color));
         }
