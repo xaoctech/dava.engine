@@ -34,7 +34,7 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
 #include <stack>
-#include "File.h"
+#include "FileSystem/File.h"
 
 namespace DAVA 
 {
@@ -100,6 +100,8 @@ protected:
     void            FillContentAccordingToVariantTypeValue(VariantType* varType);
     void            ProcessMatrix(const float32* array,uint32 dimension);
     void            ProcessVector(const float32 array[],uint32 dimension);
+    bool            IsContainingMap();
+    String          FloatToCuttedString(float f);
     
 private:
     

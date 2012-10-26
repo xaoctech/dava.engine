@@ -28,8 +28,8 @@
  * Created by Andrii Makovii
  =====================================================================================*/
 
-#ifndef Framework_MathDefines_h
-#define Framework_MathDefines_h
+#ifndef __DAVAENGINE_MATH_DEFINES_H__
+#define __DAVAENGINE_MATH_DEFINES_H__
 
 #include "Base/BaseTypes.h"
 
@@ -46,4 +46,4 @@ namespace DAVA {
 	
 }
 
-#endif
+#endif // __DAVAENGINE_MATH_DEFINES_H__
