@@ -28,18 +28,25 @@ public:
 	void setImage(const QImage &image);
 	void setColorChannel(int mask);
 
-	float getZoom();
-	int   getZoomPercent();
-	void  setZoomPercent();
-	void  fitZoom();
+	QColor getPixelColor(QPoint pos);
+	float getTextureZoom();
+
+	void borderVisible(bool visible);
+	void bgMaskVisible(bool visible);
+	void waitbarVisible(bool visible);
+
+	void resetTexturePosZoom();
 
 public slots:	
 	void texturePos(const QPoint &pos);
 	void textureZoom(const float &zoom);
 
 signals:
-	void texturePosChanged(QPoint pos);
+	void texturePosChanged(const QPoint &pos);
 	void textureZoomChanged(const float &zoom);
+
+	void mouseOverPixel(const QPoint &pos);
+	void mouseWheel(int delta);
 
 protected:
 	void setScene(QGraphicsScene *scene);
@@ -57,13 +64,20 @@ private:
 	QPoint mousePressPos;
 	QPoint mousePressScrollPos;
 
+	QGraphicsRectItem *textureBorder;
+	QGraphicsProxyWidget *waitBar;
+
 	QImage currentTextureImage;
+
+	QBrush bgMask;
 
 	QGraphicsScene *textureScene;
 	QGraphicsPixmapItem *texturePixmap;
 	float zoomFactor;
 
 	void applyCurrentImageToScenePixmap();
+	void applyCurrentImageBorder();
+	void adjustWaitBarPos();
 };
 
 #endif // __TEXTURE_SCROLL_AREA_H__
