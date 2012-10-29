@@ -160,7 +160,7 @@ QImage TextureConvertor::convertThreadDXT(const WorkItem *item)
 	QPainter p(&convertedImage);
 	p.setBrush(QColor(0,255,0));
 	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
-	Sleep(1000);
+//	Sleep(1000);
 	// <--
 
 	return convertedImage;
