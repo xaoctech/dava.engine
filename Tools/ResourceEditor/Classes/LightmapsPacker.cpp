@@ -1,6 +1,7 @@
 #include "LightmapsPacker.h"
 
 #include "SceneEditor/PVRConverter.h"
+#include "Qt/QtUtils.h"
 
 LightmapsPacker::LightmapsPacker()
 {
@@ -66,17 +67,14 @@ Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
 {
 	Vector2 ret;
 
-	Image * image = new Image();
-	if(1 != LibPngWrapper::ReadPngFile(filePath.c_str(), image))
-	{
-		SafeRelease(image);
-		return ret;
-	}
-
-	ret.x = (float32)image->GetWidth();
-	ret.y = (float32)image->GetHeight();
-
-	SafeRelease(image);
+    Image * image = CreateTopLevelImage(filePath);
+    if(image)
+    {
+        ret.x = (float32)image->GetWidth();
+        ret.y = (float32)image->GetHeight();
+        
+        SafeRelease(image);
+    }
 
 	return ret;
 }
@@ -99,7 +97,11 @@ void LightmapsPacker::Compress()
 			continue;
 		}
 
-		String newName = PVRConverter::Instance()->ConvertPngToPvr(fileName, compressFormat, true);
+		TextureDescriptor descriptor;
+		descriptor.pvrCompression.format = compressFormat;
+		descriptor.generateMipMaps = TextureDescriptor::OPTION_ENABLED;
+
+		String newName = PVRConverter::Instance()->ConvertPngToPvr(fileName, descriptor);
 	}
 
 	fileList->Release();

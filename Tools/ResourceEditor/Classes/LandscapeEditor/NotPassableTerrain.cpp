@@ -37,9 +37,8 @@ NotPassableTerrain::NotPassableTerrain()
 {
     SetName(String("Landscape_NotPassable"));
 
-    notPassableMapSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
-    
-    LoadColorsArray();
+    notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
+    notPassableMapSprite = Sprite::CreateAsRenderTarget((float32)TEXTURE_TILE_FULL_SIZE, (float32)TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
 }
 
 NotPassableTerrain::~NotPassableTerrain()

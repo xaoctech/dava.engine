@@ -63,12 +63,12 @@ void ReplaceBundleName(const String &newBundlePath);
 	
     
 /**
- \brief Function to compare strings without letter case
+ \brief Function to compare strings case-insensitive
  \param[in] ext1 - first string 
  \param[in] ext2 - second string 
  \param[out] result of comparision 
  */
-int32 CompareStrings(const String &str1, const String &str2);
+int32 CompareCaseInsensitive(const String &str1, const String &str2);
 
 //implementation
 

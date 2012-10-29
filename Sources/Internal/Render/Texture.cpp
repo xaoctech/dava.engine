@@ -53,6 +53,7 @@
 #include "Render/OGLHelpers.h"
 
 #include "Render/TextureDescriptor.h"
+#include "Render/ImageLoader.h"
 
 namespace DAVA 
 {
@@ -103,6 +104,8 @@ public:
 	int	fboMemoryUsed;
 };
 
+Texture::TextureFileFormat Texture::defaultFileFormat = NOT_FILE;
+    
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
 Map<String, Texture*> Texture::textureMap;
@@ -210,7 +213,7 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 		tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
 
 	textureFboCounter++;
-	textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname] = tx;
 	return tx;
 }
 	
@@ -324,8 +327,8 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(texture->id);
 
-	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	if (generateMipMaps)
 	{
         RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
@@ -409,18 +412,6 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
     RenderManager::Instance()->UnlockNonMain();
 }
 	
-//bool Texture::isMipmapGenerationEnabled = false;
-//	
-//void Texture::EnableMipmapGeneration()
-//{
-//	isMipmapGenerationEnabled = true;
-//}
-//
-//void Texture::DisableMipmapGeneration()
-//{
-//	isMipmapGenerationEnabled = false;
-//}
-
 void Texture::GenerateMipmaps()
 {
     if((FORMAT_PVR2 == format) || (FORMAT_PVR4 == format))
@@ -428,9 +419,6 @@ void Texture::GenerateMipmaps()
     
 	RenderManager::Instance()->LockNonMain();
     
-//    //TODO: need be stored in descriptor. Can't be changed this way
-//    descriptor->isMipMapTexture = true;
-
 #if defined(__DAVAENGINE_OPENGL__)
 
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
@@ -455,9 +443,6 @@ void Texture::GenerateMipmaps()
 void Texture::GeneratePixelesation()
 {
 	RenderManager::Instance()->LockNonMain();
-    
-//    //TODO: need be stored in descriptor. Can't be changed this way
-//    descriptor->isMipMapTexture = false;
 
 #if defined(__DAVAENGINE_OPENGL__)
     
@@ -507,64 +492,150 @@ void Texture::UsePvrMipmaps()
     RenderManager::Instance()->UnlockNonMain();
 
 }
-	
-	
-void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
+
+Texture * Texture::CreateFromImage(const String &pathname, DAVA::TextureDescriptor *descriptor)
 {
-	Image * image = Image::CreateFromFile(pathName, false);
-	if (image->GetPixelFormat() != format)
-	{
-		Logger::Error("Texture::LoadMipMapFromFile - format of file texture different from this texture"); 
-		SafeRelease(image);
-		return;
-	}
-	TexImage(level, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
-	SafeRelease(image);
-}
-	
-
-Texture * Texture::CreateFromPNG(const String & pathName, TextureDescriptor *descriptor)
-{
-    Texture * cachedTexture = Texture::Get(pathName);
-	if (cachedTexture)return cachedTexture;
-
-    
-	Image * image = Image::CreateFromFile(pathName, false);
-	if (!image)
-	{
-		Logger::Error("[Texture::CreateFromPNG] Failed to load image from: %s", pathName.c_str());
-		return 0;
-	}
-	
-	RenderManager::Instance()->LockNonMain();
-	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GetGenerateMipMaps());
-	RenderManager::Instance()->UnlockNonMain();
-
-    SafeRelease(image);
-	
-	return texture;
-}		
-
-Texture * Texture::CreateFromPNG(File *file, TextureDescriptor *descriptor)
-{
-    Image * image = Image::CreateFromFile(file, false);
-    if (!image)
+    File *file = File::Create(pathname, File::OPEN | File::READ);
+    if(!file)
     {
-        Logger::Error("[Texture::CreateFromPNG] Failed to load image from file");
-        return 0;
+        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.c_str());
+        return NULL;
+    }
+
+    Texture *texture = CreateFromImage(file, descriptor);
+    SafeRelease(file);
+	return texture;
+}
+    
+Texture * Texture::CreateFromImage(File *file, TextureDescriptor *descriptor)
+{
+    Texture * texture = new Texture();
+    if(!texture)
+    {
+        Logger::Error("[Texture::CreateFromImage] Cannot allocate memory for Texture");
+        return NULL;
     }
     
-    RenderManager::Instance()->LockNonMain();
-    Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GetGenerateMipMaps());
-    RenderManager::Instance()->UnlockNonMain();
-    
-    SafeRelease(image);
-    
+    bool loaded = texture->LoadFromImage(file, descriptor);
+    if(!loaded)
+    {
+        SafeRelease(texture);
+        Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
+    }
     return texture;
-}		
+}
+    
+bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
+{
+    Vector<Image *> imageSet = ImageLoader::CreateFromFile(file);
+    if(0 != imageSet.size())
+    {
+        RenderManager::Instance()->LockNonMain();
+#if defined(__DAVAENGINE_OPENGL__)
+        GenerateID();
+#elif defined(__DAVAENGINE_DIRECTX9__)
+        id = CreateTextureNative(Vector2((float32)_width, (float32)_height), texture->format, false, 0);
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+        RenderManager::Instance()->UnlockNonMain();
+
+        
+        width = imageSet[0]->width;
+        height = imageSet[0]->height;
+        format = imageSet[0]->format;
+        
+        bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && (1 == imageSet.size());
+        
+        RenderManager::Instance()->LockNonMain();
+        for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
+        {
+            TexImage(i, imageSet[i]->width, imageSet[i]->height, imageSet[i]->data, imageSet[i]->dataSize);
+            SafeRelease(imageSet[i]);
+        }
+        
+#if defined(__DAVAENGINE_OPENGL__)
+        
+        int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+        RenderManager::Instance()->HWglBindTexture(id);
+        
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        
+        if(needGenerateMipMaps)
+        {
+            RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
+        }
+        
+        if (descriptor->GetGenerateMipMaps())
+        {
+            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        }
+        else
+        {
+            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        }
+        
+        RenderManager::Instance()->HWglBindTexture(saveId);
+#elif defined(__DAVAENGINE_DIRECTX9__)
+        
+        if(needGenerateMipMaps)
+        {
+            // allocate only 2 levels, and reuse buffers for generation of every mipmap level
+            uint8 *mipMapData = new uint8[(width / 2) * (height / 2) * GetPixelFormatSizeInBytes(format)];
+            uint8 *mipMapData2 = new uint8[(width / 4) * (height / 4) * GetPixelFormatSizeInBytes(format)];
+            
+            const uint8 * prevMipData = _data;
+            uint8 * currentMipData = mipMapData;
+            
+            int32 mipMapWidth = width / 2;
+            int32 mipMapHeight = height / 2;
+            
+            for (uint32 i = 1; i < id->GetLevelCount(); ++i)
+            {
+                ImageConvert::DownscaleTwiceBillinear(format, format,
+                                                      prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSizeInBytes(format),
+                                                      currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSizeInBytes(format));
+                
+                TexImage(i, mipMapWidth, mipMapHeight, currentMipData, 0);
+                
+                mipMapWidth  >>= 1;
+                mipMapHeight >>= 1;
+                
+                prevMipData = currentMipData;
+                currentMipData = (i & 1) ? (mipMapData2) : (mipMapData);
+            }
+            
+            SafeDeleteArray(mipMapData2);
+            SafeDeleteArray(mipMapData);
+        }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+        
+        RenderManager::Instance()->UnlockNonMain();
+        return true;
+    }
+    return false;
+}
+    
+    
+	
+void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
+{
+    DVASSERT(false);
+    return;
 
     
-
+//	Image * image = Image::CreateFromFile(pathname);
+//	if (image->GetPixelFormat() != format)
+//	{
+//		Logger::Error("Texture::LoadMipMapFromFile - format of file texture different from this texture"); 
+//		SafeRelease(image);
+//		return;
+//	}
+//	TexImage(level, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
+//	SafeRelease(image);
+}
+	
 Texture * Texture::CreateFromFile(const String & pathName)
 {
 	Texture * texture = PureCreate(pathName);
@@ -579,37 +650,27 @@ Texture * Texture::CreateFromFile(const String & pathName)
 Texture * Texture::PureCreate(const String & pathName)
 {
     Texture * texture = Texture::Get(pathName);
-	if (texture)return texture;
+	if (texture) return texture;
     
     TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
 	String extension = FileSystem::GetExtension(pathName);
-    if(TextureDescriptor::GetDefaultExtension() == extension)
+    if(TextureDescriptor::GetDescriptorExtension() == extension)
     {
 		texture = CreateFromDescriptor(pathName, descriptor);
     }
     else
     {
-        if (extension == String(".png"))
-        {
-            texture = CreateFromPNG(pathName, descriptor);
-        }
-        else if (extension == String(".pvr"))
-        {
-            texture = CreateFromPVR(pathName, descriptor);
-        }
-        
-        if(texture)
-        {
-            texture->relativePathname = pathName;
-        }
+        texture = CreateFromImage(pathName, descriptor);
     }
 
     if(texture)
     {
-        textureMap[texture->relativePathname] = texture;
+		texture->relativePathname = descriptor->pathname;
+		//texture->relativePathname = descriptor->GetSourceTexturePathname();
+        textureMap[descriptor->pathname] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -623,47 +684,13 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = Texture::Get(pathName);
     if (texture)return texture;
     
-    switch (descriptor->textureFileFormat)
-    {
-        case TextureDescriptor::PNG_FILE:
-            texture = CreateFromPNG(descriptor->textureFile, descriptor);
-            break;
-        case TextureDescriptor::PVR_FILE:
-            texture = CreateFromPVR(descriptor->textureFile, descriptor);
-            break;
-            
-        case TextureDescriptor::DXT_FILE:
-            break;
-    }
-    
-    if(texture)
-    {
-        texture->relativePathname = pathName;
-    }
+    texture = CreateFromImage(descriptor->textureFile, descriptor);
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
-    String imagePathname;
-    switch (descriptor->textureFileFormat)
-    {
-        case PNG_FILE:
-        {
-            imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
-            texture = CreateFromPNG(imagePathname, descriptor);
-            break;
-        }
-        case PVR_FILE:
-            imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".pvr");
-            texture = CreateFromPVR(imagePathname, descriptor);
-            break;
-            
-        case DXT_FILE:
-            break;
-    }
     
-    if(texture)
-    {
-        texture->relativePathname = imagePathname;
-    }
+    TextureFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (TextureFileFormat)descriptor->textureFileFormat : defaultFileFormat;
+    String imagePathname = GetPathnameForFileFormat(pathName, formatForLoading);
+    texture = CreateFromImage(imagePathname, descriptor);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
@@ -672,36 +699,71 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 	
 TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
 {
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, TextureDescriptor::GetDefaultExtension());
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
-    if(!descriptor)
-    {
-        Logger::Error("[Texture::CreateDescriptorForTexture]: Cannot allocate TextureDescriptor");
-        return NULL;
-    }
-
     bool loaded = descriptor->Load(descriptorPathname);
-	/*
-#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     if(!loaded)
     {
-        Logger::Warning("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s). File will be created with default settings.", descriptorPathname.c_str());
-
-        String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        descriptor->Save(descriptorPathname);
+        Logger::Error("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s).", descriptorPathname.c_str());
+        SafeRelease(descriptor);
+        return NULL;
     }
-#endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-	*/
-
     return descriptor;
 }
     
 void Texture::ReloadAs(DAVA::Texture::TextureFileFormat fileFormat)
 {
+    ReleaseTextureData();
+    
+    String imagePathname = GetPathnameForFileFormat(relativePathname, fileFormat);
+    File *file = File::Create(imagePathname, File::OPEN | File::READ);
     TextureDescriptor *descriptor = CreateDescriptorForTexture(relativePathname);
+
+    bool loaded = false;
+    if(descriptor && file)
+    {
+        loaded = LoadFromImage(file, descriptor);
+    }
+
+    if(!loaded)
+    {
+        width = 16;
+		height = 16;
+        format = FORMAT_RGBA8888;
+
+        RenderManager::Instance()->LockNonMain();
+#if defined(__DAVAENGINE_OPENGL__)
+        GenerateID();
+#elif defined(__DAVAENGINE_DIRECTX9__)
+        id = CreateTextureNative(Vector2((float32)width, (float32)height), format, false, 0);
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+        RenderManager::Instance()->UnlockNonMain();
+
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.c_str());
+        
+        
+        uint32 dataSize = width * height * GetPixelFormatSizeInBytes(format);
+		uint8 * data = new uint8[dataSize];
+		uint32 pink = 0xffff00ff;
+		uint32 gray = 0xff7f7f7f;
+		bool pinkOrGray = false;
+        
+		uint32 * writeData = (uint32*)data;
+		for(uint32 w = 0; w < width; ++w)
+		{
+			pinkOrGray = !pinkOrGray;
+			for(uint32 h = 0; h < height; ++h)
+			{
+				*writeData++ = pinkOrGray ? pink : gray;
+				pinkOrGray = !pinkOrGray;
+			}
+		}
+        
+        TexImage(0, width, height, data, dataSize);
+        GeneratePixelesation();
+    }
     
-    
-    
+    SafeRelease(file);
     SafeRelease(descriptor);
 }
 
@@ -851,7 +913,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 	tx->isRenderTarget = true;
 	tx->relativePathname = Format("FBO texture %d", textureFboCounter);
-	textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname] = tx;
 	
 	textureFboCounter++;
 	
@@ -1027,10 +1089,6 @@ void Texture::Invalidate()
 
     RenderManager::Instance()->LockNonMain();
 
-    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
-    
-//    Image::EnableAlphaPremultiplication(descriptor->isAlphaPremultiplied);
-    
 	if(isRenderTarget)
 	{
 		//////////////////////////////////////////////////////////////////////////
@@ -1043,10 +1101,10 @@ void Texture::Invalidate()
 		// Now setup a texture to render to
 		RenderManager::Instance()->HWglBindTexture(id);
 
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
 #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
 		// Setup our FBO
@@ -1095,8 +1153,6 @@ void Texture::Invalidate()
 		InvalidateFromFile();
 	}
 
-    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
-    
 	RenderManager::Instance()->UnlockNonMain();
 }
 
@@ -1139,10 +1195,6 @@ void Texture::InvalidateFromFile()
 		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
 		return;
 	}
-
-    //TODO::
-//    descriptor->isAlphaPremultiplied = image->isAlphaPremultiplied;
-
 
 	savedData = image->GetData();
 	InvalidateFromSavedData();
@@ -1338,7 +1390,7 @@ PixelFormat Texture::GetPixelFormatByName(const String &formatName)
 {
     for(int32 i = 0; i < FORMAT_COUNT; ++i)
     {
-        if(!CompareStrings(formatName, pixelDescriptors[i].name))
+        if(0 == CompareCaseInsensitive(formatName, pixelDescriptors[i].name))
         {
             return pixelDescriptors[i].formatID;
         }
@@ -1383,6 +1435,40 @@ GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 }
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
+    
+String Texture::GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat)
+{
+    String imagePathname;
+    switch (fileFormat)
+    {
+        case PNG_FILE:
+            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".png"));
+            break;
+            
+        case PVR_FILE:
+            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".pvr"));
+            break;
+        case DXT_FILE:
+            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".dxt"));
+            break;
+            
+        default:
+            break;
+    }
+    
+    return imagePathname;
+}
+    
+void Texture::SetDefaultFileFormat(TextureFileFormat fileFormat)
+{
+    defaultFileFormat = fileFormat;
+}
+
+Texture::TextureFileFormat Texture::GetDefaultFileFormat()
+{
+    return defaultFileFormat;
+}
+
 
 
 };

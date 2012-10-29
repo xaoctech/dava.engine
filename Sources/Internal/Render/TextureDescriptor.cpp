@@ -30,6 +30,7 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 #include "Render/Texture.h"
 
@@ -61,12 +62,10 @@ void TextureDescriptor::SetDefaultValues()
     
     generateMipMaps = OPTION_ENABLED;
     
-    pvrCompression.format = FORMAT_PVR4;
-    pvrCompression.flipVertically = OPTION_DISABLED;
+    pvrCompression.format = FORMAT_INVALID;
     pvrCompression.baseMipMapLevel = 0;
     
     dxtCompression.format = FORMAT_INVALID;
-    dxtCompression.flipVertically = OPTION_DISABLED;
     dxtCompression.baseMipMapLevel = 0;
     
 #if defined TEXTURE_SPLICING_ENABLED
@@ -76,8 +75,9 @@ void TextureDescriptor::SetDefaultValues()
     textureFileFormat = Texture::PNG_FILE;
 }
     
-void TextureDescriptor::SaveDateAndCrc(const String &filePathname)
+void TextureDescriptor::UpdateDateAndCrc() const
 {
+	String filePathname = GetSourceTexturePathname();
     const char8 *date = File::GetModificationDate(filePathname);
     if(date)
     {
@@ -112,9 +112,15 @@ bool TextureDescriptor::Load(const String &filePathname)
     {
         LoadCompressed(file);
     }
-    else
+    else if(NOTCOMPRESSED_FILE == signature)
     {
         LoadNotCompressed(file);
+    }
+    else
+    {
+        Logger::Error("[TextureDescriptor::Load] Wrong descriptor file: %s", filePathname.c_str());
+        SafeRelease(file);
+        return false;
     }
     
     SafeRelease(file);
@@ -122,13 +128,13 @@ bool TextureDescriptor::Load(const String &filePathname)
     return true;
 }
 
-void TextureDescriptor::Save()
+void TextureDescriptor::Save() const
 {
     DVASSERT(!pathname.empty() && "Can use this method only after calling Load()");
     Save(pathname);
 }
     
-void TextureDescriptor::Save(const String &filePathname)
+void TextureDescriptor::Save(const String &filePathname) const
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
@@ -156,23 +162,23 @@ void TextureDescriptor::Save(const String &filePathname)
     
     SafeRelease(file);
 }
-    
-void TextureDescriptor::Export(const String &filePathname, const String &texturePathname)
+  
+#if defined TEXTURE_SPLICING_ENABLED
+void TextureDescriptor::ExportAndSplice(const String &filePathname, const String &texturePathname)
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
     {
-        Logger::Error("[TextureDescriptor::Save] Can't open file: %s", filePathname.c_str());
+        Logger::Error("[TextureDescriptor::ExportAndSplice] Can't open file: %s", filePathname.c_str());
         return;
     }
-
+    
     int32 signature = COMPRESSED_FILE;
     file->Write(&signature, sizeof(signature));
-
+    
     WriteGeneralSettings(file);
     file->Write(&textureFileFormat, sizeof(textureFileFormat));
-
-#if defined TEXTURE_SPLICING_ENABLED
+    
     SafeRelease(textureFile);
     textureFile = File::Create(texturePathname, File::OPEN | File::READ);
     if(textureFile)
@@ -189,11 +195,32 @@ void TextureDescriptor::Export(const String &filePathname, const String &texture
         
         SafeRelease(textureFile);
     }
-#endif //#if defined TEXTURE_SPLICING_ENABLED
+    
+    SafeRelease(file);
+}
+
+#else //#if defined TEXTURE_SPLICING_ENABLED
+void TextureDescriptor::Export(const String &filePathname)
+{
+    File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
+    if(!file)
+    {
+        Logger::Error("[TextureDescriptor::ExportAndSplice] Can't open file: %s", filePathname.c_str());
+        return;
+    }
+
+    int32 signature = COMPRESSED_FILE;
+    file->Write(&signature, sizeof(signature));
+
+    WriteGeneralSettings(file);
+    file->Write(&textureFileFormat, sizeof(textureFileFormat));
 
     SafeRelease(file);
 }
     
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
+
 void TextureDescriptor::LoadNotCompressed(File *file)
 {
     file->Read(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
@@ -238,7 +265,7 @@ void TextureDescriptor::ReadGeneralSettings(File *file)
     file->Read(&generateMipMaps, sizeof(generateMipMaps));
 }
     
-void TextureDescriptor::WriteGeneralSettings(File *file)
+void TextureDescriptor::WriteGeneralSettings(File *file) const
 {
     file->Write(&wrapModeS, sizeof(wrapModeS));
     file->Write(&wrapModeT, sizeof(wrapModeT));
@@ -252,15 +279,13 @@ void TextureDescriptor::ReadCompression(File *file, Compression &compression)
     file->Read(&format, sizeof(format));
     compression.format = (PixelFormat)format;
     
-    file->Read(&compression.flipVertically, sizeof(compression.flipVertically));
     file->Read(&compression.baseMipMapLevel, sizeof(compression.baseMipMapLevel));
 }
 
-void TextureDescriptor::WriteCompression(File *file, const Compression &compression)
+void TextureDescriptor::WriteCompression(File *file, const Compression &compression) const
 {
     int8 format = compression.format;
     file->Write(&format, sizeof(format));
-    file->Write(&compression.flipVertically, sizeof(compression.flipVertically));
     file->Write(&compression.baseMipMapLevel, sizeof(compression.baseMipMapLevel));
 }
 
@@ -270,11 +295,31 @@ bool TextureDescriptor::GetGenerateMipMaps()
     return (OPTION_DISABLED != generateMipMaps);
 }
     
+    
+String TextureDescriptor::GetSourceTexturePathname() const
+{
+    if(pathname.empty())
+    {
+        return String("");
+    }
+    
+    return FileSystem::Instance()->ReplaceExtension(pathname, GetSourceTextureExtension());
+}
 
-String TextureDescriptor::GetDefaultExtension()
+String TextureDescriptor::GetDescriptorPathname(const String &texturePathname)
+{
+    return FileSystem::Instance()->ReplaceExtension(texturePathname, GetDescriptorExtension());
+}
+
+
+String TextureDescriptor::GetDescriptorExtension()
 {
     return String(".tex");
 }
     
+String TextureDescriptor::GetSourceTextureExtension()
+{
+    return String(".png");
+}
     
 };

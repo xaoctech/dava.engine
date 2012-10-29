@@ -71,7 +71,9 @@ QImage TextureConvertor::loadOriginalThread(const DAVA::Texture *texture)
 
 	if(NULL != texture)
 	{
-		img = QImage(texture->GetPathname().c_str());
+		DAVA::TextureDescriptor *descriptor = DAVA::Texture::CreateDescriptorForTexture(texture->GetPathname());
+		img = QImage(descriptor->GetSourceTexturePathname().c_str());
+		delete descriptor;
 	}
 
 	return img;
@@ -79,47 +81,60 @@ QImage TextureConvertor::loadOriginalThread(const DAVA::Texture *texture)
 
 QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 {
-	QImage convertedImage;
-	PVRConverter pvrc;
-	/*
-	DAVA::String sourcePath = DAVA::FileSystem::ReplaceExtension(item.texture->GetPathname(), ".png");
-	DAVA::String outputPath = pvrc.ConvertPngToPvr(sourcePath, item.descriptor);
+	QImage qtConvertedImage;
 
-	DAVA::Texture *t = DAVA::Texture::CreateFromFile(outputPath);
-	DAVA::Image *i = t->CreateImageFromMemory();
-
-	QImage::Format imgFormat = QImage::Format_Invalid;
-
-	switch(i->GetPixelFormat())
+	if(NULL != item)
 	{
-	case DAVA::FORMAT_RGBA8888:
-		imgFormat = QImage::Format_ARGB32;
-		break;
-	}
+		DAVA::String sourcePath = item->descriptor.GetSourceTexturePathname();
+		DAVA::String outputPath = PVRConverter::Instance()->ConvertPngToPvr(sourcePath, item->descriptor);
 
-	if(QImage::Format_Invalid != imgFormat)
-	{
-		convertedImage = QImage(i->width, i->height, QImage::Format_ARGB32);
-
-		QRgb *data = (QRgb *) i->data;
-		QRgb *line;
-		QRgb c;
-
-		for (int y = 0; y < i->height; y++) 
+		if(!outputPath.empty())
 		{
-			line = (QRgb *) convertedImage.scanLine(y);
-			for (int x = 0; x < i->width; x++) 
+			item->descriptor.UpdateDateAndCrc();
+			item->descriptor.Save();
+
+			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+
+			if(davaImages.size() > 0)
 			{
-				c = data[y * i->width + x];
-				line[x] = c & 0xFF00FF00 | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
+				DAVA::Image *davaImage = davaImages[0];
+				QImage::Format qtImgFormat = QImage::Format_Invalid;
+
+				switch(davaImage->GetPixelFormat())
+				{
+				case DAVA::FORMAT_RGBA8888:
+					qtImgFormat = QImage::Format_ARGB32;
+					break;
+				}
+
+				if(QImage::Format_Invalid != qtImgFormat)
+				{
+					qtConvertedImage = QImage(davaImage->width, davaImage->height, QImage::Format_ARGB32);
+
+					QRgb *data = (QRgb *) davaImage->data;
+					QRgb *line;
+					QRgb c;
+
+					for (int y = 0; y < davaImage->height; y++) 
+					{
+						line = (QRgb *) qtConvertedImage.scanLine(y);
+						for (int x = 0; x < davaImage->width; x++) 
+						{
+							c = data[y * davaImage->width + x];
+							line[x] = c & 0xFF00FF00 | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
+						}
+					}
+				}
+			}
+
+			for(unsigned int i = 0; i < davaImages.size(); ++i)
+			{
+				DAVA::SafeRelease(davaImages[i]);
 			}
 		}
 	}
 
-	DAVA::SafeRelease(t);
-	DAVA::SafeRelease(i);
-	*/
-
+	/*
 	// debug -->
 	convertedImage = QImage(item->texture->width, item->texture->height, QImage::Format_ARGB32);
 	QPainter p(&convertedImage);
@@ -127,8 +142,9 @@ QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
 	Sleep(1000);
 	// <--
+	*/
 
-	return convertedImage;
+	return qtConvertedImage;
 }
 
 QImage TextureConvertor::convertThreadDXT(const WorkItem *item)

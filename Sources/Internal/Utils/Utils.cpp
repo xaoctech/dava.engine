@@ -115,7 +115,7 @@ int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length)
 	return 1;
 }
 
-int32 CompareStrings(const String &str1, const String &str2)
+int32 CompareCaseInsensitive(const String &str1, const String &str2)
 {
     String newStr1 = "";
     newStr1.resize(str1.length());

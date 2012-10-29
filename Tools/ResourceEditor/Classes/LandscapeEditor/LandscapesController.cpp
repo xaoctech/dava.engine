@@ -204,10 +204,9 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     }
     else
     {
-        EditorLandscapeNode *editorNestedLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
-        if(editorNestedLandscape)
+        if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
         {
-            editorNestedLandscape->SetParentLandscape(NULL);
+            ((EditorLandscapeNode *)nestedLandscape)->SetParentLandscape(NULL);
         }
         
         SceneNode *parentNode = hiddingLandscape->GetParent();
@@ -234,8 +233,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
 
 bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscapeForDetection);
-    return (NULL == editorLandscape);
+    return (IsPointerToExactClass<EditorLandscapeNode>(landscapeForDetection));
 }
 
 
@@ -286,10 +284,9 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
     landscapeRenderer->RebuildVertexes(changedRect);
     renderedHeightmap->HeghtWasChanged(changedRect);
 
-    EditorLandscapeNode *landscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
-    if(landscape)
+    if(IsPointerToExactClass<EditorLandscapeNode>(currentLandscape))
     {
-        landscape->HeihghtmapUpdated(changedRect);
+        ((EditorLandscapeNode *)currentLandscape)->HeihghtmapUpdated(changedRect);
     }
 }
 

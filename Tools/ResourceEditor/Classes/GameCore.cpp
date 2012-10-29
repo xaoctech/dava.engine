@@ -18,7 +18,6 @@
 #include "BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
-#include "SceneEditor/OutputManager.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "SceneEditor/PVRConverter.h"
@@ -60,10 +59,15 @@ void GameCore::OnAppStarted()
     new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
-    new OutputManager();
 	new PVRConverter();
+
+#if defined (__DAVAENGINE_MACOS__)
+	PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
+#elif defined (__DAVAENGINE_WIN32__)
+    PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
+#endif
+
     new SceneDataManager();
-        
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
@@ -89,7 +93,6 @@ void GameCore::OnAppFinished()
 {
     SceneDataManager::Instance()->Release();
 	PVRConverter::Instance()->Release();
-    OutputManager::Instance()->Release();
     SceneValidator::Instance()->Release();
     
 	SafeRelease(resourcePackerScreen);

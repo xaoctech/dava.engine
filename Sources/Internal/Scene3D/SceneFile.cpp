@@ -229,9 +229,6 @@ bool SceneFile::SaveScene(const char * filename)
 	
 bool SceneFile::ReadTexture()
 {
-//    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
-//    Texture::EnableMipmapGeneration();
-    
 	SceneFile::TextureDef textureDef;
 	sceneFP->ReadString(textureDef.name, 512);
 	
@@ -248,35 +245,14 @@ bool SceneFile::ReadTexture()
     sceneFP->Read(&hasOpacity, sizeof(hasOpacity));
 	
 	DAVA::Texture * texture = DAVA::Texture::CreateFromFile(tname);//textureDef.name);//0;
-	if (texture)
-	{
-		if ((texture->format != DAVA::FORMAT_PVR4) &&
-			(texture->format != DAVA::FORMAT_PVR2))
-		{
-			texture->GenerateMipmaps();
-		}
-		else 
-		{
-			texture->UsePvrMipmaps();
-		}
-
-//		texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
-	}
-	
 	if (debugLogEnabled)Logger::Debug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
     
-//    if (!mipMapsEnabled)
-//        Texture::DisableMipmapGeneration();
-
     SafeRelease(texture);
 	return true;
 }
 	
 bool SceneFile::ReadMaterial()
 {
-//    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
-//    Texture::EnableMipmapGeneration();
-
 	SceneFile::MaterialDef materialDef; 
 	sceneFP->ReadString(materialDef.name, 512);
 
@@ -346,12 +322,6 @@ bool SceneFile::ReadMaterial()
 	if (debugLogEnabled)Logger::Debug("- Material: %s diffuseTexture: %s hasOpacity: %s\n", materialDef.name, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
 	
 
-//    for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
-//    {
-//        if (mat->GetTexture((Material::eTextureLevel)k))
-//            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
-//    }
-    
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
 	mat->SetName(materialDef.name);
 	mat->reflective = materialDef.reflective;
@@ -364,10 +334,6 @@ bool SceneFile::ReadMaterial()
     materials.push_back(SafeRetain(mat));
     
 	SafeRelease(mat);
-    
-//    if (!mipMapsEnabled)
-//        Texture::DisableMipmapGeneration();
-
 	return true;
 }
 	

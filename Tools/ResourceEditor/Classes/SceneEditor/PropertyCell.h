@@ -32,11 +32,8 @@ class PropertyCell : public UIListCell
 {
 protected:
     
-    enum eConst
-    {
-        CELL_HEIGHT = 15,
-        KEY_NAME_DEVIDER = 2,
-    };
+    static const int32 CELL_HEIGHT = 15;
+    static const int32 KEY_NAME_DEVIDER = 2;
     
 public:
     

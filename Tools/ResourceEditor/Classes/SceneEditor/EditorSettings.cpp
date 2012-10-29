@@ -31,7 +31,10 @@ void EditorSettings::Save()
 
 void EditorSettings::ApplyOptions()
 {
-	RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    if(RenderManager::Instance())
+    {
+        RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    }
 }
 
 
@@ -54,19 +57,6 @@ void EditorSettings::SetProjectPath(const String &projectPath)
 String EditorSettings::GetProjectPath()
 {
     return settings->GetString(String("ProjectPath"), String(""));
-}
-
-
-
-bool EditorSettings::IsValidPath(const String &path)
-{
-    if(path.length() == 0) //for texture resetting
-        return true;
-    
-    size_t posPng = path.find(".png");
-    size_t posPvr = path.find(".pvr");
-    size_t posHeightmap = path.find(Heightmap::FileExtension());
-    return ((String::npos != posPng) || (String::npos != posPvr) || (String::npos != posHeightmap));
 }
 
 float32 EditorSettings::GetCameraSpeed()
@@ -239,4 +229,14 @@ bool EditorSettings::GetEnableImposters()
 {
 	return settings->GetBool("enableImposters", true);
 }
+
+int32 EditorSettings::GetTextureViewFileFormat()
+{
+    return settings->GetInt32(String("TextureViewFileFormat"), Texture::PNG_FILE);
+}
+void EditorSettings::SetTextureViewFileFormat(int32 format)
+{
+    settings->SetInt32(String("TextureViewFileFormat"), format);
+}
+
 

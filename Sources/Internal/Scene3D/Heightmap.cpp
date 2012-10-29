@@ -27,6 +27,7 @@
 
 #include "Scene3D/Heightmap.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 
@@ -106,7 +107,7 @@ void Heightmap::SaveToImage(const String & filename)
 
     SafeDeleteArray(unpackedBytes);
     
-    image->Save(filename);
+    ImageLoader::Save(image, filename);
     SafeRelease(image);
 }
   

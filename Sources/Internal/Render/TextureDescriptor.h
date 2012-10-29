@@ -43,46 +43,52 @@ namespace DAVA
 class File;
 class TextureDescriptor: public BaseObject
 {
-    enum eOptionsState
-    {
-        OPTION_DISABLED = 0,
-        OPTION_ENABLED = 1,
-    };
-
-    enum eSignatures
-    {
-        COMPRESSED_FILE = 0x00EEEE00,
-        NOTCOMPRESSED_FILE = 0x00EE00EE
-    };
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
 
 public:
+	enum eOptionsState
+	{
+		OPTION_DISABLED = 0,
+		OPTION_ENABLED = 1,
+	};
+
+	enum eSignatures
+	{
+		COMPRESSED_FILE = 0x00EEEE00,
+		NOTCOMPRESSED_FILE = 0x00EE00EE
+	};
     
     struct Compression
     {
         PixelFormat format;
-        int8 flipVertically;
         int8 baseMipMapLevel;
     };
-
 
 public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void SaveDateAndCrc(const String &filePathname);
+    void UpdateDateAndCrc() const;
 
     bool Load(const String &filePathname);
 
-    void Save();
-    void Save(const String &filePathname);
+    void Save() const;
+    void Save(const String &filePathname) const;
     
-    void Export(const String &filePathname, const String &texturePathname);
+#if defined TEXTURE_SPLICING_ENABLED
+    void ExportAndSplice(const String &filePathname, const String &texturePathname);
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    void Export(const String &filePathname);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
 
     bool GetGenerateMipMaps();
 
-    static String GetDefaultExtension();
+    String GetSourceTexturePathname() const; 
+    static String GetSourceTextureExtension(); 
+
+    static String GetDescriptorPathname(const String &texturePathname);
+    static String GetDescriptorExtension();
     
 protected:
     
@@ -92,15 +98,15 @@ protected:
     void SetDefaultValues();
     
     void ReadGeneralSettings(File *file);
-    void WriteGeneralSettings(File *file);
+    void WriteGeneralSettings(File *file) const;
     
     void ReadCompression(File *file, Compression &compression);
-    void WriteCompression(File *file, const Compression &compression);
+    void WriteCompression(File *file, const Compression &compression) const;
     
 public:
     
-    char8 modificationDate[DATE_BUFFER_SIZE];
-    uint8 crc[MD5::DIGEST_SIZE];
+    mutable char8 modificationDate[DATE_BUFFER_SIZE];
+    mutable uint8 crc[MD5::DIGEST_SIZE];
 
     int8 wrapModeS;
     int8 wrapModeT;

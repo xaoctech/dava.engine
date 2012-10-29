@@ -40,11 +40,8 @@ class LandscapeEditorBase
         DIALOG_OPERATION_SAVE,
     };
 
-    enum eConst
-    {
-        INVALID_TOUCH_ID = -1,
-		RAY_TRACING_DISTANCE = 1000
-    };
+    static const int32 INVALID_TOUCH_ID = -1;
+    static const int32 RAY_TRACING_DISTANCE = 1000;
     
     
 public:

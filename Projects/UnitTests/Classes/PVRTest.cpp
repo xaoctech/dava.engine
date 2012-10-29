@@ -63,6 +63,18 @@ PVRTest::PVRTest()
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
         RegisterFunction(this, &PVRTest::TestFunction, Format("PVRTest of %s", formatDescriptor.name.c_str()), NULL);
     }
+    
+    
+//Temporary code for descriptors generation 
+//    String documentsPath = FileSystem::Instance()->GetUserDocumentsPath();
+//    TextureDescriptor *descriptor = new TextureDescriptor();
+//    descriptor->textureFileFormat = Texture::PNG_FILE;
+//    descriptor->Export(documentsPath + "/TemplatePNGDescriptor.tex");
+//
+//    descriptor->textureFileFormat = Texture::PVR_FILE;
+//    descriptor->Export(documentsPath + "/TemplatePVRDescriptor.tex");
+//
+//    SafeRelease(descriptor);
 }
 
 void PVRTest::LoadResources()
@@ -120,8 +132,8 @@ void PVRTest::TestFunction(PerfFuncData * data)
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(pvrSprite);
         
         String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        firstComparer->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
-        secondComparer->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
+        ImageLoader::Save(firstComparer, documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
+        ImageLoader::Save(secondComparer, documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
     }
     
     ++currentTest;
