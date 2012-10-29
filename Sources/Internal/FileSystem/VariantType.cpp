@@ -84,8 +84,7 @@ namespace DAVA
 
 VariantType::VariantType()
 :	type(TYPE_NONE)
-,	int32Value(0)
-//,   pointerValue(NULL)
+,	pointerValue(0)
 {
 }
 
