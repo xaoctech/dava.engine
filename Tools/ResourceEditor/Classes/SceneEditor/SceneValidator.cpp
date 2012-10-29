@@ -228,7 +228,7 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
 	if(pathIsCorrect && !FileSystem::Instance()->IsFile(descriptorPath))
 	{
 		TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texture->GetPathname());
-		descriptor->SaveAsText(descriptorPath);
+		descriptor->Save(descriptorPath);
 	}
 
 	/*
