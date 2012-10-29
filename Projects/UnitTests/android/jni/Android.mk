@@ -30,6 +30,11 @@ LOCAL_SRC_FILES :=  \
                     ../../Classes/SampleTest.cpp \
                     ../../Classes/EntityTest.cpp \
                     ../../Classes/SoundTest.cpp \
+                    ../../Classes/HashMapTest.cpp \
+                    ../../Classes/MemoryAllocatorsTest.cpp \
+                    ../../Classes/PVRTest.cpp \
+                    ../../Classes/SplitTest.cpp \
+                    ../../Classes/TextureUtils.cpp \
 
 LOCAL_CFLAGS := -g -O2
 

@@ -33,8 +33,10 @@ LOCAL_SRC_FILES :=  \
                     Base/Data.cpp \
                     Base/DynamicObjectCache.cpp \
                     Base/EventDispatcher.cpp \
+                    Base/FixedSizePoolAllocator.cpp \
                     Base/Message.cpp \
                     Base/ObjectFactory.cpp \
+                    Base/Observable.cpp \
                     \
                     Collision/CollisionObject2.cpp \
                     Collision/CollisionPolygons.cpp \
@@ -131,7 +133,9 @@ LOCAL_SRC_FILES :=  \
                     Render/DynamicIndexBuffer.cpp \
                     Render/DynamicVertexBuffer.cpp \
                     Render/Image.cpp \
+                    Render/ImageLoader.cpp \
                     Render/LibPngHelpers.cpp \
+                    Render/LibPVRHelper.cpp \
                     Render/Material.cpp \
                     Render/RenderBase.cpp \
                     Render/RenderDataObject.cpp \
@@ -142,6 +146,7 @@ LOCAL_SRC_FILES :=  \
                     Render/RenderManagerFactory.cpp \
                     Render/RenderManagerGL.cpp \
                     Render/RenderManagerGL20.cpp \
+                    Render/RenderOptions.cpp \
                     Render/RenderResource.cpp \
                     Render/RenderStateBlock.cpp \
                     Render/Shader.cpp \
@@ -150,6 +155,7 @@ LOCAL_SRC_FILES :=  \
                     Render/StaticIndexBuffer.cpp \
                     Render/StaticVertexBuffer.cpp \
                     Render/Texture.cpp \
+                    Render/TextureDescriptor.cpp \
                     Render/UberShader.cpp \
                     \
                     Scene2D/Box2DDebugDraw.cpp \

@@ -1081,124 +1081,124 @@ void Texture::Invalidate()
     
     
 //	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
-	if(id)
-	{
-		Logger::Warning("[Texture::Invalidate] id is %d, exit", id);
-		return;
-	}
-
-    RenderManager::Instance()->LockNonMain();
-
-	if(isRenderTarget)
-	{
-		//////////////////////////////////////////////////////////////////////////
-		InvalidateFromSavedData();
-		//////////////////////////////////////////////////////////////////////////
-
-		GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
-		GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
-
-		// Now setup a texture to render to
-		RenderManager::Instance()->HWglBindTexture(id);
-
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-
-#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
-		// Setup our FBO
-		RENDER_VERIFY(glGenFramebuffersOES(1, &fboID));
-		BindFBO(fboID);
-
-		// And attach it to the FBO so we can render to it
-		RENDER_VERIFY(glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, id, 0));
-
-		GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-		if(status != GL_FRAMEBUFFER_COMPLETE_OES)
-		{
-			Logger::Error("[Texture::Invalidate] glCheckFramebufferStatusOES: %d", status);
-		}
-#elif defined(__DAVAENGINE_MACOS__)
-        RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
-        RenderManager::Instance()->HWglBindFBO(fboID);
-        
-		// And attach it to the FBO so we can render to it
-		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
-        
-		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
-		{
-			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
-		}
-#endif 
-
-		RenderManager::Instance()->HWglBindFBO(saveFBO);
-
-		if(saveTexture)
-		{
-			RenderManager::Instance()->HWglBindTexture(saveTexture);
-		}
-	}
-	else if(savedData)
-	{
-//		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
-
-		InvalidateFromSavedData();
-	}
-	else
-	{
-//		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
-
-		InvalidateFromFile();
-	}
-
-	RenderManager::Instance()->UnlockNonMain();
+//	if(id)
+//	{
+//		Logger::Warning("[Texture::Invalidate] id is %d, exit", id);
+//		return;
+//	}
+//
+//    RenderManager::Instance()->LockNonMain();
+//
+//	if(isRenderTarget)
+//	{
+//		//////////////////////////////////////////////////////////////////////////
+//		InvalidateFromSavedData();
+//		//////////////////////////////////////////////////////////////////////////
+//
+//		GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+//		GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
+//
+//		// Now setup a texture to render to
+//		RenderManager::Instance()->HWglBindTexture(id);
+//
+//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+//
+//#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
+//		// Setup our FBO
+//		RENDER_VERIFY(glGenFramebuffersOES(1, &fboID));
+//		BindFBO(fboID);
+//
+//		// And attach it to the FBO so we can render to it
+//		RENDER_VERIFY(glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, id, 0));
+//
+//		GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
+//		if(status != GL_FRAMEBUFFER_COMPLETE_OES)
+//		{
+//			Logger::Error("[Texture::Invalidate] glCheckFramebufferStatusOES: %d", status);
+//		}
+//#elif defined(__DAVAENGINE_MACOS__)
+//        RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
+//        RenderManager::Instance()->HWglBindFBO(fboID);
+//        
+//		// And attach it to the FBO so we can render to it
+//		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
+//        
+//		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+//		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
+//		{
+//			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
+//		}
+//#endif 
+//
+//		RenderManager::Instance()->HWglBindFBO(saveFBO);
+//
+//		if(saveTexture)
+//		{
+//			RenderManager::Instance()->HWglBindTexture(saveTexture);
+//		}
+//	}
+//	else if(savedData)
+//	{
+////		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
+//
+//		InvalidateFromSavedData();
+//	}
+//	else
+//	{
+////		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
+//
+//		InvalidateFromFile();
+//	}
+//
+//	RenderManager::Instance()->UnlockNonMain();
 }
 
 void Texture::InvalidateFromSavedData()
 {
     DVASSERT(false && "Need to refacor code acording last changes of Texture");
 
-    GenerateID();
-    TexImage(0, width, height, (GLvoid *)savedData, savedDataSize);
-    
-	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-	RenderManager::Instance()->HWglBindTexture(id);
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-//	if (descriptor->isMipMapTexture)
+//    GenerateID();
+//    TexImage(0, width, height, (GLvoid *)savedData, savedDataSize);
+//    
+//	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+//	RenderManager::Instance()->HWglBindTexture(id);
+//    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+//    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+////	if (descriptor->isMipMapTexture)
+////	{
+////		GenerateMipmaps();
+////	}
+////	else
+////	{
+////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+////		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+////	}
+//
+//	if (saveId != 0)
 //	{
-//		GenerateMipmaps();
+//		RenderManager::Instance()->HWglBindTexture(saveId);
 //	}
-//	else
-//	{
-//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//	}
-
-	if (saveId != 0)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveId);
-	}
 }
 
 void Texture::InvalidateFromFile()
 {
     DVASSERT(false && "Need to refacor code acording last changes of Texture");
-
-//	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
-
-	Image * image = Image::CreateFromFile(relativePathname);
-	if (!image)
-	{
-		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
-		return;
-	}
-
-	savedData = image->GetData();
-	InvalidateFromSavedData();
-	savedData = NULL;
+//
+////	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
+//
+//	Image * image = Image::CreateFromFile(relativePathname);
+//	if (!image)
+//	{
+//		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
+//		return;
+//	}
+//
+//	savedData = image->GetData();
+//	InvalidateFromSavedData();
+//	savedData = NULL;
 }
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
