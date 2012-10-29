@@ -76,11 +76,9 @@ private:
 	QtEnumEditorFactory *editorEnum;
 
 	QtProperty *enumPVRFormat;
-	QtProperty *boolPVRFlipVertical;
 	QtProperty *intBasePVRMipmapLevel;
 
 	QtProperty *enumDXTFormat;
-	QtProperty *boolDXTFlipVertical;
 	QtProperty *intBaseDXTMipmapLevel;
 
 	QtProperty *boolGenerateMipMaps;

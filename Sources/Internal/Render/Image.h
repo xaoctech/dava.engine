@@ -56,29 +56,23 @@ public:
 	Image();
 	virtual ~Image();
 	
-//    static bool IsAlphaPremultiplicationEnabled(); 
-//    static void EnableAlphaPremultiplication(bool isEnabled); 
-    
 	static Image * Create(int32 width, int32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
-	static Image * CreateFromFile(const String & pathName, bool isAlphaPremultiplied);
-	static Image * CreateFromFile(File *file, bool isAlphaPremultiplied);
 	static Vector2 GetImageSize(const String & pathName);
 	
 	inline int32 GetWidth();
 	inline int32 GetHeight();
 	inline uint8 * GetData();
 	inline PixelFormat GetPixelFormat();
-	inline bool  IsAlphaPremultiplied();
 
-	void ConvertToFormat(PixelFormat format, bool isAlphaPremultiplied = true);
-	
-	void Save(const String & filename);
     
+	
     // changes size of image to required size, if new size is bigger, sets 0 to all new pixels
     void Resize(int32 newWidth, int32 newHeight);
     
     /*
+     //	void ConvertToFormat(PixelFormat format);
+
         \todo extract all image format conversion functions to separate functions to allow to use them in different places, like textures.
         enum eAlphaAction
         {  
@@ -93,15 +87,10 @@ public:
      */
 
 	uint8 * data;
+    uint32 dataSize;
 	int32	width;
 	int32	height;
 	PixelFormat format;
-//	bool	isAlphaPremultiplied;
-private:
-    
-    void ProcessAlphaPremultiplication();
-    
-//    static bool    isAlphaPremultiplicationEnabled;
 };
 	
 // Implementation of inline functions
@@ -122,11 +111,6 @@ PixelFormat Image::GetPixelFormat()
 	return format;
 }
 
-//bool  Image::IsAlphaPremultiplied()
-//{
-//	return isAlphaPremultiplied;
-//}
-	
 	
 };
 

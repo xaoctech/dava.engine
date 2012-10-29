@@ -112,6 +112,17 @@ DAVA::int32 SceneDataManager::ScenesCount()
     return (int32)scenes.size();
 }
 
+SceneData *SceneDataManager::GetScene(DAVA::int32 index)
+{
+    DVASSERT((0 <= index) && (index < (int32)scenes.size()));
+    
+    DAVA::List<SceneData *>::iterator it = scenes.begin();
+    std::advance(it, index);
+    
+    return *it;
+}
+
+
 void SceneDataManager::SetSceneGraphView(QTreeView *view)
 {
     sceneGraphView = view;

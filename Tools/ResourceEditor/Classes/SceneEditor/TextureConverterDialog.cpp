@@ -352,7 +352,7 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
         {
             ErrorNotifier::Instance()->ShowError("Wrong size. Texture must be square.");
         }
-        else if(SceneValidator::IsntPower2(t->width))
+        else if(!IsPowerOf2(t->width))
         {
             ErrorNotifier::Instance()->ShowError("Wrong size. Size must be power of 2.");
         }
@@ -442,12 +442,6 @@ void TextureConverterDialog::SetupTexturePreview()
     Texture *workingTexture = GetTextureForIndex(selectedItem);
     String workingTexturePath = workingTexture->relativePathname;
 
-//    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
-//
-//    Image::EnableAlphaPremultiplication(false);
-//    Texture::DisableMipmapGeneration();   
-
     if(FileSystem::GetExtension(workingTexturePath) == ".png")
     {
         srcTexture = Texture::CreateFromFile(workingTexturePath);
@@ -472,13 +466,6 @@ void TextureConverterDialog::SetupTexturePreview()
     {
         dstTexture->GeneratePixelesation();
     }
-    
-//    if(isMipmaps)
-//    {
-//        Texture::EnableMipmapGeneration();
-//    }
-//    Image::EnableAlphaPremultiplication(isEnabled);
-    
     
     SetupZoomedPreview(srcTexture, srcPreview, srcZoomPreview);
     SetupZoomedPreview(dstTexture, dstPreview, dstZoomPreview);
@@ -592,14 +579,8 @@ void TextureConverterDialog::Update(float32 timeElapsed)
 
 String TextureConverterDialog::GetSrcTexturePath(const String &relativeTexturePath)
 {
-    String ext = FileSystem::GetExtension(relativeTexturePath);
-    if(".pvr" == ext)
-    {   // use src png file
-        String textureWorkingPath = FileSystem::ReplaceExtension(relativeTexturePath, ".png");
-        return textureWorkingPath;
-    }
-
-    return relativeTexturePath;
+    String textureWorkingPath = FileSystem::ReplaceExtension(relativeTexturePath, ".png");
+    return textureWorkingPath;
 }
 
 String TextureConverterDialog::NormalizePath(const String &pathname)

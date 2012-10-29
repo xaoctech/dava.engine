@@ -18,13 +18,6 @@ class ModificationPopUp;
 class EditorScene;
 class ModificationsPanel: public UIControl, public ComboBoxDelegate
 {
-    enum eConst
-    {
-        BUTTON_W = 20,
-        BUTTON_B = 5 
-    };
-    
-    
 public:
 
 	enum eModState

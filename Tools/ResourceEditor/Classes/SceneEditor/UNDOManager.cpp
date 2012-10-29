@@ -149,8 +149,6 @@ Texture * UNDOManager::UndoTilemask()
         Image *image = (Image *)((*it)->actionData);
         tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-        
-//        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
     }
     return tex;
 }
@@ -166,7 +164,6 @@ Texture * UNDOManager::RedoTilemask()
         Image *image = (Image *)((*it)->actionData);
         tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-//        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
         
         actionsHistoryUNDO.push_back(*it);
         actionsHistoryREDO.erase(it);

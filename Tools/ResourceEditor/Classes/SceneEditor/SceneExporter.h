@@ -31,12 +31,10 @@ protected:
     
     void RemoveEditorNodes(SceneNode *rootNode);
     
-    void ExportMaterials(Scene *scene, Set<String> &errorLog);
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog);
-    void ExportMeshLightmaps(Scene *scene, Set<String> &errorLog);
     bool ExportFileDirectly(const String &filePathname, Set<String> &errorLog);
-    String ExportTexture(const String &texturePathname, Set<String> &errorLog);
+    bool ExportTexture(const String &texturePathname, Set<String> &errorLog);
     void ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog);
     
     void PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog);
@@ -49,13 +47,15 @@ protected:
     
     void CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog);
     
+    String GetExportedTextureName(const String &pathname);
+    
 protected:
     
     String dataFolder;
     String dataSourceFolder; 
     String workingFolder;
 
-    String format;
+    Texture::TextureFileFormat exportFormat;
     
     Set<String>texturesForExport;
     Map<String, String>exportedTextures;

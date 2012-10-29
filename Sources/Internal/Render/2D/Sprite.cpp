@@ -199,7 +199,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 		sscanf(tempBuf, "%s", textureCharName);
 		String tp = texturePath + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
-		Texture *texture = Texture::CreateFromFile(tp.c_str());
+		Texture *texture = Texture::CreateFromFile(tp);
 		
 		spr->textures[k] = texture;
 		DVASSERT_MSG(texture, "ERROR: Texture loading failed"/* + pathName*/);

@@ -5,6 +5,10 @@
 #include "../EditorScene.h"
 #include "EditorConfig.h"
 
+
+static const float32 BUTTON_W = 20.0f;
+static const float32 BUTTON_B = 5.0f;
+
 static const WideString mods[3] = { L"M", L"R", L"S"};
 static const WideString axises[3] = { L"X", L"Y", L"Z"};
 

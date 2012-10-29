@@ -10,10 +10,7 @@ class CommandLineTool: public DAVA::Singleton<CommandLineTool>
     
 public:
 
-    enum eConst
-    {
-        INVALID_POSITION = -1
-    };
+    static const int32 INVALID_POSITION = -1;
 
 	CommandLineTool();
 	virtual ~CommandLineTool();

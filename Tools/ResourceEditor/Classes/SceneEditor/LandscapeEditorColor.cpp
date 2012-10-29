@@ -12,6 +12,7 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
+
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -319,14 +320,13 @@ void LandscapeEditorColor::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-//        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoTilemask();
-        
-//        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
+        //ENDOFTODO
+        
         CreateMaskFromTexture(tex);
     }
 }
@@ -336,13 +336,12 @@ void LandscapeEditorColor::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-//        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->RedoTilemask();
-        
-//        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        //ENDOFTODO
 
         CreateMaskFromTexture(tex);
     }
@@ -355,7 +354,7 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            img->Save(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             SafeRelease(savedTexture);

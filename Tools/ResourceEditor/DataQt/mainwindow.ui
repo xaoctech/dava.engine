@@ -337,7 +337,16 @@
      </property>
      <addaction name="actionShowNotPassableLandscape"/>
     </widget>
+    <widget class="QMenu" name="menuTextureFromat">
+     <property name="title">
+      <string>Texture Fromat</string>
+     </property>
+     <addaction name="actionReloadAsPNG"/>
+     <addaction name="actionReloadAsPVR"/>
+     <addaction name="actionReloadAsDXT"/>
+    </widget>
     <addaction name="menuLandscape"/>
+    <addaction name="menuTextureFromat"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -551,6 +560,21 @@
   <action name="actionRulerTool">
    <property name="text">
     <string>Ruler Tool</string>
+   </property>
+  </action>
+  <action name="actionReloadAsPNG">
+   <property name="text">
+    <string>As PNG</string>
+   </property>
+  </action>
+  <action name="actionReloadAsPVR">
+   <property name="text">
+    <string>As PVR</string>
+   </property>
+  </action>
+  <action name="actionReloadAsDXT">
+   <property name="text">
+    <string>As DXT</string>
    </property>
   </action>
  </widget>

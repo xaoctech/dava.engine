@@ -22,10 +22,6 @@ protected:
 
 class HintManager: public Singleton<HintManager>
 {
-    enum eConst
-    {
-        NOTIFICATION_TIME = 3
-    };
     
 public:
     HintManager();

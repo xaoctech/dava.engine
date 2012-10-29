@@ -1,7 +1,5 @@
 #include "EditorBodyControl.h"
 #include "ControlsFactory.h"
-#include "OutputManager.h"
-#include "OutputPanelControl.h"
 #include "../BeastProxy.h"
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"

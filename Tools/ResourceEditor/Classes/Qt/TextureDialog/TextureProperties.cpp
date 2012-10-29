@@ -70,12 +70,9 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	enumPVRFormat = propertiesEnum->addProperty("Format");
 	propertiesEnum->setEnumNames(enumPVRFormat, helperPVRFormats.keyList());
 
-	boolPVRFlipVertical = propertiesBool->addProperty("Flip vertical");
-
 	intBasePVRMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
 
 	groupPVR->addSubProperty(enumPVRFormat);
-	groupPVR->addSubProperty(boolPVRFlipVertical);
 	groupPVR->addSubProperty(intBasePVRMipmapLevel);
 	addProperty(groupPVR);
 
@@ -83,12 +80,9 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	enumDXTFormat = propertiesEnum->addProperty("Format");
 	propertiesEnum->setEnumNames(enumDXTFormat, helperDXTFormats.keyList());
 
-	boolDXTFlipVertical = propertiesBool->addProperty("Flip vertical");
-
 	intBaseDXTMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
 
 	groupDXT->addSubProperty(enumDXTFormat);
-	groupDXT->addSubProperty(boolDXTFlipVertical);
 	groupDXT->addSubProperty(intBaseDXTMipmapLevel);
 	addProperty(groupDXT);
 
@@ -149,12 +143,10 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 		{
 			// pvr
 			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
-			propertiesBool->setValue(boolPVRFlipVertical, curTextureDescriptor->pvrCompression.flipVertically);
 			propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
 
 			// dxt
 			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
-			propertiesBool->setValue(boolDXTFlipVertical, curTextureDescriptor->dxtCompression.flipVertically);
 			propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
 
 			// mipmap
@@ -199,14 +191,6 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			DAVA::PixelFormat newDXTFormat = (DAVA::PixelFormat) helperDXTFormats.value(enumDXTFormat->valueText());
 			curTextureDescriptor->dxtCompression.format = newDXTFormat;
 			emit formatChangedDXT(newDXTFormat);
-		}
-		else if(property == boolPVRFlipVertical)
-		{
-			curTextureDescriptor->pvrCompression.flipVertically = propertiesBool->value(boolPVRFlipVertical);
-		}
-		else if(property == boolDXTFlipVertical)
-		{
-			curTextureDescriptor->dxtCompression.flipVertically = propertiesBool->value(boolDXTFlipVertical);
 		}
 		else if(property == intBasePVRMipmapLevel)
 		{

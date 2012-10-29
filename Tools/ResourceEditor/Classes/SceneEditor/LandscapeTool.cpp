@@ -1,12 +1,15 @@
 #include "LandscapeTool.h"
+#include "../Qt/QtUtils.h"
 
 LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageName)
 {
+    image = NULL;
+    
     toolID = _ID;
     type = _type;
     
     imageName = _imageName;
-    image = Image::CreateFromFile(imageName, false);
+    image = CreateTopLevelImage(imageName);
     
     RenderManager::Instance()->LockNonMain();
     

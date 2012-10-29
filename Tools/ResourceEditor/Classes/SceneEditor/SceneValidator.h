@@ -116,13 +116,16 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-    static bool IsntPower2(int32 num);
-
-    void ReloadTextures();
+    void ReloadTextures(int32 asFile);
     
     static bool IsTextureChanged(const String &texturePathname);
     
     void FindTexturesForCompression();
+    
+	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
+	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
+
+    void CreateDefaultDescriptors(const String &folderPathname);
     
 protected:
     
@@ -132,6 +135,7 @@ protected:
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 
+	void CreateDescriptorIfNeed(const String &forPathname);
     
     void ShowErrors();
     
@@ -140,10 +144,9 @@ protected:
     bool NodeRemovingDisabled(SceneNode *node);
     
     bool WasTextureChanged(Texture *texture);
-    bool IsPathCorrectForProject(const String pathname);
+    bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);
-	String ConvertTexturePathToDescriptorPath(const String &path);
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;

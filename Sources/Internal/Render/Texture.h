@@ -60,9 +60,13 @@ public:
 	
     enum TextureFileFormat
     {
+        NOT_FILE = -1,
+        
         PNG_FILE = 0,
         PVR_FILE,
-        DXT_FILE
+        DXT_FILE,
+        
+        FILE_FORMAT_COUNT
     };
 
 	enum DepthFormat
@@ -283,18 +287,23 @@ public:							// properties for fast access
     void GenerateID();
     
     
+    static void SetDefaultFileFormat(TextureFileFormat fileFormat);
+    static TextureFileFormat GetDefaultFileFormat();
+    
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);
-	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);
-	static Texture * CreateFromPNG(File *file, TextureDescriptor *descriptor);
-	static Texture * CreateFromPVR(File *file, TextureDescriptor *descriptor);
     
-	static Texture * CreateFromDescriptor(const String & pathName, TextureDescriptor *descriptor);
-	
-	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel);
+	static Texture * CreateFromDescriptor(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
+    static String GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat);
+    
+    bool LoadFromImage(File *file, TextureDescriptor *descriptor);
+    
+    
+    
 	static PixelFormat defaultRGBAFormat;
 //	static bool	isMipmapGenerationEnabled;
 	Texture();
@@ -311,8 +320,7 @@ private:
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    void ReloadAsPng();
-    void ReloadAsPvr();
+    static TextureFileFormat defaultFileFormat;
 };
     
 // Implementation of inline functions

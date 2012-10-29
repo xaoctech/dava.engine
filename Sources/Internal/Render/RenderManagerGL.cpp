@@ -37,6 +37,7 @@
 #include "Render/Shader.h"
 
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 
@@ -328,7 +329,7 @@ void RenderManager::MakeGLScreenShot()
     
     if(image)
     {
-        image->Save(FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
+        ImageLoader::Save(image, FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
         SafeRelease(image);
     }
     

@@ -9,6 +9,10 @@ using namespace DAVA;
 
 class ColorDetailControl: public UIControl
 {
+protected:
+    
+    static const int32 SECTIONS_COUNT = 6;
+    
 public:    
     ColorDetailControl(const Rect &rect);
     virtual ~ColorDetailControl();
@@ -41,7 +45,7 @@ protected:
     
     void SetInitialColors();
     
-    Color sections[6];
+    Color sections[SECTIONS_COUNT];
     
 };
 

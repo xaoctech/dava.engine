@@ -161,8 +161,13 @@ void QtMainWindow::SetupMainMenu()
                                        );
 
     //View Options
+    connect(ui->menuViewOptions, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuViewOptionsWillShow()));
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
-    
+    connect(ui->actionReloadAsPNG, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPNG()));
+    connect(ui->actionReloadAsPVR, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPVR()));
+    connect(ui->actionReloadAsDXT, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsDXT()));
+    actionHandler->RegisterTextureFormatActions(Texture::FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
+
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
  

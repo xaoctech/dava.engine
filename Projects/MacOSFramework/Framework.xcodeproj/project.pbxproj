@@ -116,7 +116,8 @@
 		E856CF12162420420065E32B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E856CF10162420420065E32B /* TextureDescriptor.h */; };
 		E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */; };
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
-		E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C80161B171800B50BDA /* TexturePVR.cpp */; };
+		E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E86F952616381BAD0014B4C0 /* ImageLoader.cpp */; };
+		E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E86F952716381BAD0014B4C0 /* ImageLoader.h */; };
 		E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C96161B418100B50BDA /* LibPVRHelper.h */; };
 		E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C97161B418100B50BDA /* PVRDefines.h */; };
@@ -709,7 +710,8 @@
 		E856CF10162420420065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
 		E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
-		E8F98C80161B171800B50BDA /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
+		E86F952616381BAD0014B4C0 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
+		E86F952716381BAD0014B4C0 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
 		E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C96161B418100B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C97161B418100B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -1715,6 +1717,8 @@
 				FECFC17612E87E3000C71562 /* DynamicVertexBuffer.h */,
 				FE044F3A140EEA32002A6D27 /* RenderDataObject.cpp */,
 				FE044F3B140EEA32002A6D27 /* RenderDataObject.h */,
+				E86F952616381BAD0014B4C0 /* ImageLoader.cpp */,
+				E86F952716381BAD0014B4C0 /* ImageLoader.h */,
 				FECFC17712E87E3000C71562 /* Image.cpp */,
 				FECFC17812E87E3000C71562 /* Image.h */,
 				FECFC17912E87E3000C71562 /* IndexBuffer.h */,
@@ -1750,7 +1754,6 @@
 				E8F98C97161B418100B50BDA /* PVRDefines.h */,
 				E856CF0F162420420065E32B /* TextureDescriptor.cpp */,
 				E856CF10162420420065E32B /* TextureDescriptor.h */,
-				E8F98C80161B171800B50BDA /* TexturePVR.cpp */,
 				FECFC19112E87E3000C71562 /* Texture.cpp */,
 				FECFC19212E87E3000C71562 /* Texture.h */,
 				FECFC19312E87E3000C71562 /* TextureDX9.cpp */,
@@ -2346,6 +2349,7 @@
 				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
 				E856CF12162420420065E32B /* TextureDescriptor.h in Headers */,
+				E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2674,9 +2678,9 @@
 				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
 				E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */,
 				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
-				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
 				E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */,
+				E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

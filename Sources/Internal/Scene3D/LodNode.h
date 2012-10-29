@@ -42,18 +42,15 @@ class SceneFileV2;
     
 class LodNode : public SceneNode
 {
+    static const int32 RECHECK_LOD_EVERY_FRAME = 3;
     
-public:	
+public:
 
-    enum eConst
-    {
-        MAX_LOD_LAYERS = 4,
-        INVALID_DISTANCE = -1,
-        INVALID_LOD_LAYER = -1,
-        MIN_LOD_DISTANCE = 0,
-        MAX_LOD_DISTANCE = 500,
-		RECHECK_LOD_EVERY_FRAME = 3
-    };
+    static const int32 MAX_LOD_LAYERS = 4;
+    static const int32 INVALID_LOD_LAYER = -1;
+    static const float32 MIN_LOD_DISTANCE;
+    static const float32 MAX_LOD_DISTANCE;
+	static const float32 INVALID_DISTANCE;
 
     struct LodDistance
     {
