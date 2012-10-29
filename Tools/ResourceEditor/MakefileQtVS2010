@@ -1,4 +1,4 @@
-QT_DIR_OUTPUT := .GeneratedQt
+QT_DIR_OUTPUT := GeneratedQt
 
 QT_DIR_UI := DataQt
 QT_DIR_QRC := DataQt
