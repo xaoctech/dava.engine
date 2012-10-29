@@ -34,6 +34,10 @@
 
 #include "Utils/StringFormat.h"
 
+#include <sys/stat.h>
+#include <time.h>
+
+
 namespace DAVA 
 {
 	
@@ -256,8 +260,6 @@ bool File::WriteLine(const String & string)
 
 }
 
-#include <sys/stat.h>
-#include <time.h>    
 const char8 * File::GetModificationDate(const String & filePathname)
 {
     String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
@@ -268,6 +270,8 @@ const char8 * File::GetModificationDate(const String & filePathname)
     {
 #if defined (__DAVAENGINE_WIN32__)
 		tm* utcTime = gmtime(&fileInfo.st_mtime);
+#elif defined (__DAVAENGINE_ANDROID__)
+		tm* utcTime = gmtime((const time_t *)&fileInfo.st_mtime);
 #elif defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
         tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
 #endif
