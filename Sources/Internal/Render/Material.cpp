@@ -568,13 +568,15 @@ void Material::PrepareRenderState()
 	if(isAlphablend)
 	{
 		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
-		//Dizz: dunno what it was for
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		//Dizz: temporary solution
+		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode(blendSrc, blendDst);
 	}
 	else
 	{
+		//Dizz: temporary solution
+		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 

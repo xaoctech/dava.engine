@@ -238,6 +238,14 @@ public:
 	virtual bool CopyFile(const String & existingFile, const String & newFile);
 
 	/**
+		\brief Moves an existing file to a new file.
+		\param[in] existingFile The name of an existing file.
+		\param[out] newFile The name of the new file.
+		\returns true if file was successfully moved, false otherwise
+	*/
+	virtual bool MoveFile(const String & existingFile, const String & newFile);
+
+	/**
 		\brief Copies directory to another existing directory.
 		\param[in] sourceDirectory The name of an existing file.
 		\param[out] destinationDirectory The name of the new file.

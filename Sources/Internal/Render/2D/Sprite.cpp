@@ -99,6 +99,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 	String scaledName = spriteName.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	String scaledPath = scaledName + ".txt";
 	
+	
 	Map<String, Sprite*>::iterator it;
 	it = spriteMap.find(scaledPath);
 	if (it != spriteMap.end())
@@ -800,7 +801,7 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
         
     if(flags & EST_MODIFICATION)
 	{
-		if((modification & (ESM_HFLIP | ESM_VFLIP)) == (ESM_HFLIP | ESM_VFLIP))
+		if((state->flags & (ESM_HFLIP | ESM_VFLIP)) == (ESM_HFLIP | ESM_VFLIP))
 		{
 			if(flags & EST_SCALE)
 			{
@@ -831,7 +832,7 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 		}
 		else 
 		{
-			if(modification & ESM_HFLIP)
+			if(state->flags & ESM_HFLIP)
 			{
 				if(flags & EST_SCALE)
 				{
@@ -1409,6 +1410,4 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &pa
 	
 	frame = localState.frame;
 }
-
-
 };
