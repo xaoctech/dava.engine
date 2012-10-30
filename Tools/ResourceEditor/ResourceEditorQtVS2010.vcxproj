@@ -108,7 +108,7 @@
       </Message>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/make.exe -f MakefileQtVS2010</Command>
+      <Command>$(SolutionDir)/make.exe -f MakefileQtVS2010 all</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>QT generate: MOC, UI, QRC</Message>
@@ -172,30 +172,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
-    <ClCompile Include=".GeneratedQt\davaglwidget_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\FileSelectionModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\GraphItem_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\GraphModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\GUIState_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\LibraryModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\mainwindow_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\PointerHolder_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\QtIcons_qrc.cpp" />
-    <ClCompile Include=".GeneratedQt\QtMainWindowHandler_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\QtUtils_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\SceneDataManager_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\SceneData_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\SceneGraphItem_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\SceneGraphModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\ScenePreviewDialog_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureList_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
@@ -341,7 +317,6 @@
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
-    <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ViewCommands.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
@@ -475,6 +450,42 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
+    <ClCompile Include="GeneratedQt\davaglwidget_moc.cpp" />
+    <ClCompile Include="GeneratedQt\FileSelectionModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GraphItem_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GraphModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GUIState_moc.cpp" />
+    <ClCompile Include="GeneratedQt\LibraryModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="GeneratedQt\PointerHolder_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtIcons_qrc.cpp" />
+    <ClCompile Include="GeneratedQt\QtMainWindowHandler_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtbuttonpropertybrowser_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qteditorfactory_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qteditorfactory_moca.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtgroupboxpropertybrowser_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtpropertybrowserutils_p_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtpropertybrowser_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtpropertymanager_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtpropertymanager_moca.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qttreepropertybrowser_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qttreepropertybrowser_moca.cpp" />
+    <ClCompile Include="GeneratedQt\QtPropertyBrowser\qtvariantproperty_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtUtils_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneDataManager_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneData_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneGraphItem_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\ScenePreviewDialog_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureList_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
@@ -489,9 +500,6 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
-    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h" />
-    <ClInclude Include=".GeneratedQt\ui_mainwindow.h" />
-    <ClInclude Include=".GeneratedQt\ui_texturedialog.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h" />
     <ClInclude Include="Classes\BulletObject.h" />
@@ -712,7 +720,6 @@
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
-    <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\Commands\ViewCommands.h" />
     <ClInclude Include="Classes\config.h" />
@@ -850,6 +857,9 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
+    <ClInclude Include="GeneratedQt\ui_davaglwidget.h" />
+    <ClInclude Include="GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="GeneratedQt\ui_texturedialog.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui" />
