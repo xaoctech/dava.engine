@@ -366,7 +366,7 @@
 		5C048FD716037725008631C2 /* LandscapeRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeRenderer.cpp; path = Classes/LandscapeEditor/LandscapeRenderer.cpp; sourceTree = "<group>"; };
 		5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorLandscapeNode.cpp; path = Classes/LandscapeEditor/EditorLandscapeNode.cpp; sourceTree = "<group>"; };
 		5C048FDA1603BF0D008631C2 /* EditorLandscapeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorLandscapeNode.h; path = Classes/LandscapeEditor/EditorLandscapeNode.h; sourceTree = "<group>"; };
-		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = TemplateProjectQt.app; path = ResourceEditorQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C190C9515AEC58B005731F8 /* ResourceEditorQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ResourceEditorQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
@@ -1070,7 +1070,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		05596AB53D8D521C69802C27 /* TemplateProjectQt */ = {
+		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
 				5CCC10B315B45FC200DA83EB /* libbz2.dylib */,
@@ -1086,13 +1086,13 @@
 				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
 				5C190C9615AEC58B005731F8 /* Products */,
 			);
-			name = TemplateProjectQt;
+			name = ResourceEditorQt;
 			sourceTree = "<group>";
 		};
 		5C190C9615AEC58B005731F8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */,
+				5C190C9515AEC58B005731F8 /* ResourceEditorQt.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2040,9 +2040,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C44821495B0959249FEE50BE /* TemplateProjectQt */ = {
+		C44821495B0959249FEE50BE /* ResourceEditorQt */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "TemplateProjectQt" */;
+			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "ResourceEditorQt" */;
 			buildPhases = (
 				5C42E09515B42E1C00F71425 /* Compile Qt-meta */,
 				C29B8785722055ED95EF7B57 /* Build Sources */,
@@ -2054,9 +2054,9 @@
 			dependencies = (
 				5C7F49F515B44ECD0038AF3A /* PBXTargetDependency */,
 			);
-			name = TemplateProjectQt;
-			productName = TemplateProjectQt;
-			productReference = 5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */;
+			name = ResourceEditorQt;
+			productName = ResourceEditorQt;
+			productReference = 5C190C9515AEC58B005731F8 /* ResourceEditorQt.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2067,14 +2067,14 @@
 			attributes = {
 				LastUpgradeCheck = 0450;
 			};
-			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "TemplateProjectQt" */;
+			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "ResourceEditorQt" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 05596AB53D8D521C69802C27 /* TemplateProjectQt */;
+			mainGroup = 05596AB53D8D521C69802C27 /* ResourceEditorQt */;
 			productRefGroup = 5C190C9615AEC58B005731F8 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -2089,7 +2089,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				C44821495B0959249FEE50BE /* TemplateProjectQt */,
+				C44821495B0959249FEE50BE /* ResourceEditorQt */,
 			);
 		};
 /* End PBXProject section */
@@ -2664,7 +2664,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "TemplateProjectQt" */ = {
+		17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "ResourceEditorQt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BEC09A62E69C3553534FF35E /* Debug */,
@@ -2673,7 +2673,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "TemplateProjectQt" */ = {
+		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "ResourceEditorQt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4B72B24813252891014BCF61 /* Debug */,
