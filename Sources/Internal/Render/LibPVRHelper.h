@@ -34,15 +34,15 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
-#if defined (__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     #include "PVRDefines.h"
-#else
+#else //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 //    #include "libpvr/PVRTError.h"
 //    #include "libpvr/PVRTDecompress.h"
 //    #include "libpvr/PVRTMap.h"
     #include "libpvr/PVRTextureHeader.h"
 //    #include "libpvr/PVRTexture.h"
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
 namespace DAVA
 {
