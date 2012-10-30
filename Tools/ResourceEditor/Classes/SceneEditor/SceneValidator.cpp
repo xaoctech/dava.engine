@@ -441,7 +441,104 @@ String SceneValidator::SetPathForChecking(const String &pathname)
 {
     String oldPath = pathForChecking;
     pathForChecking = pathname;
-    return pathForChecking;
+    return oldPath;
+}
+
+
+bool SceneValidator::ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog)
+{
+	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+
+	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
+	if(pathIsCorrect)
+	{
+		String textureExtension = FileSystem::Instance()->GetExtension(pathForValidation);
+		String::size_type extPosition = GetTextureFileExtensions().find(textureExtension);
+		if(String::npos == extPosition)
+		{
+			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.c_str()));
+			return false;
+		}
+
+		CreateDescriptorIfNeed(pathForValidation);
+	}
+	else
+	{
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+	}
+
+	return pathIsCorrect;
+}
+
+bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog)
+{
+	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+
+	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
+	if(pathIsCorrect)
+	{
+		String::size_type posPng = pathForValidation.find(".png");
+		String::size_type posHeightmap = pathForValidation.find(Heightmap::FileExtension());
+        
+        pathIsCorrect = ((String::npos != posPng) || (String::npos != posHeightmap));
+        if(!pathIsCorrect)
+        {
+            errorsLog.insert(Format("Heightmap path %s is wrong", pathForValidation.c_str()));
+            return false;
+        }
+        
+        Heightmap *heightmap = new Heightmap();
+        if(String::npos != posPng)
+        {
+            Image *image = CreateTopLevelImage(pathForValidation);
+            pathIsCorrect = heightmap->BuildFromImage(image);
+            SafeRelease(image);
+        }
+        else
+        {
+            pathIsCorrect = heightmap->Load(pathForValidation);
+        }
+
+        
+        if(!pathIsCorrect)
+        {
+            SafeRelease(heightmap);
+            errorsLog.insert(Format("Can't load Heightmap from path %s", pathForValidation.c_str()));
+            return false;
+        }
+        
+        
+        pathIsCorrect = IsPowerOf2(heightmap->Size() - 1);
+        if(!pathIsCorrect)
+        {
+            errorsLog.insert(Format("Heightmap %s has wrong size", pathForValidation.c_str()));
+        }
+        
+        SafeRelease(heightmap);
+		return pathIsCorrect;
+	}
+	else
+	{
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+	}
+
+	return pathIsCorrect;
+}
+
+
+void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
+{
+	String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+	bool fileExists = FileSystem::Instance()->IsFile(descriptorPathname);
+	if(!fileExists)
+	{
+		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
+	
+		TextureDescriptor *descriptor = new TextureDescriptor();
+		descriptor->textureFileFormat = Texture::PNG_FILE;
+		descriptor->Save(descriptorPathname);
+	}
+>>>>>>> e9ae2a1... [DF-63] Added Validation of the Heightmap Object
 }
 
 
