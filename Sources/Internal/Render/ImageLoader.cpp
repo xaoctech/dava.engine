@@ -111,6 +111,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
     if(mipMapLevelsCount)
     {
         Vector<Image *> imageSet;
+        imageSet.reserve(mipMapLevelsCount);
         for(int32 i = 0; i < mipMapLevelsCount; ++i)
         {
             Image *image = new Image();
