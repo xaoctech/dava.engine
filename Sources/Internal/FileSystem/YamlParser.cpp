@@ -723,14 +723,10 @@ bool YamlNode::IsContainingMap()
 
 String YamlNode::FloatToCuttedString(float f)
 {
-    char letter[10];
-    sprintf(letter, "%f",f);
+    char letter[20];
+    sprintf(letter, "%.4f",f);
     String letterRepresentation(letter);
-    
-    String::iterator cutBegin = letterRepresentation.end() - 1;
-    for (; ( cutBegin != letterRepresentation.begin() && *cutBegin == '0' ); --cutBegin){}
-    letterRepresentation.erase(++cutBegin, letterRepresentation.end());
-    return  letterRepresentation;
+	return letterRepresentation;
 }
     
 void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
