@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C44821495B0959249FEE50BE"
                BuildableName = "ResourceEditorQt.app"
-               BlueprintName = "TemplateProjectQt"
-               ReferencedContainer = "container:TemplateProjectQt.xcodeproj">
+               BlueprintName = "ResourceEditorQt"
+               ReferencedContainer = "container:ResourceEditorQt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,8 +34,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C44821495B0959249FEE50BE"
             BuildableName = "ResourceEditorQt.app"
-            BlueprintName = "TemplateProjectQt"
-            ReferencedContainer = "container:TemplateProjectQt.xcodeproj">
+            BlueprintName = "ResourceEditorQt"
+            ReferencedContainer = "container:ResourceEditorQt.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -53,8 +53,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C44821495B0959249FEE50BE"
             BuildableName = "ResourceEditorQt.app"
-            BlueprintName = "TemplateProjectQt"
-            ReferencedContainer = "container:TemplateProjectQt.xcodeproj">
+            BlueprintName = "ResourceEditorQt"
+            ReferencedContainer = "container:ResourceEditorQt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -77,8 +77,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C44821495B0959249FEE50BE"
             BuildableName = "ResourceEditorQt.app"
-            BlueprintName = "TemplateProjectQt"
-            ReferencedContainer = "container:TemplateProjectQt.xcodeproj">
+            BlueprintName = "ResourceEditorQt"
+            ReferencedContainer = "container:ResourceEditorQt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
