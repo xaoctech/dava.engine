@@ -11,27 +11,17 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
-		DebugQt|Win32 = DebugQt|Win32
 		Release|Win32 = Release|Win32
-		ReleaseQt|Win32 = ReleaseQt|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.Debug|Win32.ActiveCfg = DebugQt|Win32
 		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.Debug|Win32.Build.0 = DebugQt|Win32
-		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.DebugQt|Win32.ActiveCfg = DebugQt|Win32
-		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.DebugQt|Win32.Build.0 = DebugQt|Win32
 		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.Release|Win32.ActiveCfg = ReleaseQt|Win32
 		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.Release|Win32.Build.0 = ReleaseQt|Win32
-		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.ReleaseQt|Win32.ActiveCfg = ReleaseQt|Win32
-		{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}.ReleaseQt|Win32.Build.0 = ReleaseQt|Win32
 		{A6472D47-5050-406D-89E9-4725192E32F2}.Debug|Win32.ActiveCfg = DebugQt|Win32
 		{A6472D47-5050-406D-89E9-4725192E32F2}.Debug|Win32.Build.0 = DebugQt|Win32
-		{A6472D47-5050-406D-89E9-4725192E32F2}.DebugQt|Win32.ActiveCfg = DebugQt|Win32
-		{A6472D47-5050-406D-89E9-4725192E32F2}.DebugQt|Win32.Build.0 = DebugQt|Win32
 		{A6472D47-5050-406D-89E9-4725192E32F2}.Release|Win32.ActiveCfg = ReleaseQt|Win32
 		{A6472D47-5050-406D-89E9-4725192E32F2}.Release|Win32.Build.0 = ReleaseQt|Win32
-		{A6472D47-5050-406D-89E9-4725192E32F2}.ReleaseQt|Win32.ActiveCfg = ReleaseQt|Win32
-		{A6472D47-5050-406D-89E9-4725192E32F2}.ReleaseQt|Win32.Build.0 = ReleaseQt|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
