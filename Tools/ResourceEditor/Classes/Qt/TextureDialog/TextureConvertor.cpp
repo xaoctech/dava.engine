@@ -105,6 +105,9 @@ QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 				case DAVA::FORMAT_RGBA8888:
 					qtImgFormat = QImage::Format_ARGB32;
 					break;
+                        
+                default:
+                    break;
 				}
 
 				if(QImage::Format_Invalid != qtImgFormat)

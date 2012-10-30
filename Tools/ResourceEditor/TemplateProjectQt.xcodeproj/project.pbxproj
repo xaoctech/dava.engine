@@ -308,17 +308,6 @@
 		E89DFD12163ED1F300B51706 /* PointerHolder_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCE9163ED1F300B51706 /* PointerHolder_moc.cpp */; };
 		E89DFD13163ED1F300B51706 /* QtIcons_qrc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCEA163ED1F300B51706 /* QtIcons_qrc.cpp */; };
 		E89DFD14163ED1F300B51706 /* QtMainWindowHandler_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCEB163ED1F300B51706 /* QtMainWindowHandler_moc.cpp */; };
-		E89DFD15163ED1F300B51706 /* qtbuttonpropertybrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCED163ED1F300B51706 /* qtbuttonpropertybrowser_moc.cpp */; };
-		E89DFD16163ED1F300B51706 /* qteditorfactory_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCEE163ED1F300B51706 /* qteditorfactory_moc.cpp */; };
-		E89DFD17163ED1F300B51706 /* qteditorfactory_moca.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCEF163ED1F300B51706 /* qteditorfactory_moca.cpp */; };
-		E89DFD18163ED1F300B51706 /* qtgroupboxpropertybrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF0163ED1F300B51706 /* qtgroupboxpropertybrowser_moc.cpp */; };
-		E89DFD19163ED1F300B51706 /* qtpropertybrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF1163ED1F300B51706 /* qtpropertybrowser_moc.cpp */; };
-		E89DFD1A163ED1F300B51706 /* qtpropertybrowserutils_p_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF2163ED1F300B51706 /* qtpropertybrowserutils_p_moc.cpp */; };
-		E89DFD1B163ED1F300B51706 /* qtpropertymanager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF3163ED1F300B51706 /* qtpropertymanager_moc.cpp */; };
-		E89DFD1C163ED1F300B51706 /* qtpropertymanager_moca.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF4163ED1F300B51706 /* qtpropertymanager_moca.cpp */; };
-		E89DFD1D163ED1F300B51706 /* qttreepropertybrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF5163ED1F300B51706 /* qttreepropertybrowser_moc.cpp */; };
-		E89DFD1E163ED1F300B51706 /* qttreepropertybrowser_moca.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF6163ED1F300B51706 /* qttreepropertybrowser_moca.cpp */; };
-		E89DFD1F163ED1F300B51706 /* qtvariantproperty_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF7163ED1F300B51706 /* qtvariantproperty_moc.cpp */; };
 		E89DFD20163ED1F300B51706 /* QtUtils_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF8163ED1F300B51706 /* QtUtils_moc.cpp */; };
 		E89DFD21163ED1F300B51706 /* SceneData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCF9163ED1F300B51706 /* SceneData_moc.cpp */; };
 		E89DFD22163ED1F300B51706 /* SceneDataManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFCFA163ED1F300B51706 /* SceneDataManager_moc.cpp */; };
@@ -377,7 +366,7 @@
 		5C048FD716037725008631C2 /* LandscapeRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeRenderer.cpp; path = Classes/LandscapeEditor/LandscapeRenderer.cpp; sourceTree = "<group>"; };
 		5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorLandscapeNode.cpp; path = Classes/LandscapeEditor/EditorLandscapeNode.cpp; sourceTree = "<group>"; };
 		5C048FDA1603BF0D008631C2 /* EditorLandscapeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorLandscapeNode.h; path = Classes/LandscapeEditor/EditorLandscapeNode.h; sourceTree = "<group>"; };
-		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = TemplateProjectQt.app; path = ResourceEditorQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
@@ -1031,17 +1020,6 @@
 		E89DFCE9163ED1F300B51706 /* PointerHolder_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointerHolder_moc.cpp; path = GeneratedQt/PointerHolder_moc.cpp; sourceTree = "<group>"; };
 		E89DFCEA163ED1F300B51706 /* QtIcons_qrc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtIcons_qrc.cpp; path = GeneratedQt/QtIcons_qrc.cpp; sourceTree = "<group>"; };
 		E89DFCEB163ED1F300B51706 /* QtMainWindowHandler_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtMainWindowHandler_moc.cpp; path = GeneratedQt/QtMainWindowHandler_moc.cpp; sourceTree = "<group>"; };
-		E89DFCED163ED1F300B51706 /* qtbuttonpropertybrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtbuttonpropertybrowser_moc.cpp; sourceTree = "<group>"; };
-		E89DFCEE163ED1F300B51706 /* qteditorfactory_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qteditorfactory_moc.cpp; sourceTree = "<group>"; };
-		E89DFCEF163ED1F300B51706 /* qteditorfactory_moca.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qteditorfactory_moca.cpp; sourceTree = "<group>"; };
-		E89DFCF0163ED1F300B51706 /* qtgroupboxpropertybrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtgroupboxpropertybrowser_moc.cpp; sourceTree = "<group>"; };
-		E89DFCF1163ED1F300B51706 /* qtpropertybrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtpropertybrowser_moc.cpp; sourceTree = "<group>"; };
-		E89DFCF2163ED1F300B51706 /* qtpropertybrowserutils_p_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtpropertybrowserutils_p_moc.cpp; sourceTree = "<group>"; };
-		E89DFCF3163ED1F300B51706 /* qtpropertymanager_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtpropertymanager_moc.cpp; sourceTree = "<group>"; };
-		E89DFCF4163ED1F300B51706 /* qtpropertymanager_moca.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtpropertymanager_moca.cpp; sourceTree = "<group>"; };
-		E89DFCF5163ED1F300B51706 /* qttreepropertybrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qttreepropertybrowser_moc.cpp; sourceTree = "<group>"; };
-		E89DFCF6163ED1F300B51706 /* qttreepropertybrowser_moca.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qttreepropertybrowser_moca.cpp; sourceTree = "<group>"; };
-		E89DFCF7163ED1F300B51706 /* qtvariantproperty_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qtvariantproperty_moc.cpp; sourceTree = "<group>"; };
 		E89DFCF8163ED1F300B51706 /* QtUtils_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtUtils_moc.cpp; path = GeneratedQt/QtUtils_moc.cpp; sourceTree = "<group>"; };
 		E89DFCF9163ED1F300B51706 /* SceneData_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneData_moc.cpp; path = GeneratedQt/SceneData_moc.cpp; sourceTree = "<group>"; };
 		E89DFCFA163ED1F300B51706 /* SceneDataManager_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneDataManager_moc.cpp; path = GeneratedQt/SceneDataManager_moc.cpp; sourceTree = "<group>"; };
@@ -1066,7 +1044,6 @@
 		E8F020C916103E84000969AF /* RulerToolLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolLandscape.cpp; path = Classes/LandscapeEditor/RulerToolLandscape.cpp; sourceTree = "<group>"; };
 		E8F020CA16103E84000969AF /* RulerToolLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolLandscape.h; path = Classes/LandscapeEditor/RulerToolLandscape.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
-		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1103,10 +1080,10 @@
 				5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */,
 				5C190CA015AEC704005731F8 /* Info.plist */,
 				5C190C9E15AEC6F9005731F8 /* Data */,
+				E89DFD2F163ED2A900B51706 /* DataQt */,
 				FB61758D0F0FDA4BA867C3D5 /* Sources */,
 				E89DFBE4163ECBB800B51706 /* GeneratedQt */,
 				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
-				C90923F6A2E654060C34742C /* Source [bundle data] */,
 				5C190C9615AEC58B005731F8 /* Products */,
 			);
 			name = TemplateProjectQt;
@@ -1884,15 +1861,6 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
-		C90923F6A2E654060C34742C /* Source [bundle data] */ = {
-			isa = PBXGroup;
-			children = (
-				E89DFD2F163ED2A900B51706 /* DataQt */,
-				FAC1F4E071D49CE850E70770 /* Data/ */,
-			);
-			name = "Source [bundle data]";
-			sourceTree = "<group>";
-		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
@@ -1906,7 +1874,6 @@
 				E89DFCE9163ED1F300B51706 /* PointerHolder_moc.cpp */,
 				E89DFCEA163ED1F300B51706 /* QtIcons_qrc.cpp */,
 				E89DFCEB163ED1F300B51706 /* QtMainWindowHandler_moc.cpp */,
-				E89DFCEC163ED1F300B51706 /* QtPropertyBrowser */,
 				E89DFCF8163ED1F300B51706 /* QtUtils_moc.cpp */,
 				E89DFCF9163ED1F300B51706 /* SceneData_moc.cpp */,
 				E89DFCFA163ED1F300B51706 /* SceneDataManager_moc.cpp */,
@@ -1967,25 +1934,6 @@
 				E89DFC1C163ECCEA00B51706 /* qtvariantproperty.h */,
 			);
 			name = QtPropertyBrowser;
-			sourceTree = "<group>";
-		};
-		E89DFCEC163ED1F300B51706 /* QtPropertyBrowser */ = {
-			isa = PBXGroup;
-			children = (
-				E89DFCED163ED1F300B51706 /* qtbuttonpropertybrowser_moc.cpp */,
-				E89DFCEE163ED1F300B51706 /* qteditorfactory_moc.cpp */,
-				E89DFCEF163ED1F300B51706 /* qteditorfactory_moca.cpp */,
-				E89DFCF0163ED1F300B51706 /* qtgroupboxpropertybrowser_moc.cpp */,
-				E89DFCF1163ED1F300B51706 /* qtpropertybrowser_moc.cpp */,
-				E89DFCF2163ED1F300B51706 /* qtpropertybrowserutils_p_moc.cpp */,
-				E89DFCF3163ED1F300B51706 /* qtpropertymanager_moc.cpp */,
-				E89DFCF4163ED1F300B51706 /* qtpropertymanager_moca.cpp */,
-				E89DFCF5163ED1F300B51706 /* qttreepropertybrowser_moc.cpp */,
-				E89DFCF6163ED1F300B51706 /* qttreepropertybrowser_moca.cpp */,
-				E89DFCF7163ED1F300B51706 /* qtvariantproperty_moc.cpp */,
-			);
-			name = QtPropertyBrowser;
-			path = GeneratedQt/QtPropertyBrowser;
 			sourceTree = "<group>";
 		};
 		E89DFCFE163ED1F300B51706 /* TextureDialog */ = {
@@ -2488,17 +2436,6 @@
 				E89DFD12163ED1F300B51706 /* PointerHolder_moc.cpp in Build Sources */,
 				E89DFD13163ED1F300B51706 /* QtIcons_qrc.cpp in Build Sources */,
 				E89DFD14163ED1F300B51706 /* QtMainWindowHandler_moc.cpp in Build Sources */,
-				E89DFD15163ED1F300B51706 /* qtbuttonpropertybrowser_moc.cpp in Build Sources */,
-				E89DFD16163ED1F300B51706 /* qteditorfactory_moc.cpp in Build Sources */,
-				E89DFD17163ED1F300B51706 /* qteditorfactory_moca.cpp in Build Sources */,
-				E89DFD18163ED1F300B51706 /* qtgroupboxpropertybrowser_moc.cpp in Build Sources */,
-				E89DFD19163ED1F300B51706 /* qtpropertybrowser_moc.cpp in Build Sources */,
-				E89DFD1A163ED1F300B51706 /* qtpropertybrowserutils_p_moc.cpp in Build Sources */,
-				E89DFD1B163ED1F300B51706 /* qtpropertymanager_moc.cpp in Build Sources */,
-				E89DFD1C163ED1F300B51706 /* qtpropertymanager_moca.cpp in Build Sources */,
-				E89DFD1D163ED1F300B51706 /* qttreepropertybrowser_moc.cpp in Build Sources */,
-				E89DFD1E163ED1F300B51706 /* qttreepropertybrowser_moca.cpp in Build Sources */,
-				E89DFD1F163ED1F300B51706 /* qtvariantproperty_moc.cpp in Build Sources */,
 				E89DFD20163ED1F300B51706 /* QtUtils_moc.cpp in Build Sources */,
 				E89DFD21163ED1F300B51706 /* SceneData_moc.cpp in Build Sources */,
 				E89DFD22163ED1F300B51706 /* SceneDataManager_moc.cpp in Build Sources */,
@@ -2575,8 +2512,8 @@
 					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
-					./GeneratedQt,
 					./Classes/Qt,
+					./GeneratedQt,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
@@ -2680,8 +2617,8 @@
 					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
-					./GeneratedQt,
 					./Classes/Qt,
+					./GeneratedQt,
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
