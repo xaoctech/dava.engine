@@ -559,7 +559,43 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 	{
 		String::size_type posPng = pathForValidation.find(".png");
 		String::size_type posHeightmap = pathForValidation.find(Heightmap::FileExtension());
-		return ((String::npos != posPng) || (String::npos != posHeightmap));
+        
+        pathIsCorrect = ((String::npos != posPng) || (String::npos != posHeightmap));
+        if(!pathIsCorrect)
+        {
+            errorsLog.insert(Format("Heightmap path %s is wrong", pathForValidation.c_str()));
+            return false;
+        }
+        
+        Heightmap *heightmap = new Heightmap();
+        if(String::npos != posPng)
+        {
+            Image *image = CreateTopLevelImage(pathForValidation);
+            pathIsCorrect = heightmap->BuildFromImage(image);
+            SafeRelease(image);
+        }
+        else
+        {
+            pathIsCorrect = heightmap->Load(pathForValidation);
+        }
+
+        
+        if(!pathIsCorrect)
+        {
+            SafeRelease(heightmap);
+            errorsLog.insert(Format("Can't load Heightmap from path %s", pathForValidation.c_str()));
+            return false;
+        }
+        
+        
+        pathIsCorrect = IsPowerOf2(heightmap->Size() - 1);
+        if(!pathIsCorrect)
+        {
+            errorsLog.insert(Format("Heightmap %s has wrong size", pathForValidation.c_str()));
+        }
+        
+        SafeRelease(heightmap);
+		return pathIsCorrect;
 	}
 	else
 	{
