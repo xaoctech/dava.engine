@@ -97,7 +97,13 @@ void ProcessRecourcePacker()
         printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
         return;
     }
-    PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2]);
+
+#if defined (__DAVAENGINE_MACOS__)
+	String toolName = String("/PVRTexToolCL");
+#elif defined (__DAVAENGINE_WIN32__)
+	String toolName = String("/PVRTexToolCL.exe");
+#endif
+    PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2] + toolName);
 
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
