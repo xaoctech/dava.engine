@@ -1,6 +1,8 @@
 #include "PVRConverter.h"
 #include "Render/TextureDescriptor.h"
 
+#include "../Qt/QtUtils.h"
+
 using namespace DAVA;
 
 PVRConverter::PVRConverter()
@@ -82,7 +84,7 @@ String PVRConverter::GetPVRToolOutput(const DAVA::String &inputPVR)
 void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
 {
 	pvrTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	pvrTexToolPathname = FileSystem::RealPath(pvrTexToolPathname);
+	pvrTexToolPathname = PathnameToDAVAStyle(pvrTexToolPathname);
 
 	if(!FileSystem::Instance()->IsFile(pvrTexToolPathname))
 	{
@@ -94,7 +96,7 @@ void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
 void PVRConverter::SetDXTTexTool(const DAVA::String &textToolPathname)
 {
 	dxtTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	dxtTexToolPathname = FileSystem::RealPath(dxtTexToolPathname);
+	dxtTexToolPathname = PathnameToDAVAStyle(dxtTexToolPathname);
 
 	if(!FileSystem::Instance()->IsFile(dxtTexToolPathname))
 	{

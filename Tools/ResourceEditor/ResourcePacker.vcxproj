@@ -57,7 +57,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;Classes/Qt;GeneratedQt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CONSOLE;_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -83,7 +83,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);Classes/Qt;GeneratedQt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CONSOLE;_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -252,9 +252,9 @@
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
+    <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ViewCommands.cpp" />
-    <ClCompile Include="Classes\davaglwidget.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
@@ -268,19 +268,38 @@
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
+    <ClCompile Include="Classes\Qt\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\FileSelectionModel.cpp" />
     <ClCompile Include="Classes\Qt\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\GraphModel.cpp" />
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
+    <ClCompile Include="Classes\Qt\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp" />
     <ClCompile Include="Classes\Qt\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureCache.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertor.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertorWork.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListModel.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureProperties.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
@@ -345,7 +364,6 @@
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
-    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
@@ -354,16 +372,31 @@
     <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\SpritesPacker.cpp" />
-    <ClCompile Include="mainwindow.cpp" />
-    <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp" />
-    <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_GraphModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_mainwindow.cpp" />
-    <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp" />
-    <ClCompile Include="QtBuildTool\moc_SceneData.cpp" />
-    <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp" />
-    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp" />
+    <ClCompile Include="GeneratedQt\davaglwidget_moc.cpp" />
+    <ClCompile Include="GeneratedQt\FileSelectionModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GraphItem_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GraphModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\GUIState_moc.cpp" />
+    <ClCompile Include="GeneratedQt\LibraryModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="GeneratedQt\PointerHolder_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtIcons_qrc.cpp" />
+    <ClCompile Include="GeneratedQt\QtMainWindowHandler_moc.cpp" />
+    <ClCompile Include="GeneratedQt\QtUtils_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneDataManager_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneData_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneGraphItem_moc.cpp" />
+    <ClCompile Include="GeneratedQt\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\ScenePreviewDialog_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureList_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
+    <ClCompile Include="GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
     <ClCompile Include="Win32Specific\ResourcePacker.cpp" />
     <ClCompile Include="Win32Specific\stdafx.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
@@ -600,11 +633,11 @@
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
+    <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\Commands\ViewCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
-    <ClInclude Include="Classes\davaglwidget.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
@@ -619,19 +652,38 @@
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
+    <ClInclude Include="Classes\Qt\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\FileSelectionModel.h" />
     <ClInclude Include="Classes\Qt\GraphItem.h" />
     <ClInclude Include="Classes\Qt\GraphModel.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
+    <ClInclude Include="Classes\Qt\mainwindow.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h" />
     <ClInclude Include="Classes\Qt\QtUtils.h" />
     <ClInclude Include="Classes\Qt\SceneData.h" />
     <ClInclude Include="Classes\Qt\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureCache.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertor.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertorWork.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListModel.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureScrollArea.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
@@ -697,7 +749,6 @@
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
-    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
@@ -706,7 +757,9 @@
     <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
-    <ClInclude Include="mainwindow.h" />
+    <ClInclude Include="GeneratedQt\ui_davaglwidget.h" />
+    <ClInclude Include="GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="GeneratedQt\ui_texturedialog.h" />
     <ClInclude Include="Win32Specific\stdafx.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
