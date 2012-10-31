@@ -700,19 +700,19 @@ TextureDescriptor * TexturePacker::CreateDescriptor()
         descriptor->generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
         if(CommandLineParser::Instance()->IsFlagSet("--pvr"))
         {
-            descriptor->textureFileFormat = Texture::PVR_FILE;
+            descriptor->textureFileFormat = PVR_FILE;
 
             descriptor->pvrCompression.format = DetectPixelFormatFromFlags();
         }
         else if(CommandLineParser::Instance()->IsFlagSet("--dxt"))
         {
-            descriptor->textureFileFormat = Texture::DXT_FILE;
+            descriptor->textureFileFormat = DXT_FILE;
             
             descriptor->dxtCompression.format = DetectPixelFormatFromFlags();
         }
         else
         {
-            descriptor->textureFileFormat = Texture::PNG_FILE;
+            descriptor->textureFileFormat = PNG_FILE;
         }
     }
     

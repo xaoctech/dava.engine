@@ -118,7 +118,7 @@ public:
     
     void ReloadTextures(int32 asFile);
     
-    static bool IsTextureChanged(const String &texturePathname);
+    static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
     
     void FindTexturesForCompression();
     
@@ -143,7 +143,9 @@ protected:
 
     bool NodeRemovingDisabled(SceneNode *node);
     
-    bool WasTextureChanged(Texture *texture);
+    void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
+    
+    bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
     bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);

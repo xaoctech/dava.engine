@@ -15,6 +15,6 @@ CommandReloadTextures::CommandReloadTextures()
 
 void CommandReloadTextures::Execute()
 {
-    SceneValidator::Instance()->ReloadTextures((Texture::TextureFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+    SceneValidator::Instance()->ReloadTextures((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 

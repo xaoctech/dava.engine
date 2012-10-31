@@ -54,18 +54,18 @@ void SceneExporter::SetExportingFormat(const String &newFormat)
         format = "." + format;
     }
     
-    exportFormat = Texture::NOT_FILE;
+    exportFormat = NOT_FILE;
     if(0 == CompareCaseInsensitive(format, ".png"))
     {
-        exportFormat = Texture::PNG_FILE;
+        exportFormat = PNG_FILE;
     }
     else if(0 == CompareCaseInsensitive(format, ".pvr"))
     {
-        exportFormat = Texture::PVR_FILE;
+        exportFormat = PVR_FILE;
     }
     else if(0 == CompareCaseInsensitive(format, ".dxt"))
     {
-        exportFormat = Texture::DXT_FILE;
+        exportFormat = DXT_FILE;
     }
 }
 
@@ -312,7 +312,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
             SafeRelease(image);
             
             TextureDescriptor *descriptor = new TextureDescriptor();
-            if(exportFormat == Texture::PVR_FILE)
+            if(exportFormat == PVR_FILE)
             {
                 descriptor->pvrCompression.format = FORMAT_PVR4;
             }
@@ -461,7 +461,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
     const char8 *modificationDate = File::GetModificationDate(GetExportedTextureName(texturePathname));
     
     String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-    bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname);
+    bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname, exportFormat);
     if(needToConvert || (NULL == modificationDate))
     {
         //TODO: convert to pvr/dxt
@@ -469,7 +469,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
         
         TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
         DVASSERT(descriptor && "Decriptors mast be created for all textures");
-        if(exportFormat == Texture::PVR_FILE)
+        if(exportFormat == PVR_FILE)
         {
             PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
         }
@@ -496,15 +496,15 @@ String SceneExporter::GetExportedTextureName(const String &pathname)
     
     switch (exportFormat)
     {
-        case Texture::PNG_FILE:
+        case PNG_FILE:
             exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".png"));
             break;
 
-        case Texture::PVR_FILE:
+        case PVR_FILE:
             exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".pvr"));
             break;
 
-        case Texture::DXT_FILE:
+        case DXT_FILE:
             exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".dxt"));
             break;
 

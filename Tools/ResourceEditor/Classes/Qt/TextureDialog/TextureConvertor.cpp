@@ -90,7 +90,7 @@ QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 
 		if(!outputPath.empty())
 		{
-			item->descriptor.UpdateDateAndCrc();
+			item->descriptor.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
 			item->descriptor.Save();
 
 			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
