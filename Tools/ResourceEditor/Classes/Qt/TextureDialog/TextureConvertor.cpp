@@ -130,10 +130,7 @@ QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 				}
 			}
 
-			for(unsigned int i = 0; i < davaImages.size(); ++i)
-			{
-				DAVA::SafeRelease(davaImages[i]);
-			}
+            DAVA::SafeRelease(davaImages.begin(), davaImages.end());
 		}
 	}
 
