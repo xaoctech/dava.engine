@@ -467,7 +467,7 @@ void SceneValidator::CompressTextures(const List<DAVA::Texture *> texturesForCom
 	{
 		Texture *texture = *it;
         //TODO: compress texture
-        TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texture->GetPathname());
+        TextureDescriptor *descriptor = texture->CreateDescriptor();
         if(descriptor)
         {
             if(fileFormat == PVR_FILE)
@@ -710,7 +710,7 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFo
 {
     bool isChanged = false;
     
-    TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
         isChanged = descriptor->IsSourceValidForFormat(fileFormat);
