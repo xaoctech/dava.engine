@@ -412,10 +412,7 @@ void PropertyList::ReleaseProperties()
 {
 	propsMap.clear();
     
-    for (int32 i = 0; i < (int32)props.size(); ++i)
-    {
-        SafeRelease(props[i]);
-    }
+    SafeRelease(props.begin(), props.end());
     props.clear();
     
     propsList->Refresh();

@@ -91,16 +91,10 @@ MaterialEditor::~MaterialEditor()
     SafeRelease(btnSetupFog);
     SafeRelease(line);
 
-    
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+    SafeRelease(materials.begin(), materials.end());
     materials.clear();
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
+
+    SafeRelease(workingNodeMaterials.begin(), workingNodeMaterials.end());
     workingNodeMaterials.clear();
 
     SafeRelease(workingMaterial);
@@ -117,10 +111,7 @@ MaterialEditor::~MaterialEditor()
 
 void MaterialEditor::UpdateInternalMaterialsVector()
 {
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+    SafeRelease(materials.begin(), materials.end());
     materials.clear();
     
     workingScene->GetDataNodes(materials);
@@ -133,11 +124,7 @@ void MaterialEditor::UpdateInternalMaterialsVector()
 
 void MaterialEditor::UpdateNodeMaterialsVector()
 {
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
-
+    SafeRelease(workingNodeMaterials.begin(), workingNodeMaterials.end());
     workingNodeMaterials.clear();
     if(workingSceneNode)
     {
@@ -172,15 +159,9 @@ void MaterialEditor::WillAppear()
 
 void MaterialEditor::WillDisappear()
 {
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+    SafeRelease(materials.begin(), materials.end());
     materials.clear();
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
+    SafeRelease(workingNodeMaterials.begin(), workingNodeMaterials.end());
     workingNodeMaterials.clear();
     
     SelectMaterial(-1);
