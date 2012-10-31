@@ -41,9 +41,11 @@ namespace DAVA
 void TextureDescriptor::Compression::Clear()
 {
     format = FORMAT_INVALID;
-    baseMipMapLevel = 0;
     Memset(modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
     Memset(crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+
+    compressToWidth = 0;
+    compressToHeight = 0;
 }
     
     
@@ -305,8 +307,9 @@ void TextureDescriptor::ReadCompression(File *file, Compression &compression)
     int8 format;
     file->Read(&format, sizeof(format));
     compression.format = (PixelFormat)format;
-    
-    file->Read(&compression.baseMipMapLevel, sizeof(compression.baseMipMapLevel));
+
+    file->Read(&compression.compressToWidth, sizeof(compression.compressToWidth));
+    file->Read(&compression.compressToHeight, sizeof(compression.compressToHeight));
     
     file->Read(compression.modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
     
@@ -320,7 +323,8 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
 {
     int8 format = compression.format;
     file->Write(&format, sizeof(format));
-    file->Write(&compression.baseMipMapLevel, sizeof(compression.baseMipMapLevel));
+    file->Write(&compression.compressToWidth, sizeof(compression.compressToWidth));
+    file->Write(&compression.compressToHeight, sizeof(compression.compressToHeight));
     
     //date
     file->Write(compression.modificationDate, DATE_BUFFER_SIZE * sizeof(char8));

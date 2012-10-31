@@ -143,11 +143,15 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 		{
 			// pvr
 			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
-			propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
+//			propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
+//			propertiesInt->setValue(intPVRWidth, curTextureDescriptor->pvrCompression.compressToWidth);
+//			propertiesInt->setValue(intPVRHeight, curTextureDescriptor->pvrCompression.compressToHeight);
 
 			// dxt
 			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
-			propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
+//			propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
+//			propertiesInt->setValue(intDXTWidth, curTextureDescriptor->dxtCompression.compressToWidth);
+//			propertiesInt->setValue(intDXTHeight, curTextureDescriptor->dxtCompression.compressToHeight);
 
 			// mipmap
 			propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
@@ -192,14 +196,32 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			curTextureDescriptor->dxtCompression.format = newDXTFormat;
 			emit formatChangedDXT(newDXTFormat);
 		}
-		else if(property == intBasePVRMipmapLevel)
-		{
-			curTextureDescriptor->pvrCompression.baseMipMapLevel = propertiesInt->value(intBasePVRMipmapLevel);
-		}
-		else if(property == intBaseDXTMipmapLevel)
-		{
-			curTextureDescriptor->dxtCompression.baseMipMapLevel = propertiesInt->value(intBaseDXTMipmapLevel);
-		}
+//		else if(property == intBasePVRMipmapLevel)
+//		{
+//			curTextureDescriptor->pvrCompression.baseMipMapLevel = propertiesInt->value(intBasePVRMipmapLevel);
+//		}
+//		else if(property == intBaseDXTMipmapLevel)
+//		{
+//			curTextureDescriptor->dxtCompression.baseMipMapLevel = propertiesInt->value(intBaseDXTMipmapLevel);
+//		}
+
+//        else if(property == intPVRWidth)
+//		{
+//			curTextureDescriptor->pvrCompression.compressToWidth = propertiesInt->value(intPVRWidth);
+//		}
+//        else if(property == intPVRHeight)
+//		{
+//			curTextureDescriptor->pvrCompression.compressToHeight = propertiesInt->value(intPVRHeight);
+//		}
+//        else if(property == intDXTWidth)
+//		{
+//			curTextureDescriptor->dxtCompression.compressToWidth = propertiesInt->value(intDXTWidth);
+//		}
+//        else if(property == intDXTHeight)
+//		{
+//			curTextureDescriptor->dxtCompression.compressToHeight = propertiesInt->value(intDXTHeight);
+//		}
+
 		else if(property == boolGenerateMipMaps)
 		{
 			curTextureDescriptor->generateMipMaps = (int) propertiesBool->value(boolGenerateMipMaps);
@@ -213,6 +235,7 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			curTextureDescriptor->wrapModeT = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeT->valueText());
 		}
 
+        //TODO: What this?
 		curTextureDescriptor;
 	}
 }
