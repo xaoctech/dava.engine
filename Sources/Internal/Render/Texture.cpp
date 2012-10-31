@@ -465,34 +465,6 @@ void Texture::GeneratePixelesation()
 }
     
 
-
-    
-void Texture::UsePvrMipmaps()
-{
-	RenderManager::Instance()->LockNonMain();
-#if defined(__DAVAENGINE_OPENGL__)
-	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-	RenderManager::Instance()->HWglBindTexture(id);
-
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE));
-	
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	
-	if (saveId != 0)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveId);
-	}
-
-#elif defined(__DAVAENGINE_DIRECTX9__)
-
-
-
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-    RenderManager::Instance()->UnlockNonMain();
-
-}
-
 Texture * Texture::CreateFromImage(const String &pathname, DAVA::TextureDescriptor *descriptor)
 {
     File *file = File::Create(pathname, File::OPEN | File::READ);
