@@ -178,8 +178,6 @@ public:
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
-	void UsePvrMipmaps();
-        
     /**
         \brief This function can enable / disable autosave for render targets.
         It's actual only for DX9 and for other systems is does nothing
