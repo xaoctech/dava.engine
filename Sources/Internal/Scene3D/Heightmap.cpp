@@ -54,7 +54,7 @@ void Heightmap::ReleaseData()
     size = 0;
 }
     
-bool Heightmap::BuildFromImage(DAVA::Image *image)
+void Heightmap::BuildFromImage(DAVA::Image *image)
 {
     DVASSERT(image);
     if(size != image->width)
@@ -62,6 +62,7 @@ bool Heightmap::BuildFromImage(DAVA::Image *image)
         ReleaseData();
         AllocateData(image->width);
     }
+
     
     if(FORMAT_A16 == image->format)
     {
@@ -88,9 +89,7 @@ bool Heightmap::BuildFromImage(DAVA::Image *image)
     else 
     {
         Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
-        return false;
     }
-    return true;
 }
 
 void Heightmap::SaveToImage(const String & filename)
