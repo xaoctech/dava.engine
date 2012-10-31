@@ -63,13 +63,17 @@ public:
     {
         PixelFormat format;
         int8 baseMipMapLevel;
+        mutable char8 modificationDate[DATE_BUFFER_SIZE];
+        mutable uint8 crc[MD5::DIGEST_SIZE];
+        
+        void Clear();
     };
 
 public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void UpdateDateAndCrc() const;
+    void UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const;
 
     bool Load(const String &filePathname);
 
@@ -90,7 +94,13 @@ public:
     static String GetDescriptorPathname(const String &texturePathname);
     static String GetDescriptorExtension();
     
+    bool IsSourceValidForFormat(ImageFileFormat fileFormat);
+    
+    
 protected:
+    
+    const Compression * GetCompressionParams(ImageFileFormat fileFormat) const;
+    
     
     void LoadNotCompressed(File *file);
     void LoadCompressed(File *file);
@@ -105,8 +115,6 @@ protected:
     
 public:
     
-    mutable char8 modificationDate[DATE_BUFFER_SIZE];
-    mutable uint8 crc[MD5::DIGEST_SIZE];
 
     int8 wrapModeS;
     int8 wrapModeT;

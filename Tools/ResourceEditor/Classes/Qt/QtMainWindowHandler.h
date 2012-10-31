@@ -111,7 +111,7 @@ private:
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
-    QAction *textureFileFormatActions[DAVA::Texture::FILE_FORMAT_COUNT];
+    QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
 
     
     QMenu *menuResentScenes;

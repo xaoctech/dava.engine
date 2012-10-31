@@ -104,7 +104,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-Texture::TextureFileFormat Texture::defaultFileFormat = NOT_FILE;
+ImageFileFormat Texture::defaultFileFormat = NOT_FILE;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -688,7 +688,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
-    TextureFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (TextureFileFormat)descriptor->textureFileFormat : defaultFileFormat;
+    ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     String imagePathname = GetPathnameForFileFormat(pathName, formatForLoading);
     texture = CreateFromImage(imagePathname, descriptor);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
@@ -711,7 +711,7 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
     return descriptor;
 }
     
-void Texture::ReloadAs(DAVA::Texture::TextureFileFormat fileFormat)
+void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat)
 {
     ReleaseTextureData();
     
@@ -1436,7 +1436,7 @@ GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     
-String Texture::GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat)
+String Texture::GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat)
 {
     String imagePathname;
     switch (fileFormat)
@@ -1459,12 +1459,12 @@ String Texture::GetPathnameForFileFormat(const String &sourcePathname, TextureFi
     return imagePathname;
 }
     
-void Texture::SetDefaultFileFormat(TextureFileFormat fileFormat)
+void Texture::SetDefaultFileFormat(ImageFileFormat fileFormat)
 {
     defaultFileFormat = fileFormat;
 }
 
-Texture::TextureFileFormat Texture::GetDefaultFileFormat()
+ImageFileFormat Texture::GetDefaultFileFormat()
 {
     return defaultFileFormat;
 }

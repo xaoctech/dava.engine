@@ -58,16 +58,6 @@ public:
 		WRAP_REPEAT,
 	};
 	
-    enum TextureFileFormat
-    {
-        NOT_FILE = -1,
-        
-        PNG_FILE = 0,
-        PVR_FILE,
-        DXT_FILE,
-        
-        FILE_FORMAT_COUNT
-    };
 
 	enum DepthFormat
 	{
@@ -223,7 +213,7 @@ public:
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
     static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
-    void ReloadAs(TextureFileFormat fileFormat);
+    void ReloadAs(ImageFileFormat fileFormat);
 
 
 public:							// properties for fast access
@@ -287,8 +277,8 @@ public:							// properties for fast access
     void GenerateID();
     
     
-    static void SetDefaultFileFormat(TextureFileFormat fileFormat);
-    static TextureFileFormat GetDefaultFileFormat();
+    static void SetDefaultFileFormat(ImageFileFormat fileFormat);
+    static ImageFileFormat GetDefaultFileFormat();
     
 private:
 	static Map<String, Texture*> textureMap;	
@@ -298,7 +288,7 @@ private:
 	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
-    static String GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat);
+    static String GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat);
     
     bool LoadFromImage(File *file, TextureDescriptor *descriptor);
     
@@ -320,7 +310,7 @@ private:
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    static TextureFileFormat defaultFileFormat;
+    static ImageFileFormat defaultFileFormat;
 };
     
 // Implementation of inline functions

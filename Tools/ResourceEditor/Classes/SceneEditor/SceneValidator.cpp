@@ -410,7 +410,7 @@ void SceneValidator::ReloadTextures(int32 asFile)
 		Texture *texture = it->second;
         if(!texture->isRenderTarget && IsPathCorrectForProject(texture->GetPathname()))
         {
-            texture->ReloadAs((Texture::TextureFileFormat)asFile);
+            texture->ReloadAs((ImageFileFormat)asFile);
         }
 	}
     
@@ -435,18 +435,33 @@ void SceneValidator::ReloadTextures(int32 asFile)
 
 void SceneValidator::FindTexturesForCompression()
 {
-    List<Texture *>texturesForCompression;
+    List<Texture *>texturesForPVRCompression;
+    List<Texture *>texturesForDXTCompression;
     
     const Map<String, Texture*> textureMap = Texture::GetTextureMap();
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *texture = it->second;
-        if(WasTextureChanged(texture))
+        if(WasTextureChanged(texture, PVR_FILE))
         {
-            texturesForCompression.push_back(SafeRetain(texture));
+            texturesForPVRCompression.push_back(SafeRetain(texture));
         }
+        else if(WasTextureChanged(texture, DXT_FILE))
+        {
+            texturesForDXTCompression.push_back(SafeRetain(texture));
+        }
+
 	}
 
+    CompressTextures(texturesForPVRCompression, PVR_FILE);
+    CompressTextures(texturesForDXTCompression, DXT_FILE);
+    
+    SafeRelease(texturesForPVRCompression.begin(), texturesForPVRCompression.end());
+    SafeRelease(texturesForDXTCompression.begin(), texturesForDXTCompression.end());
+}
+
+void SceneValidator::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
+{
     List<Texture *>::const_iterator endIt = texturesForCompression.end();
 	for(List<Texture *>::const_iterator it = texturesForCompression.begin(); it != endIt; ++it)
 	{
@@ -455,23 +470,29 @@ void SceneValidator::FindTexturesForCompression()
         TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texture->GetPathname());
         if(descriptor)
         {
-            PVRConverter::Instance()->ConvertPngToPvr(descriptor->GetSourceTexturePathname(), *descriptor);
-			descriptor->UpdateDateAndCrc();
+            if(fileFormat == PVR_FILE)
+            {
+                PVRConverter::Instance()->ConvertPngToPvr(descriptor->GetSourceTexturePathname(), *descriptor);
+            }
+            else if(fileFormat == DXT_FILE)
+            {
+                    
+            }
+            
+			descriptor->UpdateDateAndCrcForFormat(fileFormat);
 			descriptor->Save();
             SafeRelease(descriptor);
         }
-        
-        SafeRelease(texture);
 	}
-    texturesForCompression.clear();
 }
 
-bool SceneValidator::WasTextureChanged(Texture *texture)
+
+bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
 {
     if(!texture->isRenderTarget)
     {
         String texturePathname = texture->GetPathname();
-        return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname));
+        return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
     }
     
     return false;
@@ -615,7 +636,7 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
 	
 		TextureDescriptor *descriptor = new TextureDescriptor();
-		descriptor->textureFileFormat = Texture::PNG_FILE;
+		descriptor->textureFileFormat = PNG_FILE;
 		descriptor->Save(descriptorPathname);
 	}
 }
@@ -685,27 +706,18 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
 }
 
 
-bool SceneValidator::IsTextureChanged(const String &texturePathname)
+bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat)
 {
+    bool isChanged = false;
+    
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
     if(descriptor)
     {
-        String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        const char8 *modificationDate = File::GetModificationDate(sourceTexturePathname);
-        
-        if(modificationDate && (0 != CompareCaseInsensitive(String(modificationDate), String(descriptor->modificationDate))))
-        {
-            uint8 crc[MD5::DIGEST_SIZE];
-            MD5::ForFile(sourceTexturePathname, crc);
-            
-            int32 cmpResult = Memcmp(crc, descriptor->crc, MD5::DIGEST_SIZE * sizeof(uint8));
-            SafeRelease(descriptor);
-            return (0 != cmpResult);
-        }
-            
+        isChanged = descriptor->IsSourceValidForFormat(fileFormat);
         SafeRelease(descriptor);
     }
-    return false;
+
+    return isChanged;
 }
 
 bool SceneValidator::IsTextureDescriptorPath(const String &path)
