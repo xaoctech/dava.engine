@@ -137,7 +137,7 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 		setEnabled(true);
 
 		// load texture properties
-		curTextureDescriptor = DAVA::Texture::CreateDescriptorForTexture(curTexture->GetPathname());
+		curTextureDescriptor = curTexture->CreateDescriptor();
 
 		// set loaded descriptor to current properties
 		{

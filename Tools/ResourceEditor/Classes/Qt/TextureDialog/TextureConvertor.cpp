@@ -71,7 +71,7 @@ QImage TextureConvertor::loadOriginalThread(const DAVA::Texture *texture)
 
 	if(NULL != texture)
 	{
-		DAVA::TextureDescriptor *descriptor = DAVA::Texture::CreateDescriptorForTexture(texture->GetPathname());
+		DAVA::TextureDescriptor *descriptor = texture->CreateDescriptor();
 		img = QImage(descriptor->GetSourceTexturePathname().c_str());
 		delete descriptor;
 	}

@@ -171,10 +171,6 @@ public:
 	inline int32 GetWidth() const { return width; }
 	inline int32 GetHeight() const { return height; }
 	
-//	static void EnableMipmapGeneration();
-//	static void DisableMipmapGeneration();
-//    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
-
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
@@ -212,7 +208,7 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
-    static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
+    TextureDescriptor * CreateDescriptor() const;
     void ReloadAs(ImageFileFormat fileFormat);
 
 
@@ -295,7 +291,6 @@ private:
     
     
 	static PixelFormat defaultRGBAFormat;
-//	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
     

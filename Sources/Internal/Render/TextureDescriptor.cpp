@@ -62,6 +62,22 @@ TextureDescriptor::~TextureDescriptor()
 
 }
 
+TextureDescriptor *TextureDescriptor::CreateFromFile(const String &filePathname)
+{
+    String descriptorPathname = GetDescriptorPathname(filePathname);
+    TextureDescriptor *descriptor = new TextureDescriptor();
+    bool loaded = descriptor->Load(descriptorPathname);
+    if(!loaded)
+    {
+        Logger::Error("[TextureDescriptor::CreateFromFile(]: there are no descriptor file (%s).", descriptorPathname.c_str());
+        SafeRelease(descriptor);
+        return NULL;
+    }
+    
+    return descriptor;
+}
+    
+    
 void TextureDescriptor::SetDefaultValues()
 {
     wrapModeS = Texture::WRAP_REPEAT;
@@ -113,6 +129,16 @@ bool TextureDescriptor::Load(const String &filePathname)
     
     int32 signature;
     file->Read(&signature, sizeof(signature));
+
+    int8 version = 0;
+    file->Read(&version, sizeof(version));
+    if(version != CURRENT_VERSION)
+    {
+        Logger::Error("[TextureDescriptor::Load] Descriptor has invalid version (%d)", version);
+        SafeRelease(file);
+        return false;
+    }
+    
     
     if(COMPRESSED_FILE == signature)
     {
@@ -152,6 +178,9 @@ void TextureDescriptor::Save(const String &filePathname) const
     int32 signature = NOTCOMPRESSED_FILE;
     file->Write(&signature, sizeof(signature));
     
+    int8 version = CURRENT_VERSION;
+    file->Write(&version, sizeof(version));
+    
     WriteGeneralSettings(file);
     
     //Compression
@@ -174,6 +203,9 @@ void TextureDescriptor::ExportAndSplice(const String &filePathname, const String
     int32 signature = COMPRESSED_FILE;
     file->Write(&signature, sizeof(signature));
     
+    int8 version = CURRENT_VERSION;
+    file->Write(&version, sizeof(version));
+
     WriteGeneralSettings(file);
     file->Write(&textureFileFormat, sizeof(textureFileFormat));
     
@@ -209,6 +241,9 @@ void TextureDescriptor::Export(const String &filePathname)
 
     int32 signature = COMPRESSED_FILE;
     file->Write(&signature, sizeof(signature));
+    
+    int8 version = CURRENT_VERSION;
+    file->Write(&version, sizeof(version));
 
     WriteGeneralSettings(file);
     file->Write(&textureFileFormat, sizeof(textureFileFormat));
@@ -351,9 +386,9 @@ bool TextureDescriptor::IsSourceValidForFormat(ImageFileFormat fileFormat)
     
 const TextureDescriptor::Compression * TextureDescriptor::GetCompressionParams(ImageFileFormat fileFormat) const
 {
-    DVASSERT((fileFormat == PNG_FILE) || (fileFormat == DXT_FILE));
+    DVASSERT((fileFormat == PVR_FILE) || (fileFormat == DXT_FILE));
     
-    if(fileFormat == PNG_FILE)
+    if(fileFormat == PVR_FILE)
     {
         return &pvrCompression;
     }

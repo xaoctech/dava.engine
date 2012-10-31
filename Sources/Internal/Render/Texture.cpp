@@ -652,7 +652,7 @@ Texture * Texture::PureCreate(const String & pathName)
     Texture * texture = Texture::Get(pathName);
 	if (texture) return texture;
     
-    TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathName);
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
@@ -697,18 +697,14 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 }
 
 	
-TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
+TextureDescriptor * Texture::CreateDescriptor() const
 {
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
-    TextureDescriptor *descriptor = new TextureDescriptor();
-    bool loaded = descriptor->Load(descriptorPathname);
-    if(!loaded)
+    if(!isRenderTarget)
     {
-        Logger::Error("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s).", descriptorPathname.c_str());
-        SafeRelease(descriptor);
-        return NULL;
+        return TextureDescriptor::CreateFromFile(relativePathname);
     }
-    return descriptor;
+
+    return NULL;
 }
     
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat)
@@ -717,7 +713,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat)
     
     String imagePathname = GetPathnameForFileFormat(relativePathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
-    TextureDescriptor *descriptor = CreateDescriptorForTexture(relativePathname);
+    TextureDescriptor *descriptor = CreateDescriptor();
 
     bool loaded = false;
     if(descriptor && file)
