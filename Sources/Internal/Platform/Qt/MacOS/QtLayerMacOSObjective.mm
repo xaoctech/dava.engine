@@ -111,6 +111,17 @@ void QtLayerMacOS::LockKeyboardInput(bool locked)
     [openGLView LockKeyboardInput: locked];
 }
 
+void * QtLayerMacOS::CreateAutoreleasePool()
+{
+    NSAutoreleasePool * autoreleasePool = [[NSAutoreleasePool alloc] init];
+    return autoreleasePool;
+}
+
+void QtLayerMacOS::ReleaseAutoreleasePool(void *pool)
+{
+    NSAutoreleasePool * autoreleasePool = (NSAutoreleasePool *)pool;
+    [autoreleasePool release];
+}
 
 
 };
