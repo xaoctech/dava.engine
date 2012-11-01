@@ -621,8 +621,12 @@ Texture * Texture::CreateFromFile(const String & pathName)
 
 Texture * Texture::PureCreate(const String & pathName)
 {
-    Texture * texture = Texture::Get(pathName);
+    //TODO::temporary workaround to optimize old scenes loading
+    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(pathName, TextureDescriptor::GetDescriptorExtension());
+    Texture * texture = Texture::Get(descriptorPathname);
+//    Texture * texture = Texture::Get(pathName);
 	if (texture) return texture;
+    //ENDOF TODO
     
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathName);
     if(!descriptor) return NULL;
