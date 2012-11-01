@@ -270,7 +270,7 @@ void TextureDialog::updateInfoConverted()
 			{
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->pvrCompression.format);
 				datasize = curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBytes(curDescriptor->pvrCompression.format);
-				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), Texture::PVR_FILE).c_str()).size();
+				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE).c_str()).size();
 			}
 			break;
 		case ViewDXT:
@@ -278,7 +278,7 @@ void TextureDialog::updateInfoConverted()
 			{
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
 				datasize = curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBytes(curDescriptor->dxtCompression.format);
-				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), Texture::DXT_FILE).c_str()).size();
+				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::DXT_FILE).c_str()).size();
 			}
 			break;
 		}

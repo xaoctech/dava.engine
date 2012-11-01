@@ -68,7 +68,7 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 		}
 
 		// base mipmap level
-		if(0 != descriptor.pvrCompression.baseMipMapLevel)
+		// if(0 != descriptor.pvrCompression.baseMipMapLevel)
 		{
 			// TODO:
 			// ...

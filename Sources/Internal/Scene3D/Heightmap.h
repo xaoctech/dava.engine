@@ -48,7 +48,7 @@ public:
     Heightmap();
 	virtual ~Heightmap();
     
-    void BuildFromImage(Image *image);
+    bool BuildFromImage(Image *image);
     void SaveToImage(const String & filename);
     
     virtual void Save(const String &filePathname);

@@ -111,16 +111,14 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
     if(mipMapLevelsCount)
     {
         Vector<Image *> imageSet;
+        imageSet.reserve(mipMapLevelsCount);
         for(int32 i = 0; i < mipMapLevelsCount; ++i)
         {
             Image *image = new Image();
             if(!image)
             {
                 Logger::Error("[ImageLoader::CreateFromPVR] Cannot allocate memory");
-                for(int32 i = 0; i < (int32)imageSet.size(); ++i)
-                {
-                    SafeRelease(imageSet[i]);
-                }
+                SafeRelease(imageSet.begin(), imageSet.end());
                 return Vector<Image *>();
             }
             
@@ -132,10 +130,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         if(!read)
         {
             Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file");
-            for(int32 i = 0; i < (int32)imageSet.size(); ++i)
-            {
-                SafeRelease(imageSet[i]);
-            }
+            SafeRelease(imageSet.begin(), imageSet.end());
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;

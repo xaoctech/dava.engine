@@ -108,7 +108,7 @@
       </Message>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/make.exe -f MakefileQtVS2010</Command>
+      <Command>$(SolutionDir)/make.exe -f MakefileQtVS2010 all</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>QT generate: MOC, UI, QRC</Message>

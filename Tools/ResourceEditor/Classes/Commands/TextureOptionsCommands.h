@@ -8,7 +8,7 @@
 class ReloadTexturesAsCommand: public Command
 {
 public:	
-	ReloadTexturesAsCommand(DAVA::Texture::TextureFileFormat format);
+	ReloadTexturesAsCommand(DAVA::ImageFileFormat format);
 
 protected:	
     
@@ -16,7 +16,7 @@ protected:
     
 protected:
     
-    DAVA::Texture::TextureFileFormat fileFormat;
+    DAVA::ImageFileFormat fileFormat;
 };
 
 

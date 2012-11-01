@@ -112,7 +112,7 @@ QImage TextureConvertor::loadOriginalThread(JobItem *item)
 
 	if(NULL != item && NULL != item->texture)
 	{
-		DAVA::TextureDescriptor *descriptor = DAVA::Texture::CreateDescriptorForTexture(item->texture->GetPathname());
+		DAVA::TextureDescriptor *descriptor = item->texture->CreateDescriptor();
 		img = QImage(descriptor->GetSourceTexturePathname().c_str());
 		delete descriptor;
 	}
@@ -154,6 +154,10 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				}
 			}
 
+			// TODO:
+			// item->descriptor.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
+			// item->descriptor.Save();
+
 			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
@@ -179,10 +183,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				}
 			}
 
-			for(unsigned int i = 0; i < davaImages.size(); ++i)
-			{
-				DAVA::SafeRelease(davaImages[i]);
-			}
+            DAVA::SafeRelease(davaImages.begin(), davaImages.end());
 		}
 	}
 	else

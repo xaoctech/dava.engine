@@ -42,7 +42,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(Texture::FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -62,7 +62,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    ClearActions(Texture::FILE_FORMAT_COUNT, textureFileFormatActions);
+    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
 
     CommandsManager::Instance()->Release();
 }
@@ -298,7 +298,7 @@ void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
 
 void QtMainWindowHandler::RegisterTextureFormatActions(DAVA::int32 count, ...)
 {
-    DVASSERT((Texture::FILE_FORMAT_COUNT == count) && "Wrong count of actions");
+    DVASSERT((FILE_FORMAT_COUNT == count) && "Wrong count of actions");
     
     va_list vl;
     va_start(vl, count);
@@ -431,7 +431,7 @@ void QtMainWindowHandler::MenuViewOptionsWillShow()
 {
     uint8 textureFileFormat = (uint8)EditorSettings::Instance()->GetTextureViewFileFormat();
     
-    for(int32 i = 0; i < Texture::FILE_FORMAT_COUNT; ++i)
+    for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
     {
         textureFileFormatActions[i]->setCheckable(true);
         textureFileFormatActions[i]->setChecked(i == textureFileFormat);
@@ -445,13 +445,13 @@ void QtMainWindowHandler::RulerTool()
 
 void QtMainWindowHandler::ReloadAsPNG()
 {
-    Execute(new ReloadTexturesAsCommand(Texture::PNG_FILE));
+    Execute(new ReloadTexturesAsCommand(PNG_FILE));
 }
 void QtMainWindowHandler::ReloadAsPVR()
 {
-    Execute(new ReloadTexturesAsCommand(Texture::PVR_FILE));
+    Execute(new ReloadTexturesAsCommand(PVR_FILE));
 }
 void QtMainWindowHandler::ReloadAsDXT()
 {
-    Execute(new ReloadTexturesAsCommand(Texture::DXT_FILE));
+    Execute(new ReloadTexturesAsCommand(DXT_FILE));
 }

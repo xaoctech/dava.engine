@@ -232,7 +232,7 @@ bool EditorSettings::GetEnableImposters()
 
 int32 EditorSettings::GetTextureViewFileFormat()
 {
-    return settings->GetInt32(String("TextureViewFileFormat"), Texture::PNG_FILE);
+    return settings->GetInt32(String("TextureViewFileFormat"), PNG_FILE);
 }
 void EditorSettings::SetTextureViewFileFormat(int32 format)
 {
