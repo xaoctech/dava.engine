@@ -137,9 +137,10 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath) /* || bad_crc */)
 			{
 				QProcess p;
-				QString command(QString(PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy).c_str()));
+				DAVA::String command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy);
+				DAVA::Logger::Info("%s$: %s", DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str(), command.c_str());
 
-				p.start(command);
+				p.start(QString(command.c_str()));
 				p.waitForFinished(-1);
 
 				if(QProcess::NormalExit != p.exitStatus())
