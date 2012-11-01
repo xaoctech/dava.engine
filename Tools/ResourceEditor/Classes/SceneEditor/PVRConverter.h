@@ -19,15 +19,15 @@ public:
 	void SetPVRTexTool(const DAVA::String &textToolPathname);
 	void SetDXTTexTool(const DAVA::String &textToolPathname);
 
+	DAVA::String GetPVRToolOutput(const DAVA::String &inputPVR);
+	//DAVA::String GetDXTToolOutput(const DAVA::String &inputDXT);
+
 protected:
 	DAVA::Map<DAVA::PixelFormat, DAVA::String> pixelFormatToPVRFormat;
 	//DAVA::Map<DAVA::PixelFormat, DAVA::String> pixelFormatToDVXFormat;
 
 	DAVA::String pvrTexToolPathname;
 	DAVA::String dxtTexToolPathname;
-
-	DAVA::String GetPVRToolOutput(const DAVA::String &inputPVR);
-	//DAVA::String GetDXTToolOutput(const DAVA::String &inputDXT);
 };
 
 #endif // __PVR_CONVERTER_H__

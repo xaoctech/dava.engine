@@ -2,6 +2,7 @@
 #include "TextureListModel.h"
 #include "TextureCache.h"
 #include <QPainter>
+#include <QFileInfo>
 
 #define TEXTURE_PREVIEW_SIZE 100
 #define BORDER_MARGIN 1
@@ -21,78 +22,81 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	const TextureListModel *curModel = (TextureListModel *) index.model();
-
 	DAVA::Texture *curTexture = curModel->getTexture(index);
-	QVariant texturePath = curModel->data(index, TextureListModel::TexturePath);
-	QVariant textureName = curModel->data(index, TextureListModel::TextureName);
-	QVariant textureDimension = curModel->data(index, TextureListModel::TextureDimension);
-	QVariant textureDataSize = curModel->data(index, TextureListModel::TextureDataSize);
 
-	painter->save();
-	painter->setClipRect(option.rect);
-
-	// draw border
-	QRect borderRect = option.rect;
-	borderRect.adjust(BORDER_MARGIN, BORDER_MARGIN, -BORDER_MARGIN, -BORDER_MARGIN);
-	painter->setPen(BORDER_COLOR);
-	painter->drawRect(borderRect);
-
-	QImage img = TextureCache::Instance()->getOriginal(curTexture);
-
-	// draw image preview
-	if(!img.isNull())
+	if(NULL != curTexture)
 	{
-		QSize imageSize = img.rect().size();
-		imageSize.scale(QSize(TEXTURE_PREVIEW_SIZE - option.decorationSize.width(), TEXTURE_PREVIEW_SIZE - option.decorationSize.height()), Qt::KeepAspectRatio);
-		int imageX =  option.rect.x() + (TEXTURE_PREVIEW_SIZE - imageSize.width())/2;
-		int imageY =  option.rect.y() + (TEXTURE_PREVIEW_SIZE - imageSize.height())/2;
-		painter->drawImage(QRect(QPoint(imageX, imageY), imageSize), img);
-	}
-	else
-	{
-		// there is no image for this texture in cache
-		// so load it async
-		TextureConvertor::Instance()->loadOriginal(curTexture);
-	}
+		QString texturePath = curTexture->GetPathname().c_str();
+		QString textureName = QFileInfo(texturePath).fileName();
+		QSize textureDimension = QSize(curTexture->width, curTexture->height);
+		QVariant textureDataSize = curTexture->GetDataSize();
 
-	// draw text info
-	{
-		QRectF textRect = option.rect;
-		textRect.adjust(TEXTURE_PREVIEW_SIZE, option.decorationSize.height() / 2, 0, 0);
+		painter->save();
+		painter->setClipRect(option.rect);
 
-		QFont origFont = painter->font();
-		painter->setFont(nameFont);
-		painter->drawText(textRect, textureName.toString());
-
-		painter->setFont(origFont);
-		painter->setPen(INFO_TEXT_COLOR);
-		textRect.adjust(0, nameFontMetrics.height(), 0, 0);
-
-		QString infoText;
-		char dimen[32];
-
-		sprintf(dimen, "%dx%d", textureDimension.toSize().width(), textureDimension.toSize().height());
-		//infoText += "Dimension: ";
-		infoText += dimen;
-		infoText += "\nData size: ";
-		infoText += textureDataSize.toString();
-
-		painter->drawText(textRect, infoText);
-	}
-
-	// draw selected item
-	if(option.state & QStyle::State_Selected)
-	{
-		QBrush br = option.palette.highlight();
-		QColor cl = br.color();
-		cl.setAlpha(SELECTION_COLOR_ALPHA);
-		br.setColor(cl);
-		painter->setBrush(br);
-		painter->setPen(SELECTION_BORDER_COLOR);
+		// draw border
+		QRect borderRect = option.rect;
+		borderRect.adjust(BORDER_MARGIN, BORDER_MARGIN, -BORDER_MARGIN, -BORDER_MARGIN);
+		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
-	}
 
-	painter->restore();
+		QImage img = TextureCache::Instance()->getOriginal(curTexture);
+
+		// draw image preview
+		if(!img.isNull())
+		{
+			QSize imageSize = img.rect().size();
+			imageSize.scale(QSize(TEXTURE_PREVIEW_SIZE - option.decorationSize.width(), TEXTURE_PREVIEW_SIZE - option.decorationSize.height()), Qt::KeepAspectRatio);
+			int imageX =  option.rect.x() + (TEXTURE_PREVIEW_SIZE - imageSize.width())/2;
+			int imageY =  option.rect.y() + (TEXTURE_PREVIEW_SIZE - imageSize.height())/2;
+			painter->drawImage(QRect(QPoint(imageX, imageY), imageSize), img);
+		}
+		else
+		{
+			// there is no image for this texture in cache
+			// so load it async
+			TextureConvertor::Instance()->loadOriginal(curTexture);
+		}
+
+		// draw text info
+		{
+			QRectF textRect = option.rect;
+			textRect.adjust(TEXTURE_PREVIEW_SIZE, option.decorationSize.height() / 2, 0, 0);
+
+			QFont origFont = painter->font();
+			painter->setFont(nameFont);
+			painter->drawText(textRect, textureName);
+
+			painter->setFont(origFont);
+			painter->setPen(INFO_TEXT_COLOR);
+			textRect.adjust(0, nameFontMetrics.height(), 0, 0);
+
+			QString infoText;
+			char dimen[32];
+
+			sprintf(dimen, "%dx%d", textureDimension.width(), textureDimension.height());
+			//infoText += "Dimension: ";
+			infoText += dimen;
+			infoText += "\nData size: ";
+			infoText += textureDataSize.toString();
+
+			painter->drawText(textRect, infoText);
+		}
+
+		// draw selected item
+		if(option.state & QStyle::State_Selected)
+		{
+			QBrush br = option.palette.highlight();
+			QColor cl = br.color();
+			cl.setAlpha(SELECTION_COLOR_ALPHA);
+			br.setColor(cl);
+			painter->setBrush(br);
+			painter->setPen(SELECTION_BORDER_COLOR);
+			painter->drawRect(borderRect);
+		}
+
+		painter->restore();
+	}
 }
 
 QSize TextureListDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

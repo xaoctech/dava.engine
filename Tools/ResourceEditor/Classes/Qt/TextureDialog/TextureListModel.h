@@ -16,6 +16,7 @@ public:
 		SortBySize
 	};
 
+	/*
 	enum DisplayRore 
 	{
 		TexturePath = Qt::UserRole,
@@ -23,6 +24,7 @@ public:
 		TextureDimension,
 		TextureDataSize,
 	};
+	*/
 
 	TextureListModel(QObject *parent = 0);
 
@@ -34,13 +36,16 @@ public:
 
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-	DAVA::Texture* getTexture(const QModelIndex &index) const;
 	void dataReady(const DAVA::Texture *texture);
+
+	DAVA::Texture* getTexture(const QModelIndex &index) const;
+	DAVA::TextureDescriptor* getDescriptor(const QModelIndex &index) const;
 
 private:
 	DAVA::Scene *scene;
 	QVector<DAVA::Texture *> texturesAll;
 	QVector<DAVA::Texture *> texturesFiltredSorted;
+	QMap<DAVA::Texture *, DAVA::TextureDescriptor *> textureDescriptors;
 
 	TextureListSortMode curSortMode;
 	QString	curFilter;

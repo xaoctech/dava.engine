@@ -21,10 +21,11 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
-		case TextureName:
+		//case TextureName:
 			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).fileName());
 			break;
 
+			/*
 		case TexturePath:
 			return QVariant(curTexture->GetPathname().c_str());
 			break;
@@ -36,7 +37,7 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 		case TextureDataSize:
 			return QVariant(curTexture->GetDataSize());
 			break;
-
+			*/
 		default:
 			break;
 		}
@@ -49,9 +50,22 @@ DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 {
 	DAVA::Texture *ret = NULL;
 
-	if(index.isValid())
+	if(index.isValid() && texturesFiltredSorted.size() > index.row())
 	{
 		ret = texturesFiltredSorted[index.row()];
+	}
+
+	return ret;
+}
+
+DAVA::TextureDescriptor* TextureListModel::getDescriptor(const QModelIndex &index) const
+{
+	DAVA::TextureDescriptor *ret = NULL;
+	DAVA::Texture *tex = getTexture(index);
+
+	if(index.isValid() && textureDescriptors.contains(tex))
+	{
+		ret = textureDescriptors[tex];
 	}
 
 	return ret;
@@ -146,6 +160,12 @@ void TextureListModel::addTexture(DAVA::Texture *texture)
 	if(NULL != texture && !texture->isRenderTarget && !texture->GetPathname().empty())
 	{
 		texturesAll.push_back(texture);
+
+		DAVA::TextureDescriptor * descriptor = DAVA::Texture::CreateDescriptorForTexture(texture->GetPathname());
+		if(NULL != descriptor)
+		{
+			textureDescriptors[texture] = descriptor;
+		}
 	}
 }
 

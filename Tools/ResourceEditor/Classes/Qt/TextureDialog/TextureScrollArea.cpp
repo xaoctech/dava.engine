@@ -12,29 +12,25 @@
 #include <QMovie>
 #include <QLabel>
 
-TextureScrollArea::TextureScrollArea(QWidget* parent/* =0 */)
+TextureScrollArea::TextureScrollArea(QWidget* parent /* = 0 */)
 	: QGraphicsView(parent)
 	, textureColorMask((int) ChannelAll)
 	, mouseInMoveState(false)
 	, textureScene(NULL)
 	, textureBorder(NULL)
 	, zoomFactor(1.0)
+	, tiledBgDoDraw(false)
 {
-	// create brush for background
-	QPixmap bgPix(20, 20);
-	QPainter p(&bgPix);
-	p.setBrush(QBrush(QColor(150,150,150)));
-	p.setPen(Qt::NoPen);
-	p.drawRect(QRect(0,0,20,20));
-	p.setBrush(QBrush(QColor(200,200,200)));
-	p.drawRect(QRect(0,0,10,10));
-	p.drawRect(QRect(10,10,10,10));
-	bgMask = QBrush(bgPix);
-
 	// create and setup scene
 	textureScene = new QGraphicsScene();
 	setRenderHints((QPainter::RenderHints) 0);
 	setScene(textureScene);
+
+	// we can have complex background (if tiledBgDoDraw set to true),
+	// so set mode to redraw it each time
+	// and then prepare pixmap for our custom background
+	setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	sutupCustomTiledBg();
 
 	// add items to scene
 	texturePixmap = textureScene->addPixmap(QPixmap());
@@ -116,14 +112,10 @@ void TextureScrollArea::borderVisible(bool visible)
 
 void TextureScrollArea::bgMaskVisible(bool visible)
 {
-	if(visible)
-	{
-		textureScene->setBackgroundBrush(bgMask);
-	}
-	else
-	{
-		textureScene->setBackgroundBrush(QBrush(QColor(0, 0, 0)));
-	}
+	tiledBgDoDraw = visible;
+
+	// call this setBackgroundBrush function to force background redraw
+	textureScene->setBackgroundBrush(QBrush(QColor(0, 0, 0)));
 }
 
 void TextureScrollArea::waitbarVisible(bool visible)
@@ -290,4 +282,29 @@ void TextureScrollArea::adjustWaitBarPos()
 	qreal x = viewCenter.x() - wbRect.width() / 2.0;
 	qreal y = viewCenter.x() - wbRect.height() / 2.0;
 	waitBar->setPos(x, y);
+}
+
+void TextureScrollArea::drawBackground(QPainter * painter, const QRectF & rect)
+{
+	if(tiledBgDoDraw)
+	{
+		painter->resetTransform();
+		painter->drawTiledPixmap(this->rect(), tiledBgPixmap);
+	}
+	else
+	{
+		QGraphicsView::drawBackground(painter, rect);
+	}
+}
+
+void TextureScrollArea::sutupCustomTiledBg()
+{
+	tiledBgPixmap = QPixmap(30, 30);
+	QPainter p(&tiledBgPixmap);
+	p.setBrush(QBrush(QColor(150,150,150)));
+	p.setPen(Qt::NoPen);
+	p.drawRect(QRect(0,0,30,30));
+	p.setBrush(QBrush(QColor(200,200,200)));
+	p.drawRect(QRect(0,0,15,15));
+	p.drawRect(QRect(15,15,15,15));
 }

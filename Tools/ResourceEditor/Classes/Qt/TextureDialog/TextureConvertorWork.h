@@ -4,39 +4,50 @@
 #include "DAVAEngine.h"
 #include "Render/TextureDescriptor.h"
 
-struct WorkItem
+struct JobItem
 {
-	enum WorkItemType
+	enum JobItemType
 	{
-		WorkPVR,
-		WorkDXT
+		JobOriginal,
+		JobPVR,
+		JobDXT
 	};
 
-	WorkItemType type;
+	JobItem()
+		: forceConvert(false)
+		, type(JobOriginal)
+		, texture(NULL)
+		, descriptor(NULL)
+	{ }
+
+	bool forceConvert;
+	JobItemType type;
 	const DAVA::Texture *texture;
-	DAVA::TextureDescriptor descriptor;
+	const DAVA::TextureDescriptor *descriptor;
+
+	DAVA::TextureDescriptor descriptorCopy;
 };
 
-class WorkStack
+class JobStack
 {
 public:
-	WorkStack();
-	~WorkStack();
+	JobStack();
+	~JobStack();
 
-	void push(const WorkItem::WorkItemType &type, const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor);
-	WorkItem* pop();
+	void push(const JobItem &item);
+	JobItem* pop();
 	int size();
 
 private:
-	struct WorkItemWrapper : public WorkItem
+	struct JobItemWrapper : public JobItem
 	{
-		WorkItemWrapper(const WorkItem::WorkItemType &type, const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor);
+		JobItemWrapper(const JobItem &item);
 
-		WorkItemWrapper *next;
-		WorkItemWrapper *prev;
+		JobItemWrapper *next;
+		JobItemWrapper *prev;
 	};
 
-	WorkItemWrapper *head;
+	JobItemWrapper *head;
 
 	int itemsCount;
 };

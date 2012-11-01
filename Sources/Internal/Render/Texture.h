@@ -289,7 +289,8 @@ public:							// properties for fast access
     
     static void SetDefaultFileFormat(TextureFileFormat fileFormat);
     static TextureFileFormat GetDefaultFileFormat();
-    
+	static String GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat);
+
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
@@ -298,8 +299,6 @@ private:
 	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
-    static String GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat);
-    
     bool LoadFromImage(File *file, TextureDescriptor *descriptor);
     
     

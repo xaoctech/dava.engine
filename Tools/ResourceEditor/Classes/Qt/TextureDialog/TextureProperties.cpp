@@ -119,7 +119,7 @@ TextureProperties::~TextureProperties()
 	delete oneForAllParent;
 }
 
-void TextureProperties::setTexture(DAVA::Texture *texture)
+void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
 {
 	reactOnPropertyChange = false;
 
@@ -128,16 +128,15 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 	DAVA::SafeRelease(curTextureDescriptor);
 
 	curTexture = texture;
+	curTextureDescriptor = descriptor;
 
-	if(NULL != curTexture)
+	if(NULL != curTexture && NULL != curTextureDescriptor)
 	{
 		DAVA::SafeRetain(curTexture);
+		DAVA::SafeRetain(curTextureDescriptor);
 
 		// enable this widget
 		setEnabled(true);
-
-		// load texture properties
-		curTextureDescriptor = DAVA::Texture::CreateDescriptorForTexture(curTexture->GetPathname());
 
 		// set loaded descriptor to current properties
 		{
@@ -166,12 +165,12 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 	reactOnPropertyChange = true;
 }
 
-DAVA::Texture* TextureProperties::getTexture()
+const DAVA::Texture* TextureProperties::getTexture()
 {
 	return curTexture;
 }
 
-DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
+const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 {
 	return curTextureDescriptor;
 }
@@ -184,13 +183,11 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		{
 			DAVA::PixelFormat newPVRFormat = (DAVA::PixelFormat) helperPVRFormats.value(enumPVRFormat->valueText());
 			curTextureDescriptor->pvrCompression.format = newPVRFormat;
-			emit formatChangedPVR(newPVRFormat);
 		}
 		else if(property == enumDXTFormat)
 		{
 			DAVA::PixelFormat newDXTFormat = (DAVA::PixelFormat) helperDXTFormats.value(enumDXTFormat->valueText());
 			curTextureDescriptor->dxtCompression.format = newDXTFormat;
-			emit formatChangedDXT(newDXTFormat);
 		}
 		else if(property == intBasePVRMipmapLevel)
 		{
@@ -213,7 +210,7 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			curTextureDescriptor->wrapModeT = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeT->valueText());
 		}
 
-		curTextureDescriptor;
+		emit propertyChanged();
 	}
 }
 

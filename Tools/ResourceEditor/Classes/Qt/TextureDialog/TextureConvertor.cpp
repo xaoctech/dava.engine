@@ -1,58 +1,84 @@
 #include <QtConcurrentRun>
 #include <QPainter>
+#include <QProcess>
+#include <QTextOption>
 #include "TextureDialog/TextureConvertor.h"
 #include "SceneEditor/PVRConverter.h"
 
 TextureConvertor::TextureConvertor()
-	: curWork(NULL)
-	, curOriginalTexture(NULL)
+	: curJobConvert(NULL)
+	, curJobOriginal(NULL)
 {
 	// slot will be called in connector(this) thread
 	QObject::connect(&convertWatcher, SIGNAL(finished()), this, SLOT(threadConvertFinished()), Qt::QueuedConnection);
 	QObject::connect(&loadOriginalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
 }
 
-void TextureConvertor::getPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor)
+void TextureConvertor::getPVR( const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
 {
-	workStack.push(WorkItem::WorkPVR, texture, descriptor);
-	workRunNext();
+	if(NULL != texture && NULL != descriptor)
+	{
+		JobItem newJob;
+		newJob.type = JobItem::JobPVR;
+		newJob.texture = texture;
+		newJob.descriptor = descriptor;
+		newJob.forceConvert = forceConver;
+
+		jobStackConvert.push(newJob);
+		jobRunNextConvert();
+	}
 }
 
-void TextureConvertor::getDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor)
+void TextureConvertor::getDXT( const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
 {
-	workStack.push(WorkItem::WorkDXT, texture, descriptor);
-	workRunNext();
+	if(NULL != texture && NULL != descriptor)
+	{
+		JobItem newJob;
+		newJob.type = JobItem::JobDXT;
+		newJob.texture = texture;
+		newJob.descriptor = descriptor;
+		newJob.forceConvert = forceConver;
+
+		jobStackConvert.push(newJob);
+		jobRunNextConvert();
+	}
 }
 
 void TextureConvertor::loadOriginal(const DAVA::Texture *texture)
 {
-	loadOriginalWatcher.cancel();
+	if(NULL != texture)
+	{
+		// we dont care about job-type and descriptor when starting job to load original texture
+		JobItem newJob;
+		newJob.texture = texture;
 
-	curOriginalTexture = texture;
-	QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::loadOriginalThread, texture);
-	loadOriginalWatcher.setFuture(f);
+		jobStackOriginal.push(newJob);
+		jobRunNextOriginal();
+	}
 }
 
-void TextureConvertor::workRunNext()
+void TextureConvertor::jobRunNextConvert()
 {
 	// if there is no already running work
-	if(convertWatcher.isFinished() && NULL == curWork)
+	if(convertWatcher.isFinished() && NULL == curJobConvert)
 	{
 		// get the new work
-		curWork = workStack.pop();
-		if(NULL != curWork)
+		curJobConvert = jobStackConvert.pop();
+		if(NULL != curJobConvert)
 		{
-			switch(curWork->type)
+			curJobConvert->descriptorCopy = *curJobConvert->descriptor;
+
+			switch(curJobConvert->type)
 			{
-			case WorkItem::WorkPVR:
+			case JobItem::JobPVR:
 				{
-					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadPVR, curWork);
+					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadPVR, curJobConvert);
 					convertWatcher.setFuture(f);
 				}
 				break;
-			case WorkItem::WorkDXT:
+			case JobItem::JobDXT:
 				{
-					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadDXT, curWork);
+					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadDXT, curJobConvert);
 					convertWatcher.setFuture(f);
 				}
 				break;
@@ -62,16 +88,31 @@ void TextureConvertor::workRunNext()
 		}
 	}
 
-	emit convertStatus(curWork, workStack.size());
+	emit convertStatus(curJobConvert, jobStackConvert.size());
 }
 
-QImage TextureConvertor::loadOriginalThread(const DAVA::Texture *texture)
+void TextureConvertor::jobRunNextOriginal()
+{
+	// if there is no already running work
+	if(loadOriginalWatcher.isFinished() && NULL == curJobOriginal)
+	{
+		// get the new work
+		curJobOriginal = jobStackOriginal.pop();
+		if(NULL != curJobOriginal)
+		{
+			QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::loadOriginalThread, curJobOriginal);
+			loadOriginalWatcher.setFuture(f);
+		}
+	}
+}
+
+QImage TextureConvertor::loadOriginalThread(JobItem *item)
 {
 	QImage img;
 
-	if(NULL != texture)
+	if(NULL != item && NULL != item->texture)
 	{
-		DAVA::TextureDescriptor *descriptor = DAVA::Texture::CreateDescriptorForTexture(texture->GetPathname());
+		DAVA::TextureDescriptor *descriptor = DAVA::Texture::CreateDescriptorForTexture(item->texture->GetPathname());
 		img = QImage(descriptor->GetSourceTexturePathname().c_str());
 		delete descriptor;
 	}
@@ -79,48 +120,56 @@ QImage TextureConvertor::loadOriginalThread(const DAVA::Texture *texture)
 	return img;
 }
 
-QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
+QImage TextureConvertor::convertThreadPVR(JobItem *item)
 {
-	QImage qtConvertedImage;
+	QImage qtImage;
 
-	if(NULL != item)
+	if(NULL != item && item->descriptorCopy.pvrCompression.format != DAVA::FORMAT_INVALID)
 	{
-		DAVA::String sourcePath = item->descriptor.GetSourceTexturePathname();
-		DAVA::String outputPath = PVRConverter::Instance()->ConvertPngToPvr(sourcePath, item->descriptor);
+		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		DAVA::String outputPath = PVRConverter::Instance()->GetPVRToolOutput(sourcePath);
 
 		if(!outputPath.empty())
 		{
-			item->descriptor.UpdateDateAndCrc();
-			item->descriptor.Save();
+			// forced to convert or output file not exists
+			// TODO: add check for descriptor CRC
+			// ...
+			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath) /* || bad_crc */)
+			{
+				QProcess p;
+				QString command(QString(PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy).c_str()));
+
+				p.start(command);
+				p.waitForFinished(-1);
+
+				if(QProcess::NormalExit != p.exitStatus())
+				{
+					DAVA::Logger::Error("Convertor process crushed\n");
+				}
+
+				if(0 != p.exitCode())
+				{
+					DAVA::Logger::Error("Convertor exit with error %d\n", p.exitCode());
+					DAVA::Logger::Error("Stderror: %s", p.readAllStandardError().constData());
+				}
+			}
 
 			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
 			{
 				DAVA::Image *davaImage = davaImages[0];
-				QImage::Format qtImgFormat = QImage::Format_Invalid;
+				qtImage = QImage(davaImage->width, davaImage->height, QImage::Format_ARGB32);
 
-				switch(davaImage->GetPixelFormat())
+				// convert DAVA:RGBA8888 into Qt ARGB8888
 				{
-				case DAVA::FORMAT_RGBA8888:
-					qtImgFormat = QImage::Format_ARGB32;
-					break;
-                        
-                default:
-                    break;
-				}
-
-				if(QImage::Format_Invalid != qtImgFormat)
-				{
-					qtConvertedImage = QImage(davaImage->width, davaImage->height, QImage::Format_ARGB32);
-
 					QRgb *data = (QRgb *) davaImage->data;
 					QRgb *line;
 					QRgb c;
 
 					for (int y = 0; y < davaImage->height; y++) 
 					{
-						line = (QRgb *) qtConvertedImage.scanLine(y);
+						line = (QRgb *) qtImage.scanLine(y);
 						for (int x = 0; x < davaImage->width; x++) 
 						{
 							c = data[y * davaImage->width + x];
@@ -136,21 +185,19 @@ QImage TextureConvertor::convertThreadPVR(const WorkItem *item)
 			}
 		}
 	}
+	else
+	{
+		QRect r(0, 0, item->texture->width, item->texture->height);
+		qtImage = QImage(r.size(), QImage::Format_ARGB32);
 
-	/*
-	// debug -->
-	convertedImage = QImage(item->texture->width, item->texture->height, QImage::Format_ARGB32);
-	QPainter p(&convertedImage);
-	p.setBrush(QColor(255,0,0));
-	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
-	Sleep(1000);
-	// <--
-	*/
+		QPainter p(&qtImage);
+		p.drawText(r, "No image", QTextOption(Qt::AlignCenter));
+	}
 
-	return qtConvertedImage;
+	return qtImage;
 }
 
-QImage TextureConvertor::convertThreadDXT(const WorkItem *item)
+QImage TextureConvertor::convertThreadDXT(JobItem *item)
 {
 	QImage convertedImage;
 
@@ -163,7 +210,6 @@ QImage TextureConvertor::convertThreadDXT(const WorkItem *item)
 	QPainter p(&convertedImage);
 	p.setBrush(QColor(0,255,0));
 	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
-//	Sleep(1000);
 	// <--
 
 	return convertedImage;
@@ -171,29 +217,36 @@ QImage TextureConvertor::convertThreadDXT(const WorkItem *item)
 
 void TextureConvertor::threadOriginalFinished()
 {
-	emit readyOriginal(curOriginalTexture, loadOriginalWatcher.result());
-	curOriginalTexture = NULL;
+	if(loadOriginalWatcher.isFinished() && NULL != curJobOriginal)
+	{
+		emit readyOriginal(curJobOriginal->texture, loadOriginalWatcher.result());
+
+		delete curJobOriginal;
+		curJobOriginal = NULL;
+	}
+
+	jobRunNextOriginal();
 }
 
 void TextureConvertor::threadConvertFinished()
 {
-	if(convertWatcher.isFinished() && NULL != curWork)
+	if(convertWatcher.isFinished() && NULL != curJobConvert)
 	{
-		switch(curWork->type)
+		switch(curJobConvert->type)
 		{
-		case WorkItem::WorkPVR:
-			emit readyPVR(curWork->texture, curWork->descriptor, convertWatcher.result());
+		case JobItem::JobPVR:
+			emit readyPVR(curJobConvert->texture, &curJobConvert->descriptorCopy, convertWatcher.result());
 			break;
-		case WorkItem::WorkDXT:
-			emit readyDXT(curWork->texture, curWork->descriptor, convertWatcher.result());
+		case JobItem::JobDXT:
+			emit readyDXT(curJobConvert->texture, &curJobConvert->descriptorCopy, convertWatcher.result());
 			break;
 		default:
 			break;
 		}
 
-		delete curWork;
-		curWork = NULL;
+		delete curJobConvert;
+		curJobConvert = NULL;
 	}
 
-	workRunNext();
+	jobRunNextConvert();
 }
