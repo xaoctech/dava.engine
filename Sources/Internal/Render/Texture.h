@@ -58,16 +58,6 @@ public:
 		WRAP_REPEAT,
 	};
 	
-    enum TextureFileFormat
-    {
-        NOT_FILE = -1,
-        
-        PNG_FILE = 0,
-        PVR_FILE,
-        DXT_FILE,
-        
-        FILE_FORMAT_COUNT
-    };
 
 	enum DepthFormat
 	{
@@ -181,10 +171,6 @@ public:
 	inline int32 GetWidth() const { return width; }
 	inline int32 GetHeight() const { return height; }
 	
-//	static void EnableMipmapGeneration();
-//	static void DisableMipmapGeneration();
-//    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
-
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
@@ -192,8 +178,6 @@ public:
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
-	void UsePvrMipmaps();
-        
     /**
         \brief This function can enable / disable autosave for render targets.
         It's actual only for DX9 and for other systems is does nothing
@@ -222,8 +206,8 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
-    static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
-    void ReloadAs(TextureFileFormat fileFormat);
+    TextureDescriptor * CreateDescriptor() const;
+    void ReloadAs(ImageFileFormat fileFormat);
 
 
 public:							// properties for fast access
@@ -286,11 +270,10 @@ public:							// properties for fast access
 
     void GenerateID();
     
+    static void SetDefaultFileFormat(ImageFileFormat fileFormat);
+    static ImageFileFormat GetDefaultFileFormat();
+    static String GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat);
     
-    static void SetDefaultFileFormat(TextureFileFormat fileFormat);
-    static TextureFileFormat GetDefaultFileFormat();
-	static String GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat);
-
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
@@ -304,7 +287,6 @@ private:
     
     
 	static PixelFormat defaultRGBAFormat;
-//	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
     
@@ -319,7 +301,7 @@ private:
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    static TextureFileFormat defaultFileFormat;
+    static ImageFileFormat defaultFileFormat;
 };
     
 // Implementation of inline functions

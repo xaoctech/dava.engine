@@ -14,11 +14,7 @@ GraphItem::~GraphItem()
 {
     parentItem = NULL;
     
-	int32 count = (int32)children.size();
-	for(int32 i = 0; i < count; ++i)
-	{
-		SafeRelease(children[i]);
-	}
+    SafeRelease(children.begin(), children.end());
 	children.clear();
 }
 

@@ -4,7 +4,7 @@
 
 using namespace DAVA;
 
-ReloadTexturesAsCommand::ReloadTexturesAsCommand(Texture::TextureFileFormat format)
+ReloadTexturesAsCommand::ReloadTexturesAsCommand(ImageFileFormat format)
     :   Command(COMMAND_CLEAR_UNDO_QUEUE)
     ,   fileFormat(format)
 {

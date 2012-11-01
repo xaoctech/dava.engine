@@ -104,7 +104,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-Texture::TextureFileFormat Texture::defaultFileFormat = NOT_FILE;
+ImageFileFormat Texture::defaultFileFormat = NOT_FILE;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -465,34 +465,6 @@ void Texture::GeneratePixelesation()
 }
     
 
-
-    
-void Texture::UsePvrMipmaps()
-{
-	RenderManager::Instance()->LockNonMain();
-#if defined(__DAVAENGINE_OPENGL__)
-	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-	RenderManager::Instance()->HWglBindTexture(id);
-
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE));
-	
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	
-	if (saveId != 0)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveId);
-	}
-
-#elif defined(__DAVAENGINE_DIRECTX9__)
-
-
-
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-    RenderManager::Instance()->UnlockNonMain();
-
-}
-
 Texture * Texture::CreateFromImage(const String &pathname, DAVA::TextureDescriptor *descriptor)
 {
     File *file = File::Create(pathname, File::OPEN | File::READ);
@@ -652,7 +624,7 @@ Texture * Texture::PureCreate(const String & pathName)
     Texture * texture = Texture::Get(pathName);
 	if (texture) return texture;
     
-    TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(pathName);
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
@@ -688,7 +660,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
-    TextureFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (TextureFileFormat)descriptor->textureFileFormat : defaultFileFormat;
+    ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     String imagePathname = GetPathnameForFileFormat(pathName, formatForLoading);
     texture = CreateFromImage(imagePathname, descriptor);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
@@ -697,27 +669,23 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 }
 
 	
-TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
+TextureDescriptor * Texture::CreateDescriptor() const
 {
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
-    TextureDescriptor *descriptor = new TextureDescriptor();
-    bool loaded = descriptor->Load(descriptorPathname);
-    if(!loaded)
+    if(!isRenderTarget)
     {
-        Logger::Error("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s).", descriptorPathname.c_str());
-        SafeRelease(descriptor);
-        return NULL;
+        return TextureDescriptor::CreateFromFile(relativePathname);
     }
-    return descriptor;
+
+    return NULL;
 }
     
-void Texture::ReloadAs(DAVA::Texture::TextureFileFormat fileFormat)
+void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat)
 {
     ReleaseTextureData();
     
     String imagePathname = GetPathnameForFileFormat(relativePathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
-    TextureDescriptor *descriptor = CreateDescriptorForTexture(relativePathname);
+    TextureDescriptor *descriptor = CreateDescriptor();
 
     bool loaded = false;
     if(descriptor && file)
@@ -1436,7 +1404,7 @@ GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     
-String Texture::GetPathnameForFileFormat(const String &sourcePathname, TextureFileFormat fileFormat)
+String Texture::GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat)
 {
     String imagePathname;
     switch (fileFormat)
@@ -1459,12 +1427,12 @@ String Texture::GetPathnameForFileFormat(const String &sourcePathname, TextureFi
     return imagePathname;
 }
     
-void Texture::SetDefaultFileFormat(TextureFileFormat fileFormat)
+void Texture::SetDefaultFileFormat(ImageFileFormat fileFormat)
 {
     defaultFileFormat = fileFormat;
 }
 
-Texture::TextureFileFormat Texture::GetDefaultFileFormat()
+ImageFileFormat Texture::GetDefaultFileFormat()
 {
     return defaultFileFormat;
 }

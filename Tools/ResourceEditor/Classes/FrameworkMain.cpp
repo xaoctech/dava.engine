@@ -132,8 +132,12 @@ void FrameworkDidLaunched()
 	new EditorConfig();
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
+    
+    uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
     SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
-
+    creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
+    Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+    
     
 	if (Core::Instance()->IsConsoleMode())
 	{
@@ -168,7 +172,7 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
     
 	DAVA::Core::Instance()->SetVirtualScreenSize(480, 320);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "Gfx");
 #else
 	KeyedArchive * appOptions = new KeyedArchive();
     
@@ -189,7 +193,7 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "Gfx");
 #endif
     
 	GameCore * core = new GameCore();

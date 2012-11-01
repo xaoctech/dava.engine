@@ -161,7 +161,7 @@ void TextureListModel::addTexture(DAVA::Texture *texture)
 	{
 		texturesAll.push_back(texture);
 
-		DAVA::TextureDescriptor * descriptor = DAVA::Texture::CreateDescriptorForTexture(texture->GetPathname());
+		DAVA::TextureDescriptor * descriptor = texture->CreateDescriptor();
 		if(NULL != descriptor)
 		{
 			textureDescriptors[texture] = descriptor;

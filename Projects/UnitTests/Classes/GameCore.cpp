@@ -255,10 +255,10 @@ void GameCore::FlushTestResults()
         return;
     }
 
-    //TODO: test
-    dbClient->DropCollection();
-    dbClient->DropDatabase();
-    //end of test
+//    //TODO: test
+//    dbClient->DropCollection();
+//    dbClient->DropDatabase();
+//    //end of test
     
     
     time_t logStartTime = time(0);

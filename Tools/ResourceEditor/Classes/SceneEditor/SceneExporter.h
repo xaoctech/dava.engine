@@ -55,7 +55,7 @@ protected:
     String dataSourceFolder; 
     String workingFolder;
 
-    Texture::TextureFileFormat exportFormat;
+    ImageFileFormat exportFormat;
     
     Set<String>texturesForExport;
     Map<String, String>exportedTextures;

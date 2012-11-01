@@ -45,7 +45,8 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-
+    static const int8 CURRENT_VERSION = 2;
+    
 public:
 	enum eOptionsState
 	{
@@ -62,14 +63,23 @@ public:
     struct Compression
     {
         PixelFormat format;
-        int8 baseMipMapLevel;
+        mutable char8 modificationDate[DATE_BUFFER_SIZE];
+        mutable uint8 crc[MD5::DIGEST_SIZE];
+        
+        int32 compressToWidth;
+        int32 compressToHeight;
+        
+        void Clear();
     };
 
 public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void UpdateDateAndCrc() const;
+    static TextureDescriptor *CreateFromFile(const String &filePathname);
+    
+    
+    void UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const;
 
     bool Load(const String &filePathname);
 
@@ -90,7 +100,12 @@ public:
     static String GetDescriptorPathname(const String &texturePathname);
     static String GetDescriptorExtension();
     
+    bool IsSourceValidForFormat(ImageFileFormat fileFormat);
+    
+    
 protected:
+    
+    const Compression * GetCompressionParams(ImageFileFormat fileFormat) const;
     
     void LoadNotCompressed(File *file);
     void LoadCompressed(File *file);
@@ -105,8 +120,7 @@ protected:
     
 public:
     
-    mutable char8 modificationDate[DATE_BUFFER_SIZE];
-    mutable uint8 crc[MD5::DIGEST_SIZE];
+    
 
     int8 wrapModeS;
     int8 wrapModeT;
