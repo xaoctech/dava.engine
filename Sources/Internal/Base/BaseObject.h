@@ -184,7 +184,8 @@ void SafeRelease(const Iterator &begin, const Iterator &end)
 {
     for (Iterator it = begin; it != end; ++it)
     {
-        SafeRelease(*it);
+        BaseObject *obj = *it;
+        SafeRelease(obj);
     }
 }
     
