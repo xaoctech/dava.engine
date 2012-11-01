@@ -271,10 +271,8 @@ void SceneData::AddScene(const String &scenePathname)
     }
     SafeRelease(rootNode);
 
-    //TODO: need selection?
-//    SelectNode(scene->GetSelection());
-    
-    SceneValidator::Instance()->ValidateScene(scene);
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 
     landscapesController->SetScene(scene);
@@ -306,10 +304,8 @@ void SceneData::EditScene(const String &scenePathname)
     }
 
     
-    //TODO: need selection?
-//    SelectNode(scene->GetSelection());
-    
-    SceneValidator::Instance()->ValidateScene(scene);
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
    
     landscapesController->SetScene(scene);
@@ -363,11 +359,10 @@ void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
 	}
 	SafeRelease(refNode);
 
-	//TODO: need selection?
-	//    SelectNode(scene->GetSelection());
-
 	RebuildSceneGraph();
-	SceneValidator::Instance()->ValidateScene(scene);
+
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
 	SceneValidator::Instance()->EnumerateSceneTextures();
 }
 

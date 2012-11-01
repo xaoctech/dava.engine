@@ -29,13 +29,19 @@ SceneValidator::~SceneValidator()
     SafeRelease(infoControl);
 }
 
-void SceneValidator::ValidateScene(Scene *scene)
+bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
 {
     errorMessages.clear();
 
     ValidateScene(scene, errorMessages);
 
-    ShowErrors();
+    if(0 < errorMessages.size())
+    {
+        ShowErrors();
+        return true;
+    }
+    
+    return false;
 }
 
 void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
@@ -53,11 +59,8 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
                 node->GetParent()->RemoveNode(node);
             }
         }
-        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
-        {
-            SceneNode * node = *it;
-            SafeRelease(node);
-        }
+        
+        SafeRelease(emptyNodesForDeletion.begin(), emptyNodesForDeletion.end());
         emptyNodesForDeletion.clear();
     }
     else 
@@ -115,17 +118,6 @@ void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &e
 	}
 }
 
-
-
-void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
-{
-    errorMessages.clear();
-
-    ValidateSceneNode(sceneNode, errorMessages);
-    
-    ShowErrors();
-    
-}
 
 void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog)
 {
@@ -204,12 +196,11 @@ bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
 }
 
 
-void SceneValidator::ValidateTexture(Texture *texture)
+void SceneValidator::ValidateTextureAndShowErrors(Texture *texture)
 {
     errorMessages.clear();
 
     ValidateTexture(texture, errorMessages);
-
     ShowErrors();
 }
 
@@ -237,14 +228,6 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
 	}
 }
 
-void SceneValidator::ValidateLandscape(LandscapeNode *landscape)
-{
-    errorMessages.clear();
-    
-    ValidateLandscape(landscape, errorMessages);
-    
-    ShowErrors();
-}
 
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
 {
@@ -317,15 +300,6 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
     }
 }
 
-
-void SceneValidator::ValidateMaterial(Material *material)
-{
-    errorMessages.clear();
-
-    ValidateMaterial(material, errorMessages);
-
-    ShowErrors();
-}
 
 void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog)
 {
