@@ -5,6 +5,8 @@
 #include "TextureDialog/TextureConvertor.h"
 #include "SceneEditor/PVRConverter.h"
 
+#include "Platform/Qt/QtLayer.h"
+
 TextureConvertor::TextureConvertor()
 	: curJobConvert(NULL)
 	, curJobOriginal(NULL)
@@ -60,7 +62,7 @@ void TextureConvertor::loadOriginal(const DAVA::Texture *texture)
 void TextureConvertor::jobRunNextConvert()
 {
 	// if there is no already running work
-	if(convertWatcher.isFinished() && NULL == curJobConvert)
+	if((convertWatcher.isFinished() || convertWatcher.isCanceled()) && NULL == curJobConvert)
 	{
 		// get the new work
 		curJobConvert = jobStackConvert.pop();
@@ -94,7 +96,7 @@ void TextureConvertor::jobRunNextConvert()
 void TextureConvertor::jobRunNextOriginal()
 {
 	// if there is no already running work
-	if(loadOriginalWatcher.isFinished() && NULL == curJobOriginal)
+	if((loadOriginalWatcher.isFinished() || loadOriginalWatcher.isCanceled())&& NULL == curJobOriginal)
 	{
 		// get the new work
 		curJobOriginal = jobStackOriginal.pop();
@@ -110,19 +112,24 @@ QImage TextureConvertor::loadOriginalThread(JobItem *item)
 {
 	QImage img;
 
+    void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
+    
 	if(NULL != item && NULL != item->texture)
 	{
 		DAVA::TextureDescriptor *descriptor = item->texture->CreateDescriptor();
 		img = QImage(descriptor->GetSourceTexturePathname().c_str());
-		delete descriptor;
+		SafeRelease(descriptor);
 	}
 
+    DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return img;
 }
 
 QImage TextureConvertor::convertThreadPVR(JobItem *item)
 {
 	QImage qtImage;
+
+    void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
 	if(NULL != item && item->descriptorCopy.pvrCompression.format != DAVA::FORMAT_INVALID)
 	{
@@ -196,6 +203,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 		p.drawText(r, "No image", QTextOption(Qt::AlignCenter));
 	}
 
+    DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return qtImage;
 }
 
@@ -203,6 +211,9 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 {
 	QImage convertedImage;
 
+    void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
+
+    
 	// TODO:
 	// convert
 	// ...
@@ -214,6 +225,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
 	// <--
 
+    DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return convertedImage;
 }
 
