@@ -216,7 +216,7 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         
         ReadFrom(currentDataNode);
         
-        SceneValidator::Instance()->ValidateScene(material->GetScene());
+        SceneValidator::Instance()->ValidateSceneAndShowErrors(material->GetScene());
     }
 	else if ("property.material.blendSrc" == forKey) 
 	{
@@ -268,7 +268,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
-                SceneValidator::Instance()->ValidateTexture(tx);
+                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx);
             }
             else 
             {
