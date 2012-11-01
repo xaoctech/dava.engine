@@ -26,14 +26,13 @@ public:
 	TextureProperties(QWidget *parent = 0);
 	~TextureProperties();
 
-	void setTexture(DAVA::Texture *texture);
+	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 
-	DAVA::Texture* getTexture();
-	DAVA::TextureDescriptor* getTextureDescriptor();
+	const DAVA::Texture* getTexture();
+	const DAVA::TextureDescriptor* getTextureDescriptor();
 
 signals:
-	void formatChangedPVR(const DAVA::PixelFormat &newFormat);
-	void formatChangedDXT(const DAVA::PixelFormat &newFormat);
+	void propertyChanged();
 
 private slots:
 	void propertyChanged(QtProperty * property);

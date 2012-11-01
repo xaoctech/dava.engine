@@ -13,7 +13,7 @@ class QAbstractItemDelegate;
 class QStatusBar;
 class QLabel;
 class QSlider;
-struct WorkItem;
+struct JobItem;
 
 namespace Ui {
 class TextureDialog;
@@ -50,8 +50,11 @@ private:
 	QLabel *statusBarLabel;
 	
 	QMap<QString, int> textureListSortModes;
-	DAVA::Texture *curTextureOriginal;
+
 	TextureView curTextureView;
+
+	DAVA::Texture *curTexture;
+	DAVA::TextureDescriptor *curDescriptor;
 
 	void setupTextureListToolbar();
 	void setupTextureToolbar();
@@ -64,11 +67,13 @@ private:
 	
 	void resetTextureInfo();
 
-	void setTexture(DAVA::Texture *texture);
-	void setTextureView(TextureView view);
-	void setInfoColor(QLabel *label, const QColor &color = QColor());
-	void setInfoPos(QLabel *label, const QPoint &pos = QPoint());
-	void setInfoFormat(QLabel *label, const DAVA::PixelFormat &format = DAVA::FORMAT_INVALID, const QSize &size = QSize(0, 0), const int &datasize = 0);
+	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
+	void setTextureView(TextureView view, bool forceConvert = false);
+
+	void updateInfoColor(QLabel *label, const QColor &color = QColor());
+	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
+	void updateInfoOriginal();
+	void updateInfoConverted();
 
 private slots:
 	void textureListViewImages(bool checked);
@@ -80,20 +85,19 @@ private slots:
 	void textureColorChannelPressed(bool checked);
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
-	void textureFormatPVRChanged(const DAVA::PixelFormat &newFormat);
-	void textureFormatDXTChanged(const DAVA::PixelFormat &newFormat);
+	void texturePropertyChanged();
 	void textureViewPVR(bool checked);
 	void textureViewDXT(bool checked);
 	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);
-	void textureReadyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor, const QImage &image);
-	void textureReadyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor, const QImage &image);
+	void textureReadyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);
 	void textureZoomFit(bool checked);
 	void textureAreaWheel(int delta);
 
-	void convertStatus(const WorkItem *workCur, int workLeft);
+	void convertStatus(const JobItem *jobCur, int jobLeft);
 };
 
 #endif // __TEXTURE_DIALOG_H__

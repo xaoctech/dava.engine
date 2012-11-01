@@ -1,13 +1,13 @@
 #include "TextureDialog/TextureConvertorWork.h"
 
-WorkStack::WorkStack()
+JobStack::JobStack()
 	: head(NULL)
 	, itemsCount(0)
 { }
 
-WorkStack::~WorkStack()
+JobStack::~JobStack()
 {
-	WorkItemWrapper *item;
+	JobItemWrapper *item;
 
 	while(NULL != head)
 	{
@@ -18,54 +18,54 @@ WorkStack::~WorkStack()
 	}
 }
 
-void WorkStack::push(const WorkItem::WorkItemType &type, const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor)
+void JobStack::push(const JobItem &item)
 {
-	WorkItemWrapper *item = head;
+	JobItemWrapper *i = head;
 
 	// search for the same works in list and remove it
-	while(NULL != item)
+	while(NULL != i)
 	{
-		if(item->type == type && item->texture == texture)
+		if(i->type == item.type && i->texture == item.texture)
 		{
-			if(NULL != item->prev)
+			if(NULL != i->prev)
 			{
-				item->prev->next = item->next;
+				i->prev->next = i->next;
 			}
 
-			if(NULL != item->next)
+			if(NULL != i->next)
 			{
-				item->next->prev = item->prev;
+				i->next->prev = i->prev;
 			}
 
-			if(item == head)
+			if(i == head)
 			{
-				head = item->next;
+				head = i->next;
 			}
 
-			delete item;
+			delete i;
 			itemsCount--;
 
 			break;
 		}
 
-		item = item->next;
+		i = i->next;
 	}
 
 	// add new work
-	item = new WorkItemWrapper(type, texture, descriptor);
+	i = new JobItemWrapper(item);
 	if(NULL != head)
 	{
-		head->prev = item;
-		item->next = head;
+		head->prev = i;
+		i->next = head;
 	}
 
-	head = item;
+	head = i;
 	itemsCount++;
 }
 
-WorkItem* WorkStack::pop()
+JobItem* JobStack::pop()
 {
-	WorkItemWrapper *item = head;
+	JobItemWrapper *item = head;
 
 	if(NULL != head)
 	{
@@ -81,16 +81,13 @@ WorkItem* WorkStack::pop()
 	return item;
 }
 
-int WorkStack::size()
+int JobStack::size()
 {
 	return itemsCount;
 }
 
-WorkStack::WorkItemWrapper::WorkItemWrapper(const WorkItem::WorkItemType &type, const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor)
-	: prev(NULL)
+JobStack::JobItemWrapper::JobItemWrapper(const JobItem &item)
+	: JobItem(item)
+	, prev(NULL)
 	, next(NULL)
-{
-	this->type = type;
-	this->texture = texture;
-	this->descriptor = descriptor;
-}
+{ }

@@ -17,29 +17,31 @@ public:
 	TextureConvertor();
 
 	void loadOriginal(const DAVA::Texture *texture);
-	void getPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor);
-	void getDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor);
+	void getPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
+	void getDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
 private:
 	QFutureWatcher<QImage> loadOriginalWatcher;
 	QFutureWatcher<QImage> convertWatcher;
 
-	WorkStack workStack;
-	WorkItem *curWork;
+	JobStack jobStackConvert;
+	JobItem *curJobConvert;
 
-	const DAVA::Texture* curOriginalTexture;
+	JobStack jobStackOriginal;
+	JobItem *curJobOriginal;
 
-	void workRunNext();
+	void jobRunNextConvert();
+	void jobRunNextOriginal();
 
-	QImage loadOriginalThread(const DAVA::Texture *texture);
-	QImage convertThreadPVR(const WorkItem *item);
-	QImage convertThreadDXT(const WorkItem *item);
+	QImage loadOriginalThread(JobItem *item);
+	QImage convertThreadPVR(JobItem *item);
+	QImage convertThreadDXT(JobItem *item);
 
 signals:
 	void readyOriginal(const DAVA::Texture *texture, const QImage &image);
-	void readyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor, const QImage &image);
-	void readyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor &descriptor, const QImage &image);
-	void convertStatus(const WorkItem *workCur, int workLeft);
+	void readyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void convertStatus(const JobItem *jobCur, int jobLeft);
 
 private slots:
 	void threadOriginalFinished();

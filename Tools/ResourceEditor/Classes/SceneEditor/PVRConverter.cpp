@@ -8,7 +8,7 @@ using namespace DAVA;
 PVRConverter::PVRConverter()
 {
 	// pvr map
-	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA8888] = "OGLBGRA8888";
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA8888] = "OGL8888";
 	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA4444] = "OGL4444";
 	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA5551] = "OGL5551";
 	pixelFormatToPVRFormat[DAVA::FORMAT_RGB565] = "OGL565";
@@ -67,8 +67,13 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 			command += " -m";
 		}
 
-		// TODO: base mipmap level
-		// ...
+		// base mipmap level
+		if(0 != descriptor.pvrCompression.baseMipMapLevel)
+		{
+			// TODO:
+			// ...
+			// (0x1 >> descriptor.pvrCompression.baseMipMapLevel);
+		}
 
 		// output file
 		command += Format(" -o \"%s\"", outputFile.c_str());

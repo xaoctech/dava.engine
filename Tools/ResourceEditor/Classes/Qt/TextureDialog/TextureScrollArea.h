@@ -50,6 +50,7 @@ signals:
 
 protected:
 	void setScene(QGraphicsScene *scene);
+	virtual void drawBackground(QPainter * painter, const QRectF & rect);
 	virtual void scrollContentsBy(int dx, int dy);
 	virtual void wheelEvent(QWheelEvent * e);
 
@@ -69,11 +70,14 @@ private:
 
 	QImage currentTextureImage;
 
-	QBrush bgMask;
-
 	QGraphicsScene *textureScene;
 	QGraphicsPixmapItem *texturePixmap;
 	float zoomFactor;
+
+	bool tiledBgDoDraw;
+	QPixmap tiledBgPixmap;
+
+	void sutupCustomTiledBg();
 
 	void applyCurrentImageToScenePixmap();
 	void applyCurrentImageBorder();
