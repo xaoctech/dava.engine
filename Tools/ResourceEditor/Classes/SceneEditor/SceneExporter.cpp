@@ -460,20 +460,24 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
     const char8 *modificationDate = File::GetModificationDate(GetExportedTextureName(texturePathname));
     
     String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-    bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname, exportFormat);
-    if(needToConvert || (NULL == modificationDate))
+    
+    if(PNG_FILE != exportFormat)
     {
-        //TODO: convert to pvr/dxt
-        //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
-        
-        TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
-        DVASSERT(descriptor && "Decriptors mast be created for all textures");
-        if(exportFormat == PVR_FILE)
+        bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname, exportFormat);
+        if(needToConvert || (NULL == modificationDate))
         {
-            PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
+            //TODO: convert to pvr/dxt
+            //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
+            
+            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
+            DVASSERT(descriptor && "Decriptors mast be created for all textures");
+            if(exportFormat == PVR_FILE)
+            {
+                PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
+            }
+            
+            SafeRelease(descriptor);
         }
-        
-        SafeRelease(descriptor);
     }
 }
 
