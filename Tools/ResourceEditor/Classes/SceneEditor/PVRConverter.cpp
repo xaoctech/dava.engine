@@ -67,12 +67,10 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 			command += " -m";
 		}
 
-		// base mipmap level
-		// if(0 != descriptor.pvrCompression.baseMipMapLevel)
+		// base mipmap level (base resize)
+		if(0 != descriptor.pvrCompression.compressToWidth && descriptor.pvrCompression.compressToHeight != 0)
 		{
-			// TODO:
-			// ...
-			// (0x1 >> descriptor.pvrCompression.baseMipMapLevel);
+			command += Format(" -x %d -y %d", descriptor.pvrCompression.compressToWidth, descriptor.pvrCompression.compressToHeight);
 		}
 
 		// output file

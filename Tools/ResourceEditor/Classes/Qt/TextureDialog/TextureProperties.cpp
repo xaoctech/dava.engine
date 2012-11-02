@@ -66,20 +66,20 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	enumPVRFormat = propertiesEnum->addProperty("Format");
 	propertiesEnum->setEnumNames(enumPVRFormat, helperPVRFormats.keyList());
 
-	intBasePVRMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
+	enumBasePVRMipmapLevel = propertiesEnum->addProperty("Base Mipmap level");
 
 	groupPVR->addSubProperty(enumPVRFormat);
-	groupPVR->addSubProperty(intBasePVRMipmapLevel);
+	groupPVR->addSubProperty(enumBasePVRMipmapLevel);
 	addProperty(groupPVR);
 
 	// DXT group
 	enumDXTFormat = propertiesEnum->addProperty("Format");
 	propertiesEnum->setEnumNames(enumDXTFormat, helperDXTFormats.keyList());
 
-	intBaseDXTMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
+	enumBaseDXTMipmapLevel = propertiesEnum->addProperty("Base Mipmap level");
 
 	groupDXT->addSubProperty(enumDXTFormat);
-	groupDXT->addSubProperty(intBaseDXTMipmapLevel);
+	groupDXT->addSubProperty(enumBaseDXTMipmapLevel);
 	addProperty(groupDXT);
 
 	// Common group
@@ -134,19 +134,22 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 		// enable this widget
 		setEnabled(true);
 
+		// init mimmap sizes helper
+		InitMipMapSizes(curTexture->width, curTexture->height);
+
 		// set loaded descriptor to current properties
 		{
 			// pvr
+			QSize curPVRSize(curTextureDescriptor->pvrCompression.compressToWidth, curTextureDescriptor->pvrCompression.compressToHeight);
 			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
-//			propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
-//			propertiesInt->setValue(intPVRWidth, curTextureDescriptor->pvrCompression.compressToWidth);
-//			propertiesInt->setValue(intPVRHeight, curTextureDescriptor->pvrCompression.compressToHeight);
+			propertiesEnum->setEnumNames(enumBasePVRMipmapLevel, helperMipMapSizes.keyList());
+			propertiesEnum->setValue(enumBasePVRMipmapLevel, helperMipMapSizes.indexV(curPVRSize));
 
 			// dxt
+			QSize curDXTSize(curTextureDescriptor->dxtCompression.compressToWidth, curTextureDescriptor->dxtCompression.compressToHeight);
 			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
-//			propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
-//			propertiesInt->setValue(intDXTWidth, curTextureDescriptor->dxtCompression.compressToWidth);
-//			propertiesInt->setValue(intDXTHeight, curTextureDescriptor->dxtCompression.compressToHeight);
+			propertiesEnum->setEnumNames(enumBaseDXTMipmapLevel, helperMipMapSizes.keyList());
+			propertiesEnum->setValue(enumBaseDXTMipmapLevel, helperMipMapSizes.indexV(curDXTSize));
 
 			// mipmap
 			propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
@@ -177,7 +180,7 @@ const DAVA::TextureDescriptor* TextureProperties::getTextureDescriptor()
 
 void TextureProperties::propertyChanged(QtProperty * property)
 {
-	if(reactOnPropertyChange && NULL != curTextureDescriptor)
+	if(reactOnPropertyChange && NULL != curTextureDescriptor && NULL != curTexture)
 	{
 		if(property == enumPVRFormat)
 		{
@@ -189,32 +192,38 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			DAVA::PixelFormat newDXTFormat = (DAVA::PixelFormat) helperDXTFormats.value(enumDXTFormat->valueText());
 			curTextureDescriptor->dxtCompression.format = newDXTFormat;
 		}
-//		else if(property == intBasePVRMipmapLevel)
-//		{
-//			curTextureDescriptor->pvrCompression.baseMipMapLevel = propertiesInt->value(intBasePVRMipmapLevel);
-//		}
-//		else if(property == intBaseDXTMipmapLevel)
-//		{
-//			curTextureDescriptor->dxtCompression.baseMipMapLevel = propertiesInt->value(intBaseDXTMipmapLevel);
-//		}
+		else if(property == enumBasePVRMipmapLevel)
+		{
+			QString curSizeStr = enumBasePVRMipmapLevel->valueText();
+			QSize size = helperMipMapSizes.value(curSizeStr);
 
-//        else if(property == intPVRWidth)
-//		{
-//			curTextureDescriptor->pvrCompression.compressToWidth = propertiesInt->value(intPVRWidth);
-//		}
-//        else if(property == intPVRHeight)
-//		{
-//			curTextureDescriptor->pvrCompression.compressToHeight = propertiesInt->value(intPVRHeight);
-//		}
-//        else if(property == intDXTWidth)
-//		{
-//			curTextureDescriptor->dxtCompression.compressToWidth = propertiesInt->value(intDXTWidth);
-//		}
-//        else if(property == intDXTHeight)
-//		{
-//			curTextureDescriptor->dxtCompression.compressToHeight = propertiesInt->value(intDXTHeight);
-//		}
+			if(size.width() == curTexture->width || size.height() == curTexture->height)
+			{
+				curTextureDescriptor->pvrCompression.compressToWidth = 0;
+				curTextureDescriptor->pvrCompression.compressToHeight = 0;
+			}
+			else
+			{
+				curTextureDescriptor->pvrCompression.compressToWidth = size.width();
+				curTextureDescriptor->pvrCompression.compressToHeight = size.height();
+			}
+		}
+		else if(property == enumBaseDXTMipmapLevel)
+		{
+			QString curSizeStr = enumBaseDXTMipmapLevel->valueText();
+			QSize size = helperMipMapSizes.value(curSizeStr);
 
+			if(size.width() == curTexture->width || size.height() == curTexture->height)
+			{
+				curTextureDescriptor->dxtCompression.compressToWidth = 0;
+				curTextureDescriptor->dxtCompression.compressToHeight = 0;
+			}
+			else
+			{
+				curTextureDescriptor->dxtCompression.compressToWidth = size.width();
+				curTextureDescriptor->dxtCompression.compressToHeight = size.height();
+			}
+		}
 		else if(property == boolGenerateMipMaps)
 		{
 			curTextureDescriptor->generateMipMaps = (int) propertiesBool->value(boolGenerateMipMaps);
@@ -232,49 +241,29 @@ void TextureProperties::propertyChanged(QtProperty * property)
 	}
 }
 
-void TextureProperties::enumPropertiesHelper::push_back(const QString &key, const int &value)
-{
-	keys.push_back(key);
-	values.push_back(value);
-}
-
-int TextureProperties::enumPropertiesHelper::value(const QString &key)
-{
-	int i = keys.indexOf(key);
-	if(i != -1)
-	{
-		return values[i];
-	}
-
-	return 0;
-}
-
-int TextureProperties::enumPropertiesHelper::indexK(const QString &key)
-{
-	return keys.indexOf(key);
-}
-
-int TextureProperties::enumPropertiesHelper::indexV(const int &value)
-{
-	return values.indexOf(value);
-}
-
-QStringList TextureProperties::enumPropertiesHelper::keyList()
-{
-	QStringList ret;
-
-	for(int i = 0; i < keys.count(); ++i)
-	{
-		ret.append(keys[i]);
-	}
-
-	return ret;
-}
-
 void TextureProperties::Save()
 {
 	if(NULL != curTextureDescriptor)
 	{
 		curTextureDescriptor->Save();
+	}
+}
+
+void TextureProperties::InitMipMapSizes(int baseWidth, int baseHeight)
+{
+	int level = 0;
+
+	helperMipMapSizes.clear();
+	while(baseWidth > 1 && baseHeight > 1)
+	{
+		QSize size(baseWidth, baseHeight);
+		QString shownKey;
+
+		shownKey.sprintf("%d - %dx%d", level, baseWidth, baseHeight);
+		helperMipMapSizes.push_back(shownKey, size);
+
+		level++;
+		baseWidth = baseWidth >> 1;
+		baseHeight = baseHeight >> 1;
 	}
 }
