@@ -44,6 +44,7 @@ bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
     return false;
 }
 
+
 void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
 {
     if(scene) 
@@ -60,7 +61,13 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
             }
         }
         
-        SafeRelease(emptyNodesForDeletion.begin(), emptyNodesForDeletion.end());
+
+		for (Set<SceneNode *>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+		{
+			SceneNode *node = *it;
+			SafeRelease(node);
+		}
+
         emptyNodesForDeletion.clear();
     }
     else 
@@ -430,8 +437,8 @@ void SceneValidator::FindTexturesForCompression()
     CompressTextures(texturesForPVRCompression, PVR_FILE);
     CompressTextures(texturesForDXTCompression, DXT_FILE);
     
-    SafeRelease(texturesForPVRCompression.begin(), texturesForPVRCompression.end());
-    SafeRelease(texturesForDXTCompression.begin(), texturesForDXTCompression.end());
+	for_each(texturesForPVRCompression.begin(), texturesForPVRCompression.end(),  SafeRelease<Texture>);
+	for_each(texturesForDXTCompression.begin(), texturesForDXTCompression.end(),  SafeRelease<Texture>);
 }
 
 void SceneValidator::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
