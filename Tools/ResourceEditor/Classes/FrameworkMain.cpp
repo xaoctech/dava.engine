@@ -133,10 +133,16 @@ void FrameworkDidLaunched()
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
     
-    uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
-    SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
-    creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
-    Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+    
+    String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
+    String sourceFolder = String("DataSource/3d");
+    if(sourceFolder.length() <= dataSourcePathname.length())
+    {
+        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
+        SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
+        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
+        Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+    }
     
     
 	if (Core::Instance()->IsConsoleMode())
