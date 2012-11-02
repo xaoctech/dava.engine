@@ -36,10 +36,11 @@ namespace DAVA
     
 // MaterialGraph
 MaterialGraph::MaterialGraph()
+:   usedTextureCoordsCount(0)
 {
     
 }
-    
+
 MaterialGraph::~MaterialGraph()
 {
     RemoveAllNodes();
@@ -88,16 +89,16 @@ bool MaterialGraph::LoadFromFile(const String & pathname)
 
 bool MaterialGraph::LoadNode(YamlNode * graphNode)
 {
-    YamlNode * typeNode = graphNode->Get("node");
-    YamlNode * nameNode = graphNode->Get("name");
-    
-    
+
     MaterialGraphNode * node = new MaterialGraphNode();
-    node->SetType(typeNode->AsString());
-    node->SetName(nameNode->AsString());
+    node->InitFromYamlNode(graphNode);
     AddNode(node);
     
+    usedTextureCoordsCount = Max(usedTextureCoordsCount, node->GetTextureInputIndex());
+    
     //YamlNode *
+    YamlNode * nameNode = graphNode->Get("name");
+    YamlNode * typeNode = graphNode->Get("node");
     Logger::Debug("- %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
 
     // Parse inputs

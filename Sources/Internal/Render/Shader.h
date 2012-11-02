@@ -67,6 +67,7 @@ public:
     
     enum eUniformType
     {
+        UT_FLOAT = GL_FLOAT,
         UT_FLOAT_VEC2 = GL_FLOAT_VEC2,
         UT_FLOAT_VEC3 = GL_FLOAT_VEC3,
         UT_FLOAT_VEC4 = GL_FLOAT_VEC4,
@@ -91,26 +92,36 @@ public:
     Shader * Clone();
     
     // virtual void SetActiveShader(const String & string);
-    virtual void SetDefines(const String & defines);
+    void SetDefines(const String & defines);
+    void SetVertexShaderDefines(const String & defines);
+    void SetFragmentShaderDefines(const String & defines);
+    
     // comma ';' sepated define list
-    virtual void SetDefineList(const String & enableDefinesList);
+    void SetDefineList(const String & enableDefinesList);
     
-    virtual bool LoadFromYaml(const String & pathname);
-    virtual bool Recompile();
-    virtual Shader * RecompileNewInstance(const String & combination);
+    bool LoadFromYaml(const String & pathname);
+    bool Load(const String & vertexShaderPath, const String & fragmentShaderPath);
     
-    virtual void Bind();
+    bool Recompile();
+    Shader * RecompileNewInstance(const String & combination);
+    
+    void Bind();
     static void Unbind();
-    virtual int32 FindUniformLocationByName(const String & name);
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
     int32 GetAttributeCount();
     
     int32 GetUniformCount();
     eUniformType GetUniformType(int32 index);
+    static int32 GetUniformTypeSize(eUniformType type);
     const String & GetUniformName(int32 index);
+    int32 GetUniformLocation(int32 index);
+    int32 FindUniformLocationByName(const String & name);
+
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
+    void SetUniformValue(int32 uniformLocation, int32 count, int32 * value);
+    void SetUniformValue(int32 uniformLocation, int32 count, float32 * value);
     void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
@@ -120,6 +131,9 @@ public:
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);
 
 
+    
+    void Dump();
+    
     /**
         This function return vertex format required by shader
      */
@@ -155,14 +169,15 @@ private:
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     
-    GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources);    
+    GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
     void DeleteShaders();
     eUniform GetUniformByName(const char * name);
     int32 GetAttributeIndexByName(const char * name);
     
     static GLuint activeProgram;
-    String defines;
+    String vertexShaderDefines;
+    String fragmentShaderDefines;
     
     Data * vertexShaderData;
     Data * fragmentShaderData;

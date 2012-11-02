@@ -4,8 +4,8 @@
 #define ATTRIBUTE_TEX0
 #define TEX_COORD0_MODIFICATION_CODE
 #define TEX_COORD1_MODIFICATION_CODE
-#define VERTEX_FOG
-#define VERTEX_LIT
+//#define VERTEX_FOG
+//#define VERTEX_LIT
 #define LIGHT_NUM 2
 
 
@@ -27,8 +27,17 @@ attribute vec3 inNormal;
 #ifdef ATTRIBUTE_TEX0
 attribute vec2 inTexCoord0;
 #endif 
+
 #ifdef ATTRIBUTE_TEX1
 attribute vec2 inTexCoord1;
+#endif
+
+#ifdef ATTRIBUTE_TEX2
+attribute vec2 inTexCoord2;
+#endif
+
+#ifdef ATTRIBUTE_TEX3
+attribute vec2 inTexCoord2;
 #endif
 
 #ifdef ATTRIBUTE_COLOR

@@ -67,7 +67,7 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
 //    new SampleTest();
-//	new EntityTest(); 
+//    new EntityTest(); 
 //    new MemoryAllocatorsTest();
 //    new HashMapTest();
 //    new SoundTest();

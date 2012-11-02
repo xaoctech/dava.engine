@@ -39,6 +39,9 @@
 #include "Debug/Stats.h"
 #include "Entity/Components.h"
 #include "Entity/Entity.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/MaterialCompiler.h"
+#include "Render/Material/MaterialGraph.h"
 
 namespace DAVA 
 {
@@ -53,6 +56,21 @@ PolygonGroupWithMaterial::PolygonGroupWithMaterial(StaticMesh * _mesh, int32 _po
     mesh = SafeRetain(_mesh);
     polygroupIndex = _polygroupIndex;
     material = SafeRetain(_material);
+
+    nMaterialInstance = 0;
+    
+    MaterialCompiler * compiler = new MaterialCompiler();
+    MaterialGraph * graph = new MaterialGraph();
+    graph->LoadFromFile("~res:/Materials/default.material");
+    
+    if (MaterialCompiler::COMPILATION_SUCCESS == compiler->Compile(graph, 1, &nMaterial))
+    {
+        nMaterialInstance = new NMaterialInstance();
+        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 0);
+    }
+    
+    SafeRelease(graph);
+    SafeRelease(compiler);
 }
     
 PolygonGroupWithMaterial::~PolygonGroupWithMaterial()
@@ -80,8 +98,17 @@ Material * PolygonGroupWithMaterial::GetMaterial()
 {
     return material;
 }
-
     
+NMaterial * PolygonGroupWithMaterial::GetNMaterial()
+{
+    return nMaterial;
+}
+    
+NMaterialInstance * PolygonGroupWithMaterial::GetNMaterialInstance()
+{
+    return nMaterialInstance;
+}
+
 MeshInstanceNode::MeshInstanceNode()
 :	SceneNode()
 {
@@ -194,29 +221,41 @@ void MeshInstanceNode::Draw()
     for (uint32 k = 0; k < meshesSize; ++k)
     {
         PolygonGroupWithMaterial * polygroup = polygroups[k];
-        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
-		{
-			LightmapData * data = GetLightmapDataForIndex(k);
-			if(data && data->lightmap)
-			{
-				polygroup->material->SetSetupLightmap(false);
-				polygroup->material->SetTexture(Material::TEXTURE_DECAL, data->lightmap);
-				polygroup->material->SetUvOffset(data->uvOffset);
-				polygroup->material->SetUvScale(data->uvScale);
-			}
-			else
-			{
-				polygroup->material->SetSetupLightmap(true);
-				polygroup->material->SetSetupLightmapSize(GetCustomProperties()->GetInt32(DAVA::Format("#%d.lightmap.size", k), 128));
-			}
+        
+        NMaterial * nMaterial = polygroup->GetNMaterial();
+        
+        if (nMaterial)
+        {
+            nMaterial->PrepareRenderState(polygroup->GetPolygonGroup(), polygroup->GetNMaterialInstance());
+            nMaterial->Draw(polygroup->GetPolygonGroup(), polygroup->GetNMaterialInstance());
         }
+        else
+        {
+            
+            if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+                LightmapData * data = GetLightmapDataForIndex(k);
+                if(data && data->lightmap)
+                {
+                    polygroup->material->SetSetupLightmap(false);
+                    polygroup->material->SetTexture(Material::TEXTURE_DECAL, data->lightmap);
+                    polygroup->material->SetUvOffset(data->uvOffset);
+                    polygroup->material->SetUvScale(data->uvScale);
+                }
+                else
+                {
+                    polygroup->material->SetSetupLightmap(true);
+                    polygroup->material->SetSetupLightmapSize(GetCustomProperties()->GetInt32(DAVA::Format("#%d.lightmap.size", k), 128));
+                }
+            }
 
-//        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
-//        {
-//            polygroup->material->type = Material::MATERIAL_UNLIT_TEXTURE;
-//        }
-//        if (polygroup->material->type != Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
-        polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
+    //        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+    //        {
+    //            polygroup->material->type = Material::MATERIAL_UNLIT_TEXTURE;
+    //        }
+    //        if (polygroup->material->type != Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
+        }
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)

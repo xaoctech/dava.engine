@@ -30,11 +30,14 @@
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
+#include "Render/Material/NMaterial.h"
+#include "FileSystem/FileSystem.h"
+#include "Render/Shader.h"
 
 namespace DAVA
 {
     
-MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * materialGraph, uint32 maxLights, MaterialShaders * resultShaders)
+MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial)
 {
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
     if (!rootResultNode)
@@ -45,6 +48,18 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * mater
     RecursiveSetDepthMarker(rootResultNode, 0);
     materialGraph->SortByDepthMarker();
     GenerateCode(materialGraph);
+    
+    currentMaterial = new NMaterial(maxLights);
+
+    
+    
+    Shader * shader = new Shader();
+    shader->Load("~doc:/temp.vsh", "~doc:/temp.fsh");
+    shader->Recompile();
+    
+    currentMaterial->SetShader(0, shader);
+    
+    *resultMaterial = currentMaterial;
     
     return COMPILATION_SUCCESS;
 };
@@ -76,8 +91,28 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
         MaterialGraphNode * node = materialGraph->GetNode(nodeIndex);
         node->GenerateCode(vertexShader, pixelShader);
     }
-}
     
+    
+    MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
+
+    String vertexShaderPath = "~res:/Materials/forward.vsh";
+    String fragmentShaderPath = "~res:/Materials/forward.fsh";
+
+    String originalVertexShader = FileSystem::Instance()->ReadFileContents(vertexShaderPath);
+    String originalFragmentShader = FileSystem::Instance()->ReadFileContents(fragmentShaderPath);
+    
+    
+    File * resultVsh = File::Create("~doc:/temp.vsh", File::CREATE | File::WRITE);
+    resultVsh->WriteString(rootResultNode->GetFragmentShaderCode(), false); // Save without null terminator
+    resultVsh->WriteString(originalVertexShader);
+    SafeRelease(resultVsh);
+    
+    File * resultFsh = File::Create("~doc:/temp.fsh", File::CREATE | File::WRITE);
+    resultFsh->WriteString(rootResultNode->GetFragmentShaderCode(), false); // Save without null terminator
+    resultFsh->WriteString(originalFragmentShader);
+    //resultFsh->Write(fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
+    SafeRelease(resultFsh);
+};
 
 };
 

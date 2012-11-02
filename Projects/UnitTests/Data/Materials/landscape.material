@@ -7,7 +7,8 @@
 
 material:
     numberOfTextureCoordInputs: 1
-    
+
+# material properties
 nodes:
     -   node: TYPE_SAMPLE_2D
         name: tile1
@@ -55,5 +56,6 @@ nodes:
         input: [b, add3, rgb]
     -   node: TYPE_FORWARD_MATERIAL
         name: material
+        isPixelLightingEnabled: false
         input: [emissive, mulFinal, rgb]
 

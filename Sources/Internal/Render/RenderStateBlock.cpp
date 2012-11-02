@@ -35,6 +35,7 @@
 #include "Utils/Utils.h"
 
 
+
 namespace DAVA
 {
 
@@ -42,9 +43,9 @@ namespace DAVA
 IDirect3DDevice9 * RenderStateBlock::direct3DDevice = 0; 
 #endif
 
-RenderStateBlock::RenderStateBlock(Core::eRenderer _renderer)
-    : renderer(_renderer)
+RenderStateBlock::RenderStateBlock()
 {
+    renderer = RenderManager::Instance()->GetRenderer();
 	Reset(false);
 }
 

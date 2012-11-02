@@ -273,7 +273,7 @@ public:
         
     };*/
 
-    RenderStateBlock(Core::eRenderer _renderer);
+    RenderStateBlock();
     ~RenderStateBlock();
         
     Core::eRenderer renderer;

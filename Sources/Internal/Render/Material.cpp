@@ -125,7 +125,7 @@ Material::Material()
 	,	isAlphablend(false)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
-	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
+	,	renderStateBlock()
     ,   isWireframe(false)
 {
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
@@ -332,7 +332,7 @@ void Material::RebuildShader()
         uniformFogColor = shader->FindUniformLocationByName("fogColor");
     }
     
-    RetrieveTextureSlotNames();
+    //RetrieveTextureSlotNames();
 }
     
 void Material::RetrieveTextureSlotNames()
