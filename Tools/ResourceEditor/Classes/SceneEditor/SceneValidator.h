@@ -122,7 +122,7 @@ protected:
 
 	bool IsTextureDescriptorPath(const String &path);
     
-    Set<SceneNode*> emptyNodesForDeletion;
+    Set<SceneNode *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
     SceneInfoControl *infoControl;

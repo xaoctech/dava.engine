@@ -18,7 +18,7 @@ void CommandsManager::ClearQueue()
 {
     currentCommandIndex = -1;
     
-    SafeRelease(commandsQueue.begin(), commandsQueue.end());
+	for_each(commandsQueue.begin(), commandsQueue.end(), SafeRelease<Command>);
     commandsQueue.clear();
 }
 
@@ -27,7 +27,7 @@ void CommandsManager::ClearQueueTail()
     if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
     {
         int32 newCount = currentCommandIndex + 1;
-        SafeRelease(commandsQueue.begin(), commandsQueue.end());
+		for_each(commandsQueue.begin(), commandsQueue.end(), SafeRelease<Command>);
         
         commandsQueue.resize(newCount);
     }
