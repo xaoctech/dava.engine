@@ -129,7 +129,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         bool read = LibPVRHelper::ReadFile(file, imageSet);
         if(!read)
         {
-            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file");
+            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename());
             SafeRelease(imageSet.begin(), imageSet.end());
             return Vector<Image *>();
         }

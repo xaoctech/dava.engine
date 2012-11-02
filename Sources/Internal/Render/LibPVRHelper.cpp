@@ -1714,7 +1714,7 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
         }
         case PVRTGENPIXELID1('l',8):
         {
-            return FORMAT_INVALID;
+            return FORMAT_A8;
         }
         case PVRTGENPIXELID1('a',8):
         {
