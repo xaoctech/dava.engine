@@ -180,6 +180,9 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 		qtImage = QImage(r.size(), QImage::Format_ARGB32);
 
 		QPainter p(&qtImage);
+        p.setBrush(QBrush(QColor(100, 100, 100)));
+        p.setPen(QColor(255, 255, 255));
+        p.drawRect(r);
 		p.drawText(r, "No image", QTextOption(Qt::AlignCenter));
 	}
 
