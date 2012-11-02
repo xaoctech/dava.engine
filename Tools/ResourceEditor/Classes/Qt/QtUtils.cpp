@@ -76,7 +76,7 @@ DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname)
     if(0 != imageSet.size())
     {
         image = SafeRetain(imageSet[0]);
-        SafeRelease(imageSet.begin(), imageSet.end());
+		for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
     }
     
     return image;

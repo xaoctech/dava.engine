@@ -412,7 +412,7 @@ void PropertyList::ReleaseProperties()
 {
 	propsMap.clear();
     
-    SafeRelease(props.begin(), props.end());
+	for_each(props.begin(), props.end(),  SafeRelease<PropertyCellData>);
     props.clear();
     
     propsList->Refresh();

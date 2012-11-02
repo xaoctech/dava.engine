@@ -171,7 +171,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				qtImage = fromDavaImage(davaImage);
 			}
 
-            DAVA::SafeRelease(davaImages.begin(), davaImages.end());
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
 		}
 	}
 	else

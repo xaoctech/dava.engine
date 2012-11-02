@@ -14,7 +14,7 @@ GraphItem::~GraphItem()
 {
     parentItem = NULL;
     
-    SafeRelease(children.begin(), children.end());
+	for_each(children.begin(), children.end(), SafeRelease<GraphItem>);
 	children.clear();
 }
 
