@@ -74,7 +74,8 @@ void Parser::AddDefine(const char * define)
     
 void Parser::AddDefine(const char * define, const char * value)
 {
-    
+    Define def;
+    def.define = define;
 }
 
 int32 Parser::SkipSpaces(const char * stream)
@@ -109,6 +110,4 @@ int32 ExpectSymbol(const char * stream, const char symbol)
 
 
 };
-
-#endif // __DAVAENGINE_MATERIAL_GRAPH_H__
 
