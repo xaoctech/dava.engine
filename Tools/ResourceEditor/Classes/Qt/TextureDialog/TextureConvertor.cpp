@@ -178,11 +178,18 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 		QRect r(0, 0, item->texture->width, item->texture->height);
 		qtImage = QImage(r.size(), QImage::Format_ARGB32);
 
+		QFont font;
+		font.setPointSize(18);
+
 		QPainter p(&qtImage);
+		p.setRenderHint(QPainter::TextAntialiasing, true);
         p.setBrush(QBrush(QColor(100, 100, 100)));
         p.setPen(QColor(255, 255, 255));
+		p.setFont(font);
+
+		r.adjust(0, 0, -1, -1);
         p.drawRect(r);
-		p.drawText(r, "No image", QTextOption(Qt::AlignCenter));
+		p.drawText(r, "Wrong PVR format", QTextOption(Qt::AlignCenter));
 	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
@@ -273,7 +280,7 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 					for (int x = 0; x < image->width; x++) 
 					{
 						c = data[y * image->width + x];
-						line[x] = c & 0xFF00FF00 | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
+						line[x] = (c & 0xFF00FF00) | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
 					}
 				}
 			}
