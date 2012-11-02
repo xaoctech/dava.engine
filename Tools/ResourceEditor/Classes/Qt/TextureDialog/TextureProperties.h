@@ -38,25 +38,66 @@ private slots:
 	void propertyChanged(QtProperty * property);
 
 private:
+	template<typename T>
 	struct enumPropertiesHelper
 	{
-		int value(const QString &key);
-		int indexK(const QString &key);
-		int indexV(const int &value);
+		T value(const QString &key)
+		{
+			int i = keys.indexOf(key);
 
-		void push_back(const QString &key, const int &value);
-		QStringList keyList();
+			if(i != -1)
+			{
+				return values[i];
+			}
+
+			return T();
+		}
+
+		void push_back(const QString &key, const T &value)
+		{
+			keys.push_back(key);
+			values.push_back(value);
+		}
+
+		void clear()
+		{
+			keys.clear();
+			values.clear();
+		}
+
+		int indexK(const QString &key)
+		{
+			return keys.indexOf(key);
+		}
+
+		int indexV(const T &value)
+		{
+			return values.indexOf(value);
+		}
+
+		QStringList keyList()
+		{
+			QStringList ret;
+
+			for(int i = 0; i < keys.count(); ++i)
+			{
+				ret.append(keys[i]);
+			}
+
+			return ret;
+		}
 
 	private:
 		QVector<QString> keys;
-		QVector<int> values;
+		QVector<T> values;
 	};
 
 	QWidget *oneForAllParent;
 
-	enumPropertiesHelper helperPVRFormats;
-	enumPropertiesHelper helperDXTFormats;
-	enumPropertiesHelper helperWrapModes;
+	enumPropertiesHelper<int> helperPVRFormats;
+	enumPropertiesHelper<int> helperDXTFormats;
+	enumPropertiesHelper<int> helperWrapModes;
+	enumPropertiesHelper<QSize> helperMipMapSizes;
 
 	DAVA::Texture *curTexture;
 	DAVA::TextureDescriptor *curTextureDescriptor;
@@ -75,16 +116,23 @@ private:
 	QtEnumEditorFactory *editorEnum;
 
 	QtProperty *enumPVRFormat;
-	QtProperty *intBasePVRMipmapLevel;
+	QtProperty *enumBasePVRMipmapLevel;
 
 	QtProperty *enumDXTFormat;
-	QtProperty *intBaseDXTMipmapLevel;
+	QtProperty *enumBaseDXTMipmapLevel;
 
 	QtProperty *boolGenerateMipMaps;
 	QtProperty *enumWrapModeS;
 	QtProperty *enumWrapModeT;
 
 	void Save();
+
+
+	void InitMipMapSizes(int baseWidth, int baseHeight);
+	/*
+	int GetBaseSizeIndex(QtProperty *enumPropetie, int baseWidth, int baseHeight);
+	QSize GetBaseSize(QtProperty *enumPropetie, int index);
+	*/
 };
 
 #endif // __TEXTURE_PROPERTIES_H__
