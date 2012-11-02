@@ -175,20 +175,6 @@ void SafeRelease(C * &c)
 	}
 }
     
-/**
-     \ingroup baseobjects
-     \brief	function to perform release safely for container. It goes from begin to end and call SafeRelease to iterator value.
-     */
-template<class Iterator>
-void SafeRelease(const Iterator &begin, const Iterator &end)
-{
-    for (Iterator it = begin; it != end; ++it)
-    {
-        BaseObject *obj = *it;
-        SafeRelease(obj);
-    }
-}
-    
 
 // /*#if defined(__DAVAENGINE_DIRECTX9__)*/
 //template<>

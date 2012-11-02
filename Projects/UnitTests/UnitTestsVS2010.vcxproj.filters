@@ -53,6 +53,11 @@
     </ClInclude>
     <ClInclude Include="Classes\TextureUtils.h">
       <Filter>Common</Filter>
+    <ClInclude Include="Classes\KeyedArchiveTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\KeyedArchiveYamlTest.h">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +99,11 @@
     </ClCompile>
     <ClCompile Include="Classes\TextureUtils.cpp">
       <Filter>Common</Filter>
+    <ClCompile Include="Classes\KeyedArchiveTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp">
+      <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
