@@ -272,7 +272,7 @@ void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel 
 {
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
     landscape->SetTexture(level, texturePathname);
-    SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
+    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level));
 
     if(LandscapeNode::TEXTURE_TILE_FULL != level)
     {
@@ -332,7 +332,7 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 if(landscape)
                 {
                     landscape->SetTexture(LandscapeNode::TEXTURE_COLOR, resultPath);
-                    SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_COLOR));
+                    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(LandscapeNode::TEXTURE_COLOR));
                 }
             }
         }
