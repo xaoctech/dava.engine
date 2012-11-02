@@ -115,12 +115,13 @@ public:
 	virtual uint32 Write(const void * sourceBuffer, uint32 dataSize);
 
 	/** 
-		\brief Write string
-		write null-terminated string from current position in file
-		\param[in] string - string data loaded to this variable
+		\brief Write string.
+		write null-terminated string from current position in file.
+		\param[in] string string data loaded to this variable/
+        \param[in] shouldNullBeWritten indicates does it require to save null terminator.
 		\return true if success otherwise false
 	 */
-	virtual bool WriteString(const String & string);
+	virtual bool WriteString(const String & string, bool shouldNullBeWritten = true);
 
 	/** 
 		\brief Write one line of text
@@ -154,6 +155,7 @@ public:
 		\returns actual length of the string that was read
 	 */
 	virtual uint32 ReadString(char8 * destinationBuffer, uint32 destinationBufferSize);
+    uint32 ReadString(String & destinationString);
 	
 	/** 
 		\brief Get current file position

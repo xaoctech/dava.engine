@@ -162,6 +162,22 @@ uint32 File::ReadString(char8 * destinationBuffer, uint32 destinationBufferSize)
 	}
 	return writeIndex - 1;
 }
+    
+uint32 File::ReadString(String & destinationString)
+{
+    uint32 writeIndex = 0;
+	while(!IsEof())
+	{
+		uint8 currentChar;
+		Read(&currentChar, 1);
+		
+		destinationString += currentChar;
+		writeIndex++;
+		if(currentChar == 0)break;
+	}
+	return writeIndex - 1;
+}
+
 
 uint32 File::ReadLine(void * pointerToData, uint32 bufferSize)
 {
@@ -234,10 +250,11 @@ bool File::IsEof()
 	return (feof(file) != 0);
 }
 
-bool File::WriteString(const String & strtowrite)
+bool File::WriteString(const String & strtowrite, bool shouldNullBeWritten)
 {
 	const char * str = strtowrite.c_str();
-	return (Write((void*)str, (uint32)(strtowrite.length() + 1)) == strtowrite.length() + 1);
+    uint32 null = (shouldNullBeWritten) ? (1) : (0);
+	return (Write((void*)str, (uint32)(strtowrite.length() + null)) == strtowrite.length() + null);
 }
 
 bool File::WriteLine(const String & string)

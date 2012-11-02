@@ -247,8 +247,16 @@ public:
         \param[in] pathname path to the file we want to read
         \param[out] fileSize
         \returns pointer to newly created buffer with file contents
-     */ 
+     */
     uint8 * ReadFileContents(const String & pathname, uint32 & fileSize);
+    
+    
+    /**
+        \brief Read whole file contents into string.
+        \param[in] pathname path to the file we want to read
+        \returns string with whole file contents
+     */
+    String ReadFileContents(const String & pathname);
 
 	/**
 		\brief Function to attach ResourceArchive to filesystem
