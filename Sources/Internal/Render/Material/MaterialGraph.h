@@ -59,9 +59,12 @@ public:
     MaterialGraphNode * GetNode(uint32 index) const;
     MaterialGraphNode * GetNodeByName(const String & name) const;
     
+    
+    
 protected:
     static bool SortByDepthMarkerDescending(MaterialGraphNode * node1, MaterialGraphNode * node2);
     Vector<MaterialGraphNode*> allNodes;
+    uint32 usedTextureCoordsCount;
 };
 
 };

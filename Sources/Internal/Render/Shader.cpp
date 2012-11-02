@@ -126,11 +126,70 @@ Shader::eUniformType Shader::GetUniformType(int32 index)
     return uniformTypes[index];
 }
     
+int32 Shader::GetUniformTypeSize(eUniformType type)
+{
+    switch(type)
+    {
+        case UT_FLOAT:
+            return 4;
+        case UT_FLOAT_VEC2:
+            return 4 * 2;
+        case UT_FLOAT_VEC3:
+            return 4 * 3;
+        case UT_FLOAT_VEC4:
+            return 4 * 4;
+        case UT_INT:
+            return 4 * 1;
+        case UT_INT_VEC2:
+            return 4 * 2;
+        case UT_INT_VEC3:
+            return 4 * 3;
+        case UT_INT_VEC4:
+            return 4 * 4;
+        case UT_BOOL:
+            return 4 * 1;
+        case UT_BOOL_VEC2:
+            return 4 * 2;
+        case UT_BOOL_VEC3:
+            return 4 * 3;
+        case UT_BOOL_VEC4:
+            return 4 * 4;
+        case UT_FLOAT_MAT2:
+            return 4 * 2 * 2;
+        case UT_FLOAT_MAT3:
+            return 4 * 3 * 3;
+        case UT_FLOAT_MAT4:
+            return 4 * 4 * 4;
+        case UT_SAMPLER_2D:
+            return 4;
+        case UT_SAMPLER_CUBE:
+            return 4;
+    };
+}
+    
 const String & Shader::GetUniformName(int32 index)
 {
     return uniformNames[index];
 }
 
+int32 Shader::GetUniformLocation(int32 index)
+{
+    return uniformLocations[index];
+}
+
+int32 Shader::FindUniformLocationByName(const String & name)
+{
+    for (int32 k = 0; k < activeUniforms; ++k)
+    {
+        if (uniformNames[k] == name)
+        {
+            return uniformLocations[k];
+        }
+    }
+    return -1;
+}
+
+    
 int32 Shader::GetAttributeIndexByName(const char * name)
 {
     for (int32 k = 0; k < VERTEX_FORMAT_STREAM_MAX_COUNT; ++k)
@@ -140,7 +199,17 @@ int32 Shader::GetAttributeIndexByName(const char * name)
     
 void Shader::SetDefines(const String & _defines)
 {
-    defines = _defines;
+    vertexShaderDefines = fragmentShaderDefines = _defines;
+}
+
+void Shader::SetVertexShaderDefines(const String & _defines)
+{
+    vertexShaderDefines = _defines;
+}
+    
+void Shader::SetFragmentShaderDefines(const String & _defines)
+{
+    fragmentShaderDefines = _defines;
 }
     
 void Shader::SetDefineList(const String & enableDefinesList)
@@ -204,23 +273,30 @@ bool Shader::LoadFromYaml(const String & pathname)
         SafeRelease(parser);
         return false;
     }
-    
-    uint32 vertexShaderSize = 0, fragmentShaderSize = 0;
-
     vertexShaderPath = glslVertexNode->AsString();
-    
-    uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(pathOnly + vertexShaderPath, vertexShaderSize);
-    vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
-    
     fragmentShaderPath = glslFragmentNode->AsString();
-    uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(pathOnly + fragmentShaderPath, fragmentShaderSize);
-    fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
-    
     SafeRelease(parser);
+
+    Load(pathOnly + vertexShaderPath, pathOnly + fragmentShaderPath);
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
     
 //    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
+    return true;
+}
+    
+bool Shader::Load(const String & _vertexShaderPath, const String & _fragmentShaderPath)
+{
+    vertexShaderPath = _vertexShaderPath;
+    fragmentShaderPath = _fragmentShaderPath;
+    uint32 vertexShaderSize = 0, fragmentShaderSize = 0;
+        
+    uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(vertexShaderPath, vertexShaderSize);
+    vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
+    
+    uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
+    fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
+    
     return true;
 }
     
@@ -243,13 +319,13 @@ bool Shader::Recompile()
     DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
     
     RenderManager::Instance()->LockNonMain();
-    if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr()))
+    if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
     {
         Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.c_str());
         return false;
     }
     
-    if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr()))
+    if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr(), fragmentShaderDefines))
     {
         Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.c_str());
         return false;
@@ -401,7 +477,7 @@ GLint Shader::LinkProgram(GLuint prog)
     {
         GLchar *log = (GLchar *)malloc(logLength);
         RENDER_VERIFY(glGetProgramInfoLog(prog, logLength, &logLength, log));
-        //Logger::Debug("Program link log:\n%s", log);
+        Logger::Debug("Program link log:\n%s", log);
         free(log);
     }
     
@@ -415,7 +491,7 @@ GLint Shader::LinkProgram(GLuint prog)
 }
     
 /* Create and compile a shader from the provided source(s) */
-GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources)
+GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines)
 {
     RenderManager::Instance()->LockNonMain();
 
@@ -525,16 +601,31 @@ void Shader::Bind()
     
 }
     
-int32 Shader::FindUniformLocationByName(const String & name)
+void Shader::Dump()
 {
+    Logger::Debug("Attributes: ");
+    for (int32 k = 0; k < activeAttributes; ++k)
+    {
+        int32 flagIndex = GetAttributeIndexByName(attributeNames[k].c_str());
+        Logger::Debug("Attribute: %s location: %d vertexFormatIndex:%x", attributeNames[k].c_str(), vertexFormatAttribIndeces[flagIndex], flagIndex);
+    }
+    
+    RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
+    
+    
+    Logger::Debug("Uniforms: ");
     for (int32 k = 0; k < activeUniforms; ++k)
     {
-        if (uniformNames[k] == name)
-        {
-            return uniformLocations[k];
-        }
+        //Logger::Debug("shader uniform: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
+//        uniformNames[k] = attributeName;
+//        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
+//        uniformIDs[k] = uniform;
+//        uniformTypes[k] = (eUniformType)type;
+        eUniform uniform = GetUniformByName(uniformNames[k].c_str());
+        Logger::Debug("uniform: %s(%d) type: %s", uniformNames[k].c_str(), uniform, VertexTypeStringFromEnum(uniformTypes[k]).c_str());
     }
-    return -1;
+
+    
 }
     
 Shader * Shader::RecompileNewInstance(const String & combination)

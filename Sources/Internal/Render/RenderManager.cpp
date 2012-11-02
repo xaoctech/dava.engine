@@ -49,8 +49,8 @@ RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 
     
 RenderManager::RenderManager(Core::eRenderer _renderer)
-    : currentState(_renderer)
-    , hardwareState(_renderer)
+    : currentState()
+    , hardwareState()
     , needGLScreenShot(false)
     , screenShotIndex(0)
 {

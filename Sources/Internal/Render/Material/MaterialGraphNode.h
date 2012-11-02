@@ -38,9 +38,14 @@
 namespace DAVA
 {
 class MaterialGraphNode;
+class YamlNode;
+class Shader;
+    
 class MaterialGraphNodeConnector : public BaseObject
 {
 public:
+    MaterialGraphNode * GetNode() { return node; }
+    
     MaterialGraphNode * node;
     String modifier;
 };
@@ -74,6 +79,8 @@ public:
     MaterialGraphNode();
     ~MaterialGraphNode();
     
+    void InitFromYamlNode(YamlNode * graphNode);
+    
     void SetDepthMarker(uint32 depthMarker);
     uint32 GetDepthMarker();
     
@@ -92,7 +99,16 @@ public:
     
     void MergeConnectionModifiers(const String & usedByOtherNode);
     
+    uint32 GetTextureInputIndex() { return textureInputIndex; };
+    
+    const String & GetVertexShaderCode() { return vertexShaderCode; }
+    const String & GetFragmentShaderCode() { return fragmentShaderCode; }
+    
 protected:
+    String nodeCode;
+    String vertexShaderCode;
+    String fragmentShaderCode;
+    
     String GetResultFormat(const String & s1, const String & s2);
 
     eType type;
@@ -100,6 +116,9 @@ protected:
     String name;
     bool isVertexShaderNode;
     String usedByOthersModifier;
+    uint32 textureInputIndex;
+    uint32 textureChannelIndex;
+    Shader * shader;
     Map<String, MaterialGraphNodeConnector*> inputConnectors;
 };
 

@@ -43,7 +43,9 @@ class PolygonGroup;
 class MeshInstanceNode;
 class LightNode;
 class InstanceMaterialState;
-    
+class NMaterial;
+class NMaterialInstance;
+
 class PolygonGroupWithMaterial : public BaseObject
 {
 public:
@@ -54,10 +56,15 @@ public:
     int32 GetPolygroupIndex();
     PolygonGroup * GetPolygonGroup();
     Material * GetMaterial();
-
+    NMaterial * GetNMaterial();
+    NMaterialInstance * GetNMaterialInstance();
+    
 	Material * material;
     
 private:
+    NMaterial * nMaterial;
+    NMaterialInstance * nMaterialInstance;
+    
     StaticMesh * mesh;
     int32 polygroupIndex;
     

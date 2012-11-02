@@ -1,9 +1,6 @@
+
 #define NUM_TEXTURES 1
 #define NUM_TEX_COORDS 1
-#define COLOR_VEC4 0
-#define GRAPH_SAMPLERS
-//#define GRAPH_CUSTOM_PIXEL_CODE vec4 sample = texture2D(texture[0], varTexCoord[0]); vec4 color = sample;
-#define GRAPH_CUSTOM_PIXEL_CODE vec4 color = texture2D(texture[0], varTexCoord[0]);
 
 #ifdef GL_ES
 // define default precision for float, vec, mat.
@@ -88,14 +85,15 @@ void main()
     color += IN_SPECULAR * shininess;
 	#endif
 
-#elif defined(VERTEX_LIGHT)  // No normal use vertex lighting
-	vec4 color = IN_EMISSIVE + IN_DIFFUSE + IN_SPECULAR;
 #endif
+//defined(VERTEX_LIT)  // No normal use vertex lighting
+	vec3 color = IN_EMISSIVE;// + IN_DIFFUSE + IN_SPECULAR;
+//#endif
 	
 	gl_FragColor =
 #ifdef COLOR_VEC4
 	color.rgba;
 #else
-	color.rgb;
+	vec4(color.rgb, 1.0);
 #endif
 }

@@ -40,6 +40,7 @@ namespace DAVA
 class Shader;
 class MaterialGraph;
 class MaterialGraphNode;
+class NMaterial;
 
 struct MaterialShaders
 {
@@ -57,14 +58,14 @@ public:
         COMPILATION_FAILED = 0,
     };
     
-    eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, MaterialShaders * resultShaders);
+    eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial);
     
 private:
     void GenerateCode(MaterialGraph * graph);
     void RecursiveSetDepthMarker(MaterialGraphNode * node, uint32 depthMarker);
 
 
-
+    NMaterial * currentMaterial;
 };
      
 
