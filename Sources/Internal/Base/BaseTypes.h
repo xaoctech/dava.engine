@@ -305,6 +305,11 @@ enum eAlign
 	ALIGN_BOTTOM	= 0x20,	//!<Align graphical object by the bottom side.
 	ALIGN_HJUSTIFY	= 0x40	//!<Used only for the fonts. Stretch font string over all horizontal size of the area.
 };
+
+#ifndef COUNT_OF
+#define COUNT_OF(x) (sizeof(x)/sizeof(*x))
+#endif
+    
 };
 
 

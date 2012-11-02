@@ -2525,6 +2525,7 @@
 					"./../../Libs/ImageMagick-6.7.4/lib/",
 					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
@@ -2630,6 +2631,7 @@
 					"./../../Libs/ImageMagick-6.7.4/lib/",
 					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
