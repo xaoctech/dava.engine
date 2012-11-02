@@ -37,6 +37,8 @@ private:
 	QImage convertThreadPVR(JobItem *item);
 	QImage convertThreadDXT(JobItem *item);
 
+	QImage fromDavaImage(DAVA::Image *image);
+
 signals:
 	void readyOriginal(const DAVA::Texture *texture, const QImage &image);
 	void readyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
