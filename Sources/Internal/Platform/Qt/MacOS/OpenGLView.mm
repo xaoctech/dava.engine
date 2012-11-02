@@ -232,7 +232,8 @@
 
 - (BOOL)resignFirstResponder
 {	
-	return YES;
+//	return YES;
+    return NO;
 }
 
 
