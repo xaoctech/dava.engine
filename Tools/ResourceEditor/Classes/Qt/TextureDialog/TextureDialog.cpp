@@ -4,6 +4,7 @@
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
 #include "Qt/QtUtils.h"
+#include "Render/LibPVRHelper.h"
 
 #include "ui_texturedialog.h"
 
@@ -240,7 +241,7 @@ void TextureDialog::updateInfoOriginal()
 		int datasize = curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBytes(DAVA::FORMAT_RGBA8888);
 		int filesize = QFileInfo(curDescriptor->GetSourceTexturePathname().c_str()).size();
 
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s\n", formatStr, curTexture->width, curTexture->height,
+		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, curTexture->width, curTexture->height,
 			 SizeInBytesToString(datasize).c_str(),
 			 SizeInBytesToString(filesize).c_str());
 
@@ -268,22 +269,28 @@ void TextureDialog::updateInfoConverted()
 		case ViewPVR:
 			if(curDescriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 			{
+				DAVA::String compressedTexturePath = Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->pvrCompression.format);
-				datasize = curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBytes(curDescriptor->pvrCompression.format);
-				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE).c_str()).size();
+				filesize = QFileInfo(compressedTexturePath.c_str()).size();
+				datasize = DAVA::LibPVRHelper::GetDataLength(compressedTexturePath);
 			}
 			break;
 		case ViewDXT:
 			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 			{
+				DAVA::String compressedTexturePath = Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
-				datasize = curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBytes(curDescriptor->dxtCompression.format);
-				filesize = QFileInfo(Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::DXT_FILE).c_str()).size();
+				filesize = QFileInfo(compressedTexturePath.c_str()).size();
+
+				// TODO: more accurate dxt data size calculation
+				datasize = (curTexture->width * curTexture->height * Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
 			}
 			break;
 		}
 
-		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s\n", formatStr, curTexture->width, curTexture->height,
+		sprintf(tmp, "Format\t: %s\nSize\t: %dx%d\nData size\t: %s\nFile size\t: %s", formatStr, curTexture->width, curTexture->height,
 			SizeInBytesToString(datasize).c_str(),
 			SizeInBytesToString(filesize).c_str());
 

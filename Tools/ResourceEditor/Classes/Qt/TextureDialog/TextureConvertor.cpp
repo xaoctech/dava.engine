@@ -131,10 +131,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 
 		if(!outputPath.empty())
 		{
-			// forced to convert or output file not exists
-			// TODO: add check for descriptor CRC
-			// ...
-			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath) /* || bad_crc */)
+			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
 				QProcess p;
 				DAVA::String command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy);
@@ -164,24 +161,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 			if(davaImages.size() > 0)
 			{
 				DAVA::Image *davaImage = davaImages[0];
-				qtImage = QImage(davaImage->width, davaImage->height, QImage::Format_ARGB32);
-
-				// convert DAVA:RGBA8888 into Qt ARGB8888
-				{
-					QRgb *data = (QRgb *) davaImage->data;
-					QRgb *line;
-					QRgb c;
-
-					for (int y = 0; y < davaImage->height; y++) 
-					{
-						line = (QRgb *) qtImage.scanLine(y);
-						for (int x = 0; x < davaImage->width; x++) 
-						{
-							c = data[y * davaImage->width + x];
-							line[x] = c & 0xFF00FF00 | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
-						}
-					}
-				}
+				qtImage = fromDavaImage(davaImage);
 			}
 
             DAVA::SafeRelease(davaImages.begin(), davaImages.end());
@@ -251,4 +231,154 @@ void TextureConvertor::threadConvertFinished()
 	}
 
 	jobRunNextConvert();
+}
+
+QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
+{
+	QImage qtImage;
+
+	if(NULL != image)
+	{
+		QRgb *line;
+
+		switch(image->format)
+		{
+		case DAVA::FORMAT_PVR4:
+		case DAVA::FORMAT_PVR2:
+		case DAVA::FORMAT_RGBA8888:
+			{
+				DAVA::uint32 *data = (DAVA::uint32 *) image->data;
+				DAVA::uint32 c;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGBA8888 into Qt ARGB8888
+				for (int y = 0; y < image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0; x < image->width; x++) 
+					{
+						c = data[y * image->width + x];
+						line[x] = c & 0xFF00FF00 | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
+					}
+				}
+			}
+			break;
+
+		case DAVA::FORMAT_RGBA5551:
+			{
+				DAVA::uint16 *data = (DAVA::uint16 *) image->data;
+				DAVA::uint32 c;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGBA5551 into Qt ARGB8888
+				for (int y = 0; y < image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0; x < image->width; x++) 
+					{
+						DAVA::uint32 a;
+						DAVA::uint32 r;
+						DAVA::uint32 g;
+						DAVA::uint32 b;
+
+						c = data[y * image->width + x];
+						r = (c >> 11) & 0x1f;
+						g = (c >> 6) & 0x1f;
+						b = (c >> 1) & 0x1f;
+						a = (c & 0x1) ? 0xff000000 : 0x0;
+
+						line[x] = (a | (r << (16 + 3)) | (g << (8 + 3)) | (b << 3));
+					}
+				}
+			}
+			break;
+
+		case DAVA::FORMAT_RGBA4444:
+			{
+				DAVA::uint16 *data = (DAVA::uint16 *) image->data;
+				DAVA::uint32 c;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGBA4444 into Qt ARGB8888
+				for (int y = 0; y < image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0; x < image->width; x++) 
+					{
+						DAVA::uint32 a;
+						DAVA::uint32 r;
+						DAVA::uint32 g;
+						DAVA::uint32 b;
+
+						c = data[y * image->width + x];
+						r = (c >> 12) & 0xf;
+						g = (c >> 8) & 0xf;
+						b = (c >> 4) & 0xf;
+						a = (c & 0xf);
+
+						line[x] = ((a << (24 + 4)) | (r << (16 + 4)) | (g << (8+4)) | (b << 4));
+					}
+				}
+			}
+			break;
+
+		case DAVA::FORMAT_RGB565:
+			{
+				DAVA::uint16 *data = (DAVA::uint16 *) image->data;
+				DAVA::uint32 c;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGBA565 into Qt ARGB8888
+				for (int y = 0; y < image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0; x < image->width; x++) 
+					{
+						DAVA::uint32 a;
+						DAVA::uint32 r;
+						DAVA::uint32 g;
+						DAVA::uint32 b;
+
+						c = data[y * image->width + x];
+						a = 0xff;
+						r = (c >> 11) & 0x1f;
+						g = (c >> 5) & 0x3f;
+						b = c & 0x1f;
+
+						line[x] = ((a << 24) | (r << (16 + 3)) | (g << (8 + 2)) | (b << 3));
+					}
+				}
+			}
+			break;
+
+		case DAVA::FORMAT_A8:
+			{
+				DAVA::uint8 *data = (DAVA::uint8 *) image->data;
+				DAVA::uint32 c;
+
+				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
+
+				// convert DAVA:RGBA565 into Qt ARGB8888
+				for (int y = 0; y < image->height; y++) 
+				{
+					line = (QRgb *) qtImage.scanLine(y);
+					for (int x = 0; x < image->width; x++) 
+					{
+						c = data[y * image->width + x];
+						line[x] = ((0xff << 24) | (c << 16) | (c << 8) | c);
+					}
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return qtImage;
 }
