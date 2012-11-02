@@ -118,7 +118,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
             if(!image)
             {
                 Logger::Error("[ImageLoader::CreateFromPVR] Cannot allocate memory");
-                SafeRelease(imageSet.begin(), imageSet.end());
+				for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
                 return Vector<Image *>();
             }
             
@@ -130,7 +130,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         if(!read)
         {
             Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename());
-            SafeRelease(imageSet.begin(), imageSet.end());
+			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
