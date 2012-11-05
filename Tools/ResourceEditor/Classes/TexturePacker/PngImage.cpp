@@ -498,22 +498,74 @@ void PngImageExt::DrawRect(const Rect2i & rect, uint32 color)
 	}
 }
 
-/*void process_file(void)
+
+void PngImageExt::DitherAlpha()
 {
-	if (info_ptr->color_type != PNG_COLOR_TYPE_RGBA)
-		abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (is %d)", info_ptr->color_type);
-	
-	for (y=0; y<height; y++) {
-		png_byte* row = row_pointers[y];
-		for (x=0; x<width; x++) {
-			png_byte* ptr = &(row[x*4]);
-			printf("Pixel at position [ %d - %d ] has the following RGBA values: %d - %d - %d - %d\n",
-			       x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
-			
-			
-			ptr[0] = 0;
-			ptr[1] = ptr[2];
-		}
-	}
-	
-}*/
+	uint8 * ditheredAlpha = new uint8[width * 4 * height];
+
+    uint8 *ditheredPtr = ditheredAlpha;
+    uint8 *dataPtr = data;
+
+    for(int32 y = 0; y < height; ++y)
+    {
+        for(int32 x = 0; x < width; ++x)
+        {
+            if(dataPtr[3])
+            {
+                Memcpy(ditheredPtr, dataPtr, 4);
+            }
+            else
+            {
+                Color color = GetColorForPoint(x, y);
+                
+                ditheredPtr[0] = (uint8)color.r;
+                ditheredPtr[1] = (uint8)color.g;
+                ditheredPtr[2] = (uint8)color.b;
+                ditheredPtr[3] = 0;
+            }
+            
+            ditheredPtr += 4;
+            dataPtr += 4;
+        }
+    }
+    
+    SafeDeleteArray(data);
+    data = ditheredAlpha;
+}
+
+Color PngImageExt::GetColorForPoint(int32 x, int32 y)
+{
+    int32 count = 0;
+    Color newColor(0, 0, 0, 0);
+    
+    int32 startY = Max(y - 1, 0);
+    int32 endY = Min(y + 1, height);
+    int32 startX = Max(x - 1, 0);
+    int32 endX = Min(x + 1, width);
+    
+    for (int32 alphaY = startY; alphaY < endY; ++alphaY)
+    {
+        for (int32 alphaX = startX; alphaX < endX; ++alphaX)
+        {
+            int32 offset = (y * width + x)*4;
+            if(data[offset + 3])
+            {
+                ++count;
+                newColor.r += (float32)data[offset];
+                newColor.g += (float32)data[offset + 1];
+                newColor.b += (float32)data[offset + 2];
+            }
+        }
+    }
+    
+    if(count)
+    {
+        newColor /= count;
+    }
+    
+    return newColor;
+}
+
+
+
+
