@@ -55,9 +55,10 @@ void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
     SafeRelease(nestedLandscape);
     nestedLandscape = SafeRetain(landscapeNode);
     
-    if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscapeNode);
+    if(editorLandscape)
     {
-        ((EditorLandscapeNode *)nestedLandscape)->SetParentLandscape(this);
+        editorLandscape->SetParentLandscape(this);
     }
     
     

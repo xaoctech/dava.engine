@@ -472,7 +472,7 @@ bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFor
 {
     if(!texture->isRenderTarget)
     {
-        String::size_type textTexturePos = texture->GetPathname().find("text texture");
+        String::size_type textTexturePos = texture->GetPathname().find("Text texture");
         if(String::npos != textTexturePos)
         {
             return false; //is text texture

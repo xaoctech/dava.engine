@@ -204,9 +204,10 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     }
     else
     {
-        if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
+        EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+        if(editorLandscape)
         {
-            ((EditorLandscapeNode *)nestedLandscape)->SetParentLandscape(NULL);
+            editorLandscape->SetParentLandscape(NULL);
         }
         
         SceneNode *parentNode = hiddingLandscape->GetParent();
