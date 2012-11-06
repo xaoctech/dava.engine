@@ -123,14 +123,11 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
-	curTexture = texture;
-	curTextureDescriptor = descriptor;
+	curTexture = DAVA::SafeRetain(texture);
+	curTextureDescriptor = DAVA::SafeRetain(descriptor);
 
 	if(NULL != curTexture && NULL != curTextureDescriptor)
 	{
-		DAVA::SafeRetain(curTexture);
-		DAVA::SafeRetain(curTextureDescriptor);
-
 		// enable this widget
 		setEnabled(true);
 
