@@ -863,7 +863,7 @@ void PropertyDistanceCell::SetData(PropertyCellData *prop)
 
 float32 PropertyDistanceCell::GetHeightForWidth(float32 , int32 count)
 {
-    return CELL_HEIGHT + (count*2 + 1) * ControlsFactory::BUTTON_HEIGHT;
+    return CELL_HEIGHT + LodDistanceControl::GetControlHeightForLodCount(count);
 }
 
 void PropertyDistanceCell::DistanceChanged(LodDistanceControl *, int32 index, float32 value)
