@@ -74,6 +74,10 @@ void GameCore::OnAppStarted()
 
     new SceneDataManager();
     
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+
+    
+    
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     
