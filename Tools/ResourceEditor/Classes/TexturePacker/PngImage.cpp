@@ -560,7 +560,7 @@ Color PngImageExt::GetColorForPoint(int32 x, int32 y)
     
     if(count)
     {
-        newColor /= count;
+        newColor /= (float32)count;
     }
     
     return newColor;
