@@ -679,13 +679,14 @@ void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command
 
 void SceneData::ToggleNotPassableLandscape()
 {
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
+    UIScreen *screen = UIScreenManager::Instance()->GetScreen();
+    if (IsPointerToExactClass<SceneEditorScreenMain>(screen))
     {
-        if(screen->TileMaskEditorEnabled())
+        if(((SceneEditorScreenMain *)screen)->TileMaskEditorEnabled())
         {
             return;
         }
+
     }
     
     landscapesController->ToggleNotPassableLandscape();

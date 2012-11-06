@@ -275,6 +275,7 @@ public:							// properties for fast access
     static String GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat);
     
 private:
+    
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
     
