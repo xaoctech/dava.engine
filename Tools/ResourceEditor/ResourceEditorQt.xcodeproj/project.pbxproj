@@ -2138,7 +2138,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make -C $PROJECT_DIR -f 'MakefileQtXcode' all";
+			shellScript = "make -C $PROJECT_DIR -f 'MakefileQt' all";
 		};
 /* End PBXShellScriptBuildPhase section */
 
