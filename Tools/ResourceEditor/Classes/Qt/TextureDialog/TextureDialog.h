@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QMap>
 #include "DAVAEngine.h"
+#include "QtPosSaver/QtPosSaver.h"
 
 class QModelIndex;
 class TextureListDelegate;
@@ -38,6 +39,7 @@ public:
 
 private:
     Ui::TextureDialog *ui;
+	QtPosSaver posSaver;
 
 	TextureListModel *textureListModel;
 	TextureListDelegate *textureListImagesDelegate;
