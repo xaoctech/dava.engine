@@ -516,7 +516,7 @@ void PngImageExt::DitherAlpha()
             }
             else
             {
-                Color color = GetColorForPoint(x, y);
+                Color color = GetDitheredColorForPoint(x, y);
                 
                 ditheredPtr[0] = (uint8)color.r;
                 ditheredPtr[1] = (uint8)color.g;
@@ -533,7 +533,7 @@ void PngImageExt::DitherAlpha()
     data = ditheredAlpha;
 }
 
-Color PngImageExt::GetColorForPoint(int32 x, int32 y)
+Color PngImageExt::GetDitheredColorForPoint(int32 x, int32 y)
 {
     int32 count = 0;
     Color newColor(0, 0, 0, 0);
