@@ -78,7 +78,7 @@ void LandscapeEditorColor::CreateMaskTexture()
     savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
     if(savedTexture)
     {
-        savedPath = savedTexture->relativePathname;
+        savedPath = savedTexture->GetPathname();
     }
     else 
     {

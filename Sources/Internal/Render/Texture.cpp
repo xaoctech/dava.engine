@@ -645,7 +645,6 @@ Texture * Texture::PureCreate(const String & pathName)
     if(texture)
     {
 		texture->relativePathname = descriptor->pathname;
-		//texture->relativePathname = descriptor->GetSourceTexturePathname();
         textureMap[descriptor->pathname] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }

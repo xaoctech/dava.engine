@@ -346,12 +346,12 @@ void SceneValidator::EnumerateSceneTextures()
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-        if(String::npos != t->relativePathname.find(projectPath))
+        if(String::npos != t->GetPathname().find(projectPath))
         {
-            String::size_type pvrPos = t->relativePathname.find(".pvr");
+            String::size_type pvrPos = t->GetPathname().find(".pvr");
             if(String::npos != pvrPos)
             {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-                sceneTextureMemory += LibPVRHelper::GetDataLength(t->relativePathname);
+                sceneTextureMemory += LibPVRHelper::GetDataLength(t->GetPathname());
             }
             else 
             {
@@ -472,6 +472,12 @@ bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFor
 {
     if(!texture->isRenderTarget)
     {
+        String::size_type textTexturePos = texture->GetPathname().find("text texture");
+        if(String::npos != textTexturePos)
+        {
+            return false; //is text texture
+        }
+        
         String texturePathname = texture->GetPathname();
         return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
     }
