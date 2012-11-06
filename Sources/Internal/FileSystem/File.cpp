@@ -266,7 +266,7 @@ bool File::WriteLine(const String & string)
 
 }
 
-const char8 * File::GetModificationDate(const String & filePathname)
+String File::GetModificationDate(const String & filePathname)
 {
     String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
     
@@ -281,11 +281,11 @@ const char8 * File::GetModificationDate(const String & filePathname)
 #elif defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
         tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
 #endif
-        return Format("%04d.%02d.%02d %02d:%02d:%02d",
+        return String(Format("%04d.%02d.%02d %02d:%02d:%02d",
                        utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
-                       utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
+                       utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec));
     }
-    return NULL;
+    return String("");
 }
 
     

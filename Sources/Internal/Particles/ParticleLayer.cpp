@@ -566,7 +566,7 @@ void ParticleLayer::Draw()
 	}
 	else 
 	{
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
 	switch(type)
