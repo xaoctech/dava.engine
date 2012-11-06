@@ -31,15 +31,15 @@ public:
 	QColor getPixelColor(QPoint pos);
 	float getTextureZoom();
 
-	void borderVisible(bool visible);
-	void bgMaskVisible(bool visible);
-	void waitbarVisible(bool visible);
+	void borderShow(bool show);
+	void bgmaskShow(bool show);
+	void waitbarShow(bool show);
 
 	void resetTexturePosZoom();
 
 public slots:	
-	void texturePos(const QPoint &pos);
-	void textureZoom(const float &zoom);
+	void setTexturePos(const QPoint &pos);
+	void setTextureZoom(const float &zoom);
 
 signals:
 	void texturePosChanged(const QPoint &pos);
@@ -49,7 +49,6 @@ signals:
 	void mouseWheel(int delta);
 
 protected:
-	void setScene(QGraphicsScene *scene);
 	virtual void drawBackground(QPainter * painter, const QRectF & rect);
 	virtual void scrollContentsBy(int dx, int dy);
 	virtual void wheelEvent(QWheelEvent * e);

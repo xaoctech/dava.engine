@@ -65,6 +65,9 @@ TextureDialog::TextureDialog(QWidget *parent)
 
 TextureDialog::~TextureDialog()
 {
+	// return listview delegate back to default
+	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
+
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
@@ -118,7 +121,7 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 			TextureConvertor::Instance()->loadOriginal(texture);
 
 			// show loading bar
-			ui->textureAreaOriginal->waitbarVisible(true);
+			ui->textureAreaOriginal->waitbarShow(true);
 		}
 	}
 	else
@@ -158,7 +161,7 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 		// set empty image to converted image view. it will be visible until
 		// conversion done (signal by textureConvertor).
 		ui->textureAreaPVR->setImage(QImage());
-		ui->textureAreaPVR->waitbarVisible(true);
+		ui->textureAreaPVR->waitbarShow(true);
 
 		switch(view)
 		{
@@ -315,16 +318,23 @@ void TextureDialog::setupStatusBar()
 
 void TextureDialog::setupTexturesList()
 {
+	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
 	QObject::connect(textureListImagesDelegate, SIGNAL(needRedraw(const DAVA::Texture *)), this, SLOT(textureListItemNeedRedraw(const DAVA::Texture *)));
+
 	textureListDefaultDelegate = ui->listViewTextures->itemDelegate();
+	ui->listViewTextures->setModel(textureListModel);
 
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
 
-	ui->listViewTextures->setModel(textureListModel);
-	textureListModel->setScene(mainScreenScene);
-
-	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			textureListModel->setScene(mainScreenScene);
+		}
+	}
 }
 
 void TextureDialog::setupImagesScrollAreas()
@@ -483,14 +493,14 @@ void TextureDialog::textureColorChannelPressed(bool checked)
 
 void TextureDialog::textureBorderPressed(bool checked)
 {
-	ui->textureAreaPVR->borderVisible(checked);
-	ui->textureAreaOriginal->borderVisible(checked);
+	ui->textureAreaPVR->borderShow(checked);
+	ui->textureAreaOriginal->borderShow(checked);
 }
 
 void TextureDialog::textureBgMaskPressed(bool checked)
 {
-	ui->textureAreaPVR->bgMaskVisible(checked);
-	ui->textureAreaOriginal->bgMaskVisible(checked);
+	ui->textureAreaPVR->bgmaskShow(checked);
+	ui->textureAreaOriginal->bgmaskShow(checked);
 }
 
 void TextureDialog::texturePropertyChanged()
@@ -520,7 +530,7 @@ void TextureDialog::textureReadyOriginal(const DAVA::Texture *texture, const QIm
 		{
 			ui->textureAreaOriginal->setImage(image);
 			ui->textureAreaOriginal->setEnabled(true);
-			ui->textureAreaOriginal->waitbarVisible(false);
+			ui->textureAreaOriginal->waitbarShow(false);
 
 			// set info about loaded image
 			updateInfoOriginal();
@@ -537,7 +547,7 @@ void TextureDialog::textureReadyPVR(const DAVA::Texture *texture, const DAVA::Te
 	{
 		ui->textureAreaPVR->setImage(image);
 		ui->textureAreaPVR->setEnabled(true);
-		ui->textureAreaPVR->waitbarVisible(false);
+		ui->textureAreaPVR->waitbarShow(false);
 
 		if(NULL != texture && NULL != descriptor)
 		{
@@ -556,7 +566,7 @@ void TextureDialog::textureReadyDXT(const DAVA::Texture *texture, const DAVA::Te
 	{
 		ui->textureAreaPVR->setImage(image);
 		ui->textureAreaPVR->setEnabled(true);
-		ui->textureAreaPVR->waitbarVisible(false);
+		ui->textureAreaPVR->waitbarShow(false);
 
 		if(NULL != texture && NULL != descriptor)
 		{
@@ -604,8 +614,8 @@ void TextureDialog::textureZoomSlide(int value)
 	zoom = 1.0 + (float) value / 100.0;
 	v = 100 + value;
 
-	ui->textureAreaOriginal->textureZoom(zoom);
-	ui->textureAreaPVR->textureZoom(zoom);
+	ui->textureAreaOriginal->setTextureZoom(zoom);
+	ui->textureAreaPVR->setTextureZoom(zoom);
 
 	toolbarZoomSliderValue->setText(QString("%1%").arg(v));
 }

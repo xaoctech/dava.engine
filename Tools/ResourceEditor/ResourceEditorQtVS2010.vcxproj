@@ -108,7 +108,7 @@
       </Message>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/make.exe -f MakefileQtVS2010 all</Command>
+      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>QT generate: MOC, UI, QRC</Message>
@@ -855,7 +855,7 @@
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui" />
     <None Include="DataQt\texturedialog.ui" />
-    <None Include="MakefileQtVS2010" />
+    <None Include="MakefileQt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

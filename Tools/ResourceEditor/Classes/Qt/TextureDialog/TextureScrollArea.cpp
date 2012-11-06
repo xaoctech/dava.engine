@@ -45,9 +45,9 @@ TextureScrollArea::TextureScrollArea(QWidget* parent /* = 0 */)
 
 	adjustWaitBarPos();
 
-	borderVisible(false);
-	bgMaskVisible(false);
-	waitbarVisible(false);
+	borderShow(false);
+	bgmaskShow(false);
+	waitbarShow(false);
 }
 
 TextureScrollArea::~TextureScrollArea()
@@ -67,11 +67,6 @@ void TextureScrollArea::setColorChannel(int mask)
 {
 	textureColorMask = mask;
 	applyCurrentImageToScenePixmap();
-}
-
-void TextureScrollArea::setScene(QGraphicsScene *scene)
-{
-	QGraphicsView::setScene(scene);
 }
 
 float TextureScrollArea::getTextureZoom()
@@ -94,13 +89,13 @@ QColor TextureScrollArea::getPixelColor(QPoint pos)
 
 void TextureScrollArea::resetTexturePosZoom()
 {
-	textureZoom(1.0);
-	texturePos(QPoint(0,0));
+	setTextureZoom(1.0);
+	setTexturePos(QPoint(0,0));
 }
 
-void TextureScrollArea::borderVisible(bool visible)
+void TextureScrollArea::borderShow(bool show)
 {
-	if(visible)
+	if(show)
 	{
 		textureBorder->show();
 	}
@@ -110,17 +105,17 @@ void TextureScrollArea::borderVisible(bool visible)
 	}
 }
 
-void TextureScrollArea::bgMaskVisible(bool visible)
+void TextureScrollArea::bgmaskShow(bool show)
 {
-	tiledBgDoDraw = visible;
+	tiledBgDoDraw = show;
 
 	// call this setBackgroundBrush function to force background redraw
 	textureScene->setBackgroundBrush(QBrush(QColor(0, 0, 0)));
 }
 
-void TextureScrollArea::waitbarVisible(bool visible)
+void TextureScrollArea::waitbarShow(bool show)
 {
-	if(visible)
+	if(show)
 	{
 		waitBar->show();
 		adjustWaitBarPos();
@@ -131,7 +126,7 @@ void TextureScrollArea::waitbarVisible(bool visible)
 	}
 }
 
-void TextureScrollArea::textureZoom(const float &zoom)
+void TextureScrollArea::setTextureZoom(const float &zoom)
 {
 	if(zoom != zoomFactor)
 	{
@@ -146,7 +141,7 @@ void TextureScrollArea::textureZoom(const float &zoom)
 	}
 }
 
-void TextureScrollArea::texturePos(const QPoint &pos)
+void TextureScrollArea::setTexturePos(const QPoint &pos)
 {
 	horizontalScrollBar()->setValue(pos.x());
 	verticalScrollBar()->setValue(pos.y());
