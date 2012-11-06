@@ -42,7 +42,7 @@ public:
     
 private:
     
-    Color GetColorForPoint(int32 x, int32 y);
+    Color GetDitheredColorForPoint(int32 x, int32 y);
     
 	int32		width;
 	int32		height;
