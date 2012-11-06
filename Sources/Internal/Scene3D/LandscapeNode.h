@@ -272,7 +272,7 @@ public:
     Heightmap *GetHeightmap();
     virtual void SetHeightmap(Heightmap *height);
     
-    void UpdateFullTiledTexture();
+    virtual void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
     
     void SetFog(bool _fogEnabled);

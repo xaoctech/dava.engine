@@ -384,7 +384,7 @@ void LandscapeEditorHeightmap::HideAction()
 
     workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
-    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
+//    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
 
     
     UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
