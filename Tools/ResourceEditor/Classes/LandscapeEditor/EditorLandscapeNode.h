@@ -56,6 +56,8 @@ public:
     
     void FlushChanges();
     
+    virtual void UpdateFullTiledTexture();
+
 protected:
     
     void DrawFullTiledTexture(DAVA::Texture *renderTarget, const DAVA::Rect &drawRect);

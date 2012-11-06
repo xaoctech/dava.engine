@@ -227,6 +227,10 @@ void EditorLandscapeNode::DrawFullTiledTexture(DAVA::Texture *renderTarget, cons
     background->Draw();
 }
 
+void EditorLandscapeNode::UpdateFullTiledTexture()
+{
+    nestedLandscape->UpdateFullTiledTexture();
+}
 
 
 
