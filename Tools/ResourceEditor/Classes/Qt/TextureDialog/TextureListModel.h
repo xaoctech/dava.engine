@@ -16,16 +16,6 @@ public:
 		SortBySize
 	};
 
-	/*
-	enum DisplayRore 
-	{
-		TexturePath = Qt::UserRole,
-		TextureName,
-		TextureDimension,
-		TextureDataSize,
-	};
-	*/
-
 	TextureListModel(QObject *parent = 0);
 
 	void setScene(DAVA::Scene *scene);
@@ -52,8 +42,9 @@ private:
 
 	void applyFilterAndSort();
 
-	void searchTexturesInMaterial(DAVA::Material *material);
-	void searchTexturesInNodes(DAVA::SceneNode *parentNode);
+	void searchTexturesInMaterial(DAVA::SceneNode *parentNode);
+	void searchTexturesInLandscapes(DAVA::SceneNode *parentNode);
+	void searchTexturesInMesh(DAVA::SceneNode *parentNode);
 	void addTexture(DAVA::Texture *texture);
 
 	static bool sortFnByName(const DAVA::Texture* t1, const DAVA::Texture* t2);

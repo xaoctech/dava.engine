@@ -21,23 +21,9 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
-		//case TextureName:
 			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).fileName());
 			break;
 
-			/*
-		case TexturePath:
-			return QVariant(curTexture->GetPathname().c_str());
-			break;
-
-		case TextureDimension:
-			return QVariant(QSize(curTexture->GetWidth(), curTexture->GetHeight()));
-			break;
-
-		case TextureDataSize:
-			return QVariant(curTexture->GetDataSize());
-			break;
-			*/
 		default:
 			break;
 		}
@@ -100,20 +86,16 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	texturesAll.clear();
 	texturesFiltredSorted.clear();
 
-	if(NULL != scene)
+	// Parse scene and find it all Textures
 	{
-		// Parse scene and find it all Textures
-
 		// Search textures in materials
-		DAVA::Vector<DAVA::Material *> allMaterials;
-		scene->GetDataNodes(allMaterials);
-		for(int i = 0; i < (int) allMaterials.size(); ++i)
-		{
-			searchTexturesInMaterial(allMaterials[i]);
-		}
+		searchTexturesInMaterial(scene);
 
-		// Search textures in scene nodes
-		searchTexturesInNodes(scene);
+		// Search textures in landscapes
+		searchTexturesInLandscapes(scene);
+
+		// Search textures in mesh
+		searchTexturesInMesh(scene);
 	}
 
 	applyFilterAndSort();
@@ -121,37 +103,79 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	endResetModel();
 }
 
-void TextureListModel::searchTexturesInMaterial(DAVA::Material *material)
+void TextureListModel::searchTexturesInMaterial(DAVA::SceneNode *parentNode)
 {
-	for(int t = 0; t < DAVA::Material::TEXTURE_COUNT; ++t)
+	if(NULL != parentNode)
 	{
-		if(material->type == DAVA::Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP &&
-			t > DAVA::Material::TEXTURE_DIFFUSE)
-		{
-			continue;
-		}
+		DAVA::Vector<DAVA::Material *> allMaterials;
 
-		addTexture(material->GetTexture((DAVA::Material::eTextureLevel) t));
+		parentNode->GetDataNodes(allMaterials);
+		for(int i = 0; i < (int) allMaterials.size(); ++i)
+		{
+			DAVA::Material *material = allMaterials[i];
+
+			if(NULL != material)
+			{
+				for(int t = 0; t < DAVA::Material::TEXTURE_COUNT; ++t)
+				{
+					if(material->type == DAVA::Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP &&
+						t > DAVA::Material::TEXTURE_DIFFUSE)
+					{
+						continue;
+					}
+
+					addTexture(material->GetTexture((DAVA::Material::eTextureLevel) t));
+				}
+			}
+		}
 	}
 }
 
-void TextureListModel::searchTexturesInNodes(DAVA::SceneNode *parentNode)
+void TextureListModel::searchTexturesInLandscapes(DAVA::SceneNode *parentNode)
 {
-	int count = parentNode->GetChildrenCount();
-	for(int n = 0; n < count; ++n)
+	if(NULL != parentNode)
 	{
-		DAVA::SceneNode *childNode = parentNode->GetChild(n);
-		DAVA::LandscapeNode *landscape = dynamic_cast<DAVA::LandscapeNode*>(childNode);
+		DAVA::Vector<DAVA::LandscapeNode *> allLandscapes;
 
-		if (landscape) 
+		parentNode->GetDataNodes(allLandscapes);
+		for(int i = 0; i < (int) allLandscapes.size(); ++i)
 		{
-			for(int t = 0; t < DAVA::LandscapeNode::TEXTURE_COUNT; ++t)
+			DAVA::LandscapeNode *landscape = allLandscapes[i];
+
+			if(NULL != landscape)
 			{
-				addTexture(landscape->GetTexture((DAVA::LandscapeNode::eTextureLevel) t));
+				for(int t = 0; t < DAVA::LandscapeNode::TEXTURE_COUNT; ++t)
+				{
+					addTexture(landscape->GetTexture((DAVA::LandscapeNode::eTextureLevel) t));
+				}
 			}
 		}
+	}
+}
 
-		searchTexturesInNodes(childNode);
+void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
+{
+	if(NULL != parentNode)
+	{
+		DAVA::Vector<DAVA::MeshInstanceNode *> allMeshes;
+
+		parentNode->GetDataNodes(allMeshes);
+		for(int i = 0; i < (int) allMeshes.size(); ++i)
+		{
+			DAVA::MeshInstanceNode *mesh = allMeshes[i];
+
+			if(NULL != mesh)
+			{
+				for(int t = 0; t < mesh->GetLightmapCount(); ++t)
+				{
+					DAVA::MeshInstanceNode::LightmapData *ldata = mesh->GetLightmapDataForIndex(t);
+					if(NULL != ldata)
+					{
+						addTexture(ldata->lightmap);
+					}
+				}
+			}
+		}
 	}
 }
 
