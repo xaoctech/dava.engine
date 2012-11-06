@@ -72,8 +72,10 @@ GameObject::GameObject()
 	sprite = 0;
 	manager = 0;
 	color = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	srcOp = BLEND_ONE;
+	srcOp = BLEND_SRC_ALPHA;
 	destOp = BLEND_ONE_MINUS_SRC_ALPHA;
+
+    
 	collision = 0;
 	groupId = 0;
 	priority = 0;

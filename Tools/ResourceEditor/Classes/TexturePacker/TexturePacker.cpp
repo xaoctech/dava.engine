@@ -672,6 +672,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
 {
     TextureDescriptor *descriptor = CreateDescriptor();
 
+    image->DitherAlpha();
     image->Write(exportedPathname.c_str());
     
     if (NULL != descriptor && FORMAT_INVALID != descriptor->pvrCompression.format)

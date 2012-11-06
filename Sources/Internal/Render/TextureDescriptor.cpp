@@ -102,18 +102,18 @@ void TextureDescriptor::UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) co
     const Compression *compression = GetCompressionParams(fileFormat);
     
 	String filePathname = GetSourceTexturePathname();
-    const char8 *date = File::GetModificationDate(filePathname);
-    if(date)
-    {
-        strncpy(compression->modificationDate, date, DATE_BUFFER_SIZE-1);
-        compression->modificationDate[DATE_BUFFER_SIZE-1] = 0;
-        
-        MD5::ForFile(filePathname, compression->crc);
-    }
-    else
+    String date = File::GetModificationDate(filePathname);
+    if(date.empty())
     {
         Memset(compression->modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
         Memset(compression->crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+    }
+    else
+    {
+        strncpy(compression->modificationDate, date.c_str(), DATE_BUFFER_SIZE-1);
+        compression->modificationDate[DATE_BUFFER_SIZE-1] = 0;
+        
+        MD5::ForFile(filePathname, compression->crc);
     }
 }
 
@@ -373,9 +373,9 @@ bool TextureDescriptor::IsSourceValidForFormat(ImageFileFormat fileFormat)
     const Compression *compression = GetCompressionParams(fileFormat);
 
     const String sourceTexturePathname = GetSourceTexturePathname();
-    const char8 *modificationDate = File::GetModificationDate(sourceTexturePathname);
+    String modificationDate = File::GetModificationDate(sourceTexturePathname);
     
-    if(modificationDate && (0 != CompareCaseInsensitive(String(modificationDate), String(compression->modificationDate))))
+    if(!modificationDate.empty() && (0 != CompareCaseInsensitive(modificationDate, String(compression->modificationDate))))
     {
         uint8 crc[MD5::DIGEST_SIZE];
         MD5::ForFile(sourceTexturePathname, crc);
