@@ -233,7 +233,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
 
 bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection)
 {
-    return (IsPointerToExactClass<EditorLandscapeNode>(landscapeForDetection));
+    return !(IsPointerToExactClass<EditorLandscapeNode>(landscapeForDetection));
 }
 
 
