@@ -2154,14 +2154,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MakefileQtVS2010">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\texturedialog.ui">
       <Filter>QtData</Filter>
+    </None>
+    <None Include="MakefileQt">
+      <Filter>Sources</Filter>
     </None>
   </ItemGroup>
 </Project>
