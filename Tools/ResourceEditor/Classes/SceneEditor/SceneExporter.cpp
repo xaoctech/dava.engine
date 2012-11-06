@@ -457,14 +457,14 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 
 void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog)
 {
-    const char8 *modificationDate = File::GetModificationDate(GetExportedTextureName(texturePathname));
+    String modificationDate = File::GetModificationDate(GetExportedTextureName(texturePathname));
     
     String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
     
     if(PNG_FILE != exportFormat)
     {
         bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname, exportFormat);
-        if(needToConvert || (NULL == modificationDate))
+        if(needToConvert || modificationDate.empty())
         {
             //TODO: convert to pvr/dxt
             //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
