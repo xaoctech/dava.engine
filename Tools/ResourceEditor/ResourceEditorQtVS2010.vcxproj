@@ -345,6 +345,7 @@
     <ClCompile Include="Classes\Qt\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
+    <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp" />
@@ -740,6 +741,7 @@
     <ClInclude Include="Classes\Qt\mainwindow.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
+    <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h" />

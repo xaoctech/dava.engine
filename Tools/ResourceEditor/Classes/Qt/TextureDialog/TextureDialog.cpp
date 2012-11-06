@@ -61,6 +61,8 @@ TextureDialog::TextureDialog(QWidget *parent)
 	// set initial empty texture
 	setTexture(curTexture, curDescriptor);
 	setTextureView(curTextureView);
+
+	posSaver.Load(this, __FUNCTION__);
 }
 
 TextureDialog::~TextureDialog()

@@ -70,6 +70,9 @@
     <Filter Include="QtGenerated\TextureDialog">
       <UniqueIdentifier>{9ff04bd1-6e6b-4185-acde-ce2274eabc0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\QtPosSaver">
+      <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1035,6 +1038,9 @@
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp">
+      <Filter>Sources\Qt\QtPosSaver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1945,6 +1951,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h">
+      <Filter>Sources\Qt\QtPosSaver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,6 +37,7 @@ private slots:
         
 private:
     Ui::MainWindow *ui;
+	QtPosSaver posSaver;
 };
 
 
