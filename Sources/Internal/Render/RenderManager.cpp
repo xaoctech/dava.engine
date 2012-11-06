@@ -225,10 +225,10 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 	frameBufferWidth = _frameBufferWidth;
 	frameBufferHeight = _frameBufferHeight;
 #if defined (__DAVAENGINE_OPENGL__)
-	Logger::Debug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
-#else 
-	Logger::Debug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
-#endif 
+//	Logger::Debug("[RenderManager::Init] orientation: %d x %d", frameBufferWidth, frameBufferHeight);
+#else
+//	Logger::Debug("[RenderManager::Init] orientation: %d x %d ", frameBufferWidth, frameBufferHeight);
+#endif
     // TODO: Rethink of initialization concepts because they changed
     pointerArraysRendererState = pointerArraysCurrentState = 0;
 }
