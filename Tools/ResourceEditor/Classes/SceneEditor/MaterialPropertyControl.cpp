@@ -4,7 +4,7 @@
 
 #include "ControlsFactory.h"
 
-#include "../Qt//QtUtils.h"
+//#include "../Qt/QtUtils.h"
 #include "ErrorNotifier.h"
 
 static const String textureNames[] = 
@@ -57,20 +57,20 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     propertyList->SetComboPropertyIndex("property.material.type", materialType);
 
     
-    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], GetTextureFileExtensions());
+    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], TextureDescriptor::GetSupportedTextureExtensions());
     SetFilepathValue(material, ETT_DIFFUSE);
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DECAL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DECAL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], GetTextureFileExtensions());
+        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_DECAL);
     }
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DETAIL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DETAIL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], GetTextureFileExtensions());
+        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_DETAIL);
     }
     
@@ -79,7 +79,7 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType)
 		||  (Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], GetTextureFileExtensions());
+        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 

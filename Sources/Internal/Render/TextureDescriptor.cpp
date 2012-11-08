@@ -404,6 +404,11 @@ const TextureDescriptor::Compression * TextureDescriptor::GetCompressionParams(I
     return NULL;
 }
 
+String TextureDescriptor::GetSupportedTextureExtensions()
+{
+    return String(".png;.pvr;") + TextureDescriptor::GetDescriptorExtension();
+}
+
 
 
 };

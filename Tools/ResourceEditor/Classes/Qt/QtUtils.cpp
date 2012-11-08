@@ -63,11 +63,6 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
     return StringToWString(SizeInBytesToString(size));
 }
 
-DAVA::String GetTextureFileExtensions()
-{
-	String extensions = String(".png;.pvr;") + TextureDescriptor::GetDescriptorExtension();
-	return extensions;
-}
 
 DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname)
 {

@@ -52,13 +52,13 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     
     propertyList->AddSubsection("property.landscape.subsection.textures");
-    AddFilepathProperty(String("property.landscape.texture.color"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_COLOR);
-    AddFilepathProperty(String("property.landscape.texture.tile0"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE0);
-    AddFilepathProperty(String("property.landscape.texture.tile1"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE1);
-    AddFilepathProperty(String("property.landscape.texture.tile2"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE2);
-    AddFilepathProperty(String("property.landscape.texture.tile3"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE3);
-    AddFilepathProperty(String("property.landscape.texture.tilemask"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE_MASK);
-    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE_FULL);
+    AddFilepathProperty(String("property.landscape.texture.color"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_COLOR);
+    AddFilepathProperty(String("property.landscape.texture.tile0"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE0);
+    AddFilepathProperty(String("property.landscape.texture.tile1"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE1);
+    AddFilepathProperty(String("property.landscape.texture.tile2"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE2);
+    AddFilepathProperty(String("property.landscape.texture.tile3"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE3);
+    AddFilepathProperty(String("property.landscape.texture.tilemask"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_MASK);
+    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_FULL);
     propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"), 
                                      Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
 
@@ -67,8 +67,8 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 
     propertyList->AddSubsection("property.landscape.subsection.build_mask");
-    propertyList->AddFilepathProperty("property.landscape.lightmap", GetTextureFileExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.alphamask", GetTextureFileExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.lightmap", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.alphamask", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("property.landscape.lightmap", String(""));
     propertyList->SetFilepathPropertyValue("property.landscape.alphamask", String(""));
 

@@ -16,9 +16,6 @@ DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &path
 DAVA::WideString SizeInBytesToWideString(DAVA::float32 size);
 DAVA::String SizeInBytesToString(DAVA::float32 size);
 
-
-DAVA::String GetTextureFileExtensions();
-
 DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname);
 
 #endif // __QT_UTILS_H__
