@@ -541,7 +541,7 @@ bool SceneValidator::ValidateTexturePathname(const String &pathForValidation, Se
 	if(pathIsCorrect)
 	{
 		String textureExtension = FileSystem::Instance()->GetExtension(pathForValidation);
-		String::size_type extPosition = GetTextureFileExtensions().find(textureExtension);
+		String::size_type extPosition = TextureDescriptor::GetSupportedTextureExtensions().find(textureExtension);
 		if(String::npos == extPosition)
 		{
 			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.c_str()));

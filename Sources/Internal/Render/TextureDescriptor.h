@@ -97,6 +97,8 @@ public:
     String GetSourceTexturePathname() const; 
     static String GetSourceTextureExtension(); 
 
+    static String GetSupportedTextureExtensions();
+
     static String GetDescriptorPathname(const String &texturePathname);
     static String GetDescriptorExtension();
     
