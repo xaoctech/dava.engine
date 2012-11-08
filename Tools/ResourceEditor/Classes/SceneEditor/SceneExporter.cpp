@@ -277,8 +277,8 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
         String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
         String workingPathname = RemoveFolderFromPath(fullTiledPathname, dataSourceFolder);
         PrepareFolderForCopy(workingPathname, errorLog);
-        
-        Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+
+        Texture *fullTiledTexture = Texture::GetPinkPlaceholder();
         Image *image = fullTiledTexture->CreateImageFromMemory();
         if(image)
         {
@@ -290,7 +290,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
             errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
         }
         
-        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, workingPathname);
+        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
     }
 }
 
