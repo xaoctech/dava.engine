@@ -178,6 +178,10 @@ int32 Material::Release()
 
 Material::~Material()
 {
+    for (int32 tc = 0; tc < TEXTURE_COUNT; ++tc)
+    {
+        SafeRelease(textures[tc]);
+    }
 }
     
     
