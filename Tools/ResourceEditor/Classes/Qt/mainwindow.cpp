@@ -60,7 +60,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-	posSaver.Load(this, __FUNCTION__);
+	posSaver.Attach(this, __FUNCTION__);
 }
 
 QtMainWindow::~QtMainWindow()

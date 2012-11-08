@@ -11,7 +11,7 @@ public:
 	QtPosSaver();
 	virtual ~QtPosSaver();
 
-	void Load(QWidget *widget, const DAVA::String &classKey);
+	void Attach(QWidget *widget, const DAVA::String &classKey);
 
 private:
 	QWidget *m_widget;
