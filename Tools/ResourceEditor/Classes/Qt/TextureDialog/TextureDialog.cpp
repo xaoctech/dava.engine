@@ -62,7 +62,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setTexture(curTexture, curDescriptor);
 	setTextureView(curTextureView);
 
-	posSaver.Load(this, __FUNCTION__);
+	posSaver.Attach(this, __FUNCTION__);
 }
 
 TextureDialog::~TextureDialog()

@@ -51,7 +51,7 @@ QtPosSaver::~QtPosSaver()
 	}
 }
 
-void QtPosSaver::Load(QWidget *widget, const DAVA::String &classFileName)
+void QtPosSaver::Attach(QWidget *widget, const DAVA::String &classFileName)
 {
 	m_widget = widget;
 
