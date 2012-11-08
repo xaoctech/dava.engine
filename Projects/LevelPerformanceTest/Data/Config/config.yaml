@@ -1,0 +1,5 @@
+landscapeNodeName: "Landscape"
+landscapePartitioning: [3, 4]
+cameraElevation: 10.0
+cameraRotationSpeed: 180.0
+cameraSpeed: 180.0

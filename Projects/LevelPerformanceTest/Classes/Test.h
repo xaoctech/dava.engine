@@ -5,9 +5,19 @@
 
 using namespace DAVA;
 
-class Test: public DAVA::UIScreen {
+enum eStatFps
+{
+    STAT_MIN = 0,
+    STAT_MID,
+    STAT_MAX,
+    
+    STAT_COUNT
+};
+
+class Test: public DAVA::UIScreen
+{
 public:
-	Test(const String& fullName, int skipFrames=10);
+	Test(const String& fullName);
 	
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -19,51 +29,48 @@ public:
 	
 	virtual void Input(DAVA::UIEvent * touch);
 	
-	int GetScreenId() const {return m_nScreenId;};
+	int32 GetScreenId() const {return screenId;};
 	
-	bool IsFinished() const {return m_bIsFinished;};
+	bool IsFinished() const {return isFinished;};
 	
-	const Vector<float>* const GetStat() const {return m_FpsStat;};
+	const Vector<float32>* const GetStat() const {return fpsStat;};
 	const String GetFileName() const;
 private:
 	Test();
 	
-	static int globalScreenId;
-	int m_nScreenId;
-	
-	int m_nSkipFrames;
-	
-	String m_FullName;
-	
-	float32 m_fTime;
-	
-	float m_fVelocity;
-	Vector3 m_VelocityDir;
-	
-	int m_nCurPathPointNum;
-	Vector3 m_CurPathPoint;
-	Vector3 m_NextPathPoint;
-	
-	int m_nNextFpsCheckPointNum;
-	Vector3 m_NextFpsCheckPoint;
-	
-	float m_fFpsMin;
-	float m_fFpsMid;
-	float m_fFpsMax;
-	int m_nFrameCount;
-	
-	Vector<Vector3> m_CenterPoints;
-	Vector<Vector3> m_FpsCheckPoints;
-	Vector<float> m_FpsStat[3];
+	static int32 globalScreenId;
+	int32 screenId;
 
-	bool m_bIsFinished;
+	String fullName;
 	
+	float32 time;
+
+	float32 fpsMin;
+	float32 fpsMid;
+	float32 fpsMax;
+	int32 frameCount;
+    
+    float32 curFpsRectNum;
+    Vector3 curCameraPosition;
+    int32 nextRectNum;
+    float32 curCameraAngle;
+    LinearAnimation<Vector3>* camMoveAnimation;
+    LinearAnimation<float32>* camRotateAnimation;
+
+    Vector<DAVA::Rect> rectSequence;
+	Vector<float32> fpsStat[STAT_COUNT];
+
+	bool isFinished;
+	
+    Vector3 GetRealPoint(const Vector2& point);
+    
 	void PreparePath();
-	void PrepareFpsCheckPoints();
-	void UpdatePathSegment();
-	void UpdateFpsSegment();
-	
+    void PrepareCameraAnimation();
+    void PrepareFpsStat();
+    void MoveToNextPoint();
+    void SaveFpsStat();
 	void ZeroCurFpsStat();
+    void AnimationFinished(BaseObject*, void*, void*);
 
 	inline UI3DView* GetSceneView();
 	inline Scene* GetScene();

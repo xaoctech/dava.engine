@@ -5,21 +5,23 @@
 
 using namespace DAVA;
 
-class SettingsManager: public Singleton<SettingsManager> {
+class SettingsManager: public Singleton<SettingsManager>
+{
 public:
 	void Init();
+    void InitWithFile(const String& filename);
 	
 	Point2i GetLandscapePartitioning() const;
 	const String GetLandscapeNodeName() const;
-	float GetCameraElevation() const;
-	float GetCameraRotationAngleStep() const;
-	float GetCameraMovementSpeed() const;
+	float32 GetCameraElevation() const;
+	float32 GetCameraRotationSpeed() const;
+	float32 GetCameraMovementSpeed() const;
 private:
-	Point2i m_LandscapePartitioning;
-	String m_LandscapeNodeName;
-	float m_fCameraElevation;
-	float m_fCameraRotationAngleStep;
-	float m_fCameraMovementSpeed;
+	Point2i landscapePartitioning;
+	String landscapeNodeName;
+	float32 cameraElevation;
+	float32 cameraRotationSpeed;
+	float32 cameraMovementSpeed;
 };
 
 #endif
