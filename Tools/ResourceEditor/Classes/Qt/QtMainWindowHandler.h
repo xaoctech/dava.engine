@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QPoint>
+#include <QVector>
+#include <QAbstractButton>
 
 #include "DAVAEngine.h"
 #include "../Constants.h"
@@ -13,6 +15,9 @@ class QMenu;
 class QAction;
 class QTreeView;
 class QStatusBar;
+class QPushButton;
+class QSlider;
+class QComboBox;
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
@@ -38,6 +43,9 @@ public:
     void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
     
     void SetWaitingCursorEnabled(bool enabled);
+    
+	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*);
+    void SetCustomColorsWidgetsState(bool state);
     
 public slots:
     //menu
@@ -78,6 +86,12 @@ public slots:
     
     //scene graph
     void RefreshSceneGraph();
+    
+    //custom colors
+    void ToggleCustomColors();
+    void SaveTextureCustomColors();
+    void ChangeBrushSizeCustomColors(int newSize);
+    void ChangeColorCustomColors(int newColorIndex);
 
     //
     void ReloadTexturesFromFileSystem();
@@ -101,6 +115,10 @@ private:
     void ClearActions(int32 count, QAction **actions);
     
 private:
+	QPushButton* customColorsToggleButton;
+	QPushButton* customColorsSaveTextureButton;
+	QSlider* customColorsBrushSizeSlider;
+	QComboBox* customColorsColorComboBox;
     
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
