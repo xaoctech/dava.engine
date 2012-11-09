@@ -171,11 +171,11 @@ UIListCell *LandscapeToolsSelection::CellAtIndex(UIList *list, int32 index)
             toolControl->SetSprite(tools[toolIndex]->sprite, 0);
             toolControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, 
                                   Message(this, &LandscapeToolsSelection::OnToolSelected, tools[toolIndex]));
-            toolControl->SetVisible(true);
+            toolControl->SetVisible(this->GetVisible());
         }
         else 
         {
-            toolControl->SetVisible(true);
+            toolControl->SetVisible(this->GetVisible());
         }
     }
     
