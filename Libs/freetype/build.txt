@@ -3,7 +3,7 @@ Compiling the library
 We have to compile the library four times, once for each architecture.
 i386
 
-$ ./configure CFLAGS="-arch i386"
+$ ./configure CFLAGS="-arch i386" --without-bzip2
 
 $ make
 
