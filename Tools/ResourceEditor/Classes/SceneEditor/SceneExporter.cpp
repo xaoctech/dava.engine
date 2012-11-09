@@ -79,7 +79,7 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
     //Create destination folder
-    String normalizedFileName = FileSystem::Instance()->NormalizePath(fileName);
+    String normalizedFileName = FileSystem::Instance()->GetCanonicalPath(fileName);
 
     
     String workingFile;
@@ -173,7 +173,7 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
 
 String SceneExporter::NormalizeFolderPath(const String &pathname)
 {
-    String normalizedPathname = FileSystem::Instance()->NormalizePath(pathname);
+    String normalizedPathname = FileSystem::Instance()->GetCanonicalPath(pathname);
 
     int32 lastPos = normalizedPathname.length() - 1;
     if((0 <= lastPos) && ('/' != normalizedPathname.at(lastPos)))

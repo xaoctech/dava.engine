@@ -84,7 +84,7 @@ void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
 
 String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
 {
-    String result = absolutePathname;
+    String result = FileSystem::GetCanonicalPath(absolutePathname);
     
     if (isSaveForGame)
     {
@@ -95,8 +95,6 @@ String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
         }
     }
 
-//    replace(result, GetScenePath(), String(""));
-    result = FileSystem::NormalizePath(result); // normalize path
     result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
     return result;
 }
@@ -105,7 +103,7 @@ String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
 {
     String result;
     result = GetScenePath() + relativePathname;
-    result = FileSystem::NormalizePath(result); // normalize path
+    result = FileSystem::GetCanonicalPath(result);
     return result;
 }
     
@@ -165,7 +163,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
         return GetError();
     }
     
-    rootNodePathName = filename;
+    rootNodePathName = FileSystem::GetCanonicalPath(filename);
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
     // save header
@@ -239,7 +237,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     }   
 
     scene = _scene;
-    rootNodePathName = filename;
+    rootNodePathName = FileSystem::GetCanonicalPath(filename);
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
     file->Read(&header, sizeof(Header));

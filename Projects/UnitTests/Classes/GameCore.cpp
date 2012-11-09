@@ -42,6 +42,7 @@
 #include "SplitTest.h"
 #include "PVRTest.h"
 #include "KeyedArchiveYamlTest.h"
+#include "SceneFileTest.h"
 
 using namespace DAVA;
 
@@ -67,6 +68,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    new SceneFileTest();
     new PVRTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();

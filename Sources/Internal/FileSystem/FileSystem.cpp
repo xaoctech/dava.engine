@@ -655,6 +655,26 @@ String FileSystem::NormalizePath(const String & _path)
 }
 
     
+String FileSystem::GetCanonicalPath(const String &path)
+{
+	String canonicalPath = FileSystem::Instance()->NormalizePath(path);
+    
+    String::size_type resPos = canonicalPath.find("~res:");
+    String::size_type docPos = canonicalPath.find("~doc:");
+    
+    if(String::npos == resPos && String::npos == docPos)
+    {
+        String::size_type colonPos = canonicalPath.find(":");
+        if((String::npos != colonPos) && (colonPos < canonicalPath.length() - 1))
+        {
+            canonicalPath = canonicalPath.substr(colonPos + 1);
+        }
+    }
+    
+	return canonicalPath;
+}
+
+    
 String FileSystem::ReplaceExtension(const String & filename, const String & newExt)
 {
 	String::size_type dotpos = filename.rfind(".");
