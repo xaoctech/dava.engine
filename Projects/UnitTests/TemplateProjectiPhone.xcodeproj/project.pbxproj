@@ -21,6 +21,7 @@
 		5CDC2533156CE21000742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2532156CE20F00742348 /* libz.dylib */; };
 		CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */; };
 		CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */; };
+		E8602036164C41DA0053127D /* SceneFileTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8602034164C41DA0053127D /* SceneFileTest.cpp */; };
 		E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C46161AE9B900B50BDA /* PVRTest.cpp */; };
 		FE76D9EE1163F2F0009E83B6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */; };
 		FE76D9EF1163F2F0009E83B6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */; };
@@ -82,6 +83,8 @@
 		CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		CEC6DA15162D959B009E5F1D /* KeyedArchiveYamlTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyedArchiveYamlTest.h; sourceTree = "<group>"; };
 		CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
+		E8602034164C41DA0053127D /* SceneFileTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFileTest.cpp; sourceTree = "<group>"; };
+		E8602035164C41DA0053127D /* SceneFileTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileTest.h; sourceTree = "<group>"; };
 		E8F98C46161AE9B900B50BDA /* PVRTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTest.cpp; sourceTree = "<group>"; };
 		E8F98C47161AE9B900B50BDA /* PVRTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTest.h; sourceTree = "<group>"; };
 		FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -208,6 +211,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E8602034164C41DA0053127D /* SceneFileTest.cpp */,
+				E8602035164C41DA0053127D /* SceneFileTest.h */,
 				E8F98C46161AE9B900B50BDA /* PVRTest.cpp */,
 				E8F98C47161AE9B900B50BDA /* PVRTest.h */,
 				02BC3C0515E6399C0047F67F /* SplitTest.cpp */,
@@ -368,6 +373,7 @@
 				E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */,
 				CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */,
 				CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */,
+				E8602036164C41DA0053127D /* SceneFileTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
