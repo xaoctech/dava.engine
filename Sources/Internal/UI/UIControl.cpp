@@ -1250,6 +1250,10 @@ namespace DAVA
                                     }
 									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
 								}
+								else
+								{
+									PerformEventWithData(EVENT_TOUCH_UP_OUTSIDE, currentInput);
+								}
 								controlState &= ~STATE_PRESSED_INSIDE;
 								controlState &= ~STATE_PRESSED_OUTSIDE;
 								controlState |= STATE_NORMAL;

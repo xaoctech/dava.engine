@@ -207,6 +207,7 @@ public:
 		EVENT_HOVERED_REMOVED       = 5,//!<
 		EVENT_FOCUS_SET             = 6,//!<Trigger when control becomes focused
 		EVENT_FOCUS_LOST            = 7,//!<Trigger when control losts focus
+		EVENT_TOUCH_UP_OUTSIDE		= 8,//!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
         EVENTS_COUNT
 	};	
 	
