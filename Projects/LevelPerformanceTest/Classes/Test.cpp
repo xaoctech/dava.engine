@@ -27,10 +27,11 @@ Test::Test(const String& fullName)
 
 void Test::LoadResources()
 {
-	SettingsManager *pSettings = SettingsManager::Instance();
+	SettingsManager *settings = SettingsManager::Instance();
 	
 	time = 0.f;
 	isFinished = false;
+	skipFrames = 100;
 
 	Scene *scene = new Scene();
 	scene->AddNode(scene->GetRootNode(fullName));
@@ -48,7 +49,7 @@ void Test::LoadResources()
     scene->SetCurrentCamera(cam);
 	SafeRelease(cam);
 	
-    LandscapeNode* land = (LandscapeNode *)scene->FindByName(pSettings->GetLandscapeNodeName());
+    LandscapeNode* land = (LandscapeNode *)scene->FindByName(settings->GetLandscapeNodeName());
     if(land)
     {
 		land->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
@@ -88,31 +89,36 @@ void Test::Update(float32 timeElapsed)
 {
 	time += timeElapsed;
 
-    if(isFinished)
+	if(skipFrames)
+	{
+		if(!--skipFrames)
+		{
+			camRotateAnimation->Start(CAMERA_ANIMATION_ROTATE);
+			camMoveAnimation->Start(CAMERA_ANIMATION_MOVE);
+		}
+	}
+	else if(!isFinished)
     {
-        SaveFpsStat();
-    }
-    else
-    {
-        Rect curFpsRect = rectSequence[curFpsRectNum];
+		Camera* cam = GetCamera();
+
+		float32 fps = 1.f / timeElapsed;
+		if(fps < fpsStatItem.minFps)
+		{
+			fpsStatItem.minFps = fps;
+			fpsStatItem.position = cam->GetPosition();
+			fpsStatItem.viewTarget = cam->GetTarget();
+		}
+
+        Rect curFpsRect = rectSequence[testData.GetItemCount()];
         Vector2 point(curCameraPosition.x, curCameraPosition.y);
         if(!curFpsRect.PointInside(point))
         {
             SaveFpsStat();
             
             ZeroCurFpsStat();
-            ++curFpsRectNum;
+			fpsStatItem.rect = rectSequence[testData.GetItemCount()];
         }
-
-        float32 fps = 1.f / timeElapsed;
-		if(fps > fpsMax)
-			fpsMax = fps;
-		if(fps < fpsMin)
-			fpsMin = fps;
-		fpsMid += fps;
-		++frameCount;
-
-		Camera* cam = GetCamera();
+		
         cam->SetPosition(curCameraPosition);
 
 		Vector3 newCamTarget = DEF_CAMERA_DIRECTION * Matrix4::MakeRotation(Vector3(0.f, 0.f, 1.f), DegToRad(curCameraAngle));
@@ -126,9 +132,7 @@ void Test::Update(float32 timeElapsed)
 
 void Test::SaveFpsStat()
 {
-    fpsStat[STAT_MIN][curFpsRectNum] = fpsMin;
-    fpsStat[STAT_MID][curFpsRectNum] = fpsMid / frameCount;
-    fpsStat[STAT_MAX][curFpsRectNum] = fpsMax;
+	testData.AddStatItem(fpsStatItem);
 }
 
 void Test::Draw(const UIGeometricData &geometricData)
@@ -186,10 +190,12 @@ void Test::MoveToNextPoint()
         
         camMoveAnimation = new LinearAnimation<Vector3>(this, &curCameraPosition, endPoint, timeToMove, Interpolation::LINEAR);
         camMoveAnimation->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &Test::AnimationFinished));
-        camMoveAnimation->Start(CAMERA_ANIMATION_MOVE);
+		if(!skipFrames)
+        	camMoveAnimation->Start(CAMERA_ANIMATION_MOVE);
     }
     else
     {
+		SaveFpsStat();
         isFinished = true;
     }
 }
@@ -210,17 +216,21 @@ void Test::PrepareCameraAnimation()
     float32 timeToRotate = maxRotateAngle / SettingsManager::Instance()->GetCameraRotationSpeed();
     camRotateAnimation = new LinearAnimation<float32>(this, &curCameraAngle, maxRotateAngle, timeToRotate, Interpolation::LINEAR);
     camRotateAnimation->SetRepeatCount(-1);
-    camRotateAnimation->Start(CAMERA_ANIMATION_ROTATE);
 }
 
 void Test::PrepareFpsStat()
 {
-    int32 rectCount = rectSequence.size();
-    fpsStat[STAT_MIN].resize(rectCount);
-    fpsStat[STAT_MID].resize(rectCount);
-    fpsStat[STAT_MAX].resize(rectCount);
-    
-    curFpsRectNum = 0;
+	testData.Clear();
+	fpsStatItem.rect = rectSequence[testData.GetItemCount()];
+
+    LandscapeNode *land = GetLandscape();
+	AABBox3 boundingBox = land->GetBoundingBox();
+	
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+					 (boundingBox.max - boundingBox.min).x);
+
+	testData.SetLandscapeRect(Rect(landPos, landSize));
 }
 
 Vector3 Test::GetRealPoint(const Vector2& point)
@@ -251,10 +261,7 @@ const String Test::GetFileName() const
 
 void Test::ZeroCurFpsStat()
 {
-	fpsMin = std::numeric_limits<float32>::infinity();
-	fpsMid = 0.f;
-	fpsMax = 0.f;
-	frameCount = 0;
+	fpsStatItem.minFps = std::numeric_limits<float32>::infinity();
 }
 
 inline UI3DView* Test::GetSceneView()
