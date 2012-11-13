@@ -8,12 +8,18 @@
 #include "Platform/Qt/QtLayer.h"
 
 TextureConvertor::TextureConvertor()
-	: curJobConvert(NULL)
-	, curJobOriginal(NULL)
+	: curJobOriginal(NULL)
 {
-	// slot will be called in connector(this) thread
-	QObject::connect(&convertWatcher, SIGNAL(finished()), this, SLOT(threadConvertFinished()), Qt::QueuedConnection);
+	// slots will be called in connector(this) thread
 	QObject::connect(&loadOriginalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
+
+	for(int i = 0; i < CONVERT_JOB_COUNT; ++i)
+	{
+		curJobConvert[i] = NULL;
+
+		// slots will be called in connector(this) thread
+		QObject::connect(&convertWatcher[i], SIGNAL(finished()), this, SLOT(threadConvertFinished()), Qt::QueuedConnection);
+	}
 }
 
 void TextureConvertor::getPVR( const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
@@ -61,36 +67,38 @@ void TextureConvertor::loadOriginal(const DAVA::Texture *texture)
 
 void TextureConvertor::jobRunNextConvert()
 {
+	int freeIndex = jobGetConvertFreeIndex();
+
 	// if there is no already running work
-	if((convertWatcher.isFinished() || convertWatcher.isCanceled()) && NULL == curJobConvert)
+	if(-1 != freeIndex)
 	{
 		// get the new work
-		curJobConvert = jobStackConvert.pop();
-		if(NULL != curJobConvert)
+		curJobConvert[freeIndex] = jobStackConvert.pop();
+		if(NULL != curJobConvert[freeIndex])
 		{
-			curJobConvert->descriptorCopy = *curJobConvert->descriptor;
+			curJobConvert[freeIndex]->descriptorCopy = *curJobConvert[freeIndex]->descriptor;
 
-			switch(curJobConvert->type)
+			switch(curJobConvert[freeIndex]->type)
 			{
 			case JobItem::JobPVR:
 				{
-					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadPVR, curJobConvert);
-					convertWatcher.setFuture(f);
+					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadPVR, curJobConvert[freeIndex]);
+					convertWatcher[freeIndex].setFuture(f);
 				}
 				break;
 			case JobItem::JobDXT:
 				{
-					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadDXT, curJobConvert);
-					convertWatcher.setFuture(f);
+					QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::convertThreadDXT, curJobConvert[freeIndex]);
+					convertWatcher[freeIndex].setFuture(f);
 				}
 				break;
 			default:
 				break;
 			}
 		}
-	}
 
-	emit convertStatus(curJobConvert, jobStackConvert.size());
+		emit convertStatus(curJobConvert[freeIndex], jobStackConvert.size());
+	}
 }
 
 void TextureConvertor::jobRunNextOriginal()
@@ -233,25 +241,62 @@ void TextureConvertor::threadOriginalFinished()
 
 void TextureConvertor::threadConvertFinished()
 {
-	if(convertWatcher.isFinished() && NULL != curJobConvert)
-	{
-		switch(curJobConvert->type)
-		{
-		case JobItem::JobPVR:
-			emit readyPVR(curJobConvert->texture, &curJobConvert->descriptorCopy, convertWatcher.result());
-			break;
-		case JobItem::JobDXT:
-			emit readyDXT(curJobConvert->texture, &curJobConvert->descriptorCopy, convertWatcher.result());
-			break;
-		default:
-			break;
-		}
+	int doneIndex = jobGetConvertIndex((QFutureWatcher<QImage> *) QObject::sender());
 
-		delete curJobConvert;
-		curJobConvert = NULL;
+	if(-1 != doneIndex)
+	{
+		if(convertWatcher[doneIndex].isFinished() && NULL != curJobConvert[doneIndex])
+		{
+			switch(curJobConvert[doneIndex]->type)
+			{
+			case JobItem::JobPVR:
+				emit readyPVR(curJobConvert[doneIndex]->texture, &curJobConvert[doneIndex]->descriptorCopy, convertWatcher[doneIndex].result());
+				break;
+			case JobItem::JobDXT:
+				emit readyDXT(curJobConvert[doneIndex]->texture, &curJobConvert[doneIndex]->descriptorCopy, convertWatcher[doneIndex].result());
+				break;
+			default:
+				break;
+			}
+
+			delete curJobConvert[doneIndex];
+			curJobConvert[doneIndex] = NULL;
+		}
 	}
 
 	jobRunNextConvert();
+}
+
+int TextureConvertor::jobGetConvertFreeIndex()
+{
+	int index = -1;
+
+	for(int i = 0; i < CONVERT_JOB_COUNT; ++i)
+	{
+		if(convertWatcher[i].isFinished() || convertWatcher[i].isCanceled() && NULL == curJobConvert[i])
+		{
+			index = i;
+			break;
+		}
+	}
+
+	return index;
+}
+
+int TextureConvertor::jobGetConvertIndex(QFutureWatcher<QImage> *watcher)
+{
+	int index = -1;
+
+	for(int i = 0; i < CONVERT_JOB_COUNT; ++i)
+	{
+		if(watcher == &convertWatcher[i])
+		{
+			index = i;
+			break;
+		}
+	}
+
+	return index;
 }
 
 QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
