@@ -930,6 +930,7 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
+	SafeRelease(landscapeEditorCustomColors);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
 }
