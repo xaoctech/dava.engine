@@ -41,7 +41,7 @@
 #include "SoundTest.h"
 #include "SplitTest.h"
 #include "PVRTest.h"
-
+#include "KeyedArchiveYamlTest.h"
 
 using namespace DAVA;
 
@@ -68,12 +68,12 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new PVRTest();
-//	new SampleTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
 	new SoundTest();
 	new SplitTest();
+    new KeyedArchiveYamlTest();
     
     errors.reserve(TestCount());
 

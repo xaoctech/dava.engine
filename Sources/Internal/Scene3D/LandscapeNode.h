@@ -143,7 +143,7 @@ public:
         \brief Builds landscape from heightmap image and bounding box of this landscape block
         \param[in] landscapeBox axial-aligned bounding box of the landscape block
      */
-    void BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & landscapeBox);
+    virtual void BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & landscapeBox);
     
     enum eTextureLevel
     {
@@ -272,7 +272,7 @@ public:
     Heightmap *GetHeightmap();
     virtual void SetHeightmap(Heightmap *height);
     
-    void UpdateFullTiledTexture();
+    virtual void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
     
     void SetFog(bool _fogEnabled);
