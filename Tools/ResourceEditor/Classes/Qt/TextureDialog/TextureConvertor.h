@@ -9,6 +9,8 @@
 #include "Render/RenderManager.h"
 #include "TextureDialog/TextureConvertorWork.h"
 
+#define CONVERT_JOB_COUNT 2
+
 class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor>
 {
 	Q_OBJECT
@@ -22,10 +24,10 @@ public:
 
 private:
 	QFutureWatcher<QImage> loadOriginalWatcher;
-	QFutureWatcher<QImage> convertWatcher;
+	QFutureWatcher<QImage> convertWatcher[CONVERT_JOB_COUNT];
 
 	JobStack jobStackConvert;
-	JobItem *curJobConvert;
+	JobItem *curJobConvert[CONVERT_JOB_COUNT];
 
 	JobStack jobStackOriginal;
 	JobItem *curJobOriginal;
@@ -38,6 +40,9 @@ private:
 	QImage convertThreadDXT(JobItem *item);
 
 	QImage fromDavaImage(DAVA::Image *image);
+
+	int jobGetConvertFreeIndex();
+	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
 
 signals:
 	void readyOriginal(const DAVA::Texture *texture, const QImage &image);
