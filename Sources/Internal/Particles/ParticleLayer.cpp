@@ -32,6 +32,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Utils/StringFormat.h"
 #include "Render/RenderManager.h"
+#include "Render/Image.h"
 #include "Utils/Random.h"
 #include "FileSystem/FileSystem.h"
 
@@ -645,7 +646,9 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		relativeSpriteName = relativePathName;
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
+		Image::EnableAlphaPremultiplication(false);
 		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
+		Image::EnableAlphaPremultiplication(false);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{
