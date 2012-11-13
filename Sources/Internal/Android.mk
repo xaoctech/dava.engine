@@ -57,6 +57,10 @@ LOCAL_SRC_FILES :=  \
                     Entity/Entity.cpp \
                     Entity/EntityFamily.cpp \
                     Entity/EntityManager.cpp \
+                    Entity/LandscapeGeometryComponent.cpp \
+                    Entity/MeshInstanceComponent.cpp \
+                    Entity/MeshInstanceDrawSystem.cpp \
+                    Entity/TransformComponent.cpp \
                     Entity/PoolSystem.cpp \
                     Entity/VisibilityAABBoxComponent.cpp \
                     \
@@ -101,8 +105,10 @@ LOCAL_SRC_FILES :=  \
                     \
                     Particles/Particle.cpp \
                     Particles/ParticleEmitter.cpp \
+                    Particles/ParticleEmitter3D.cpp \
                     Particles/ParticleEmitterObject.cpp \
                     Particles/ParticleLayer.cpp \
+                    Particles/ParticleLayer3D.cpp \
                     Particles/ParticlePropertyLine.cpp \
                     Particles/ParticleSystem.cpp \
                     \
@@ -249,7 +255,7 @@ LOCAL_SRC_FILES :=  \
                     Utils/Utils.cpp \
 
 # set build flags
-LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1
+LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
@@ -265,6 +271,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
+LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
