@@ -450,6 +450,9 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	customColorsToggleButton->setChecked(state);
 	customColorsToggleButton->blockSignals(false);
 
+	QString buttonText = state ? "Disable Custom Colors" : "Enable Custom Colors";
+	customColorsToggleButton->setText(buttonText);
+
 	customColorsSaveTextureButton->setEnabled(state);
 	customColorsBrushSizeSlider->setEnabled(state);
 	customColorsColorComboBox->setEnabled(state);

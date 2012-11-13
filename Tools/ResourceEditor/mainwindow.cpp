@@ -256,6 +256,8 @@ void QtMainWindow::SetupCustomColorsDock()
     ui->comboboxCustomColors->setIconSize(iconSize);
     
     Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
+	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
+	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
     for(int i = 0; i < customColors.size(); ++i)
     {
         QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
@@ -267,7 +269,8 @@ void QtMainWindow::SetupCustomColorsDock()
         pixmap.convertFromImage(image, Qt::ColorOnly);
         
         QIcon icon(pixmap);
-        ui->comboboxCustomColors->addItem(icon, "");
+		String description = isEveryColorHasDescription ? customColorsDescription[i] : "";
+        ui->comboboxCustomColors->addItem(icon, description.c_str());
     }
     handler->SetCustomColorsWidgetsState(false);
 }
