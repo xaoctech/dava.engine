@@ -31,6 +31,7 @@
 #include "AppScreens.h"
 #include "FileManagerWrapper.h"
 #include "SettingsManager.h"
+#include "LandscapeTestData.h"
 
 using namespace DAVA;
 
@@ -115,8 +116,9 @@ void GameCore::Update(float32 timeElapsed)
         {
 			if(resultScreen == NULL)
             {
-				int32 testNum = testCount - tests.size() + 1;
-				resultScreen = new ResultScreen(curTest->GetStat(), curTest->GetFileName(), testCount, testNum);
+				resultScreen = new ResultScreen(curTest->GetLandscapeTestData(),
+												curTest->GetFileName(),
+												curTest->GetLandscapeTexture());
                 
 				UIScreenManager::Instance()->RegisterScreen(RESULT_SCREEN, resultScreen);
                 UIScreenManager::Instance()->SetScreen(RESULT_SCREEN);

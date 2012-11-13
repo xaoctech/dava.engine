@@ -96,6 +96,7 @@
     <ClCompile Include="Classes\FileManagerWrapper.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\LandscapeTestData.cpp" />
     <ClCompile Include="Classes\ResultScreen.cpp" />
     <ClCompile Include="Classes\SettingsManager.cpp" />
     <ClCompile Include="Classes\Test.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="Classes\FileManagerWrapper.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\LandscapeTestData.h" />
     <ClInclude Include="Classes\ResultScreen.h" />
     <ClInclude Include="Classes\SettingsManager.h" />
     <ClInclude Include="Classes\Test.h" />

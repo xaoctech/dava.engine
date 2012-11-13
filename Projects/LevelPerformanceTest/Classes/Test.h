@@ -2,17 +2,9 @@
 #define SurfaceTester_Test_h
 
 #include "DAVAEngine.h"
+#include "LandscapeTestData.h"
 
 using namespace DAVA;
-
-enum eStatFps
-{
-    STAT_MIN = 0,
-    STAT_MID,
-    STAT_MAX,
-    
-    STAT_COUNT
-};
 
 class Test: public DAVA::UIScreen
 {
@@ -33,32 +25,35 @@ public:
 	
 	bool IsFinished() const {return isFinished;};
 	
-	const Vector<float32>* const GetStat() const {return fpsStat;};
+	Texture* GetLandscapeTexture()
+	{
+		return GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+	};
+
 	const String GetFileName() const;
+
+	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:
 	Test();
 	
 	static int32 globalScreenId;
 	int32 screenId;
+	
+	int32 skipFrames;
 
 	String fullName;
 	
 	float32 time;
-
-	float32 fpsMin;
-	float32 fpsMid;
-	float32 fpsMax;
-	int32 frameCount;
     
-    float32 curFpsRectNum;
+	LandscapeTestData testData;
     Vector3 curCameraPosition;
-    int32 nextRectNum;
+    uint32 nextRectNum;
     float32 curCameraAngle;
     LinearAnimation<Vector3>* camMoveAnimation;
     LinearAnimation<float32>* camRotateAnimation;
 
     Vector<DAVA::Rect> rectSequence;
-	Vector<float32> fpsStat[STAT_COUNT];
+	FpsStatItem fpsStatItem;
 
 	bool isFinished;
 	
