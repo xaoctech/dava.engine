@@ -258,7 +258,7 @@ void QtMainWindow::SetupCustomColorsDock()
     Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
 	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
 	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
-    for(int i = 0; i < customColors.size(); ++i)
+    for(size_t i = 0; i < customColors.size(); ++i)
     {
         QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
         
