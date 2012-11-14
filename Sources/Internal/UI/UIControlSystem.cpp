@@ -489,6 +489,10 @@ void UIControlSystem::CancelInput(UIEvent *touch)
 		touch->touchLocker->SystemInputCancelled(touch);
 		touch->touchLocker = NULL;
 	}
+	if (touch->touchLocker != currentScreen)
+	{
+		currentScreen->SystemInputCancelled(touch);
+	}
 }
 void UIControlSystem::CancelAllInputs()
 {
