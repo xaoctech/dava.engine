@@ -46,8 +46,9 @@ allParams = [masterParams, helperParams]
 running_procs = []
 
 for params in allParams:
-    running_procs.append(subprocess.Popen(params, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+    #running_procs.append(subprocess.Popen(params, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
     print "subprocess.Popen " + "[%s]" % ", ".join(map(str, params))
+    running_procs.append(subprocess.Popen(params))
     time.sleep(1.0)
 
 while running_procs:
