@@ -123,7 +123,9 @@ for testFile in testFiles:
         if(platformName == "Windows"):
             #TODO: Windows
             print "run " + executableName + " on Windows"
-            os.system("start /WAIT " + executableName)
+            #os.system("start /WAIT " + executableName)
+            params = [executableName]
+            os.spawnv(os.P_WAIT, executableName, params)
         else:
             print "Error: wrong OS " + platformName
     elif (platform.system() == "Darwin"):
@@ -134,6 +136,7 @@ for testFile in testFiles:
             os.chdir(autotestingSrcFolder)
             
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
+
             params = ["sh", "./runOnDevice.sh", targetName]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
@@ -141,8 +144,10 @@ for testFile in testFiles:
         elif (platformName == "MacOS"):
             #TODO: MacOS
             print "run " + executableRunPath + " on MacOS"
-            os.system("open -W " + executableRunPath)
-        
+            #os.system("open -W " + executableRunPath)
+
+            params = [executableRunPath]
+            os.spawnv(os.P_WAIT, executableRunPath, params)
         else:
             print "Error: wrong OS " + platformName
     else:
