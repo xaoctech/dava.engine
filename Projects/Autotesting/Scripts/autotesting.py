@@ -103,7 +103,7 @@ elif (platform.system() == "Darwin"):
     elif (platformName == "MacOS"):
         #TODO: MacOS
         print "prepare to run " + executableName + " on MacOS"
-        executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName)
+        executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/MacOS/" + targetName)
         executableRunPath = executableBuildPath
     else:
         print "Error: wrong OS " + platformName
