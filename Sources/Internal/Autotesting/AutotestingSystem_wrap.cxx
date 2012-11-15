@@ -2017,6 +2017,55 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_WaitForMaster(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::WaitForMaster",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WaitForMaster",1,"DAVA::AutotestingSystemLua *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_WaitForMaster",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  (arg1)->WaitForMaster();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_WaitForHelpers(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::int32 arg2 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::WaitForHelpers",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WaitForHelpers",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::WaitForHelpers",2,"DAVA::int32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_WaitForHelpers",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  arg2 = (DAVA::int32)lua_tonumber(L, 2);
+  (arg1)->WaitForHelpers(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_OnError(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -2278,6 +2327,8 @@ DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) obj;
 delete arg1;
 }
 static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
+    {"WaitForMaster", _wrap_AutotestingSystemLua_WaitForMaster}, 
+    {"WaitForHelpers", _wrap_AutotestingSystemLua_WaitForHelpers}, 
     {"OnError", _wrap_AutotestingSystemLua_OnError}, 
     {"OnTestAssert", _wrap_AutotestingSystemLua_OnTestAssert}, 
     {"OnTestFinished", _wrap_AutotestingSystemLua_OnTestFinished}, 

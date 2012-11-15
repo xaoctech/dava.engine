@@ -63,6 +63,16 @@ function StopTest()
     autotestingSystem:OnTestFinished()
 end
 
+function WaitForMaster()
+    print("WaitForMaster")
+    autotestingSystem:WaitForMaster()
+end
+
+function WaitForHelpers(helpersCount)
+    print("WaitForHelpers")
+    autotestingSystem:WaitForHelpers(helpersCount)
+end
+
 function Wait(waitTime)
     print("Wait "..waitTime)
     

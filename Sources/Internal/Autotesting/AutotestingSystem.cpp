@@ -28,6 +28,8 @@ AutotestingSystem::AutotestingSystem()
     , needClearDB(false)
     , reportFile(NULL)
     , groupName("default")
+    , isMaster(true)
+    , requestedHelpers(0)
 {
 #ifdef AUTOTESTING_LUA
     new AutotestingSystemLua();
@@ -274,8 +276,7 @@ void AutotestingSystem::SaveTestToDB()
     KeyedArchive* testResultsArchive = NULL;
     
     int32 testResultsCount = testResults.size();
-    bool isTestPassed = true; // if only started should not count as success
-    bool isStartLogged = false;
+    bool isTestPassed = true; // if not finished should not count as success
     bool isFinishLogged = false;
     for(int32 i = 0; i < testResultsCount; ++i)
     {
@@ -284,12 +285,7 @@ void AutotestingSystem::SaveTestToDB()
             isTestPassed = false;
             break;
         }
-        
-        if(testResults[i].first == "started")
-        {
-            isStartLogged = true;
-        }
-        else if(testResults[i].first == "finished")
+        if(testResults[i].first == "finished")
         {
             isFinishLogged = true;
         }
@@ -297,7 +293,7 @@ void AutotestingSystem::SaveTestToDB()
     
     if(isTestPassed)
     {
-        isTestPassed = (isStartLogged && isFinishLogged);
+        isTestPassed = isFinishLogged;
     }
     
     bool isTestSuitePassed = isTestPassed;
@@ -444,6 +440,7 @@ void AutotestingSystem::Update(float32 timeElapsed)
 {
     if(!isInit) return;
     
+    
     if(needExitApp)
     {
         timeBeforeExit -= timeElapsed;
@@ -462,6 +459,14 @@ void AutotestingSystem::Update(float32 timeElapsed)
 #else
         AutotestingSystemYaml::Instance()->Update(timeElapsed);
 #endif
+    }
+    else if(isWaiting)
+    {
+        if(CheckMasterHelpersReadyDB())
+        {
+            isWaiting = false;
+            isRunning = true;
+        }
     }
 }
 
@@ -483,13 +488,104 @@ void AutotestingSystem::Draw()
 void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
-    AddTestResult("started", true);
-	SaveTestToDB();
 #ifdef AUTOTESTING_LUA
     AutotestingSystemLua::Instance()->StartTest();
 #endif
 }
     
+#define AUTOTEST_MASTER_ID "master"
+String AutotestingSystem::ReadMasterIDFromDB()
+{
+    //TODO: get first available master
+    return AUTOTEST_MASTER_ID;
+}
+    
+void AutotestingSystem::InitMultiplayer()
+{
+    multiplayerName = Format("%u_multiplayer", testsDate);
+    isRunning = false;
+    isWaiting = true;
+}
+    
+void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
+{
+    isMaster = true;
+    requestedHelpers = helpersCount;
+    masterId = AUTOTEST_MASTER_ID;
+    InitMultiplayer();
+    
+    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+    if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
+    {
+        dbUpdateObject->SetObjectName(masterId);
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* masterArchive = SafeRetain(dbUpdateObject->GetData()->GetArchive(masterId, NULL));
+    if(!masterArchive)
+    {
+        masterArchive = new KeyedArchive();
+    }
+    
+    masterArchive->SetInt32("requested", requestedHelpers);
+    masterArchive->SetInt32("helpers", 0);
+    
+    dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
+    
+    dbUpdateObject->SaveToDB(dbClient);
+    
+    // delete created archives
+    SafeRelease(masterArchive);
+    
+    // delete created update object
+    SafeRelease(dbUpdateObject);
+}
+    
+void AutotestingSystem::RegisterHelperInDB()
+{
+    isMaster = false;
+    InitMultiplayer();
+    
+    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+    if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
+    {
+        dbUpdateObject->SetObjectName(masterId);
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* masterArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
+    if(masterArchive)
+    {
+        int32 helpersCount = masterArchive->GetInt32("helpers", 0) + 1;
+        masterArchive->SetInt32("helpers", helpersCount);
+        
+        dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
+        
+        dbUpdateObject->SaveToDB(dbClient);
+    }
+    // delete created update object
+    SafeRelease(dbUpdateObject);
+}
+    
+bool AutotestingSystem::CheckMasterHelpersReadyDB()
+{
+    Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB");
+    bool isReady = false;
+    
+    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+    if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
+    {
+        dbUpdateObject->LoadData();
+        KeyedArchive* testArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
+        if(testArchive)
+        {
+            isReady = (testArchive->GetInt32("requested") == testArchive->GetInt32("helpers"));
+        }
+    }
+    
+    return isReady;
+}
+
 void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 {
     String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));

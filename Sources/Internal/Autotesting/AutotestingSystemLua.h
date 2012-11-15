@@ -71,6 +71,9 @@ public:
 #endif
     
     // autotesting system api
+    void WaitForMaster();
+    void WaitForHelpers(DAVA::int32 helpersCount);
+    
     void OnError(const String &errorMessage);
     void OnTestAssert(const String &text, bool isPassed);
     void OnTestFinished();

@@ -75,6 +75,16 @@ void AutotestingSystemLua::StartTest()
     Logger::Debug("AutotestingSystemLua::StartTest");
     RunScript();
 }
+    
+void AutotestingSystemLua::WaitForMaster()
+{
+    //TODO: check if first call
+}
+    
+void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
+{
+    //TODO: check if first call
+}
 
 void AutotestingSystemLua::Update(float32 timeElapsed)
 {

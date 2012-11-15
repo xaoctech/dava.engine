@@ -93,11 +93,20 @@ public:
     bool FindTouch(int32 id, UIEvent &touch);
     bool IsTouchDown(int32 id);
 
+    // DB Master-Helper relations
+    void RegisterMasterInDB(int32 helpersCount);
+    void RegisterHelperInDB();
+    
 protected:
     //DB
     bool ConnectToDB();
     void AddTestResult(const String &text, bool isPassed);
     void SaveTestToDB();
+    
+    void InitMultiplayer();
+    String ReadMasterIDFromDB(); //TODO: get first available master
+    
+    bool CheckMasterHelpersReadyDB();
     //
     
     void ExitApp();
@@ -121,6 +130,12 @@ protected:
     MongodbClient *dbClient;
     bool isDB;
     bool needClearDB;
+    
+    bool isMaster;
+    int32 requestedHelpers;
+    String masterId; // for communication
+    bool isWaiting;
+    String multiplayerName;
 
     String testReportsFolder;
     File* reportFile;
