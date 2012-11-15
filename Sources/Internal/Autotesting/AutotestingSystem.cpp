@@ -30,6 +30,9 @@ AutotestingSystem::AutotestingSystem()
     , groupName("default")
     , isMaster(true)
     , requestedHelpers(0)
+    , isWaiting(false)
+    , isRegistered(false)
+    , waitTimeLeft(0.0f)
 {
 #ifdef AUTOTESTING_LUA
     new AutotestingSystemLua();
@@ -201,9 +204,8 @@ void AutotestingSystem::RunTests()
     
     if(!isRunning)
     {
-        OnTestsSatrted();
-        
         isRunning = true;
+        OnTestsSatrted();
     }
 }
     
@@ -462,7 +464,15 @@ void AutotestingSystem::Update(float32 timeElapsed)
     }
     else if(isWaiting)
     {
-        if(CheckMasterHelpersReadyDB())
+        waitTimeLeft -= timeElapsed;
+        
+        if(waitTimeLeft <= 0.0f)
+        {
+            isWaiting = false;
+            isRunning = false;
+            OnError("Multiplayer Wait Timeout");
+        }
+        else if(CheckMasterHelpersReadyDB())
         {
             isWaiting = false;
             isRunning = true;
@@ -503,8 +513,10 @@ String AutotestingSystem::ReadMasterIDFromDB()
 void AutotestingSystem::InitMultiplayer()
 {
     multiplayerName = Format("%u_multiplayer", testsDate);
+    Logger::Debug("AutotestingSystem::InitMultiplayer %s", multiplayerName.c_str());
     isRunning = false;
     isWaiting = true;
+    waitTimeLeft = 300.0f;
 }
     
 void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
@@ -512,12 +524,11 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     isMaster = true;
     requestedHelpers = helpersCount;
     masterId = AUTOTEST_MASTER_ID;
-    InitMultiplayer();
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
     {
-        dbUpdateObject->SetObjectName(masterId);
+        dbUpdateObject->SetObjectName(multiplayerName);
     }
     dbUpdateObject->LoadData();
     
@@ -532,7 +543,8 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     
     dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
     
-    dbUpdateObject->SaveToDB(dbClient);
+    isRegistered = dbUpdateObject->SaveToDB(dbClient);
+    Logger::Debug("AutotestingSystem::RegisterMasterInDB %d", isRegistered);
     
     // delete created archives
     SafeRelease(masterArchive);
@@ -544,12 +556,12 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
 void AutotestingSystem::RegisterHelperInDB()
 {
     isMaster = false;
-    InitMultiplayer();
+    masterId = ReadMasterIDFromDB();
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
     {
-        dbUpdateObject->SetObjectName(masterId);
+        dbUpdateObject->SetObjectName(multiplayerName);
     }
     dbUpdateObject->LoadData();
     
@@ -561,7 +573,8 @@ void AutotestingSystem::RegisterHelperInDB()
         
         dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
         
-        dbUpdateObject->SaveToDB(dbClient);
+        isRegistered = dbUpdateObject->SaveToDB(dbClient);
+        Logger::Debug("AutotestingSystem::RegisterHelperInDB %d", isRegistered);
     }
     // delete created update object
     SafeRelease(dbUpdateObject);
@@ -569,8 +582,20 @@ void AutotestingSystem::RegisterHelperInDB()
     
 bool AutotestingSystem::CheckMasterHelpersReadyDB()
 {
-    Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB");
+    //Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB");
     bool isReady = false;
+    
+    if(!isRegistered)
+    {
+        if(isMaster)
+        {
+            RegisterMasterInDB(requestedHelpers);
+        }
+        else
+        {
+            RegisterHelperInDB();
+        }
+    }
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))

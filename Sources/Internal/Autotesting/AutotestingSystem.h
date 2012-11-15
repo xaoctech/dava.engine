@@ -134,8 +134,10 @@ protected:
     bool isMaster;
     int32 requestedHelpers;
     String masterId; // for communication
+    bool isRegistered;
     bool isWaiting;
     String multiplayerName;
+    float32 waitTimeLeft;
 
     String testReportsFolder;
     File* reportFile;

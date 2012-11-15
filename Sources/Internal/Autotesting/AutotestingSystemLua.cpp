@@ -78,12 +78,17 @@ void AutotestingSystemLua::StartTest()
     
 void AutotestingSystemLua::WaitForMaster()
 {
+    Logger::Debug("AutotestingSystemLua::WaitForMaster");
     //TODO: check if first call
+    AutotestingSystem::Instance()->
+    AutotestingSystem::Instance()->RegisterHelperInDB();
 }
     
 void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
 {
+    Logger::Debug("AutotestingSystemLua::WaitForHelpers %d", helpersCount);
     //TODO: check if first call
+    AutotestingSystem::Instance()->RegisterMasterInDB(helpersCount);
 }
 
 void AutotestingSystemLua::Update(float32 timeElapsed)
