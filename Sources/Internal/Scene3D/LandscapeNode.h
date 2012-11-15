@@ -201,7 +201,7 @@ public:
         \param[in] level 
         \returns current texture
 	 */
-	Texture * GetTexture(eTextureLevel level);
+	virtual Texture * GetTexture(eTextureLevel level);
     
 	/**
         \brief Get texture name that was previously set in SetTexture.

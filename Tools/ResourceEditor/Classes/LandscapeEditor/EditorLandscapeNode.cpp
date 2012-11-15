@@ -237,4 +237,19 @@ void EditorLandscapeNode::BuildLandscapeFromHeightmapImage(const DAVA::String & 
     nestedLandscape->BuildLandscapeFromHeightmapImage(heightmapPathname, landscapeBox);
 }
 
+Texture * EditorLandscapeNode::GetTexture(eTextureLevel level)
+{
+    if(level == TEXTURE_TILE_FULL)
+    {
+        return GetDisplayedTexture();
+    }
+
+    return nestedLandscape->GetTexture(level);
+}
+
+Texture * EditorLandscapeNode::GetDisplayedTexture()
+{
+    return nestedLandscape->GetTexture(TEXTURE_TILE_FULL);
+}
+
 
