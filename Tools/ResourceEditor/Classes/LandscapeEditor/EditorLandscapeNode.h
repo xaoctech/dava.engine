@@ -56,6 +56,7 @@ public:
     
     void FlushChanges();
     
+	virtual DAVA::Texture * GetTexture(eTextureLevel level);
     virtual void BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox);
     virtual void UpdateFullTiledTexture();
 
@@ -65,6 +66,7 @@ protected:
 
     void CopyCursorData(DAVA::LandscapeNode *sourceLandscape, DAVA::LandscapeNode *destinationLandscape);
     virtual void SetDisplayedTexture();
+    virtual DAVA::Texture * GetDisplayedTexture();
 
     DAVA::LandscapeNode *nestedLandscape;
     EditorLandscapeNode *parentLandscape;

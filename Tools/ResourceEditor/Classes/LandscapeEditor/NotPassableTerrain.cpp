@@ -177,3 +177,8 @@ bool NotPassableTerrain::PickColor(float32 tan, Color& color) const
 	}
     return false;
 }
+
+Texture * NotPassableTerrain::GetDisplayedTexture()
+{
+    return notPassableMapSprite->GetTexture();
+}
