@@ -316,7 +316,7 @@ const Vector<Vector3> LandscapeEditorVisibilityCheckTool::CalculateVisibility(fl
 }
 
 void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoords, Vector2 circleCentr, float circleRadius,
-												   float density, const Vector<float>& hightValues, Vector<Vector3>* colorizedPoints)
+	float density, const Vector<float>& hightValues, Vector<Vector3>* colorizedPoints)
 {
 	Vector2 startOfCounting(circleCentr.x - circleRadius, circleCentr.y - circleRadius);
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
@@ -326,9 +326,11 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	//spectatorPointTmp.y = spectatorCoords.y ;
 	
 	// get soource point in propper coords system
-	Vector3 sourcePoint;
-	bool isIntersect = GetIntersectionPoint(SpectatorCoords2D, sourcePoint);
+	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
+	//bool isIntersect = GetIntersectionPoint(SpectatorCoords2D, sourcePoint);
 	
+	//sourcePoint.x = spectatorCoords.x;
+	//sourcePoint.y = spectatorCoords.y;
 	sourcePoint.z = spectatorCoords.z;
 	
 	uint32	hight = hightValues.size();
@@ -361,6 +363,9 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	{
 		for(uint32 y = 0; y < sideLength; ++y)
 		{
+			Vector3 target(ConvertToLanscapeSystem( Vector2(points[0][x][y].x,points[0][x][y].y) )) ;
+			//isIntersect = GetIntersectionPoint(Vector2(points[0][x][y].x,points[0][x][y].y), target);
+			
 			for(uint32 layerIndex = 0; layerIndex < hight; ++layerIndex)
 			{
 				Vector3 targetTmp = points[layerIndex][x][y];
@@ -369,11 +374,11 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 					continue;
 				}
 				
-				Vector3 target;
-				isIntersect = GetIntersectionPoint(Vector2(targetTmp.x,targetTmp.y), target);
-				
 				target.z = targetTmp.z;
 				
+				//target.x = targetTmp.y;
+				//target.y = targetTmp.y;
+
 				bool res = parent->GetScene()->TryIsTargetAccesible(sourcePoint, target);
 				//DAVA::Logger::Debug("Trace test: from source [%f, %f, %f] to point [%f, %f, %f] - %s",
 				//	sourcePointTmp.x,sourcePointTmp.y,sourcePoint.z,
@@ -395,6 +400,55 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	}
 }
 
+Vector2 LandscapeEditorVisibilityCheckTool::TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect)
+{
+	DVASSERT(fromRect.dx != 0 && fromRect.dy != 0);
+	
+	Vector2 origRectSize = fromRect.GetSize();
+	Vector2 destRectSize = toRect.GetSize();
+	
+	Vector2 scale(destRectSize.x / origRectSize.x,
+	     destRectSize.y / origRectSize.y);
+	
+	Vector2 relPos = point - fromRect.GetPosition();
+	Vector2 newRelPos(relPos.x * scale.x,
+	      relPos.y * scale.y);
+	
+	Vector2 newPos = newRelPos + toRect.GetPosition();
+	
+	return newPos;
+}
+
+float32 LandscapeEditorVisibilityCheckTool::GetLandscapeHeightFromCursorPos(const Vector2& point)
+{
+	AABBox3 boundingBox = workingLandscape->GetBoundingBox();
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+	     (boundingBox.max - boundingBox.min).y);
+	
+	Rect landRect(landPos, landSize);
+	Rect textRect(Vector2(0, 0), visibilityAreaSprite->GetSize());
+	
+	Vector3 landscapePoint(TranslatePoint(point, textRect, landRect));
+	
+	workingLandscape->PlacePoint(landscapePoint, landscapePoint);
+	//TODO: get source from next func
+	return landscapePoint.z;
+}
+
+Vector2 LandscapeEditorVisibilityCheckTool::ConvertToLanscapeSystem(const Vector2& point)
+{
+	AABBox3 boundingBox = workingLandscape->GetBoundingBox();
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+	     (boundingBox.max - boundingBox.min).y);
+	
+	Rect landRect(landPos, landSize);
+	Rect textRect(Vector2(0, 0), visibilityAreaSprite->GetSize());
+	
+	return TranslatePoint(point, textRect, landRect);
+}
+
 bool LandscapeEditorVisibilityCheckTool::GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape)
 {
     DVASSERT(parent);
@@ -412,6 +466,7 @@ bool LandscapeEditorVisibilityCheckTool::CheckIsInCircle(Vector2 circleCentre, f
 	float arg1 = targetCoord.x - circleCentre.x;
 	float arg2 = targetCoord.y - circleCentre.y;
 	return  ( pow(arg1, 2) + pow( arg2, 2) ) < ( pow(radius,2) ) ;
+
 }
 
 void LandscapeEditorVisibilityCheckTool::HideAction()
