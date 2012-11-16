@@ -93,6 +93,10 @@ SceneNode::~SceneNode()
 
 void SceneNode::SetScene(Scene * _scene)
 {
+    if (scene == _scene)
+    {
+        return;
+    }
     // Сheck 
     if (scene)scene->UnregisterNode(this);
     scene = _scene;
