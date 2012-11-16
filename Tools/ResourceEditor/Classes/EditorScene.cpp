@@ -234,7 +234,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	uint64 time2;
     landCollisionWorld->rayTest(pos, to, cb);
 	time2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("raytest %lld", time2-time1);
+	//Logger::Debug("raytest %lld", time2-time1);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {

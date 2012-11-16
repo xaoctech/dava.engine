@@ -70,6 +70,10 @@ protected:
 	bool GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape);
 	bool CheckIsInCircle(Vector2 circleCentre, float radius, Vector2 targetCoord);
 
+	static Vector2 TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect);
+	float32 GetLandscapeHeightFromCursorPos(const Vector2& point);
+	Vector2 ConvertToLanscapeSystem(const Vector2& point);
+
     void PerformLandscapeDraw();
 	
 	eVisibilityCheckToolState state;
