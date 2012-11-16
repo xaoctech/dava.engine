@@ -80,7 +80,7 @@ void AutotestingSystemLua::WaitForMaster()
 {
     Logger::Debug("AutotestingSystemLua::WaitForMaster");
     //TODO: check if first call
-    AutotestingSystem::Instance()->
+    AutotestingSystem::Instance()->InitMultiplayer();
     AutotestingSystem::Instance()->RegisterHelperInDB();
 }
     
@@ -88,6 +88,7 @@ void AutotestingSystemLua::WaitForHelpers(DAVA::int32 helpersCount)
 {
     Logger::Debug("AutotestingSystemLua::WaitForHelpers %d", helpersCount);
     //TODO: check if first call
+    AutotestingSystem::Instance()->InitMultiplayer();
     AutotestingSystem::Instance()->RegisterMasterInDB(helpersCount);
 }
 

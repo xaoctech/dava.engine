@@ -33,6 +33,8 @@ AutotestingSystem::AutotestingSystem()
     , isWaiting(false)
     , isRegistered(false)
     , waitTimeLeft(0.0f)
+    , masterRunId(0)
+    , isInitMultiplayer(false)
 {
 #ifdef AUTOTESTING_LUA
     new AutotestingSystemLua();
@@ -512,11 +514,16 @@ String AutotestingSystem::ReadMasterIDFromDB()
     
 void AutotestingSystem::InitMultiplayer()
 {
-    multiplayerName = Format("%u_multiplayer", testsDate);
-    Logger::Debug("AutotestingSystem::InitMultiplayer %s", multiplayerName.c_str());
-    isRunning = false;
-    isWaiting = true;
-    waitTimeLeft = 300.0f;
+    if(!isInitMultiplayer)
+    {
+        isInitMultiplayer = true;
+        
+        multiplayerName = Format("%u_multiplayer", testsDate);
+        Logger::Debug("AutotestingSystem::InitMultiplayer %s", multiplayerName.c_str());
+        isRunning = false;
+        isWaiting = true;
+        waitTimeLeft = 300.0f;
+    }
 }
     
 void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
@@ -540,6 +547,10 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     
     masterArchive->SetInt32("requested", requestedHelpers);
     masterArchive->SetInt32("helpers", 0);
+    
+    masterRunId = masterArchive->GetInt32("runId", 0) + 1;
+    masterArchive->SetInt32("runId", masterRunId);
+    
     
     dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
     
@@ -571,6 +582,8 @@ void AutotestingSystem::RegisterHelperInDB()
         int32 helpersCount = masterArchive->GetInt32("helpers", 0) + 1;
         masterArchive->SetInt32("helpers", helpersCount);
         
+        masterRunId = masterArchive->GetInt32("runId", 0);
+        
         dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
         
         isRegistered = dbUpdateObject->SaveToDB(dbClient);
@@ -597,17 +610,42 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
         }
     }
     
-    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-    if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
+    if(isRegistered)
     {
-        dbUpdateObject->LoadData();
-        KeyedArchive* testArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
-        if(testArchive)
+        MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+        if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
         {
-            isReady = (testArchive->GetInt32("requested") == testArchive->GetInt32("helpers"));
+            dbUpdateObject->LoadData();
+            KeyedArchive* masterArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
+            if(masterArchive)
+            {
+                // for registered agents, check if runId is overwritten
+                if(masterRunId == 0)
+                {
+                    // exit on error (runId is invalid)
+                    OnError("Multiplayer Master runId=0");
+                }
+                else if(masterRunId != masterArchive->GetInt32("runId"))
+                {
+                    // runId was overwritten
+                    if(isMaster)
+                    {
+                        // exit on error (conflict with another master)
+                        OnError("Multiplayer Master Conflict");
+                    }
+                    else
+                    {
+                        // re-register helper
+                        isRegistered = false;
+                    }
+                }
+                else
+                {
+                    isReady = (masterArchive->GetInt32("requested") == masterArchive->GetInt32("helpers"));
+                }
+            }
         }
     }
-    
     return isReady;
 }
 
@@ -645,6 +683,8 @@ void AutotestingSystem::OnMessage(const String & logMessage)
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
+    
+    isWaiting = false;
     
     AddTestResult(errorMessage, false);
 	SaveTestToDB();
