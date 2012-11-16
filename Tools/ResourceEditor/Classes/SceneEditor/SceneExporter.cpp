@@ -173,10 +173,7 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
         {
             Texture *tex = materials[m]->GetTexture((Material::eTextureLevel)t);
-            if(tex && !tex->isRenderTarget)
-            {
-                texturesForExport.insert(tex->GetPathname());
-            }
+            CollectTextureForExport(tex);
         }
     }
 
@@ -188,10 +185,7 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
         {
             Texture *tex = landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t);
-            if(tex && !tex->isRenderTarget)
-            {
-                texturesForExport.insert(tex->GetPathname());
-            }
+            CollectTextureForExport(tex);
         }
     }
     
@@ -203,9 +197,9 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
         {
             MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-            if (ld && !ld->lightmap->isRenderTarget)
+            if (ld)
             {
-                texturesForExport.insert(ld->lightmapName);
+                CollectTextureForExport(ld->lightmap);
             }
         }
     }
@@ -516,5 +510,18 @@ String SceneExporter::GetExportedTextureName(const String &pathname)
     }
     
     return exportedPathname;
+}
+
+void SceneExporter::CollectTextureForExport(Texture *texture)
+{
+    if(texture && !texture->isRenderTarget)
+    {
+        String exportedPathname = texture->GetPathname();
+        String::size_type textTexturePos = texture->GetPathname().find("Text texture");
+        if(!exportedPathname.empty() && (String::npos == textTexturePos))
+        {
+            texturesForExport.insert(exportedPathname);
+        }
+    }
 }
 
