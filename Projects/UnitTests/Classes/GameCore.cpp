@@ -256,8 +256,8 @@ void GameCore::FlushTestResults()
     }
 
     //TODO: test
-    dbClient->DropCollection();
-    dbClient->DropDatabase();
+//    dbClient->DropCollection();
+//    dbClient->DropDatabase();
     //end of test
     
     
