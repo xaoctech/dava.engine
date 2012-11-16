@@ -24,6 +24,7 @@ private:
     void SetupProjectPath();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
+	void SetupVisibilityToolDock();
     
     void SetCustomColorsDockControlsEnabled(bool enabled);
         

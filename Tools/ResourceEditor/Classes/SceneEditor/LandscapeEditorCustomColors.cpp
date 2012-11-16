@@ -35,8 +35,12 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	texSurf = NULL;
 	circleTexture = NULL;
 
-	SetRadius(64);
-		
+	
+	isCursorTransparent = false;
+
+	radius = 64;
+	UpdateCircleTexture(false);
+	//
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
@@ -61,7 +65,7 @@ void LandscapeEditorCustomColors::Draw(const DAVA::UIGeometricData &geometricDat
 
 void LandscapeEditorCustomColors::PrepareRenderLayers()
 {
-	UpdateCircleTexture();
+	UpdateCircleTexture(false);
 
     Sprite* blankSprite = Sprite::CreateFromTexture(circleTexture, 0, 0, (float32)circleTexture->width, (float32)circleTexture->height);
     
@@ -70,7 +74,7 @@ void LandscapeEditorCustomColors::PrepareRenderLayers()
 	
 	Vector2 newPoint = workingLandscape->GetCursor()->GetCursorPosition(); 
     newPoint *= 2; 
-    RenderManager::Instance()->SetColor(paintColor);
+	RenderManager::Instance()->SetColor(paintColor);
 	
     blankSprite->SetPosition(newPoint); 
 	blankSprite->Draw();
@@ -167,7 +171,7 @@ void LandscapeEditorCustomColors::DrawCircle(Vector<Vector<bool> >& matrixForCir
 	}
 }
 
-uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format)
+uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent)
 {
 	if(FORMAT_RGBA8888 != format || radius == 0)
 		return NULL;
@@ -203,16 +207,29 @@ uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DA
 				texArr[blockOffset]		= 0xff;
 				texArr[blockOffset + 1] = 0xff;
 				texArr[blockOffset + 2] = 0xff;
-				texArr[blockOffset + 3] = 0xff;
+				if(setTransparent)
+				{
+					texArr[blockOffset + 3] = 0x00;
+				}
+				else
+				{
+					texArr[blockOffset + 3] = 0xff;
+				}
+				
+				
 			}
 		}
 	}
 
+	isCursorTransparent = setTransparent;
+
 	return texArr;
 }
-
+/*
 void LandscapeEditorCustomColors::UpdateTool()
 {
+	wasTileMaskToolUpdate = true;
+	return;
 	if(currentTool && currentTool->sprite && currentTool->size)
 	{
 		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
@@ -222,7 +239,7 @@ void LandscapeEditorCustomColors::UpdateTool()
             wasTileMaskToolUpdate = true;
 
 			UpdateCircleTexture();
-
+			
 			Sprite* blankSprite = Sprite::CreateFromTexture(circleTexture, 0, 0, (float32)circleTexture->width, (float32)circleTexture->height);
 			
 			//fill color sprite to get opportunity to save its texture separately 
@@ -235,16 +252,18 @@ void LandscapeEditorCustomColors::UpdateTool()
 			SafeRelease(blankSprite);
 
 			currentTool->sprite->SetPosition(pos);
+			
         }
 	}
-}
+}*/
 
 void LandscapeEditorCustomColors::UpdateCursor()
 {
 	if(currentTool && currentTool->sprite && currentTool->size)
 	{
+		//isCursorTransparent = false;
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
-		UpdateCircleTexture();
+		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
 		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
@@ -254,8 +273,10 @@ void LandscapeEditorCustomColors::UpdateCursor()
 
 void LandscapeEditorCustomColors::SetRadius(int _radius)
 {
+	//isCursorTransparent = true;
 	radius = _radius;
-	UpdateCircleTexture();
+	UpdateCircleTexture(true);
+	
 }
 
 void LandscapeEditorCustomColors::SetColor(const Color &newColor)
@@ -268,18 +289,21 @@ void LandscapeEditorCustomColors::SaveColorLayer(const String &pathName)
 	SaveTextureAction(pathName);
 }
 
-void LandscapeEditorCustomColors::UpdateCircleTexture()
+void LandscapeEditorCustomColors::UpdateCircleTexture(bool setTransparent)
 {
-	if(NULL != circleTexture && circleTexture->width == radius * 2 )
+	if(isCursorTransparent == setTransparent)
 	{
-		return;
+		if(NULL != circleTexture  )
+		{
+			return;
+		}
 	}
-	uint8* texArr = DrawFilledCircleWithFormat(radius, FORMAT_RGBA8888);
+	uint8* texArr = DrawFilledCircleWithFormat(radius, FORMAT_RGBA8888, setTransparent);
 	if(!texArr)
 	{
 		return;
 	}
-	SafeRelease(cursorTexture);
+	SafeRelease(circleTexture);
 	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2);
 	//check addref
 	delete[] texArr;
@@ -320,9 +344,8 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             break;
     }
     
-
-    UpdateTool(); 
-
+    UpdateCircleTexture(false);
+	wasTileMaskToolUpdate = true;
 }
 
 void LandscapeEditorCustomColors::HideAction()
@@ -334,13 +357,13 @@ void LandscapeEditorCustomColors::HideAction()
     SafeRelease(savedHeightmap);
 
 	//restore tool
-	RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	currentToolSprite->Draw();//
-	RenderManager::Instance()->RestoreRenderTarget();
+	//RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
+	//RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	//currentToolSprite->Draw();//
+	//RenderManager::Instance()->RestoreRenderTarget();
 	
-	SafeRelease(currentToolSprite);
-	currentToolSprite = NULL;
+	//SafeRelease(currentToolSprite);
+	//currentToolSprite = NULL;
 
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
@@ -359,10 +382,10 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	
 	Texture* texSpr = currentTool->sprite->GetTexture();
-	currentToolSprite =  Sprite::CreateAsRenderTarget(texSpr->width, texSpr->height, FORMAT_RGBA8888);
-	RenderManager::Instance()->SetRenderTarget(currentToolSprite);
-	currentTool->sprite->Draw();//
-	RenderManager::Instance()->RestoreRenderTarget();
+	//currentToolSprite =  Sprite::CreateAsRenderTarget(texSpr->width, texSpr->height, FORMAT_RGBA8888);
+	//RenderManager::Instance()->SetRenderTarget(currentToolSprite);
+	//currentTool->sprite->Draw();//
+	//RenderManager::Instance()->RestoreRenderTarget();
 
 	if(NULL == colorSprite)
 	{

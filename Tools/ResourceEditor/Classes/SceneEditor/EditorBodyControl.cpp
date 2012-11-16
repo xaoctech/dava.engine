@@ -19,6 +19,7 @@
 #include "SceneEditorScreenMain.h"
 #include "LandscapeToolsSelection.h"
 #include "LandscapeEditorCustomColors.h"
+#include "LandscapeEditorVisibilityCheckTool.h"
 
 
 #include "SceneGraph.h"
@@ -141,12 +142,15 @@ void EditorBodyControl::SaveTexture(const String &path)
 	if(RulerToolIsActive())
         return;
     
-	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	if(!currentLandscapeEditor)
 	{
 		return;
 	}
-
-	landscapeEditorCustomColors->SaveColorLayer(path);
+	
+	if(currentLandscapeEditor == landscapeEditorCustomColors)
+		landscapeEditorCustomColors->SaveColorLayer(path);
+	else if(currentLandscapeEditor == landscapeEditorVisibilityTool)
+		landscapeEditorVisibilityTool->SaveColorLayer(path);
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -915,6 +919,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     landscapeEditorCustomColors = new LandscapeEditorCustomColors(this, this, toolsRect);
+	landscapeEditorVisibilityTool = new LandscapeEditorVisibilityCheckTool(this, this, toolsRect);
     
     Rect rect = GetRect();
     landscapeToolsSelection = new LandscapeToolsSelection(NULL, 
@@ -931,6 +936,7 @@ void EditorBodyControl::ReleaseLandscapeEditor()
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
 	SafeRelease(landscapeEditorCustomColors);
+	SafeRelease(landscapeEditorVisibilityTool);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
 }
@@ -951,7 +957,10 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     } else if(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS == landscapeEditorMode)
     {
         requestedEditor = landscapeEditorCustomColors;
-    }
+    } else if(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL == landscapeEditorMode)
+	{
+		requestedEditor = landscapeEditorVisibilityTool;
+	}
     
     if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
         return false;
@@ -1137,4 +1146,19 @@ bool EditorBodyControl::RulerToolTriggered()
 bool EditorBodyControl::RulerToolIsActive()
 {
     return (NULL != landscapeRulerTool);
+}
+
+void EditorBodyControl::VisibilityToolSetPoint()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_POINT);
+}
+
+void EditorBodyControl::VisibilityToolSetArea()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_AREA);
+}
+
+void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
+{
+	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
 }

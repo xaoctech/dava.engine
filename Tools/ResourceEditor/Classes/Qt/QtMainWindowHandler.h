@@ -46,7 +46,11 @@ public:
     
 	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*);
     void SetCustomColorsWidgetsState(bool state);
-    
+	
+	//visibility check tool
+	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
+	void SetWidgetsStateVisibilityTool(bool state);
+
 public slots:
     //menu
     void MenuToolsWillShow();
@@ -92,6 +96,13 @@ public slots:
     void SaveTextureCustomColors();
     void ChangeBrushSizeCustomColors(int newSize);
     void ChangeColorCustomColors(int newColorIndex);
+	
+	//visibility check tool
+	void ToggleVisibilityTool();
+	void SaveTextureVisibilityTool();
+	void ChangleAreaSizeVisibilityTool(int newSize);
+	void SetVisibilityPointVisibilityTool();
+	void SetVisibilityAreaVisibilityTool();
 
     //
     void ReloadTexturesFromFileSystem();
@@ -119,6 +130,13 @@ private:
 	QPushButton* customColorsSaveTextureButton;
 	QSlider* customColorsBrushSizeSlider;
 	QComboBox* customColorsColorComboBox;
+	
+	//visibility check tool
+	QPushButton* visibilityToolToggleButton;
+	QPushButton* visibilityToolSaveTextureButton;
+	QPushButton* visibilityToolSetPointButton;
+	QPushButton* visibilityToolSetAreaButton;
+	QSlider* visibilityToolAreaSizeSlider;
     
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
