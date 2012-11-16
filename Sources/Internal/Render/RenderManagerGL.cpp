@@ -858,9 +858,9 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
 //#endif //PLATFORMS
 		HWglBindFBO(renderTarget->GetTexture()->fboID);
-#if defined(__DAVAENGINE_ANDROID__)
-        renderTarget->GetTexture()->renderTargetModified = true;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+//#if defined(__DAVAENGINE_ANDROID__)
+//        renderTarget->GetTexture()->renderTargetModified = true;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
 
         
         SetViewport(Rect(0, 0, (float32)(renderTarget->GetTexture()->width), (float32)(renderTarget->GetTexture()->height)), true);
@@ -1179,11 +1179,12 @@ void RenderManager::HWglBindFBO(const int32 fbo)
 {
     //	if(0 != fbo)
     {
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);	// Unbind the FBO for now
-#else //Non ES platforms
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);	// Unbind the FBO for now
-#endif //PLATFORMS
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);	// Unbind the FBO for now
+//#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);	// Unbind the FBO for now
+//#else //Non ES platforms
+//        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);	// Unbind the FBO for now
+//#endif //PLATFORMS
         
         //		GLenum err = glGetError();
         //		if (err != GL_NO_ERROR)

@@ -46,4 +46,16 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Classes</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Classes</locationURI>
+		</link>
+		<link>
+			<name>Sources</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Sources</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
