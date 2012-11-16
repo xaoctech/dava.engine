@@ -49,6 +49,9 @@ protected:
     
     String GetExportedTextureName(const String &pathname);
     
+    void CollectTextureForExport(Texture *texture);
+    
+    
 protected:
     
     String dataFolder;
