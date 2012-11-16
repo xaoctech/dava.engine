@@ -94,6 +94,7 @@ public:
     bool IsTouchDown(int32 id);
 
     // DB Master-Helper relations
+    void InitMultiplayer();
     void RegisterMasterInDB(int32 helpersCount);
     void RegisterHelperInDB();
     
@@ -103,7 +104,6 @@ protected:
     void AddTestResult(const String &text, bool isPassed);
     void SaveTestToDB();
     
-    void InitMultiplayer();
     String ReadMasterIDFromDB(); //TODO: get first available master
     
     bool CheckMasterHelpersReadyDB();
@@ -134,8 +134,10 @@ protected:
     bool isMaster;
     int32 requestedHelpers;
     String masterId; // for communication
+    int32 masterRunId;
     bool isRegistered;
     bool isWaiting;
+    bool isInitMultiplayer;
     String multiplayerName;
     float32 waitTimeLeft;
 
