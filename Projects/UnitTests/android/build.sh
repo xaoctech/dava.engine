@@ -28,10 +28,6 @@ SDK_ROOT=`pwd`/../../../Sources
 export NDK_MODULE_PATH=`pwd`/jni:$SDK_ROOT/External:$SDK_ROOT/External/Box2D:$SDK_ROOT/Internal:$SDK_ROOT
 
 
-echo "__1__"
-echo $ANDROID_NDK_ROOT
-echo "__1__"
-
 $ANDROID_NDK_ROOT/ndk-build NDK_DEBUG=1
 if [ $? != 0 ]; then
     echo "ERROR: Can't build test program!"

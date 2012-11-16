@@ -187,7 +187,7 @@ typedef std::string		String;
 #if defined(__DAVAENGINE_ANDROID__)
 	typedef std::basic_string<wchar_t>	WideString;
 #else //#if defined(__DAVAENGINE_ANDROID__)
-typedef std::wstring	WideString;
+	typedef std::wstring	WideString;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	

@@ -43,7 +43,8 @@ LOCAL_CFLAGS := -g -O2
 LOCAL_LDLIBS := -lz -lOpenSLES -landroid -fuse-ld=gold -fno-exceptions
 
 # set included libraries
-LOCAL_STATIC_LIBRARIES := libInternal libbox2d
+#LOCAL_STATIC_LIBRARIES := libInternal libbox2d
+LOCAL_STATIC_LIBRARIES := libInternal
 
 # build shared library
 include $(BUILD_SHARED_LIBRARY)
