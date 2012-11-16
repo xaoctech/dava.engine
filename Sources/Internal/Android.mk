@@ -193,6 +193,7 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/PathManip.cpp \
                     Scene3D/ProxyNode.cpp \
                     Scene3D/QuadTree.cpp \
+                    Scene3D/ReferenceNode.cpp \
                     Scene3D/RotatingCubeNode.cpp \
                     Scene3D/Scene.cpp \
                     Scene3D/SceneAnimationMixer.cpp \
