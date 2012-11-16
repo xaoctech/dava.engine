@@ -200,6 +200,30 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
+{
+	if (selection)
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+
+	btVector3 pos(from.x, from.y, from.z);
+    btVector3 to(target.x, target.y, target.z);
+		
+    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
+    landCollisionWorld->rayTest(pos, to, cb);
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
+    {
+		//there is some obj before target
+		//cb.m_hitPointWorld - contain coord of breaker
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+	
+}
+
 bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::Vector3 &direction, DAVA::Vector3 &point)
 {
 	btVector3 pos(from.x, from.y, from.z);

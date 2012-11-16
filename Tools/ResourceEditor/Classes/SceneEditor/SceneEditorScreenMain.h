@@ -71,6 +71,7 @@ public:
         ELEMID_HEIGHTMAP = 0,
         ELEMID_COLOR_MAP,
         ELEMID_CUSTOM_COLORS,
+		ELEMID_VISIBILITY_CHECK_TOOL,
         
         ELEMID_COUNT
     };
@@ -208,6 +209,13 @@ public: //For Qt integration
 	void CustomColorsSetRadius(uint32 newRadius);
 	void CustomColorsSetColor(uint32 indexInSet);
 	void CustomColorsSaveTexture(const String &path);
+	
+	//visibility check tool
+	void VisibilityToolTriggered();
+	void VisibilityToolSaveTexture(const String& path);
+	void VisibilityToolSetPoint();
+	void VisibilityToolSetArea();
+	void VisibilityToolSetAreaSize(uint32 size);
     
     void ToggleSceneInfo();
     void ShowSettings();

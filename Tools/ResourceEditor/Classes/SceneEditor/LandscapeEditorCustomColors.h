@@ -37,8 +37,6 @@ public:
 	void SetColor(const Color &newColor);
 	void SetRadius(int radius);
 	void SaveColorLayer(const String &pathName);
-	void UpdateTool();
-	
 
 protected:
 
@@ -51,14 +49,14 @@ protected:
     virtual void RedoAction();
 	
     virtual void RecreateHeightmapNode();
-	void UpdateCircleTexture();
+	void UpdateCircleTexture(bool setTransparent);
 
 
 	void PrepareRenderLayers();
 
     void PerformLandscapeDraw();
     void DrawCircle(Vector<Vector<bool> >& matrixForCircle) ;
-    uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format);
+    uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent);
 
     EditorHeightmap *editedHeightmap;
     Heightmap *savedHeightmap;
@@ -78,7 +76,7 @@ protected:
 
 	int32		radius;
 
-	Sprite*		currentToolSprite;
+	bool		isCursorTransparent;
 };
 
 

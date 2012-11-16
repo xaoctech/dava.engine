@@ -11,6 +11,7 @@
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
+#include "../Commands/VisibilityCheckToolCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -464,5 +465,63 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	{
 		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
 		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
+	}
+}
+
+void QtMainWindowHandler::ToggleVisibilityTool()
+{
+	Execute(new CommandToggleVisibilityTool());
+}
+
+void QtMainWindowHandler::SaveTextureVisibilityTool()
+{
+	Execute(new CommandSaveTextureVisibilityTool());
+}
+
+void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
+{
+	Execute(new CommandChangeAreaSizeVisibilityTool(newSize));
+}
+
+void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
+{
+	Execute(new CommandSetPointVisibilityTool());
+}
+
+void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
+{
+	Execute(new CommandSetAreaVisibilityTool());
+}
+
+void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
+{
+	visibilityToolToggleButton = toggleButton;
+	visibilityToolSaveTextureButton = saveTextureButton;
+	visibilityToolSetPointButton = setPointButton;
+	visibilityToolSetAreaButton = setAreaButton;
+	visibilityToolAreaSizeSlider = areaSizeSlider;
+}
+
+void QtMainWindowHandler::SetWidgetsStateVisibilityTool(bool state)
+{
+	visibilityToolToggleButton->blockSignals(true);
+	visibilityToolToggleButton->setChecked(state);
+	visibilityToolToggleButton->blockSignals(false);
+	
+	QString toggleButtonText = state ? tr("Disable Visibility Check Tool"): tr("Enable Visibility Check Tool");
+	visibilityToolToggleButton->setText(toggleButtonText);
+
+	visibilityToolSaveTextureButton->setEnabled(state);
+	visibilityToolSetPointButton->setEnabled(state);
+	visibilityToolSetAreaButton->setEnabled(state);
+	visibilityToolAreaSizeSlider->setEnabled(state);
+	visibilityToolSaveTextureButton->blockSignals(!state);
+	visibilityToolSetPointButton->blockSignals(!state);
+	visibilityToolSetAreaButton->blockSignals(!state);
+	visibilityToolAreaSizeSlider->blockSignals(!state);
+	
+	if(state == true)
+	{
+		ChangleAreaSizeVisibilityTool(visibilityToolAreaSizeSlider->value());
 	}
 }

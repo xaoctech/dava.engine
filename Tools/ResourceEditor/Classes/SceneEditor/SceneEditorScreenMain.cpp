@@ -887,3 +887,33 @@ void SceneEditorScreenMain::RulerToolTriggered()
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->RulerToolTriggered();
 }
+
+void SceneEditorScreenMain::VisibilityToolTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_VISIBILITY_CHECK_TOOL);
+}
+
+void SceneEditorScreenMain::VisibilityToolSaveTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SaveTexture(path);
+}
+
+void SceneEditorScreenMain::VisibilityToolSetPoint()
+{
+	BodyItem *iBody = FindCurrentBody();
+	iBody->bodyControl->VisibilityToolSetPoint();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetArea()
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetArea();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetAreaSize(uint32 size)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetAreaSize(size);
+}
