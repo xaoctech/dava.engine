@@ -96,8 +96,6 @@ namespace DAVA
     #define glGenerateMipmap glGenerateMipmapOES
 
 	#define glBindFramebuffer glBindFramebufferOES
-	#define GL_FRAMEBUFFER GL_FRAMEBUFFER_OES
-
 #elif defined(__DAVAENGINE_ANDROID__)
     #define glDeleteFramebuffers glDeleteFramebuffers
     #define glDeleteRenderbuffers glDeleteRenderbuffers

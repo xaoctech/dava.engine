@@ -62,6 +62,7 @@ public:
     {
         ELEMID_HEIGHTMAP = 0,
         ELEMID_COLOR_MAP,
+        ELEMID_CUSTOM_COLORS,
         
         ELEMID_COUNT
     };
@@ -193,6 +194,10 @@ public: //For Qt integration
     void HeightmapTriggered();
     void TilemapTriggered();
     void RulerToolTriggered();
+    void CustomColorsTriggered();
+	void CustomColorsSetRadius(uint32 newRadius);
+	void CustomColorsSetColor(uint32 indexInSet);
+	void CustomColorsSaveTexture(const String &path);
     
     void ToggleSceneInfo();
     void ShowSettings();

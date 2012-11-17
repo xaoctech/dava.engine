@@ -74,7 +74,7 @@ public:
 
 protected:
 
-    void SaveTexture();
+    virtual void SaveTexture();
     void SaveTextureAs(const String &pathToFile, bool closeLE);
 
     virtual void InputAction(int32 phase, bool intersects) = 0;

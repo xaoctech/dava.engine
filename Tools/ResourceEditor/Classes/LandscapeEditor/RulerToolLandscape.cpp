@@ -118,3 +118,8 @@ void RulerToolLandscape::SetDisplayedTexture()
 {
     SetTexture(LandscapeNode::TEXTURE_TILE_FULL, rulerSprite->GetTexture());
 }
+
+Texture * RulerToolLandscape::GetDisplayedTexture()
+{
+    return rulerSprite->GetTexture();
+}

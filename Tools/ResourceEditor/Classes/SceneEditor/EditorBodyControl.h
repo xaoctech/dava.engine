@@ -26,6 +26,7 @@ class BeastManager;
 class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
+class LandscapeEditorCustomColors;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -107,6 +108,12 @@ public:
     bool RulerToolTriggered();
     
 	void UpdateModificationPanel(void);
+
+	//custom color editor elements
+	
+	void SetBrushRadius(uint32 size);
+	void SetColorIndex(uint32 indexInSet);
+	void SaveTexture(const String &path);
 
 protected:
 
@@ -190,6 +197,7 @@ protected:
     
     LandscapeEditorColor *landscapeEditorColor;
     LandscapeEditorHeightmap *landscapeEditorHeightmap;
+    LandscapeEditorCustomColors *landscapeEditorCustomColors;
     LandscapeEditorBase *currentLandscapeEditor;
     LandscapeToolsSelection *landscapeToolsSelection;
     
