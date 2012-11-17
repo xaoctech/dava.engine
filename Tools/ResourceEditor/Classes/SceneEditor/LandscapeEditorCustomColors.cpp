@@ -5,6 +5,7 @@
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
 #include "EditorScene.h"
+#include "EditorConfig.h"
 
 #include "UNDOManager.h"
 #include "HeightmapNode.h"
@@ -87,7 +88,9 @@ void LandscapeEditorCustomColors::PerformLandscapeDraw()
 	//render original and color layer to final container 
     RenderManager::Instance()->SetRenderTarget(sprTargetSurf);
 	sprLandscape->Draw();
+	RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, .5f);
     colorSprite->Draw();
+	RenderManager::Instance()->SetColor(Color::White());
     texSurf->GenerateMipmaps();
     RenderManager::Instance()->RestoreRenderTarget();
 
@@ -368,6 +371,13 @@ void LandscapeEditorCustomColors::ShowAction()
 	{
 		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL); 
 		colorSprite = Sprite::CreateAsRenderTarget(tex->width, tex->height, FORMAT_RGBA8888);
+		RenderManager::Instance()->SetRenderTarget(colorSprite);
+		const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
+		if(!colors.empty())
+		{
+			RenderManager::Instance()->ClearWithColor(colors[0].r, colors[0].g, colors[0].b, colors[0].a);
+		}
+		RenderManager::Instance()->RestoreRenderTarget();
 	}
 	else
 	{
