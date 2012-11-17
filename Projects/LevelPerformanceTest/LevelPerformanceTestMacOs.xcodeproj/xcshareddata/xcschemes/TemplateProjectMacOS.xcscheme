@@ -14,9 +14,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D1107260486CEB800E47090"
-               BuildableName = "TemplateProjectMacOS.app"
-               BlueprintName = "TemplateProjectMacOS"
-               ReferencedContainer = "container:TemplateProjectMacOS.xcodeproj">
+               BuildableName = "LevelPerformanceTestMacOs.app"
+               BlueprintName = "LevelPerformanceTestMacOs"
+               ReferencedContainer = "container:LevelPerformanceTestMacOs.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,9 +32,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "TemplateProjectMacOS.app"
-            BlueprintName = "TemplateProjectMacOS"
-            ReferencedContainer = "container:TemplateProjectMacOS.xcodeproj">
+            BuildableName = "LevelPerformanceTestMacOs.app"
+            BlueprintName = "LevelPerformanceTestMacOs"
+            ReferencedContainer = "container:LevelPerformanceTestMacOs.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -51,9 +51,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "TemplateProjectMacOS.app"
-            BlueprintName = "TemplateProjectMacOS"
-            ReferencedContainer = "container:TemplateProjectMacOS.xcodeproj">
+            BuildableName = "LevelPerformanceTestMacOs.app"
+            BlueprintName = "LevelPerformanceTestMacOs"
+            ReferencedContainer = "container:LevelPerformanceTestMacOs.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -69,9 +69,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "TemplateProjectMacOS.app"
-            BlueprintName = "TemplateProjectMacOS"
-            ReferencedContainer = "container:TemplateProjectMacOS.xcodeproj">
+            BuildableName = "LevelPerformanceTestMacOs.app"
+            BlueprintName = "LevelPerformanceTestMacOs"
+            ReferencedContainer = "container:LevelPerformanceTestMacOs.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

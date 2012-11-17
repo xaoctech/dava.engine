@@ -12,8 +12,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A31689CE-A339-464E-8D7E-49EF2AF81AA4}</ProjectGuid>
-    <RootNamespace>TemplateProjectWin32</RootNamespace>
+    <RootNamespace>LevelPerformanceTestVS2010</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>LevelPerformanceTestVS2010</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -53,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../dava.framework/Sources/Internal;./../dava.framework/Sources/External;$(DXSDK_DIR)/include;../dava.framework/Libs/glew/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;$(DXSDK_DIR)/include;../../Libs/glew/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -65,7 +66,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../dava.framework/Projects/Win32Framework/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -92,16 +93,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\FileManagerWrapper.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
-    <ClCompile Include="Classes\TestScreen.cpp" />
+    <ClCompile Include="Classes\LandscapeTestData.cpp" />
+    <ClCompile Include="Classes\ResultScreen.cpp" />
+    <ClCompile Include="Classes\SettingsManager.cpp" />
+    <ClCompile Include="Classes\Test.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\FileManagerWrapper.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
-    <ClInclude Include="Classes\TestScreen.h" />
+    <ClInclude Include="Classes\LandscapeTestData.h" />
+    <ClInclude Include="Classes\ResultScreen.h" />
+    <ClInclude Include="Classes\SettingsManager.h" />
+    <ClInclude Include="Classes\Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
