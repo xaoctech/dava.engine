@@ -2231,7 +2231,7 @@ bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet)
     }
 
     bool read = true;
-    for (uint32 i = 0; i < (int32)imageSet.size(); ++i)
+    for (uint32 i = 0; i < (uint32)imageSet.size(); ++i)
     {
         read &= ReadMipMapLevel((const char *)fileData, fileSize, imageSet[i], i);
     }

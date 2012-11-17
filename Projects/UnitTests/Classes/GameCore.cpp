@@ -260,7 +260,6 @@ void GameCore::FlushTestResults()
 //    dbClient->DropDatabase();
 //    //end of test
     
-    
     time_t logStartTime = time(0);
     String testTimeString = Format("%lld", logStartTime);
 

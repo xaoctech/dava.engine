@@ -2,12 +2,14 @@
 #define SurfaceTester_Test_h
 
 #include "DAVAEngine.h"
+#include "LandscapeTestData.h"
 
 using namespace DAVA;
 
-class Test: public DAVA::UIScreen {
+class Test: public DAVA::UIScreen
+{
 public:
-	Test(const String& fullName, int skipFrames=10);
+	Test(const String& fullName);
 	
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -19,52 +21,56 @@ public:
 	
 	virtual void Input(DAVA::UIEvent * touch);
 	
-	int GetScreenId() const {return screenId;};
+	int32 GetScreenId() const {return screenId;};
 	
 	bool IsFinished() const {return isFinished;};
 	
-	const Vector<float>* const GetStat() const {return fpsStat;};
+	Texture* GetLandscapeTexture()
+	{
+		return GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+	};
+
 	const String GetFileName() const;
+
+	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:
 	Test();
 	
-	static int globalScreenId;
-	int screenId;
+	static int32 globalScreenId;
+	int32 screenId;
 	
-	int skipFrames;
-	
+	int32 skipFrames;
+
 	String fullName;
 	
 	float32 time;
-	
-	float velocity;
-	Vector3 velocityDir;
-	
-	int curPathPointNum;
-	Vector3 curPathPoint;
-	Vector3 nextPathPoint;
-	
-	int nextFpsCheckPointNum;
-	Vector3 nextFpsCheckPoint;
-	
-	float fpsMin;
-	float fpsMid;
-	float fpsMax;
-	int frameCount;
-	
-	Vector<Vector3> centerPoints;
-	Vector<Vector3> fpsCheckPoints;
-	Vector<float> fpsStat[3];
-	
-	LandscapeNode *land;
-	Camera *cam;
-	
+    
+	LandscapeTestData testData;
+    Vector3 curCameraPosition;
+    uint32 nextRectNum;
+    float32 curCameraAngle;
+    LinearAnimation<Vector3>* camMoveAnimation;
+    LinearAnimation<float32>* camRotateAnimation;
+
+    Vector<DAVA::Rect> rectSequence;
+	FpsStatItem fpsStatItem;
+
 	bool isFinished;
 	
+    Vector3 GetRealPoint(const Vector2& point);
+    
 	void PreparePath();
-	void PrepareFpsCheckPoints();
-	void UpdatePathSegment();
-	void UpdateFpsSegment();
+    void PrepareCameraAnimation();
+    void PrepareFpsStat();
+    void MoveToNextPoint();
+    void SaveFpsStat();
+	void ZeroCurFpsStat();
+    void AnimationFinished(BaseObject*, void*, void*);
+
+	inline UI3DView* GetSceneView();
+	inline Scene* GetScene();
+	inline Camera* GetCamera();
+	inline LandscapeNode* GetLandscape();
 };
 
 #endif

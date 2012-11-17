@@ -27,6 +27,9 @@ private:
 
     void SetupProjectPath();
     void SetupDockWidgets();
+    void SetupCustomColorsDock();
+    
+    void SetCustomColorsDockControlsEnabled(bool enabled);
         
 private slots:
 

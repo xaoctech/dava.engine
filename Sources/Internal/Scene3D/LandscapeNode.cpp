@@ -241,19 +241,15 @@ void LandscapeNode::SetLods(const Vector4 & lods)
     
 void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & _box)
 {
-    heightmapPath = heightmapPathname;
-    
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
-
     SafeDeleteArray(indices); //TODO: need here or no?
     
+	heightmapPath = heightmapPathname;
+	box = _box;
+
     InitShaders(); // init new shaders according to the selected rendering mode
-    
     BuildHeightmap();
-    
-    box = _box;
-    
     BuildLandscape();
 }
 
@@ -1189,7 +1185,10 @@ void LandscapeNode::Draw()
     }
 	FlushQueue();
     
-    if(nearLodIndex != farLodIndex)     BindMaterial(farLodIndex);
+    if(nearLodIndex != farLodIndex)     
+	{
+		BindMaterial(farLodIndex);
+	}
 
     int32 countNot0 = lodNot0quads.size();
     for(int32 i = 0; i < countNot0; ++i)
@@ -1230,7 +1229,10 @@ void LandscapeNode::Draw()
         
         Draw(&quadTreeHead);
         
-        if(nearLodIndex != farLodIndex)     BindMaterial(nearLodIndex);
+        if(nearLodIndex != farLodIndex)     
+		{
+			BindMaterial(nearLodIndex);
+		}
         int32 count0 = lod0quads.size();
         for(int32 i = 0; i < count0; ++i)
         {
@@ -1238,7 +1240,10 @@ void LandscapeNode::Draw()
         }
         FlushQueue();
         
-        if(nearLodIndex != farLodIndex)     BindMaterial(farLodIndex);
+        if(nearLodIndex != farLodIndex)
+		{
+			BindMaterial(farLodIndex);
+		}
         
         int32 countNot0 = lodNot0quads.size();
         for(int32 i = 0; i < countNot0; ++i)
@@ -1482,7 +1487,6 @@ void LandscapeNode::SetHeightmap(DAVA::Heightmap *height)
     
     SafeDeleteArray(indices);
 
-    
     heightmap = SafeRetain(height);
     BuildLandscape();
 }

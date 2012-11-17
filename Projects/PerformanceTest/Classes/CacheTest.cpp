@@ -133,7 +133,7 @@ void CacheTest::UnloadResources()
     {
         if (matrixesResult[k]._data[1][3] != neonMatrixesResult[k]._data[1][3])
         {
-            Logger::Debug("Function calculated results wrongly");
+            Logger::Debug("Neon Function calculated results wrongly");
             break;
         }
     }
