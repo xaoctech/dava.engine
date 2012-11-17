@@ -10,6 +10,7 @@
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
+#include "../Commands/CustomColorCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -24,6 +25,9 @@
 #include <QAction>
 #include <QCursor>
 #include <QWidget>
+#include <QPushButton>
+#include <QSlider>
+#include <QComboBox>
 #include <QStatusBar>
 
 using namespace DAVA;
@@ -410,4 +414,55 @@ void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
 void QtMainWindowHandler::RulerTool()
 {
     Execute(new CommandRulerTool());
+}
+
+void QtMainWindowHandler::ToggleCustomColors()
+{
+    Execute(new CommandToggleCustomColors());
+}
+
+void QtMainWindowHandler::SaveTextureCustomColors()
+{
+    Execute(new CommandSaveTextureCustomColors());
+}
+
+void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
+{
+    Execute(new CommandChangeBrushSizeCustomColors(newSize));
+}
+
+void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
+{
+    Execute(new CommandChangeColorCustomColors(newColorIndex));
+}
+
+void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox)
+{
+	this->customColorsToggleButton = toggleButton;
+	this->customColorsSaveTextureButton = saveTextureButton;
+	this->customColorsBrushSizeSlider = brushSizeSlider;
+	this->customColorsColorComboBox = colorComboBox;
+}
+
+void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
+{
+	customColorsToggleButton->blockSignals(true);
+	customColorsToggleButton->setChecked(state);
+	customColorsToggleButton->blockSignals(false);
+
+	QString buttonText = state ? "Disable Custom Colors" : "Enable Custom Colors";
+	customColorsToggleButton->setText(buttonText);
+
+	customColorsSaveTextureButton->setEnabled(state);
+	customColorsBrushSizeSlider->setEnabled(state);
+	customColorsColorComboBox->setEnabled(state);
+	customColorsSaveTextureButton->blockSignals(!state);
+	customColorsBrushSizeSlider->blockSignals(!state);
+	customColorsColorComboBox->blockSignals(!state);
+
+	if(state == true)
+	{
+		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
+		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
+	}
 }

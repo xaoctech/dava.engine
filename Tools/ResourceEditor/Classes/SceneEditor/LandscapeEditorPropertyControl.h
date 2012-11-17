@@ -35,7 +35,8 @@ public:
     enum eEditorMode
     {
         MASK_EDITOR_MODE = 0,
-        HEIGHT_EDITOR_MODE        
+        HEIGHT_EDITOR_MODE,
+		COLORIZE_EDITOR_MODE
     };
     
 	LandscapeEditorPropertyControl(const Rect & rect, bool createNodeProperties, eEditorMode mode);
