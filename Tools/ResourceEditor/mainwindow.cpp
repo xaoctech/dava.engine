@@ -15,6 +15,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 
+#include <QPixmap>
+
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
@@ -43,6 +45,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     
     new GUIState();
 
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
+    
     SetupMainMenu();
     
     SetupToolBar();
@@ -50,7 +54,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupDockWidgets();
 
     SetupProjectPath();
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -91,6 +94,7 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
 	QAction *actionReferences = ui->dockReferences->toggleViewAction();
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
+    QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -98,12 +102,13 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionReferences, actionEntities);
     ui->menuView->insertAction(actionEntities, actionDataGraph);
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
+    ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, actionReferences);
+                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors);
 
 
     ui->dockDataGraph->hide();
@@ -221,9 +226,53 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-
     
+    SetupCustomColorsDock();
+
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+}
+
+void QtMainWindow::SetupCustomColorsDock()
+{
+    QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+    connect(ui->buttonCustomColorsEnable, SIGNAL(clicked()), handler, SLOT(ToggleCustomColors()));
+
+	ui->buttonCustomColorsSave->blockSignals(true);
+	ui->sliderCustomColorBrushSize->blockSignals(true);
+	ui->comboboxCustomColors->blockSignals(true);
+
+    connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
+    connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
+    connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
+
+	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
+		ui->buttonCustomColorsEnable,
+		ui->buttonCustomColorsSave,
+		ui->sliderCustomColorBrushSize,
+		ui->comboboxCustomColors);
+    
+    QSize iconSize = ui->comboboxCustomColors->iconSize();
+    iconSize = iconSize.expandedTo(QSize(100, 0));
+    ui->comboboxCustomColors->setIconSize(iconSize);
+    
+    Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
+	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
+	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
+    for(size_t i = 0; i < customColors.size(); ++i)
+    {
+        QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
+        
+        QImage image(iconSize, QImage::Format_ARGB32);
+        image.fill(color);
+        
+        QPixmap pixmap(iconSize);
+        pixmap.convertFromImage(image, Qt::ColorOnly);
+        
+        QIcon icon(pixmap);
+		String description = isEveryColorHasDescription ? customColorsDescription[i] : "";
+        ui->comboboxCustomColors->addItem(icon, description.c_str());
+    }
+    handler->SetCustomColorsWidgetsState(false);
 }
 
 void QtMainWindow::MenuFileWillShow()

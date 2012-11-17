@@ -18,6 +18,7 @@
 #include "LandscapeEditorHeightmap.h"
 #include "SceneEditorScreenMain.h"
 #include "LandscapeToolsSelection.h"
+#include "LandscapeEditorCustomColors.h"
 
 
 #include "SceneGraph.h"
@@ -27,6 +28,8 @@
 #include "../Qt/SceneDataManager.h"
 #include "../Qt/SceneData.h"
 #include "../RulerTool/RulerTool.h"
+
+#include "../SceneEditor/EditorConfig.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -102,6 +105,49 @@ void EditorBodyControl::UpdateModificationPanel(void)
 	modificationPanel->UpdateCollisionTypes();
 }
 
+void EditorBodyControl::SetBrushRadius(uint32 newSize)
+{
+	if(RulerToolIsActive())
+        return;
+    
+	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	{
+		return;
+	}
+
+	landscapeEditorCustomColors->SetRadius(newSize);
+}
+
+void EditorBodyControl::SetColorIndex(uint32 indexInSet)
+{
+	if(RulerToolIsActive())
+        return;
+    
+	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	{
+		return;
+	}
+
+	const Vector<Color> &colorVector = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
+	if(colorVector.size() == 0 || colorVector.size() <= indexInSet)
+	{
+		return;
+	}
+	landscapeEditorCustomColors->SetColor(colorVector[indexInSet]);
+}
+
+void EditorBodyControl::SaveTexture(const String &path)
+{
+	if(RulerToolIsActive())
+        return;
+    
+	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	{
+		return;
+	}
+
+	landscapeEditorCustomColors->SaveColorLayer(path);
+}
 
 void RemoveDeepCamera(SceneNode * curr)
 {
@@ -873,6 +919,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     toolsRect.dy += ControlsFactory::TOOLS_HEIGHT;
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
+    landscapeEditorCustomColors = new LandscapeEditorCustomColors(this, this, toolsRect);
     
     Rect rect = GetRect();
     landscapeToolsSelection = new LandscapeToolsSelection(NULL, 
@@ -888,6 +935,7 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
+	SafeRelease(landscapeEditorCustomColors);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
 }
@@ -905,6 +953,9 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
     {
         requestedEditor = landscapeEditorHeightmap;
+    } else if(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorCustomColors;
     }
     
     if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))

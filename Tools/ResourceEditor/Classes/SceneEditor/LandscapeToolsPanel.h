@@ -33,13 +33,14 @@ protected:
     
 public:
     LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
+	LandscapeToolsPanel(const Rect & rect); // for custom panels
     virtual ~LandscapeToolsPanel();
     
     virtual void WillAppear();
     virtual void Input(UIEvent *currentInput);
 
     LandscapeTool *CurrentTool();
-    void SetSelectionPanel(LandscapeToolsSelection *newPanel);
+    virtual void SetSelectionPanel(LandscapeToolsSelection *newPanel);
     
     //LandscapeToolsSelectionDelegate
     virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);

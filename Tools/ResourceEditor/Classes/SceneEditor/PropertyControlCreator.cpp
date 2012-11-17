@@ -148,6 +148,10 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
                 controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
                 break;
 
+			case EPCID_LANDSCAPE_EDITOR_COLORIZE:
+                controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
+                break;
+
             case EPCID_DATANODE:
                 controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
                 break;
@@ -179,6 +183,10 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(S
     else if(LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE == mode)
     {
         return CreateControlForNode(EPCID_LANDSCAPE_EDITOR_HEIGHT, rect, false);
+    }
+	else if(LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE == mode)
+    {
+        return CreateControlForNode(EPCID_LANDSCAPE_EDITOR_COLORIZE, rect, false);
     }
 
     return NULL;
