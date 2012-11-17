@@ -40,6 +40,7 @@
 		4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AFCB14C499E600BAA259 /* SceneManager.cpp */; };
 		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
+		492A98DC1644149F006AAE2A /* Image.mm in Sources */ = {isa = PBXBuildFile; fileRef = 492A98DB1644149F006AAE2A /* Image.mm */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0105D5157799E000E0B939 /* MongodbClient.cpp */; };
 		5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0105D6157799E000E0B939 /* MongodbClient.h */; };
@@ -599,6 +600,7 @@
 		4780AFCB14C499E600BAA259 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		4780AFCC14C499E600BAA259 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
+		492A98DB1644149F006AAE2A /* Image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Image.mm; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C0105D5157799E000E0B939 /* MongodbClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbClient.cpp; path = Database/MongodbClient.cpp; sourceTree = "<group>"; };
 		5C0105D6157799E000E0B939 /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
@@ -1615,6 +1617,7 @@
 				FECFB3EC12E5904400C71562 /* DynamicVertexBuffer.h */,
 				FECFB3ED12E5904400C71562 /* Image.cpp */,
 				FECFB3EE12E5904400C71562 /* Image.h */,
+				492A98DB1644149F006AAE2A /* Image.mm */,
 				FECFB3EF12E5904400C71562 /* IndexBuffer.h */,
 				FECFB3F012E5904400C71562 /* LibPngHelpers.cpp */,
 				FECFB3F112E5904400C71562 /* LibPngHelpers.h */,
@@ -2539,6 +2542,7 @@
 				C2F0A4FC161DEA8C003A2006 /* Observable.cpp in Sources */,
 				E8F98C70161B163600B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */,
+				492A98DC1644149F006AAE2A /* Image.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
