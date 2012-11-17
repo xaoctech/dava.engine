@@ -419,7 +419,7 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type) {
         const QString& name = iter.key();
         const SoftWare& soft = iter.value();
         if (!soft.m_CurVersion.isEmpty() &&
-            Settings::GetVersion(soft.m_CurVersion) < Settings::GetVersion(soft.m_NewVersion)) {
+            soft.m_CurVersion < soft.m_NewVersion) {
 
             if (0 == QMessageBox::information(NULL,//this,
                                              tr("Update available"),
