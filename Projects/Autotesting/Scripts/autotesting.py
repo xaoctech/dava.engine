@@ -156,8 +156,8 @@ if 5 == len(arguments):
                 if testsCountLeft <= testFilesInFolderCount:
                     testFiles.append(testFilesInFolder[0:testsCountLeft])
                 else:
-                    testsCountLeft -= testFilesInFolderCount
                     testFiles.append(testFilesInFolder)
+            testsCountLeft -= testFilesInFolderCount
     print "testFiles=" + "[%s]" % ", ".join(map(str, testFiles))
 else:
     testFiles = os.listdir(testsFolder)
