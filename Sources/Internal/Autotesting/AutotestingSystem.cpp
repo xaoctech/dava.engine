@@ -33,6 +33,7 @@ AutotestingSystem::AutotestingSystem()
     , isWaiting(false)
     , isRegistered(false)
     , waitTimeLeft(0.0f)
+    , waitCheckTimeLeft(0.0f)
     , masterRunId(0)
     , isInitMultiplayer(false)
 {
@@ -467,6 +468,7 @@ void AutotestingSystem::Update(float32 timeElapsed)
     else if(isWaiting)
     {
         waitTimeLeft -= timeElapsed;
+        waitCheckTimeLeft -= timeElapsed;
         
         if(waitTimeLeft <= 0.0f)
         {
@@ -474,10 +476,14 @@ void AutotestingSystem::Update(float32 timeElapsed)
             isRunning = false;
             OnError("Multiplayer Wait Timeout");
         }
-        else if(CheckMasterHelpersReadyDB())
+        else if(waitCheckTimeLeft <= 0.0f)
         {
-            isWaiting = false;
-            isRunning = true;
+            waitCheckTimeLeft = 0.1f;
+            if(CheckMasterHelpersReadyDB())
+            {
+                isWaiting = false;
+                isRunning = true;
+            }
         }
     }
 }
@@ -512,11 +518,14 @@ String AutotestingSystem::ReadMasterIDFromDB()
     return AUTOTEST_MASTER_ID;
 }
     
-void AutotestingSystem::InitMultiplayer()
+void AutotestingSystem::InitMultiplayer(bool _isMaster)
 {
     if(!isInitMultiplayer)
     {
         isInitMultiplayer = true;
+ 
+        isMaster = _isMaster;
+        masterId = ReadMasterIDFromDB(); //TODO: DB set or get name
         
         multiplayerName = Format("%u_multiplayer", testsDate);
         Logger::Debug("AutotestingSystem::InitMultiplayer %s", multiplayerName.c_str());
@@ -528,9 +537,7 @@ void AutotestingSystem::InitMultiplayer()
     
 void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
 {
-    isMaster = true;
     requestedHelpers = helpersCount;
-    masterId = AUTOTEST_MASTER_ID;
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
@@ -551,6 +558,7 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     masterRunId = masterArchive->GetInt32("runId", 0) + 1;
     masterArchive->SetInt32("runId", masterRunId);
     
+    masterArchive->SetBool("run", false);
     
     dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
     
@@ -566,28 +574,29 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     
 void AutotestingSystem::RegisterHelperInDB()
 {
-    isMaster = false;
-    masterId = ReadMasterIDFromDB();
-    
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-    if(!dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
+    if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
     {
-        dbUpdateObject->SetObjectName(multiplayerName);
-    }
-    dbUpdateObject->LoadData();
-    
-    KeyedArchive* masterArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
-    if(masterArchive)
-    {
-        int32 helpersCount = masterArchive->GetInt32("helpers", 0) + 1;
-        masterArchive->SetInt32("helpers", helpersCount);
+        dbUpdateObject->LoadData();
         
-        masterRunId = masterArchive->GetInt32("runId", 0);
-        
-        dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
-        
-        isRegistered = dbUpdateObject->SaveToDB(dbClient);
-        Logger::Debug("AutotestingSystem::RegisterHelperInDB %d", isRegistered);
+        KeyedArchive* masterArchive = SafeRetain(dbUpdateObject->GetData()->GetArchive(masterId, NULL));
+        if(masterArchive)
+        {
+            if(!masterArchive->GetBool("run", false))
+            {
+                int32 helpersCount = masterArchive->GetInt32("helpers", 0) + 1;
+                masterArchive->SetInt32("helpers", helpersCount);
+                
+                masterRunId = masterArchive->GetInt32("runId", 0);
+                
+                dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
+                
+                isRegistered = dbUpdateObject->SaveToDB(dbClient);
+                Logger::Debug("AutotestingSystem::RegisterHelperInDB %d", isRegistered);
+            }
+        }
+        // delete created archives
+        SafeRelease(masterArchive);
     }
     // delete created update object
     SafeRelease(dbUpdateObject);
@@ -616,16 +625,11 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
         if(dbClient->FindObjectByKey(multiplayerName, dbUpdateObject))
         {
             dbUpdateObject->LoadData();
-            KeyedArchive* masterArchive = dbUpdateObject->GetData()->GetArchive(masterId, NULL);
+            KeyedArchive* masterArchive = SafeRetain(dbUpdateObject->GetData()->GetArchive(masterId, NULL));
             if(masterArchive)
             {
                 // for registered agents, check if runId is overwritten
-                if(masterRunId == 0)
-                {
-                    // exit on error (runId is invalid)
-                    OnError("Multiplayer Master runId=0");
-                }
-                else if(masterRunId != masterArchive->GetInt32("runId"))
+                if(masterRunId != masterArchive->GetInt32("runId"))
                 {
                     // runId was overwritten
                     if(isMaster)
@@ -641,10 +645,51 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                 }
                 else
                 {
-                    isReady = (masterArchive->GetInt32("requested") == masterArchive->GetInt32("helpers"));
+                    if(isMaster)
+                    {
+                        int32 requested = masterArchive->GetInt32("requested");
+                        int32 helpers = masterArchive->GetInt32("helpers");
+                        if(requested == helpers)
+                        {
+                            if(requested != requestedHelpers)
+                            {
+                                OnError("Multiplayer Master wrong Helpers count");
+                            }
+                            else
+                            {
+                                masterArchive->SetBool("run", true);
+                                //TODO: set task for helpers into DB
+                                masterArchive->SetString("task", "autotest1master_task.lua");
+                                
+                                dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
+                                
+                                isReady = dbUpdateObject->SaveToDB(dbClient);
+                                if(isReady)
+                                {
+                                    Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Master: %d helpers ready", requestedHelpers);
+                                }
+                                else
+                                {
+                                    Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Master: failed to run");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isReady = masterArchive->GetBool("run", false);
+                        if(isReady)
+                        {
+                            //TODO: get task from DB
+                            String taskFromDB = masterArchive->GetString("task");
+                            Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Helper: run test %s", taskFromDB.c_str());
+                        }
+                    }
                 }
             }
+            SafeRelease(masterArchive);
         }
+        SafeRelease(dbUpdateObject);
     }
     return isReady;
 }
