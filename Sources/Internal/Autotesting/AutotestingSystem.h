@@ -109,6 +109,8 @@ protected:
     bool CheckMasterHelpersReadyDB();
     //
     
+    int32 GetIndexInFileList(FileList &fileList, int32 index);
+    
     void ExitApp();
     
     bool isInit;

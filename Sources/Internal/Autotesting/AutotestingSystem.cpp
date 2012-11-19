@@ -139,35 +139,19 @@ void AutotestingSystem::OnAppStarted()
 			needClearDB = true;
         }
         
-        int32 indexInFileList = testIndex;
-        // skip directories
-        for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
+        int32 indexInFileList = GetIndexInFileList(fileList, testIndex);
+        
+        // try to cycle
+        if(fileListSize <= indexInFileList)
         {
-            if((fileList.IsDirectory(i)) || (fileList.IsNavigationDirectory(i)))
-            {
-                indexInFileList++;
-            }
-            else
-            {
-                String fileExtension = FileSystem::Instance()->GetExtension(fileList.GetFilename(i));
-#ifdef AUTOTESTING_LUA
-                //skip all non-lua files
-                if(fileExtension != ".lua")
-                {
-                    indexInFileList++;
-                }
-#else
-                // skip all non-yaml files
-                if(fileExtension != ".yaml")
-                {
-                    indexInFileList++;
-                }
-#endif
-            }
+            testIndex = 0;
+            indexInFileList = GetIndexInFileList(fileList, testIndex);
         }
         
         if(indexInFileList < fileListSize)
         {
+            // found direct or cycled
+            
             testFilePath = fileList.GetPathname(indexInFileList);
             testFileName = fileList.GetFilename(indexInFileList);
             
@@ -184,12 +168,47 @@ void AutotestingSystem::OnAppStarted()
         }
         else
         {
+            // not found
+            
             // last file (or after last) - reset id and index
             //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
             autotestingArchive->SetInt32("index", 0);
         }
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
     }
+}
+    
+    
+int32 AutotestingSystem::GetIndexInFileList(FileList &fileList, int32 index)
+{
+    int32 fileListSize = fileList.GetCount();
+    int32 indexInFileList = index;
+    // skip directories
+    for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
+    {
+        if((fileList.IsDirectory(i)) || (fileList.IsNavigationDirectory(i)))
+        {
+            indexInFileList++;
+        }
+        else
+        {
+            String fileExtension = FileSystem::Instance()->GetExtension(fileList.GetFilename(i));
+#ifdef AUTOTESTING_LUA
+            //skip all non-lua files
+            if(fileExtension != ".lua")
+            {
+                indexInFileList++;
+            }
+#else
+            // skip all non-yaml files
+            if(fileExtension != ".yaml")
+            {
+                indexInFileList++;
+            }
+#endif
+        }
+    }
+    return indexInFileList;
 }
     
 void AutotestingSystem::OnAppFinished()
