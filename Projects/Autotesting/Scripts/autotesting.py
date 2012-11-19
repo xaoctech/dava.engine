@@ -112,7 +112,7 @@ elif (platform.system() == "Darwin"):
         executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/MacOS/" + targetName)
         executableRunPath = executableBuildPath
 
-        testsFolder = os.path.realpath(executableBuildPath + "/Contents/Resources/Data/Autotesting/Tests")
+        testsFolder = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/Resources/Data/Autotesting/Tests")
     else:
         print "Error: wrong OS " + platformName
 
