@@ -12,9 +12,10 @@
 
 namespace DAVA
 {
-	inline size_t dava_hash_string(const char* str)
+	// default hash function for strings
+	inline size_t DavaHashString(const char* str)
 	{
-		size_t hash = 0; 
+		size_t hash = 0;
 		for (; *str; ++str)
 		{
 			hash = 5 * hash + *str;
@@ -22,70 +23,80 @@ namespace DAVA
 		return hash;
 	}
 
+	// Base hash type
+	// Any child (template specialized) structure
+	// should implement for specific type T:
+	// - hash function: operator()(T value)
+	// - compare function: compare(T value1, T value2)
 	template <typename T>
 	struct Hash
 	{ };
 
+	// specialization for char *
 	template<> struct Hash <char *>
 	{
 		size_t operator()(const char *str) const
 		{
-			return dava_hash_string(str);
+			return DavaHashString(str);
 		}
 
-		bool compare(const char *str1, const char *str2)
+		bool Compare(const char *str1, const char *str2)
 		{
 			return (str1 == str2) || (0 == strcmp(str1, str2));
 		}
 	};
 
+	// specialization for const char *
 	template<> struct Hash <const char *>
 	{
 		size_t operator()(const char *str) const
 		{
-			return dava_hash_string(str);
+			return DavaHashString(str);
 		}
 
-		bool compare(const char *str1, const char *str2)
+		bool Compare(const char *str1, const char *str2)
 		{
 			return (str1 == str2) || (0 == strcmp(str1, str2));
 		}
 	};
 
+	// specialization for const DAVA::String &
 	template<> struct Hash <DAVA::String>
 	{
 		size_t operator()(const DAVA::String &str) const
 		{
-			return dava_hash_string(str.c_str());
+			return DavaHashString(str.c_str());
 		}
 
-		bool compare(const DAVA::String &str1, const DAVA::String &str2)
+		bool Compare(const DAVA::String &str1, const DAVA::String &str2)
 		{
 			return (str1 == str2);
 		}
 	};
 
+	// specialization for DAVA::String *
 	template<> struct Hash <DAVA::String *>
 	{
 		size_t operator()(const DAVA::String *str) const
 		{
-			return dava_hash_string(str->c_str());
+			return DavaHashString(str->c_str());
 		}
 
-		bool compare(const DAVA::String *str1, const DAVA::String *str2)
+		bool Compare(const DAVA::String *str1, const DAVA::String *str2)
 		{
 			return (str1 == str2) || 0 == str1->compare(str2->c_str());
 		}
 	};
 
+	// specialization for const DAVA::String *
 	template<> struct Hash <const DAVA::String *>
 	{
 		size_t operator()(const DAVA::String *str) const
 		{
-			return dava_hash_string(str->c_str());
+			return DavaHashString(str->c_str());
 		}
 
-		bool compare(const DAVA::String *str1, const DAVA::String *str2)
+		bool Compare(const DAVA::String *str1, const DAVA::String *str2)
 		{
 			return (str1 == str2) || 0 == str1->compare(str2->c_str());
 		}
