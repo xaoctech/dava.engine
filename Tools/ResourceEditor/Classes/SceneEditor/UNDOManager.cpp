@@ -298,17 +298,20 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
     {
         if(forAction == (*it)->type)
         {
-            if(UNDOAction::ACTION_TILEMASK == (*it)->type)
-            {
-                Image *image = (Image *)((*it)->actionData);
-                SafeRelease(image);
-                (*it)->actionData = NULL;
-            }
-            else 
-            {
-                FileSystem::Instance()->DeleteFile((*it)->filePathname);
-            }
-            
+			switch ((*it)->type)
+			{
+			case UNDOAction::ACTION_TILEMASK : case UNDOAction::ACTION_COLORIZE :
+				{
+					Image *image = (Image *)((*it)->actionData);
+					SafeRelease(image);
+					(*it)->actionData = NULL;
+				}
+					break;
+			default:
+					FileSystem::Instance()->DeleteFile((*it)->filePathname);
+					break;
+
+			}
             SafeRelease(*it);
             
             it = actionsHistory.erase(it);

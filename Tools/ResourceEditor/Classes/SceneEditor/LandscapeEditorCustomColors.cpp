@@ -431,6 +431,8 @@ void LandscapeEditorCustomColors::UndoAction()
 		RenderManager::Instance()->RestoreRenderTarget();
 
 		PerformLandscapeDraw();
+
+		SafeRelease(tex);
     }
 }
 
@@ -458,6 +460,8 @@ void LandscapeEditorCustomColors::RedoAction()
 		RenderManager::Instance()->RestoreRenderTarget();
 
 		PerformLandscapeDraw();
+
+		SafeRelease(tex);
     }
 }
 
