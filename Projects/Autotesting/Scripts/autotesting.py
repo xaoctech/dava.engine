@@ -45,8 +45,9 @@ executableName = ""
 executableBuildPath = ""
 executableRunPath = ""
 testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
-testsFolderMacOS = testsFolder
-testsFolderiOS = testsFolder
+
+testsFolderiOS = os.path.realpath(projectDir + "/build/" + configurationName + "-iphoneos/" + targetName + ".app/Data/Autotesting/Tests")
+testsFolderMacOS = os.path.realpath(projectDir + "/build/" + configurationName + "/" + targetName + ".app/Contents/Resources/Data/Autotesting/Tests")
 
 if (platform.system() == "Windows"):
     executableName = targetName + ".exe"
@@ -105,7 +106,7 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
 
-        testsFolderiOS = os.path.realpath(executableBuildPath + "/Data/Autotesting/Tests")
+        
         testsFolder = testsFolderiOS
 
     elif (platformName == "MacOS"):
@@ -114,7 +115,6 @@ elif (platform.system() == "Darwin"):
         executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/MacOS/" + targetName)
         executableRunPath = executableBuildPath
 
-        testsFolderMacOS = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/Resources/Data/Autotesting/Tests")
         testsFolder = testsFolderMacOS
     else:
         print "Error: wrong OS " + platformName
@@ -128,6 +128,7 @@ os.chdir(projectDir)
 if 5 == len(arguments):
     
     masterPlatform = arguments[4]
+    print "get tests count from master " + masterPlatform
 
     testFilesInFolder = os.listdir(testsFolder)
     testFilesInFolderCount = len(testFilesInFolder)
@@ -136,10 +137,14 @@ if 5 == len(arguments):
     
     if (platform.system() == "Darwin"):
         if (masterPlatform == "iOS"):
+            print "get tests count from " + testsFolderiOS
             testsCount = len(os.listdir(testsFolderiOS))
         elif (masterPlatform == "MacOS"):
+            print "get tests count from " + testsFolderMacOS
             testsCount = len(os.listdir(testsFolderMacOS))
-    
+
+    print "testsCount=" + str(testsCount)
+
     if testsCount <= testFilesInFolderCount:
         testFiles = testFilesInFolder[0:testsCount]
     else:
@@ -153,6 +158,7 @@ if 5 == len(arguments):
                 else:
                     testsCountLeft -= testFilesInFolderCount
                     testFiles.append(testFilesInFolder)
+    print "testFiles=" + "[%s]" % ", ".join(map(str, testFiles))
 else:
     testFiles = os.listdir(testsFolder)
 
