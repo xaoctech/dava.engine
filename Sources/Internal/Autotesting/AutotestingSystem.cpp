@@ -275,7 +275,7 @@ void AutotestingSystem::SaveTestToDB()
     
     Logger::Debug("AutotestingSystem::SaveTestToDB");
     
-    String testAndFileName = Format("%s (%s)", testName.c_str(), testFileName.c_str());
+    String testAndFileName = (!masterId.empty() && !isMaster) ? Format("%s (%s) %s", testName.c_str(), testFileName.c_str(), masterTask.c_str()) : Format("%s (%s)", testName.c_str(), testFileName.c_str());
     
     String testsName = Format("%u",testsDate);
     
@@ -678,7 +678,7 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                             {
                                 masterArchive->SetBool("run", true);
                                 //TODO: set task for helpers into DB
-                                masterArchive->SetString("task", "autotest1master_task.lua");
+                                masterArchive->SetString("task", testFileName);
                                 
                                 dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
                                 
@@ -700,8 +700,8 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                         if(isReady)
                         {
                             //TODO: get task from DB
-                            String taskFromDB = masterArchive->GetString("task");
-                            Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Helper: run test %s", taskFromDB.c_str());
+                            masterTask = masterArchive->GetString("task");
+                            Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Helper: run test %s", masterTask.c_str());
                         }
                     }
                 }
