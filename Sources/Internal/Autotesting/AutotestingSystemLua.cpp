@@ -261,7 +261,7 @@ void AutotestingSystemLua::RunScript(const DAVA::String &luaScript)
     
 void AutotestingSystemLua::RunScript()
 {
-    Logger::Debug("AutotestingSystemLua::RunScript");
+    //Logger::Debug("AutotestingSystemLua::RunScript");
     lua_pcall(luaState, 0, 0, 0); //TODO: LUA_MULTRET?
 }
 
