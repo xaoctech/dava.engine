@@ -68,6 +68,7 @@ public:
     
     void AllocChilds()
     {
+		SafeDeleteArray(childs);
         childs = new LandQuadTreeNode[4];
     }
     

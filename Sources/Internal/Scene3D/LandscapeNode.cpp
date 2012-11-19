@@ -237,19 +237,15 @@ void LandscapeNode::SetLods(const Vector4 & lods)
     
 void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & _box)
 {
-    heightmapPath = heightmapPathname;
-    
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
-
     SafeDeleteArray(indices); //TODO: need here or no?
     
+	heightmapPath = heightmapPathname;
+	box = _box;
+
     InitShaders(); // init new shaders according to the selected rendering mode
-    
     BuildHeightmap();
-    
-    box = _box;
-    
     BuildLandscape();
 }
 
@@ -1483,7 +1479,6 @@ void LandscapeNode::SetHeightmap(DAVA::Heightmap *height)
     
     SafeDeleteArray(indices);
 
-    
     heightmap = SafeRetain(height);
     BuildLandscape();
 }
