@@ -935,10 +935,10 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
-	SafeRelease(landscapeEditorCustomColors);
-	SafeRelease(landscapeEditorVisibilityTool);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
+	SafeRelease(landscapeEditorCustomColors);
+	SafeRelease(landscapeEditorVisibilityTool);
 }
 
 bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
