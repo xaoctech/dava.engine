@@ -50,6 +50,8 @@ public:
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
 	void SetWidgetsStateVisibilityTool(bool state);
+	void SetPointButtonStateVisibilityTool(bool state);
+	void SetAreaButtonStateVisibilityTool(bool state);
 
 public slots:
     //menu

@@ -61,6 +61,7 @@ protected:
 	bool SetPointInputAction(int32 phase);
 	bool SetAreaInputAction(int32 phase);
 
+	void ClearConfig();
 	void PrepareConfig();
 	void RecreateVisibilityAreaSprite();
 	const Vector<Vector3> CalculateVisibility(float32 density, const Vector3& point, const Vector<float32>& pointsHeight, const Vector3& areaCenter, float32 areaSize);
