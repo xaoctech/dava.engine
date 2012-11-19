@@ -18,10 +18,9 @@ import subprocess;
 
 arguments = sys.argv[1:]
 
-if len(arguments) != 4:
-    print 'Usage: ./autotesting.py [PlatformName] [ProjectName] [TargetName] [ConfigurationName]'
+if 0 == len(arguments) or 5 < len(arguments):
+    print 'Usage: ./autotesting.py PlatformName ProjectName TargetName ConfigurationName [MasterPlatform]'
     exit(1)
-
 
 print "*** DAVA Starting autotesting"
 
@@ -46,6 +45,8 @@ executableName = ""
 executableBuildPath = ""
 executableRunPath = ""
 testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
+testsFolderMacOS = testsFolder
+testsFolderiOS = testsFolder
 
 if (platform.system() == "Windows"):
     executableName = targetName + ".exe"
@@ -104,7 +105,8 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
 
-        testsFolder = os.path.realpath(executableBuildPath + "/Data/Autotesting/Tests")
+        testsFolderiOS = os.path.realpath(executableBuildPath + "/Data/Autotesting/Tests")
+        testsFolder = testsFolderiOS
 
     elif (platformName == "MacOS"):
         #TODO: MacOS
@@ -112,7 +114,8 @@ elif (platform.system() == "Darwin"):
         executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/MacOS/" + targetName)
         executableRunPath = executableBuildPath
 
-        testsFolder = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/Resources/Data/Autotesting/Tests")
+        testsFolderMacOS = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/Resources/Data/Autotesting/Tests")
+        testsFolder = testsFolderMacOS
     else:
         print "Error: wrong OS " + platformName
 
@@ -121,8 +124,37 @@ else:
 
 os.chdir(projectDir)
 
+# the following code is specially for configuration that runs iOS and MacOS autotests on single agent
+if 5 == len(arguments):
+    
+    masterPlatform = arguments[4]
 
-testFiles = os.listdir(testsFolder)
+    testFilesInFolder = os.listdir(testsFolder)
+    testFilesInFolderCount = len(testFilesInFolder)
+    
+    testsCount = testFilesInFolderCount
+    
+    if (platform.system() == "Darwin"):
+        if (masterPlatform == "iOS"):
+            testsCount = len(os.listdir(testsFolderiOS))
+        elif (masterPlatform == "MacOS"):
+            testsCount = len(os.listdir(testsFolderMacOS))
+    
+    if testsCount <= testFilesInFolderCount:
+        testFiles = testFilesInFolder[0:testsCount]
+    else:
+        testFiles = testFilesInFolder;
+        
+        if testFilesInFolderCount > 0:
+            testsCountLeft = testsCount - testFilesInFolderCount
+            while testsCountLeft > 0:
+                if testsCountLeft <= testFilesInFolderCount:
+                    testFiles.append(testFilesInFolder[0:testsCountLeft])
+                else:
+                    testsCountLeft -= testFilesInFolderCount
+                    testFiles.append(testFilesInFolder)
+else:
+    testFiles = os.listdir(testsFolder)
 
 for testFile in testFiles:
     print "current test file is: " + testFile

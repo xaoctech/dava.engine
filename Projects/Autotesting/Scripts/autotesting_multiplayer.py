@@ -40,7 +40,7 @@ helperTargetName = arguments[5]
 
 
 masterParams = ["python", "./autotesting.py", masterPlatformName, projectName, masterTargetName, configurationName]
-helperParams = ["python", "./autotesting.py", helperPlatformName, projectName, helperTargetName, configurationName]
+helperParams = ["python", "./autotesting.py", helperPlatformName, projectName, helperTargetName, configurationName, masterPlatformName]
 
 allParams = [masterParams, helperParams]
 running_procs = []
