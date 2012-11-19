@@ -53,7 +53,7 @@ LandscapeEditorVisibilityCheckTool::~LandscapeEditorVisibilityCheckTool()
     SafeRelease(savedHeightmap);
 	SafeRelease(texSurf);
 	SafeRelease(pointCursorTexture);
-	SafeRelease(areaCursorTexture);
+	//SafeRelease(areaCursorTexture);
 }
 
 void LandscapeEditorVisibilityCheckTool::Draw(const DAVA::UIGeometricData &geometricData)
@@ -318,19 +318,18 @@ const Vector<Vector3> LandscapeEditorVisibilityCheckTool::CalculateVisibility(fl
 void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoords, Vector2 circleCentr, float circleRadius,
 	float density, const Vector<float>& hightValues, Vector<Vector3>* colorizedPoints)
 {
+	if(hightValues.size() == 0)
+	{
+		return;
+	}
 	Vector2 startOfCounting(circleCentr.x - circleRadius, circleCentr.y - circleRadius);
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
-	
-	//Vector3 spectatorPointTmp;
-	//spectatorPointTmp.x = spectatorCoords.x ;
-	//spectatorPointTmp.y = spectatorCoords.y ;
+
 	
 	// get soource point in propper coords system
 	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
 	//bool isIntersect = GetIntersectionPoint(SpectatorCoords2D, sourcePoint);
 	
-	//sourcePoint.x = spectatorCoords.x;
-	//sourcePoint.y = spectatorCoords.y;
 	sourcePoint.z = spectatorCoords.z;
 	
 	uint32	hight = hightValues.size();
@@ -463,10 +462,11 @@ bool LandscapeEditorVisibilityCheckTool::GetIntersectionPoint(const DAVA::Vector
 
 bool LandscapeEditorVisibilityCheckTool::CheckIsInCircle(Vector2 circleCentre, float radius, Vector2 targetCoord)
 {
-	float arg1 = targetCoord.x - circleCentre.x;
-	float arg2 = targetCoord.y - circleCentre.y;
-	return  ( pow(arg1, 2) + pow( arg2, 2) ) < ( pow(radius,2) ) ;
-
+	//float arg1 = targetCoord.x - circleCentre.x;
+	//float arg2 = targetCoord.y - circleCentre.y;
+	//return  ( pow(arg1, 2) + pow( arg2, 2) ) < ( pow(radius,2) ) ;
+	Vector2 diff = targetCoord - circleCentre;
+	return (pow(diff.x, 2) + pow(diff.y, 2) < ( pow(radius,2) )) ;
 }
 
 void LandscapeEditorVisibilityCheckTool::HideAction()

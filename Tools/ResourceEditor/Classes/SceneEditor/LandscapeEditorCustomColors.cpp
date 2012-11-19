@@ -49,7 +49,7 @@ LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
     SafeRelease(savedHeightmap);
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
-	SafeRelease(circleTexture);
+	//SafeRelease(circleTexture);
 }
 
 
