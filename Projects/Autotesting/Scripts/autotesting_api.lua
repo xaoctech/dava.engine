@@ -4,7 +4,7 @@ TIMEOUT = 10.0
 TIMECLICK = 0.2
 
 function Yield()
-    #print("Yield")
+    --print("Yield")
     coroutine.yield()
 end
 
@@ -27,12 +27,12 @@ function Assert(expression, msg)
 end
 
 function ResumeTest()
-    #print("ResumeTest")
+    --print("ResumeTest")
     if coroutine.status(co) == "suspended" then
         coroutine.resume(co)
-        #print("ResumeTest done")
+        --print("ResumeTest done")
     else
-        #print("ResumeTest failed. status:", coroutine.status(co))
+        --print("ResumeTest failed. status:", coroutine.status(co))
         StopTest()
     end
 end
