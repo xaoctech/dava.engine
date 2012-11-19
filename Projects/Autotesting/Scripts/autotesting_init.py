@@ -14,6 +14,7 @@ import string;
 import platform;
 import shutil;
 import subprocess;
+import filecmp
 
 arguments = sys.argv[1:]
 
@@ -42,11 +43,17 @@ print "Project directory:" + projectDir
 if 2 <= len(arguments):
     autotestingConfigSrcPath = os.path.realpath(currentDir + "/../Data/Config.h")
     autotestingConfigDestPath = os.path.realpath(frameworkDir + "/Sources/Internal/Autotesting/Config.h")
-    if os.path.exists(autotestingConfigDestPath):    
-        print "delete " + autotestingConfigDestPath
-        os.remove(autotestingConfigDestPath)
-    print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
-    shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
+    if os.path.exists(autotestingConfigDestPath):
+        if filecmp.cmp(autotestingConfigSrcPath, autotestingConfigDestPath):
+            print "skip copy Config.h - dest file exists and equal to src file"
+        else:
+            print "delete " + autotestingConfigDestPath
+            os.remove(autotestingConfigDestPath)
+            print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
+            shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
+    else:
+        print "copy " + autotestingConfigSrcPath + " to " + autotestingConfigDestPath
+        shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
 
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
