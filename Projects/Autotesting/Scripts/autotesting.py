@@ -45,6 +45,8 @@ autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
 executableName = ""
 executableBuildPath = ""
 executableRunPath = ""
+testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
+
 if (platform.system() == "Windows"):
     executableName = targetName + ".exe"
     print "executableName: " +executableName
@@ -61,6 +63,8 @@ if (platform.system() == "Windows"):
             os.remove(executableRunPath)
         print "copy " + executableBuildPath + " to " + executableRunPath
         shutil.copy(executableBuildPath, executableRunPath)
+    
+        testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
     
     else:
         print "Error: wrong OS " + platformName
@@ -100,11 +104,15 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
 
+        testsFolder = os.path.realpath(executableBuildPath + "/Data/Autotesting/Tests")
+
     elif (platformName == "MacOS"):
         #TODO: MacOS
         print "prepare to run " + executableName + " on MacOS"
         executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName + "/Contents/MacOS/" + targetName)
         executableRunPath = executableBuildPath
+
+        testsFolder = os.path.realpath(executableBuildPath + "/Contents/Resources/Data/Autotesting/Tests")
     else:
         print "Error: wrong OS " + platformName
 
@@ -113,7 +121,7 @@ else:
 
 os.chdir(projectDir)
 
-testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
+
 testFiles = os.listdir(testsFolder)
 
 for testFile in testFiles:
