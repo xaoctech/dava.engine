@@ -13,12 +13,8 @@
 namespace DAVA
 {
 
-// size = 2 ^ HASHMAP_DEFAULT_TABLE_SIZE_BITS
-#define HASHMAP_DEFAULT_TABLE_SIZE_BITS 10
-#define HASHMAP_DEFAULT_TABLE_SIZE (1 << HASHMAP_DEFAULT_TABLE_SIZE_BITS)
-
 template <typename TKey, typename TValue>
-class HashMapN
+class HashMap
 {
 private:
 	struct HashMapItemBase
@@ -42,24 +38,25 @@ private:
 
 	size_t sz;
 	size_t szTable;
-	HashMapItem<TKey, TValue>* table[HASHMAP_DEFAULT_TABLE_SIZE];
+	HashMapItem<TKey, TValue>* *table;
 	Hash<TKey> hashFn;
 	TValue defaultValue;
 
-	inline size_t getIndex(const TKey &key)
+	inline size_t GetIndex(const TKey &key)
 	{
-		return hashFn(key) & (~(0xFFFFFFFF << HASHMAP_DEFAULT_TABLE_SIZE_BITS));
+		// fast hashFn(key) % szTable
+		return hashFn(key) & (szTable - 1);
 	}
 
-	inline const HashMapItem<TKey, TValue>* getItem(const TKey &key)
+	inline const HashMapItem<TKey, TValue>* GetItem(const TKey &key)
 	{
-		size_t index = getIndex(key);
+		size_t index = GetIndex(key);
 
 		HashMapItem<TKey, TValue>* i = table[index];
 
 		while(NULL != i)
 		{
-			if(hashFn.compare(i->key, key))
+			if(hashFn.Compare(i->key, key))
 			{
 				break;
 			}
@@ -70,38 +67,9 @@ private:
 		return i;
 	}
 
-public:
-	HashMapN(TValue defaultValue = TValue())
-		: sz(0)
-		, szTable(HASHMAP_DEFAULT_TABLE_SIZE)
-		, defaultValue(defaultValue)
+	inline void InsertItem(HashMapItem<TKey, TValue>* item)
 	{
-		for(size_t i = 0; i < szTable; ++i)
-		{
-			table[i] = NULL;
-		}
-	}
-
-	~HashMapN()
-	{
-		Clear();
-	}
-
-	size_t Size()
-	{
-		return sz;
-	}
-
-	bool Empty()
-	{
-		return (0 == sz);
-	}
-
-	void Insert(const TKey &key, const TValue &value)
-	{
-		HashMapItem<TKey, TValue>* item = new HashMapItem<TKey, TValue>(key, value);
-
-		size_t index = getIndex(key);
+		size_t index = GetIndex(item->key);
 		if(NULL != table[index])
 		{
 			HashMapItem<TKey, TValue>* i = table[index];
@@ -121,16 +89,51 @@ public:
 		sz++;
 	}
 
+public:
+	HashMap(size_t hashSize = 128, TValue defaultValue = TValue())
+		: sz(0)
+		, szTable(hashSize)
+		, defaultValue(defaultValue)
+	{
+		table = new HashMapItem<TKey, TValue>*[szTable];
+		for(size_t i = 0; i < szTable; ++i)
+		{
+			table[i] = NULL;
+		}
+	}
+
+	~HashMap()
+	{
+		Clear();
+		delete[] table;
+	}
+
+	size_t Size()
+	{
+		return sz;
+	}
+
+	bool Empty()
+	{
+		return (0 == sz);
+	}
+
+	void Insert(const TKey &key, const TValue &value)
+	{
+		HashMapItem<TKey, TValue>* item = new HashMapItem<TKey, TValue>(key, value);
+		InsertItem(item);
+	}
+
 	void Remove(const TKey &key)
 	{
-		size_t index = getIndex(key);
+		size_t index = GetIndex(key);
 
 		HashMapItem<TKey, TValue>* item = table[index];
 		HashMapItem<TKey, TValue>* prev = NULL;
 
 		while(NULL != item)
 		{
-			if(hashFn.compare(item->key, key))
+			if(hashFn.Compare(item->key, key))
 			{
 				break;
 			}
@@ -138,7 +141,7 @@ public:
 			prev = item;
 			item = item->next;
 		}
-		
+
 		if(NULL != item)
 		{
 			if(NULL != prev)
@@ -153,6 +156,27 @@ public:
 			sz--;
 			delete item;
 		}
+	}
+
+	bool HasKey(const TKey &key)
+	{
+		return (NULL != GetItem(key));
+	}
+
+	TValue Value(const TKey &key)
+	{
+		const HashMapItem<TKey, TValue>* item = GetItem(key);
+		if(NULL != item)
+		{
+			return item->value;
+		}
+
+		return defaultValue;
+	}
+
+	TValue operator[](const TKey &key)
+	{
+		return Value(key);
 	}
 
 	void Clear()
@@ -173,25 +197,38 @@ public:
 		}
 	}
 
-	bool HasKey(const TKey &key)
+	void Resize(size_t newSize)
 	{
-		return (NULL != getItem(key));
-	}
+		HashMapItem<TKey, TValue>* item;
+		HashMapItem<TKey, TValue>* next = NULL;
 
-	TValue Value(const TKey &key)
-	{
-		const HashMapItem<TKey, TValue>* item = getItem(key);
-		if(NULL != item)
+		// not 0 and power of 2
+		DVASSERT(0 != newSize && 0 == (newSize & (newSize - 1)));
+
+		HashMapItem<TKey, TValue> **oldTable = table;
+		size_t szOld = szTable;
+
+		szTable = newSize;
+		table = new HashMapItem<TKey, TValue>*[szTable];
+
+		for(size_t i = 0; i < szTable; ++i)
 		{
-			return item->value;
+			table[i] = NULL;
 		}
 
-		return defaultValue;
-	}
+		for(size_t i = 0; i < szOld; ++i)
+		{
+			item = oldTable[i];
+			while(NULL != item)
+			{
+				next = item->next;
 
-	TValue operator[](const TKey &key)
-	{
-		return value(key);
+				item->next = NULL;
+				InsertItem(item);
+
+				item = next;
+			}
+		}
 	}
 };
 
