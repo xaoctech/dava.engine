@@ -504,7 +504,14 @@ void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButto
 
 void QtMainWindowHandler::SetWidgetsStateVisibilityTool(bool state)
 {
+	DVASSERT(visibilityToolToggleButton &&
+			 visibilityToolSetPointButton &&
+			 visibilityToolSetAreaButton &&
+			 visibilityToolSaveTextureButton &&
+			 visibilityToolAreaSizeSlider);
+	
 	visibilityToolToggleButton->blockSignals(true);
+	visibilityToolToggleButton->setCheckable(state);
 	visibilityToolToggleButton->setChecked(state);
 	visibilityToolToggleButton->blockSignals(false);
 	
@@ -524,4 +531,24 @@ void QtMainWindowHandler::SetWidgetsStateVisibilityTool(bool state)
 	{
 		ChangleAreaSizeVisibilityTool(visibilityToolAreaSizeSlider->value());
 	}
+}
+
+void QtMainWindowHandler::SetPointButtonStateVisibilityTool(bool state)
+{
+	DVASSERT(visibilityToolSetPointButton);
+
+	bool b = visibilityToolSetPointButton->signalsBlocked();
+	visibilityToolSetPointButton->blockSignals(true);
+	visibilityToolSetPointButton->setChecked(state);
+	visibilityToolSetPointButton->blockSignals(b);
+}
+
+void QtMainWindowHandler::SetAreaButtonStateVisibilityTool(bool state)
+{
+	DVASSERT(visibilityToolSetAreaButton);
+
+	bool b = visibilityToolSetAreaButton->signalsBlocked();
+	visibilityToolSetAreaButton->blockSignals(true);
+	visibilityToolSetAreaButton->setChecked(state);
+	visibilityToolSetAreaButton->blockSignals(b);
 }

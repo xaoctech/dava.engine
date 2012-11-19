@@ -13,7 +13,8 @@ public:
         ACTION_NONE = -1,
         ACTION_HEIGHTMAP = 0,
         ACTION_TILEMASK,
-		ACTION_COLORIZE
+		ACTION_COLORIZE,
+		ACTION_VISIBILITY
     };
     
     UNDOAction();
@@ -49,7 +50,12 @@ public:
 	void SaveColorize(Texture *colTex);
     Texture * UndoColorize();
     Texture * RedoColorize();
-    
+
+	void SaveVisibility(Texture* visibilityAreaTexture, bool visibilityPointSet, const Vector2& visibilityPoint);
+	void UndoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint);
+	void RedoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint);
+
+
     UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
     
@@ -63,6 +69,7 @@ protected:
     UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
     UNDOAction *CreateTilemaskAction(Texture *tilemask);
     UNDOAction *CreateColorizeAction(Texture *tilemask);
+	UNDOAction* CreateVisibilityAction(Texture *visibilityAreaTexture, bool visibilityPointSet, const Vector2 &visibilityPoint);
     
     String TimeString();
     

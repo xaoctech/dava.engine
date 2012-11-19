@@ -451,6 +451,9 @@
        <property name="text">
         <string>Set Visibility Point</string>
        </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -523,6 +526,9 @@ Area Size:</string>
       <widget class="QPushButton" name="buttonVisibilityToolSetArea">
        <property name="text">
         <string>Set Visibility Area</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
