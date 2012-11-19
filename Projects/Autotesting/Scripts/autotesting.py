@@ -154,9 +154,9 @@ if 5 == len(arguments):
             testsCountLeft = testsCount - testFilesInFolderCount
             while testsCountLeft > 0:
                 if testsCountLeft <= testFilesInFolderCount:
-                    testFiles.append(testFilesInFolder[0:testsCountLeft])
+                    testFiles.extend(testFilesInFolder[0:testsCountLeft])
                 else:
-                    testFiles.append(testFilesInFolder)
+                    testFiles.extend(testFilesInFolder)
                 testsCountLeft -= testFilesInFolderCount
     print "testFiles=" + "[%s]" % ", ".join(map(str, testFiles))
 else:
