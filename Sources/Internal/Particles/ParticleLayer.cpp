@@ -648,7 +648,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		FileSystem::SplitPath(configPath, configFolder, configFile);
 		Image::EnableAlphaPremultiplication(false);
 		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
-		Image::EnableAlphaPremultiplication(false);
+		Image::EnableAlphaPremultiplication(true);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{
