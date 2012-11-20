@@ -211,6 +211,9 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observer.h" />
@@ -543,6 +546,8 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
