@@ -137,7 +137,7 @@ void TextureListModel::searchTexturesInLandscapes(DAVA::SceneNode *parentNode)
 	{
 		DAVA::Vector<DAVA::LandscapeNode *> allLandscapes;
 
-		parentNode->GetDataNodes(allLandscapes);
+		parentNode->GetChildNodes(allLandscapes);
 		for(int i = 0; i < (int) allLandscapes.size(); ++i)
 		{
 			DAVA::LandscapeNode *landscape = allLandscapes[i];
@@ -159,7 +159,7 @@ void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
 	{
 		DAVA::Vector<DAVA::MeshInstanceNode *> allMeshes;
 
-		parentNode->GetDataNodes(allMeshes);
+		parentNode->GetChildNodes(allMeshes);
 		for(int i = 0; i < (int) allMeshes.size(); ++i)
 		{
 			DAVA::MeshInstanceNode *mesh = allMeshes[i];
@@ -183,12 +183,16 @@ void TextureListModel::addTexture(DAVA::Texture *texture)
 {
 	if(NULL != texture && !texture->isRenderTarget && !texture->GetPathname().empty())
 	{
-		texturesAll.push_back(texture);
-
-		DAVA::TextureDescriptor * descriptor = texture->CreateDescriptor();
-		if(NULL != descriptor)
+		// if there is no such texture in vector - add it
+		if(-1 == texturesAll.indexOf(texture))
 		{
-			textureDescriptors[texture] = descriptor;
+			texturesAll.push_back(texture);
+
+			DAVA::TextureDescriptor * descriptor = texture->CreateDescriptor();
+			if(NULL != descriptor)
+			{
+				textureDescriptors[texture] = descriptor;
+			}
 		}
 	}
 }

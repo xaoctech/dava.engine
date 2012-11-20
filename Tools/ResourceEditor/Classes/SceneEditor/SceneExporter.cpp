@@ -437,6 +437,8 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 {
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     DVASSERT(descriptor && "Decriptors mast be created for all textures");
+
+    descriptor->textureFileFormat = exportFormat;
     
     String workingPathname = RemoveFolderFromPath(descriptor->pathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
