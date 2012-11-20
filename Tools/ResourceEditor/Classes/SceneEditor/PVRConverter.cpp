@@ -88,7 +88,7 @@ String PVRConverter::GetPVRToolOutput(const DAVA::String &inputPVR)
 void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
 {
 	pvrTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	pvrTexToolPathname = PathnameToDAVAStyle(pvrTexToolPathname);
+	pvrTexToolPathname = FileSystem::Instance()->GetCanonicalPath(pvrTexToolPathname);
 
 	if(!FileSystem::Instance()->IsFile(pvrTexToolPathname))
 	{
@@ -100,7 +100,7 @@ void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
 void PVRConverter::SetDXTTexTool(const DAVA::String &textToolPathname)
 {
 	dxtTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	dxtTexToolPathname = PathnameToDAVAStyle(dxtTexToolPathname);
+	dxtTexToolPathname = FileSystem::Instance()->GetCanonicalPath(dxtTexToolPathname);
 
 	if(!FileSystem::Instance()->IsFile(dxtTexToolPathname))
 	{
