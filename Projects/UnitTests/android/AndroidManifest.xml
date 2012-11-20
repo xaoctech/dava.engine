@@ -4,11 +4,13 @@
 	android:versionName="1.0" 
 	package="com.dava.framework"
 	>
-    <uses-sdk android:minSdkVersion="13" />
-
+    <uses-sdk 
+        android:minSdkVersion="11"
+        android:targetSdkVersion="14" 
+    />
+    
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.READ_FRAME_BUFFER" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
@@ -20,8 +22,9 @@
     <application 
     	android:icon="@drawable/icon" 
     	android:label="@string/app_name" 
-    	android:hasCode="true" 
-    	android:name="JNIApplication" android:debuggable="true">
+    	android:hasCode="true"
+    	android:debuggable="true"
+    	android:name="JNIApplication">
         <activity android:name="JNIActivity"
 			android:screenOrientation="portrait"
 			android:configChanges="keyboardHidden|orientation" 

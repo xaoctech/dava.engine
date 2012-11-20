@@ -342,8 +342,8 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
-        uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-        Logger::Info("[GETROOTNODE TIME] %dms", (endTime - startTime));
+        uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
+        Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
 	it = rootNodes.find(rootNodePath);

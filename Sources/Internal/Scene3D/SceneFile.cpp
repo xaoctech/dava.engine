@@ -91,7 +91,7 @@ bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBun
     materials.clear();
     
 	scene = _scene;
-    rootNodePath = filename;
+    rootNodePath = FileSystem::GetCanonicalPath(filename);
     
     
 //  textureIndexOffset = scene->GetTextureCount();

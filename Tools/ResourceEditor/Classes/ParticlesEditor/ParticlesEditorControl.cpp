@@ -602,7 +602,7 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
         forcePreview->SetValue(Vector3(0, 0, 0));
         
         SafeRelease(emitter);
-        emitter = new ParticleEmitter();
+        emitter = new ParticleEmitter3D();
         for(int i = 0; i < (int32)layers.size(); i++)
         {
             SafeRemoveControl(layers[i]->curLayerTime);
@@ -629,7 +629,15 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
     }
     if(obj == addLayer)
     {        
-        ParticleLayer *layer = new ParticleLayer();
+		ParticleLayer *layer;
+		if(emitter->GetIs3D())
+		{
+			layer = new ParticleLayer3D();
+		}
+		else
+		{
+			layer = new ParticleLayer();
+		}
         layer->endTime = 100000000.0f;
         emitter->AddLayer(layer);
         SafeRelease(layer);

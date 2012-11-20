@@ -10,6 +10,11 @@ UNDOAction::UNDOAction()
     actionData = NULL;
 }
 
+UNDOAction::~UNDOAction()
+{
+	SafeRelease(actionData);
+}
+
 
 UNDOManager::UNDOManager()
     :   actionCounter(0)
@@ -102,35 +107,46 @@ void UNDOManager::RedoHeightmap(Heightmap *heightmap)
 
 UNDOAction * UNDOManager::CreateTilemaskAction(Texture *tilemask)
 {
-    String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-    String folderPathname = documentsPath + "History";
-    FileSystem::Instance()->CreateDirectory(folderPathname);
-    folderPathname = folderPathname + "/Tilemask";
-    FileSystem::Instance()->CreateDirectory(folderPathname);
-    
-    UNDOAction *action = new UNDOAction();
-    action->type = UNDOAction::ACTION_TILEMASK;
-    action->ID = actionCounter++;
-    action->filePathname = "";
-    action->actionData = tilemask->CreateImageFromMemory();
-    
-    return action;
+    return CreateTextureAction(tilemask, UNDOAction::ACTION_TILEMASK);
 }
 
 
 void UNDOManager::SaveTilemask(Texture *tilemask)
 {
-    DVASSERT(tilemask);
-    
-    CheckHistoryLength();
-    
-    UNDOAction *action = CreateTilemaskAction(tilemask);
-    actionsHistoryUNDO.push_back(action);
-    
-    ReleaseHistory(actionsHistoryREDO);
+    SaveTexture(tilemask, UNDOAction::ACTION_TILEMASK);
 }
 
 Texture * UNDOManager::UndoTilemask()
+{
+    return UNDOManager::UndoTexture();
+}
+
+Texture * UNDOManager::RedoTilemask()
+{
+    return  UNDOManager::RedoTexture();
+}
+
+UNDOAction * UNDOManager::CreateColorizeAction(Texture *colTex)
+{
+	return CreateTextureAction(colTex, UNDOAction::ACTION_COLORIZE);
+}
+
+void UNDOManager::SaveColorize(Texture *colTex)
+{
+    SaveTexture(colTex, UNDOAction::ACTION_COLORIZE);
+}
+
+Texture * UNDOManager::UndoColorize()
+{
+    return  UNDOManager::UndoTexture();
+}
+
+Texture * UNDOManager::RedoColorize()
+{
+    return  UNDOManager::RedoTexture();
+}
+
+Texture * UNDOManager::UndoTexture()
 {
     Texture *tex = NULL;
     
@@ -153,7 +169,7 @@ Texture * UNDOManager::UndoTilemask()
     return tex;
 }
 
-Texture * UNDOManager::RedoTilemask()
+Texture * UNDOManager::RedoTexture()
 {
     Texture *tex = NULL;
     if(actionsHistoryREDO.size())
@@ -172,7 +188,61 @@ Texture * UNDOManager::RedoTilemask()
     return tex;
 }
 
+UNDOAction * UNDOManager::CreateTextureAction(Texture *tex, UNDOAction::eActionType type)
+{
+	String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
+    String folderPathname = documentsPath + "History";
+    FileSystem::Instance()->CreateDirectory(folderPathname);
+    folderPathname = folderPathname ;
+	switch (type)
+	{
+		case UNDOAction::ACTION_COLORIZE:
+			folderPathname += "/Colorize";
+			break;
+		case UNDOAction::ACTION_TILEMASK:
+			folderPathname += "/Tilemask";
+			break;
+        default:
+            break;
+	}
+    FileSystem::Instance()->CreateDirectory(folderPathname);
+    
+    UNDOAction *action = new UNDOAction();
+    action->type = type;
+    action->ID = actionCounter++;
+    action->filePathname = "";
+    action->actionData = tex->CreateImageFromMemory();
+    
+    return action;
+}
 
+void UNDOManager::SaveTexture(Texture *tex, UNDOAction::eActionType type)
+{
+	DVASSERT(tex);
+    
+    CheckHistoryLength();
+    
+    UNDOAction *action = NULL;
+	switch (type)
+	{
+		case UNDOAction::ACTION_COLORIZE:
+			action = CreateColorizeAction(tex);
+			break;
+		case UNDOAction::ACTION_TILEMASK:
+			action = CreateTilemaskAction(tex);
+			break;
+        default:
+            break;
+	}
+	
+	if(!action)
+	{
+		return;
+	}
+    actionsHistoryUNDO.push_back(action);
+    
+    ReleaseHistory(actionsHistoryREDO);
+}
 
 UNDOAction::eActionType UNDOManager::GetLastUNDOAction()
 {

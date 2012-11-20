@@ -5,8 +5,13 @@
 namespace DAVA
 {
 
-	void ParticleEmitter3D::Draw(Camera * camera)
-	{
+ParticleEmitter3D::ParticleEmitter3D()
+{
+	is3D = true;
+}
+
+void ParticleEmitter3D::Draw(Camera * camera)
+{
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
@@ -17,6 +22,8 @@ namespace DAVA
 		}
 	}
 }
+
+
 
 }
 

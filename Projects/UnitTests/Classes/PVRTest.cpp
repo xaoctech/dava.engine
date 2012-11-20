@@ -82,6 +82,8 @@ void PVRTest::LoadResources()
     GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
 
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    DVASSERT(font);
+
     font->SetSize(20);
     font->SetColor(Color::White());
 
@@ -143,6 +145,17 @@ bool PVRTest::IsCurrentTestAccepted()
 {
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
     
+#if defined (__DAVAENGINE_ANDROID__)
+    if((formats[currentTest] == FORMAT_PVR2) && !deviceCaps.isPVRTCSupported)
+    {
+        return false;
+    }
+    if((formats[currentTest] == FORMAT_PVR4) && !deviceCaps.isPVRTCSupported)
+    {
+        return false;
+    }
+    
+#endif //#if defined (__DAVAENGINE_ANDROID__)
     if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)
     {
         return false;
