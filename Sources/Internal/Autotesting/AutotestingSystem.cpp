@@ -347,9 +347,10 @@ void AutotestingSystem::SaveTestToDB()
             
             if(groupArchive)
             {
-                if(testIndex == 0)
+                if(testIndex == 0 && isMaster)
                 {
                     // remove prev results
+                    // only for master tests, helpers should just overwrite results (assumed they never share the same group with master)
                     SafeRelease(groupArchive);
                 }
                 else
