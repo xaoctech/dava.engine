@@ -1826,8 +1826,8 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
         return false;
     }
     
-    image->width = compressedHeader.u32Width >> mipMapLevel;
-    image->height = compressedHeader.u32Height >> mipMapLevel;
+    image->width = PVRT_MAX(1, compressedHeader.u32Width >> mipMapLevel);
+    image->height = PVRT_MAX(1, compressedHeader.u32Height >> mipMapLevel);
     image->format = formatDescriptor.formatID;
 
     //Check for compressed formats
