@@ -966,6 +966,15 @@
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp">
       <Filter>Sources\Qt\QtPosSaver</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorCustomColors.cpp">
+      <Filter>Sources\SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.cpp">
+      <Filter>Sources\SceneEditor\Landscape</Filter>
+    </ClCompile>
     <ClCompile Include="_GeneratedQt\TextureDialog\TextureCache_moc.cpp">
       <Filter>QtGenerated\TextureDialog</Filter>
     </ClCompile>
@@ -1945,6 +1954,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h">
       <Filter>Sources\Qt\QtPosSaver</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CustomColorCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorCustomColors.h">
+      <Filter>Sources\SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.h">
+      <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h">
       <Filter>QtGenerated</Filter>

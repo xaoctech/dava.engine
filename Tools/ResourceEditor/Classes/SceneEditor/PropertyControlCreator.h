@@ -25,6 +25,7 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
         
         EPCID_LANDSCAPE_EDITOR_MASK,
         EPCID_LANDSCAPE_EDITOR_HEIGHT,
+		EPCID_LANDSCAPE_EDITOR_COLORIZE,
 
 		EPCID_ENTITY,
 		EPCID_PARTICLE_EMITTER,

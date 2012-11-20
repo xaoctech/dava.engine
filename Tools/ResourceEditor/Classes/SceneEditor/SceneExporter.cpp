@@ -100,7 +100,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     DVASSERT(0 == exportedTextures.size())
     
     //Create destination folder
-    String normalizedFileName = FileSystem::Instance()->NormalizePath(fileName);
+    String normalizedFileName = FileSystem::Instance()->GetCanonicalPath(fileName);
 
     
     String workingFile;
@@ -173,10 +173,7 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
         {
             Texture *tex = materials[m]->GetTexture((Material::eTextureLevel)t);
-            if(tex && !tex->isRenderTarget)
-            {
-                texturesForExport.insert(tex->GetPathname());
-            }
+            CollectTextureForExport(tex);
         }
     }
 
@@ -188,10 +185,7 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
         {
             Texture *tex = landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t);
-            if(tex && !tex->isRenderTarget)
-            {
-                texturesForExport.insert(tex->GetPathname());
-            }
+            CollectTextureForExport(tex);
         }
     }
     
@@ -203,9 +197,9 @@ void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
         for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
         {
             MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-            if (ld && !ld->lightmap->isRenderTarget)
+            if (ld)
             {
-                texturesForExport.insert(ld->lightmapName);
+                CollectTextureForExport(ld->lightmap);
             }
         }
     }
@@ -259,7 +253,7 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
 
 String SceneExporter::NormalizeFolderPath(const String &pathname)
 {
-    String normalizedPathname = FileSystem::Instance()->NormalizePath(pathname);
+    String normalizedPathname = FileSystem::Instance()->GetCanonicalPath(pathname);
 
     int32 lastPos = normalizedPathname.length() - 1;
     if((0 <= lastPos) && ('/' != normalizedPathname.at(lastPos)))
@@ -303,8 +297,8 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
         String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
         String workingPathname = RemoveFolderFromPath(fullTiledPathname, dataSourceFolder);
         PrepareFolderForCopy(workingPathname, errorLog);
-        
-        Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+
+        Texture *fullTiledTexture = Texture::GetPinkPlaceholder();
         Image *image = fullTiledTexture->CreateImageFromMemory();
         if(image)
         {
@@ -330,6 +324,8 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
             errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
             landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, String(""));
         }
+        
+        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
     }
 }
 
@@ -516,5 +512,18 @@ String SceneExporter::GetExportedTextureName(const String &pathname)
     }
     
     return exportedPathname;
+}
+
+void SceneExporter::CollectTextureForExport(Texture *texture)
+{
+    if(texture && !texture->isRenderTarget)
+    {
+        String exportedPathname = texture->GetPathname();
+        String::size_type textTexturePos = texture->GetPathname().find("Text texture");
+        if(!exportedPathname.empty() && (String::npos == textTexturePos))
+        {
+            texturesForExport.insert(exportedPathname);
+        }
+    }
 }
 

@@ -215,22 +215,22 @@ public:							// properties for fast access
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__)
-	bool		 renderTargetModified;
-    bool         renderTargetAutosave;
-
-	virtual void SaveToSystemMemory();
-	virtual void Lost();
-	virtual void Invalidate();
-	void InvalidateFromFile();
-	void InvalidateFromSavedData();
-
-    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
-    void SaveData(uint8 * data, int32 dataSize);
-    
-	uint8 *savedData;
-	int32 savedDataSize;
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__)
+//	bool		 renderTargetModified;
+//    bool         renderTargetAutosave;
+//
+//	virtual void SaveToSystemMemory();
+//	virtual void Lost();
+//	virtual void Invalidate();
+//	void InvalidateFromFile();
+//	void InvalidateFromSavedData();
+//
+//    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
+//    void SaveData(uint8 * data, int32 dataSize);
+//    
+//	uint8 *savedData;
+//	int32 savedDataSize;
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	static LPDIRECT3DTEXTURE9 CreateTextureNative(Vector2 & size, PixelFormat & format, bool isRenderTarget, int32 flags);
@@ -308,9 +308,9 @@ private:
 // Implementation of inline functions
 inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 {
-#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
     renderTargetAutosave = isEnabled;
-#endif //#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
+#endif //#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
 }
 inline const String & Texture::GetPathname() const
 {

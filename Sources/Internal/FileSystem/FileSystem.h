@@ -185,18 +185,16 @@ public:
 	 */
 	static String RealPath(const String & path);
 
-    /**
+	/**
      \brief Return canonical path name of \a path.
      
-     NormalizePath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
+     GetCanonicalPath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
      the string named by path and returns the canonicalized absolute pathname.
      The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
      Nor will it  end on a slash: if the result is the root then the returned path is empty,
-     and unless the result is empty, it will always start with a slash.
+     and unless the result is empty, it will always start with a slash. It also removes disk letter from path.
 	 */
-	static String NormalizePath(const String & path);
-
-    
+    static String GetCanonicalPath(const String & path);
     
     
 	/**
@@ -292,6 +290,18 @@ public:
     static void ReplaceBundleName(const String &newBundlePath);
 
 private:
+    
+    /**
+     \brief Return canonical path name of \a path.
+     
+     NormalizePath expands all symbolic links and resolves references to '/./', '/../' and extra '/' characters in
+     the string named by path and returns the canonicalized absolute pathname.
+     The resulting path will have no symbolic link, '/./' or '/../' components, also no trailing ones.
+     Nor will it  end on a slash: if the result is the root then the returned path is empty,
+     and unless the result is empty, it will always start with a slash.
+	 */
+	static String NormalizePath(const String & path);
+
     
     String tempRetPath;
 	String currentWorkingDirectory;

@@ -1,51 +1,55 @@
 #include "Test.h"
-#include "Constants.h"
+#include "SettingsManager.h"
+#include "AppScreens.h"
 
-#define H 10.f
-#define ANGLE_STEP 1.f
-#define VELOCITY 4.5f
 #define DEF_CAMERA_DIRECTION Vector3(1.f, 0.f, 0.f)
-#define LANDSCAPE_NODE_NAME "Landscape"
 
-int Test::globalScreenId=2;
+enum eCameraAnimationFrames
+{
+    CAMERA_ANIMATION_MOVE = 0,
+    CAMERA_ANIMATION_ROTATE,
+    
+    CAMERA_ANIMATION_COUNT
+};
 
-Test::Test() {
+int32 Test::globalScreenId=PREDEFINED_SCREENS_COUNT;
+
+Test::Test()
+{
 }
 
-Test::Test(const String& fullName, int skipFrames) {
-	this->fullName=fullName;
-	this->skipFrames=skipFrames;
+Test::Test(const String& fullName)
+{
+	this->fullName = fullName;
 	
-	screenId=globalScreenId++;
+	screenId = globalScreenId++;
 }
 
 void Test::LoadResources()
 {
-	time=0.f;
-	velocity=VELOCITY;
-	isFinished=false;
+	SettingsManager *settings = SettingsManager::Instance();
 	
-	
-	land = new LandscapeNode();  
-	SafeRelease(land);
-	
+	time = 0.f;
+	isFinished = false;
+	skipFrames = 100;
+
 	Scene *scene = new Scene();
 	scene->AddNode(scene->GetRootNode(fullName));
 	
-	cam = new Camera();
+	Camera* cam = new Camera();
 	scene->AddCamera(cam);
 
-	Core* core=DAVA::Core::Instance();
-	float aspect=core->GetVirtualScreenHeight() / core->GetVirtualScreenWidth();
+	Core* core = DAVA::Core::Instance();
+	float32 aspect = core->GetVirtualScreenHeight() / core->GetVirtualScreenWidth();
 
 	cam->Setup(70.f, aspect, 1.f, 5000.f);
 	cam->SetLeft(Vector3(1, 0, 0));
 	cam->SetUp(Vector3(0, 0, 1));
-	//SafeRelease(cam);	
     
     scene->SetCurrentCamera(cam);
+	SafeRelease(cam);
 	
-    land = (LandscapeNode *)scene->FindByName(LANDSCAPE_NODE_NAME); 
+    LandscapeNode* land = (LandscapeNode *)scene->FindByName(settings->GetLandscapeNodeName());
     if(land)
     {
 		land->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
@@ -54,9 +58,13 @@ void Test::LoadResources()
 		AddControl(sceneView);
 		SafeRelease(sceneView);
     }
-	
+
 	PreparePath();
-	
+    PrepareFpsStat();
+    PrepareCameraAnimation();
+    ZeroCurFpsStat();
+    MoveToNextPoint();
+
     SafeRelease(scene);
 }
 
@@ -79,55 +87,52 @@ void Test::Input(UIEvent * event)
 
 void Test::Update(float32 timeElapsed)
 {
-	time+=timeElapsed;
-	
+	time += timeElapsed;
+
 	if(skipFrames)
-		--skipFrames;
-	
-	if(!isFinished && !skipFrames) {
-		float fps=1.f/timeElapsed;
-		if(fps > fpsMax)
-			fpsMax=fps;
-		if(fps < fpsMin)
-			fpsMin=fps;
-		fpsMid+=fps;
-		++frameCount;
-		
-		Vector3 camOffset(velocityDir*velocity);
-		Vector3 camPos=cam->GetPosition();
-		camPos+=camOffset;
-		
-		Vector3 diffFpsCheck=nextFpsCheckPoint-camPos;
-		if(fabsf(diffFpsCheck.x) < (velocity/2) && fabsf(diffFpsCheck.y) < (velocity/2)) {
-			++nextFpsCheckPointNum;
-			UpdateFpsSegment();
+	{
+		if(!--skipFrames)
+		{
+			camRotateAnimation->Start(CAMERA_ANIMATION_ROTATE);
+			camMoveAnimation->Start(CAMERA_ANIMATION_MOVE);
 		}
-		
-		Vector3 diffPath=nextPathPoint-camPos;
-		if(fabsf(diffPath.x) < (velocity/2) && fabsf(diffPath.y) < (velocity/2)) {
-			camPos=nextPathPoint;
-			
-			if(curPathPointNum < (centerPoints.size()-2)) {
-				++curPathPointNum;
-				UpdatePathSegment();
-			} else {
-				isFinished=true;
-			}
+	}
+	else if(!isFinished)
+    {
+		Camera* cam = GetCamera();
+
+		float32 fps = 1.f / timeElapsed;
+		if(fps < fpsStatItem.minFps)
+		{
+			fpsStatItem.minFps = fps;
+			fpsStatItem.position = cam->GetPosition();
+			fpsStatItem.viewTarget = cam->GetTarget();
 		}
+
+        Rect curFpsRect = rectSequence[testData.GetItemCount()];
+        Vector2 point(curCameraPosition.x, curCameraPosition.y);
+        if(!curFpsRect.PointInside(point))
+        {
+            SaveFpsStat();
+            
+            ZeroCurFpsStat();
+			fpsStatItem.rect = rectSequence[testData.GetItemCount()];
+        }
 		
-		static float angle=0.f;
-		angle+=ANGLE_STEP;
-		if(angle >= 360.f)
-			angle-=360.f;
-		
-		Vector3 newCamTarget=DEF_CAMERA_DIRECTION*Matrix4::MakeRotation(Vector3(0.f, 0.f, 1.f), DegToRad(angle));
-		newCamTarget+=camPos;
+        cam->SetPosition(curCameraPosition);
+
+		Vector3 newCamTarget = DEF_CAMERA_DIRECTION * Matrix4::MakeRotation(Vector3(0.f, 0.f, 1.f), DegToRad(curCameraAngle));
+		newCamTarget += curCameraPosition;
 		
 		cam->SetTarget(newCamTarget);
-		cam->SetPosition(camPos);
 	}
-	
+
 	UIScreen::Update(timeElapsed);
+}
+
+void Test::SaveFpsStat()
+{
+	testData.AddStatItem(fpsStatItem);
 }
 
 void Test::Draw(const UIGeometricData &geometricData)
@@ -135,106 +140,147 @@ void Test::Draw(const UIGeometricData &geometricData)
 	UIScreen::Draw(geometricData);
 }
 
-void Test::PreparePath() {
-	AABBox3 boundingBox=land->GetBoundingBox();
-	Vector3 min=boundingBox.min;
-	Vector3 max=boundingBox.max;
+void Test::PreparePath()
+{
+	SettingsManager *settings = SettingsManager::Instance();
+
+	int32 partX = settings->GetLandscapePartitioning().x;
+	int32 partY = settings->GetLandscapePartitioning().y;
 	
-	float landWidth=max.x-min.x;
-	float landLength=max.y-min.y;
+    LandscapeNode *land = GetLandscape();
+	AABBox3 boundingBox = land->GetBoundingBox();
+	Vector3 min = boundingBox.min;
+	Vector3 max = boundingBox.max;
 	
-	Vector2 rectSize(landWidth/X, landLength/Y);
+	float32 landWidth = max.x - min.x;
+	float32 landLength = max.y - min.y;
 	
-	int x=0;
-	int xDir=1;
-	for(int y=0; y<Y; ++y) {
+	Vector2 rectSize(landWidth / partX, landLength / partY);
+	
+	int32 x = 0;
+	int32 xDir = 1;
+	for(int32 y = 0; y < partY; ++y)
+    {
 		Rect curRect;
-		for(int i=X; i; --i, x+=xDir) {
+		for(int32 i = 0; i < partX; ++i, x += xDir)
+        {
 			Vector2 v;
-			v.Set(min.x+x*rectSize.x, min.y+y*rectSize.y);
+			v.Set(min.x + x * rectSize.x, min.y + y * rectSize.y);
 			curRect.SetPosition(v);
 			curRect.SetSize(rectSize);
-			
-			Vector3 p(curRect.GetCenter());
-			land->PlacePoint(p, p);
-			p.z+=H;
-			
-			centerPoints.push_back(p);
+            rectSequence.push_back(curRect);
 		}
-		x-=xDir;
-		xDir=-xDir;
+		x -= xDir;
+		xDir = -xDir;
 	}
-	
-	for(Vector<Vector3>::const_iterator it=centerPoints.begin(); it!=centerPoints.end(); ++it) {
-		Logger::Debug("%.4f %.4f %.4f", (*it).x, (*it).y, (*it).z);
-	}
-	
-	Vector3 camPos=centerPoints.front();
-	
-	cam->SetPosition(camPos);
-	cam->SetDirection(DEF_CAMERA_DIRECTION);
-	
-	PrepareFpsCheckPoints();
-	
-	curPathPointNum=0;
-	UpdatePathSegment();
 }
 
-void Test::PrepareFpsCheckPoints() {
-	Vector<Vector3>::const_iterator it=centerPoints.begin();
-	
-	Vector3 prevPoint, curPoint;
-	curPoint=*it;
-	while(++it != centerPoints.end()) {
-		prevPoint=curPoint;
-		curPoint=*it;
-		
-		Vector3 fpsCheckPoint=(prevPoint+curPoint)/2.f;
-		fpsCheckPoints.push_back(fpsCheckPoint);
-	}
-	fpsCheckPoints.push_back(centerPoints.back());
-	
-	for(Vector<Vector3>::const_iterator it=fpsCheckPoints.begin(); it!=fpsCheckPoints.end(); ++it) {
-		Logger::Debug("%.4f %.4f", (*it).x, (*it).y);
-	}
-	
-	fpsMin=INFINITY;
-	fpsMid=0.f;
-	fpsMax=0.f;
-	frameCount=0.f;
-	
-	nextFpsCheckPointNum=0;
-	nextFpsCheckPoint=fpsCheckPoints.front();
+void Test::MoveToNextPoint()
+{
+    ++nextRectNum;
+
+    if(nextRectNum < rectSequence.size())
+    {
+        Rect nextRect = rectSequence[nextRectNum];
+
+        Vector3 endPoint = GetRealPoint(nextRect.GetCenter());
+
+        float32 pathSegmentLength = (endPoint - curCameraPosition).Length();
+        float32 timeToMove = pathSegmentLength / SettingsManager::Instance()->GetCameraMovementSpeed();
+        
+        camMoveAnimation = new LinearAnimation<Vector3>(this, &curCameraPosition, endPoint, timeToMove, Interpolation::LINEAR);
+        camMoveAnimation->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &Test::AnimationFinished));
+		if(!skipFrames)
+        	camMoveAnimation->Start(CAMERA_ANIMATION_MOVE);
+    }
+    else
+    {
+		SaveFpsStat();
+        isFinished = true;
+    }
 }
 
-void Test::UpdatePathSegment() {
-	Logger::Debug("%d -> %d", curPathPointNum, curPathPointNum+1);
-	
-	curPathPoint=centerPoints[curPathPointNum];
-	nextPathPoint=centerPoints[curPathPointNum+1];
-	
-	velocityDir=nextPathPoint-curPathPoint;
-	velocityDir.Normalize();
+void Test::PrepareCameraAnimation()
+{
+    Rect rect = rectSequence.front();
+    curCameraPosition = GetRealPoint(rect.GetCenter());
+
+    Camera* cam = GetCamera();
+    cam->SetPosition(curCameraPosition);
+    cam->SetDirection(DEF_CAMERA_DIRECTION);
+
+    nextRectNum = 0;
+
+    curCameraAngle = 0.f;
+    float32 maxRotateAngle = 360.f;
+    float32 timeToRotate = maxRotateAngle / SettingsManager::Instance()->GetCameraRotationSpeed();
+    camRotateAnimation = new LinearAnimation<float32>(this, &curCameraAngle, maxRotateAngle, timeToRotate, Interpolation::LINEAR);
+    camRotateAnimation->SetRepeatCount(-1);
 }
 
-void Test::UpdateFpsSegment() {
-	fpsMid/=frameCount;
-	fpsStat[0].push_back(fpsMin);
-	fpsStat[1].push_back(fpsMid);
-	fpsStat[2].push_back(fpsMax);
-	Logger::Debug("min: %.4f\tmid: %.4f\tmax: %.4f", fpsMin, fpsMid, fpsMax);
+void Test::PrepareFpsStat()
+{
+	testData.Clear();
+	fpsStatItem.rect = rectSequence[testData.GetItemCount()];
+
+    LandscapeNode *land = GetLandscape();
+	AABBox3 boundingBox = land->GetBoundingBox();
 	
-	fpsMin=INFINITY;
-	fpsMid=0.f;
-	fpsMax=0.f;
-	frameCount=0;
-	
-	nextFpsCheckPoint=fpsCheckPoints[nextFpsCheckPointNum];
+	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	Vector2 landSize((boundingBox.max - boundingBox.min).x,
+					 (boundingBox.max - boundingBox.min).x);
+
+	testData.SetLandscapeRect(Rect(landPos, landSize));
 }
 
-const String Test::GetFileName() const {
+Vector3 Test::GetRealPoint(const Vector2& point)
+{
+    Vector3 realPoint(point);
+
+	LandscapeNode *land = GetLandscape();
+    land->PlacePoint(realPoint, realPoint);
+
+    realPoint.z += SettingsManager::Instance()->GetCameraElevation();
+    
+    return realPoint;
+}
+
+void Test::AnimationFinished(DAVA::BaseObject *, void *, void *)
+{
+    MoveToNextPoint();
+    camMoveAnimation = NULL;
+}
+
+const String Test::GetFileName() const
+{
 	String path;
 	String filename;
 	FileSystem::Instance()->SplitPath(fullName, path, filename);
 	return filename;
+}
+
+void Test::ZeroCurFpsStat()
+{
+	fpsStatItem.minFps = std::numeric_limits<float32>::infinity();
+}
+
+inline UI3DView* Test::GetSceneView()
+{
+	return (UI3DView*)GetChildren().front();
+}
+
+inline Scene* Test::GetScene()
+{
+	return GetSceneView()->GetScene();
+}
+
+inline Camera* Test::GetCamera()
+{
+	return GetScene()->GetCurrentCamera();
+}
+
+inline LandscapeNode* Test::GetLandscape()
+{
+	SettingsManager* settings = SettingsManager::Instance();
+	return (LandscapeNode *)GetScene()->FindByName(settings->GetLandscapeNodeName());
 }

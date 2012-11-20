@@ -65,9 +65,9 @@ Shader::Shader()
     vertexShaderData = 0;
     fragmentShaderData = 0;
     
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-    relativeFileName = "";
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//    relativeFileName = "";
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
 }
 
@@ -142,9 +142,9 @@ void Shader::SetDefineList(const String & enableDefinesList)
     
 bool Shader::LoadFromYaml(const String & pathname)
 {
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-    relativeFileName = pathname;
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//    relativeFileName = pathname;
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
     uint64 shaderLoadTime = SystemTimer::Instance()->AbsoluteMS();
     String pathOnly, shaderFilename;
@@ -531,26 +531,26 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 }
 
     
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-void Shader::SaveToSystemMemory()
-{
-    RenderResource::Lost();
-}
-void Shader::Lost()
-{
-//    Logger::Debug("[Shader::Lost]");
-    DeleteShaders();
-    RenderResource::Lost();
-}
-void Shader::Invalidate()
-{
-//    Logger::Debug("[Shader::Invalidate]");
-//    LoadFromYaml(relativeFileName);
-    Recompile();
-    
-    RenderResource::Invalidate();
-}
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//void Shader::SaveToSystemMemory()
+//{
+//    RenderResource::Lost();
+//}
+//void Shader::Lost()
+//{
+////    Logger::Debug("[Shader::Lost]");
+//    DeleteShaders();
+//    RenderResource::Lost();
+//}
+//void Shader::Invalidate()
+//{
+////    Logger::Debug("[Shader::Invalidate]");
+////    LoadFromYaml(relativeFileName);
+//    Recompile();
+//    
+//    RenderResource::Invalidate();
+//}
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
 
 #endif 

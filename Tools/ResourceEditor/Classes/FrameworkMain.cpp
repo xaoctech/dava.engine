@@ -19,10 +19,10 @@
 #include "SceneEditor/SceneExporter.h"
 
 #include "SceneEditor/PVRConverter.h"
+#include "version.h"
 
 using namespace DAVA;
 
-#define VERSION     "0.0.35"
  
 void PrintUsage()
 {
@@ -192,7 +192,7 @@ void FrameworkDidLaunched()
         DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
     }
     
-	appOptions->SetString("title", Format("DAVA SDK - Studio. %s", VERSION));
+	appOptions->SetString("title", Format("dava framework - resource editor | %s", RESOURCE_EDITOR_VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 

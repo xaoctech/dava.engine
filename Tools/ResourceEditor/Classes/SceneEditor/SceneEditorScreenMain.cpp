@@ -752,6 +752,30 @@ void SceneEditorScreenMain::TilemapTriggered()
     bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
 }
 
+void SceneEditorScreenMain::CustomColorsTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_CUSTOM_COLORS);	
+}
+
+void SceneEditorScreenMain::CustomColorsSetRadius(uint32 newRadius)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SetBrushRadius(newRadius);
+}
+
+void SceneEditorScreenMain::CustomColorsSetColor(uint32 indexInSet)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SetColorIndex(indexInSet);
+}
+
+void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SaveTexture(path);
+}
+
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
 {
     BodyItem *iBody = FindCurrentBody();

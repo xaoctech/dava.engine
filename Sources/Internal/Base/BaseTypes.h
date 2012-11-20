@@ -187,7 +187,7 @@ typedef std::string		String;
 #if defined(__DAVAENGINE_ANDROID__)
 	typedef std::basic_string<wchar_t>	WideString;
 #else //#if defined(__DAVAENGINE_ANDROID__)
-typedef std::wstring	WideString;
+	typedef std::wstring	WideString;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	
@@ -251,7 +251,7 @@ inline T Clamp(T val, T a, T b)
 #define Snprinf	_snprintf	
 #else //#if defined(__DAVAENGINE_WIN32__)
 #define Snprinf	snprintf	
-#endif//#if defined(__DAVAENGINE_WIN32__)
+#endif //#if defined(__DAVAENGINE_WIN32__)
 
 #define Memcmp memcmp
 #define Memcpy memcpy
@@ -309,6 +309,14 @@ enum eAlign
 #ifndef COUNT_OF
 #define COUNT_OF(x) (sizeof(x)/sizeof(*x))
 #endif
+
+    
+//#if defined(__DAVAENGINE_IPHONE__)
+#ifdef __thumb__
+#error "This file should be compiled in ARM mode only."
+    // Note in Xcode, right click file, Get Info->Build, Other compiler flags = "-marm"
+#endif
+//#endif//#if !defined(__DAVAENGINE_ANDROID__)
     
 };
 

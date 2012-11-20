@@ -41,6 +41,9 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
+LandscapeToolsPanel::LandscapeToolsPanel(const Rect & rect):UIControl(rect)
+{
+};
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
@@ -114,6 +117,7 @@ LandscapeTool * LandscapeToolsPanel::CurrentTool()
 void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
 {
     selectionPanel = newPanel;
+	selectionPanel->SetVisible(this->GetVisible());
     if(selectionPanel)
     {
         selectionPanel->SetDelegate(this);

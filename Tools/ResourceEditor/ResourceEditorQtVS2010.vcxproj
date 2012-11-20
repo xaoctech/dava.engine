@@ -312,6 +312,7 @@
     <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp" />
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
+    <ClCompile Include="Classes\Commands\CustomColorCommands.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
     <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
@@ -401,12 +402,14 @@
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorCustomColors.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
@@ -706,6 +709,7 @@
     <ClInclude Include="Classes\Commands\CommandReloadTextures.h" />
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
+    <ClInclude Include="Classes\Commands\CustomColorCommands.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
     <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
@@ -798,12 +802,14 @@
     <ClInclude Include="Classes\SceneEditor\HintManager.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorCustomColors.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeTool.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />

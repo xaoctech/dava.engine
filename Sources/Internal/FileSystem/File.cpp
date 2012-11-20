@@ -87,6 +87,13 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 			return file;
 		}
 	}
+    
+    bool isDirectory = FileSystem::Instance()->IsDirectory(filename);
+    if(isDirectory)
+    {
+        return NULL;
+    }
+    
 
 	FILE * file = 0;
 	uint32 size = 0;

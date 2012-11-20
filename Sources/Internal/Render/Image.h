@@ -38,6 +38,16 @@ namespace DAVA
 {
 
 class File;
+#ifdef __DAVAENGINE_IPHONE__
+
+class SaveToSystemPhotoCallbackReceiver
+{
+public:
+    virtual void SaveToSystemPhotosFinished() = 0;
+};
+    
+#endif
+
 class Image : public BaseObject
 {
 public:
@@ -66,7 +76,10 @@ public:
 	inline PixelFormat GetPixelFormat();
 
     
-	
+#ifdef __DAVAENGINE_IPHONE__
+    void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
+#endif
+    
     // changes size of image to required size, if new size is bigger, sets 0 to all new pixels
     void Resize(int32 newWidth, int32 newHeight);
     
