@@ -104,7 +104,7 @@ void TextureConvertor::jobRunNextConvert()
 void TextureConvertor::jobRunNextOriginal()
 {
 	// if there is no already running work
-	if((loadOriginalWatcher.isFinished() || loadOriginalWatcher.isCanceled())&& NULL == curJobOriginal)
+	if((loadOriginalWatcher.isFinished() || loadOriginalWatcher.isCanceled()) && NULL == curJobOriginal)
 	{
 		// get the new work
 		curJobOriginal = jobStackOriginal.pop();
@@ -273,7 +273,7 @@ int TextureConvertor::jobGetConvertFreeIndex()
 
 	for(int i = 0; i < CONVERT_JOB_COUNT; ++i)
 	{
-		if(convertWatcher[i].isFinished() || convertWatcher[i].isCanceled() && NULL == curJobConvert[i])
+		if((convertWatcher[i].isFinished() || convertWatcher[i].isCanceled()) && NULL == curJobConvert[i])
 		{
 			index = i;
 			break;
