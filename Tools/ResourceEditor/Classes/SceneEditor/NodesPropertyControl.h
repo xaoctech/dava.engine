@@ -63,12 +63,13 @@ public:
 
     void SetWorkingScene(Scene *scene);
     
-#if defined (DAVA_QT)
     virtual void SetSize(const Vector2 &newSize);
-#endif //#if defined (DAVA_QT)
     
 protected:
 
+    int32 GetTrianglesForLodLayer(LodNode::LodData *lodData);
+    
+    
     bool GetHeaderState(const String & headerName, bool defaultValue = true);
     void SetHeaderState(const String & headerName, bool newState);
     

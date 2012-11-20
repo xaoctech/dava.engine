@@ -3,6 +3,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -25,8 +26,12 @@ ParticleLayer3D::~ParticleLayer3D()
 	SafeRelease(renderData);
 }
 
-void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & cameraPos)
+void ParticleLayer3D::Draw(Camera * camera)
 {
+	const Matrix4 & mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+	Vector3 _up(mv._01, mv._11, mv._21);
+	Vector3 _left(mv._00, mv._10, mv._20);
+
 	verts.clear();
 	textures.clear();
 	colors.clear();

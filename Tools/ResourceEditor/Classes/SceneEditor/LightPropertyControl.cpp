@@ -106,6 +106,7 @@ void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
 	{
 		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
 		light->GetCustomProperties()->SetBool("editor.dynamiclight.enable", newValue);
+		light->SetDynamic(newValue);
 	}
     else if("Cast shadows" == forKey)
     {

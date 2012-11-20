@@ -12,16 +12,18 @@ public:
     {
         ACTION_NONE = -1,
         ACTION_HEIGHTMAP = 0,
-        ACTION_TILEMASK
+        ACTION_TILEMASK,
+		ACTION_COLORIZE
     };
     
     UNDOAction();
+	~UNDOAction();
 
     eActionType type;
     int32 ID;
     String filePathname;
     
-    void *actionData;
+    BaseObject *actionData;
 };
 
 
@@ -45,6 +47,9 @@ public:
     Texture * UndoTilemask();
     Texture * RedoTilemask();
 
+	void SaveColorize(Texture *colTex);
+    Texture * UndoColorize();
+    Texture * RedoColorize();
     
     UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
@@ -58,11 +63,16 @@ protected:
     
     UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
     UNDOAction *CreateTilemaskAction(Texture *tilemask);
-    
+    UNDOAction *CreateColorizeAction(Texture *tilemask);
     
     String TimeString();
     
     void CheckHistoryLength();
+
+	Texture * UndoTexture();
+    Texture * RedoTexture();
+	void SaveTexture(Texture *tex, UNDOAction::eActionType type);
+	UNDOAction * CreateTextureAction(Texture *tex, UNDOAction::eActionType type);
     
     List<UNDOAction *>actionsHistoryUNDO;
     List<UNDOAction *>actionsHistoryREDO;

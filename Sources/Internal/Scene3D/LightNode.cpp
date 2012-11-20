@@ -44,7 +44,8 @@ LightNode::LightNode()
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
     specularColor(1.0f, 1.0f, 1.0f, 1.0f),
-    intensity(300.0f)
+    intensity(300.0f),
+	isDynamic(true)
 {
 }
     
@@ -196,6 +197,8 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     specularColor.a = archive->GetFloat("specColor.a", specularColor.a);
     
     intensity = archive->GetFloat("intensity", intensity);
+
+	isDynamic = GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
 }
 
 void LightNode::Draw()
@@ -215,6 +218,16 @@ void LightNode::Draw()
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
+}
+
+bool LightNode::IsDynamic()
+{
+	return isDynamic;
+}
+
+void LightNode::SetDynamic(bool _isDynamic)
+{
+	isDynamic = _isDynamic;
 }
 
 };

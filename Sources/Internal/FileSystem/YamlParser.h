@@ -34,11 +34,12 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
 #include <stack>
+#include "FileSystem/File.h"
 
 namespace DAVA 
 {
 class YamlParser;
-
+class VariantType;
 /**
 	\defgroup yaml Yaml configs
  */
@@ -60,9 +61,14 @@ public:
 	virtual ~YamlNode();
 	
 	void Print(int32 identation);
+    void PrintToFile(DAVA::File* file, uint32 identationDepth = 0);
 	
 	bool			AsBool();
-	int32			AsInt();
+	int32			AsInt();//left for old code
+    int32			AsInt32();
+    uint32			AsUInt32();
+    int64			AsInt64();
+    uint64			AsUInt64();
 	float32			AsFloat();
 	const String &	AsString();
 	const WideString & AsWString();
@@ -76,7 +82,9 @@ public:
 	Vector2			AsPoint();//Dizz: this one exists cause of Boroda
 	Vector2			AsVector2();
 	Vector3			AsVector3();
+  	Vector4			AsVector4();
 	Rect			AsRect();	
+    VariantType     AsVariantType();
 	
 	YamlNode *		Get(const String & name);
 	YamlNode *		Get(int32 index); 
@@ -84,16 +92,26 @@ public:
 	
 	eType			GetType() { return type; }
 	int32			GetCount();
-	
+
+    void            InitFromKeyedArchive(KeyedArchive* archive);
+    void            InitFromVariantType(VariantType* varType);
+    
+protected:
+    void            FillContentAccordingToVariantTypeValue(VariantType* varType);
+    void            ProcessMatrix(const float32* array,uint32 dimension);
+    void            ProcessVector(const float32 array[],uint32 dimension);
+    bool            IsContainingMap();
+    String          FloatToCuttedString(float f);
+    
 private:
+    
 	int						mapIndex;
 	int						mapCount;
-	eType					 type;
+	eType					type;
 	WideString				stringValue;
 	String					 nwStringValue;
 	Vector<YamlNode*>		 objectArray;
     std::multimap<String, YamlNode*>	objectMap;
-
 	friend class YamlParser;
 };
 

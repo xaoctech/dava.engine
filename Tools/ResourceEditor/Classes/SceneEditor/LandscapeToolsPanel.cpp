@@ -35,6 +35,9 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
+LandscapeToolsPanel::LandscapeToolsPanel(const Rect & rect):UIControl(rect)
+{
+};
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
@@ -108,6 +111,7 @@ LandscapeTool * LandscapeToolsPanel::CurrentTool()
 void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
 {
     selectionPanel = newPanel;
+	selectionPanel->SetVisible(this->GetVisible());
     if(selectionPanel)
     {
         selectionPanel->SetDelegate(this);
@@ -236,13 +240,8 @@ void LandscapeToolsPanel::UpdateRect()
         Vector2 panelSize = this->GetSize();
         Vector2 panelPosition = this->GetPosition();
 
-#if defined (DAVA_QT)
         this->SetSize(Vector2(screenSize.x - EditorSettings::Instance()->GetRightPanelWidth(), panelSize.y));
         this->SetPosition(Vector2(0, panelPosition.y));
-#else //#if defined (DAVA_QT)
-        this->SetSize(Vector2(screenSize.x - EditorSettings::Instance()->GetRightPanelWidth() - EditorSettings::Instance()->GetLeftPanelWidth(), panelSize.y));
-        this->SetPosition(Vector2(EditorSettings::Instance()->GetLeftPanelWidth(), panelPosition.y));
-#endif //#if defined (DAVA_QT)
     }
 }
 

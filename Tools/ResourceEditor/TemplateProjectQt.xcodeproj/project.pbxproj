@@ -10,6 +10,9 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
+		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
+		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
 		5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FABE15D530270048024E /* LibraryModel.cpp */; };
 		5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC115D535230048024E /* moc_LibraryModel.cpp */; };
@@ -233,7 +236,6 @@
 		5C7F499F15B44B7A0038AF3A /* PropertyControlCreator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F493D15B44B7A0038AF3A /* PropertyControlCreator.cpp */; };
 		5C7F49A015B44B7A0038AF3A /* PropertyList.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F493F15B44B7A0038AF3A /* PropertyList.cpp */; };
 		5C7F49A115B44B7A0038AF3A /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */; };
-		5C7F49A215B44B7A0038AF3A /* PVRUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */; };
 		5C7F49A315B44B7A0038AF3A /* SceneEditorScreenMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */; };
 		5C7F49A415B44B7A0038AF3A /* SceneExporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */; };
 		5C7F49A515B44B7A0038AF3A /* SceneGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494915B44B7A0038AF3A /* SceneGraph.cpp */; };
@@ -299,6 +301,8 @@
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
+		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
+		E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F020C916103E84000969AF /* RulerToolLandscape.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -332,6 +336,12 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomColorCommands.cpp; path = Classes/Commands/CustomColorCommands.cpp; sourceTree = "<group>"; };
+		4940AF6B164C1684003E95A7 /* CustomColorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomColorCommands.h; path = Classes/Commands/CustomColorCommands.h; sourceTree = "<group>"; };
+		4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorCustomColors.cpp; path = Classes/SceneEditor/LandscapeEditorCustomColors.cpp; sourceTree = "<group>"; };
+		4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorCustomColors.h; path = Classes/SceneEditor/LandscapeEditorCustomColors.h; sourceTree = "<group>"; };
+		4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeToolsPanelCustomColors.cpp; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.cpp; sourceTree = "<group>"; };
+		4940AF70164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeToolsPanelCustomColors.h; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.h; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -851,8 +861,6 @@
 		5C7F494015B44B7A0038AF3A /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyList.h; path = Classes/SceneEditor/PropertyList.h; sourceTree = "<group>"; };
 		5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRConverter.cpp; path = Classes/SceneEditor/PVRConverter.cpp; sourceTree = "<group>"; };
 		5C7F494215B44B7A0038AF3A /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRConverter.h; path = Classes/SceneEditor/PVRConverter.h; sourceTree = "<group>"; };
-		5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRUtils.cpp; path = Classes/SceneEditor/PVRUtils.cpp; sourceTree = "<group>"; };
-		5C7F494415B44B7A0038AF3A /* PVRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRUtils.h; path = Classes/SceneEditor/PVRUtils.h; sourceTree = "<group>"; };
 		5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneEditorScreenMain.cpp; path = Classes/SceneEditor/SceneEditorScreenMain.cpp; sourceTree = "<group>"; };
 		5C7F494615B44B7A0038AF3A /* SceneEditorScreenMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneEditorScreenMain.h; path = Classes/SceneEditor/SceneEditorScreenMain.h; sourceTree = "<group>"; };
 		5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneExporter.cpp; path = Classes/SceneEditor/SceneExporter.cpp; sourceTree = "<group>"; };
@@ -977,6 +985,10 @@
 		C78621891602175100C96AA8 /* EditorConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorConfig.h; path = Classes/SceneEditor/EditorConfig.h; sourceTree = "<group>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		E8EE7E57160DBCA000645405 /* RulerTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerTool.cpp; path = Classes/RulerTool/RulerTool.cpp; sourceTree = "<group>"; };
+		E8EE7E58160DBCA000645405 /* RulerTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerTool.h; path = Classes/RulerTool/RulerTool.h; sourceTree = "<group>"; };
+		E8F020C916103E84000969AF /* RulerToolLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolLandscape.cpp; path = Classes/LandscapeEditor/RulerToolLandscape.cpp; sourceTree = "<group>"; };
+		E8F020CA16103E84000969AF /* RulerToolLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolLandscape.h; path = Classes/LandscapeEditor/RulerToolLandscape.h; sourceTree = "<group>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
@@ -1078,6 +1090,8 @@
 		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E8F020C916103E84000969AF /* RulerToolLandscape.cpp */,
+				E8F020CA16103E84000969AF /* RulerToolLandscape.h */,
 				5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */,
 				5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */,
 				5C45EB951606483E007EE300 /* LandscapesController.cpp */,
@@ -1624,6 +1638,10 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */,
+				4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */,
+				4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */,
+				4940AF70164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.h */,
 				C78621881602175100C96AA8 /* EditorConfig.cpp */,
 				C78621891602175100C96AA8 /* EditorConfig.h */,
 				5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */,
@@ -1745,8 +1763,6 @@
 				5C7F494015B44B7A0038AF3A /* PropertyList.h */,
 				5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */,
 				5C7F494215B44B7A0038AF3A /* PVRConverter.h */,
-				5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */,
-				5C7F494415B44B7A0038AF3A /* PVRUtils.h */,
 				5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */,
 				5C7F494615B44B7A0038AF3A /* SceneEditorScreenMain.h */,
 				5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */,
@@ -1821,6 +1837,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */,
+				4940AF6B164C1684003E95A7 /* CustomColorCommands.h */,
 				5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */,
 				5C45EB9316060B70007EE300 /* LandscapeOptionsCommands.h */,
 				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
@@ -1884,6 +1902,15 @@
 			name = "Source [bundle data]";
 			sourceTree = "<group>";
 		};
+		E8EE7E56160DBC8800645405 /* RulerTool */ = {
+			isa = PBXGroup;
+			children = (
+				E8EE7E57160DBCA000645405 /* RulerTool.cpp */,
+				E8EE7E58160DBCA000645405 /* RulerTool.h */,
+			);
+			name = RulerTool;
+			sourceTree = "<group>";
+		};
 		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -1921,6 +1948,7 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E8EE7E56160DBC8800645405 /* RulerTool */,
 				5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */,
 				5C8DA28E160263C200BCE6DF /* SpritesPacker.h */,
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
@@ -1996,7 +2024,7 @@
 		91B15E841AA80083484172DE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "TemplateProjectQt" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2171,7 +2199,6 @@
 				5C7F499F15B44B7A0038AF3A /* PropertyControlCreator.cpp in Build Sources */,
 				5C7F49A015B44B7A0038AF3A /* PropertyList.cpp in Build Sources */,
 				5C7F49A115B44B7A0038AF3A /* PVRConverter.cpp in Build Sources */,
-				5C7F49A215B44B7A0038AF3A /* PVRUtils.cpp in Build Sources */,
 				5C7F49A315B44B7A0038AF3A /* SceneEditorScreenMain.cpp in Build Sources */,
 				5C7F49A415B44B7A0038AF3A /* SceneExporter.cpp in Build Sources */,
 				5C7F49A515B44B7A0038AF3A /* SceneGraph.cpp in Build Sources */,
@@ -2369,6 +2396,11 @@
 				5C048FDB1603BF0D008631C2 /* EditorLandscapeNode.cpp in Build Sources */,
 				5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */,
 				5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */,
+				E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */,
+				E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */,
+				4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */,
+				4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */,
+				4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2441,6 +2473,7 @@
 					"./../../Libs/ImageMagick-6.7.4/lib/",
 					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
@@ -2468,7 +2501,7 @@
 					"-lMagickWand",
 				);
 				PRODUCT_NAME = TemplateProjectQt;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -2544,6 +2577,7 @@
 					"./../../Libs/ImageMagick-6.7.4/lib/",
 					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
@@ -2571,7 +2605,7 @@
 					"-lMagickWand",
 				);
 				PRODUCT_NAME = TemplateProjectQt;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

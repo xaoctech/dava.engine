@@ -217,7 +217,39 @@ void EditorLandscapeNode::FlushChanges()
     }
 }
 
+void EditorLandscapeNode::DrawFullTiledTexture(DAVA::Texture *renderTarget, const DAVA::Rect &drawRect)
+{
+    Texture *fullTiledTexture = nestedLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+    Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
+    background->SetPosition(0.f, 0.f);
+    background->SetScaleSize((float32)renderTarget->GetWidth(), (float32)renderTarget->GetHeight());
+    
+    background->Draw();
+}
 
+void EditorLandscapeNode::UpdateFullTiledTexture()
+{
+    nestedLandscape->UpdateFullTiledTexture();
+}
 
+void EditorLandscapeNode::BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox)
+{
+    nestedLandscape->BuildLandscapeFromHeightmapImage(heightmapPathname, landscapeBox);
+}
+
+Texture * EditorLandscapeNode::GetTexture(eTextureLevel level)
+{
+    if(level == TEXTURE_TILE_FULL)
+    {
+        return GetDisplayedTexture();
+    }
+
+    return nestedLandscape->GetTexture(level);
+}
+
+Texture * EditorLandscapeNode::GetDisplayedTexture()
+{
+    return nestedLandscape->GetTexture(TEXTURE_TILE_FULL);
+}
 
 

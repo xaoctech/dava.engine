@@ -19,19 +19,14 @@
 
 using namespace DAVA;
 
-
+class RulerTool;
 class SceneGraph;
-#if !defined (DAVA_QT)
-class DataGraph;
-class EntitiesGraph;
-class OutputPanelControl;
-#endif //#if !defined (DAVA_QT)
-
 class SceneInfoControl;
 class BeastManager;
 class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
+class LandscapeEditorCustomColors;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -55,31 +50,10 @@ public:
     
     virtual void WillAppear();
 	virtual void Update(float32 timeElapsed);
-    virtual void Input(UIEvent * touch);
+    virtual void Input(UIEvent * event);
 	virtual void Draw(const UIGeometricData &geometricData);
 
-#if defined (DAVA_QT)
     virtual void SetSize(const Vector2 &newSize);
-#else //#if defined (DAVA_QT)
-    void OpenScene(const String &pathToFile, bool editScene);
-
-    void ShowProperties(bool show);
-    bool PropertiesAreShown();
-
-    void ToggleSceneGraph();
-    void ToggleDataGraph();
-	void ToggleEntities();
-    void UpdateLibraryState(bool isShown, int32 width);
-    
-    void CreateScene(bool withCameras);
-    void ReleaseScene();
-    
-    const String &GetFilePath();
-    void SetFilePath(const String &newFilePath);
-    
-    void BakeScene();
-
-#endif //#if defined (DAVA_QT)
 
     void ReloadRootScene(const String &pathToFile);
     void ReloadNode(SceneNode *node, const String &pathToFile);
@@ -93,8 +67,6 @@ public:
     void RemoveSelectedSGNode();
     SceneNode *GetSelectedSGNode(); //Scene Graph node
     
-    void RefreshProperties();
-
     void Refresh();
     
     
@@ -125,31 +97,31 @@ public:
     
     bool TileMaskEditorEnabled();
     
-#if defined (DAVA_QT)        
     void SetScene(EditorScene *newScene);
     void SetCameraController(CameraController *newCameraController);
     
     void SelectNodeQt(SceneNode *node);
     void OnReloadRootNodesQt();
-#endif //#if defined (DAVA_QT)        
     
     
 	SceneGraph * GetSceneGraph() { return sceneGraph; }
 
+
+    bool RulerToolIsActive();
+    bool RulerToolTriggered();
+    
+	void UpdateModificationPanel(void);
+
+	//custom color editor elements
+	
+	void SetBrushRadius(uint32 size);
+	void SetColorIndex(uint32 indexInSet);
+	void SaveTexture(const String &path);
+
 protected:
 
     void InitControls();
-    
-
-#if !defined (DAVA_QT)        
-    void ToggleGraph(GraphBase *graph);
-
-    void ResetSelection();
-    
-    void BakeNode(SceneNode *node);
-    void FindIdentityNodes(SceneNode *node);
-    void RemoveIdentityNodes(SceneNode *node);
-#endif //#if !defined (DAVA_QT)
+    void PropcessIsSolidChanging();
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
@@ -161,6 +133,10 @@ protected:
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
 	
+    bool LandscapeEditorInput(UIEvent *event);
+    bool RulerToolInput(UIEvent *event);
+    bool ProcessKeyboard(UIEvent *event);
+    bool ProcessMouse(UIEvent *event);
 	
     //scene controls
     EditorScene * scene;
@@ -186,17 +162,6 @@ protected:
 	
 	float32 axisSign[3];
 	
-#if !defined (DAVA_QT)
-    //OutputPanelControl
-    OutputPanelControl *outputPanel;
-    DataGraph *dataGraph;
-	EntitiesGraph *entitiesGraph;
-    
-    void ChangeControlWidthRight(UIControl *c, float32 width);
-    void ChangeControlWidthLeft(UIControl *c, float32 width);
-
-#endif //#if !defined (DAVA_QT)
-	
 	float32 moveKf;
     
     String mainFilePath;
@@ -221,10 +186,6 @@ protected:
     };
     Vector<AddedNode> nodesToAdd;
 	
-	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
-	//
-	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
-
 	
     ResourceEditor::eViewportType currentViewportType;
     
@@ -239,6 +200,7 @@ protected:
     
     LandscapeEditorColor *landscapeEditorColor;
     LandscapeEditorHeightmap *landscapeEditorHeightmap;
+    LandscapeEditorCustomColors *landscapeEditorCustomColors;
     LandscapeEditorBase *currentLandscapeEditor;
     LandscapeToolsSelection *landscapeToolsSelection;
     
@@ -246,6 +208,8 @@ protected:
     SceneGraph *sceneGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
+    
+    RulerTool *landscapeRulerTool;
 };
 
 

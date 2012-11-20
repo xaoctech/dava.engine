@@ -10,6 +10,7 @@ EditorSettings::EditorSettings()
     settings = new KeyedArchive();
     
     settings->Load("~doc:/ResourceEditorOptions.archive");
+	ApplyOptions();
 }
     
 EditorSettings::~EditorSettings()
@@ -23,11 +24,16 @@ KeyedArchive *EditorSettings::GetSettings()
     return settings;
 }
 
-
 void EditorSettings::Save()
 {
     settings->Save("~doc:/ResourceEditorOptions.archive");
 }
+
+void EditorSettings::ApplyOptions()
+{
+	RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+}
+
 
 void EditorSettings::SetDataSourcePath(const String &datasourcePath)
 {
@@ -225,6 +231,7 @@ bool EditorSettings::GetDrawGrid()
 
 void EditorSettings::SetEnableImposters(bool enableImposters)
 {
+	RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, enableImposters);
 	settings->SetBool("enableImposters", enableImposters);
 }
 
@@ -232,5 +239,4 @@ bool EditorSettings::GetEnableImposters()
 {
 	return settings->GetBool("enableImposters", true);
 }
-
 

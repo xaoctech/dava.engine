@@ -23,13 +23,6 @@
 
 #include "NeonMath.h"
 
-#if !defined(__DAVAENGINE_ANDROID__)
-#ifdef __thumb__
-#error "This file should be compiled in ARM mode only."
-// Note in Xcode, right click file, Get Info->Build, Other compiler flags = "-marm"
-#endif
-#endif//#if !defined(__DAVAENGINE_ANDROID__)
-
 #ifdef _ARM_ARCH_7
 
 namespace DAVA 
@@ -105,5 +98,8 @@ void NEON_Matrix4Vector4Mul(const float* m, const float* v, float* output)
      : "memory", "q0", "q1", "q2", "q3", "q4", "q5" //clobber
      );
 }
+
 };
-#endif
+
+#endif //#ifdef _ARM_ARCH_7
+

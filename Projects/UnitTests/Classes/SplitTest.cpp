@@ -87,7 +87,7 @@ void SplitTest::SplitByWords(PerfFuncData * data)
         }
     }
     
-    TEST_VERIFY(testSuccess)
+    TEST_VERIFY(testSuccess);
 }
 
 void SplitTest::SplitBySymbols(PerfFuncData * data)
@@ -121,7 +121,7 @@ void SplitTest::SplitBySymbols(PerfFuncData * data)
         }
     }
     
-    TEST_VERIFY(testSuccess)
+    TEST_VERIFY(testSuccess);
 }
 
 void SplitTest::SplitByWordsWithNewLine(PerfFuncData * data)
@@ -156,7 +156,7 @@ void SplitTest::SplitByWordsWithNewLine(PerfFuncData * data)
         }
     }
     
-    TEST_VERIFY(testSuccess)
+    TEST_VERIFY(testSuccess);
 }
 
 void SplitTest::SplitBySymbolsWithNewLine(PerfFuncData * data)
@@ -192,5 +192,5 @@ void SplitTest::SplitBySymbolsWithNewLine(PerfFuncData * data)
         }
     }
     
-    TEST_VERIFY(testSuccess)
+    TEST_VERIFY(testSuccess);
 }

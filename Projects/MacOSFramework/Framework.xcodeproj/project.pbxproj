@@ -92,6 +92,9 @@
 		5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D4E156E3EBF00EDB730 /* UserNode.h */; };
 		C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */; };
 		C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */; };
+		C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F0A51D161DEAEE003A2006 /* Observable.cpp */; };
+		C2F0A521161DEAEE003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51E161DEAEE003A2006 /* Observable.h */; };
+		C2F0A522161DEAEE003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51F161DEAEE003A2006 /* Observer.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -108,8 +111,13 @@
 		CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFF221115EE10E400363446 /* SwitchNode.cpp */; };
 		CCFF221415EE10E400363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF221215EE10E400363446 /* SwitchNode.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */; };
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
+		E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C80161B171800B50BDA /* TexturePVR.cpp */; };
+		E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */; };
+		E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C96161B418100B50BDA /* LibPVRHelper.h */; };
+		E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C97161B418100B50BDA /* PVRDefines.h */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
 		ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DD158A4B0D009E0EC7 /* Component.h */; };
@@ -672,6 +680,9 @@
 		5CFA5D4E156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
+		C2F0A51D161DEAEE003A2006 /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
+		C2F0A51E161DEAEE003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
+		C2F0A51F161DEAEE003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C784403A158204A000F75358 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -691,8 +702,13 @@
 		CCFF221215EE10E400363446 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
+		E8F98C80161B171800B50BDA /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
+		E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
+		E8F98C96161B418100B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
+		E8F98C97161B418100B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		ED2F52DC158A4B0D009E0EC7 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
 		ED2F52DD158A4B0D009E0EC7 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
@@ -1152,6 +1168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
 				0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */,
 				5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */,
 				5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */,
@@ -1183,6 +1200,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				E82366CD16148EF9007B40D0 /* libPVRTexLib.a */,
 				0224B6FF15989F7400CDEF9E /* libtheora_macos.a */,
 				5C50EA1915761947005ABED7 /* libmongodb_macos.a */,
 				5C97965914E3F09F00FFFA14 /* libyaml_macos.a */,
@@ -1436,6 +1454,9 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				C2F0A51D161DEAEE003A2006 /* Observable.cpp */,
+				C2F0A51E161DEAEE003A2006 /* Observable.h */,
+				C2F0A51F161DEAEE003A2006 /* Observer.h */,
 				FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */,
 				FECFC0B712E87E3000C71562 /* BaseMath.cpp */,
 				FECFC0B812E87E3000C71562 /* BaseMath.h */,
@@ -1720,6 +1741,10 @@
 				FECFC18E12E87E3000C71562 /* StaticIndexBuffer.h */,
 				FECFC18F12E87E3000C71562 /* StaticVertexBuffer.cpp */,
 				FECFC19012E87E3000C71562 /* StaticVertexBuffer.h */,
+				E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */,
+				E8F98C96161B418100B50BDA /* LibPVRHelper.h */,
+				E8F98C97161B418100B50BDA /* PVRDefines.h */,
+				E8F98C80161B171800B50BDA /* TexturePVR.cpp */,
 				FECFC19112E87E3000C71562 /* Texture.cpp */,
 				FECFC19212E87E3000C71562 /* Texture.h */,
 				FECFC19312E87E3000C71562 /* TextureDX9.cpp */,
@@ -2310,6 +2335,10 @@
 				C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */,
 				CCFF221415EE10E400363446 /* SwitchNode.h in Headers */,
 				E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */,
+				C2F0A521161DEAEE003A2006 /* Observable.h in Headers */,
+				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
+				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
+				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2637,6 +2666,9 @@
 				C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */,
 				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
 				E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */,
+				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
+				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
+				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

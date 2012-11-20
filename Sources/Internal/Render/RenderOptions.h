@@ -2,11 +2,12 @@
 #define __DAVAENGINE_RENDEROPTIONS_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Observable.h"
 
 namespace DAVA
 {
 
-class RenderOptions
+class RenderOptions : public Observable
 {
 public:
 	enum RenderOption

@@ -33,10 +33,6 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/Logger.h"
 
-
-namespace DAVA
-{
-	
 /**
 	\page tutorial_debug Debugging
 	Here you'll learn how to debug your project and find bugs faster.
@@ -71,13 +67,7 @@ namespace DAVA
 */
 
 
-// Alexandresky style compile time assertion. 
-template <bool> struct CompileTimeError;
-template <> struct CompileTimeError<true> {};
-#define COMPILER_ASSERT(expr)  (CompileTimeError<(expr)!=0>());
-	
-// Runtime asserts	
-
+// Runtime assert
 
 #if defined(__DAVAENGINE_WIN32__)
 #define DebugBreak() { __debugbreak(); }
@@ -121,10 +111,6 @@ template <> struct CompileTimeError<true> {};
 #define DVVERIFY(expr) (expr)
 
 #endif
-	
-
-
-}; // end of namespace Log
 
 #endif
 

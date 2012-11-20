@@ -73,7 +73,6 @@ Scene::Scene()
 //    ,   forceLodLayer(-1)
 	,	shadowRect(0)
 	,	imposterManager(0)
-	,	enableImposters(true)
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
@@ -718,13 +717,16 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
 		LightNode * node = *it;
-		const Vector3 & lightPosition = node->GetPosition();
-
-		float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-		if (squareDistanceToLight < squareMinDistance)
+		if(node->IsDynamic())
 		{
-			squareMinDistance = squareDistanceToLight;
-			nearestLight = node;
+			const Vector3 & lightPosition = node->GetPosition();
+
+			float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+			if (squareDistanceToLight < squareMinDistance)
+			{
+				squareMinDistance = squareDistanceToLight;
+				nearestLight = node;
+			}
 		}
 	}
 
@@ -744,7 +746,6 @@ void Scene::RegisterImposter(ImposterNode * imposter)
 	}
 	
 	imposterManager->Add(imposter);
-	imposter->RecursiveEnableImposters(enableImposters);
 }
 
 void Scene::UnregisterImposter(ImposterNode * imposter)
@@ -755,20 +756,6 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	{
 		SafeRelease(imposterManager);
 	}
-}
-
-void Scene::EnableImposters(bool enable)
-{
-	if(enable != enableImposters)
-	{
-		enableImposters = enable;
-		RecursiveEnableImposters(enableImposters);
-	}
-}
-
-bool Scene::IsImposterEnabled()
-{
-	return enableImposters;
 }
 
 void Scene::SetReferenceNodeSuffix(const String & suffix)

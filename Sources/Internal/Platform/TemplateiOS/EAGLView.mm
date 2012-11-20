@@ -145,6 +145,7 @@
 		}
         
         DAVA::RenderManager::Instance()->Init(DAVA::Core::Instance()->GetPhysicalScreenWidth(), DAVA::Core::Instance()->GetPhysicalScreenHeight());
+        DAVA::RenderManager::Instance()->DetectRenderingCapabilities();
         
 		self.multipleTouchEnabled = YES;
 		animating = FALSE;

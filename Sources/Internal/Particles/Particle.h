@@ -54,7 +54,10 @@ public:
 	Color drawColor;
 	Vector3 position;
 	Vector2 size;
-	Vector3 velocity;
+
+	Vector3 direction;
+	float32 speed;
+
 	float32 angle;
 	float32 spin;
 
@@ -65,12 +68,13 @@ public:
 	float32 velocityOverLife;
 	float32 spinOverLife;
 
-	Vector<Vector3> forces;
+	Vector<Vector3> forcesDirections;
+	Vector<float32> forcesValues;
 	Vector<float32> forcesOverLife;
 	int32	frame;
 	
 	friend class ParticleEmitter;
-}; // 2 4 2 2 2 7 = 19 * 4 = 76 bytes per particle
+};
 
 // Implementation
 inline bool Particle::IsDead()

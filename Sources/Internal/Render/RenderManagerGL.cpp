@@ -116,12 +116,61 @@ void RenderManager::Release()
 
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
+    
+    
+bool IsGLExtensionSupported(const char * const extension)
+{
+    // The recommended technique for querying OpenGL extensions;
+    // from http://opengl.org/resources/features/OGLextensions/
+    const GLubyte *extensions = NULL;
+    const GLubyte *start;
+    GLubyte *where, *terminator;
+    
+    /* Extension names should not have spaces. */
+    where = (GLubyte *) strchr(extension, ' ');
+    if (where || *extension == '\0')
+        return 0;
+    
+    extensions = glGetString(GL_EXTENSIONS);
+    //    Logger::Warning("[EXT] %s", extensions);
+    
+    /* It takes a bit of care to be fool-proof about parsing the
+     OpenGL extensions string. Don't be fooled by sub-strings, etc. */
+    start = extensions;
+    for (;;) {
+        where = (GLubyte *) strstr((const char *) start, extension);
+        if (!where)
+            break;
+        terminator = where + strlen(extension);
+        if (where == start || *(where - 1) == ' ')
+            if (*terminator == ' ' || *terminator == '\0')
+                return true;
+        start = terminator;
+    }
+    
+    return false;
+}
+    
 void RenderManager::DetectRenderingCapabilities()
 {
 #if defined(__DAVAENGINE_MACOS__)
 	caps.isHardwareCursorSupported = true;
-#else
+#elif defined (__DAVAENGINE_IPHONE__)
 	caps.isHardwareCursorSupported = false;
+#endif
+
+#if defined(__DAVAENGINE_IPHONE__)
+    caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
+    caps.isETCSupported = false;
+    caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+#else
+    caps.isPVRTCSupported = false;
+    caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
+    caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 #endif
 }
 
@@ -210,20 +259,21 @@ void RenderManager::MakeGLScreenShot()
 
     int32 width = frameBufferWidth;
     int32 height = frameBufferHeight;
-    PixelFormat format = FORMAT_RGBA8888;
+    
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     
     Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
     
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
 #if defined(__DAVAENGINE_IPHONE__)    
-    image = Image::Create(height, width, format);
+    image = Image::Create(height, width, formatDescriptor.formatID);
 #else
-    image = Image::Create(width, height, format);
+    image = Image::Create(width, height, formatDescriptor.formatID);
 #endif
     uint8 *imageData = image->GetData();
     
-    int32 formatSize = Image::GetFormatSize(format);
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
     uint8 *tempData;
     
     uint32 imageDataSize = width * height * formatSize;
@@ -237,26 +287,7 @@ void RenderManager::MakeGLScreenShot()
 #endif
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-    switch(format)
-    {
-        case FORMAT_RGBA8888:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-            break;
-        case FORMAT_RGB565:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)tempData));
-            break;
-        case FORMAT_A8:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-            break;
-        case FORMAT_RGBA4444:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)tempData));
-            break;
-        case FORMAT_A16:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)tempData));
-            break;
-        default:
-            break;
-    }
+    RENDER_VERIFY(glReadPixels(0, 0, width, height, formatDescriptor.format, formatDescriptor.type, (GLvoid *)tempData));
     UnlockNonMain();
     
     //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
@@ -808,7 +839,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#else //Non ES platforms
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
 //#endif //PLATFORMS
-        BindFBO(fboViewFramebuffer);
+        HWglBindFBO(fboViewFramebuffer);
 
         SetViewport(Rect(0, 0, -1, -1), true);
 
@@ -825,7 +856,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#else //Non ES platforms
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
 //#endif //PLATFORMS
-		BindFBO(renderTarget->GetTexture()->fboID);
+		HWglBindFBO(renderTarget->GetTexture()->fboID);
 #if defined(__DAVAENGINE_ANDROID__)
         renderTarget->GetTexture()->renderTargetModified = true;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -864,7 +895,7 @@ void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
-	BindFBO(renderTarget->fboID);
+	HWglBindFBO(renderTarget->fboID);
 	RemoveClip();
 }
 
@@ -1090,7 +1121,79 @@ void RenderManager::AttachRenderData()
 //}
 //
 
+    
+    
+int32 RenderManager::HWglGetLastTextureID()
+{
+    return lastBindedTexture;
 
+    
+//#if defined(__DAVAENGINE_ANDROID__)
+//    return lastBindedTexture;
+//#else //#if defined(__DAVAENGINE_ANDROID__)
+//    int32 saveId = 0;
+//    glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
+//    //    GLenum err = glGetError();
+//    //    if (err != GL_NO_ERROR)
+//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
+//    return saveId;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
+}
+
+void RenderManager::HWglBindTexture(int32 tId)
+{
+    if(0 != tId)
+    {
+        glBindTexture(GL_TEXTURE_2D, tId);
+        
+        //		GLenum err = glGetError();
+        //		if (err != GL_NO_ERROR)
+        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+        
+        lastBindedTexture = tId;
+    }
+}
+
+int32 RenderManager::HWglGetLastFBO()
+{
+    return lastBindedFBO;
+//    int32 saveFBO = 0;
+//#if defined(__DAVAENGINE_IPHONE__)
+//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
+//#elif defined(__DAVAENGINE_ANDROID__)
+//    saveFBO = lastBindedFBO;
+//#else //Non ES platforms
+//    glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO);
+//    
+//    //    GLenum err = glGetError();
+//    //    if (err != GL_NO_ERROR)
+//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
+//    
+//#endif //PLATFORMS
+//    
+//    return saveFBO;
+}
+
+void RenderManager::HWglBindFBO(const int32 fbo)
+{
+    //	if(0 != fbo)
+    {
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);	// Unbind the FBO for now
+#else //Non ES platforms
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);	// Unbind the FBO for now
+#endif //PLATFORMS
+        
+        //		GLenum err = glGetError();
+        //		if (err != GL_NO_ERROR)
+        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
+        
+        
+        lastBindedFBO = fbo;
+    }
+}
+
+    
 
 
 };

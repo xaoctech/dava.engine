@@ -360,7 +360,7 @@ const Vector3 & Camera::GetPosition() const
 const Vector3 & Camera::GetDirection()
 {
     direction = target - position;
-    direction.Normalize();
+    direction.Normalize(); //TODO: normalize only on target/position changes
     return direction;
 }
 

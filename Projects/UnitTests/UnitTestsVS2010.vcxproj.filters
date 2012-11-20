@@ -48,6 +48,15 @@
     <ClInclude Include="Classes\SplitTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\PVRTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\KeyedArchiveTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\KeyedArchiveYamlTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -81,6 +90,15 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SplitTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\PVRTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\KeyedArchiveTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>

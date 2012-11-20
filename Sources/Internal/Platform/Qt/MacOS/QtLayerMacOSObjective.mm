@@ -105,6 +105,12 @@ void QtLayerMacOS::MouseMoved(int32 x, int32 y)
 {
     [openGLView MouseMoved:x y: y];
 }
+    
+void QtLayerMacOS::LockKeyboardInput(bool locked)
+{
+    [openGLView LockKeyboardInput: locked];
+}
+
 
 
 };

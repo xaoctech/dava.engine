@@ -69,7 +69,12 @@ public:
     struct Caps
 	{
         Core::eRenderer renderer;
-		bool            isHardwareCursorSupported;
+		bool isHardwareCursorSupported;
+        bool isPVRTCSupported;
+        bool isETCSupported;
+        bool isBGRA8888Supported;
+        bool isFloat16Supported;
+        bool isFloat32Supported;
 	};
     
     struct Stats
@@ -492,8 +497,17 @@ public:
     
 #if defined(__DAVAENGINE_OPENGL__)
     void HWglBindBuffer(GLenum target, GLuint  	buffer);
-    GLuint bufferBindingId[2];    
-#endif
+    GLuint bufferBindingId[2];
+    
+    int32 HWglGetLastTextureID();
+    void HWglBindTexture(int32 tId);
+    int32 lastBindedTexture;
+
+    
+    int32 HWglGetLastFBO();
+    void HWglBindFBO(const int32 fbo);
+    int32 lastBindedFBO;
+#endif //#if defined(__DAVAENGINE_OPENGL__)
     
     void RequestGLScreenShot() { needGLScreenShot = true; };
 

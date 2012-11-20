@@ -68,6 +68,8 @@ public:
     
     LandscapesController *GetLandscapesController();
     
+    void OpenLibraryForFile(const DAVA::String &filePathname);
+    
 protected:
     
     void BakeNode(DAVA::SceneNode *node);
@@ -131,6 +133,9 @@ protected:
 	QTreeView *libraryView;
     
     LandscapesController *landscapesController;
+    
+    bool skipLibraryPreview;
+
 };
 
 #endif // __SCENE_DATA_H__

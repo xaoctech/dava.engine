@@ -40,7 +40,7 @@ using namespace DAVA;
     bool passed = command;\
     if (!passed)\
     {\
-        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__); \
+        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__, &data->testData); \
     }\
 }
 
@@ -52,10 +52,12 @@ public:
     TestData()
     {
         name = String("");
+        message = String("");
         userData = NULL;
     }
 
     String name;
+    String message;
     void * userData;
 };
 

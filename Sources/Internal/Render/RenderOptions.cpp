@@ -19,6 +19,7 @@ bool RenderOptions::IsOptionEnabled(RenderOption option)
 void RenderOptions::SetOption(RenderOption option, bool value)
 {
 	options[option] = value;
+	NotifyObservers();
 }
 
 };

@@ -77,6 +77,7 @@ public:
         LAYER_ALIGN_TO_MOTION,
         LAYER_START_TIME,
         LAYER_END_TIME,
+		LAYER_IS_LONG
     };
     class PropListCell : public UIListCell
     {
@@ -303,6 +304,7 @@ protected:
     int32 selectedAddPropElement;
     int32 selectedForceElement;
     int32 selectedEmitterTypeElement;
+	int32 selectedIsLong;
     
     float32 cellH;
     

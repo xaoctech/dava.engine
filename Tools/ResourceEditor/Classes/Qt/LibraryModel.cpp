@@ -56,9 +56,7 @@ void LibraryModel::Activate(QTreeView *view)
 
 void LibraryModel::Reload()
 {
-	QString datasourcePathname(EditorSettings::Instance()->GetDataSourcePath().c_str());
-	QDir datasosurceFolder(datasourcePathname);
-	QString rootPath = datasosurceFolder.canonicalPath(); 
+	QString rootPath = QStylePathname(EditorSettings::Instance()->GetDataSourcePath()); 
 
 	setRootPath(rootPath);
     if(attachedTreeView)
@@ -92,4 +90,23 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
     return QFileSystemModel::data(index, role);
 }
 
+bool LibraryModel::SelectFile(const DAVA::String &pathname)
+{
+	if(!attachedTreeView)
+		return false;
+
+	QString filePathname = QStylePathname(pathname); 
+	const QModelIndex fileIndex = index(filePathname);
+	attachedTreeView->setCurrentIndex(fileIndex);
+	attachedTreeView->scrollTo(fileIndex);
+
+	return true;
+}
+
+QString LibraryModel::QStylePathname(const DAVA::String &pathname)
+{
+	QString pathnameQt(pathname.c_str());
+	QDir pathnameDirObject(pathnameQt);
+	return pathnameDirObject.canonicalPath(); 
+}
 

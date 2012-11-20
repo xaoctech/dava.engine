@@ -59,6 +59,7 @@ public:
     float32 GetSliderMinValue();
     float32 GetSliderMaxValue();
     float32 *GetDistances();
+    int32 *GetTriangles();
     int32 GetDistancesCount();
     
     Texture *GetTexture();
@@ -80,6 +81,7 @@ public:
     void SetSliderValue(float32 newValue);
     void SetTexture(Texture *newTexture);
     void SetDistances(float32 *newDistances, int32 count);
+    void SetTriangles(int32 *newTriangles, int32 count);
     void SetDistance(float32 newDistance, int32 index);
     
     int32 cellType;
@@ -113,6 +115,7 @@ protected:
     Texture *texture;
     
     float32 *distances;
+    int32 *triangles;
     int32 distanceCount;
 };
 

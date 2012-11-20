@@ -18,13 +18,11 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
 
+#include "version.h"
+
 using namespace DAVA;
 
-#define VERSION     "0.0.28"
  
-//void EntityTest();
-
-
 void PrintUsage()
 {
     printf("Usage:\n");
@@ -152,12 +150,6 @@ void FrameworkDidLaunched()
 	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "XGfx");
 #else
 	KeyedArchive * appOptions = new KeyedArchive();
-//	appOptions->SetInt("width",	920);
-//	appOptions->SetInt("height", 690);
-    
-//    int32 width = 1024;
-//    int32 height = 690;
-        
     
     int32 width = (int32)DAVA::Core::Instance()->GetVirtualScreenWidth();
     int32 height = (int32)DAVA::Core::Instance()->GetVirtualScreenHeight();
@@ -169,7 +161,7 @@ void FrameworkDidLaunched()
         DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
     }
     
-	appOptions->SetString("title", Format("DAVA SDK - Studio. %s", VERSION));
+	appOptions->SetString("title", Format("dava framework - resource editor | %s", RESOURCE_EDITOR_VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 
@@ -182,12 +174,7 @@ void FrameworkDidLaunched()
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
 	DAVA::Core::Instance()->SetOptions(appOptions);
-    
-    
-#if defined (DAVA_QT)
     DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
-#endif //#if defined (DAVA_QT)
-    
 }
 
 

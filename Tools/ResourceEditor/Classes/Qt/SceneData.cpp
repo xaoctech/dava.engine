@@ -13,6 +13,8 @@
 
 #include "../LandscapeEditor/LandscapesController.h"
 
+#include "QtMainWindowHandler.h"
+
 
 #include "QtUtils.h"
 #include "PointerHolder.h"
@@ -48,6 +50,7 @@ SceneData::SceneData()
     
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
+    skipLibraryPreview = false;
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
     connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
@@ -394,6 +397,8 @@ void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
     
     connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
     connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
 }
 
 void SceneData::Deactivate()
@@ -601,7 +606,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
 {
     //TODO: need best way to display scene preview
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
+    if(screen && !skipLibraryPreview)
     {
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
         if(0 == CompareStrings(extension, String(".sc2")) && isFile)
@@ -613,6 +618,8 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
             screen->HideScenePreview();
         }
     }
+    
+    skipLibraryPreview = false;
 }
 
 void SceneData::Execute(Command *command)
@@ -643,7 +650,7 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     QMenu menu;
     
     AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
-    AddActionToMenu(&menu, QString("Look at Objec"), new CommandLockAtObject());
+    AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
     AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 
     AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
@@ -715,5 +722,13 @@ LandscapesController * SceneData::GetLandscapesController()
 }
 
 
-
+void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
+{
+    skipLibraryPreview = true;
+	bool fileWillBeSelected = libraryModel->SelectFile(filePathname);
+	if(!fileWillBeSelected)
+	{
+		skipLibraryPreview = false;
+	}
+}
 
