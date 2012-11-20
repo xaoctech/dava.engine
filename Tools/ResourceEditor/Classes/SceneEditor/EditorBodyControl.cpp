@@ -433,11 +433,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && modificationPanel->IsModificationMode())
 				{
-					PrepareModMatrix(event->point);
-					selection->SetLocalTransform(currTransform);
-                    if(currentGraph)
+                    
+                    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
+                    if(!landscape)
                     {
-                        currentGraph->UpdatePropertiesForCurrentNode();
+                        PrepareModMatrix(event->point);
+                        selection->SetLocalTransform(currTransform);
+                        if(currentGraph)
+                        {
+                            currentGraph->UpdatePropertiesForCurrentNode();
+                        }
                     }
 				}
 			}

@@ -37,8 +37,9 @@ NotPassableTerrain::NotPassableTerrain()
 {
     SetName(String("Landscape_NotPassable"));
 
-    notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
     notPassableMapSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
+    
+    LoadColorsArray();
 }
 
 NotPassableTerrain::~NotPassableTerrain()
@@ -70,7 +71,6 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 
     DrawFullTiledTexture(notPassableMap, drawRect);
     
-    Color red(1.0f, 0.0f, 0.0f, 1.0f);
     int32 lastY = (int32)(forRect.y + forRect.dy);
     int32 lastX = (int32)(forRect.x + forRect.dx);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
@@ -91,20 +91,23 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
             float32 ydx = y * dx;
             float32 xdx = x * dx;
 
+            RenderManager* renderManager = RenderManager::Instance();
+            RenderHelper* renderHelper = RenderHelper::Instance();
             
-            if(notPassableAngleTan <= tanRight)
-            {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2((xdx + dx), ydx));
-            }
+            Color color;
 
-            if(notPassableAngleTan <= tanBottom)
+            if(PickColor(tanRight, color))
             {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2(xdx, (ydx + dx)));
+                renderManager->SetColor(color);
+                renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx + dx), ydx));
             }
+            
+            if(PickColor(tanBottom, color))
+            {
+                renderManager->SetColor(color);
+                renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx + dx)));
+            }
+            
         }
     }
 
@@ -120,4 +123,62 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 void NotPassableTerrain::SetDisplayedTexture()
 {
     SetTexture(LandscapeNode::TEXTURE_TILE_FULL, notPassableMapSprite->GetTexture());
+}
+
+void NotPassableTerrain::LoadColorsArray()
+{
+    YamlParser* parser = YamlParser::Create("~res:/Configs/LandscapeAngle.yaml");
+    
+    if (parser != 0)
+    {
+        YamlNode* rootNode = parser->GetRootNode();
+        int32 anglesCount = rootNode->GetCount();
+        
+        for (int32 i = 0; i < anglesCount; ++i)
+        {
+            YamlNode* node = rootNode->Get(i);
+            if (!node || node->GetCount() != 3)
+                continue;
+            
+            float32 angle1 = node->Get(0)->AsFloat();
+            float32 angle2 = node->Get(1)->AsFloat();
+            
+            angle1 = Min(angle1, 89.f);
+            angle2 = Min(angle2, 89.f);
+            
+            float32 tangentMin = tan(DegToRad(angle1));
+            float32 tangentMax = tan(DegToRad(angle2));
+            
+            YamlNode* colorNode = node->Get(2);
+            if (!colorNode || colorNode->GetCount() != 4)
+                continue;
+         
+            Color color(colorNode->Get(0)->AsFloat()/255.f,
+                        colorNode->Get(1)->AsFloat()/255.f,
+                        colorNode->Get(2)->AsFloat()/255.f,
+                        colorNode->Get(3)->AsFloat()/255.f);
+            
+            angleColor.push_back(TerrainColor(Vector2(tangentMin, tangentMax), color));
+        }
+    }
+
+    SafeRelease(parser);
+}
+
+bool NotPassableTerrain::PickColor(float32 tan, Color& color) const
+{
+    for (uint32 i = 0; i < angleColor.size(); ++i)
+    {
+		if(tan >= angleColor[i].angleRange.x && tan < angleColor[i].angleRange.y)
+        {
+            color = angleColor[i].color;
+            return true;
+		}
+	}
+    return false;
+}
+
+Texture * NotPassableTerrain::GetDisplayedTexture()
+{
+    return notPassableMapSprite->GetTexture();
 }

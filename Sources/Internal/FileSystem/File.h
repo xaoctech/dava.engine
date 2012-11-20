@@ -122,7 +122,15 @@ public:
 	 */
 	virtual bool WriteString(const String & string);
 
-	/** 
+	/**
+     \brief Write string
+     write string without '\0' from current position in file
+     \param[in] string - string data loaded to this variable
+     \return true if success otherwise false
+	 */
+  	virtual bool WriteNonTerminatedString(const String & string);
+	
+    /**
 		\brief Write one line of text
 		Write string and add /r/n in the end.
 		\param[in] string - string to write

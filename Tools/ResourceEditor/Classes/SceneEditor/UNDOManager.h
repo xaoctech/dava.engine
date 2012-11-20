@@ -18,12 +18,13 @@ public:
     };
     
     UNDOAction();
+	~UNDOAction();
 
     eActionType type;
     int32 ID;
     String filePathname;
     
-    void *actionData;
+    BaseObject *actionData;
 };
 
 

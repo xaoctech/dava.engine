@@ -11,6 +11,7 @@ class Camera;
 class ParticleEmitter3D : public ParticleEmitter
 {
 public:
+	ParticleEmitter3D();
 	void Draw(Camera * camera);
 
 protected:
