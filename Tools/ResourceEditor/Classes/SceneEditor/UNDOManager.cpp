@@ -6,13 +6,19 @@ UNDOAction::UNDOAction()
 {
     type = ACTION_NONE;
     ID = -1;
-    filePathname = "";
+    filePathname = String("");
     
     actionData = NULL;
 }
 
 UNDOAction::~UNDOAction()
 {
+    if(!filePathname.empty())
+    {
+        FileSystem::Instance()->DeleteFile(filePathname);
+        filePathname = String("");
+    }
+    
 	SafeRelease(actionData);
 }
 
@@ -303,19 +309,7 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
     {
         if(forAction == (*it)->type)
         {
-            if(UNDOAction::ACTION_TILEMASK == (*it)->type)
-            {
-                Image *image = (Image *)((*it)->actionData);
-                SafeRelease(image);
-                (*it)->actionData = NULL;
-            }
-            else 
-            {
-                FileSystem::Instance()->DeleteFile((*it)->filePathname);
-            }
-            
             SafeRelease(*it);
-            
             it = actionsHistory.erase(it);
         }
         else 
@@ -328,24 +322,7 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
 
 void UNDOManager::ReleaseHistory(List<UNDOAction *> &actionsHistory)
 {
-    List<UNDOAction *>::iterator it = actionsHistory.begin();
-    List<UNDOAction *>::const_iterator endIt = actionsHistory.end();
-    
-    for(; it != endIt; ++it)
-    {
-        if(UNDOAction::ACTION_TILEMASK == (*it)->type)
-        {
-            Image *image = (Image *)((*it)->actionData);
-            SafeRelease(image);
-            (*it)->actionData = NULL;
-        }
-        else 
-        {
-            FileSystem::Instance()->DeleteFile((*it)->filePathname);
-        }
-        
-        SafeRelease(*it);
-    }
+    for_each(actionsHistory.begin(), actionsHistory.end(), SafeRelease<UNDOAction>);
     actionsHistory.clear();
 }
 
