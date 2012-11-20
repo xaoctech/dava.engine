@@ -213,6 +213,7 @@
     <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observer.h" />
