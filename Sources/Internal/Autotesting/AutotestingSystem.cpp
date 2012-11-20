@@ -578,6 +578,8 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     masterArchive->SetInt32("runId", masterRunId);
     
     masterArchive->SetBool("run", false);
+    //TODO: set task for helpers into DB
+    masterArchive->SetString("task", testFileName);
     
     dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
     
@@ -677,8 +679,6 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                             else
                             {
                                 masterArchive->SetBool("run", true);
-                                //TODO: set task for helpers into DB
-                                masterArchive->SetString("task", testFileName);
                                 
                                 dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
                                 
