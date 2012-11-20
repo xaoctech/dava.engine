@@ -2501,7 +2501,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib\"",
+					"\"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -2523,7 +2523,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib\"",
+					"\"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib\"",
 				);
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/bin;
