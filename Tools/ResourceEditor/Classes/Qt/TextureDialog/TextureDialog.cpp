@@ -342,8 +342,8 @@ void TextureDialog::setupTexturesList()
 void TextureDialog::setupImagesScrollAreas()
 {
 	// pos change
-	QObject::connect(ui->textureAreaOriginal, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaPVR, SLOT(texturePos(const QPoint &)));
-	QObject::connect(ui->textureAreaPVR, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaOriginal, SLOT(texturePos(const QPoint &)));
+	QObject::connect(ui->textureAreaOriginal, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaPVR, SLOT(setTexturePos(const QPoint &)));
+	QObject::connect(ui->textureAreaPVR, SIGNAL(texturePosChanged(const QPoint &)), ui->textureAreaOriginal, SLOT(setTexturePos(const QPoint &)));
 
 	// mouse over pixel
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(mouseOverPixel(const QPoint &)), this, SLOT(texturePixelOver(const QPoint &)));
