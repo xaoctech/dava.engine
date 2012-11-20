@@ -229,7 +229,7 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
 	}
     
 	// if there is no descriptor file for this texture - generate it
-	if(pathIsCorrect && !texture->isRenderTarget)
+	if(pathIsCorrect && !IsFBOTexture(texture))
 	{
 		CreateDescriptorIfNeed(texture->GetPathname());
 	}
@@ -389,7 +389,7 @@ void SceneValidator::ReloadTextures(int32 asFile)
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *texture = it->second;
-        if(!texture->isRenderTarget && IsPathCorrectForProject(texture->GetPathname()))
+        if(!IsFBOTexture(texture) && IsPathCorrectForProject(texture->GetPathname()))
         {
             texture->ReloadAs((ImageFileFormat)asFile);
         }
@@ -470,16 +470,26 @@ void SceneValidator::CompressTextures(const List<DAVA::Texture *> texturesForCom
 
 bool SceneValidator::WasTextureChanged(Texture *texture, ImageFileFormat fileFormat)
 {
-    if(!texture->isRenderTarget)
+    if(IsFBOTexture(texture))
     {
-        String::size_type textTexturePos = texture->GetPathname().find("Text texture");
-        if(String::npos != textTexturePos)
-        {
-            return false; //is text texture
-        }
-        
-        String texturePathname = texture->GetPathname();
-        return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
+        return false;
+    }
+    
+    String texturePathname = texture->GetPathname();
+    return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname, fileFormat));
+}
+
+bool SceneValidator::IsFBOTexture(Texture *texture)
+{
+    if(texture->isRenderTarget)
+    {
+        return true;
+    }
+
+    String::size_type textTexturePos = texture->GetPathname().find("Text texture");
+    if(String::npos != textTexturePos)
+    {
+        return true; //is text texture
     }
     
     return false;

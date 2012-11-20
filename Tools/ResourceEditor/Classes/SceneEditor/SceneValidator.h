@@ -122,6 +122,8 @@ protected:
 
 	bool IsTextureDescriptorPath(const String &path);
     
+    bool IsFBOTexture(Texture *texture);
+    
     Set<SceneNode *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
