@@ -153,7 +153,7 @@ void UNDOManager::SaveTilemask(Texture *tilemask)
 
 Texture * UNDOManager::UndoTilemask()
 {
-    return  UNDOManager::RedoTexture();
+    return UNDOManager::UndoTexture();
 }
 
 Texture * UNDOManager::RedoTilemask()
@@ -325,7 +325,7 @@ UNDOAction * UNDOManager::CreateTextureAction(Texture *tex, UNDOAction::eActionT
     FileSystem::Instance()->CreateDirectory(folderPathname);
     
     UNDOAction *action = new UNDOAction();
-    action->type = UNDOAction::ACTION_COLORIZE;
+    action->type = type;
     action->ID = actionCounter++;
     action->filePathname = "";
     action->actionData = tex->CreateImageFromMemory();

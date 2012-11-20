@@ -612,7 +612,10 @@ String FileSystem::RealPath(const String & _path)
 
 String FileSystem::NormalizePath(const String & _path)
 {
-    String path = (_path);
+	if(_path.empty())
+		return String("");
+	
+	String path = (_path);
     std::replace(path.begin(), path.end(),'\\','/');
 
     Vector<String> tokens;
@@ -643,7 +646,8 @@ String FileSystem::NormalizePath(const String & _path)
     }
 
     String result = "";
-    if((0 < path.length()) && ('/' == path[0])) result = "/";
+    if('/' == path[0])
+		result = "/";
     
     for (int32 k = 0; k < (int32)tokens.size(); ++k)
     {
@@ -651,7 +655,32 @@ String FileSystem::NormalizePath(const String & _path)
         if (k + 1 != (int32)tokens.size())
             result += String("/");
     }
+
+	//process last /
+	if(('/' == path[path.length() - 1]) && (path.length() != 1)) 
+		result += String("/");
+
     return result;
+}
+
+    
+String FileSystem::GetCanonicalPath(const String &path)
+{
+	String canonicalPath = FileSystem::Instance()->NormalizePath(path);
+    
+    String::size_type resPos = canonicalPath.find("~res:");
+    String::size_type docPos = canonicalPath.find("~doc:");
+    
+    if(String::npos == resPos && String::npos == docPos)
+    {
+        String::size_type colonPos = canonicalPath.find(":");
+        if((String::npos != colonPos) && (colonPos < canonicalPath.length() - 1))
+        {
+            canonicalPath = canonicalPath.substr(colonPos + 1);
+        }
+    }
+    
+	return canonicalPath;
 }
 
     

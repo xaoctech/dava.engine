@@ -32,7 +32,9 @@
 
 enum
 {
-	SCREEN_TEST = 1,
+	RESULT_SCREEN = 1,
+    
+    PREDEFINED_SCREENS_COUNT
 };
 	
 

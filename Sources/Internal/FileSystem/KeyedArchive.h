@@ -35,12 +35,22 @@
 #include "FileSystem/VariantType.h"
 #include "FileSystem/File.h"
 
+#include "Math/MathConstants.h"
+#include "Math/Matrix2.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
+#include "Math/Math2D.h"
+
+
 namespace DAVA 
 {
 /**
 	\ingroup filesystem
 	\brief this is a class that should be used for serialization & deserialization of the items
  */
+
+class YamlNode;
+    
 class KeyedArchive : public BaseObject
 {
 public:
@@ -133,6 +143,69 @@ public:
 	 */
 	KeyedArchive * GetArchive(const String & key, KeyedArchive * defaultValue = 0);
     
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	int64 GetInt64(const String & key, int64 defaultValue = 0);
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	uint64 GetUInt64(const String & key, uint64 defaultValue = 0);
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Vector2 GetVector2(const String & key, const Vector2 & defaultValue = Vector2());
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Vector3 GetVector3(const String & key, const Vector3 & defaultValue = Vector3());
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Vector4 GetVector4(const String & key, const Vector4 & defaultValue = Vector4());
+
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Matrix2 GetMatrix2(const String & key, const Matrix2 & defaultValue = Matrix2());
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Matrix3 GetMatrix3(const String & key, const Matrix3 & defaultValue = Matrix3());
+    
+    /**
+     \brief Function to get variable from archive.
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	Matrix4 GetMatrix4(const String & key, const Matrix4 & defaultValue = Matrix4());
     /*
         \brief Function to get object from byte array.
         \param[in] key string key
@@ -215,6 +288,61 @@ public:
 	void SetArchive(const String & key, KeyedArchive * archive);
     
     /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetInt64(const String & key, int64 &value);
+	/**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetUInt64(const String & key, uint64 &value);
+    
+	/**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetVector2(const String & key, Vector2 &value);
+    
+    /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetVector3(const String & key, Vector3 &value);
+    
+    /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetVector4(const String & key, Vector4 &value);
+
+    /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetMatrix2(const String & key, Matrix2 &value);
+    
+    /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetMatrix3(const String & key, Matrix3 &value);
+    
+    /**
+     \brief Function to set variable in archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetMatrix4(const String & key, Matrix4 &value);
+    
+    /**
         \brief Function to set value from template type to byte array.  
         This functionality is added to perform simple storage of complex types, like Vector3, Vector4, Matrix4 and others to byte arrays
         \param[in] key string key
@@ -244,7 +372,19 @@ public:
         \param[in] file to save
 	 */
 	bool Save(File *file);
+    
+    /**
+     \brief Function loads data from given yaml file.
+     \param[in] pathName relative pathname in application documents folder
+	 */
+	bool LoadFromYamlFile(const String & pathName);
 
+    /**
+     \brief Function saves data to given yaml file.
+     \param[in] file to save
+	 */
+	bool SaveToYamlFile(const String & pathName);
+    
 	/**
 		\brief Deletes named key.
 		\param[in] key name of the key to delete
@@ -269,7 +409,11 @@ public:
 	 */
     const Map<String, VariantType*> & GetArchieveData() const;
     
-    
+    /**
+     \brief Function loads data from given yaml Node.
+     \param[in] pathName relative pathname in application documents folder
+	 */
+	bool LoadFromYamlNode(YamlNode* rootNode);
 
 //	yaml
 // 	/**
@@ -283,7 +427,7 @@ public:
 // 		\param[in] pathName relative pathname in application documents folder
 // 	*/
 // 	bool SaveToYaml(const String & pathName);
-
+    
 private:
 	Map<String, VariantType*> objectMap;
 };

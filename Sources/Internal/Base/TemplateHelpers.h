@@ -184,8 +184,12 @@ public:
     template<class C, class O>
     bool IsPointerToExactClass(const O* pObject) 
     {
-        COMPILER_ASSERT(!TypeTraits<C>::isPointer);//You should not use pointers for this method
-        return &typeid(*pObject) == &typeid(C);
+		if (pObject)
+        {
+			COMPILER_ASSERT(!TypeTraits<C>::isPointer);//You should not use pointers for this method
+			return &typeid(*pObject) == &typeid(C);
+		}
+	    return false;
     }
     
     /* TEST, need to transfer to unit tests.
