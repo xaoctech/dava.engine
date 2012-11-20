@@ -12,7 +12,7 @@ else
 	OS_INFO:=Unix
 endif
 
-QT_DIR_OUTPUT := GeneratedQt
+QT_DIR_OUTPUT := _GeneratedQt
 QT_DIR_UI := DataQt
 QT_DIR_QRC := DataQt
 QT_DIR_MOC := Classes/Qt

@@ -43,8 +43,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(SolutionDir).$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">.$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(SolutionDir)\_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">_$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</IgnoreImportLibrary>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -452,31 +452,31 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
-    <ClCompile Include="GeneratedQt\davaglwidget_moc.cpp" />
-    <ClCompile Include="GeneratedQt\FileSelectionModel_moc.cpp" />
-    <ClCompile Include="GeneratedQt\GraphItem_moc.cpp" />
-    <ClCompile Include="GeneratedQt\GraphModel_moc.cpp" />
-    <ClCompile Include="GeneratedQt\GUIState_moc.cpp" />
-    <ClCompile Include="GeneratedQt\LibraryModel_moc.cpp" />
-    <ClCompile Include="GeneratedQt\mainwindow_moc.cpp" />
-    <ClCompile Include="GeneratedQt\PointerHolder_moc.cpp" />
-    <ClCompile Include="GeneratedQt\QtIcons_qrc.cpp" />
-    <ClCompile Include="GeneratedQt\QtMainWindowHandler_moc.cpp" />
-    <ClCompile Include="GeneratedQt\QtUtils_moc.cpp" />
-    <ClCompile Include="GeneratedQt\SceneDataManager_moc.cpp" />
-    <ClCompile Include="GeneratedQt\SceneData_moc.cpp" />
-    <ClCompile Include="GeneratedQt\SceneGraphItem_moc.cpp" />
-    <ClCompile Include="GeneratedQt\SceneGraphModel_moc.cpp" />
-    <ClCompile Include="GeneratedQt\ScenePreviewDialog_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureList_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
-    <ClCompile Include="GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\davaglwidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\FileSelectionModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GUIState_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\LibraryModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\PointerHolder_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtMainWindowHandler_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtUtils_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneDataManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneData_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneGraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ScenePreviewDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureList_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
@@ -850,9 +850,9 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
-    <ClInclude Include="GeneratedQt\ui_davaglwidget.h" />
-    <ClInclude Include="GeneratedQt\ui_mainwindow.h" />
-    <ClInclude Include="GeneratedQt\ui_texturedialog.h" />
+    <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
+    <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="_GeneratedQt\ui_texturedialog.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui" />
