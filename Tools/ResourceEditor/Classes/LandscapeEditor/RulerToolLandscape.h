@@ -46,6 +46,7 @@ public:
 protected:
 
     virtual void SetDisplayedTexture();
+    virtual DAVA::Texture * GetDisplayedTexture();
 
 
     DAVA::Sprite *rulerSprite;

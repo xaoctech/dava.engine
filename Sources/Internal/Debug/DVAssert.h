@@ -33,10 +33,6 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/Logger.h"
 
-
-namespace DAVA
-{
-	
 /**
 	\page tutorial_debug Debugging
 	Here you'll learn how to debug your project and find bugs faster.
@@ -71,9 +67,7 @@ namespace DAVA
 */
 
 
-	
-// Runtime asserts	
-
+// Runtime assert
 
 #if defined(__DAVAENGINE_WIN32__)
 #define DebugBreak() { __debugbreak(); }
@@ -117,10 +111,6 @@ namespace DAVA
 #define DVVERIFY(expr) (expr)
 
 #endif
-	
-
-
-}; // end of namespace Log
 
 #endif
 
