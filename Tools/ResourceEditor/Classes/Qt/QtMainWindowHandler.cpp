@@ -447,11 +447,17 @@ void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton,
 
 void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 {
+	DVASSERT(customColorsToggleButton &&
+			 customColorsSaveTextureButton &&
+			 customColorsBrushSizeSlider &&
+			 customColorsColorComboBox);
+
 	customColorsToggleButton->blockSignals(true);
+	customColorsToggleButton->setCheckable(state);
 	customColorsToggleButton->setChecked(state);
 	customColorsToggleButton->blockSignals(false);
 
-	QString buttonText = state ? "Disable Custom Colors" : "Enable Custom Colors";
+	QString buttonText = state ? tr("Disable Custom Colors") : tr("Enable Custom Colors");
 	customColorsToggleButton->setText(buttonText);
 
 	customColorsSaveTextureButton->setEnabled(state);

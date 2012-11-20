@@ -61,12 +61,13 @@ protected:
 	bool SetPointInputAction(int32 phase);
 	bool SetAreaInputAction(int32 phase);
 
-	void ClearConfig();
 	void PrepareConfig();
 	void RecreateVisibilityAreaSprite();
 	const Vector<Vector3> CalculateVisibility(float32 density, const Vector3& point, const Vector<float32>& pointsHeight, const Vector3& areaCenter, float32 areaSize);
 	void DrawVisibilityAreaPoints(const Vector<Vector3>& points);
-	
+
+	void CopyImageRectToImage(Image* imageFrom, const Rect2i& rectFrom, Image* imageTo, const Point2i& pos);
+
 	void PerformHightTest(Vector3 spectatorCoords, Vector2 circleCentr, float cirecleRadius, float density, const Vector<float>& hightValues, Vector<Vector3>* colorizedPoints);
 	bool GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape);
 	bool CheckIsInCircle(Vector2 circleCentre, float radius, Vector2 targetCoord);

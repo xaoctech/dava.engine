@@ -14,16 +14,18 @@ public:
         ACTION_HEIGHTMAP = 0,
         ACTION_TILEMASK,
 		ACTION_COLORIZE,
-		ACTION_VISIBILITY
+		ACTION_VISIBILITY_AREA,
+		ACTION_VISIBILITY_POINT
     };
     
     UNDOAction();
+	~UNDOAction();
 
     eActionType type;
     int32 ID;
     String filePathname;
     
-    void *actionData;
+    BaseObject *actionData;
 };
 
 
@@ -51,12 +53,12 @@ public:
     Texture * UndoColorize();
     Texture * RedoColorize();
 
-	void SaveVisibility(Texture* visibilityAreaTexture, bool visibilityPointSet, const Vector2& visibilityPoint);
-	void UndoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint);
-	void RedoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint);
+	void SaveVisibilityArea(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint);
+	void SaveVisibilityPoint(Image* undoImage, bool visibilityPointSet, const Vector2& visibilityPoint);
+	void UndoVisibility(Image** undoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
+	void RedoVisibility(Image** redoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
 
-
-    UNDOAction::eActionType GetLastUNDOAction();
+	UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
     
     void ClearHistory(UNDOAction::eActionType forAction);
@@ -69,7 +71,7 @@ protected:
     UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
     UNDOAction *CreateTilemaskAction(Texture *tilemask);
     UNDOAction *CreateColorizeAction(Texture *tilemask);
-	UNDOAction* CreateVisibilityAction(Texture *visibilityAreaTexture, bool visibilityPointSet, const Vector2 &visibilityPoint);
+	UNDOAction* CreateVisibilityAction(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint);
     
     String TimeString();
     

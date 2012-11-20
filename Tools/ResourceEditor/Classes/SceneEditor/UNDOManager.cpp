@@ -1,11 +1,34 @@
 #include "UNDOManager.h"
 #include "Scene3D/Heightmap.h"
 
-struct VisibilityActionDataStruct
+class VisibilityActionDataStruct: public BaseObject
 {
-	Image* image;
+public:
 	bool isVisibilityPointSet;
 	Vector2 visibilityPointPos;
+	Image* undoImage;
+	Image* redoImage;
+	Point2i imagePos;
+	
+	VisibilityActionDataStruct()
+	{
+		undoImage = 0;
+		redoImage = 0;
+		imagePos = Point2i(0, 0);
+		isVisibilityPointSet = false;
+		visibilityPointPos = Vector2(0, 0);
+	}
+	
+	virtual int32 Release()
+	{
+		if(GetRetainCount() == 1)
+		{
+			SafeRelease(undoImage);
+			SafeRelease(redoImage);
+		}
+
+		return BaseObject::Release();
+	}
 };
 
 UNDOAction::UNDOAction()
@@ -15,6 +38,16 @@ UNDOAction::UNDOAction()
     filePathname = "";
     
     actionData = NULL;
+}
+
+UNDOAction::~UNDOAction()
+{
+/*
+ *	what about deleting file in this->filePathname?
+ *	if(filePathname != "")
+ *		FileSystem::Instance()->DeleteFile(filePathname);
+ */
+	SafeRelease(actionData);
 }
 
 
@@ -148,42 +181,55 @@ Texture * UNDOManager::RedoColorize()
     return  UNDOManager::RedoTexture();
 }
 
-UNDOAction* UNDOManager::CreateVisibilityAction(Texture *visibilityAreaTexture, bool visibilityPointSet, const Vector2 &visibilityPoint)
+UNDOAction* UNDOManager::CreateVisibilityAction(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint)
 {
 	UNDOAction* action = new UNDOAction();
-	action->type = UNDOAction::ACTION_VISIBILITY;
+	action->type = UNDOAction::ACTION_VISIBILITY_AREA;
 	action->ID = actionCounter++;
 	action->filePathname = "";
 
-	Image* image = visibilityAreaTexture->CreateImageFromMemory();
-
 	VisibilityActionDataStruct* data = new VisibilityActionDataStruct;
-	data->image = image;
+	data->undoImage = undoImage;
+	data->redoImage = redoImage;
+	data->imagePos = imagePosition;
 	data->isVisibilityPointSet = visibilityPointSet;
 	data->visibilityPointPos = visibilityPoint;
-	action->actionData = data;
 
+	action->actionData = data;
 	return action;
 }
 
-void UNDOManager::SaveVisibility(Texture *visibilityAreaTexture, bool visibilityPointSet, const Vector2 &visibilityPoint)
+void UNDOManager::SaveVisibilityPoint(Image* undoImage, bool visibilityPointSet, const Vector2& visibilityPoint)
 {
-	DVASSERT(visibilityAreaTexture);
-
 	CheckHistoryLength();
 
-	UNDOAction *action = CreateVisibilityAction(visibilityAreaTexture, visibilityPointSet, visibilityPoint);
+	UNDOAction *action = CreateVisibilityAction(undoImage, 0, Point2i(0, 0), visibilityPointSet, visibilityPoint);
+	action->type = UNDOAction::ACTION_VISIBILITY_POINT;
 	actionsHistoryUNDO.push_back(action);
 
 	ReleaseHistory(actionsHistoryREDO);
 }
 
-void UNDOManager::UndoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint)
+void UNDOManager::SaveVisibilityArea(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint)
+{
+	CheckHistoryLength();
+
+	UNDOAction *action = CreateVisibilityAction(undoImage, redoImage, imagePosition, visibilityPointSet, visibilityPoint);
+	actionsHistoryUNDO.push_back(action);
+
+	ReleaseHistory(actionsHistoryREDO);
+}
+
+void UNDOManager::UndoVisibility(Image** undoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint)
 {
 	if(1 < actionsHistoryUNDO.size())
 	{
 		List<UNDOAction*>::iterator it = actionsHistoryUNDO.end();
 		--it;
+
+		VisibilityActionDataStruct* data = (VisibilityActionDataStruct*)((*it)->actionData);
+		*undoImage = data->undoImage;
+		*imagePosition = data->imagePos;
 
 		actionsHistoryREDO.push_front(*it);
 		actionsHistoryUNDO.erase(it);
@@ -191,31 +237,21 @@ void UNDOManager::UndoVisibility(Texture** visibilityAreaTexture, bool* visibili
 		it = actionsHistoryUNDO.end();
 		--it;
 
-		RenderManager::Instance()->LockNonMain();
-		VisibilityActionDataStruct* data = (VisibilityActionDataStruct*)((*it)->actionData);
-		Image* image = (Image*)(data->image);
-		*visibilityAreaTexture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
-		RenderManager::Instance()->UnlockNonMain();
-		(*visibilityAreaTexture)->isAlphaPremultiplied = image->isAlphaPremultiplied;
-
+		data = (VisibilityActionDataStruct*)((*it)->actionData);
 		*visibilityPointSet = data->isVisibilityPointSet;
 		*visibilityPoint = data->visibilityPointPos;
 	}
 }
 
-void UNDOManager::RedoVisibility(Texture** visibilityAreaTexture, bool* visibilityPointSet, Vector2* visibilityPoint)
+void UNDOManager::RedoVisibility(Image** redoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint)
 {
 	if(actionsHistoryREDO.size() != 0)
 	{
 		List<UNDOAction*>::iterator it = actionsHistoryREDO.begin();
 
-		RenderManager::Instance()->LockNonMain();
 		VisibilityActionDataStruct* data = (VisibilityActionDataStruct*)((*it)->actionData);
-		Image* image = (Image*)(data->image);
-		*visibilityAreaTexture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
-		RenderManager::Instance()->UnlockNonMain();
-		(*visibilityAreaTexture)->isAlphaPremultiplied = image->isAlphaPremultiplied;
-
+		*redoImage = data->redoImage;
+		*imagePosition = data->imagePos;
 		*visibilityPointSet = data->isVisibilityPointSet;
 		*visibilityPoint = data->visibilityPointPos;
 
@@ -381,32 +417,6 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
     {
         if(forAction == (*it)->type)
         {
-			switch((*it)->type)
-			{
-				case UNDOAction::ACTION_COLORIZE:
-				case UNDOAction::ACTION_TILEMASK:
-				{
-					Image *image = (Image *)((*it)->actionData);
-					SafeRelease(image);
-					(*it)->actionData = NULL;
-					break;
-				}
-
-				case UNDOAction::ACTION_VISIBILITY:
-				{
-					VisibilityActionDataStruct* data = (VisibilityActionDataStruct*)((*it)->actionData);
-					Image* image = (Image*)(data->image);
-					SafeRelease(image);
-					SafeDelete(data);
-					(*it)->actionData = NULL;
-					break;
-				}
-
-				default:
-					FileSystem::Instance()->DeleteFile((*it)->filePathname);
-					break;
-			}
-
             SafeRelease(*it);
 
             it = actionsHistory.erase(it);
@@ -423,37 +433,10 @@ void UNDOManager::ReleaseHistory(List<UNDOAction *> &actionsHistory)
 {
     List<UNDOAction *>::iterator it = actionsHistory.begin();
     List<UNDOAction *>::const_iterator endIt = actionsHistory.end();
-    
+
     for(; it != endIt; ++it)
     {
-		switch((*it)->type)
-		{
-			case UNDOAction::ACTION_COLORIZE:
-			case UNDOAction::ACTION_TILEMASK:
-			{
-				Image *image = (Image *)((*it)->actionData);
-				SafeRelease(image);
-				(*it)->actionData = NULL;
-				break;
-			}
-
-			case UNDOAction::ACTION_VISIBILITY:
-			{
-				VisibilityActionDataStruct* data = (VisibilityActionDataStruct*)((*it)->actionData);
-				Image* image = (Image*)(data->image);
-				SafeRelease(image);
-				SafeDelete(data);
-				(*it)->actionData = NULL;
-				break;
-			}
-
-			default:
-				FileSystem::Instance()->DeleteFile((*it)->filePathname);
-				break;
-		}
-
         SafeRelease(*it);
     }
     actionsHistory.clear();
 }
-
