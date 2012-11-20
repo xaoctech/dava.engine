@@ -334,7 +334,7 @@ namespace DAVA
 		}
 		if(parent)
 		{
-			absolutePosition = relativePosition + parent->GetGeometricData().position;
+			absolutePosition = GetGeometricData().position;
 			return absolutePosition;
 		}
 		if(!needToRecalcFromAbsoluteCoordinates)
@@ -1249,6 +1249,10 @@ namespace DAVA
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
                                     }
 									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
+								}
+								else
+								{
+									PerformEventWithData(EVENT_TOUCH_UP_OUTSIDE, currentInput);
 								}
 								controlState &= ~STATE_PRESSED_INSIDE;
 								controlState &= ~STATE_PRESSED_OUTSIDE;

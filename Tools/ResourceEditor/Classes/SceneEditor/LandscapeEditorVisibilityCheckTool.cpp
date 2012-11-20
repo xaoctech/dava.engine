@@ -359,10 +359,7 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	
 	// get soource point in propper coords system
 	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
-	//bool isIntersect = GetIntersectionPoint(SpectatorCoords2D, sourcePoint);
 	
-	//sourcePoint.x = spectatorCoords.x;
-	//sourcePoint.y = spectatorCoords.y;
 	sourcePoint.z = spectatorCoords.z;
 	
 	uint32	hight = hightValues.size();
@@ -372,7 +369,6 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	
 	for(uint32 layerIndex = 0; layerIndex < hight; ++layerIndex)
 	{
-//		float zOfPoint = hightValues[layerIndex];
 		Vector<Vector<Vector3> > xLine;
 		for(uint32 x = 0; x < sideLength; ++x)
 		{
@@ -391,15 +387,15 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	}
 	
 	colorizedPoints->clear();
-	
+	parent->GetScene()->JuncCollWorldToLandscapeCollWorld();
 	for(uint32 x = 0; x < sideLength; ++x)
 	{
 		for(uint32 y = 0; y < sideLength; ++y)
 		{
 			Vector3 target(ConvertToLanscapeSystem( Vector2(points[0][x][y].x,points[0][x][y].y) )) ;
-			//isIntersect = GetIntersectionPoint(Vector2(points[0][x][y].x,points[0][x][y].y), target);
-			
-			for(uint32 layerIndex = 0; layerIndex < hight; ++layerIndex)
+
+			bool prevRes = false;
+			for(int32 layerIndex = hight - 1; layerIndex >= 0; --layerIndex)
 			{
 				Vector3 targetTmp = points[layerIndex][x][y];
 				if(!CheckIsInCircle(circleCentr, circleRadius, Vector2(targetTmp.x, targetTmp.y)))
@@ -408,29 +404,44 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 				}
 				
 				target.z = targetTmp.z;
-				
-				//target.x = targetTmp.y;
-				//target.y = targetTmp.y;
-
 				bool res = parent->GetScene()->TryIsTargetAccesible(sourcePoint, target);
 				//DAVA::Logger::Debug("Trace test: from source [%f, %f, %f] to point [%f, %f, %f] - %s",
-				//	sourcePointTmp.x,sourcePointTmp.y,sourcePoint.z,
-				//	targetTmp.x, targetTmp.y, targetTmp.z,
-				//	(res)?"true":"false");
-				if(res)
+				//	sourcePointTmp.x,sourcePointTmp.y,sourcePoint.z, targetTmp.x, targetTmp.y, targetTmp.z,	(res)?"true":"false");
+				float colorIndex =0;
+				if(prevRes)
 				{
-					Vector3 exportData(targetTmp.x, targetTmp.y,(float)layerIndex);
-					//tmp
-//					DAVA::Logger::Debug("OutputContent: %f, %f, %f",
-//										exportData.x,exportData.y,exportData.z);
-					//
-					colorizedPoints->push_back(exportData);
-					
-					break;
+					if(!res)
+					{
+						colorIndex = (float)layerIndex+2; // +1 - because need layer from prev loop, and +1 - 'cause the first color reserved for  "death zone" 
+						Vector3 exportData(targetTmp.x, targetTmp.y, colorIndex);
+						colorizedPoints->push_back(exportData);
+						break;
+					}
+					else
+					{
+						if(layerIndex == 0)
+						{
+							colorIndex = 1;
+							Vector3 exportData(targetTmp.x, targetTmp.y, colorIndex);
+							colorizedPoints->push_back(exportData);
+						}
+					}
 				}
+				else
+				{
+					if(layerIndex == hight - 1 && !res)
+					{
+						colorIndex = 0;
+						Vector3 exportData(targetTmp.x, targetTmp.y, colorIndex );
+						colorizedPoints->push_back(exportData);
+						break;
+					}
+				}
+				prevRes = res;
 			}
 		}
 	}
+	parent->GetScene()->SeparateCollWorldFromLandscapeCollWorld();
 }
 
 Vector2 LandscapeEditorVisibilityCheckTool::TranslatePoint(const Vector2& point, const Rect& fromRect, const Rect& toRect)
@@ -454,15 +465,15 @@ Vector2 LandscapeEditorVisibilityCheckTool::TranslatePoint(const Vector2& point,
 
 float32 LandscapeEditorVisibilityCheckTool::GetLandscapeHeightFromCursorPos(const Vector2& point)
 {
-	AABBox3 boundingBox = workingLandscape->GetBoundingBox();
-	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
-	Vector2 landSize((boundingBox.max - boundingBox.min).x,
-	     (boundingBox.max - boundingBox.min).y);
+	//AABBox3 boundingBox = workingLandscape->GetBoundingBox();
+	//Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
+	//Vector2 landSize((boundingBox.max - boundingBox.min).x,
+	//     (boundingBox.max - boundingBox.min).y);
+	//
+	//Rect landRect(landPos, landSize);
+	//Rect textRect(Vector2(0, 0), visibilityAreaSprite->GetSize());
 	
-	Rect landRect(landPos, landSize);
-	Rect textRect(Vector2(0, 0), visibilityAreaSprite->GetSize());
-	
-	Vector3 landscapePoint(TranslatePoint(point, textRect, landRect));
+	Vector3 landscapePoint(ConvertToLanscapeSystem(point));
 	
 	workingLandscape->PlacePoint(landscapePoint, landscapePoint);
 	//TODO: get source from next func

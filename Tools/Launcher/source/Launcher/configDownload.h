@@ -20,6 +20,8 @@ public:
     QStringList m_InstalledFiles;
     QString m_InstallCmd;
     QString m_UninstallCmd;
+    QString m_InstallParams;
+    QString m_UninstallParams;
     int m_nSuccessInstallCode;
 
     AppConfig() {
@@ -34,6 +36,8 @@ public:
         m_InstalledFiles.clear();
         m_InstallCmd.clear();
         m_UninstallCmd.clear();
+        m_InstallParams.clear();
+        m_UninstallParams.clear();
     }
 };
 

@@ -28,6 +28,8 @@ Settings* Settings::m_spInstance = NULL;
 #define INSTALL_CMD "installCmd"
 #define UNINSTALL_CMD "uninstallCmd"
 #define INSTALLED_FILES "installedFiles"
+#define INSTALL_PARAMS "installParams"
+#define UNINSTALL_PARAMS "uninstallParams"
 
 #define InitFile "/settings.yaml"
 
@@ -116,6 +118,10 @@ void Settings::ParseAppConfig(const YAML::Node* pNode, const char* appType, Apps
             if (pInstallCmd) setString(config.m_InstallCmd, pInstallCmd);
             const YAML::Node* pUninstallCmd = appNode.FindValue(UNINSTALL_CMD);
             if (pUninstallCmd) setString(config.m_UninstallCmd, pUninstallCmd);
+            const YAML::Node* pInstallParams = appNode.FindValue(INSTALL_PARAMS);
+            if (pInstallParams) setString(config.m_InstallParams, pInstallParams);
+            const YAML::Node* pUninstallParams = appNode.FindValue(UNINSTALL_PARAMS);
+            if (pUninstallParams) setString(config.m_UninstallParams, pUninstallParams);
 
             const YAML::Node* pInstalledFiles = appNode.FindValue(INSTALLED_FILES);
             if (pInstalledFiles) {
@@ -181,6 +187,10 @@ void Settings::EmitAppConfig(YAML::Emitter& emitter, const char* appType, const 
             emitter << YAML::Value << config.m_InstallCmd.toStdString();
             emitter << YAML::Key << UNINSTALL_CMD;
             emitter << YAML::Value << config.m_UninstallCmd.toStdString();
+            emitter << YAML::Key << INSTALL_PARAMS;
+            emitter << YAML::Value << config.m_InstallParams.toStdString();
+            emitter << YAML::Key << UNINSTALL_PARAMS;
+            emitter << YAML::Value << config.m_UninstallParams.toStdString();
 
             if (config.m_InstalledFiles.size()) {
                 emitter << YAML::Key << INSTALLED_FILES;
