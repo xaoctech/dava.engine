@@ -24,7 +24,7 @@ EditorScene::EditorScene()
 :Scene()
 {
     selectedMeshInstance = NULL;
-    
+    originalHandler = NULL;
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
@@ -200,6 +200,36 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+void EditorScene::JuncCollWorldToLandscapeCollWorld()
+{
+	
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		originalHandler = landscapeObjects[i]->getBroadphaseHandle();
+		collisionWorld->addCollisionObject(landscapeObjects[i]);
+	}
+}
+
+void EditorScene::SeparateCollWorldFromLandscapeCollWorld()
+{
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		collisionWorld->removeCollisionObject(landscapeObjects[i]);
+		landscapeObjects[i]->setBroadphaseHandle(originalHandler);
+	}
+}
+
 bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
 {
 	if (selection)
@@ -207,9 +237,11 @@ bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(target.x, target.y, target.z);
-		
+
     btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
-    landCollisionWorld->rayTest(pos, to, cb);
+    
+	collisionWorld->rayTest(pos, to, cb);
+
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
