@@ -82,7 +82,6 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 
 	glewInit();
 
-	DetectRenderingCapabilities();
 	return true;
 }
 
@@ -106,7 +105,6 @@ bool RenderManager::ChangeDisplayMode(DisplayMode mode, bool isFullscreen)
 
 bool RenderManager::Create()
 {
-	DetectRenderingCapabilities();
 	return true;
 }
 	

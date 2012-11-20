@@ -185,6 +185,8 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
 
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 {
+    DetectRenderingCapabilities();
+
     if (!FLAT_COLOR)
         FLAT_COLOR = ColorOnlyEffect::Create(renderer);
     if (!TEXTURE_MUL_FLAT_COLOR) 
