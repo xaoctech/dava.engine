@@ -577,7 +577,7 @@ void AutotestingSystem::RegisterMasterInDB(int32 helpersCount)
     masterRunId = masterArchive->GetInt32("runId", 0) + 1;
     masterArchive->SetInt32("runId", masterRunId);
     
-    masterArchive->SetBool("run", false);
+    masterArchive->SetInt32("run", 0);
     //TODO: set task for helpers into DB
     masterArchive->SetString("task", testFileName);
     
@@ -603,7 +603,7 @@ void AutotestingSystem::RegisterHelperInDB()
         KeyedArchive* masterArchive = SafeRetain(dbUpdateObject->GetData()->GetArchive(masterId, NULL));
         if(masterArchive)
         {
-            if(!masterArchive->GetBool("run", false))
+            if(masterArchive->GetInt32("run", 0) == 0)
             {
                 int32 helpersCount = masterArchive->GetInt32("helpers", 0) + 1;
                 masterArchive->SetInt32("helpers", helpersCount);
@@ -678,7 +678,7 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                             }
                             else
                             {
-                                masterArchive->SetBool("run", true);
+                                masterArchive->SetInt32("run", 1);
                                 
                                 dbUpdateObject->GetData()->SetArchive(masterId, masterArchive);
                                 
@@ -696,9 +696,10 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
                     }
                     else
                     {
-                        isReady = masterArchive->GetBool("run", false);
-                        if(isReady)
+                        
+                        if(masterArchive->GetInt32("run", 0) > 0)
                         {
+                            isReady = true;
                             //TODO: get task from DB
                             masterTask = masterArchive->GetString("task");
                             Logger::Debug("AutotestingSystem::CheckMasterHelpersReadyDB Helper: run test %s", masterTask.c_str());
