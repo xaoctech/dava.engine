@@ -48,7 +48,6 @@
 		5C203F201579362300CB53E9 /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C203F1E1579362300CB53E9 /* MongodbObject.h */; };
 		5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */; };
 		5C44738C15B5A1C500028948 /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */; };
-		5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44738715B5A1C500028948 /* HashMap.cpp */; };
 		5C44738E15B5A1C500028948 /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738815B5A1C500028948 /* HashMap.h */; };
 		5C44738F15B5A1C500028948 /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738915B5A1C500028948 /* Mallocator.h */; };
 		5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738A15B5A1C500028948 /* TemplateHelpers.h */; };
@@ -611,7 +610,6 @@
 		5C203F1E1579362300CB53E9 /* MongodbObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbObject.h; path = Database/MongodbObject.h; sourceTree = "<group>"; };
 		5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
 		5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
-		5C44738715B5A1C500028948 /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
 		5C44738815B5A1C500028948 /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
 		5C44738915B5A1C500028948 /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mallocator.h; sourceTree = "<group>"; };
 		5C44738A15B5A1C500028948 /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
@@ -703,9 +701,9 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E80842B3163913B7002A6A77 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
 		E80842B4163913B7002A6A77 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
+		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E856CF21162420F10065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
 		E856CF22162420F10065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
-		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
@@ -1355,7 +1353,6 @@
 				C2F0A4FB161DEA8C003A2006 /* Observer.h */,
 				5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */,
 				5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */,
-				5C44738715B5A1C500028948 /* HashMap.cpp */,
 				5C44738815B5A1C500028948 /* HashMap.h */,
 				5C44738915B5A1C500028948 /* Mallocator.h */,
 				5C44738A15B5A1C500028948 /* TemplateHelpers.h */,
@@ -2545,7 +2542,6 @@
 				5C5EAC1315A582F200279915 /* XMLParser.cpp in Sources */,
 				5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */,
 				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
-				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
 				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
 				C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */,
 				CCFF223615EE15B100363446 /* SwitchNode.cpp in Sources */,
