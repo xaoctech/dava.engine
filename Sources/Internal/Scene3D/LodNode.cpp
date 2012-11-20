@@ -268,8 +268,11 @@ void LodNode::RecheckLod()
         float32 dst = 0.f;
         if(INVALID_DISTANCE == forceDistance)
         {
-            dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
-            dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+            if(scene->GetCurrentCamera())
+            {
+                dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
+                dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+            }
         }
         else 
         {

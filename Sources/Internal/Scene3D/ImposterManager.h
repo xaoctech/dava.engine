@@ -30,6 +30,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/Observer.h"
 #include "Scene3D/ImposterNode.h"
 
 namespace DAVA
@@ -38,7 +39,7 @@ namespace DAVA
 class SharedFBO;
 class Scene;
 
-class ImposterManager : public BaseObject
+class ImposterManager : public BaseObject, public Observer //Dizz: I know you hate multiple inheritance
 {
 public:
 	static const int32 MAX_UPDATES_PER_FRAME = 3;
@@ -58,12 +59,16 @@ public:
 	void UpdateQueue(ImposterNode * node);
     void ProcessQueue();
 
+	void CreateFBO();
+	void ReleaseFBO();
+	SharedFBO * GetFBO();
+
+	virtual void HandleEvent(Observable * observable);
+
 private:
 	List<ImposterNode*> imposters;
 	List<ImposterNode*> queue;
 
-	
-	
 	void AddToPrioritizedPosition(ImposterNode * node);
 
 	SharedFBO * sharedFBO;

@@ -572,9 +572,19 @@ void Material::PrepareRenderState()
 		renderStateBlock.SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
 	}
 
-	if (textures[Material::TEXTURE_DECAL]) // this is normal map as well
+	if(MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == type || MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == type || MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == type)
 	{
-		renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
+		if (textures[Material::TEXTURE_NORMALMAP])
+		{
+			renderStateBlock.SetTexture(textures[Material::TEXTURE_NORMALMAP], 1);
+		}
+	}
+	else
+	{
+		if (textures[Material::TEXTURE_DECAL])
+		{
+			renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
+		}
 	}
 
 	if (isOpaque || isTwoSided)
@@ -590,13 +600,15 @@ void Material::PrepareRenderState()
 	if(isAlphablend)
 	{
 		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
-		//Dizz: dunno what it was for
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		//Dizz: temporary solution
+		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode(blendSrc, blendDst);
 	}
 	else
 	{
+		//Dizz: temporary solution
+		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 

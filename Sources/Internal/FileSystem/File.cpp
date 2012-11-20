@@ -82,6 +82,13 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 			return file;
 		}
 	}
+    
+    bool isDirectory = FileSystem::Instance()->IsDirectory(filename);
+    if(isDirectory)
+    {
+        return NULL;
+    }
+    
 
 	FILE * file = 0;
 	uint32 size = 0;
@@ -255,6 +262,12 @@ bool File::WriteString(const String & strtowrite, bool shouldNullBeWritten)
 	const char * str = strtowrite.c_str();
     uint32 null = (shouldNullBeWritten) ? (1) : (0);
 	return (Write((void*)str, (uint32)(strtowrite.length() + null)) == strtowrite.length() + null);
+}
+    
+bool File::WriteNonTerminatedString(const String & strtowrite)
+{
+    const char * str = strtowrite.c_str();
+    return (Write((void*)str, (uint32)(strtowrite.length() )) == strtowrite.length() );
 }
 
 bool File::WriteLine(const String & string)

@@ -57,6 +57,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	Logger::Debug("[RenderManager] created");
     renderer = _renderer;
 
+    Texture::InitializePixelFormatDescriptors();
+    
 //  RENDERSTATE
 //	oldColor = Color::Clear();
 //    newColor = Color::Clear();
@@ -129,7 +131,9 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 1;
     
-#endif 
+    lastBindedTexture = 0;
+    lastBindedFBO = 0;
+#endif //#if defined (__DAVAENGINE_OPENGL__)
     
 	cursor = 0;
     currentRenderData = 0;

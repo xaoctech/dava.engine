@@ -97,8 +97,11 @@ uint32 DynamicMemoryFile::Write(const void * pointerToData, uint32 dataSize)
 	{
 		data.resize(currentPtr + dataSize);
 	}
-	Memcpy(&(data[currentPtr]), pointerToData, dataSize);
-	currentPtr += dataSize;
+	if(dataSize)
+	{
+		Memcpy(&(data[currentPtr]), pointerToData, dataSize);
+		currentPtr += dataSize;
+	}
 	
 	return dataSize;
 }

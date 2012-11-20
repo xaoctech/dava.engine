@@ -9,5 +9,6 @@
         <file>Data/QtIcons/notpassableterrain.png</file>
         <file>Data/QtIcons/heightmapeditor.png</file>
         <file>Data/QtIcons/tilemapeditor.png</file>
+        <file>Data/QtIcons/rulertool.png</file>
     </qresource>
 </RCC>

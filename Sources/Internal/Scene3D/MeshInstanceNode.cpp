@@ -457,27 +457,32 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Load(archive, sceneFile);
 
-    if (sceneFile->GetVersion() >= 3)
+    static const int32 errorIdx = -1;
+
+    if(sceneFile->GetVersion() >= 3)
     {
         int32 polygroupCount = archive->GetInt32("pgcnt", 0);
         
-        for (int idx = 0; idx < polygroupCount; ++idx)
+        for(int idx = 0; idx < polygroupCount; ++idx)
         {
             uint64 matPtr = archive->GetByteArrayAsType(Format("pg%d_matptr", idx), (uint64)0);
             Material * material = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(matPtr));
             uint64 meshPtr = archive->GetByteArrayAsType(Format("pg%d_meshptr", idx), (uint64)0);
             StaticMesh * mesh = dynamic_cast<StaticMesh*>(sceneFile->GetNodeByPointer(meshPtr));
-            int32 pgIndex = archive->GetInt32(Format("pg%d_pg", idx), -1);
+            const int32 pgIndex = archive->GetInt32(Format("pg%d_pg", idx), errorIdx);
 
-            if (material && mesh)
+            if(material && mesh)
             {
+                DVASSERT(pgIndex != errorIdx);
+
                 if(sceneFile->DebugLogEnabled())
                     Logger::Debug("+ assign material: %s", material->GetName().c_str());
                 
                 AddPolygonGroup(mesh, pgIndex, material);
             }
         }
-    }else
+    }
+    else
     {
         //int32 lodCount = archive->GetInt32("lodCount", 0);
         
@@ -485,18 +490,20 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         int32 lodIdx = 0;
         {
             size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);
-            for (size_t idx = 0; idx < size; ++idx)
+            for(size_t idx = 0; idx < size; ++idx)
             {
-                if (sceneFile->GetVersion() == 2)
+                if(sceneFile->GetVersion() == 2)
                 {
                     uint64 matPtr = archive->GetByteArrayAsType(Format("l%d_%d_matptr", lodIdx, idx), (uint64)0);
                     Material * material = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(matPtr));
                     uint64 meshPtr = archive->GetByteArrayAsType(Format("l%d_%d_meshptr", lodIdx, idx), (uint64)0);
                     StaticMesh * mesh = dynamic_cast<StaticMesh*>(sceneFile->GetNodeByPointer(meshPtr));
-                    int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
+                    const int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), errorIdx);
 
-                    if (material && mesh)
+                    if(material && mesh)
                     {
+                        DVASSERT(pgIndex != errorIdx);
+
                         if(sceneFile->DebugLogEnabled())
                             Logger::Debug("+ assign material: %s", material->GetName().c_str());
                         
@@ -504,7 +511,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
                     }
                 }
 
-                if (sceneFile->GetVersion() == 1)
+                if(sceneFile->GetVersion() == 1)
                 {
                     sceneFile->SetError(SceneFileV2::ERROR_VERSION_IS_TOO_OLD);
     //                int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
@@ -708,6 +715,11 @@ void MeshInstanceNode::UpdateLights()
 void MeshInstanceNode::RegisterNearestLight(LightNode * node)
 {
     materialState->SetLight(0, node);
+}
+
+bool MeshInstanceNode::HasLightmaps()
+{
+	return lightmaps.size() > 0;
 }
 
 

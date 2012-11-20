@@ -141,6 +141,8 @@ public:
         \brief Delete all lightmaps for this MeshInstance. 
 	 */
 	void ClearLightmaps();
+
+	bool HasLightmaps();
     
 	/**
         \brief Replace material for polygon group. 

@@ -51,6 +51,8 @@ enum eHideableWidgets
     
     HIDABLEWIDGET_TOOLBAR,
     
+    HIDABLEWIDGET_CUSTOMCOLORS,
+    
     HIDABLEWIDGET_COUNT
 };
     

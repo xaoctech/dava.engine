@@ -5,7 +5,7 @@
 
 EditorConfig::EditorConfig()
 {
-
+	empty.push_back("none");
 }
     
 EditorConfig::~EditorConfig()
@@ -48,6 +48,11 @@ int32 EditorConfig::ParseType(const String &typeStr)
 	{
 		return PT_COMBOBOX;
 	}
+    
+    if(typeStr == "ColorList")
+    {
+        return PT_COLOR_LIST;
+    }
 	return PT_NONE;
 }
 
@@ -157,6 +162,36 @@ void EditorConfig::ParseConfig(const String &filePath)
 										}
 									}
 									break;
+                                case PT_COLOR_LIST:
+                                    {
+                                        int32 defaultValue = 0;
+                                        if(defaultNode)
+                                        {
+                                            defaultValue = defaultNode->AsInt();
+                                        }
+                                        properties[nameStr]->defaultValue.SetInt32(defaultValue);
+                                        
+                                        YamlNode *colorListNode = propertyNode->Get("list");
+                                        if(colorListNode)
+                                        {
+                                            Vector<YamlNode*> colorListNodes = colorListNode->AsVector();
+                                            int32 colorListValuesCount = colorListNodes.size();
+                                            for(int32 i = 0; i < colorListValuesCount; ++i)
+                                            {
+                                                YamlNode* colorNode = colorListNodes[i];
+                                                if(!colorNode || colorNode->GetCount() != 4)
+                                                    continue;
+                                                
+                                                Color color(colorNode->Get(0)->AsFloat()/255.f,
+                                                            colorNode->Get(1)->AsFloat()/255.f,
+                                                            colorNode->Get(2)->AsFloat()/255.f,
+                                                            colorNode->Get(3)->AsFloat()/255.f);
+
+                                                properties[nameStr]->colorListValues.push_back(color);
+                                            }
+                                        }
+                                    }
+                                    break;
 								}
 								propertyNames.push_back(nameStr);
 							} //isOk
@@ -187,6 +222,24 @@ const Vector<String> &EditorConfig::GetProjectPropertyNames()
 	return propertyNames;
 }
 
+const Vector<String> & EditorConfig::GetComboPropertyValues(const String & nameStr)
+{
+	if (properties.find(nameStr) != properties.end())
+		return properties[nameStr]->comboValues;
+	else
+	{
+		return empty;
+	}
+}
+
+const Vector<Color> & EditorConfig::GetColorPropertyValues(const String& nameStr)
+{
+    if (properties.find(nameStr) != properties.end())
+        return properties[nameStr]->colorListValues;
+    else
+        return emptyColors;
+}
+
 PropertyDescription* EditorConfig::GetPropertyDescription(const String &propertyName)
 {
 	Map<String, PropertyDescription*>::iterator findIt = properties.find(propertyName);
@@ -212,6 +265,7 @@ int32 EditorConfig::GetValueTypeFromPropertyType(int32 propertyType)
 		break;
 	case PT_INT:
 	case PT_COMBOBOX:
+    case PT_COLOR_LIST:
 		type = VariantType::TYPE_INT32;
 		break;
 	case PT_STRING:

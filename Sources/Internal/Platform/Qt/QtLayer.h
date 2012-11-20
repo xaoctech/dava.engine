@@ -63,8 +63,11 @@ public:
     
     virtual void ProcessFrame() = 0;
 
+    virtual void LockKeyboardInput(bool locked) = 0;
+
     void Quit();
     void SetDelegate(QtLayerDelegate *delegate);
+    
     
 protected:
     

@@ -52,11 +52,20 @@ bool Particle::Update(float32 timeElapsed)
 		return false;
 	}
 
-	position += velocity * timeElapsed * velocityOverLife;
+	position += direction * speed * timeElapsed * velocityOverLife;
 	angle += spin * timeElapsed * spinOverLife;
-    int32 n = (int32)forces.size();
-    for(int i = 0; i < n; i++)
-        velocity += forces[i] * forcesOverLife[i] * timeElapsed;
+    int32 n = (int32)forcesDirections.size();
+	if(n > 0)
+	{
+		Vector3 velocity = direction*speed;
+		for(int i = 0; i < n; i++)
+		{
+			velocity += forcesDirections[i] * forcesValues[i] * forcesOverLife[i] * timeElapsed;
+		}
+		float32 invSqrt = InvSqrtFast(velocity.SquareLength());
+		speed = 1.f/invSqrt;
+		direction = velocity*invSqrt;
+	}
 	return true;
 }
 
@@ -72,4 +81,3 @@ void Particle::Draw()
 }
 
 };
-

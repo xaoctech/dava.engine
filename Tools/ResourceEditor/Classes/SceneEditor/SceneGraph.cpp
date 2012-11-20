@@ -7,10 +7,8 @@
 
 #include "SceneValidator.h"
 
-#if defined (DAVA_QT)
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
-#endif //#if defined (DAVA_QT)
 
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
@@ -27,49 +25,6 @@ SceneGraph::~SceneGraph()
 void SceneGraph::SelectNode(BaseObject *node)
 {
     workingNode = dynamic_cast<SceneNode *>(node);
-    
-#if !defined(DAVA_QT)
-    if(workingNode)
-    {
-        List<void *> nodesForSearch;
-        
-        SceneNode *nd = workingNode;
-        SceneNode *topSolidNode = NULL;
-        while(nd)   //find solid node
-        {
-            if(nd->GetSolid())
-            {
-                topSolidNode = nd;
-            }
-            nd = nd->GetParent();
-        }
-        
-        if(topSolidNode)
-        {
-            workingNode = topSolidNode;
-            nd = topSolidNode;
-        }
-        else
-        {
-            nd = workingNode;
-        }
-        
-        while(nd)   // fill list of nodes
-        {
-            nodesForSearch.push_front(nd);
-            nd = nd->GetParent();
-        }
-        
-        graphTree->OpenNodes(nodesForSearch);
-        graphTree->ScrollToData(workingNode);
-    }
-    else
-    {
-        RefreshGraph();
-    }
-    
-#endif //#if !defined(DAVA_QT)
-
     UpdatePropertyPanel();
 }
 
@@ -114,16 +69,6 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * buildQuadTree = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
                                                             LocalizedString(L"scenegraph.buildquadtree"));
-    
-#if !defined (DAVA_QT)
-    removeRootNodes->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveRootNodesButtonPressed));
-    refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRefreshGraph));
-    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnLookAtButtonPressed));
-    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveNodeButtonPressed));
-    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnEnableDebugFlagsPressed));
-    bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBakeMatricesPressed));
-    buildQuadTree->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBuildQuadTreePressed));
-#endif //#if !defined (DAVA_QT)
     
     graphPanel->AddControl(removeRootNodes);
     graphPanel->AddControl(refreshSceneGraphButton);
@@ -217,7 +162,6 @@ void SceneGraph::UpdatePropertyPanel()
         {
             propertyPanel->AddControl(propertyControl);
         }
-        RefreshProperties();
     }
     else
     {
@@ -256,13 +200,8 @@ void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
 
 void SceneGraph::OnRemoveNodeButtonPressed(BaseObject *, void *, void *)
 {
-#if defined(DAVA_QT)
     SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
     activeScene->RemoveSceneNode(workingNode);
-#else //#if defined(DAVA_QT)
-    RemoveWorkingNode();
-#endif //#if defined(DAVA_QT)
-    
 }
 
 void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject *, void *, void *)
@@ -514,7 +453,6 @@ void SceneGraph::RefreshGraph()
     SceneValidator::Instance()->EnumerateNodes(workingScene);
 }
 
-#if defined (DAVA_QT)
 void SceneGraph::SetSize(const Vector2 &newSize)
 {
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
@@ -522,15 +460,11 @@ void SceneGraph::SetSize(const Vector2 &newSize)
     propertyPanelRect = Rect(newSize.x - rightSideWidth, 0, rightSideWidth, newSize.y);
     propertyPanel->SetRect(propertyPanelRect);
     
-    refreshButton->SetPosition(Vector2(0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT));
-    
     propertyPanelRect.x = propertyPanelRect.y = 0;
-    propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
     
     if(propertyControl)
     {
         propertyControl->SetSize(propertyPanelRect.GetSize());
     }
 }
-#endif //#if defined (DAVA_QT)
 

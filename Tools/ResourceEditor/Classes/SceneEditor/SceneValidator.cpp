@@ -3,7 +3,8 @@
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
 
-#include "PVRUtils.h"
+#include "Render/LibPVRHelper.h"
+
 
 SceneValidator::SceneValidator()
 {
@@ -328,11 +329,10 @@ void SceneValidator::EnumerateSceneTextures()
 		Texture *t = it->second;
         if(String::npos != t->relativePathname.find(projectPath))
         {
-            String::size_type pvrpngPos = t->relativePathname.find(".pvr.png");
-            if(String::npos != pvrpngPos)
-            {
-                String pvrPath = FileSystem::ReplaceExtension(t->relativePathname, "");
-                sceneTextureMemory += PVRUtils::Instance()->GetPVRDataLength(pvrPath);
+            String::size_type pvrPos = t->relativePathname.find(".pvr");
+            if(String::npos != pvrPos)
+            {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+                sceneTextureMemory += LibPVRHelper::GetDataLength(t->relativePathname);
             }
             else 
             {
@@ -381,7 +381,7 @@ void SceneValidator::ReloadTextures()
         Image *image = Image::CreateFromFile(texture->relativePathname);
         if(image)
         {
-            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData());
+            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
             if(texture->isMimMapTexture)
             {
                 texture->GenerateMipmaps();
@@ -452,17 +452,17 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
-    String normalizedPath = FileSystem::NormalizePath(pathForValidation);
+    String pathname = FileSystem::GetCanonicalPath(pathForValidation);
     
-    String::size_type fboFound = normalizedPath.find(String("FBO"));
-    String::size_type resFound = normalizedPath.find(String("~res:"));
+    String::size_type fboFound = pathname.find(String("FBO"));
+    String::size_type resFound = pathname.find(String("~res:"));
     if((String::npos != fboFound) || (String::npos != resFound))
     {
         return true;   
     }
     
     
-    String::size_type foundPos = normalizedPath.find(pathForChecking);
+    String::size_type foundPos = pathname.find(pathForChecking);
     bool pathIsCorrect = (String::npos != foundPos);
     if(!pathIsCorrect)
     {

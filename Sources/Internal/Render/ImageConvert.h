@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Image.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -193,8 +194,8 @@ public:
 			if (destination)
 			{
 				ConvertDownscaleTwiceBillinear<uint32, uint32, UnpackRGBA8888, PackRGBA8888> convertFunc;
-				convertFunc(source->GetData(), source->GetWidth(), source->GetHeight(), source->GetWidth() * Image::GetFormatSize(source->GetPixelFormat()),
-					destination->GetData(), destination->GetWidth(), destination->GetHeight(), destination->GetWidth() * Image::GetFormatSize(destination->GetPixelFormat()));
+				convertFunc(source->GetData(), source->GetWidth(), source->GetHeight(), source->GetWidth() * Texture::GetPixelFormatSizeInBytes(source->GetPixelFormat()),
+					destination->GetData(), destination->GetWidth(), destination->GetHeight(), destination->GetWidth() * Texture::GetPixelFormatSizeInBytes(destination->GetPixelFormat()));
 			}
 			return destination;
 		}

@@ -44,6 +44,7 @@ ParticlesEditorControl::ParticlesEditorControl()
     layerProps.push_back("alignToMotion");
     layerProps.push_back("startTime");
     layerProps.push_back("endTime");
+	layerProps.push_back("isLong");
     
     emitterTypes.push_back("POINT");
     emitterTypes.push_back("LINE");
@@ -601,7 +602,7 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
         forcePreview->SetValue(Vector3(0, 0, 0));
         
         SafeRelease(emitter);
-        emitter = new ParticleEmitter();
+        emitter = new ParticleEmitter3D();
         for(int i = 0; i < (int32)layers.size(); i++)
         {
             SafeRemoveControl(layers[i]->curLayerTime);
@@ -628,7 +629,15 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
     }
     if(obj == addLayer)
     {        
-        ParticleLayer *layer = new ParticleLayer();
+		ParticleLayer *layer;
+		if(emitter->GetIs3D())
+		{
+			layer = new ParticleLayer3D();
+		}
+		else
+		{
+			layer = new ParticleLayer();
+		}
         layer->endTime = 100000000.0f;
         emitter->AddLayer(layer);
         SafeRelease(layer);
@@ -1662,7 +1671,10 @@ void ParticlesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
     if(id > 0)
     {
         SafeAddControl(valueBut);
-        SafeAddControl(KFBut);
+        if(id != LAYER_IS_LONG)
+		{
+			SafeAddControl(KFBut);
+		}
     }
     
     curColorProp = 0;
@@ -1935,6 +1947,19 @@ void ParticlesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
             vSliders[0]->SetValue(emitter->GetLayers().at(selectedEmitterElement-1)->endTime);
             tfValue[0]->SetText(Format(L"%.2f", emitter->GetLayers().at(selectedEmitterElement-1)->endTime));
             break;
+
+		case LAYER_IS_LONG:
+			//selectedIsLong = emitter->GetLayers().at(selectedEmitterElement-1)->;
+
+			//SafeAddControl(emitterTypeList);
+			//SafeRemoveControl(valueBut);
+			//SafeRemoveControl(KFBut);
+
+			//if(getLimits && selectedEmitterTypeElement == 0)
+			//	layers[0]->props[EMITTER_TYPE]->isDefault = true;
+			//else
+			//	layers[0]->props[EMITTER_TYPE]->isDefault = false;
+			break;
             
         default:
             break;
@@ -3012,6 +3037,12 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 		file->WriteLine("    type: layer");
 
 		file->WriteLine(Format("    layerType: %s", emitter->GetLayers()[i]->type == ParticleLayer::TYPE_SINGLE_PARTICLE ? "single" : "particles"));
+		bool isLong = typeid(*(emitter->GetLayers()[i])) == typeid(ParticleLayerLong);
+		if(isLong)
+		{
+			file->WriteLine("    isLong: true");
+		}
+		
 		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
 
 		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();

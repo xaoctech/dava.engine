@@ -55,8 +55,8 @@ void QtLayerMacOS::WidgetCreated()
 //	
 	// launch framework and setup all preferences
     //TODO: maybe we need reorder calls 
-    FrameworkDidLaunched();
     RenderManager::Create(Core::RENDERER_OPENGL);
+    FrameworkDidLaunched();
 }
 
 void QtLayerMacOS::WidgetDestroyed()

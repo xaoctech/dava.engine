@@ -73,7 +73,8 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     
     if (    (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
-        ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
+        ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType)
+		||  (Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == materialType))
     {
         propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], ".png;.pvr");
         SetFilepathValue(material, ETT_NORMAL_MAP);
@@ -115,11 +116,11 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
     {
-        propertyList->AddColorProperty("materialeditor.ambientcolor");
-        propertyList->SetColorPropertyValue("materialeditor.ambientcolor", material->GetAmbientColor());
+        propertyList->AddColorProperty("property.material.ambientcolor");
+        propertyList->SetColorPropertyValue("property.material.ambientcolor", material->GetAmbientColor());
         
-        propertyList->AddColorProperty("materialeditor.diffusecolor");
-        propertyList->SetColorPropertyValue("materialeditor.diffusecolor", material->GetDiffuseColor());
+        propertyList->AddColorProperty("property.material.diffusecolor");
+        propertyList->SetColorPropertyValue("property.material.diffusecolor", material->GetDiffuseColor());
     }
     
     if (    (Material::MATERIAL_VERTEX_LIT_TEXTURE == materialType)

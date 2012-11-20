@@ -194,6 +194,8 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[0x1C] = DVKEY_8;
     keyTranslator[0x19] = DVKEY_9;
     keyTranslator[0x7A] = DVKEY_F1;
+    keyTranslator[0x1B] = DVKEY_MINUS;
+    keyTranslator[0x18] = DVKEY_EQUALS;
 
     
     // numeric keys at numpad

@@ -479,13 +479,13 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel) const
 #if defined (LOG_FINAL_RENDER_STATE)
         Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
 #endif    
-        BindTexture(currentTexture[textureLevel]->id);
+        RenderManager::Instance()->HWglBindTexture(currentTexture[textureLevel]->id);
     }else
     {
 #if defined (LOG_FINAL_RENDER_STATE)
         Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, 0);
 #endif    
-        BindTexture(0);
+        RenderManager::Instance()->HWglBindTexture(0);
     }    
 }
 inline void RenderStateBlock::SetDepthTestInHW() const

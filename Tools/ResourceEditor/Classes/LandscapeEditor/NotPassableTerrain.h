@@ -33,17 +33,9 @@
 #include "DAVAEngine.h"
 #include "EditorLandscapeNode.h"
 
-#define NOTPASSABLE_TERRAIN_ENABLED  
-
 class LandscapeRenderer;
 class NotPassableTerrain: public EditorLandscapeNode
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
-
-    
 public:	
 	NotPassableTerrain();
 	virtual ~NotPassableTerrain();
@@ -53,11 +45,27 @@ public:
 protected:
 
     virtual void SetDisplayedTexture();
-
-    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
+    virtual DAVA::Texture * GetDisplayedTexture();
 
     DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+    
+    void LoadColorsArray();
+    bool PickColor(DAVA::float32 tan, DAVA::Color& color) const;
+
+private:
+    struct TerrainColor
+    {
+        DAVA::Color color;
+        DAVA::Vector2 angleRange;
+        
+        TerrainColor(const DAVA::Vector2& angle, const DAVA::Color& color)
+        {
+            this->color = color;
+            this->angleRange = angle;
+        }
+    };
+    
+    DAVA::Vector<TerrainColor> angleColor;
 };
 
 

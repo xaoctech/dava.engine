@@ -2,6 +2,7 @@
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -11,7 +12,7 @@ ParticleLayerLong::ParticleLayerLong()
 	material->SetTwoSided(true);
 }
 
-void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & _cameraPos)
+void ParticleLayerLong::Draw(Camera * camera)
 {
 	verts.clear();
 	textures.clear();
@@ -24,14 +25,13 @@ void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left, const V
 		RenderManager::Instance()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
+	Vector3 direction = camera->GetDirection();
 	while(current != 0)
 	{
-		Vector3 vecShort = current->velocity.CrossProduct(_cameraPos-current->position);
-		vecShort.Normalize();
+		Vector3 vecShort = current->direction.CrossProduct(direction);
 		vecShort /= 2.f;
 
-		Vector3 vecLong = -current->velocity;
-		vecLong.Normalize();
+		Vector3 vecLong = -current->direction;
 
 		float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife;
 		float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife;

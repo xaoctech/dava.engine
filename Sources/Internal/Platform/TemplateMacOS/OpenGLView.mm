@@ -428,7 +428,7 @@ static int32 oldModifersFlags = 0;
 - (void) keyDown:(NSEvent *)event
 {
 	{
-		Logger::Debug("glview keypress!");
+			//		Logger::Debug("glview keypress!");
 		unichar c = [[event characters] characterAtIndex:0];
 		
 		Vector<DAVA::UIEvent> touches;

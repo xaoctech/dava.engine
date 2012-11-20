@@ -45,7 +45,6 @@ protected:
     
     
     Texture *GetTextureForIndex(int32 index);
-    Texture *CreateFromImage(const String &fileName);
     
     UIList *textureList;
     int32 selectedItem;
@@ -71,7 +70,6 @@ protected:
     
     void SetupZoomedPreview(Texture *tex, UIControl *preview, UIZoomControl *zoomControl);
     
-    static String GetWorkingTexturePath(const String &relativeTexturePath);
     static String GetSrcTexturePath(const String &relativeTexturePath);
 
     static String NormalizePath(const String &pathname);

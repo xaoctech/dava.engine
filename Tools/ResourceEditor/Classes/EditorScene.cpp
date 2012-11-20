@@ -22,7 +22,9 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 :Scene()
-{ 
+{
+    selectedMeshInstance = NULL;
+    
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
@@ -39,18 +41,6 @@ EditorScene::EditorScene()
 	landBroadphase = new btAxisSweep3(worldMin,worldMax);
 	landCollisionWorld = new btCollisionWorld(landDispatcher, landBroadphase, landCollisionConfiguration);
 
-//    RegisterLodLayer(0, 15);
-//    RegisterLodLayer(12, 35);
-//    RegisterLodLayer(31, 1000);
-
-//    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-//    for(int32 iLod = 0; iLod < lodCount; ++iLod)
-//    {
-//        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-//        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-//        RegisterLodLayer(nearDistance, farDistance);
-//    }
-    
     SetDrawGrid(true);
 }
 
@@ -73,7 +63,6 @@ void EditorScene::Update(float32 timeElapsed)
     Scene::Update(timeElapsed);
 	CheckNodes(this);
 	collisionWorld->updateAabbs();
-	UpdateImpostersSettings();
 }
 
 void EditorScene::CheckNodes(SceneNode * curr)
@@ -132,17 +121,17 @@ void EditorScene::ReleaseUserData(SceneNode * curr)
 
 SceneNode * GetSolidParent(SceneNode* curr)
 {
-	if (curr->GetSolid())
+	if (curr == 0)
+		return 0;
+	
+	SceneNode * parentResult = GetSolidParent(curr->GetParent());
+	
+	if (curr->GetSolid() && parentResult == 0)
 	{
 		return curr;
 	}
-	else 
-	{
-		SceneNode * parent = curr->GetParent();
-		if (parent == 0)
-			return 0;
-		return GetSolidParent(parent);
-	}
+	else
+		return parentResult;
 }
 
 SceneNode * GetLodParent(SceneNode * curr)
@@ -196,7 +185,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
 		}
-		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+			//		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
 		if (findedIndex == -1)
 			findedIndex = cb.m_collisionObjects.size() - 1;
@@ -316,10 +305,15 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 {
     if (selection)
     {
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+        uint32 flags = selection->GetDebugFlags();
+        uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        
+        SetNodeDebugFlags(selection, newFlags);
     }
     
 	selection = newSelection;
+    selectedMeshInstance = dynamic_cast<MeshInstanceNode *>(newSelection);
+    
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
@@ -340,8 +334,23 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	}
 
 	if(selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+    {
+        uint32 flags = selection->GetDebugFlags();
+        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        
+        SetNodeDebugFlags(selection, newFlags);
+    }
 }
+
+void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
+{
+    selectedNode->SetDebugFlags(flags);
+    if(selectedMeshInstance && selectedMeshInstance != selectedNode)
+    {
+        selectedMeshInstance->SetDebugFlags(flags, false);
+    }
+}
+
 
 SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 {
@@ -492,13 +501,4 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
     }
     
     return -1;
-}
-
-void EditorScene::UpdateImpostersSettings()
-{
-	bool newImposterEnabledValue = EditorSettings::Instance()->GetEnableImposters();
-	if(enableImposters != newImposterEnabledValue)
-	{
-		EnableImposters(newImposterEnabledValue);
-	}
 }

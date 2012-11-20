@@ -16,6 +16,7 @@ public:
 	int32 type;
 	VariantType defaultValue;
 	Vector<String> comboValues;
+    Vector<Color> colorListValues;
 };
 
 class EditorConfig: public Singleton<EditorConfig>
@@ -33,13 +34,16 @@ public:
 		PT_FLOAT,
 		PT_STRING,
 		PT_COMBOBOX,
+        PT_COLOR_LIST,
 
 		PROPERTY_TYPES_COUNT
 	};
 
     void ParseConfig(const String &filePath);
 
-	const Vector<String> &GetProjectPropertyNames();
+	const Vector<String> & GetProjectPropertyNames();
+	const Vector<String> & GetComboPropertyValues(const String & nameStr);
+    const Vector<Color> & GetColorPropertyValues(const String& nameStr);
 
 	bool HasProperty(const String &propertyName);
 	int32 GetPropertyValueType(const String &propertyName);
@@ -57,6 +61,8 @@ protected:
 
 	Vector<String> propertyNames;
 	Map<String, PropertyDescription*> properties;
+	Vector<String> empty;
+    Vector<Color> emptyColors;
 };
 
 

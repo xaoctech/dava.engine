@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QPoint>
+#include <QVector>
+#include <QAbstractButton>
 
 #include "DAVAEngine.h"
 #include "../Constants.h"
@@ -12,6 +14,10 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
+class QStatusBar;
+class QPushButton;
+class QSlider;
+class QComboBox;
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
@@ -33,6 +39,14 @@ public:
 	void SetDefaultFocusWidget(QWidget *widget);
 	void RestoreDefaultFocus();
     
+    void RegisterStatusBar(QStatusBar *registeredSatusBar);
+    void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
+    
+    void SetWaitingCursorEnabled(bool enabled);
+    
+	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*);
+    void SetCustomColorsWidgetsState(bool state);
+    
 public slots:
     //menu
     void MenuToolsWillShow();
@@ -50,7 +64,8 @@ public slots:
     void ExportAsPNG();
     void ExportAsPVR();
     void ExportAsDXT();
-    
+    void SaveToFolderWithChilds();
+
     //View
     void RestoreViews();
     void ToggleSceneInfo();
@@ -60,6 +75,7 @@ public slots:
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void RulerTool();
     void ShowSettings();
     void BakeScene();
     void Beast();
@@ -70,6 +86,12 @@ public slots:
     
     //scene graph
     void RefreshSceneGraph();
+    
+    //custom colors
+    void ToggleCustomColors();
+    void SaveTextureCustomColors();
+    void ChangeBrushSizeCustomColors(int newSize);
+    void ChangeColorCustomColors(int newColorIndex);
 
     //
     void ReloadTexturesFromFileSystem();
@@ -93,6 +115,10 @@ private:
     void ClearActions(int32 count, QAction **actions);
     
 private:
+	QPushButton* customColorsToggleButton;
+	QPushButton* customColorsSaveTextureButton;
+	QSlider* customColorsBrushSizeSlider;
+	QComboBox* customColorsColorComboBox;
     
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
@@ -103,6 +129,8 @@ private:
     QAction *resentAncorAction;
 
 	QWidget *defaultFocusWidget;
+    
+    QStatusBar *statusBar;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__
