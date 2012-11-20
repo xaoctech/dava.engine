@@ -35,6 +35,7 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderStateBlock.h"
 #include "Render/ShaderUniformArray.h"
+#include "Render/Material/NMaterialConsts.h"
 
 namespace DAVA
 {
@@ -48,9 +49,8 @@ class PolygonGroup;
 class RenderDataObject;
 class RenderStateBlock;
 class LightNode;
-    
-    
-class NMaterialDescriptor
+
+class NMaterialDescriptor : public BaseObject
 {
 public:
     NMaterialDescriptor();
@@ -70,7 +70,7 @@ private:
 /*
     Sorting should be done by NMaterialInstance shader, because it can be changed by material
  */
-class NMaterialInstance
+class NMaterialInstance : public BaseObject
 {
 public:
     NMaterialInstance();
@@ -81,32 +81,50 @@ public:
     void SetLightNode(uint32 index, LightNode * lightNode) { lightNodes[index] = lightNode; };
     RenderStateBlock * GetRenderState() { return &renderState; };
 
-    void SetUniformData(uint32 uniformIndex, void * data, uint32 size);
     void PrepareInstanceForShader(Shader * shader);
-    void BindUniforms(Shader * shader);
+
+    void SetUniformData(uint32 uniformIndex, void * data, uint32 size);
     
+    void UpdateUniforms();
+    void BindUniforms();
     
 private:
+    
+    static const uint32 SKIP_UNIFORM = 1 << 0;
+    
+    
+    struct UniformInfo
+    {
+        uint32  flags: 8;
+        uint32  arraySize : 8;
+        uint32  shift : 16;
+    };
+    
+    
     uint32                  uniformCount;
-    uint32 *                uniformShifts;
+    UniformInfo *           uniforms;
     uint8 *                 uniformData;
     uint32                  lightCount;
     LightNode              *lightNodes[8];
     RenderStateBlock        renderState;
+    Shader *                shader;
     friend class NMaterial;
 };
-    
-class NMaterial
+ 
+class NMaterial : public BaseObject
 {
 public:
     NMaterial(uint32 shaderCount);
     virtual ~NMaterial();
     
+    NMaterialDescriptor * GetDescriptor();
     void SetShader(uint32 index, Shader * shader);
     void PrepareRenderState(PolygonGroup * polygonGroup, NMaterialInstance * instance);
     void Draw(PolygonGroup * polygonGroup, NMaterialInstance * instance);
 
 private:
+    
+    
     uint32 shaderCount;
     Shader ** shaderArray;
     NMaterialDescriptor * descriptor;

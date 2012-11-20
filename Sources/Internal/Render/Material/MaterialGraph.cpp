@@ -37,6 +37,7 @@ namespace DAVA
 // MaterialGraph
 MaterialGraph::MaterialGraph()
 :   usedTextureCoordsCount(0)
+,   usedTextures(0)
 {
     
 }
@@ -66,6 +67,19 @@ void MaterialGraph::RemoveNode(MaterialGraphNode * node)
     allNodes.erase(std::remove(allNodes.begin(), allNodes.end(), node));
     SafeRelease(node);
 }
+    
+void MaterialGraph::RemoveNodeRecursive(MaterialGraphNode * node)
+{
+//    Map<String, MaterialGraphNodeConnector*> & inputConnectors = node->GetInputConnectors();
+//    for (Map<String, MaterialGraphNodeConnector*>::iterator it = inputConnectors.begin(); it != inputConnectors.end(); ++it)
+//    {
+//        MaterialGraphNodeConnector * connector = it->second;
+//        MaterialGraphNode * connectedNode = connector->node;
+//        RemoveNodeRecursive(connectedNode);
+//    }
+    
+    RemoveNode(node);
+}
 
 bool MaterialGraph::LoadFromFile(const String & pathname)
 {
@@ -90,16 +104,19 @@ bool MaterialGraph::LoadFromFile(const String & pathname)
 bool MaterialGraph::LoadNode(YamlNode * graphNode)
 {
 
-    MaterialGraphNode * node = new MaterialGraphNode();
+    MaterialGraphNode * node = new MaterialGraphNode(this);
     node->InitFromYamlNode(graphNode);
     AddNode(node);
     
-    usedTextureCoordsCount = Max(usedTextureCoordsCount, node->GetTextureInputIndex());
+    usedTextureCoordsCount = Max(usedTextureCoordsCount, node->GetTextureInputIndex() + 1);
+    
+    if (node->GetType() == MaterialGraphNode::TYPE_SAMPLE_2D)
+        usedTextures++;
     
     //YamlNode *
     YamlNode * nameNode = graphNode->Get("name");
     YamlNode * typeNode = graphNode->Get("node");
-    Logger::Debug("- %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
+    Logger::Debug("- Read Node %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
 
     // Parse inputs
     std::multimap<String, YamlNode*> & map = graphNode->AsMap();
@@ -116,7 +133,7 @@ bool MaterialGraph::LoadNode(YamlNode * graphNode)
         MaterialGraphNode * connectNode = GetNodeByName(nodeName);
         if (connectNode)
         {
-            Logger::Debug("- input: %s connected:%s filter:%s",
+            Logger::Debug("- Read Input: %s connected:%s filter:%s",
                           inputNode->Get(0)->AsString().c_str(),
                           inputNode->Get(1)->AsString().c_str(),
                           inputNode->Get(2)->AsString().c_str());
@@ -153,8 +170,21 @@ bool MaterialGraph::SortByDepthMarkerDescending(MaterialGraphNode * node1, Mater
     return (node1->GetDepthMarker() > node2->GetDepthMarker());
 }
 
-void MaterialGraph::SortByDepthMarker()
+void MaterialGraph::SortByDepthMarkerAndRemoveUnused()
 {
+    for (Vector<MaterialGraphNode*>::iterator it = allNodes.begin(); it != allNodes.end();)
+    {
+        MaterialGraphNode * node = *it;
+        if (node->GetDepthMarker() == -1)
+        {
+            Logger::Debug("- remove empty node: %s", node->GetName().c_str());
+            RemoveNodeRecursive(node);
+            it = allNodes.begin();
+            continue;
+        }
+        ++it;
+    }
+    
     std::sort(allNodes.begin(), allNodes.end(), SortByDepthMarkerDescending);
 }
 

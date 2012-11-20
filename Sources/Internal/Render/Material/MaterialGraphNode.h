@@ -34,9 +34,13 @@
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
 #include "FileSystem/YamlParser.h"
+#include "Render/Shader.h"
+#include "FileSystem/VariantType.h"
 
 namespace DAVA
 {
+
+class MaterialGraph;
 class MaterialGraphNode;
 class YamlNode;
 class Shader;
@@ -53,13 +57,6 @@ public:
 class MaterialGraphNode : public BaseObject
 {
 public:
-    enum eCompileError
-    {
-        NO_ERROR = 1,
-        ERROR_NOT_ENOUGH_CONNECTORS,
-        ERROR_UNUSED_NODE,
-    };
-    
     enum eType
     {
         TYPE_NONE = 0,
@@ -72,11 +69,22 @@ public:
         TYPE_TIME,
         TYPE_SIN,
         TYPE_COS,
+        TYPE_CONST,
+        TYPE_ROTATOR,
+        TYPE_SHIFTER,
+        TYPE_TEX_COORD_INPUT,
         
         TYPE_COUNT,
     };
     
-    MaterialGraphNode();
+    enum eNodeUsage
+    {
+        USE_VERTEX = 0,
+        USE_PIXEL = 1,
+        USE_BOTH = 2,
+    };
+    
+    MaterialGraphNode(MaterialGraph * graph);
     ~MaterialGraphNode();
     
     void InitFromYamlNode(YamlNode * graphNode);
@@ -88,38 +96,81 @@ public:
     Map<String, MaterialGraphNodeConnector*> & GetInputConnectors();
     void ConnectToNode(const String & inputName, MaterialGraphNode * node, const String & connectionModifier);
 
-    eCompileError GenerateCode(String & vertexShader, String & pixelShader);
-    
     uint32 GetOutputCount();
     uint32 GetConstCount() const;
     
     const String & GetName() const;
     void SetName(const String & name);
     void SetType(const String & type);
+    eType GetType() { return type; };
+    
+    eNodeUsage SetUsage(eNodeUsage _usage) { usage = _usage; };
+    eNodeUsage GetUsage() const { return usage; };
     
     void MergeConnectionModifiers(const String & usedByOtherNode);
     
     uint32 GetTextureInputIndex() { return textureInputIndex; };
     
-    const String & GetVertexShaderCode() { return vertexShaderCode; }
-    const String & GetFragmentShaderCode() { return fragmentShaderCode; }
+    //const String & GetVertexShaderCode() { return vertexShaderCode; }
+    //const String & GetFragmentShaderCode() { return fragmentShaderCode; }
     
+    /*
+        Here we try to set nodes shader according to the input connectors. So firstly from vertex shader => pixel shader. 
+     */
+    static MaterialGraphNode::eNodeUsage RecursiveSetRealUsageBack(MaterialGraphNode * node);
+    /*
+        Here we mark remaining nodes according to the nodes we try to use values in. For example const nodes.
+        If const is used in pixel shader, we mark it for pixel shader, if in vertex shader we mark if for vertex shader.
+     */
+    static void RecursiveSetRealUsageForward(MaterialGraphNode * node);
+
 protected:
-    String nodeCode;
-    String vertexShaderCode;
-    String fragmentShaderCode;
-    
     String GetResultFormat(const String & s1, const String & s2);
 
+    struct TypeUsageStruct
+    {
+        const char * name;
+        MaterialGraphNode::eNodeUsage usage;
+    };
+    
     eType type;
+    eNodeUsage usage;
+    MaterialGraph * graph;
+    Shader::eUniformType returnType;
+    VariantType constValue;
+    
+
     uint32 depthMarker;
     String name;
     bool isVertexShaderNode;
-    String usedByOthersModifier;
+    //String usedByOthersModifier;
+    
+    enum
+    {
+        VAR_MODIFIER_R = 1,
+        VAR_MODIFIER_G = 2,
+        VAR_MODIFIER_B = 4,
+        VAR_MODIFIER_A = 8,
+    };
+    
+    uint32 StringToRGBAModifier(const String & input);
+    uint32 usedByOthersModifier;
+    String RGBAModifierToString(uint32 modifier);
+    String RGBAModifierToType(uint32 modifier);
+    
     uint32 textureInputIndex;
     uint32 textureChannelIndex;
     Shader * shader;
     Map<String, MaterialGraphNodeConnector*> inputConnectors;
+    
+    String nodeCode;
+    String nodeGenVarying;
+//    String vertexShaderCode;
+//    String fragmentShaderCode;
+    
+    static TypeUsageStruct types[];
+    
+    friend class MaterialCompiler;
 };
 
 };

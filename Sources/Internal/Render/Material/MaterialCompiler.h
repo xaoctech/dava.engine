@@ -34,10 +34,10 @@
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
 #include "FileSystem/YamlParser.h"
+#include "Render/Shader.h"
 
 namespace DAVA
 {
-class Shader;
 class MaterialGraph;
 class MaterialGraphNode;
 class NMaterial;
@@ -47,7 +47,6 @@ struct MaterialShaders
     Shader * shaderForwardLight[4];
     Shader * shaderDeferred;
 };
-    
 
 class MaterialCompiler : public BaseObject
 {
@@ -58,14 +57,47 @@ public:
         COMPILATION_FAILED = 0,
     };
     
-    eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial);
+    enum eCompileError
+    {
+        NO_ERROR = 1,
+        ERROR_NOT_ENOUGH_CONNECTORS,
+        ERROR_UNUSED_NODE,
+    };
     
+    eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial);
+    eCompileError GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader);
+
 private:
+    /**
+        Plan: 
+        1. Remove unused nodes.
+        2. Split vertex shader nodes, from pixel shader nodes. 
+        3. Add varying nodes.
+        4. Sort graph. 
+        5. Generate plain code for vertex, and pixel shader. 
+     
+        IN_DIFFUSE, IN_SPECULAR, IN_EMISSIVE
+        PIXEL SHADER | VARYING VARIABLES | VERTEX_SHADER.
+        node0, node1, node2 | var1, var2, var3, var4 | node5, node6, node7.
+     */
+    void GenPlainCodeWithPositionDefines(List<MaterialGraphNode*> & requiredNodes);
+    
+    
     void GenerateCode(MaterialGraph * graph);
     void RecursiveSetDepthMarker(MaterialGraphNode * node, uint32 depthMarker);
+    void FixNodesWithoutProperInputs();
 
-
+    MaterialGraph * materialGraph;
     NMaterial * currentMaterial;
+    
+    String pixelShaderCode;
+    String vertexShaderCode;
+    String finalPixelShaderCode;
+    String finalVertexShaderCode;
+    
+    Map<String, Shader::eUniformType> vertexShaderAdditionaUniforms;
+    Map<String, Shader::eUniformType> pixelShaderAdditionaUniforms;
+    Map<String, Shader::eUniformType> additionalVaryings;
 };
      
 

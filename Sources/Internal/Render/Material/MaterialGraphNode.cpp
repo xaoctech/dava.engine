@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Material/MaterialGraphNode.h"
+#include "Render/Material/MaterialGraph.h"
 
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/FileSystem.h"
@@ -56,11 +57,12 @@ namespace DAVA
  
  */
     
-MaterialGraphNode::MaterialGraphNode()
+MaterialGraphNode::MaterialGraphNode(MaterialGraph * _graph)
     :   type(TYPE_NONE)
-    ,   depthMarker(0)
+    ,   graph(_graph)
+    ,   depthMarker(-1)
     ,   isVertexShaderNode(false)
-    ,   usedByOthersModifier()
+    ,   usedByOthersModifier(0)
     ,   textureInputIndex(0)
     ,   textureChannelIndex(0)
     ,   shader(0)
@@ -84,15 +86,30 @@ void MaterialGraphNode::InitFromYamlNode(YamlNode * graphNode)
     SetType(typeNode->AsString());
     SetName(nameNode->AsString());
         
+    usage = types[type].usage;
+    DVASSERT(usage == USE_VERTEX || usage == USE_BOTH || usage == USE_PIXEL);
+    
     if (type == TYPE_SAMPLE_2D)
+    {
+        YamlNode * textureChannelNode = graphNode->Get("channel");
+        if (textureChannelNode)
+            textureChannelIndex = textureChannelNode->AsInt();
+    }
+    if (type == TYPE_TEX_COORD_INPUT)
     {
         YamlNode * inputNode = graphNode->Get("input");
         if (inputNode)
             textureInputIndex = inputNode->AsInt();
-        
-        YamlNode * textureChannelNode = graphNode->Get("channel");
-        if (textureChannelNode)
-            textureChannelIndex = textureChannelNode->AsInt();
+    }
+    if (type == TYPE_CONST)
+    {
+        YamlNode * valueNode = graphNode->Get("value");
+        if (valueNode->GetType() == YamlNode::TYPE_STRING)
+            constValue.SetInt32(valueNode->AsInt());
+        else if (valueNode->GetType() == YamlNode::TYPE_ARRAY)
+        {
+            //constValue.SetVe
+        }
     }
 }
 
@@ -121,11 +138,64 @@ void MaterialGraphNode::ConnectToNode(const String & connectorName, MaterialGrap
     node->MergeConnectionModifiers(connectionModifier);
 }
     
+uint32 MaterialGraphNode::StringToRGBAModifier(const String & input)
+{
+    uint32 result = 0;
+    for (uint32 k = 0; k < input.length(); ++k)
+    {
+        if (input[k] == 'r')result |= VAR_MODIFIER_R;
+        if (input[k] == 'g')result |= VAR_MODIFIER_G;
+        if (input[k] == 'b')result |= VAR_MODIFIER_B;
+        if (input[k] == 'a')result |= VAR_MODIFIER_A;
+    }
+    return result;
+}
+    
+String MaterialGraphNode::RGBAModifierToString(uint32 modifier)
+{
+    String result;
+    if (modifier & VAR_MODIFIER_R)
+        result += 'r';
+    if (modifier & VAR_MODIFIER_G)
+        result += 'g';
+    if (modifier & VAR_MODIFIER_B)
+        result += 'b';
+    if (modifier & VAR_MODIFIER_A)
+        result += 'a';
+    
+    return result;
+}
+    
+static const char * returnTypes[] =
+{
+    "wrong type",
+    "float",
+    "vec2",
+    "vec3",
+    "vec4",
+};
+    
+String MaterialGraphNode::RGBAModifierToType(uint32 modifier)
+{
+    uint32 bc = 0;
+    if (modifier & VAR_MODIFIER_R)
+        bc++;
+    if (modifier & VAR_MODIFIER_G)
+        bc++;
+    if (modifier & VAR_MODIFIER_B)
+        bc++;
+    if (modifier & VAR_MODIFIER_A)
+        bc++;
+    
+    return returnTypes[bc];
+}
+
+    
 void MaterialGraphNode::MergeConnectionModifiers(const String & usedByOtherNode)
 {
-    usedByOthersModifier += usedByOtherNode;
-    //std::sort(usedByOthersModifier.begin(), usedByOthersModifier.end());
-    std::unique(usedByOthersModifier.begin(), usedByOthersModifier.end());
+    uint32 otherNodeModifier = StringToRGBAModifier(usedByOtherNode);
+    
+    usedByOthersModifier |= otherNodeModifier;
 }
 
 MaterialGraphNodeConnector * MaterialGraphNode::GetInputConnector(const String & name)
@@ -136,15 +206,6 @@ MaterialGraphNodeConnector * MaterialGraphNode::GetInputConnector(const String &
     return 0;
 }
 
-static const char * returnTypes[] =
-{
-    "wrong type",
-    "float",
-    "vec2",
-    "vec3",
-    "vec4",
-};
-
 String MaterialGraphNode::GetResultFormat(const String & s1, const String & s2)
 {
     uint32 s1Len = s1.length();
@@ -153,123 +214,13 @@ String MaterialGraphNode::GetResultFormat(const String & s1, const String & s2)
     {
         uint32 formatBytes = Max(s1Len, s2Len);
         return returnTypes[formatBytes];
+    }else if ((s1Len == 0) || (s2Len == 0))
+    {
+        uint32 formatBytes = Max(s1Len, s2Len);
+        return returnTypes[formatBytes];
     }
     else if (s1Len == s2Len)return returnTypes[s1Len];
     return returnTypes[0];
-}
-
-MaterialGraphNode::eCompileError MaterialGraphNode::GenerateCode(String & vertexShader, String & pixelShader)
-{
-    Logger::Debug("Generate Code: %d", type);
-    
-    
-    uint32 usedByOthersCount = usedByOthersModifier.length();
-    /*     if (usedByOthersCount == 0)
-         {
-            return ERROR_UNUSED_NODE;
-         }
-     */
-    //
-    if (type == TYPE_SAMPLE_2D)
-    {
-        
-        nodeCode = Format("%s %s = texture2D(texture[%d], varTexCoord[%d]).%s;", returnTypes[usedByOthersCount],
-                                    name.c_str(),
-                                    textureChannelIndex,
-                                    textureInputIndex,
-                                    usedByOthersModifier.c_str());
-        Logger::Debug("%s", nodeCode.c_str());
-        if (isVertexShaderNode)
-            vertexShader += nodeCode;
-        else
-            pixelShader += nodeCode;
-    }
-    if (type == TYPE_MUL)
-    {
-        MaterialGraphNodeConnector * connectorA = GetInputConnector("a");
-        MaterialGraphNodeConnector * connectorB = GetInputConnector("b");
-        
-        if (!connectorA || !connectorB)
-            return ERROR_NOT_ENOUGH_CONNECTORS;
-        String resultFormat = GetResultFormat(connectorA->modifier, connectorB->modifier);
-        
-        String op1 = connectorA->node->GetName();
-        if (!connectorA->modifier.empty())op1 += "." + connectorA->modifier;
-        String op2 = connectorB->node->GetName();
-        if (!connectorB->modifier.empty())op2 += "." + connectorB->modifier;
-        
-        nodeCode = Format("%s %s = %s * %s;",  resultFormat.c_str(),
-                                                    name.c_str(),
-                                                    op1.c_str(),
-                                                    op2.c_str());
-        Logger::Debug("%s", nodeCode.c_str());
-        if (isVertexShaderNode)
-            vertexShader += nodeCode;
-        else
-            pixelShader += nodeCode;
-    
-    }
-    if (type == TYPE_ADD)
-    {
-        MaterialGraphNodeConnector * connectorA = GetInputConnector("a");
-        MaterialGraphNodeConnector * connectorB = GetInputConnector("b");
-        
-        if (!connectorA || !connectorB)
-            return ERROR_NOT_ENOUGH_CONNECTORS;
-        String resultFormat = GetResultFormat(connectorA->modifier, connectorB->modifier);
-        
-        nodeCode = Format("%s %s = %s.%s + %s.%s;", resultFormat.c_str(),
-                            name.c_str(),
-                            connectorA->node->GetName().c_str(),
-                            connectorA->modifier.c_str(),
-                            connectorB->node->GetName().c_str(),
-                            connectorB->modifier.c_str());
-
-        Logger::Debug("%s", nodeCode.c_str());
-        if (isVertexShaderNode)
-            vertexShader += nodeCode;
-        else
-            pixelShader += nodeCode;
-    }
-    
-    if (type == TYPE_FORWARD_MATERIAL)
-    {
-        // shader = new Shader();
-        MaterialGraphNodeConnector * connectorEmissive = GetInputConnector("emissive");
-        MaterialGraphNodeConnector * connectorDiffuse = GetInputConnector("diffuse");
-        MaterialGraphNodeConnector * connectorSpecular = GetInputConnector("specular");
-        MaterialGraphNodeConnector * connectorNormal = GetInputConnector("normal");
-//      MaterialGraphNodeConnector * connectorAlpha = GetInputConnector("alpha");
-        
-        // vertexShader +=
-        fragmentShaderCode += "#define GRAPH_CUSTOM_PIXEL_CODE ";
-        fragmentShaderCode += pixelShader;
-        fragmentShaderCode += "\n";
-        
-        if (connectorEmissive)
-            fragmentShaderCode += Format("#define IN_EMISSIVE %s\n", connectorEmissive->GetNode()->GetName().c_str());
-        if (connectorDiffuse)
-            fragmentShaderCode += Format("#define IN_DIFFUSE %s\n", connectorDiffuse->GetNode()->GetName().c_str());
-        if (connectorSpecular)
-            fragmentShaderCode += Format("#define IN_SPECULAR %s\n", connectorSpecular->GetNode()->GetName().c_str());
-        if (connectorNormal)
-            fragmentShaderCode += Format("#define IN_NORMAL %s\n", connectorNormal->GetNode()->GetName().c_str());
-        
-        if (connectorNormal)
-        {
-            fragmentShaderCode += "#define PIXEL_LIT\n";
-            vertexShaderCode += "#define PIXEL_LIT\n";
-        }
-        else if (connectorDiffuse || connectorSpecular)
-        {
-            fragmentShaderCode += "#define VERTEX_LIT\n";
-            vertexShaderCode += "#define VERTEX_LIT\n";
-        }
-        
-        
-    }
-    
-    return NO_ERROR;
 }
 
 const String & MaterialGraphNode::GetName() const
@@ -282,25 +233,29 @@ void MaterialGraphNode::SetName(const String & _name)
     name = _name;
 }
 
-static const char * types[] =
+MaterialGraphNode::TypeUsageStruct MaterialGraphNode::types[] =
 {
-    "TYPE_NONE",
-    "TYPE_FORWARD_MATERIAL",
-    "TYPE_DEFERRED_MATERIAL",
-    "TYPE_SAMPLE_2D",
-    "TYPE_MUL",
-    "TYPE_ADD",
-    "TYPE_LERP",
-    "TYPE_TIME",
-    "TYPE_SIN",
-    "TYPE_COS",
+    "TYPE_NONE", MaterialGraphNode::USE_BOTH,
+    "TYPE_FORWARD_MATERIAL", MaterialGraphNode::USE_PIXEL,
+    "TYPE_DEFERRED_MATERIAL", MaterialGraphNode::USE_PIXEL,
+    "TYPE_SAMPLE_2D", MaterialGraphNode::USE_PIXEL,
+    "TYPE_MUL", MaterialGraphNode::USE_BOTH,
+    "TYPE_ADD", MaterialGraphNode::USE_BOTH,
+    "TYPE_LERP", MaterialGraphNode::USE_BOTH,
+    "TYPE_TIME", MaterialGraphNode::USE_BOTH,
+    "TYPE_SIN", MaterialGraphNode::USE_BOTH,
+    "TYPE_COS", MaterialGraphNode::USE_BOTH,
+    "TYPE_CONST", MaterialGraphNode::USE_BOTH,
+    "TYPE_ROTATOR", MaterialGraphNode::USE_BOTH,
+    "TYPE_SHIFTER", MaterialGraphNode::USE_BOTH,
+    "TYPE_TEX_COORD_INPUT", MaterialGraphNode::USE_VERTEX,
 };
-
+    
 void MaterialGraphNode::SetType(const String & _type)
 {
     for (uint32 k = 0; k < TYPE_COUNT; ++k)
     {
-        if (_type == types[k])
+        if (_type == types[k].name)
         {
             type = (eType)k;
             return;
@@ -308,7 +263,75 @@ void MaterialGraphNode::SetType(const String & _type)
     }
     DVASSERT(0 && "MaterialGraphNode type not found");
 }
+    
+void MaterialGraphNode::RecursiveSetRealUsageForward(MaterialGraphNode * node)
+{
+    Map<String, eNodeUsage> resultUsage;
+    Map<String, MaterialGraphNodeConnector*> & inputConnectors = node->GetInputConnectors();
+    
+    for (Map<String, MaterialGraphNodeConnector*>::iterator it = inputConnectors.begin(); it != inputConnectors.end(); ++it)
+    {
+        MaterialGraphNodeConnector * connector = it->second;
+        MaterialGraphNode * connectedNode = connector->node;
+        if (connectedNode)
+        {
+            RecursiveSetRealUsageForward(connectedNode);
+            
+            if ((connectedNode->usage == USE_BOTH) && (node->usage != USE_BOTH))
+                connectedNode->usage = node->usage;
+        }
+    }
+}
 
+
+MaterialGraphNode::eNodeUsage MaterialGraphNode::RecursiveSetRealUsageBack(MaterialGraphNode * node)
+{
+    
+    // DEBUG
+    //Logger::Debug("eval node: %s", node->GetName().c_str());
+
+    Map<String, eNodeUsage> resultUsage;
+    Map<String, MaterialGraphNodeConnector*> & inputConnectors = node->GetInputConnectors();
+    
+    // return node usage if it does not have connectors
+    if (inputConnectors.size() == 0)
+    {
+        return node->usage;
+    }
+    
+    for (Map<String, MaterialGraphNodeConnector*>::iterator it = inputConnectors.begin(); it != inputConnectors.end(); ++it)
+    {
+        MaterialGraphNodeConnector * connector = it->second;
+        MaterialGraphNode * connectedNode = connector->node;
+        if (connectedNode)
+        {
+            resultUsage[it->first] = RecursiveSetRealUsageBack(connectedNode);
+        }
+    }
+    
+    if (node->usage == USE_PIXEL || node->usage == USE_VERTEX)return node->usage;
+    
+    // usage is the same
+    int32 index = 0;
+    eNodeUsage firstInputUsage = USE_BOTH;
+    for (Map<String, eNodeUsage>::iterator it = resultUsage.begin(); it != resultUsage.end(); ++it)
+    {
+        if (index == 0)firstInputUsage = it->second;
+        else if (firstInputUsage != it->second)
+            firstInputUsage = USE_BOTH;
+    }
+
+    
+    // we run mechanism only for nodes where we are not sure that
+    // node are in vertex shader or in pixel shader
+    DVASSERT(node->usage == USE_BOTH);
+    
+    if (firstInputUsage != USE_BOTH)
+        node->usage = firstInputUsage;
+
+    DVASSERT(firstInputUsage != USE_BOTH);
+    return node->usage;
+}
 
 };
 

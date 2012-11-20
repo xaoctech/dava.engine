@@ -41,6 +41,8 @@ class Mutex;
 class SystemTimer : public Singleton<SystemTimer> 
 {
     friend class Core;
+    
+    
 #if defined(__DAVAENGINE_WIN32__)
 	LARGE_INTEGER	liFrequency;
 	LARGE_INTEGER	tLi;
@@ -65,7 +67,7 @@ public:
 	SystemTimer();
 	virtual ~SystemTimer();
 
-		uint64 AbsoluteMS();
+    uint64 AbsoluteMS();
 
 	static void SetFrameDelta(float32 _delta); //for replay playback only
 	
@@ -78,12 +80,49 @@ public:
 	{
 		return stampTime;
 	}
+
+    // Global time is something that can be used by game
+
+    inline void ResetGlobalTime();
+    inline void UpdateGlobalTime(float32 timeElapsed);
+    inline float32 GetGlobalTime();
+    inline void PauseGlobalTime(bool isPaused);
+    
+    
 #if defined(__DAVAENGINE_ANDROID__)
 	Mutex  *tickMutex;
 	uint64 GetTickCount();
 	void InitTickCount();
 #endif //#if defined(__DAVAENGINE_ANDROID__)
+    
+private:
+    float32 globalTime;
+    float32 pauseMultiplier;
 };
+    
+// Inline functions
+inline void SystemTimer::ResetGlobalTime()
+{
+    globalTime = 0.0f;
+}
+
+inline void SystemTimer::UpdateGlobalTime(float32 timeElapsed)
+{
+    globalTime += timeElapsed * pauseMultiplier;
+}
+
+inline float32 SystemTimer::GetGlobalTime()
+{
+    return globalTime;
+}
+
+inline void SystemTimer::PauseGlobalTime(bool isPaused)
+{
+    if (isPaused)
+        pauseMultiplier = 0.0f;
+    else
+        pauseMultiplier = 1.0f;
+}
 };
 
 #endif // #ifndef __DAVAENGINE_SYSTEM_TIMER__

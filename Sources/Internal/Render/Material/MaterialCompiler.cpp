@@ -33,25 +33,30 @@
 #include "Render/Material/NMaterial.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Shader.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
     
-MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial)
+MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _materialGraph, uint32 maxLights, NMaterial ** resultMaterial)
 {
+    materialGraph = _materialGraph;
+    MaterialGraphNode * shifter1 = materialGraph->GetNodeByName("shifter1");
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
     if (!rootResultNode)
     {
         return COMPILATION_FAILED;
     }
 
-    RecursiveSetDepthMarker(rootResultNode, 0);
-    materialGraph->SortByDepthMarker();
-    GenerateCode(materialGraph);
-    
     currentMaterial = new NMaterial(maxLights);
 
+    RecursiveSetDepthMarker(rootResultNode, 0);
+    materialGraph->SortByDepthMarkerAndRemoveUnused();
+
+    MaterialGraphNode::RecursiveSetRealUsageBack(rootResultNode);
+    MaterialGraphNode::RecursiveSetRealUsageForward(rootResultNode);
     
+    GenerateCode(materialGraph);
     
     Shader * shader = new Shader();
     shader->Load("~doc:/temp.vsh", "~doc:/temp.fsh");
@@ -89,9 +94,8 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     for (uint32 nodeIndex = 0; nodeIndex < materialGraph->GetNodeCount(); ++nodeIndex)
     {
         MaterialGraphNode * node = materialGraph->GetNode(nodeIndex);
-        node->GenerateCode(vertexShader, pixelShader);
+        GenerateCodeForNode(node, vertexShader, pixelShader);
     }
-    
     
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
 
@@ -103,16 +107,222 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     
     
     File * resultVsh = File::Create("~doc:/temp.vsh", File::CREATE | File::WRITE);
-    resultVsh->WriteString(rootResultNode->GetFragmentShaderCode(), false); // Save without null terminator
+    resultVsh->WriteString(finalVertexShaderCode, false); // Save without null terminator
     resultVsh->WriteString(originalVertexShader);
     SafeRelease(resultVsh);
     
     File * resultFsh = File::Create("~doc:/temp.fsh", File::CREATE | File::WRITE);
-    resultFsh->WriteString(rootResultNode->GetFragmentShaderCode(), false); // Save without null terminator
+    resultFsh->WriteString(finalPixelShaderCode, false); // Save without null terminator
     resultFsh->WriteString(originalFragmentShader);
     //resultFsh->Write(fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
     SafeRelease(resultFsh);
 };
+    
+void MaterialCompiler::FixNodesWithoutProperInputs()
+{
+    
+}
+
+    
+MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader)
+{
+    Logger::Debug("Generate Code: %s %d", node->GetName().c_str(), node->GetType());
+    
+    
+    //uint32 usedByOthersCount = usedByOthersModifier.length();
+    /*     if (usedByOthersCount == 0)
+     {
+     return ERROR_UNUSED_NODE;
+     }
+     */
+    //
+    
+    DVASSERT(node->usage != MaterialGraphNode::USE_BOTH);
+    
+    MaterialGraphNode::eType type = node->GetType();
+    
+    String * destinationCode = &pixelShaderCode;
+    if (node->usage == MaterialGraphNode::USE_VERTEX)
+        destinationCode = &vertexShaderCode;
+        
+    if (type == MaterialGraphNode::TYPE_TEX_COORD_INPUT)
+    {
+        //
+        node->nodeGenVarying = Format("var_inTexCoord%d", node->textureInputIndex);
+        node->nodeCode = Format("var_inTexCoord%d = inTexCoord%d;", node->textureInputIndex, node->textureInputIndex);
+        *destinationCode += node->nodeCode;
+    }
+    
+    if (type == MaterialGraphNode::TYPE_SHIFTER)
+    {
+        MaterialGraphNodeConnector * connectorTexCoord = node->GetInputConnector("texCoord");
+        int32 texCoordIndex = 0;
+        if (connectorTexCoord)
+            texCoordIndex = connectorTexCoord->GetNode()->textureInputIndex;
+        
+        // Add uniform
+        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+        node->nodeGenVarying = Format("var_%s", node->GetName().c_str());
+        node->nodeCode = Format("var_%s = %s + 0.25 * globalTime;", node->GetName().c_str(), connectorTexCoord->GetNode()->GetName().c_str());
+        *destinationCode += node->nodeCode;
+    }
+    
+    if (type == MaterialGraphNode::TYPE_ROTATOR)
+    {
+        // Add uniform
+        vertexShaderAdditionaUniforms[UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;
+    }
+    
+    if (type == MaterialGraphNode::TYPE_SAMPLE_2D)
+    {
+        MaterialGraphNodeConnector * connectorTexCoord = node->GetInputConnector("texCoord");
+        String inputVarName;
+        if (connectorTexCoord)
+        {
+            MaterialGraphNode * inputCoordNode = connectorTexCoord->GetNode();
+            
+            // Get from varying
+            if (inputCoordNode->usage == MaterialGraphNode::USE_VERTEX)
+            {
+                additionalVaryings[inputCoordNode->nodeGenVarying] = Shader::UT_FLOAT_VEC2;
+                inputVarName = "var_" + connectorTexCoord->GetNode()->GetName();
+            }else
+            {
+                inputVarName = node->GetName();
+            }
+        }
+        node->nodeCode = Format("%s %s = texture2D(texture[%d], %s).%s;", node->RGBAModifierToType(node->usedByOthersModifier).c_str(),
+                          node->name.c_str(),
+                          node->textureChannelIndex,
+                          inputVarName.c_str(),
+                          node->RGBAModifierToString(node->usedByOthersModifier).c_str());
+        Logger::Debug("%s", node->nodeCode.c_str());
+        *destinationCode += node->nodeCode;
+        
+        NMaterialDescriptor * descriptor = currentMaterial->GetDescriptor();
+        descriptor->SetNameForTextureSlot(node->textureChannelIndex, node->name);
+    }
+    
+    if (type == MaterialGraphNode::TYPE_CONST)
+    {
+        node->nodeCode = Format("float %s = %f;", node->name.c_str(), 1.0f);
+        *destinationCode += node->nodeCode;
+    }
+    
+    if (type == MaterialGraphNode::TYPE_MUL)
+    {
+        MaterialGraphNodeConnector * connectorA = node->GetInputConnector("a");
+        MaterialGraphNodeConnector * connectorB = node->GetInputConnector("b");
+        
+        if (!connectorA || !connectorB)
+            return ERROR_NOT_ENOUGH_CONNECTORS;
+        String resultFormat = node->GetResultFormat(connectorA->modifier, connectorB->modifier);
+        
+        String op1 = connectorA->node->GetName();
+        if (!connectorA->modifier.empty())op1 += "." + connectorA->modifier;
+        String op2 = connectorB->node->GetName();
+        if (!connectorB->modifier.empty())op2 += "." + connectorB->modifier;
+        
+        node->nodeCode = Format("%s %s = %s * %s;",  resultFormat.c_str(),
+                          node->name.c_str(),
+                          op1.c_str(),
+                          op2.c_str());
+        Logger::Debug("%s", node->nodeCode.c_str());
+        *destinationCode += node->nodeCode;
+    }
+    if (type == MaterialGraphNode::TYPE_ADD)
+    {
+        MaterialGraphNodeConnector * connectorA = node->GetInputConnector("a");
+        MaterialGraphNodeConnector * connectorB = node->GetInputConnector("b");
+        
+        if (!connectorA || !connectorB)
+            return ERROR_NOT_ENOUGH_CONNECTORS;
+        String resultFormat = node->GetResultFormat(connectorA->modifier, connectorB->modifier);
+        
+        node->nodeCode = Format("%s %s = %s.%s + %s.%s;", resultFormat.c_str(),
+                          node->name.c_str(),
+                          connectorA->node->GetName().c_str(),
+                          connectorA->modifier.c_str(),
+                          connectorB->node->GetName().c_str(),
+                          connectorB->modifier.c_str());
+        
+        Logger::Debug("%s", node->nodeCode.c_str());
+        *destinationCode += node->nodeCode;
+    }
+    
+    if (type == MaterialGraphNode::TYPE_FORWARD_MATERIAL)
+    {
+        // shader = new Shader();
+        MaterialGraphNodeConnector * connectorEmissive = node->GetInputConnector("emissive");
+        MaterialGraphNodeConnector * connectorDiffuse = node->GetInputConnector("diffuse");
+        MaterialGraphNodeConnector * connectorSpecular = node->GetInputConnector("specular");
+        MaterialGraphNodeConnector * connectorNormal = node->GetInputConnector("normal");
+        //      MaterialGraphNodeConnector * connectorAlpha = GetInputConnector("alpha");        
+        
+        // vertexShader +=
+        finalPixelShaderCode += "#define GRAPH_CUSTOM_PIXEL_CODE ";
+        finalPixelShaderCode += pixelShaderCode;
+        finalPixelShaderCode += "\n";
+
+        finalVertexShaderCode += "#define GRAPH_CUSTOM_VERTEX_CODE ";
+        finalVertexShaderCode += vertexShaderCode;
+        finalVertexShaderCode += "\n";
+        
+        finalPixelShaderCode += Format("#define NUM_TEXTURES %d\n", materialGraph->GetUsedTextures());
+        finalPixelShaderCode += Format("#define NUM_TEX_COORDS %d\n", materialGraph->GetUsedTextureCoordsCount());
+        
+        finalVertexShaderCode += Format("#define NUM_TEX_COORDS %d\n", materialGraph->GetUsedTextureCoordsCount());
+        
+        if (connectorEmissive)
+            finalPixelShaderCode += Format("#define IN_EMISSIVE %s\n", connectorEmissive->GetNode()->GetName().c_str());
+        if (connectorDiffuse)
+            finalPixelShaderCode += Format("#define IN_DIFFUSE %s\n", connectorDiffuse->GetNode()->GetName().c_str());
+        if (connectorSpecular)
+            finalPixelShaderCode += Format("#define IN_SPECULAR %s\n", connectorSpecular->GetNode()->GetName().c_str());
+        if (connectorNormal)
+            finalPixelShaderCode += Format("#define IN_NORMAL %s\n", connectorNormal->GetNode()->GetName().c_str());
+        
+        if (connectorNormal)
+        {
+            finalPixelShaderCode += "#define PIXEL_LIT\n";
+            finalVertexShaderCode += "#define PIXEL_LIT\n";
+        }
+        else if (connectorDiffuse || connectorSpecular)
+        {
+            finalPixelShaderCode += "#define VERTEX_LIT\n";
+            finalVertexShaderCode += "#define VERTEX_LIT\n";
+        }
+
+        finalVertexShaderCode += "#define ADDITIONAL_UNIFORMS ";
+        for (Map<String, Shader::eUniformType>::iterator it = vertexShaderAdditionaUniforms.begin(); it != vertexShaderAdditionaUniforms.end(); ++it)
+        {
+            finalVertexShaderCode += Format("uniform %s %s;", Shader::GetUniformTypeSLName(it->second), it->first.c_str());
+        }
+        finalVertexShaderCode += "\n";
+
+        finalPixelShaderCode += "#define ADDITIONAL_UNIFORMS ";
+        for (Map<String, Shader::eUniformType>::iterator it = pixelShaderAdditionaUniforms.begin(); it != pixelShaderAdditionaUniforms.end(); ++it)
+        {
+            finalPixelShaderCode += Format("uniform %s %s;", Shader::GetUniformTypeSLName(it->second), it->first.c_str());
+        }
+        finalPixelShaderCode += "\n";
+        
+        finalVertexShaderCode += "#define ADDITIONAL_VARYINGS ";
+        finalPixelShaderCode += "#define ADDITIONAL_VARYINGS ";
+        for (Map<String, Shader::eUniformType>::iterator it = additionalVaryings.begin(); it != additionalVaryings.end(); ++it)
+        {
+            finalVertexShaderCode += Format("varying %s %s;", Shader::GetUniformTypeSLName(it->second), it->first.c_str());
+            finalPixelShaderCode += Format("varying %s %s;", Shader::GetUniformTypeSLName(it->second), it->first.c_str());
+        }
+        finalVertexShaderCode += "\n";
+        finalPixelShaderCode += "\n";
+    }
+
+        
+    return NO_ERROR;
+}
+
+
 
 };
 
