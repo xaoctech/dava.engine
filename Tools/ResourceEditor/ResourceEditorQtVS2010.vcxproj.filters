@@ -73,6 +73,9 @@
     <Filter Include="Sources\Qt\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="QtGenerated\QtPosSaver">
+      <UniqueIdentifier>{5765e078-6490-4145-8476-c5e0fdaff20b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1049,6 +1052,9 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\ScenePreviewDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp">
+      <Filter>QtGenerated\QtPosSaver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
