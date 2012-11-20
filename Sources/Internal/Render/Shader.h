@@ -62,6 +62,7 @@ public:
 		UNIFORM_PROJECTION_MATRIX,
         UNIFORM_NORMAL_MATRIX, 
         UNIFORM_COLOR,
+        UNIFORM_GLOBAL_TIME,
         UNIFORM_COUNT,
     };
     
@@ -113,7 +114,10 @@ public:
     int32 GetUniformCount();
     eUniformType GetUniformType(int32 index);
     static int32 GetUniformTypeSize(eUniformType type);
+    static const char * GetUniformTypeSLName(eUniformType type);
     const String & GetUniformName(int32 index);
+    int32 GetUniformArraySize(int32 index);
+
     int32 GetUniformLocation(int32 index);
     int32 FindUniformLocationByName(const String & name);
 
@@ -162,10 +166,22 @@ private:
     GLint activeUniforms;
     
     
-    eUniform *uniformIDs;
-    String * uniformNames;
-    GLint * uniformLocations;
-    eUniformType * uniformTypes;
+//    eUniform *uniformIDs;
+//    String * uniformNames;
+//    GLint * uniformLocations;
+//    GLint * uniformSizes;
+//    eUniformType * uniformTypes;
+    
+    
+    struct Uniform
+    {
+        eUniform        id;
+        String          name;
+        GLint           location;
+        GLint           size;
+        eUniformType    type;
+    };
+    Uniform * uniforms;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     

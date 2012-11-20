@@ -39,32 +39,37 @@ namespace DAVA
 {
 
 class MaterialGraphNode;
+class NMaterial;
+
 class MaterialGraph : public BaseObject
 {
 public:
     MaterialGraph();
     ~MaterialGraph();
     
-    
     bool LoadFromFile(const String & pathname);
     bool LoadNode(YamlNode * graphNode);
     
-    void SortByDepthMarker();
+    void SortByDepthMarkerAndRemoveUnused();
     
     void RemoveAllNodes();
     void AddNode(MaterialGraphNode * node);
     void RemoveNode(MaterialGraphNode * node);
+    void RemoveNodeRecursive(MaterialGraphNode * node);
+
     
     uint32 GetNodeCount() const;
     MaterialGraphNode * GetNode(uint32 index) const;
     MaterialGraphNode * GetNodeByName(const String & name) const;
     
-    
+    uint32 GetUsedTextureCoordsCount() { return usedTextureCoordsCount; };
+    uint32 GetUsedTextures() { return usedTextures; };
     
 protected:
     static bool SortByDepthMarkerDescending(MaterialGraphNode * node1, MaterialGraphNode * node2);
     Vector<MaterialGraphNode*> allNodes;
     uint32 usedTextureCoordsCount;
+    uint32 usedTextures;
 };
 
 };

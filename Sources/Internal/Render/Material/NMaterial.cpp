@@ -9,6 +9,8 @@
 
 namespace DAVA
 {
+    
+    
 NMaterialDescriptor::NMaterialDescriptor()
 {
     
@@ -54,7 +56,8 @@ void NMaterialDescriptor::SetNameForUniformSlot(uint32 slot, const String & name
 
 NMaterialInstance::NMaterialInstance()
 {
-    uniformShifts = 0;
+    DVASSERT(sizeof(UniformInfo) == 4);
+    uniforms = 0;
     uniformData = 0;
     lightCount = 0;
     for (uint32 k = 0; k < 8; ++k)
@@ -63,11 +66,12 @@ NMaterialInstance::NMaterialInstance()
     }
     
     renderState.state = RenderStateBlock::DEFAULT_3D_STATE;
+    shader = 0;
 }
     
 NMaterialInstance::~NMaterialInstance()
 {
-    SafeDeleteArray(uniformShifts);
+    SafeDeleteArray(uniforms);
     SafeDeleteArray(uniformData);
 }
     
@@ -84,21 +88,32 @@ bool NMaterialInstance::LoadFromYaml(const String & pathname)
     
 void NMaterialInstance::SetUniformData(uint32 uniformIndex, void * data, uint32 size)
 {
-    memcpy(&uniformData[uniformShifts[uniformIndex]], data, size);
+    memcpy(&uniformData[uniforms[uniformIndex].shift], data, size);
 }
 
     
-void NMaterialInstance::PrepareInstanceForShader(Shader * shader)
+void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
 {
+    if (shader == _shader)return;
+    shader = _shader;
+    /*
+        TODO: rethink how to prepare instances for particular shaders of material.
+     */
+    
+    SafeDeleteArray(uniforms);
+    SafeDeleteArray(uniformData);
+    
     uniformCount = shader->GetUniformCount();
-    uniformShifts = new uint32[uniformCount];
+    uniforms = new UniformInfo[uniformCount];
+    memset(uniforms, 0, sizeof(UniformInfo) * uniformCount);
     
     uint32 uniformDataSize = 0;
     for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
-        uint32 size = shader->GetUniformTypeSize(uniformType) + 4;
-        uniformShifts[uniformIndex] = uniformDataSize;
+        uint32 size = shader->GetUniformTypeSize(uniformType) * shader->GetUniformArraySize(uniformIndex) + 4;
+        uniforms[uniformIndex].shift = uniformDataSize;
+        uniforms[uniformIndex].arraySize = shader->GetUniformArraySize(uniformIndex);
         uniformDataSize += size;
     }
     
@@ -108,23 +123,32 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * shader)
     {
         Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         const String & uniformName = shader->GetUniformName(uniformIndex);
+        //Logger::Debug("Find uniform: %s", uniformName.c_str());
         
-        if (uniformName == "texture[0]")
+        if ((uniformName == "texture[0]") || (uniformName == "texture"))
         {
-            uint32 textureIndex = 0;
-            SetUniformData(uniformIndex, &textureIndex, 4);
-        }else if (uniformName == "texture[1]")
+            uint32 textureIndexes[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+            SetUniformData(uniformIndex, textureIndexes, 4 *  shader->GetUniformArraySize(uniformIndex));
+        }else if ((uniformName == "lightIntensity[0]") || (uniformName == "lightIntensity"))
         {
-            uint32 textureIndex = 1;
-            SetUniformData(uniformIndex, &textureIndex, 4);
-        }else if (uniformName == "texture[2]")
+            float32 lightIntensity[8] = {500, 500, 500, 500, 100, 100, 100, 100};
+            SetUniformData(uniformIndex, lightIntensity, 4 *  shader->GetUniformArraySize(uniformIndex));
+        }else if ((uniformName == "lightPosition[0]") || (uniformName == "lightPosition"))
         {
-            uint32 textureIndex = 2;
-            SetUniformData(uniformIndex, &textureIndex, 4);
-        }else if (uniformName == "texture[3]")
+            Vector3 lightPosition[8] = {
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 0.0f),
+            };
+            SetUniformData(uniformIndex, lightPosition, 12 *  shader->GetUniformArraySize(uniformIndex));
+        }else
         {
-            uint32 textureIndex = 3;
-            SetUniformData(uniformIndex, &textureIndex, 4);
+            uniforms[uniformIndex].flags |= SKIP_UNIFORM;
         }
     }
 }
@@ -132,79 +156,112 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * shader)
 // TODO: Platform specific code.
 // Either rethink, or rewrite. 
 
-void NMaterialInstance::BindUniforms(Shader * shader)
+void NMaterialInstance::BindUniforms()
 {
     for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
-        uint8 * data = &uniformData[uniformShifts[uniformIndex]];
+        UniformInfo uniformInfo = uniforms[uniformIndex];
+        
+        if (uniformInfo.flags & SKIP_UNIFORM)continue;
+        
+//        Logger::Debug("Bind uniform: %s", shader->GetUniformName(uniformIndex).c_str());
+        
+        uint8 * data = &uniformData[uniformInfo.shift];
         switch(uniformType)
         {
             case Shader::UT_FLOAT:
-                RENDER_VERIFY(glUniform1fv(shader->GetUniformLocation(uniformIndex), 1, (float*)data));
+                RENDER_VERIFY(glUniform1fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (float*)data));
                 break;
             case Shader::UT_FLOAT_VEC2:
-                RENDER_VERIFY(glUniform2fv(shader->GetUniformLocation(uniformIndex), 1, (float*)data));
+                RENDER_VERIFY(glUniform2fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (float*)data));
                 break;
             case Shader::UT_FLOAT_VEC3:
-                RENDER_VERIFY(glUniform3fv(shader->GetUniformLocation(uniformIndex), 1, (float*)data));
+                RENDER_VERIFY(glUniform3fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (float*)data));
                 break;
             case Shader::UT_FLOAT_VEC4:
-                RENDER_VERIFY(glUniform4fv(shader->GetUniformLocation(uniformIndex), 1, (float*)data));
+                RENDER_VERIFY(glUniform4fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (float*)data));
                 break;
             case Shader::UT_INT:
-                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_INT_VEC2:
-                RENDER_VERIFY(glUniform2iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform2iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_INT_VEC3:
-                RENDER_VERIFY(glUniform3iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform3iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_INT_VEC4:
-                RENDER_VERIFY(glUniform4iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform4iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_BOOL:
-                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_BOOL_VEC2:
-                RENDER_VERIFY(glUniform2iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform2iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_BOOL_VEC3:
-                RENDER_VERIFY(glUniform3iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform3iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_BOOL_VEC4:
-                RENDER_VERIFY(glUniform4iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform4iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_FLOAT_MAT2:
-                RENDER_VERIFY(glUniformMatrix2fv(shader->GetUniformLocation(uniformIndex), 1, GL_FALSE, (float32*)data));
+                RENDER_VERIFY(glUniformMatrix2fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, GL_FALSE, (float32*)data));
                 break;
             case Shader::UT_FLOAT_MAT3:
-                RENDER_VERIFY(glUniformMatrix3fv(shader->GetUniformLocation(uniformIndex), 1, GL_FALSE, (float32*)data));
+                RENDER_VERIFY(glUniformMatrix3fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, GL_FALSE, (float32*)data));
                 break;
             case Shader::UT_FLOAT_MAT4:
-                RENDER_VERIFY(glUniformMatrix4fv(shader->GetUniformLocation(uniformIndex), 1, GL_FALSE, (float32*)data));
+                RENDER_VERIFY(glUniformMatrix4fv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, GL_FALSE, (float32*)data));
                 break;
             case Shader::UT_SAMPLER_2D:
-                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
             case Shader::UT_SAMPLER_CUBE:
-                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), 1, (int32*)data));
+                RENDER_VERIFY(glUniform1iv(shader->GetUniformLocation(uniformIndex), uniformInfo.arraySize, (int32*)data));
                 break;
         };
     }
 }
 
     
+void NMaterialInstance::UpdateUniforms()
+{
+    // Get global time
+    //float32 time = 0.0;
+    //shader->GetUniformLocationByName(FN_GLOBAL_TIME);
+    
+    
+    /*
+         Camera * camera = scene->GetCurrentCamera();
+         LightNode * lightNode0 = instanceMaterialState->GetLight(0);
+         if (lightNode0 && camera)
+         {
+         if (uniformLightPosition0 != -1)
+         {
+         const Matrix4 & matrix = camera->GetMatrix();
+         Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+     */
+
+}
+    
 NMaterial::NMaterial(uint32 _shaderCount)
     :   shaderCount(_shaderCount)
 {
     shaderArray = new Shader*[shaderCount];
+    descriptor = new NMaterialDescriptor();
 }
     
 NMaterial::~NMaterial()
 {
+    SafeRelease(descriptor);
     SafeDeleteArray(shaderArray);
+}
+    
+NMaterialDescriptor * NMaterial::GetDescriptor()
+{
+    return descriptor;
 }
     
 void NMaterial::SetShader(uint32 index, Shader * shader)
@@ -212,29 +269,35 @@ void NMaterial::SetShader(uint32 index, Shader * shader)
     DVASSERT(shaderArray != 0);
     shaderArray[index] = shader;
 }
-    
+
+
 void NMaterial::PrepareRenderState(PolygonGroup * polygonGroup, NMaterialInstance * instance)
 {
     
 //    if (1)
     {
-        shaderArray[0]->Dump();
+//        shaderArray[0]->Dump();
     }
     
     
-    Shader * shader = shaderArray[instance->GetLightCount()];
-    DVASSERT(shader != 0)
-    instance->renderState.SetShader(shader);
+    Shader * activeShader = shaderArray[instance->GetLightCount()];
+    DVASSERT(activeShader != 0)
+    instance->renderState.SetShader(activeShader);
+    instance->PrepareInstanceForShader(activeShader);
+    
+    // Bind shader & global uniforms
     RenderManager::Instance()->FlushState(&instance->renderState);
+
+    // Here bind local uniforms of material
+    instance->UpdateUniforms();
+    instance->BindUniforms();
+    
     RenderManager::Instance()->SetRenderData(polygonGroup->renderDataObject);
 	RenderManager::Instance()->AttachRenderData();
 };
 
 void NMaterial::Draw(PolygonGroup * polygonGroup, NMaterialInstance * instance)
 {
-    
-
-    
     // TODO: rethink this code
     if (polygonGroup->renderDataObject->GetIndexBufferID() != 0)
     {
@@ -243,8 +306,10 @@ void NMaterial::Draw(PolygonGroup * polygonGroup, NMaterialInstance * instance)
     else
     {
         RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, polygonGroup->indexArray);
-    }    
+    }
 };
+    
+
 
 
 };

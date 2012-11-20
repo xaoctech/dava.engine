@@ -55,10 +55,7 @@ Shader::Shader()
     activeAttributes = 0;
     activeUniforms = 0;
 
-    uniformIDs = 0;
-    uniformNames = 0;
-    uniformLocations = 0;
-    uniformTypes = 0;
+    uniforms = 0;
     
     for (int32 ki = 0; ki < VERTEX_FORMAT_STREAM_MAX_COUNT; ++ki)
          vertexFormatAttribIndeces[ki] = -1;
@@ -93,6 +90,7 @@ const char * uniformStrings[Shader::UNIFORM_COUNT] =
 		"projectionMatrix",
         "normalMatrix",
         "flatColor",
+        "globalTime",
     };
 
 const char * attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] = 
@@ -123,7 +121,7 @@ int32 Shader::GetUniformCount()
     
 Shader::eUniformType Shader::GetUniformType(int32 index)
 {
-    return uniformTypes[index];
+    return uniforms[index].type;
 }
     
 int32 Shader::GetUniformTypeSize(eUniformType type)
@@ -167,23 +165,72 @@ int32 Shader::GetUniformTypeSize(eUniformType type)
     };
 }
     
+    
+const char * Shader::GetUniformTypeSLName(eUniformType type)
+{
+    switch(type)
+    {
+        case UT_FLOAT:
+            return "float";
+        case UT_FLOAT_VEC2:
+            return "vec2";
+        case UT_FLOAT_VEC3:
+            return "vec3";
+        case UT_FLOAT_VEC4:
+            return "vec4";
+        case UT_INT:
+            return "int";
+        case UT_INT_VEC2:
+            return "ivec2";
+        case UT_INT_VEC3:
+            return "ivec3";
+        case UT_INT_VEC4:
+            return "ivec4";
+        case UT_BOOL:
+            return "bool";
+        case UT_BOOL_VEC2:
+            return "bvec2";
+        case UT_BOOL_VEC3:
+            return "bvec3";
+        case UT_BOOL_VEC4:
+            return "bvec4";
+        case UT_FLOAT_MAT2:
+            return "mat2";
+        case UT_FLOAT_MAT3:
+            return "mat3";
+        case UT_FLOAT_MAT4:
+            return "mat4";
+        case UT_SAMPLER_2D:
+            return "sampler2D";
+        case UT_SAMPLER_CUBE:
+            return "samplerCube";
+    };
+}
+
+    
+    
 const String & Shader::GetUniformName(int32 index)
 {
-    return uniformNames[index];
+    return uniforms[index].name;
 }
 
 int32 Shader::GetUniformLocation(int32 index)
 {
-    return uniformLocations[index];
+    return uniforms[index].location;
+}
+    
+int32 Shader::GetUniformArraySize(int32 index)
+{
+    return uniforms[index].size;
 }
 
 int32 Shader::FindUniformLocationByName(const String & name)
 {
     for (int32 k = 0; k < activeUniforms; ++k)
     {
-        if (uniformNames[k] == name)
+        if (uniforms[k].name == name)
         {
-            return uniformLocations[k];
+            return uniforms[k].location;
         }
     }
     return -1;
@@ -303,10 +350,7 @@ bool Shader::Load(const String & _vertexShaderPath, const String & _fragmentShad
 Shader::~Shader()
 {
     SafeDeleteArray(attributeNames);
-    SafeDeleteArray(uniformNames);
-    SafeDeleteArray(uniformIDs);
-    SafeDeleteArray(uniformLocations);
-    SafeDeleteArray(uniformTypes);
+    SafeDeleteArray(uniforms);
     
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
@@ -366,10 +410,7 @@ bool Shader::Recompile()
     
     RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
     
-    uniformLocations = new GLint[activeUniforms];
-    uniformIDs = new eUniform[activeUniforms];
-    uniformNames = new String[activeUniforms];
-    uniformTypes = new eUniformType[activeUniforms];
+    uniforms = new Uniform[activeUniforms];
     
     for (int32 k = 0; k < activeUniforms; ++k)
     {
@@ -378,11 +419,12 @@ bool Shader::Recompile()
         RENDER_VERIFY(glGetActiveUniform(program, k, 512, 0, &size, &type, attributeName));
         eUniform uniform = GetUniformByName(attributeName);
         //Logger::Debug("shader uniform: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
-        uniformNames[k] = attributeName;
-        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
-        uniformIDs[k] = uniform;
-        uniformTypes[k] = (eUniformType)type;
-//        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
+        uniforms[k].name = attributeName;
+        uniforms[k].location = glGetUniformLocation(program, uniforms[k].name.c_str());
+        uniforms[k].id = uniform;
+        uniforms[k].type = (eUniformType)type;
+        uniforms[k].size = size;
+//        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniforms[k].name.c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
     
     
@@ -434,7 +476,6 @@ void Shader::SetUniformValue(int32 uniformLocation, const Matrix4 & matrix)
     DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, matrix.data));
 }
-    
     
 int32 Shader::GetAttributeCount()
 {
@@ -561,38 +602,43 @@ void Shader::Bind()
     
     for (int32 k = 0; k < activeUniforms; ++k)
     {
-        switch (uniformIDs[k])
+        switch (uniforms[k].id)
         {
         case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
             {    
                 const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelViewProj.data));
+                RENDER_VERIFY(glUniformMatrix4fv(uniforms[k].location, 1, GL_FALSE, modelViewProj.data));
                 break;
             }
         case UNIFORM_MODEL_VIEW_MATRIX:
             {    
                 const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelView.data));
+                RENDER_VERIFY(glUniformMatrix4fv(uniforms[k].location, 1, GL_FALSE, modelView.data));
                 break;
             }
 		case UNIFORM_PROJECTION_MATRIX:
 			{
 				const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, proj.data));
+                RENDER_VERIFY(glUniformMatrix4fv(uniforms[k].location, 1, GL_FALSE, proj.data));
 				break;
 			}
         case UNIFORM_NORMAL_MATRIX:
             {
                 const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
-                RENDER_VERIFY(glUniformMatrix3fv(uniformLocations[k], 1, GL_FALSE, normalMatrix.data));
+                RENDER_VERIFY(glUniformMatrix3fv(uniforms[k].location, 1, GL_FALSE, normalMatrix.data));
                 break;
             }
         case UNIFORM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();
-                RENDER_VERIFY(glUniform4fv(uniformLocations[k], 1, &c.r));
+                RENDER_VERIFY(glUniform4fv(uniforms[k].location, 1, &c.r));
                 break;
-            }  
+            }
+        case UNIFORM_GLOBAL_TIME:
+            {
+                float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
+                RENDER_VERIFY(glUniform1f(uniforms[k].location, globalTime));
+            };
         default:
             
             break;
@@ -621,8 +667,8 @@ void Shader::Dump()
 //        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
 //        uniformIDs[k] = uniform;
 //        uniformTypes[k] = (eUniformType)type;
-        eUniform uniform = GetUniformByName(uniformNames[k].c_str());
-        Logger::Debug("uniform: %s(%d) type: %s", uniformNames[k].c_str(), uniform, VertexTypeStringFromEnum(uniformTypes[k]).c_str());
+        eUniform uniform = GetUniformByName(uniforms[k].name.c_str());
+        Logger::Debug("uniform: %s(%d) type: %s", uniforms[k].name.c_str(), uniform, VertexTypeStringFromEnum(uniforms[k].type).c_str());
     }
 
     

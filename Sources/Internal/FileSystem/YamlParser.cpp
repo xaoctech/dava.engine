@@ -299,9 +299,9 @@ VariantType YamlNode::AsVariantType()
 {
     VariantType retValue;
     
-    Map<String, YamlNode*> & mapFromNode = AsMap();
+    std::multimap<String, YamlNode*> & mapFromNode = AsMap();
         
-    for(Map<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
+    for(std::multimap<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
         String innerTypeName = it->first;
         
@@ -503,7 +503,7 @@ void  YamlNode::InitFromVariantType(VariantType* varType)
     //create value node
     YamlNode* valueNode = new YamlNode(YamlNode::TYPE_STRING);
     valueNode->FillContentAccordingToVariantTypeValue(varType);
-    objectMap[variantName]=valueNode;
+    objectMap.insert(std::pair<String, YamlNode*>(variantName, valueNode));
 }
     
     
@@ -592,7 +592,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
                 YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
                 
                 arrayElementNodeValue->InitFromVariantType(it->second);
-                arrayElementNode->objectMap[it->first] = arrayElementNodeValue;
+                arrayElementNode->objectMap.insert(std::pair<String, YamlNode*>(it->first, arrayElementNodeValue));
                 
                 objectArray.push_back(arrayElementNode);
             }
@@ -743,12 +743,12 @@ void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
         YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
 
         arrayElementNodeValue->InitFromVariantType(it->second);
-        arrayElementNode->objectMap[it->first] = arrayElementNodeValue;
+        arrayElementNode->objectMap.insert(std::pair<String, YamlNode*>(it->first, arrayElementNodeValue));
         
         arrayContentNode->objectArray.push_back(arrayElementNode);
     }
     
-    objectMap[VariantType::TYPENAME_KEYED_ARCHIVE] = arrayContentNode;
+    objectMap.insert(std::pair<String, YamlNode*>(VariantType::TYPENAME_KEYED_ARCHIVE, arrayContentNode));
      
 }
     

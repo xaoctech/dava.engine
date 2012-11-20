@@ -623,6 +623,7 @@ void Core::SystemProcessFrame()
 		}
 
 		float32 frameDelta = SystemTimer::Instance()->FrameDelta();
+        SystemTimer::Instance()->UpdateGlobalTime(frameDelta);
 
 		if(Replay::IsRecord())
 		{

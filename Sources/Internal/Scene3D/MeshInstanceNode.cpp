@@ -65,8 +65,16 @@ PolygonGroupWithMaterial::PolygonGroupWithMaterial(StaticMesh * _mesh, int32 _po
     
     if (MaterialCompiler::COMPILATION_SUCCESS == compiler->Compile(graph, 1, &nMaterial))
     {
+        //NMaterialDescriptor * descriptor = nMaterial->GetDescriptor();
+        
+        
         nMaterialInstance = new NMaterialInstance();
         nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 0);
+//        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 1);
+        Texture * texture = Texture::CreateFromFile("/Users/binaryzebra/Sources/dava.framework/Tools/ResourceEditor/DataSource/3D/materials_new/images/normal.png");
+        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        DVASSERT(texture);
+        nMaterialInstance->GetRenderState()->SetTexture(texture, 1);
     }
     
     SafeRelease(graph);
