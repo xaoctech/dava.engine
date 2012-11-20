@@ -273,11 +273,13 @@ void AutotestingSystem::SaveTestToDB()
 {
     if(!isDB) return;
     
-    Logger::Debug("AutotestingSystem::SaveTestToDB");
+    
     
     String testAndFileName = (!masterId.empty() && !isMaster) ? Format("%s (%s) %s", testName.c_str(), testFileName.c_str(), masterTask.c_str()) : Format("%s (%s)", testName.c_str(), testFileName.c_str());
     
     String testsName = Format("%u",testsDate);
+    
+    Logger::Debug("AutotestingSystem::SaveTestToDB %s %s", testsName.c_str(), testAndFileName.c_str());
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
