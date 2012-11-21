@@ -31,7 +31,8 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::T
 {
 	String outputName;
 	String command = GetCommandLinePVR(fileToConvert, descriptor);
-
+    Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
+    
 	if(!command.empty())
 	{
 		FileSystem::Instance()->Spawn(command);
@@ -76,6 +77,11 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 		// output file
 		command += Format(" -o \"%s\"", outputFile.c_str());
 	}
+    else
+    {
+        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.c_str());
+        command = "";
+    }
 
 	return command;
 }
