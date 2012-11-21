@@ -490,7 +490,14 @@
        </layout>
       </widget>
      </widget>
-     <widget class="TextureProperties" name="textureProperties" native="true"/>
+     <widget class="TextureProperties" name="textureProperties" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>
