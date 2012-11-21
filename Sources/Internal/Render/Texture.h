@@ -272,7 +272,6 @@ public:							// properties for fast access
     
     static void SetDefaultFileFormat(ImageFileFormat fileFormat);
     static ImageFileFormat GetDefaultFileFormat();
-    static String GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat);
     
 private:
     

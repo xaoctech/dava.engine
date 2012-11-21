@@ -274,7 +274,7 @@ void TextureDialog::updateInfoConverted()
 		case ViewPVR:
 			if(curDescriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+				DAVA::String compressedTexturePath = TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->pvrCompression.format);
 				filesize = QFileInfo(compressedTexturePath.c_str()).size();
@@ -284,7 +284,7 @@ void TextureDialog::updateInfoConverted()
 		case ViewDXT:
 			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = Texture::GetPathnameForFileFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+				DAVA::String compressedTexturePath = TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
 				filesize = QFileInfo(compressedTexturePath.c_str()).size();

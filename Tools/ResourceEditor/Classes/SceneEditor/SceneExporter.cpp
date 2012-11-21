@@ -373,7 +373,7 @@ bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &er
     ExportTextureDescriptor(texturePathname, errorLog);
     CompressTextureIfNeed(texturePathname, errorLog);
     
-    bool ret = ExportFileDirectly(GetExportedTextureName(texturePathname), errorLog);
+    bool ret = ExportFileDirectly(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat), errorLog);
 //    if(!ret)
 //    {
 //        //TODO: blen textures
@@ -455,7 +455,7 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 
 void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog)
 {
-    String modificationDate = File::GetModificationDate(GetExportedTextureName(texturePathname));
+    String modificationDate = File::GetModificationDate(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat));
     
     String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
     
@@ -491,30 +491,6 @@ String SceneExporter::RemoveFolderFromPath(const String &pathname, const String 
     return workingPathname;
 }
 
-String SceneExporter::GetExportedTextureName(const String &pathname)
-{
-    String exportedPathname = String("");
-    
-    switch (exportFormat)
-    {
-        case PNG_FILE:
-            exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".png"));
-            break;
-
-        case PVR_FILE:
-            exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".pvr"));
-            break;
-
-        case DXT_FILE:
-            exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".dds"));
-            break;
-
-        default:
-            break;
-    }
-    
-    return exportedPathname;
-}
 
 void SceneExporter::CollectTextureForExport(Texture *texture)
 {

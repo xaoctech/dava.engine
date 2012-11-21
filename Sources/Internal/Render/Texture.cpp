@@ -667,7 +667,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
-    String imagePathname = GetPathnameForFileFormat(pathName, formatForLoading);
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
     texture = CreateFromImage(imagePathname, descriptor);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
@@ -689,7 +689,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat)
 {
     ReleaseTextureData();
     
-    String imagePathname = GetPathnameForFileFormat(relativePathname, fileFormat);
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(relativePathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
     TextureDescriptor *descriptor = CreateDescriptor();
 
@@ -1409,29 +1409,6 @@ GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 }
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
-    
-String Texture::GetPathnameForFileFormat(const String &sourcePathname, ImageFileFormat fileFormat)
-{
-    String imagePathname;
-    switch (fileFormat)
-    {
-        case PNG_FILE:
-            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".png"));
-            break;
-            
-        case PVR_FILE:
-            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".pvr"));
-            break;
-        case DXT_FILE:
-            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".dds"));
-            break;
-            
-        default:
-            break;
-    }
-    
-    return imagePathname;
-}
     
 void Texture::SetDefaultFileFormat(ImageFileFormat fileFormat)
 {

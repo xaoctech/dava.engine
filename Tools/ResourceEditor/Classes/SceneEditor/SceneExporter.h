@@ -47,8 +47,6 @@ protected:
     
     void CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog);
     
-    String GetExportedTextureName(const String &pathname);
-    
     void CollectTextureForExport(Texture *texture);
     
     
