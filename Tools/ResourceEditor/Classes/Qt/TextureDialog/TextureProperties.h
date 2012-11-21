@@ -97,6 +97,8 @@ private:
 	enumPropertiesHelper<int> helperPVRFormats;
 	enumPropertiesHelper<int> helperDXTFormats;
 	enumPropertiesHelper<int> helperWrapModes;
+	enumPropertiesHelper<int> helperMinGLModes;
+	enumPropertiesHelper<int> helperMagGLModes;
 	enumPropertiesHelper<QSize> helperMipMapSizes;
 
 	DAVA::Texture *curTexture;
@@ -124,6 +126,8 @@ private:
 	QtProperty *boolGenerateMipMaps;
 	QtProperty *enumWrapModeS;
 	QtProperty *enumWrapModeT;
+	QtProperty *enumMinGL;
+	QtProperty *enumMagGL;
 
 	void Save();
 

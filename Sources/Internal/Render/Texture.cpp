@@ -1426,9 +1426,13 @@ GLint Texture::HWglFilterToGLFilter(TextureFilter filter)
 
         case FILTER_LINEAR_MIPMAP_LINEAR:
             return GL_LINEAR_MIPMAP_LINEAR;
-    }
+
+		default:
+			DVASSERT(0 && "Wrong filter");
+			break;
+    }	
     
-    return 0;
+    return GL_NEAREST;
 }
     
     
