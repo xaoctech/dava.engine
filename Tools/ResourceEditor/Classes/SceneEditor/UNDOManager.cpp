@@ -42,11 +42,8 @@ UNDOAction::UNDOAction()
 
 UNDOAction::~UNDOAction()
 {
-/*
- *	what about deleting file in this->filePathname?
- *	if(filePathname != "")
- *		FileSystem::Instance()->DeleteFile(filePathname);
- */
+	if(filePathname != "")
+		FileSystem::Instance()->DeleteFile(filePathname);
 	SafeRelease(actionData);
 }
 
