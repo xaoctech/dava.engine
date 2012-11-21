@@ -63,7 +63,7 @@ void SceneExporter::SetExportingFormat(const String &newFormat)
     {
         exportFormat = PVR_FILE;
     }
-    else if(0 == CompareCaseInsensitive(format, ".dxt"))
+    else if(0 == CompareCaseInsensitive(format, ".dds"))
     {
         exportFormat = DXT_FILE;
     }
@@ -506,7 +506,7 @@ String SceneExporter::GetExportedTextureName(const String &pathname)
             break;
 
         case DXT_FILE:
-            exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".dxt"));
+            exportedPathname = FileSystem::Instance()->ReplaceExtension(pathname, String(".dds"));
             break;
 
         default:

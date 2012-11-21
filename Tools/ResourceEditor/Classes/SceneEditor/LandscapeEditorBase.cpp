@@ -248,7 +248,8 @@ void LandscapeEditorBase::SaveTexture()
     
     if(savedPath.length())
     {
-        SaveTextureAs(savedPath, true);
+        String pathToSave = FileSystem::Instance()->ReplaceExtension(savedPath, ".png");
+        SaveTextureAs(pathToSave, true);
     }
     else if(!fileSystemDialog->GetParent())
     {

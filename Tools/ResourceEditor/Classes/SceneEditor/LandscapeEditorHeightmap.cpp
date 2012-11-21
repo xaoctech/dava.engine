@@ -18,6 +18,8 @@
 #include "../LandscapeEditor/LandscapesController.h"
 #include "../Qt/QtUtils.h"
 
+#include "EditorSettings.h"
+
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -429,7 +431,7 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     if(mask)
     {
         tilemaskPathname = mask->GetPathname();
-        tilemaskImage = CreateTopLevelImage(tilemaskPathname);
+        tilemaskImage = CreateTopLevelImage(TextureDescriptor::GetPathnameForFormat(tilemaskPathname, (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat()));
         tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
     }
     
