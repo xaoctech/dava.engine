@@ -537,8 +537,8 @@ bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
             RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
         }
         
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, descriptor->minFilter));
-        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, descriptor->magFilter));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->minFilter)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->magFilter)));
 
 //        if (descriptor->GetGenerateMipMaps())
 //        {
@@ -1394,19 +1394,44 @@ void Texture::GenerateID()
 #if defined (__DAVAENGINE_OPENGL__)
 GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 {
-    GLint glWrap = 0;
     switch(wrap)
     {
         case WRAP_CLAMP_TO_EDGE:
-            glWrap = GL_CLAMP_TO_EDGE;
-            break;
+            return GL_CLAMP_TO_EDGE;
         case WRAP_REPEAT:
-            glWrap = GL_REPEAT;
-            break;
+            return GL_REPEAT;
     };
     
-    return glWrap;
+    return 0;
 }
+    
+GLint Texture::HWglFilterToGLFilter(TextureFilter filter)
+{
+    switch (filter)
+    {
+        case FILTER_NEAREST:
+            return GL_NEAREST;
+            
+        case FILTER_LINEAR:
+            return GL_LINEAR;
+
+        case FILTER_NEAREST_MIPMAP_NEAREST:
+            return GL_NEAREST_MIPMAP_NEAREST;
+
+        case FILTER_LINEAR_MIPMAP_NEAREST:
+            return GL_LINEAR_MIPMAP_NEAREST;
+
+        case FILTER_NEAREST_MIPMAP_LINEAR:
+            return GL_NEAREST_MIPMAP_LINEAR;
+
+        case FILTER_LINEAR_MIPMAP_LINEAR:
+            return GL_LINEAR_MIPMAP_LINEAR;
+    }
+    
+    return 0;
+}
+    
+    
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     
