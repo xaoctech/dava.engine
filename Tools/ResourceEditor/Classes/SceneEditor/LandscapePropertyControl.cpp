@@ -216,7 +216,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 	else
 	{
-		bool isValid = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
+		bool isValid = (newValue.empty()) ? true: SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
 		if(isValid)
 		{
 			if("property.landscape.texture.tile0" == forKey)
@@ -383,9 +383,20 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
 {
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
     String texPathname = landscape->SaveFullTiledTexture();
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
     
-    propertyList->SetFilepathPropertyValue(String("property.landscape.texture.tiledtexture"), texPathname);
-    landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texPathname);
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+    if(!descriptor)
+    {
+        descriptor = new TextureDescriptor();
+        descriptor->pathname = descriptorPathname;
+        descriptor->Save();
+    }
+    
+    propertyList->SetFilepathPropertyValue(String("property.landscape.texture.tiledtexture"), descriptor->pathname);
+    landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, descriptor->pathname);
+    
+    SafeRelease(descriptor);
 }
 
 void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void *userData, void *callerData)
