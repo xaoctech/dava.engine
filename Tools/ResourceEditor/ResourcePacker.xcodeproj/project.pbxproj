@@ -301,7 +301,7 @@
 		E8D838C7162EE8F200FBE1EA /* UNDOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8D837C5162EE8F100FBE1EA /* UNDOManager.cpp */; };
 		E8D838E4162EEA4600FBE1EA /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838E3162EEA4600FBE1EA /* QtGui.framework */; };
 		E8D838E6162EEA6000FBE1EA /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838E5162EEA6000FBE1EA /* QtCore.framework */; };
-		E8D838E8162EEA7A00FBE1EA /* QtNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838E7162EEA7A00FBE1EA /* QtNetwork.framework */; };
+		E8D838E8162EEA7A00FBE1EA /* QtNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838E7162EEA7A00FBE1EA /* QtNetwork.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		E8D838EA162EEA8C00FBE1EA /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838E9162EEA8C00FBE1EA /* QtOpenGL.framework */; };
 		E8D83918162EEC7A00FBE1EA /* libFColladaS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D838FC162EEB5E00FBE1EA /* libFColladaS.a */; };
 		E8D83919162EEC7A00FBE1EA /* libFrameworkQt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D83902162EEB8F00FBE1EA /* libFrameworkQt.a */; };
