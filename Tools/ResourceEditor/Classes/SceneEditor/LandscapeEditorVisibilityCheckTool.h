@@ -63,7 +63,6 @@ protected:
 
 	void PrepareConfig();
 	void RecreateVisibilityAreaSprite();
-	const Vector<Vector3> CalculateVisibility(float32 density, const Vector3& point, const Vector<float32>& pointsHeight, const Vector3& areaCenter, float32 areaSize);
 	void DrawVisibilityAreaPoints(const Vector<Vector3>& points);
 
 	Rect2i FitRectToImage(Image* image, const Rect2i& rect);

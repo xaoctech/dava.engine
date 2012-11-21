@@ -100,12 +100,11 @@ void LandscapeEditorVisibilityCheckTool::PerformLandscapeDraw()
 		visibilityPointSprite->SetScale(scale, scale);
 		visibilityPointSprite->Draw();
 	}
-	
-    texSurf->GenerateMipmaps();
     RenderManager::Instance()->RestoreRenderTarget();
 
 	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, sprTargetSurf->GetTexture());
 	
+	SafeRelease(visibilityPointSprite);
 	SafeRelease(sprTargetSurf);
 	SafeRelease(sprLandscape);
 	
@@ -241,9 +240,6 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 				point.z = GetLandscapeHeightFromCursorPos(visibilityPoint);
 				point.z += visibilityPointHeight;
 
-				Vector<Vector3> resP;
-				PerformHightTest(point, visibilityAreaCenter, visibilityAreaSize, pointsDensity, areaPointHeights, &resP);
-
 				Rect2i rect;
 				rect.SetSize(Size2i(visibilityAreaSize * 2 + 10, visibilityAreaSize * 2 + 10));
 				rect.SetCenter(Point2i((int32)visibilityAreaCenter.x, (int32)visibilityAreaCenter.y));
@@ -254,6 +250,8 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 				Image* undoImage = Image::Create(rect.dx, rect.dy, undoTextureImage->GetPixelFormat());
 				CopyImageRectToImage(undoTextureImage, rect, undoImage, Point2i(0, 0));
 
+				Vector<Vector3> resP;
+				PerformHightTest(point, visibilityAreaCenter, visibilityAreaSize, pointsDensity, areaPointHeights, &resP);
 				DrawVisibilityAreaPoints(resP);
 
 				Image* redoTextureImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
@@ -332,35 +330,11 @@ void LandscapeEditorVisibilityCheckTool::PrepareConfig()
 	areaPointColors = config->GetColorPropertyValues("LevelVisibilityColors");
 }
 
-const Vector<Vector3> LandscapeEditorVisibilityCheckTool::CalculateVisibility(float32 density, const Vector3& point, const Vector<float32>& pointsHeight, const Vector3& areaCenter, float32 areaSize)
-{
-	Vector<Vector3> points;
-
-	Vector2 center(areaCenter.x, areaCenter.y);
-	Vector2 a = center - Vector2(areaSize, areaSize);
-
-	for(float32 x = a.x; x < (a.x + areaSize * 2); x += density)
-	{
-		for(float32 y = a.y; y < (a.y + areaSize * 2); y += density)
-		{
-			Vector2 b(x, y);
-			Vector2 c = b - center;
-			if(c.Length() < areaSize)
-			{
-				Vector3 d(b);
-				d.z = rand() % areaPointColors.size();
-				points.push_back(d);
-			}
-		}
-	}
-
-	return points;
-}
-
 void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoords, Vector2 circleCentr, float circleRadius,
 	float density, const Vector<float>& hightValues, Vector<Vector3>* colorizedPoints)
 {
-	if(hightValues.size() == 0)
+	DVASSERT(colorizedPoints);
+	if(hightValues.size() == 0 )
 	{
 		return;
 	}

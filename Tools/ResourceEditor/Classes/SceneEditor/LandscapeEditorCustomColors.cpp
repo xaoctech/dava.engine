@@ -51,7 +51,6 @@ LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
     SafeRelease(savedHeightmap);
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
-	//SafeRelease(circleTexture);
 }
 
 
@@ -229,35 +228,6 @@ uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DA
 
 	return texArr;
 }
-/*
-void LandscapeEditorCustomColors::UpdateTool()
-{
-	if(currentTool && currentTool->sprite && currentTool->size)
-	{
-		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
-        Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
-        if(pos != prevDrawPos)
-        {
-            wasTileMaskToolUpdate = true;
-
-			UpdateCircleTexture();
-			
-			Sprite* blankSprite = Sprite::CreateFromTexture(circleTexture, 0, 0, (float32)circleTexture->width, (float32)circleTexture->height);
-			
-			//fill color sprite to get opportunity to save its texture separately 
-			RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
-			RenderManager::Instance()->SetColor(paintColor);
-			
-			blankSprite->Draw();//
-			RenderManager::Instance()->RestoreRenderTarget();
-			RenderManager::Instance()->ResetColor();
-			SafeRelease(blankSprite);
-
-			currentTool->sprite->SetPosition(pos);
-			
-        }
-	}
-}*/
 
 void LandscapeEditorCustomColors::UpdateCursor()
 {
@@ -356,15 +326,6 @@ void LandscapeEditorCustomColors::HideAction()
     SafeRelease(editedHeightmap);
     SafeRelease(savedHeightmap);
 
-	//restore tool
-	//RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
-	//RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	//currentToolSprite->Draw();//
-	//RenderManager::Instance()->RestoreRenderTarget();
-	
-	//SafeRelease(currentToolSprite);
-	//currentToolSprite = NULL;
-
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
 	
@@ -373,7 +334,6 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-	//
     landscapeSize = settings->maskSize;
 
 	workingLandscape->CursorEnable();
@@ -382,11 +342,7 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	
 	Texture* texSpr = currentTool->sprite->GetTexture();
-	//currentToolSprite =  Sprite::CreateAsRenderTarget(texSpr->width, texSpr->height, FORMAT_RGBA8888);
-	//RenderManager::Instance()->SetRenderTarget(currentToolSprite);
-	//currentTool->sprite->Draw();//
-	//RenderManager::Instance()->RestoreRenderTarget();
-
+	
 	if(NULL == colorSprite)
 	{
 		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL); 
