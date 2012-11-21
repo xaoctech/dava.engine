@@ -87,7 +87,7 @@ void TextureDescriptor::SetDefaultValues()
     
     generateMipMaps = OPTION_ENABLED;
 
-    minFilter = Texture::FILTER_LINEAR;
+    minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
     magFilter = Texture::FILTER_LINEAR;
     
     pvrCompression.Clear();
