@@ -31,6 +31,16 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 		helperWrapModes.push_back("Clamp", DAVA::Texture::WRAP_CLAMP_TO_EDGE);
 		helperWrapModes.push_back("Repeat", DAVA::Texture::WRAP_REPEAT);
+
+		helperMinGLModes.push_back("Nearest", DAVA::Texture::FILTER_NEAREST);
+		helperMinGLModes.push_back("Linear", DAVA::Texture::FILTER_LINEAR);
+		helperMinGLModes.push_back("Nearest, Mipmap Nearest", DAVA::Texture::FILTER_NEAREST_MIPMAP_NEAREST);
+		helperMinGLModes.push_back("Linear, Mipmap Nearest", DAVA::Texture::FILTER_LINEAR_MIPMAP_NEAREST);
+		helperMinGLModes.push_back("Nearest, Mipmap Linear", DAVA::Texture::FILTER_NEAREST_MIPMAP_LINEAR);
+		helperMinGLModes.push_back("Linear, Mipmap Linear", DAVA::Texture::FILTER_LINEAR_MIPMAP_LINEAR);
+
+		helperMagGLModes.push_back("Nearest", DAVA::Texture::FILTER_NEAREST);
+		helperMagGLModes.push_back("Linear", DAVA::Texture::FILTER_LINEAR);
 	}
 
 	// parent widget
@@ -98,6 +108,16 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	propertiesEnum->setEnumNames(enumWrapModeT, helperWrapModes.keyList());
 	groupCommon->addSubProperty(enumWrapModeT);
 
+	// min OpenGL filter
+	enumMinGL = propertiesEnum->addProperty("Min Filter");
+	propertiesEnum->setEnumNames(enumMinGL, helperMinGLModes.keyList());
+	groupCommon->addSubProperty(enumMinGL);
+
+	// mag OpenGl filter
+	enumMagGL = propertiesEnum->addProperty("Mag Filter");
+	propertiesEnum->setEnumNames(enumMagGL, helperMagGLModes.keyList());
+	groupCommon->addSubProperty(enumMagGL);
+
 	addProperty(groupCommon);
 
 	QObject::connect(propertiesEnum, SIGNAL(propertyChanged(QtProperty *)), this, SLOT(propertyChanged(QtProperty *)));
@@ -154,6 +174,11 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 			// wrap mode
 			propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
 			propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+
+			// min gl filter
+			propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+			propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
+
 		}
 	}
 	else
@@ -232,6 +257,14 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		else if(property == enumWrapModeS)
 		{
 			curTextureDescriptor->wrapModeT = (DAVA::Texture::TextureWrap) helperWrapModes.value(enumWrapModeT->valueText());
+		}
+		else if(property == enumMinGL)
+		{
+			curTextureDescriptor->minFilter = helperMinGLModes.value(enumMinGL->valueText());
+		}
+		else if(property == enumMagGL)
+		{
+			curTextureDescriptor->magFilter = helperMinGLModes.value(enumMagGL->valueText());
 		}
 
 		emit propertyChanged();
