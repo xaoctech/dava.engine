@@ -45,7 +45,7 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 2;
+    static const int8 CURRENT_VERSION = 3;
     
 public:
 	enum eOptionsState
@@ -104,6 +104,7 @@ public:
     
     bool IsSourceValidForFormat(ImageFileFormat fileFormat);
     
+    static String GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat);
     
 protected:
     
@@ -120,14 +121,20 @@ protected:
     void ReadCompression(File *file, Compression &compression);
     void WriteCompression(File *file, const Compression &compression) const;
     
+    
+    void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
+    void LoadVersion2(int32 signature, File *file);
+    
 public:
     
-    
-
     int8 wrapModeS;
     int8 wrapModeT;
     
     int8 generateMipMaps;
+    
+    int32 minFilter;
+    int32 magFilter;
+    
     
     Compression pvrCompression;
     Compression dxtCompression;

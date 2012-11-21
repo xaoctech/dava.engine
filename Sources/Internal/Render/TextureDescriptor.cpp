@@ -86,6 +86,14 @@ void TextureDescriptor::SetDefaultValues()
     wrapModeT = Texture::WRAP_REPEAT;
     
     generateMipMaps = OPTION_ENABLED;
+
+#if defined (__DAVAENGINE_OPENGL__)
+    minFilter = GL_LINEAR;
+    magFilter = GL_LINEAR;
+#else //#if defined (__DAVAENGINE_OPENGL__)
+    minFilter = 0;
+    magFilter = 0;
+#endif //#if defined (__DAVAENGINE_OPENGL__)
     
     pvrCompression.Clear();
     dxtCompression.Clear();
@@ -136,11 +144,10 @@ bool TextureDescriptor::Load(const String &filePathname)
     file->Read(&version, sizeof(version));
     if(version != CURRENT_VERSION)
     {
-        Logger::Error("[TextureDescriptor::Load] Descriptor has invalid version (%d)", version);
-        SafeRelease(file);
-        return false;
+        ConvertToCurrentVersion(version, signature, file);
+        Save();
+        return true;
     }
-    
     
     if(COMPRESSED_FILE == signature)
     {
@@ -256,6 +263,52 @@ void TextureDescriptor::Export(const String &filePathname)
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
 
+void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
+{
+    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] from version %d", version);
+    
+    if(version == 2)
+    {
+        LoadVersion2(signature, file);
+    }
+}
+    
+void TextureDescriptor::LoadVersion2(int32 signature, DAVA::File *file)
+{
+    if(signature == COMPRESSED_FILE)
+    {
+#if defined TEXTURE_SPLICING_ENABLED
+        SafeRelease(textureFile);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+        
+        file->Read(&wrapModeS, sizeof(wrapModeS));
+        file->Read(&wrapModeT, sizeof(wrapModeT));
+        file->Read(&generateMipMaps, sizeof(generateMipMaps));
+        file->Read(&textureFileFormat, sizeof(textureFileFormat));
+        
+#if defined TEXTURE_SPLICING_ENABLED
+        uint32 textureSize = file->GetSize() - file->GetPos();
+        uint8 *textureData = new uint8[textureSize];
+        if(textureData)
+        {
+            file->Read(textureData, textureSize);
+            
+            textureFile = DynamicMemoryFile::Create(textureData, textureSize, File::WRITE | File::READ);
+            SafeDeleteArray(textureData);
+        }
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+    }
+    else if(signature == NOTCOMPRESSED_FILE)
+    {
+        file->Read(&wrapModeS, sizeof(wrapModeS));
+        file->Read(&wrapModeT, sizeof(wrapModeT));
+        file->Read(&generateMipMaps, sizeof(generateMipMaps));
+        
+        ReadCompression(file, pvrCompression);
+        ReadCompression(file, dxtCompression);
+    }
+}
+    
 void TextureDescriptor::LoadNotCompressed(File *file)
 {
     ReadGeneralSettings(file);
@@ -292,6 +345,8 @@ void TextureDescriptor::ReadGeneralSettings(File *file)
     file->Read(&wrapModeS, sizeof(wrapModeS));
     file->Read(&wrapModeT, sizeof(wrapModeT));
     file->Read(&generateMipMaps, sizeof(generateMipMaps));
+    file->Read(&minFilter, sizeof(minFilter));
+    file->Read(&magFilter, sizeof(magFilter));
 }
     
 void TextureDescriptor::WriteGeneralSettings(File *file) const
@@ -299,6 +354,8 @@ void TextureDescriptor::WriteGeneralSettings(File *file) const
     file->Write(&wrapModeS, sizeof(wrapModeS));
     file->Write(&wrapModeT, sizeof(wrapModeT));
     file->Write(&generateMipMaps, sizeof(generateMipMaps));
+    file->Write(&minFilter, sizeof(minFilter));
+    file->Write(&magFilter, sizeof(magFilter));
 }
 
     
@@ -316,7 +373,6 @@ void TextureDescriptor::ReadCompression(File *file, Compression &compression)
     char8 crcString[MD5::DIGEST_SIZE*2 + 1];
     file->Read(crcString, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
     MD5::CharToHash(crcString, compression.crc);
-
 }
 
 void TextureDescriptor::WriteCompression(File *file, const Compression &compression) const
@@ -409,6 +465,23 @@ String TextureDescriptor::GetSupportedTextureExtensions()
     return String(".png;.pvr;") + TextureDescriptor::GetDescriptorExtension();
 }
 
+String TextureDescriptor::GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat)
+{
+    if(fileFormat == PNG_FILE)
+    {
+        return FileSystem::Instance()->ReplaceExtension(pathname, ".png");
+    }
+    else if(fileFormat == PVR_FILE)
+    {
+        return FileSystem::Instance()->ReplaceExtension(pathname, ".pvr");
+    }
+    else if(fileFormat == DXT_FILE)
+    {
+        return FileSystem::Instance()->ReplaceExtension(pathname, ".dds");
+    }
+
+    return String("");
+}
 
 
 };

@@ -537,16 +537,19 @@ bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
             RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
         }
         
-        if (descriptor->GetGenerateMipMaps())
-        {
-            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        }
-        else
-        {
-            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-        }
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, descriptor->minFilter));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, descriptor->magFilter));
+
+//        if (descriptor->GetGenerateMipMaps())
+//        {
+//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+//        }
+//        else
+//        {
+//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+//        }
         
         RenderManager::Instance()->HWglBindTexture(saveId);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -1420,7 +1423,7 @@ String Texture::GetPathnameForFileFormat(const String &sourcePathname, ImageFile
             imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".pvr"));
             break;
         case DXT_FILE:
-            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".dxt"));
+            imagePathname = FileSystem::Instance()->ReplaceExtension(sourcePathname, String(".dds"));
             break;
             
         default:
