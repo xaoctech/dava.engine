@@ -132,8 +132,8 @@ public:
     
     int8 generateMipMaps;
     
-    int32 minFilter;
-    int32 magFilter;
+    int8 minFilter;
+    int8 magFilter;
     
     
     Compression pvrCompression;

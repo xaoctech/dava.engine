@@ -57,7 +57,17 @@ public:
 		WRAP_CLAMP_TO_EDGE = 0,
 		WRAP_REPEAT,
 	};
-	
+
+    enum TextureFilter
+	{
+        FILTER_NEAREST  = 0,
+        FILTER_LINEAR,
+
+        FILTER_NEAREST_MIPMAP_NEAREST,
+        FILTER_LINEAR_MIPMAP_NEAREST,
+        FILTER_NEAREST_MIPMAP_LINEAR,
+        FILTER_LINEAR_MIPMAP_LINEAR
+	};
 
 	enum DepthFormat
 	{
@@ -285,7 +295,6 @@ private:
     bool LoadFromImage(File *file, TextureDescriptor *descriptor);
     
     
-    
 	static PixelFormat defaultRGBAFormat;
 	Texture();
 	virtual ~Texture();
@@ -298,6 +307,7 @@ private:
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
 #if defined(__DAVAENGINE_OPENGL__)
+    static GLint HWglFilterToGLFilter(TextureFilter filter);
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     

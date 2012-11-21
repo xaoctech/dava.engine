@@ -74,14 +74,11 @@ void GameCore::OnAppStarted()
 
     new SceneDataManager();
     
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
-
-    
-    
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
-    
     exporterScreen = new ExporterScreen();
+
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
@@ -118,7 +115,11 @@ void GameCore::OnSuspend()
 void GameCore::OnResume()
 {
     ApplicationCore::OnResume();
-    SceneValidator::Instance()->FindTexturesForCompression();
+    
+    if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+    {
+        SceneValidator::Instance()->FindTexturesForCompression();
+    }
 }
 
 void GameCore::OnBackground()
