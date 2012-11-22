@@ -741,3 +741,11 @@ void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 	}
 }
 
+void SceneData::ResetLandsacpeSelection()
+{
+	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
+	if(selectedNode)
+	{
+		SelectNode(NULL);
+	}
+}
