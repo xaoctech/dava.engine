@@ -114,7 +114,8 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
-    EnumerateTextures(scene, errorLog);
+    texturesForExport.clear();
+    SceneValidator::Instance()->EnumerateTextures(texturesForExport, scene);
 
     ExportTextures(scene, errorLog);
     ExportLandscape(scene, errorLog);
@@ -163,55 +164,14 @@ void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
 }
 
 
-void SceneExporter::EnumerateTextures(DAVA::Scene *scene, Set<String> &errorLog)
-{
-    //materials
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for(int32 m = 0; m < (int32)materials.size(); ++m)
-    {
-        for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-        {
-            Texture *tex = materials[m]->GetTexture((Material::eTextureLevel)t);
-            CollectTextureForExport(tex);
-        }
-    }
-
-    //landscapes
-    Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
-    for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-    {
-        for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
-        {
-            Texture *tex = landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t);
-            CollectTextureForExport(tex);
-        }
-    }
-    
-    //lightmaps
-    Vector<MeshInstanceNode *> meshInstances;
-    scene->GetChildNodes(meshInstances);
-    for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-    {
-        for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
-        {
-            MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-            if (ld)
-            {
-                CollectTextureForExport(ld->lightmap);
-            }
-        }
-    }
-}
 
 void SceneExporter::ExportTextures(DAVA::Scene *scene, Set<String> &errorLog)
 {
-    Set<String>::const_iterator endIt = texturesForExport.end();
-    Set<String>::iterator it = texturesForExport.begin();
+    Map<String, Texture *>::const_iterator endIt = texturesForExport.end();
+    Map<String, Texture *>::iterator it = texturesForExport.begin();
     for( ; it != endIt; ++it)
     {
-        exportedTextures[*it] = ExportTexture( *it, errorLog);
+        ExportTexture( it->first, errorLog);
     }
 }
 
@@ -472,6 +432,8 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
             if(exportFormat == PVR_FILE)
             {
                 PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
+                descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+                descriptor->Save();
             }
             
             SafeRelease(descriptor);
@@ -489,19 +451,5 @@ String SceneExporter::RemoveFolderFromPath(const String &pathname, const String 
     }
 
     return workingPathname;
-}
-
-
-void SceneExporter::CollectTextureForExport(Texture *texture)
-{
-    if(texture && !texture->isRenderTarget)
-    {
-        String exportedPathname = texture->GetPathname();
-        String::size_type textTexturePos = texture->GetPathname().find("Text texture");
-        if(!exportedPathname.empty() && (String::npos == textTexturePos))
-        {
-            texturesForExport.insert(exportedPathname);
-        }
-    }
 }
 

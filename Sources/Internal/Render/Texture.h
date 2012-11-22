@@ -217,7 +217,7 @@ public:
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
     TextureDescriptor * CreateDescriptor() const;
-    void ReloadAs(ImageFileFormat fileFormat);
+    void ReloadAs(ImageFileFormat fileFormat, TextureDescriptor *descriptor);
 
 
 public:							// properties for fast access

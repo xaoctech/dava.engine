@@ -385,21 +385,45 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
 
 void SceneValidator::ReloadTextures(int32 asFile)
 {
-    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
-	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *texture = it->second;
-        if(!IsFBOTexture(texture) && IsPathCorrectForProject(texture->GetPathname()))
-        {
-            texture->ReloadAs((ImageFileFormat)asFile);
-        }
-	}
+    Map<String, Texture *> textures;
     
+    //Enumerate textures
     int32 count = SceneDataManager::Instance()->ScenesCount();
     for(int32 i = 0; i < count; ++i)
     {
         SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
+        EnumerateTextures(textures, sceneData->GetScene());
+    }
+
+    //Reload textures
+	for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); )
+	{
+        Texture *texture = it->second;
+        if(texture == Texture::GetPinkPlaceholder())
+        {
+            it->second = Texture::CreateFromFile(it->first);
+            ++it;
+        }
+        else
+        {
+            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
+            if(descriptor)
+            {
+                texture->ReloadAs((ImageFileFormat)asFile, descriptor);
+                SafeRelease(descriptor);
+            }
+        
+            textures.erase(it++);
+        }
+	}
+    
+    //reload landscape full tiled texures, which were created as FBO
+    for(int32 i = 0; i < count; ++i)
+    {
+        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
         EditorScene *scene = sceneData->GetScene();
+        
+        RestoreTextures(textures, scene);
 
         LandscapeNode *landscape = scene->GetLandScape(scene);
         if(landscape)
@@ -416,22 +440,30 @@ void SceneValidator::ReloadTextures(int32 asFile)
 
 void SceneValidator::FindTexturesForCompression()
 {
+    Map<String, Texture *> textures;
+    
+    //Enumerate textures
+    int32 count = SceneDataManager::Instance()->ScenesCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
+        EnumerateTextures(textures, sceneData->GetScene());
+    }
+
     List<Texture *>texturesForPVRCompression;
     List<Texture *>texturesForDXTCompression;
-    
-    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
-	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *texture = it->second;
-        if(WasTextureChanged(texture, PVR_FILE))
-        {
-            texturesForPVRCompression.push_back(SafeRetain(texture));
-        }
-        else if(WasTextureChanged(texture, DXT_FILE))
-        {
-            texturesForDXTCompression.push_back(SafeRetain(texture));
-        }
 
+    Map<String, Texture *>::const_iterator endIt = textures.end();
+	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
+	{
+        if(IsTextureChanged(it->first, PVR_FILE))
+        {
+            texturesForPVRCompression.push_back(SafeRetain(it->second));
+        }
+        else if(IsTextureChanged(it->first, DXT_FILE))
+        {
+            texturesForDXTCompression.push_back(SafeRetain(it->second));
+        }
 	}
 
     CompressTextures(texturesForPVRCompression, PVR_FILE);
@@ -768,3 +800,114 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 
 	SafeRelease(fileList);
 }
+
+void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, Scene *scene)
+{
+    if(!scene)  return;
+    
+    //materials
+    Vector<Material*> materials;
+    scene->GetDataNodes(materials);
+    for(int32 m = 0; m < (int32)materials.size(); ++m)
+    {
+        for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+        {
+            String path = materials[m]->GetTextureName((Material::eTextureLevel)t);
+            if(!path.empty() && IsPathCorrectForProject(path))
+            {
+                textures[path] = materials[m]->GetTexture((Material::eTextureLevel)t);
+            }
+        }
+    }
+    
+    //landscapes
+    Vector<LandscapeNode *> landscapes;
+    scene->GetChildNodes(landscapes);
+    for(int32 l = 0; l < (int32)landscapes.size(); ++l)
+    {
+        for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+        {
+            String path = landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t);
+            if(!path.empty() && IsPathCorrectForProject(path))
+            {
+                textures[path] = landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t);
+            }
+        }
+    }
+    
+    //lightmaps
+    Vector<MeshInstanceNode *> meshInstances;
+    scene->GetChildNodes(meshInstances);
+    for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
+    {
+        for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
+        {
+            MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
+            if (ld)
+            {
+                if(!ld->lightmapName.empty() && IsPathCorrectForProject(ld->lightmapName))
+                {
+                    textures[ld->lightmapName] = ld->lightmap;
+                }
+            }
+        }
+    }
+}
+
+void SceneValidator::RestoreTextures(Map<String, Texture *> &textures, Scene *scene)
+{
+    if(!scene)  return;
+    
+    //materials
+    Vector<Material*> materials;
+    scene->GetDataNodes(materials);
+    for(int32 m = 0; m < (int32)materials.size(); ++m)
+    {
+        for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+        {
+            String path = materials[m]->GetTextureName((Material::eTextureLevel)t);
+            Map<String, Texture *>::iterator it = textures.find(path);
+            if(it != textures.end())
+            {
+                materials[m]->SetTexture((Material::eTextureLevel)t, path);
+            }
+        }
+    }
+    
+    //landscapes
+    Vector<LandscapeNode *> landscapes;
+    scene->GetChildNodes(landscapes);
+    for(int32 l = 0; l < (int32)landscapes.size(); ++l)
+    {
+        for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+        {
+            String path = landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t);
+            Map<String, Texture *>::iterator it = textures.find(path);
+            if(it != textures.end())
+            {
+                landscapes[l]->SetTexture((LandscapeNode::eTextureLevel)t, it->second);
+            }
+        }
+    }
+    
+    //lightmaps
+    Vector<MeshInstanceNode *> meshInstances;
+    scene->GetChildNodes(meshInstances);
+    for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
+    {
+        for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
+        {
+            MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
+            if (ld)
+            {
+                Map<String, Texture *>::iterator it = textures.find(ld->lightmapName);
+                if(it != textures.end())
+                {
+                    SafeRelease(ld->lightmap);
+                    ld->lightmap = SafeRetain(it->second);
+                }
+            }
+        }
+    }
+}
+
