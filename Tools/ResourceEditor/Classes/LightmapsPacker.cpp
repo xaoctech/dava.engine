@@ -100,8 +100,11 @@ void LightmapsPacker::Compress()
 		TextureDescriptor descriptor;
 		descriptor.pvrCompression.format = compressFormat;
 		descriptor.generateMipMaps = TextureDescriptor::OPTION_ENABLED;
+        //TODO: need to set correct min/mag for Lightmaps?
 
 		String newName = PVRConverter::Instance()->ConvertPngToPvr(fileName, descriptor);
+        descriptor.UpdateDateAndCrcForFormat(PVR_FILE);
+        descriptor.Save(TextureDescriptor::GetDescriptorPathname(fileName));
 	}
 
 	fileList->Release();

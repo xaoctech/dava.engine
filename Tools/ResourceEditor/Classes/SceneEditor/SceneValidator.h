@@ -98,8 +98,13 @@ public:
 	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
 
     void CreateDefaultDescriptors(const String &folderPathname);
+
+    void EnumerateTextures(Map<String, Texture *> &textures, Scene *scene);
+    void RestoreTextures(Map<String, Texture *> &textures, Scene *scene);
     
 protected:
+    
+    
     
     int32 EnumerateSceneNodes(SceneNode *node);
     
