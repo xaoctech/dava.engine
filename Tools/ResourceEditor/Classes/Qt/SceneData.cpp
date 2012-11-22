@@ -269,6 +269,12 @@ void SceneData::AddScene(const String &scenePathname)
         mod.CreateTranslation(nodePos);
         rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
     }
+
+	List<LandscapeNode *> landscapes;
+	rootNode->GetChildNodes(landscapes);
+
+	bool needUpdateLandscapeController = !landscapes.empty();
+
     SafeRelease(rootNode);
 
     //TODO: need selection?
@@ -277,7 +283,10 @@ void SceneData::AddScene(const String &scenePathname)
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 
-    landscapesController->SetScene(scene);
+	if(needUpdateLandscapeController)
+	{
+		landscapesController->SetScene(scene);
+	}
     
     RebuildSceneGraph();
 }
