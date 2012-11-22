@@ -539,17 +539,6 @@ bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
         
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->minFilter)));
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->magFilter)));
-
-//        if (descriptor->GetGenerateMipMaps())
-//        {
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//        }
-//        else
-//        {
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//        }
         
         RenderManager::Instance()->HWglBindTexture(saveId);
 #elif defined(__DAVAENGINE_DIRECTX9__)
