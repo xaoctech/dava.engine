@@ -539,17 +539,6 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->minFilter)));
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, HWglFilterToGLFilter((TextureFilter)descriptor->magFilter)));
-
-//        if (descriptor->GetGenerateMipMaps())
-//        {
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//        }
-//        else
-//        {
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-//            RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//        }
         
         RenderManager::Instance()->HWglBindTexture(saveId);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -796,11 +785,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 	tx->depthFormat = _depthFormat;
 	 
-	// Now setup a texture to render to
 	RenderManager::Instance()->HWglBindTexture(tx->id);
 	
-		// Setup our FBO
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
 	RenderManager::Instance()->HWglBindFBO(tx->fboID);
     
@@ -808,11 +794,9 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
     {
         glGenRenderbuffers(1, &tx->rboID);
         glBindRenderbuffer(GL_RENDERBUFFER, tx->rboID);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16_OES, dx, dy);
-        //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, dx, dy);
     }
 		
-	// And attach it to the FBO so we can render to it
 	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
     
     if(DEPTH_RENDERBUFFER == _depthFormat)
@@ -825,47 +809,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	{
 		Logger::Error("glCheckFramebufferStatus: %d", status);
 	}
-
-#else //PLATFORMS
-#if defined(__DAVAENGINE_WIN32__)    
-	if(GLEW_EXT_framebuffer_object)
-	{
-#endif //#if defined(__DAVAENGINE_WIN32__)  
-		if(DEPTH_RENDERBUFFER == _depthFormat)
-		{
-			glGenRenderbuffersEXT(1, &tx->rboID);
-			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, tx->rboID);
-			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, dx, dy);
-			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-		}
-
-		RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
-//		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
-        RenderManager::Instance()->HWglBindFBO(tx->fboID);
-
-		// And attach it to the FBO so we can render to it
-		RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
-
-		if(DEPTH_RENDERBUFFER == _depthFormat)
-		{
-			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, tx->rboID);
-		}
-	
-		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
-		{
-			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
-		}
-#if defined(__DAVAENGINE_WIN32__)         
-	}
-	else
-	{
-		Logger::Error("[Texture::CreateFBO] GL_EXT_framebuffer_object not supported");
-	}
-#endif //#if defined(__DAVAENGINE_WIN32__)       
-#endif //PLATFORMS
 				
-
 	RenderManager::Instance()->HWglBindFBO(saveFBO);
 				
 	if(saveTexture)

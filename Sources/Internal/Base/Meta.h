@@ -4,7 +4,7 @@
 #define META_USE_TYPEID
 
 #ifdef META_USE_TYPEID
-#include <typeinfo.h>
+#include <typeinfo>
 #endif
 
 namespace DAVA
