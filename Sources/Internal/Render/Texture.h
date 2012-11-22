@@ -217,8 +217,9 @@ public:
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
     TextureDescriptor * CreateDescriptor() const;
-    void ReloadAs(ImageFileFormat fileFormat);
 
+    void ReloadAs(ImageFileFormat fileFormat);
+	void ReloadAs(ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 
 public:							// properties for fast access
 
@@ -292,7 +293,7 @@ private:
 	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
-    bool LoadFromImage(File *file, TextureDescriptor *descriptor);
+    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
     
     
 	static PixelFormat defaultRGBAFormat;

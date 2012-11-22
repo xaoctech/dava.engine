@@ -145,14 +145,16 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 
 	curTexture = DAVA::SafeRetain(texture);
 	curTextureDescriptor = DAVA::SafeRetain(descriptor);
+	origImageSize = QSize(0, 0);
 
 	if(NULL != curTexture && NULL != curTextureDescriptor)
 	{
 		// enable this widget
 		setEnabled(true);
 
-		// init mimmap sizes helper
-		InitMipMapSizes(curTexture->width, curTexture->height);
+		// reset mimmap sizes
+		// we don't know avaliable mipmap sizes for newly set texture until setOriginalSize() method will be called by user
+		MipMapSizesReset();
 
 		// set loaded descriptor to current properties
 		{
@@ -190,6 +192,31 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 	reactOnPropertyChange = true;
 }
 
+void TextureProperties::setOriginalImageSize(const QSize &size)
+{
+	reactOnPropertyChange = false;
+
+	origImageSize = size;
+
+	// Init mimmap sizes based on original image size
+	MipMapSizesInit(size.width(), size.height());
+
+	if(NULL != curTextureDescriptor)
+	{
+		// reload values into PVR property
+		QSize curPVRSize(curTextureDescriptor->pvrCompression.compressToWidth, curTextureDescriptor->pvrCompression.compressToHeight);
+		propertiesEnum->setEnumNames(enumBasePVRMipmapLevel, helperMipMapSizes.keyList());
+		propertiesEnum->setValue(enumBasePVRMipmapLevel, helperMipMapSizes.indexV(curPVRSize));
+
+		// reload values into DXT property
+		QSize curDXTSize(curTextureDescriptor->dxtCompression.compressToWidth, curTextureDescriptor->dxtCompression.compressToHeight);
+		propertiesEnum->setEnumNames(enumBaseDXTMipmapLevel, helperMipMapSizes.keyList());
+		propertiesEnum->setValue(enumBaseDXTMipmapLevel, helperMipMapSizes.indexV(curDXTSize));
+	}
+
+	reactOnPropertyChange = true;
+}
+
 const DAVA::Texture* TextureProperties::getTexture()
 {
 	return curTexture;
@@ -204,22 +231,26 @@ void TextureProperties::propertyChanged(QtProperty * property)
 {
 	if(reactOnPropertyChange && NULL != curTextureDescriptor && NULL != curTexture)
 	{
+		PropertiesType type = TYPE_COMMON;
+
 		if(property == enumPVRFormat)
 		{
 			DAVA::PixelFormat newPVRFormat = (DAVA::PixelFormat) helperPVRFormats.value(enumPVRFormat->valueText());
 			curTextureDescriptor->pvrCompression.format = newPVRFormat;
+			type = TYPE_PVR;
 		}
 		else if(property == enumDXTFormat)
 		{
 			DAVA::PixelFormat newDXTFormat = (DAVA::PixelFormat) helperDXTFormats.value(enumDXTFormat->valueText());
 			curTextureDescriptor->dxtCompression.format = newDXTFormat;
+			type = TYPE_DXT;
 		}
 		else if(property == enumBasePVRMipmapLevel)
 		{
 			QString curSizeStr = enumBasePVRMipmapLevel->valueText();
 			QSize size = helperMipMapSizes.value(curSizeStr);
 
-			if(size.width() == curTexture->width || size.height() == curTexture->height)
+			if(size.width() == origImageSize.width() || size.height() == origImageSize.height())
 			{
 				curTextureDescriptor->pvrCompression.compressToWidth = 0;
 				curTextureDescriptor->pvrCompression.compressToHeight = 0;
@@ -229,13 +260,14 @@ void TextureProperties::propertyChanged(QtProperty * property)
 				curTextureDescriptor->pvrCompression.compressToWidth = size.width();
 				curTextureDescriptor->pvrCompression.compressToHeight = size.height();
 			}
+			type = TYPE_PVR;
 		}
 		else if(property == enumBaseDXTMipmapLevel)
 		{
 			QString curSizeStr = enumBaseDXTMipmapLevel->valueText();
 			QSize size = helperMipMapSizes.value(curSizeStr);
 
-			if(size.width() == curTexture->width || size.height() == curTexture->height)
+			if(size.width() == origImageSize.width() || size.height() == origImageSize.height())
 			{
 				curTextureDescriptor->dxtCompression.compressToWidth = 0;
 				curTextureDescriptor->dxtCompression.compressToHeight = 0;
@@ -245,6 +277,7 @@ void TextureProperties::propertyChanged(QtProperty * property)
 				curTextureDescriptor->dxtCompression.compressToWidth = size.width();
 				curTextureDescriptor->dxtCompression.compressToHeight = size.height();
 			}
+			type = TYPE_DXT;
 		}
 		else if(property == boolGenerateMipMaps)
 		{
@@ -267,7 +300,7 @@ void TextureProperties::propertyChanged(QtProperty * property)
 			curTextureDescriptor->magFilter = helperMinGLModes.value(enumMagGL->valueText());
 		}
 
-		emit propertyChanged();
+		emit propertyChanged(type);
 	}
 }
 
@@ -279,7 +312,7 @@ void TextureProperties::Save()
 	}
 }
 
-void TextureProperties::InitMipMapSizes(int baseWidth, int baseHeight)
+void TextureProperties::MipMapSizesInit(int baseWidth, int baseHeight)
 {
 	int level = 0;
 
@@ -296,4 +329,15 @@ void TextureProperties::InitMipMapSizes(int baseWidth, int baseHeight)
 		baseWidth = baseWidth >> 1;
 		baseHeight = baseHeight >> 1;
 	}
+
+	enumBaseDXTMipmapLevel->setEnabled(true);
+	enumBasePVRMipmapLevel->setEnabled(true);
+}
+
+void TextureProperties::MipMapSizesReset()
+{
+	helperMipMapSizes.clear();
+
+	enumBaseDXTMipmapLevel->setEnabled(false);
+	enumBasePVRMipmapLevel->setEnabled(false);
 }
