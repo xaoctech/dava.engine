@@ -31,6 +31,7 @@
 #define __DAVAENGINE_VARIANTTYPE_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Meta.h"
 #include "FileSystem/File.h"
 
 namespace DAVA 
@@ -124,11 +125,13 @@ public:
     {
         eVariantType variantType;
         String variantName;
+		MetaInfo *variantMeta;
         
-        PairTypeName(eVariantType type, String name )
+        PairTypeName(eVariantType type, String name, MetaInfo *meta)
         {
             variantType = type;
             variantName = name;
+			variantMeta = meta;
         }
     };
     
@@ -361,6 +364,9 @@ public:
 		\returns true if values are not equal
 	 */
     bool operator!=(const VariantType& other) const;
+
+	static VariantType LoadData(const void *src, const MetaInfo *meta);
+	static void SaveData(void *dst, const MetaInfo *meta, const VariantType &val);
     
 private:
     void ReleasePointer();
