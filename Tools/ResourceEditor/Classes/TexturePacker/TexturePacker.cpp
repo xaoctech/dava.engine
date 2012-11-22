@@ -699,6 +699,17 @@ TextureDescriptor * TexturePacker::CreateDescriptor()
     {
         descriptor->wrapModeS = descriptor->wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
         descriptor->generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+        if(descriptor->generateMipMaps)
+        {
+            descriptor->minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+            descriptor->magFilter = Texture::FILTER_LINEAR;
+        }
+        else
+        {
+            descriptor->minFilter = Texture::FILTER_LINEAR;
+            descriptor->magFilter = Texture::FILTER_LINEAR;
+        }
+        
         if(CommandLineParser::Instance()->IsFlagSet("--pvr"))
         {
             descriptor->textureFileFormat = PVR_FILE;
