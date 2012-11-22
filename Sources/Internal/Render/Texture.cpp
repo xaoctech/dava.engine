@@ -835,12 +835,12 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 		}
 
-		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
+		RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
         RenderManager::Instance()->HWglBindFBO(tx->fboID);
 
 		// And attach it to the FBO so we can render to it
-		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
+		RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
 
 		if(DEPTH_RENDERBUFFER == _depthFormat)
 		{
