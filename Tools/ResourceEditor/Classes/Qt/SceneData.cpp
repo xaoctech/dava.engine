@@ -269,13 +269,22 @@ void SceneData::AddScene(const String &scenePathname)
         mod.CreateTranslation(nodePos);
         rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
     }
+
+	List<LandscapeNode *> landscapes;
+	rootNode->GetChildNodes(landscapes);
+
+	bool needUpdateLandscapeController = !landscapes.empty();
+
     SafeRelease(rootNode);
 
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 
-    landscapesController->SetScene(scene);
+	if(needUpdateLandscapeController)
+	{
+		landscapesController->SetScene(scene);
+	}
     
     RebuildSceneGraph();
 }
@@ -728,3 +737,11 @@ void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 	}
 }
 
+void SceneData::ResetLandsacpeSelection()
+{
+	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
+	if(selectedNode)
+	{
+		SelectNode(NULL);
+	}
+}
