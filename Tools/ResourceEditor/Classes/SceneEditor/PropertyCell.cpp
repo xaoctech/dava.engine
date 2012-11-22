@@ -373,9 +373,12 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
     String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    property->SetString(pathToFile);
-    SetData(property);
-    propertyDelegate->OnPropertyChanged(property);
+    if(!pathToFile.empty())
+    {
+        property->SetString(pathToFile);
+        SetData(property);
+        propertyDelegate->OnPropertyChanged(property);
+    }
 }
 
 String PropertyFilepathCell::GetPathname()
