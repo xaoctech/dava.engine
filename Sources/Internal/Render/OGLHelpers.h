@@ -94,18 +94,25 @@ namespace DAVA
     #define glDeleteFramebuffers glDeleteFramebuffersOES
     #define glDeleteRenderbuffers glDeleteRenderbuffersOES
     #define glGenerateMipmap glGenerateMipmapOES
-
 	#define glBindFramebuffer glBindFramebufferOES
+	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
 #elif defined(__DAVAENGINE_ANDROID__)
-    #define glDeleteFramebuffers glDeleteFramebuffers
-    #define glDeleteRenderbuffers glDeleteRenderbuffers
     #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
 #elif defined(__DAVAENGINE_MACOS__)
 	#define glDeleteFramebuffers glDeleteFramebuffersEXT
     #define glDeleteRenderbuffers glDeleteRenderbuffersEXT
     #define glGenerateMipmap glGenerateMipmapEXT
-
 	#define glBindFramebuffer glBindFramebufferEXT
+	#define glGenRenderbuffers glGenRenderbuffersEXT
+	#define glBindRenderbuffer glBindRenderbufferEXT
+	#define GL_RENDERBUFFER GL_RENDERBUFFER_EXT
+	#define glRenderbufferStorage glRenderbufferStorageEXT
+	#define GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT 
+	#define GL_DEPTH_ATTACHMENT GL_DEPTH_ATTACHMENT_EXT 
+	#define GL_RENDERBUFFER GL_RENDERBUFFER_EXT 
+	#define glCheckFramebufferStatus glCheckFramebufferStatusEXT 
+	#define GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT 
 #elif defined(__DAVAENGINE_WIN32__)
 #endif //#if defined (__DAVAENGINE_IPHONE__)
     
