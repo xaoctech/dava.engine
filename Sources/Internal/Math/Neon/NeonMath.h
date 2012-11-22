@@ -26,13 +26,21 @@
 
 #include "Base/BaseTypes.h"
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 #ifdef __arm__
-#include "arm/arch.h"
-#endif
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    #if defined(__DAVAENGINE_IPHONE__)
+        #include "arm/arch.h"
+        #ifdef _ARM_ARCH_7
+            #define __DAVAENGINE_ARM_7__
+        #endif //#ifdef _ARM_ARCH_7
+    #endif //#if defined(__DAVAENGINE_IPHONE__)
 
-
+    #if defined(__DAVAENGINE_ANDROID__)
+        #include <machine/cpu-features.h>
+        #if _ARM_ARCH_ == 7
+            #define __DAVAENGINE_ARM_7__
+        #endif //#if _ARM_ARCH_ == 7
+    #endif //#if defined(__DAVAENGINE_ANDROID__)
+#endif //#ifdef __arm__
 
 // Matrixes are assumed to be stored in column major format according to OpenGL
 // specification.

@@ -997,6 +997,7 @@ void EditorBodyControl::LandscapeEditorStarted()
     
     LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
     scene->SetSelection(landscape);
+	SelectNodeAtTree(NULL);
     SelectNodeAtTree(landscape);
     
     landscapeToolsSelection->Show();
