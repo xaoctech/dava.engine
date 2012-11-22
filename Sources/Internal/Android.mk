@@ -277,8 +277,13 @@ LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
+# set arm mode
+LOCAL_ARM_MODE := arm
+
+
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
+
 
 include $(BUILD_STATIC_LIBRARY)
 
