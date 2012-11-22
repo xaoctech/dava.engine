@@ -87,13 +87,8 @@ void TextureDescriptor::SetDefaultValues()
     
     generateMipMaps = OPTION_ENABLED;
 
-#if defined (__DAVAENGINE_OPENGL__)
-    minFilter = GL_LINEAR;
-    magFilter = GL_LINEAR;
-#else //#if defined (__DAVAENGINE_OPENGL__)
-    minFilter = 0;
-    magFilter = 0;
-#endif //#if defined (__DAVAENGINE_OPENGL__)
+    minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+    magFilter = Texture::FILTER_LINEAR;
     
     pvrCompression.Clear();
     dxtCompression.Clear();
