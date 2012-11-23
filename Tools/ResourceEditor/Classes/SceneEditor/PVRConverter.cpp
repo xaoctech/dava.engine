@@ -1,8 +1,6 @@
 #include "PVRConverter.h"
 #include "Render/TextureDescriptor.h"
 
-#include "../Qt/QtUtils.h"
-
 using namespace DAVA;
 
 PVRConverter::PVRConverter()
