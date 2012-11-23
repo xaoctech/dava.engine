@@ -42,8 +42,12 @@ UNDOAction::UNDOAction()
 
 UNDOAction::~UNDOAction()
 {
-	if(filePathname != "")
-		FileSystem::Instance()->DeleteFile(filePathname);
+    if(!filePathname.empty())
+    {
+        FileSystem::Instance()->DeleteFile(filePathname);
+        filePathname = String("");
+    }
+    
 	SafeRelease(actionData);
 }
 
@@ -275,9 +279,8 @@ Texture * UNDOManager::UndoTexture()
 
         RenderManager::Instance()->LockNonMain();
         Image *image = (Image *)((*it)->actionData);
-        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
     }
     return tex;
 }
@@ -291,9 +294,8 @@ Texture * UNDOManager::RedoTexture()
 
         RenderManager::Instance()->LockNonMain();
         Image *image = (Image *)((*it)->actionData);
-        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
         
         actionsHistoryUNDO.push_back(*it);
         actionsHistoryREDO.erase(it);
@@ -415,7 +417,6 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
         if(forAction == (*it)->type)
         {
             SafeRelease(*it);
-
             it = actionsHistory.erase(it);
         }
         else 
@@ -428,12 +429,6 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
 
 void UNDOManager::ReleaseHistory(List<UNDOAction *> &actionsHistory)
 {
-    List<UNDOAction *>::iterator it = actionsHistory.begin();
-    List<UNDOAction *>::const_iterator endIt = actionsHistory.end();
-
-    for(; it != endIt; ++it)
-    {
-        SafeRelease(*it);
-    }
+    for_each(actionsHistory.begin(), actionsHistory.end(), SafeRelease<UNDOAction>);
     actionsHistory.clear();
 }

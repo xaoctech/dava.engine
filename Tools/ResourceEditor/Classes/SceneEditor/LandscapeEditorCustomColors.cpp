@@ -1,4 +1,3 @@
-
 #include "LandscapeEditorCustomColors.h"
 
 #include "LandscapeTool.h"
@@ -42,7 +41,6 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 
 	radius = 64;
 	UpdateCircleTexture(false);
-	//
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
@@ -244,7 +242,6 @@ void LandscapeEditorCustomColors::UpdateCursor()
 
 void LandscapeEditorCustomColors::SetRadius(int _radius)
 {
-	//isCursorTransparent = true;
 	radius = _radius;
 	UpdateCircleTexture(true);
 }
@@ -326,6 +323,15 @@ void LandscapeEditorCustomColors::HideAction()
     SafeRelease(editedHeightmap);
     SafeRelease(savedHeightmap);
 
+	//restore tool
+	RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	currentToolSprite->Draw();//
+	RenderManager::Instance()->RestoreRenderTarget();
+	
+	SafeRelease(currentToolSprite);
+	currentToolSprite = NULL;
+
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
 	
@@ -342,7 +348,11 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	
 	Texture* texSpr = currentTool->sprite->GetTexture();
-	
+	currentToolSprite =  Sprite::CreateAsRenderTarget(texSpr->width, texSpr->height, FORMAT_RGBA8888);
+	RenderManager::Instance()->SetRenderTarget(currentToolSprite);
+	currentTool->sprite->Draw();//
+	RenderManager::Instance()->RestoreRenderTarget();
+
 	if(NULL == colorSprite)
 	{
 		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL); 

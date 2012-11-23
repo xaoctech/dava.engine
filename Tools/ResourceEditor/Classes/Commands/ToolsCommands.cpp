@@ -40,7 +40,11 @@ void CommandTextureConverter::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->TextureConverterTriggered();
+		// Replaced with Qt
+		// TODO:
+		// remove this
+		// 
+        // screen->TextureConverterTriggered();
     }
 }
 

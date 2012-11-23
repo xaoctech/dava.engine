@@ -60,6 +60,9 @@ public:
     
     virtual void LockKeyboardInput(bool locked);
 
+    virtual void * CreateAutoreleasePool();
+    virtual void ReleaseAutoreleasePool(void *pool);
+
     
     void InitializeGlWindow(void *qtView, int32 width, int32 height);
     

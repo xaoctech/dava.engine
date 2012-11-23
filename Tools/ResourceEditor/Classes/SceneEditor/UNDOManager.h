@@ -31,10 +31,7 @@ public:
 
 class UNDOManager: public Singleton<UNDOManager>
 {    
-    enum eConst
-    {
-        UNDO_HISTORY_SIZE = 20
-    };
+    static const int32 UNDO_HISTORY_SIZE = 20;
     
 public:
  
@@ -58,7 +55,7 @@ public:
 	void UndoVisibility(Image** undoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
 	void RedoVisibility(Image** redoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
 
-	UNDOAction::eActionType GetLastUNDOAction();
+    UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
     
     void ClearHistory(UNDOAction::eActionType forAction);

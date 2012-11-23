@@ -45,12 +45,6 @@ class PVRTest : public TestTemplate<PVRTest>
         ACCETABLE_DELTA_IN_PERSENTS = 2
     };
     
-    struct CompareResult
-    {
-        uint32 difference;
-        uint32 bytesCount;
-    };
-    
 public:
 	PVRTest();
 
@@ -67,12 +61,7 @@ private:
     int32 currentTest;
     
     void ReloadSprites();
-    
-    
-    Sprite *CreateSpriteFromTexture(const String &texturePathname);
-    CompareResult CompareSprites(Sprite *first, Sprite *second);
-    Image * CreateImageAsRGBA8888(Sprite *sprite);
-    
+    bool IsCurrentTestAccepted();
     
     UIStaticText *compareResultText;
     

@@ -40,46 +40,45 @@
 
 namespace DAVA
 {
-    const String VariantType::TYPENAME_UNKNOWN = "unknown";
-    const String VariantType::TYPENAME_BOOLEAN = "bool";
-    const String VariantType::TYPENAME_INT32   = "int32";
-    const String VariantType::TYPENAME_UINT32  = "uint32";
-    const String VariantType::TYPENAME_INT64   = "int64";
-    const String VariantType::TYPENAME_UINT64  = "uint64";
+
+const String VariantType::TYPENAME_UNKNOWN = "unknown";
+const String VariantType::TYPENAME_BOOLEAN = "bool";
+const String VariantType::TYPENAME_INT32   = "int32";
+const String VariantType::TYPENAME_UINT32  = "uint32";
+const String VariantType::TYPENAME_INT64   = "int64";
+const String VariantType::TYPENAME_UINT64  = "uint64";
     
-    const String VariantType::TYPENAME_FLOAT   = "float";
-    const String VariantType::TYPENAME_STRING  = "string";
-    const String VariantType::TYPENAME_WIDESTRING = "wideString";
-    const String VariantType::TYPENAME_BYTE_ARRAY = "byteArray";
-    const String VariantType::TYPENAME_KEYED_ARCHIVE = "keyedArchive";
-    const String VariantType::TYPENAME_VECTOR2 = "Vector2";
-    const String VariantType::TYPENAME_VECTOR3 = "Vector3";
-    const String VariantType::TYPENAME_VECTOR4 = "Vector4";
-    const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
-    const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
-    const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
+const String VariantType::TYPENAME_FLOAT   = "float";
+const String VariantType::TYPENAME_STRING  = "string";
+const String VariantType::TYPENAME_WIDESTRING = "wideString";
+const String VariantType::TYPENAME_BYTE_ARRAY = "byteArray";
+const String VariantType::TYPENAME_KEYED_ARCHIVE = "keyedArchive";
+const String VariantType::TYPENAME_VECTOR2 = "Vector2";
+const String VariantType::TYPENAME_VECTOR3 = "Vector3";
+const String VariantType::TYPENAME_VECTOR4 = "Vector4";
+const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
+const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
+const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
     
-    
-    
-    const VariantType::PairTypeName VariantType::variantNamesMap[] =
+const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
-    VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN),
-    VariantType::PairTypeName(VariantType::TYPE_BOOLEAN,       TYPENAME_BOOLEAN),
-    VariantType::PairTypeName(VariantType::TYPE_INT32,         TYPENAME_INT32),
-    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT),
-    VariantType::PairTypeName(VariantType::TYPE_STRING,        TYPENAME_STRING),
-    VariantType::PairTypeName(VariantType::TYPE_WIDE_STRING,   TYPENAME_WIDESTRING),
-    VariantType::PairTypeName(VariantType::TYPE_BYTE_ARRAY,    TYPENAME_BYTE_ARRAY),
-    VariantType::PairTypeName(VariantType::TYPE_UINT32,        TYPENAME_UINT32),
-    VariantType::PairTypeName(VariantType::TYPE_KEYED_ARCHIVE, TYPENAME_KEYED_ARCHIVE),
-    VariantType::PairTypeName(VariantType::TYPE_INT64,         TYPENAME_INT64),
-    VariantType::PairTypeName(VariantType::TYPE_UINT64,        TYPENAME_UINT64),
-    VariantType::PairTypeName(VariantType::TYPE_VECTOR2,       TYPENAME_VECTOR2),
-    VariantType::PairTypeName(VariantType::TYPE_VECTOR3,       TYPENAME_VECTOR3),
-    VariantType::PairTypeName(VariantType::TYPE_VECTOR4,       TYPENAME_VECTOR4),
-    VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2),
-    VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3),
-    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4)
+    VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN,		NULL),
+    VariantType::PairTypeName(VariantType::TYPE_BOOLEAN,       TYPENAME_BOOLEAN,		MetaInfo::Instance<bool>()),
+    VariantType::PairTypeName(VariantType::TYPE_INT32,         TYPENAME_INT32,			MetaInfo::Instance<int32>()),
+    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT,			MetaInfo::Instance<float>()),
+    VariantType::PairTypeName(VariantType::TYPE_STRING,        TYPENAME_STRING,			MetaInfo::Instance<String>()),
+    VariantType::PairTypeName(VariantType::TYPE_WIDE_STRING,   TYPENAME_WIDESTRING,		MetaInfo::Instance<WideString>()),
+    VariantType::PairTypeName(VariantType::TYPE_BYTE_ARRAY,    TYPENAME_BYTE_ARRAY,		MetaInfo::Instance<Vector<uint8> >()),
+    VariantType::PairTypeName(VariantType::TYPE_UINT32,        TYPENAME_UINT32,			MetaInfo::Instance<uint32>()),
+    VariantType::PairTypeName(VariantType::TYPE_KEYED_ARCHIVE, TYPENAME_KEYED_ARCHIVE,	MetaInfo::Instance<KeyedArchive>()),
+    VariantType::PairTypeName(VariantType::TYPE_INT64,         TYPENAME_INT64,			MetaInfo::Instance<int64>()),
+    VariantType::PairTypeName(VariantType::TYPE_UINT64,        TYPENAME_UINT64,			MetaInfo::Instance<uint64>()),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR2,       TYPENAME_VECTOR2,		MetaInfo::Instance<Vector2>()),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR3,       TYPENAME_VECTOR3,		MetaInfo::Instance<Vector3>()),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR4,       TYPENAME_VECTOR4,		MetaInfo::Instance<Vector4>()),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>())
 };
 
 VariantType::VariantType()
@@ -889,5 +888,145 @@ bool VariantType::operator!=(const VariantType& other) const
 {
     return (!(*this == other));
 }
+
+VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
+{
+	VariantType v;
+	uint8 type = TYPE_NONE;
+
+	for(int i = 0; i < TYPES_COUNT; ++i)
+	{
+		if(variantNamesMap[i].variantMeta == meta)
+		{
+			type = variantNamesMap[i].variantType;
+			break;
+		}
+	}
+
+	DVASSERT(NULL != src);
+
+	switch(type)
+	{
+	case TYPE_BOOLEAN:
+		v.SetBool(*((bool *) src));
+		break;
+	case TYPE_INT32:
+		v.SetInt32(*((int32 *) src));
+		break;
+	case TYPE_FLOAT:
+		v.SetFloat(*((float *) src));
+		break;
+	case TYPE_STRING:
+		v.SetString(*((DAVA::String *) src));
+		break;
+	case TYPE_WIDE_STRING:
+		v.SetWideString(*((DAVA::WideString *) src));
+		break;
+	case TYPE_UINT32:
+		v.SetUInt32(*((uint32 *) src));
+		break;
+	//case TYPE_BYTE_ARRAY:
+	//	break;
+	//case TYPE_KEYED_ARCHIVE:
+	//	break;
+	case TYPE_INT64:
+		v.SetInt64(*((DAVA::int64 *) src));
+		break;
+	case TYPE_UINT64:
+		v.SetUInt64(*((DAVA::uint64 *) src));
+		break;
+	case TYPE_VECTOR2:
+		v.SetVector2(*((DAVA::Vector2 *) src));
+		break;
+	case TYPE_VECTOR3:
+		v.SetVector3(*((DAVA::Vector3 *) src));
+		break;
+	case TYPE_VECTOR4:
+		v.SetVector4(*((DAVA::Vector4 *) src));
+		break;
+	case TYPE_MATRIX2:
+		v.SetMatrix2(*((DAVA::Matrix2 *) src));
+		break;
+	case TYPE_MATRIX3:
+		v.SetMatrix3(*((DAVA::Matrix3 *) src));
+		break;
+	case TYPE_MATRIX4:
+		v.SetMatrix4(*((DAVA::Matrix4 *) src));
+		break;
+	default:
+		DVASSERT(0 && "Don't know how to load data for such VariantType");
+	}
+
+	return v;
+}
+
+void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &val)
+{
+	MetaInfo *valMeta = NULL;
+
+	for(int i = 0; i < TYPES_COUNT; ++i)
+	{
+		if(variantNamesMap[i].variantType == val.type)
+		{
+			valMeta = variantNamesMap[i].variantMeta;
+			break;
+		}
+	}
+
+	DVASSERT(meta == valMeta);
+
+	switch(val.type)
+	{
+	case TYPE_BOOLEAN:
+		*((bool *) dst) = val.AsBool();
+		break;
+	case TYPE_INT32:
+		*((int32 *) dst) = val.AsInt32();
+		break;
+	case TYPE_FLOAT:
+		*((float *) dst) = val.AsFloat();
+		break;
+	case TYPE_STRING:
+		*((DAVA::String *) dst) = val.AsString();
+		break;
+	case TYPE_WIDE_STRING:
+		*((DAVA::WideString *) dst) = val.AsWideString();
+		break;
+	case TYPE_UINT32:
+		*((uint32 *) dst) = val.AsUInt32();
+		break;
+		//case TYPE_BYTE_ARRAY:
+		//	break;
+		//case TYPE_KEYED_ARCHIVE:
+		//	break;
+	case TYPE_INT64:
+		*((DAVA::int64 *) dst) = val.AsInt64();
+		break;
+	case TYPE_UINT64:
+		*((DAVA::uint64 *) dst) = val.AsUInt64();
+		break;
+	case TYPE_VECTOR2:
+		*((DAVA::Vector2 *) dst) = val.AsVector2();
+		break;
+	case TYPE_VECTOR3:
+		*((DAVA::Vector3 *) dst) = val.AsVector3();
+		break;
+	case TYPE_VECTOR4:
+		*((DAVA::Vector4 *) dst) = val.AsVector4();
+		break;
+	case TYPE_MATRIX2:
+		*((DAVA::Matrix2 *) dst) = val.AsMatrix2();
+		break;
+	case TYPE_MATRIX3:
+		*((DAVA::Matrix3 *) dst) = val.AsMatrix3();
+		break;
+	case TYPE_MATRIX4:
+		*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
+		break;
+	default:
+		DVASSERT(0 && "Don't know how to save data from such VariantType");
+	}
+}
+
 	
 };

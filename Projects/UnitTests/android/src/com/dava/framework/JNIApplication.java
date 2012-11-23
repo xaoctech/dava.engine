@@ -35,7 +35,7 @@ public class JNIApplication extends Application
                 int count = strs.length;
                 for(int i = 0; i < count; ++i)
                 {
-//                    Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] AL[%d]:  %s", i, strs[i])); 
+                    Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] AL[%d]:  %s", i, strs[i])); 
                 }
             }
             catch(Exception e)

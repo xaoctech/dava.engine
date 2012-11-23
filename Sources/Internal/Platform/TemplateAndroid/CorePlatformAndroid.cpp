@@ -219,7 +219,10 @@ namespace DAVA
         if(wasCreated)
         {
             ApplicationCore * core = Core::Instance()->GetApplicationCore();
-            core->OnResume();
+            if(core)
+            {
+                core->OnResume();
+            }
             
             foreground = true;
         }
@@ -235,7 +238,10 @@ namespace DAVA
 		RenderResource::LostAllResources();
 
         ApplicationCore * core = Core::Instance()->GetApplicationCore();
-        core->OnSuspend();
+        if(core)
+        {
+            core->OnSuspend();
+        }
 
 		foreground = false;
 

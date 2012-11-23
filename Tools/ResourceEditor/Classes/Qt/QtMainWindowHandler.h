@@ -29,6 +29,7 @@ public:
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
     void RegisterDockActions(DAVA::int32 count, ...);
+    void RegisterTextureFormatActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
     void SetResentAncorAction(QAction *ancorAction);
@@ -87,8 +88,12 @@ public slots:
     void Beast();
     
     //ViewOptions
+    void MenuViewOptionsWillShow();
     void ToggleNotPassableTerrain();
-    
+    void ReloadAsPNG();
+    void ReloadAsPVR();
+    void ReloadAsDXT();
+
     
     //scene graph
     void RefreshSceneGraph();
@@ -144,7 +149,9 @@ private:
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
+    QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
 
+    
     QMenu *menuResentScenes;
     QAction *resentAncorAction;
 

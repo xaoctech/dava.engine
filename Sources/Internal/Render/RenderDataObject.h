@@ -78,13 +78,13 @@ public:
     */
     void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-	virtual void SaveToSystemMemory();
-	virtual void Lost();
-	virtual void Invalidate();
-	int32 savedVertexCount;
-    bool isLost;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+//#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//	virtual void SaveToSystemMemory();
+//	virtual void Lost();
+//	virtual void Invalidate();
+//	int32 savedVertexCount;
+//    bool isLost;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
     void BuildIndexBuffer();
@@ -101,9 +101,9 @@ private:
     
     eIndexFormat indexFormat;
     uint8 * indices;
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-    uint8 * savedIndices;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+//#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//    uint8 * savedIndices;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
     uint32 indexBuffer;
     int32 indexCount;
     

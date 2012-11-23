@@ -107,8 +107,10 @@
 
 // 2D Graphics
 #include "Render/2D/Sprite.h"
+#include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "Render/Shader.h"
 
 #include "Core/DisplayMode.h"

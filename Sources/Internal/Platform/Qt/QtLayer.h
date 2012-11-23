@@ -65,9 +65,11 @@ public:
 
     virtual void LockKeyboardInput(bool locked) = 0;
 
+    virtual void* CreateAutoreleasePool() { return NULL; };
+    virtual void ReleaseAutoreleasePool(void *pool) {};
+    
     void Quit();
     void SetDelegate(QtLayerDelegate *delegate);
-    
     
 protected:
     

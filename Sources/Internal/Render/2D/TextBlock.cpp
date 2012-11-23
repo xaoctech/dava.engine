@@ -668,7 +668,7 @@ void TextBlock::Prepare()
 				}
 			}
 			
-			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, addInfo.c_str());
+			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, false, addInfo.c_str());
 			delete[] buf;
 			sprite = Sprite::CreateFromTexture(tex, 0, 0, finalW, finalH);
 			SafeRelease(tex);

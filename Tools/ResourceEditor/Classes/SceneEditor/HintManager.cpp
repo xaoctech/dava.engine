@@ -1,6 +1,7 @@
 #include "HintManager.h"
 #include "ControlsFactory.h"
 
+static const float32 NOTIFICATION_TIME = 3;
 
 HintControl::HintControl(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)

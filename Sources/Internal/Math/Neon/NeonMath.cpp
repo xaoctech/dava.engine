@@ -23,7 +23,7 @@
 
 #include "NeonMath.h"
 
-#ifdef _ARM_ARCH_7
+#ifdef __DAVAENGINE_ARM_7__
 
 namespace DAVA 
 {
@@ -99,7 +99,8 @@ void NEON_Matrix4Vector4Mul(const float* m, const float* v, float* output)
      );
 }
 
+    
 };
 
-#endif //#ifdef _ARM_ARCH_7
+#endif //#ifdef __DAVAENGINE_ARM_7__
 

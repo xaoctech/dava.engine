@@ -1,7 +1,5 @@
 #include "EditorBodyControl.h"
 #include "ControlsFactory.h"
-#include "OutputManager.h"
-#include "OutputPanelControl.h"
 #include "../BeastProxy.h"
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"
@@ -1008,6 +1006,7 @@ void EditorBodyControl::LandscapeEditorStarted()
     
     LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
     scene->SetSelection(landscape);
+	SelectNodeAtTree(NULL);
     SelectNodeAtTree(landscape);
     
     landscapeToolsSelection->Show();
