@@ -1131,6 +1131,30 @@
     <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1946,7 +1970,10 @@
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\TexturePVR.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>

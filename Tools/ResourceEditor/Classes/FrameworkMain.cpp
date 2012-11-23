@@ -18,6 +18,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
 
+#include "SceneEditor/PVRConverter.h"
 #include "version.h"
 
 using namespace DAVA;
@@ -88,16 +89,34 @@ void ProcessRecourcePacker()
         return;
     }
     
+    new PVRConverter();
+
+    
+    if(commandLine.size() < 3)
+    {
+        printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
+        return;
+    }
+
+#if defined (__DAVAENGINE_MACOS__)
+	String toolName = String("/PVRTexToolCL");
+#elif defined (__DAVAENGINE_WIN32__)
+	String toolName = String("/PVRTexToolCL.exe");
+#endif
+    PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2] + toolName);
+
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
     printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.c_str());
     printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.c_str());
     
-    
+    Texture::InitializePixelFormatDescriptors();
     resourcePackerScreen->PackResources();
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
+    
+    PVRConverter::Instance()->Release();
     
     SafeRelease(resourcePackerScreen);
 }
@@ -113,6 +132,18 @@ void FrameworkDidLaunched()
 	new EditorConfig();
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
+    
+    
+    String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
+    String sourceFolder = String("DataSource/3d");
+    if(sourceFolder.length() <= dataSourcePathname.length())
+    {
+        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
+        SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
+        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
+        Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+    }
+    
     
 	if (Core::Instance()->IsConsoleMode())
 	{
@@ -147,7 +178,7 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
     
 	DAVA::Core::Instance()->SetVirtualScreenSize(480, 320);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "Gfx");
 #else
 	KeyedArchive * appOptions = new KeyedArchive();
     
@@ -168,7 +199,7 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "Gfx");
 #endif
     
 	GameCore * core = new GameCore();

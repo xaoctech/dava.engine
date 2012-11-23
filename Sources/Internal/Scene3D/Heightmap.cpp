@@ -27,6 +27,7 @@
 
 #include "Scene3D/Heightmap.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 
@@ -54,7 +55,7 @@ void Heightmap::ReleaseData()
     size = 0;
 }
     
-void Heightmap::BuildFromImage(DAVA::Image *image)
+bool Heightmap::BuildFromImage(DAVA::Image *image)
 {
     DVASSERT(image);
     if(size != image->width)
@@ -62,7 +63,6 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
         ReleaseData();
         AllocateData(image->width);
     }
-
     
     if(FORMAT_A16 == image->format)
     {
@@ -89,7 +89,9 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
     else 
     {
         Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
+        return false;
     }
+    return true;
 }
 
 void Heightmap::SaveToImage(const String & filename)
@@ -106,7 +108,7 @@ void Heightmap::SaveToImage(const String & filename)
 
     SafeDeleteArray(unpackedBytes);
     
-    image->Save(filename);
+    ImageLoader::Save(image, filename);
     SafeRelease(image);
 }
   

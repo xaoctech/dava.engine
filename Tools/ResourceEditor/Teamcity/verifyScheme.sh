@@ -9,9 +9,9 @@ else
   cp -Rf schemes/MacOS/* "../TemplateProjectMacOS.xcodeproj/$DIR_SCH" 
 fi
 
-if [ -f "../TemplateProjectQt.xcodeproj/$DIR_SCH/TemplateProjectQt.xcscheme" ]; then
+if [ -f "../ResourceEditorQt.xcodeproj/$DIR_SCH/ResourceEditorQt.xcscheme" ]; then
    echo "scheme for Qt MacOS exists"
 else
-  mkdir -p "../TemplateProjectQt.xcodeproj/$DIR_SCH/"
-  cp -Rf schemes/Qt/* "../TemplateProjectQt.xcodeproj/$DIR_SCH" 
+  mkdir -p "../ResourceEditorQt.xcodeproj/$DIR_SCH/"
+  cp -Rf schemes/Qt/* "../ResourceEditorQt.xcodeproj/$DIR_SCH" 
 fi

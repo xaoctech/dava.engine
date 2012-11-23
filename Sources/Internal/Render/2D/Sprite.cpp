@@ -89,11 +89,19 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 	String pathName = spriteName + ".txt";
 	
 	Sprite * spr = forPointer;
+	String scaledName;
+	String scaledPath;
 	
 	int pos = (int)spriteName.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
-	String scaledName = spriteName.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
-	String scaledPath = scaledName + ".txt";
-	
+	if(pos < 0)
+	{
+		scaledName = spriteName;
+	}
+	else
+	{
+		scaledName = spriteName.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+	}
+	scaledPath = scaledName + ".txt";
 	
 	Map<String, Sprite*>::iterator it;
 	it = spriteMap.find(scaledPath);
@@ -194,7 +202,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 		sscanf(tempBuf, "%s", textureCharName);
 		String tp = texturePath + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
-		Texture *texture = Texture::CreateFromFile(tp.c_str());
+		Texture *texture = Texture::CreateFromFile(tp);
 		
 		spr->textures[k] = texture;
 		DVASSERT_MSG(texture, "ERROR: Texture loading failed"/* + pathName*/);
@@ -1405,6 +1413,4 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &pa
 	
 	frame = localState.frame;
 }
-
-
 };

@@ -1,20 +1,23 @@
 #include "LandscapeTool.h"
+#include "../Qt/QtUtils.h"
 
 LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageName)
 {
+    image = NULL;
+    
     toolID = _ID;
     type = _type;
     
     imageName = _imageName;
-    image = Image::CreateFromFile(imageName);
+    image = CreateTopLevelImage(imageName);
     
     RenderManager::Instance()->LockNonMain();
     
     float32 sideSize = (float32)image->width;
     sprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
     
-    Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
-                                              image->GetWidth(), image->GetHeight());
+    Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
+                                              image->GetWidth(), image->GetHeight(), false);
     
     Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());
     

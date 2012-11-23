@@ -39,6 +39,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/LightNode.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA 
 {
@@ -177,6 +178,10 @@ int32 Material::Release()
 
 Material::~Material()
 {
+    for (int32 tc = 0; tc < TEXTURE_COUNT; ++tc)
+    {
+        SafeRelease(textures[tc]);
+    }
 }
     
     
@@ -387,9 +392,6 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    Image::EnableAlphaPremultiplication(false);
-    Texture::EnableMipmapGeneration();
-
     DataNode::Load(keyedArchive, sceneFile);
 
     int32 texCount = keyedArchive->GetInt32("mat.texCount");
@@ -409,10 +411,6 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
                 Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
             textures[k] = Texture::CreateFromFile(names[k]);
-            if (textures[k])
-            {
-                textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-            }
         }
         
 //        if (names[k].size())
@@ -420,8 +418,6 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
 //        } 
     }
-    Texture::DisableMipmapGeneration();
-    Image::EnableAlphaPremultiplication(true);
     
     
     diffuseColor = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuseColor);
@@ -776,19 +772,12 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
     SafeRelease(textures[level]);
     names[level] = "";
  
-    Image::EnableAlphaPremultiplication(false);
-    Texture::EnableMipmapGeneration();
-
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
-		t->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
         textures[level] = t;
         names[level] = textureName;
     }
-
-    Texture::DisableMipmapGeneration();
-    Image::EnableAlphaPremultiplication(true);
 }
 
 void Material::SetAlphablend(bool _isAlphablend)

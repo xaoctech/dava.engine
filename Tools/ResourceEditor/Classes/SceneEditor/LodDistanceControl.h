@@ -22,6 +22,8 @@ public:
 
     virtual void WillDisappear();
     
+    virtual void Update(float32 timeElapsed);
+
     void SetDistances(float32 *newDistances, int32 *newTriangles, int32 newCount);
     
     virtual void Input(UIEvent *currentInput);
@@ -33,16 +35,20 @@ public:
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
     
+    
+    static const float32 GetControlHeightForLodCount(int32 lodCount);
+    
 private:
 
     void ReleaseControls();
+    void UpdateDistanceToCamera();
     
     UIControl **zones;
     UIControl **sliders;
     
     int32 count;
-    float32 distances[LodNode::MAX_LOD_DISTANCE];
-    int32 triangles[LodNode::MAX_LOD_DISTANCE];
+    float32 distances[LodNode::MAX_LOD_LAYERS];
+    int32 triangles[LodNode::MAX_LOD_LAYERS];
     
     float32 maxDistance;
 
@@ -67,6 +73,8 @@ private:
     UIStaticText *trianglesText[LodNode::MAX_LOD_LAYERS];
     UIStaticText *trianglesTextValues[LodNode::MAX_LOD_LAYERS];
 
+    UIStaticText *distanceToCameraText;
+    UIStaticText *distanceToCameraValue;
     
     int32 activeLodIndex;
 };

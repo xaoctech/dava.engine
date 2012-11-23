@@ -34,11 +34,8 @@ class EditorBodyControl:
         public LandscapeEditorDelegate,
         public ModificationsPanelDelegate
 {
-    enum eConst
-    {
-        SCENE_OFFSET = 10, 
-    };
-
+    static const int32 SCENE_OFFSET = 10;
+    
     enum ePropertyShowState
     {
         EPSS_HIDDEN = 0,

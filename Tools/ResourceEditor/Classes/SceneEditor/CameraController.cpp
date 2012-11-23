@@ -354,6 +354,8 @@ void WASDCameraController::Input(UIEvent * event)
     
 void WASDCameraController::LockAtSelection()
 {
+    DVASSERT(currScene);
+    
     Camera * camera = currScene->GetCurrentCamera();
     if (!camera)return;
 

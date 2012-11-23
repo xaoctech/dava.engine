@@ -217,7 +217,7 @@ String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture 
     if(-1 != pos)
     {
         String extension = FileSystem::Instance()->GetExtension(textureRelativePathName);
-        if((0 != CompareStrings(extension, ".png")) && (0 != CompareStrings(extension, ".pvr")))
+        if((0 != CompareCaseInsensitive(extension, ".png")) && (0 != CompareCaseInsensitive(extension, ".pvr")))
         {
             textureRelativePathName.replace(pos, 4, ".png");
         }

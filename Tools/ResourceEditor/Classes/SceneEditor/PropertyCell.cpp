@@ -15,7 +15,6 @@
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
 #include "HintManager.h"
-#include "UIFilePreviewDialog.h"
 
 #include "../Qt/QtUtils.h"
 
@@ -374,9 +373,12 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
     String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    property->SetString(pathToFile);
-    SetData(property);
-    propertyDelegate->OnPropertyChanged(property);
+    if(!pathToFile.empty())
+    {
+        property->SetString(pathToFile);
+        SetData(property);
+        propertyDelegate->OnPropertyChanged(property);
+    }
 }
 
 String PropertyFilepathCell::GetPathname()
@@ -864,7 +866,7 @@ void PropertyDistanceCell::SetData(PropertyCellData *prop)
 
 float32 PropertyDistanceCell::GetHeightForWidth(float32 , int32 count)
 {
-    return CELL_HEIGHT + (count*2 + 1) * ControlsFactory::BUTTON_HEIGHT;
+    return CELL_HEIGHT + LodDistanceControl::GetControlHeightForLodCount(count);
 }
 
 void PropertyDistanceCell::DistanceChanged(LodDistanceControl *, int32 index, float32 value)

@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include "QtMainWindowHandler.h"
 
+#include "Render/TextureDescriptor.h"
+
 using namespace DAVA;
 
 
@@ -47,3 +49,19 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
 {
     return StringToWString(SizeInBytesToString(size));
 }
+
+
+DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname)
+{
+    Image *image = NULL;
+    Vector<Image *> imageSet = ImageLoader::CreateFromFile(imagePathname);
+    if(0 != imageSet.size())
+    {
+        image = SafeRetain(imageSet[0]);
+		for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+    }
+    
+    return image;
+}
+
+
