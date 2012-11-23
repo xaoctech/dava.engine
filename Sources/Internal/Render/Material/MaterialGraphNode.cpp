@@ -67,7 +67,6 @@ MaterialGraphNode::MaterialGraphNode(MaterialGraph * _graph)
     ,   textureChannelIndex(0)
     ,   shader(0)
 {
-    
 }
     
 MaterialGraphNode::~MaterialGraphNode()
@@ -105,10 +104,29 @@ void MaterialGraphNode::InitFromYamlNode(YamlNode * graphNode)
     {
         YamlNode * valueNode = graphNode->Get("value");
         if (valueNode->GetType() == YamlNode::TYPE_STRING)
-            constValue.SetInt32(valueNode->AsInt());
+        {
+            constValue.SetFloat(valueNode->AsFloat());
+            returnType = Shader::UT_FLOAT;
+        }
         else if (valueNode->GetType() == YamlNode::TYPE_ARRAY)
         {
-            //constValue.SetVe
+            switch (valueNode->GetCount())
+            {
+                case 2:
+                    constValue.SetVector2(valueNode->AsVector2());
+                    returnType = Shader::UT_FLOAT_VEC2;
+                    break;
+                case 3:
+                    constValue.SetVector3(valueNode->AsVector3());
+                    returnType = Shader::UT_FLOAT_VEC3;
+                    break;
+                case 4:
+                    constValue.SetVector4(valueNode->AsVector4());
+                    returnType = Shader::UT_FLOAT_VEC4;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -290,7 +308,7 @@ MaterialGraphNode::eNodeUsage MaterialGraphNode::RecursiveSetRealUsageBack(Mater
     // DEBUG
     //Logger::Debug("eval node: %s", node->GetName().c_str());
 
-    Map<String, eNodeUsage> resultUsage;
+    //Map<String, eNodeUsage> resultUsage;
     Map<String, MaterialGraphNodeConnector*> & inputConnectors = node->GetInputConnectors();
     
     // return node usage if it does not have connectors
@@ -299,37 +317,49 @@ MaterialGraphNode::eNodeUsage MaterialGraphNode::RecursiveSetRealUsageBack(Mater
         return node->usage;
     }
     
+    bool hasPixelShaderNode = false;
+    bool hasVertexShaderNode = false;
+    
     for (Map<String, MaterialGraphNodeConnector*>::iterator it = inputConnectors.begin(); it != inputConnectors.end(); ++it)
     {
         MaterialGraphNodeConnector * connector = it->second;
         MaterialGraphNode * connectedNode = connector->node;
         if (connectedNode)
         {
-            resultUsage[it->first] = RecursiveSetRealUsageBack(connectedNode);
+            eNodeUsage result = RecursiveSetRealUsageBack(connectedNode);
+            if (result == USE_PIXEL)
+            {
+                hasPixelShaderNode = true;
+            
+            }else if (result == USE_VERTEX)
+            {
+                hasVertexShaderNode = true;
+            }
         }
     }
     
     if (node->usage == USE_PIXEL || node->usage == USE_VERTEX)return node->usage;
     
     // usage is the same
-    int32 index = 0;
-    eNodeUsage firstInputUsage = USE_BOTH;
-    for (Map<String, eNodeUsage>::iterator it = resultUsage.begin(); it != resultUsage.end(); ++it)
-    {
-        if (index == 0)firstInputUsage = it->second;
-        else if (firstInputUsage != it->second)
-            firstInputUsage = USE_BOTH;
-    }
-
+//    int32 index = 0;
+//    eNodeUsage firstInputUsage = USE_BOTH;
+//    for (Map<String, eNodeUsage>::iterator it = resultUsage.begin(); it != resultUsage.end(); ++it)
+//    {
+//        if (index == 0)firstInputUsage = it->second;
+//        else if (firstInputUsage != it->second)
+//            firstInputUsage = USE_BOTH;
+//    }
     
     // we run mechanism only for nodes where we are not sure that
     // node are in vertex shader or in pixel shader
     DVASSERT(node->usage == USE_BOTH);
-    
-    if (firstInputUsage != USE_BOTH)
-        node->usage = firstInputUsage;
 
-    DVASSERT(firstInputUsage != USE_BOTH);
+    if (hasPixelShaderNode)node->usage = USE_PIXEL;
+    else if (hasVertexShaderNode)node->usage = USE_VERTEX;
+    
+//    if (firstInputUsage != USE_BOTH)
+//        node->usage = firstInputUsage;
+//    DVASSERT(firstInputUsage != USE_BOTH);
     return node->usage;
 }
 

@@ -179,7 +179,7 @@ bool KeyedArchive::LoadFromYamlNode(YamlNode* rootNode)
 
         VariantType *value = new VariantType(node->AsVariantType());
                 
-        if(value->type == VariantType::TYPE_NONE)
+        if(value->GetType() == VariantType::TYPE_NONE)
         {
             SafeDelete(value);
             continue;
@@ -528,7 +528,7 @@ void KeyedArchive::Dump()
 	Logger::Info("--------------- Archive Currently contain ----------------");
 	for(Map<String, VariantType*>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
 	{
-		switch(it->second->type)
+		switch(it->second->GetType())
 		{
 			case VariantType::TYPE_BOOLEAN:
 			{

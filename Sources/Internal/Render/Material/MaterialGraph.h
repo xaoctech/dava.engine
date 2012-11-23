@@ -65,7 +65,17 @@ public:
     uint32 GetUsedTextureCoordsCount() { return usedTextureCoordsCount; };
     uint32 GetUsedTextures() { return usedTextures; };
     
+    const String & GetMaterialFilename() const { return materialFilename; };
+    const String & GetMaterialPath() const { return materialPath; };
+    const String & GetVertexShaderFilename() const { return vertexShaderFilename; };
+    const String & GetPixelShaderFilename() const { return pixelShaderFilename; };
+    
 protected:
+    String materialFilename;
+    String materialPath;
+    String vertexShaderFilename;
+    String pixelShaderFilename;
+    
     static bool SortByDepthMarkerDescending(MaterialGraphNode * node1, MaterialGraphNode * node2);
     Vector<MaterialGraphNode*> allNodes;
     uint32 usedTextureCoordsCount;
