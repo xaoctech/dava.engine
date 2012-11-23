@@ -74,7 +74,8 @@ public:
 	VariantType();
     VariantType(const VariantType &var);
 	~VariantType();
-	enum eVariantType
+	
+    enum eVariantType
 	{
 		TYPE_NONE = 0,
 		TYPE_BOOLEAN,
@@ -135,6 +136,9 @@ public:
     const static PairTypeName variantNamesMap[];
 	
 	// Functions
+    
+    
+    inline eVariantType GetType();
 	
 	/**
 		\brief Function to set bool value to variant type variable
@@ -366,6 +370,11 @@ private:
     void ReleasePointer();
 };
 	
+VariantType::eVariantType VariantType::GetType()
+{
+    return (eVariantType)type;
+}
+
 	
 };
 

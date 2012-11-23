@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -83,8 +84,21 @@ void MaterialGraph::RemoveNodeRecursive(MaterialGraphNode * node)
 
 bool MaterialGraph::LoadFromFile(const String & pathname)
 {
+    
     YamlParser * materialFileParser = YamlParser::Create(pathname);
+    if (!materialFileParser)return false;
+    
+    FileSystem::Instance()->SplitPath(pathname, materialPath, materialFilename);
+        
+    
     YamlNode * rootNode = materialFileParser->GetRootNode();
+    YamlNode * materialNode = rootNode->Get("material");
+    
+    YamlNode * vertexShaderFileNode = materialNode->Get("vertexShader");
+    vertexShaderFilename = vertexShaderFileNode->AsString();
+    
+    YamlNode * pixelShaderFileNode = materialNode->Get("pixelShader");
+    pixelShaderFilename = pixelShaderFileNode->AsString();
     
     YamlNode * nodes = rootNode->Get("nodes");
     if (nodes && nodes->GetType() == YamlNode::TYPE_ARRAY)

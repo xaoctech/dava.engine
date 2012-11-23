@@ -99,12 +99,11 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
 
-    String vertexShaderPath = "~res:/Materials/forward.vsh";
-    String fragmentShaderPath = "~res:/Materials/forward.fsh";
+    String vertexShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetVertexShaderFilename();
+    String fragmentShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetPixelShaderFilename();
 
     String originalVertexShader = FileSystem::Instance()->ReadFileContents(vertexShaderPath);
     String originalFragmentShader = FileSystem::Instance()->ReadFileContents(fragmentShaderPath);
-    
     
     File * resultVsh = File::Create("~doc:/temp.vsh", File::CREATE | File::WRITE);
     resultVsh->WriteString(finalVertexShaderCode, false); // Save without null terminator
@@ -205,7 +204,17 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
     
     if (type == MaterialGraphNode::TYPE_CONST)
     {
-        node->nodeCode = Format("float %s = %f;", node->name.c_str(), 1.0f);
+        String value;
+        if (node->constValue.GetType() == VariantType::TYPE_FLOAT)
+            value = Format("(%f)", node->constValue.AsFloat());
+        else if (node->constValue.GetType() == VariantType::TYPE_VECTOR2)
+            value = Format("(%f, %f)", node->constValue.AsVector2().x, node->constValue.AsVector2().y);
+        else if (node->constValue.GetType() == VariantType::TYPE_VECTOR3)
+            value = Format("(%f, %f, %f)", node->constValue.AsVector3().x, node->constValue.AsVector3().y, node->constValue.AsVector3().z);
+        else if (node->constValue.GetType() == VariantType::TYPE_VECTOR4)
+            value = Format("(%f, %f, %f, %f)", node->constValue.AsVector4().x, node->constValue.AsVector4().y, node->constValue.AsVector4().z, node->constValue.AsVector4().w);
+        
+        node->nodeCode = Format("%s %s = %s%s;", Shader::GetUniformTypeSLName(node->returnType), node->name.c_str(), Shader::GetUniformTypeSLName(node->returnType), value.c_str());
         *destinationCode += node->nodeCode;
     }
     
