@@ -96,7 +96,9 @@ namespace DAVA
     #define glDeleteRenderbuffers glDeleteRenderbuffersOES
     #define glGenerateMipmap glGenerateMipmapOES
 	#define glBindFramebuffer glBindFramebufferOES
-	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+#if !defined GL_DEPTH_COMPONENT
+    #define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+#endif //#if !defined GL_DEPTH_COMPONENT
     
 #elif defined(__DAVAENGINE_ANDROID__)
     
