@@ -31,14 +31,21 @@
   <property name="dockOptions">
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
-  <widget class="DavaGLWidget" name="centralWidget">
+  <widget class="QWidget" name="centralFrame">
    <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
+    <enum>Qt::NoFocus</enum>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
      <number>0</number>
     </property>
+    <item>
+     <widget class="DavaGLWidget" name="davaGLWidget" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QDockWidget" name="dockSceneGraph">

@@ -356,6 +356,12 @@
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\mainwindow.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
@@ -474,6 +480,12 @@
     <ClCompile Include="_GeneratedQt\GUIState_moc.cpp" />
     <ClCompile Include="_GeneratedQt\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\PointerHolder_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtMainWindowHandler_moc.cpp" />
@@ -756,6 +768,12 @@
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\mainwindow.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
@@ -875,6 +893,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui" />
+    <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\texturedialog.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>

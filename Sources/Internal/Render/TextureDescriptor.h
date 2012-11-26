@@ -92,7 +92,7 @@ public:
     void Export(const String &filePathname);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
-    bool GetGenerateMipMaps();
+    bool GetGenerateMipMaps() const;
 
     String GetSourceTexturePathname() const; 
     static String GetSourceTextureExtension(); 

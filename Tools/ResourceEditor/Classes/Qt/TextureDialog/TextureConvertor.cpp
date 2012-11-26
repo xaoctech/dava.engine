@@ -148,22 +148,26 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				QProcess p;
-				DAVA::String command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy);
-				DAVA::Logger::Info("%s$: %s", DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str(), command.c_str());
+				QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
 
-				p.start(QString(command.c_str()));
+				command += "/";
+				command += PVRConverter::Instance()->GetCommandLinePVR(sourcePath, item->descriptorCopy).c_str();
+				DAVA::Logger::Info("%s", command.toStdString().c_str());
+
+				QProcess p;
+				p.start(command);
 				p.waitForFinished(-1);
 
 				if(QProcess::NormalExit != p.exitStatus())
 				{
-					DAVA::Logger::Error("Convertor process crushed\n");
+					DAVA::Logger::Error("Convertor process crushed");
 				}
-
 				if(0 != p.exitCode())
 				{
-					DAVA::Logger::Error("Convertor exit with error %d\n", p.exitCode());
-					DAVA::Logger::Error("Stderror: %s", p.readAllStandardError().constData());
+					DAVA::Logger::Error("Convertor exit with error %d", p.exitCode());
+					DAVA::Logger::Error("Stderror:\n%s", p.readAllStandardError().constData());
+					DAVA::Logger::Error("Stdout:\n%s", p.readAllStandardOutput().constData());
+					DAVA::Logger::Error("---");
 				}
 			}
 

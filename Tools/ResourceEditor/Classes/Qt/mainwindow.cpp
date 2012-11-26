@@ -23,16 +23,15 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	ui->centralWidget->setFocus();
+	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
     
     new QtMainWindowHandler(this);
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-
     
     RegisterBasePointerTypes();
     
@@ -51,11 +50,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
     SetupMainMenu();
-    
     SetupToolBar();
-    
     SetupDockWidgets();
-
     SetupProjectPath();
     
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
