@@ -294,6 +294,18 @@
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E86671DE1663F21400F33A54 /* MaterialBrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671D81663F21400F33A54 /* MaterialBrowser_moc.cpp */; };
+		E86671DF1663F21400F33A54 /* MaterialTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671D91663F21400F33A54 /* MaterialTree_moc.cpp */; };
+		E86671E01663F21400F33A54 /* MaterialTreeItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671DA1663F21400F33A54 /* MaterialTreeItem_moc.cpp */; };
+		E86671E11663F21400F33A54 /* MaterialTreeModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671DB1663F21400F33A54 /* MaterialTreeModel_moc.cpp */; };
+		E86671E21663F21400F33A54 /* MaterialView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671DC1663F21400F33A54 /* MaterialView_moc.cpp */; };
+		E86671E31663F21400F33A54 /* MaterialViewModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671DD1663F21400F33A54 /* MaterialViewModel_moc.cpp */; };
+		E86671F11663F23700F33A54 /* MaterialBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671E51663F23700F33A54 /* MaterialBrowser.cpp */; };
+		E86671F21663F23700F33A54 /* MaterialTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671E71663F23700F33A54 /* MaterialTree.cpp */; };
+		E86671F31663F23700F33A54 /* MaterialTreeItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671E91663F23700F33A54 /* MaterialTreeItem.cpp */; };
+		E86671F41663F23700F33A54 /* MaterialTreeModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671EB1663F23700F33A54 /* MaterialTreeModel.cpp */; };
+		E86671F51663F23700F33A54 /* MaterialView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671ED1663F23700F33A54 /* MaterialView.cpp */; };
+		E86671F61663F23700F33A54 /* MaterialViewModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86671EF1663F23700F33A54 /* MaterialViewModel.cpp */; };
 		E89DFC1D163ECCEA00B51706 /* qtbuttonpropertybrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFC0A163ECCEA00B51706 /* qtbuttonpropertybrowser.cpp */; };
 		E89DFC1E163ECCEA00B51706 /* qteditorfactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFC0C163ECCEA00B51706 /* qteditorfactory.cpp */; };
 		E89DFC20163ECCEA00B51706 /* qtgroupboxpropertybrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFC0F163ECCEA00B51706 /* qtgroupboxpropertybrowser.cpp */; };
@@ -985,6 +997,25 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E86671D61663F1FD00F33A54 /* ui_materialbrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_materialbrowser.h; path = _GeneratedQt/ui_materialbrowser.h; sourceTree = "<group>"; };
+		E86671D81663F21400F33A54 /* MaterialBrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialBrowser_moc.cpp; sourceTree = "<group>"; };
+		E86671D91663F21400F33A54 /* MaterialTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree_moc.cpp; sourceTree = "<group>"; };
+		E86671DA1663F21400F33A54 /* MaterialTreeItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTreeItem_moc.cpp; sourceTree = "<group>"; };
+		E86671DB1663F21400F33A54 /* MaterialTreeModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTreeModel_moc.cpp; sourceTree = "<group>"; };
+		E86671DC1663F21400F33A54 /* MaterialView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialView_moc.cpp; sourceTree = "<group>"; };
+		E86671DD1663F21400F33A54 /* MaterialViewModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewModel_moc.cpp; sourceTree = "<group>"; };
+		E86671E51663F23700F33A54 /* MaterialBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialBrowser.cpp; sourceTree = "<group>"; };
+		E86671E61663F23700F33A54 /* MaterialBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialBrowser.h; sourceTree = "<group>"; };
+		E86671E71663F23700F33A54 /* MaterialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree.cpp; sourceTree = "<group>"; };
+		E86671E81663F23700F33A54 /* MaterialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTree.h; sourceTree = "<group>"; };
+		E86671E91663F23700F33A54 /* MaterialTreeItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTreeItem.cpp; sourceTree = "<group>"; };
+		E86671EA1663F23700F33A54 /* MaterialTreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTreeItem.h; sourceTree = "<group>"; };
+		E86671EB1663F23700F33A54 /* MaterialTreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTreeModel.cpp; sourceTree = "<group>"; };
+		E86671EC1663F23700F33A54 /* MaterialTreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTreeModel.h; sourceTree = "<group>"; };
+		E86671ED1663F23700F33A54 /* MaterialView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialView.cpp; sourceTree = "<group>"; };
+		E86671EE1663F23700F33A54 /* MaterialView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialView.h; sourceTree = "<group>"; };
+		E86671EF1663F23700F33A54 /* MaterialViewModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialViewModel.cpp; sourceTree = "<group>"; };
+		E86671F01663F23700F33A54 /* MaterialViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialViewModel.h; sourceTree = "<group>"; };
 		E89DFC0A163ECCEA00B51706 /* qtbuttonpropertybrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qtbuttonpropertybrowser.cpp; path = Classes/Qt/QtPropertyBrowser/qtbuttonpropertybrowser.cpp; sourceTree = "<group>"; };
 		E89DFC0B163ECCEA00B51706 /* qtbuttonpropertybrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = qtbuttonpropertybrowser.h; path = Classes/Qt/QtPropertyBrowser/qtbuttonpropertybrowser.h; sourceTree = "<group>"; };
 		E89DFC0C163ECCEA00B51706 /* qteditorfactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qteditorfactory.cpp; path = Classes/Qt/QtPropertyBrowser/qteditorfactory.cpp; sourceTree = "<group>"; };
@@ -1140,6 +1171,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				E86671E41663F23700F33A54 /* MaterialBrowser */,
 				E8F316B0164BABB100A0EDF2 /* QtPosSaver */,
 				E89DFC09163ECCCF00B51706 /* QtPropertyBrowser */,
 				E89DFC08163ECCC200B51706 /* TextureDialog */,
@@ -1908,9 +1940,45 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		E86671D71663F21400F33A54 /* MaterialBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E86671D81663F21400F33A54 /* MaterialBrowser_moc.cpp */,
+				E86671D91663F21400F33A54 /* MaterialTree_moc.cpp */,
+				E86671DA1663F21400F33A54 /* MaterialTreeItem_moc.cpp */,
+				E86671DB1663F21400F33A54 /* MaterialTreeModel_moc.cpp */,
+				E86671DC1663F21400F33A54 /* MaterialView_moc.cpp */,
+				E86671DD1663F21400F33A54 /* MaterialViewModel_moc.cpp */,
+			);
+			name = MaterialBrowser;
+			path = _GeneratedQt/MaterialBrowser;
+			sourceTree = "<group>";
+		};
+		E86671E41663F23700F33A54 /* MaterialBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E86671E51663F23700F33A54 /* MaterialBrowser.cpp */,
+				E86671E61663F23700F33A54 /* MaterialBrowser.h */,
+				E86671E71663F23700F33A54 /* MaterialTree.cpp */,
+				E86671E81663F23700F33A54 /* MaterialTree.h */,
+				E86671E91663F23700F33A54 /* MaterialTreeItem.cpp */,
+				E86671EA1663F23700F33A54 /* MaterialTreeItem.h */,
+				E86671EB1663F23700F33A54 /* MaterialTreeModel.cpp */,
+				E86671EC1663F23700F33A54 /* MaterialTreeModel.h */,
+				E86671ED1663F23700F33A54 /* MaterialView.cpp */,
+				E86671EE1663F23700F33A54 /* MaterialView.h */,
+				E86671EF1663F23700F33A54 /* MaterialViewModel.cpp */,
+				E86671F01663F23700F33A54 /* MaterialViewModel.h */,
+			);
+			name = MaterialBrowser;
+			path = Classes/Qt/MaterialBrowser;
+			sourceTree = "<group>";
+		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				E86671D71663F21400F33A54 /* MaterialBrowser */,
+				E86671D61663F1FD00F33A54 /* ui_materialbrowser.h */,
 				4F2929D6165BB438009D6961 /* davaglwidget_moc.cpp */,
 				4F2929D7165BB438009D6961 /* FileSelectionModel_moc.cpp */,
 				4F2929D8165BB438009D6961 /* GraphItem_moc.cpp */,
@@ -2497,6 +2565,18 @@
 				4F292A23165BB438009D6961 /* TextureListModel_moc.cpp in Build Sources */,
 				4F292A24165BB438009D6961 /* TextureProperties_moc.cpp in Build Sources */,
 				4F292A25165BB438009D6961 /* TextureScrollArea_moc.cpp in Build Sources */,
+				E86671DE1663F21400F33A54 /* MaterialBrowser_moc.cpp in Build Sources */,
+				E86671DF1663F21400F33A54 /* MaterialTree_moc.cpp in Build Sources */,
+				E86671E01663F21400F33A54 /* MaterialTreeItem_moc.cpp in Build Sources */,
+				E86671E11663F21400F33A54 /* MaterialTreeModel_moc.cpp in Build Sources */,
+				E86671E21663F21400F33A54 /* MaterialView_moc.cpp in Build Sources */,
+				E86671E31663F21400F33A54 /* MaterialViewModel_moc.cpp in Build Sources */,
+				E86671F11663F23700F33A54 /* MaterialBrowser.cpp in Build Sources */,
+				E86671F21663F23700F33A54 /* MaterialTree.cpp in Build Sources */,
+				E86671F31663F23700F33A54 /* MaterialTreeItem.cpp in Build Sources */,
+				E86671F41663F23700F33A54 /* MaterialTreeModel.cpp in Build Sources */,
+				E86671F51663F23700F33A54 /* MaterialView.cpp in Build Sources */,
+				E86671F61663F23700F33A54 /* MaterialViewModel.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
