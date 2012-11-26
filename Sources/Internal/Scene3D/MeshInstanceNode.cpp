@@ -242,7 +242,8 @@ void MeshInstanceNode::Draw()
 //			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //			RenderHelper::Instance()->DrawCornerBox(bbox);
 //      }
-        //if (debugFlags & DEBUG_DRAW_NORMALS)
+        
+        if (debugFlags & DEBUG_DRAW_NORMALS)
         {
             
             //const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);

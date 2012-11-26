@@ -21,7 +21,7 @@ private:
 
 	Vector2 GetTextureSize(const String & filePath);
 
-	int32 compressFormat;
+	PixelFormat compressFormat;
 };
 
 #endif //__LIGHTMAPS_PACKER_H__

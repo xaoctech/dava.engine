@@ -36,7 +36,7 @@
 namespace DAVA
 {
 
-#if defined (__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     
     
 #define PVRT_MIN(a,b)            (((a) < (b)) ? (a) : (b))
@@ -529,7 +529,7 @@ inline bool PVRTIsLittleEndian()
 }
     
 
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     
 };
 

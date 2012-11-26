@@ -151,7 +151,7 @@ enum PixelFormat
     FORMAT_COUNT,
     FORMAT_CLOSEST = 256
 };
-
+    
 struct PixelFormatDescriptor
 {
     GLenum format;
@@ -169,6 +169,19 @@ struct PixelFormatDescriptor
     }
 };
 
+    
+enum ImageFileFormat
+{
+    NOT_FILE = -1,
+    
+    PNG_FILE = 0,
+    PVR_FILE,
+    DXT_FILE,
+    
+    FILE_FORMAT_COUNT
+};
+
+    
 #if defined(__DAVAENGINE_OPENGL__)
 static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
 {

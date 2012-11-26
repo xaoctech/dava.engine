@@ -37,7 +37,6 @@
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
 
-
 namespace DAVA
 {
 /**
@@ -47,14 +46,27 @@ namespace DAVA
 	For iOS it also support compressed PVR formats. (PVR2 and PVR4)
  */
 class Image;
+class TextureDescriptor;
+class File;
 class Texture : public RenderResource
 {
 public:
-	
-	enum TextureWrap
+    
+    enum TextureWrap
 	{
 		WRAP_CLAMP_TO_EDGE = 0,
 		WRAP_REPEAT,
+	};
+
+    enum TextureFilter
+	{
+        FILTER_NEAREST  = 0,
+        FILTER_LINEAR,
+
+        FILTER_NEAREST_MIPMAP_NEAREST,
+        FILTER_LINEAR_MIPMAP_NEAREST,
+        FILTER_NEAREST_MIPMAP_LINEAR,
+        FILTER_LINEAR_MIPMAP_LINEAR
 	};
 
 	enum DepthFormat
@@ -91,6 +103,7 @@ public:
         \returns string value describing pixel format
      */
     static const char * GetPixelFormatString(PixelFormat format);
+    static PixelFormat GetPixelFormatByName(const String &formatName);
     
     /**
         \brief Create texture from data arrray
@@ -101,7 +114,7 @@ public:
         \param[in] width width of new texture
         \param[in] height height of new texture
      */
-	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height);
+	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height, bool generateMipMaps);
 
     /**
         \brief Create text texture from data arrray
@@ -113,7 +126,7 @@ public:
         \param[in] height height of new texture
         \param[in] addInfo additional info
      */
-	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, const char * addInfo = 0);
+	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, bool generateMipMaps, const char * addInfo = 0);
     
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -165,12 +178,9 @@ public:
 
 	static void	DumpTextures();
 
-	inline int32 GetWidth() { return width; }
-	inline int32 GetHeight() { return height; }
+	inline int32 GetWidth() const { return width; }
+	inline int32 GetHeight() const { return height; }
 	
-	static void EnableMipmapGeneration();
-	static void DisableMipmapGeneration();
-    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
@@ -178,8 +188,6 @@ public:
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
-	void UsePvrMipmaps();
-        
     /**
         \brief This function can enable / disable autosave for render targets.
         It's actual only for DX9 and for other systems is does nothing
@@ -208,27 +216,32 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
+    TextureDescriptor * CreateDescriptor() const;
+
+    void ReloadAs(ImageFileFormat fileFormat);
+	void ReloadAs(ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-	bool		 renderTargetModified;
-    bool         renderTargetAutosave;
-
-	virtual void SaveToSystemMemory();
-	virtual void Lost();
-	virtual void Invalidate();
-	void InvalidateFromFile();
-	void InvalidateFromSavedData();
-
-    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
-    void SaveData(uint8 * data, int32 dataSize);
-    
-	uint8 *savedData;
-	int32 savedDataSize;
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__)
+//	bool		 renderTargetModified;
+//    bool         renderTargetAutosave;
+//
+//	virtual void SaveToSystemMemory();
+//	virtual void Lost();
+//	virtual void Invalidate();
+//	void InvalidateFromFile();
+//	void InvalidateFromSavedData();
+//
+//    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
+//    void SaveData(uint8 * data, int32 dataSize);
+//    
+//	uint8 *savedData;
+//	int32 savedDataSize;
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	static LPDIRECT3DTEXTURE9 CreateTextureNative(Vector2 & size, PixelFormat & format, bool isRenderTarget, int32 flags);
@@ -258,34 +271,32 @@ public:							// properties for fast access
 	DepthFormat depthFormat;
 	bool		isRenderTarget;
 
-    bool isMimMapTexture;
-	bool isAlphaPremultiplied;
-
-    TextureWrap wrapModeS; 
-    TextureWrap wrapModeT;
-
 	void SetDebugInfo(const String & _debugInfo);
 
 	static const Map<String, Texture*> & GetTextureMap();
     
-    int32 GetDataSize();
+    int32 GetDataSize() const;
     
     void ReleaseTextureData();
 
     void GenerateID();
     
+    static void SetDefaultFileFormat(ImageFileFormat fileFormat);
+    static ImageFileFormat GetDefaultFileFormat();
     
 private:
+    
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
-	static Texture * CreateFromPVR(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
+    
+	static Texture * CreateFromDescriptor(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
-	
-	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize);
-
+    bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
+    
+    
 	static PixelFormat defaultRGBAFormat;
-	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
     
@@ -295,14 +306,21 @@ private:
     
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    static GLint HWglFilterToGLFilter(TextureFilter filter);
+    static GLint HWglConvertWrapMode(TextureWrap wrap);
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    static ImageFileFormat defaultFileFormat;
 };
     
 // Implementation of inline functions
 inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 {
-#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
     renderTargetAutosave = isEnabled;
-#endif //#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
+#endif //#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
 }
 inline const String & Texture::GetPathname() const
 {

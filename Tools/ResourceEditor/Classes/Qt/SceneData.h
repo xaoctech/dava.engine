@@ -70,6 +70,8 @@ public:
     
     void OpenLibraryForFile(const DAVA::String &filePathname);
     
+	void ResetLandsacpeSelection();
+
 protected:
     
     void BakeNode(DAVA::SceneNode *node);

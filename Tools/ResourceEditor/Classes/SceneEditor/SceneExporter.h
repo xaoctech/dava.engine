@@ -6,8 +6,7 @@
 using namespace DAVA;
 
 class SceneExporter: public DAVA::Singleton<SceneExporter>
-{    
-    
+{
 public:
 
 	SceneExporter();
@@ -32,14 +31,20 @@ protected:
     
     void RemoveEditorNodes(SceneNode *rootNode);
     
-    void ExportMaterials(Scene *scene, Set<String> &errorLog);
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog);
-    void ExportMeshLightmaps(Scene *scene, Set<String> &errorLog);
     bool ExportFileDirectly(const String &filePathname, Set<String> &errorLog);
-    String ExportTexture(const String &texturePathname, Set<String> &errorLog);
+    bool ExportTexture(const String &texturePathname, Set<String> &errorLog);
+    void ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog);
     
     void PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog);
+    
+    
+    void ExportTextures(Scene *scene, Set<String> &errorLog);
+    
+    void ReleaseTextures();
+    
+    void CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog);
     
     
 protected:
@@ -48,7 +53,10 @@ protected:
     String dataSourceFolder; 
     String workingFolder;
 
-    String format;
+    ImageFileFormat exportFormat;
+    
+    Map<String, Texture *> texturesForExport;
+    Map<String, String>exportedTextures;
 };
 
 

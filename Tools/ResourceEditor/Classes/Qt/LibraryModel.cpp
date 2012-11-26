@@ -79,7 +79,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
         if(info.isFile())
         {
             String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(info.fileName()));
-            if(0 == CompareStrings(".sc2", extension))
+            if(0 == CompareCaseInsensitive(".sc2", extension))
             {
                 return QColor(158, 0, 0);
             }

@@ -51,9 +51,9 @@ void HashMapTest::HashMapInsertRemoveGetTest(PerfFuncData * data)
 {
     
 //    HashMap<uint32*, uint32*> memoryHashMap(1024);
-    uint32 *var1 = new uint32();
-    uint32 *var2 = new uint32();
-    uint32 *var3 = new uint32();
+//    uint32 *var1 = new uint32();
+//    uint32 *var2 = new uint32();
+//    uint32 *var3 = new uint32();
 
 //    memoryHashMap.Insert(var1, var1);
 //    memoryHashMap.Insert(var2, var2);

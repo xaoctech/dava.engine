@@ -115,58 +115,64 @@ public:
 	virtual bool SetCurrentWorkingDirectory(const String & newWorkingDirectory);
 	
 	/**
-	         \brief Function to retrieve current documents directory
-         \returns current documents directory
-         */
-        virtual const String & GetCurrentDocumentsDirectory();
-        
-        /**
+        \brief Function to retrieve current documents directory
+        \returns current documents directory
+     */
+    virtual const String & GetCurrentDocumentsDirectory();
+    
+    /**
          \brief Function to set current documents directory
          \param[in] newDocDirectory new documents directory to be set
-         */
-        virtual void SetCurrentDocumentsDirectory(const String & newDocDirectory);
-        
-        /**
+     */
+    virtual void SetCurrentDocumentsDirectory(const String & newDocDirectory);
+    
+    /**
          \brief Function to set current documents directory to default
-         */
-        virtual void SetDefaultDocumentsDirectory();
-        
-        /**
+     */
+    virtual void SetDefaultDocumentsDirectory();
+    
+    /**
          \brief Function to retrieve full path relative current documents folder
          \returns path relative corrent documents folder
-         */
-        virtual const String FilepathInDocuments(const char * relativePathname);
-        
-        /**
+     */
+    virtual const String FilepathInDocuments(const char * relativePathname);
+    
+    /**
          \brief Function to retrieve full path relative current documents folder
          \returns path relative corrent documents folder
-         */
-        virtual const String FilepathInDocuments(const String & relativePathname);
-        
-        /**
+     */
+    virtual const String FilepathInDocuments(const String & relativePathname);
+    
+    /**
          \brief Function to retrieve user's documents path
          \returns user's documents path
-         */
-        virtual const String GetUserDocumentsPath();
-        
-        /**
+     */
+    virtual const String GetUserDocumentsPath();
+    
+    /**
          \brief Function to retrieve public documents path
          \returns public documents path
-         */
-        virtual const String GetPublicDocumentsPath();
+     */
+    virtual const String GetPublicDocumentsPath();
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)  
-        /**
+    /**
         \brief Function to retrieve user’s home path
         \returns user’s home path
-        */
-        virtual const String GetHomePath();
+    */
+    virtual const String GetHomePath();
 #endif
     
 	/**
-		\brief Function to compute CRC32 
+		\brief Function check if specified path is a regular file
+	*/
+	virtual bool IsFile(const String & pathToCheck);
+
+		
+	/**
+		\brief Function check if specified path is a directory
 	 */
-    virtual bool IsDirectory(const String & pathToCheck);
+	virtual bool IsDirectory(const String & pathToCheck);
 		
 	/**
 		\brief Return canonical path name of \a path.
@@ -317,11 +323,8 @@ private:
     static const char * FilepathRelativeToBundle(const String & relativePathname);
 
 #if defined(__DAVAENGINE_ANDROID__)
-private:	
-	enum eConst
-	{
-		MAX_PATH = 260
-	};
+private:
+    static const int32 MAX_PATH = 256;
 	char8 assetsPath[MAX_PATH];
 	char8 documentsPath[MAX_PATH];
 	zip *APKArchive;

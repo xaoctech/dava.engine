@@ -33,7 +33,7 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
-    dstBlendMode = BLEND_ONE;
+    dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
     paintColor = Color(1.f, 1.f, 1.f, 1.0f);
     
     toolsPanel = new LandscapeToolsPanelColor(this, toolsRect);
@@ -78,7 +78,7 @@ void LandscapeEditorColor::CreateMaskTexture()
     savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
     if(savedTexture)
     {
-        savedPath = savedTexture->relativePathname;
+        savedPath = savedTexture->GetPathname();
     }
     else 
     {
@@ -110,6 +110,7 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     if(tex)
     {
         RenderManager::Instance()->LockNonMain();
+        RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
         
         Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         
@@ -320,14 +321,13 @@ void LandscapeEditorColor::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoTilemask();
-        
-        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
+        //ENDOFTODO
+        
         CreateMaskFromTexture(tex);
     }
 }
@@ -337,13 +337,12 @@ void LandscapeEditorColor::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->RedoTilemask();
-        
-        Image::EnableAlphaPremultiplication(true);
+
+        //TODO: is code usefull?
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        //ENDOFTODO
 
         CreateMaskFromTexture(tex);
     }
@@ -356,11 +355,14 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            img->Save(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             SafeRelease(savedTexture);
-            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); 
+            
+            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToFile);
+            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, descriptorPathname);
+
             savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
             workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, maskSprite->GetTexture());
         }

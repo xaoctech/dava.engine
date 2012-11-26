@@ -21,6 +21,7 @@ public:
     EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
     DAVA::int32 ScenesCount();
+    SceneData *GetScene(DAVA::int32 index);
 
     void SetSceneGraphView(QTreeView *view);
     void SetLibraryView(QTreeView *view);

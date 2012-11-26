@@ -155,7 +155,7 @@ protected:
 
 /** 
 	\ingroup baseobjects
-	\brief	function to perform release safely. It checks if given object not equal to zero, in debug mode it also checks if such object 
+	\brief	function to perform release safely. It checks if given object not equal to zero, in debug mode it also checks if such object
 			haven't deallocated before and only if both checks is positive it call Release. After release it set value of variable to 0 to avoid 
 			possible errors with usage of this variable
  */
@@ -174,6 +174,7 @@ void SafeRelease(C * &c)
 		c = 0;
 	}
 }
+    
 
 // /*#if defined(__DAVAENGINE_DIRECTX9__)*/
 //template<>

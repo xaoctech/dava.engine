@@ -283,7 +283,7 @@ void LandscapeEditorCustomColors::UpdateCircleTexture()
 		return;
 	}
 	SafeRelease(cursorTexture);
-	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2);
+	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2, false);
 	//check addref
 	delete[] texArr;
 }
@@ -400,11 +400,8 @@ void LandscapeEditorCustomColors::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
-        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoColorize();
-        
-        Image::EnableAlphaPremultiplication(true);
+
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
 		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
@@ -426,11 +423,7 @@ void LandscapeEditorCustomColors::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
-        Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->RedoColorize();
-        
-        Image::EnableAlphaPremultiplication(true);
 
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
@@ -455,7 +448,7 @@ void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
         Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            img->Save(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
         }
     }

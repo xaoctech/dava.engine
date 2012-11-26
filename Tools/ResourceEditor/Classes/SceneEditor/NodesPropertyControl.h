@@ -19,10 +19,7 @@ public:
 
 class NodesPropertyControl: public UIControl, public PropertyListDelegate, public CreatePropertyControlDelegate, public UIListDelegate
 {
-    enum eConst
-    {
-        CELL_HEIGHT = 20,
-    };
+    static const int32 CELL_HEIGHT = 20;
     
 public:
     NodesPropertyControl(const Rect & rect, bool createNodeProperties);

@@ -360,20 +360,18 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					DVASSERT(ind >= 0);
 					int16 * writeBuf = resultBuf + ind;
 					uint8 * readBuf = bitmap->buffer;
+                    
+                    uint16 color = (((r >> 4)<<12) | ((g >> 4)<<8) | ((b >> 4) << 4));
 					for(int32 h = 0; h < realH; h++)
 					{
 						for(int32 w = 0; w < realW; w++)
 						{
-							int32 oldPix = *readBuf;
-							uint8 preAlpha = (oldPix*a)>>8;
-							if(preAlpha)
+                            uint8 oldPix = *readBuf;
+							if(oldPix)
 							{
-								uint8 tempA = preAlpha>>4;
-								uint8 tempR = (preAlpha*r)>>12; 
-								uint8 tempG = (preAlpha*g)>>12;
-								uint8 tempB = (preAlpha*b)>>12;
+								uint8 tempA = (oldPix*a)>>12;
 								DVASSERT(writeBuf-resultBuf <= bufWidth*bufHeight);
-								*writeBuf = ((tempR<<12) | (tempG<<8) | (tempB<<4) | tempA);
+								*writeBuf = (color | tempA);
 							}
 							++writeBuf;
 							++readBuf;

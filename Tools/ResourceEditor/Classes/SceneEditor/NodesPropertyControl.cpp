@@ -78,6 +78,8 @@ NodesPropertyControl::~NodesPropertyControl()
     SafeRelease(btnPlus);
 
     SafeRelease(propertyList);
+    
+    SafeRelease(currentSceneNode);
 }
 
 void NodesPropertyControl::WillAppear()
@@ -106,11 +108,13 @@ void NodesPropertyControl::WillDisappear()
         
         ReleaseChildLodData();
     }
+    
+    SafeRelease(currentSceneNode);
 }
 
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    currentSceneNode = sceneNode;
+    currentSceneNode = SafeRetain(sceneNode);
     currentDataNode = NULL;
     ReleaseChildLodData();
     

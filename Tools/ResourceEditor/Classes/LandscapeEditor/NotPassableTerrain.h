@@ -36,6 +36,8 @@
 class LandscapeRenderer;
 class NotPassableTerrain: public EditorLandscapeNode
 {
+    static const DAVA::int32 NOT_PASSABLE_ANGLE = 23;
+    
 public:	
 	NotPassableTerrain();
 	virtual ~NotPassableTerrain();
@@ -48,6 +50,7 @@ protected:
     virtual DAVA::Texture * GetDisplayedTexture();
 
     DAVA::Sprite *notPassableMapSprite;
+	DAVA::float32 notPassableAngleTan;
     
     void LoadColorsArray();
     bool PickColor(DAVA::float32 tan, DAVA::Color& color) const;
