@@ -118,6 +118,12 @@
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
 		E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E86F952616381BAD0014B4C0 /* ImageLoader.cpp */; };
 		E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E86F952716381BAD0014B4C0 /* ImageLoader.h */; };
+		E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89ECC7B1663A9A100D17C41 /* FastName.cpp */; };
+		E89ECC821663A9A100D17C41 /* FastName.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7C1663A9A100D17C41 /* FastName.h */; };
+		E89ECC831663A9A100D17C41 /* FastNameMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7D1663A9A100D17C41 /* FastNameMap.h */; };
+		E89ECC841663A9A100D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7E1663A9A100D17C41 /* Hash.h */; };
+		E89ECC851663A9A100D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7F1663A9A100D17C41 /* Introspection.h */; };
+		E89ECC861663A9A100D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC801663A9A100D17C41 /* Meta.h */; };
 		E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C96161B418100B50BDA /* LibPVRHelper.h */; };
 		E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C97161B418100B50BDA /* PVRDefines.h */; };
@@ -711,6 +717,12 @@
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E86F952616381BAD0014B4C0 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
 		E86F952716381BAD0014B4C0 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
+		E89ECC7B1663A9A100D17C41 /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
+		E89ECC7C1663A9A100D17C41 /* FastName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastName.h; sourceTree = "<group>"; };
+		E89ECC7D1663A9A100D17C41 /* FastNameMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastNameMap.h; sourceTree = "<group>"; };
+		E89ECC7E1663A9A100D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		E89ECC7F1663A9A100D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
+		E89ECC801663A9A100D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
 		E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C96161B418100B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C97161B418100B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -1458,6 +1470,12 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E89ECC7B1663A9A100D17C41 /* FastName.cpp */,
+				E89ECC7C1663A9A100D17C41 /* FastName.h */,
+				E89ECC7D1663A9A100D17C41 /* FastNameMap.h */,
+				E89ECC7E1663A9A100D17C41 /* Hash.h */,
+				E89ECC7F1663A9A100D17C41 /* Introspection.h */,
+				E89ECC801663A9A100D17C41 /* Meta.h */,
 				C2F0A51D161DEAEE003A2006 /* Observable.cpp */,
 				C2F0A51E161DEAEE003A2006 /* Observable.h */,
 				C2F0A51F161DEAEE003A2006 /* Observer.h */,
@@ -2347,6 +2365,11 @@
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
 				E856CF12162420420065E32B /* TextureDescriptor.h in Headers */,
 				E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */,
+				E89ECC821663A9A100D17C41 /* FastName.h in Headers */,
+				E89ECC831663A9A100D17C41 /* FastNameMap.h in Headers */,
+				E89ECC841663A9A100D17C41 /* Hash.h in Headers */,
+				E89ECC851663A9A100D17C41 /* Introspection.h in Headers */,
+				E89ECC861663A9A100D17C41 /* Meta.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2677,6 +2700,7 @@
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
 				E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */,
 				E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */,
+				E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
