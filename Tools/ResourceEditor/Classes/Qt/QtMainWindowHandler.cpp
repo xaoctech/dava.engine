@@ -140,7 +140,8 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 
 void QtMainWindowHandler::Materials()
 {
-    //Execute(new CommandMaterials());
+    Execute(new CommandMaterials());
+	/*
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -154,6 +155,7 @@ void QtMainWindowHandler::Materials()
 	}
 
 	materialBrowser.show();
+	*/
 }
 
 void QtMainWindowHandler::HeightmapEditor()
