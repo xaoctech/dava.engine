@@ -16,9 +16,8 @@ signals:
 	void selected(const QModelIndex &index);
 
 protected:
-	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-
-private:
+	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+	virtual void resizeEvent(QResizeEvent * event);
 
 };
 
