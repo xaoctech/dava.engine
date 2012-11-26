@@ -1158,6 +1158,12 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Meta.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\FastName.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1978,6 +1984,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
       <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
+      <Filter>Internal\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
