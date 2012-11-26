@@ -50,5 +50,14 @@ void MaterialBrowser::TreeItemSelected(const QItemSelection &selected, const QIt
 
 void MaterialBrowser::TreeItemPressed(const QModelIndex &index)
 {
+	MaterialTreeItem *item = treeModelScene->Item(index);
+	if(NULL != item)
+	{
+		if(0 == item->ChildCount() && NULL != item->Parent())
+		{
+			item = item->Parent();
+		}
 
+		viewModel->SetTreeItem(item);
+	}
 }

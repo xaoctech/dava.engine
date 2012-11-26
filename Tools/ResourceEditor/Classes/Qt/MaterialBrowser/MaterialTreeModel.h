@@ -18,7 +18,7 @@ public:
 	~MaterialTreeModel();
 
 	void SetScene(DAVA::Scene *scene);
-	const MaterialTreeItem* Item(const QModelIndex &index) const;
+	MaterialTreeItem* Item(const QModelIndex &index) const;
 
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
