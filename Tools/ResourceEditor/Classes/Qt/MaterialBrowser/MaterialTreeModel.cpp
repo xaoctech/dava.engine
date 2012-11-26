@@ -17,9 +17,16 @@ void MaterialTreeModel::SetScene(DAVA::Scene *scene)
 	SearchMaterialsInScene();
 }
 
-inline const MaterialTreeItem* MaterialTreeModel::Item(const QModelIndex &index) const
+MaterialTreeItem* MaterialTreeModel::Item(const QModelIndex &index) const
 {
-	return (MaterialTreeItem*) index.internalPointer();
+	MaterialTreeItem *item = NULL;
+
+	if(index.isValid())
+	{
+		item = (MaterialTreeItem*) index.internalPointer();
+	}
+
+	return item;
 }
 
 int MaterialTreeModel::columnCount(const QModelIndex &parent) const
@@ -28,7 +35,7 @@ int MaterialTreeModel::columnCount(const QModelIndex &parent) const
 
 	if(parent.isValid())
 	{
-		const MaterialTreeItem* item = Item(parent);
+		MaterialTreeItem* item = (MaterialTreeItem*) parent.internalPointer();
 		count = item->ColumnCount();
 	}
 	else if(NULL != rootFiltredMaterial)
@@ -45,7 +52,7 @@ int MaterialTreeModel::rowCount(const QModelIndex &parent) const
 
 	if(parent.isValid())
 	{
-		const MaterialTreeItem* item = Item(parent);
+		MaterialTreeItem* item = (MaterialTreeItem*) parent.internalPointer();
 		count = item->ChildCount();
 	}
 	else if(NULL != rootFiltredMaterial)
@@ -63,7 +70,7 @@ QVariant MaterialTreeModel::data(const QModelIndex &index, int role) const
 
 	if (index.isValid())
 	{
-		const MaterialTreeItem* item = Item(index);
+		MaterialTreeItem* item = (MaterialTreeItem*) index.internalPointer();
 
 		switch(role)
 		{
@@ -85,11 +92,11 @@ QModelIndex MaterialTreeModel::index(int row, int column, const QModelIndex &par
 
 	if (hasIndex(row, column, parent))
 	{
-		const MaterialTreeItem* item;
+		MaterialTreeItem* item;
 
 		if (parent.isValid())
 		{
-			item = Item(index);
+			item = (MaterialTreeItem *) parent.internalPointer();
 		}
 		else
 		{
@@ -115,7 +122,7 @@ QModelIndex MaterialTreeModel::parent(const QModelIndex &index) const
 
 	if (index.isValid())
 	{
-		const MaterialTreeItem* item = Item(index);
+		MaterialTreeItem *item = (MaterialTreeItem *) index.internalPointer();
 		if(NULL != item && item != rootFiltredMaterial)
 		{
 			MaterialTreeItem *parent = item->Parent();

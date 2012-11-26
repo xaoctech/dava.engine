@@ -1,3 +1,5 @@
+#include <QImage>
+#include <QPainter>
 #include "MaterialBrowser/MaterialViewModel.h"
 
 MaterialViewModel::MaterialViewModel(QObject *parent /* = 0 */)
@@ -31,6 +33,13 @@ QVariant MaterialViewModel::data(const QModelIndex &index, int role /* = Qt::Dis
 				v = item->Data(0);
 				break;
 			case Qt::DecorationRole:
+				{
+					QImage img = QImage(80, 80, QImage::Format_ARGB32);
+					QPainter p(&img);
+					p.setBrush(QColor(0,255,0));
+					p.drawEllipse(QPoint(40, 40), 25, 25);
+					v = img;
+				}
 				break;
 			}
 		}
@@ -41,7 +50,13 @@ QVariant MaterialViewModel::data(const QModelIndex &index, int role /* = Qt::Dis
 
 void MaterialViewModel::SetTreeItem(MaterialTreeItem* item)
 {
+	beginResetModel();
+
 	DAVA::SafeRelease(treeItem);
 	treeItem = item;
 	DAVA::SafeRetain(treeItem);
+
+	endResetModel();
+
+	//emit dataChanged();
 }
