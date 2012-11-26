@@ -623,7 +623,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
         }
         else 
         {
-            //TODO: VK: need to save pathname, not relative pathname. (Will be worked only for *.png, not for *.pvr)
             textureNames[level] = textures[level]->GetPathname();
         }
     }

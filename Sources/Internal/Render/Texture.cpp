@@ -684,8 +684,10 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
+	
+	DVASSERT(NULL != descriptor);
     
-	String imagePathname = TextureDescriptor::GetPathnameForFormat(relativePathname, fileFormat);
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
@@ -693,13 +695,13 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     {
         loaded = LoadFromImage(file, descriptor);
     }
-
+    
     if(!loaded)
     {
         width = 16;
 		height = 16;
         format = FORMAT_RGBA8888;
-
+        
         RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
         GenerateID();
@@ -707,7 +709,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
         id = CreateTextureNative(Vector2((float32)width, (float32)height), format, false, 0);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
         RenderManager::Instance()->UnlockNonMain();
-
+        
         Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.c_str());
         
         
