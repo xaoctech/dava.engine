@@ -76,6 +76,12 @@
     <Filter Include="QtGenerated\QtPosSaver">
       <UniqueIdentifier>{5765e078-6490-4145-8476-c5e0fdaff20b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\MaterialBrowser">
+      <UniqueIdentifier>{cd852ce6-b3e2-41d5-80b4-6f9bf02a83ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\MaterialBrowser">
+      <UniqueIdentifier>{488c2fc8-5d57-4ddb-aa5d-148fb1170bf8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1056,6 +1062,42 @@
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp">
       <Filter>QtGenerated\QtPosSaver</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp">
+      <Filter>QtGenerated\MaterialBrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1979,6 +2021,24 @@
     <ClInclude Include="_GeneratedQt\ui_texturedialog.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.h">
+      <Filter>Sources\Qt\MaterialBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2195,6 +2255,9 @@
     </None>
     <None Include="MakefileQt">
       <Filter>Sources</Filter>
+    </None>
+    <None Include="DataQt\materialbrowser.ui">
+      <Filter>QtData</Filter>
     </None>
   </ItemGroup>
 </Project>
