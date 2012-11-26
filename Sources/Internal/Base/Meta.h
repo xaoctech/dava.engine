@@ -36,7 +36,7 @@ namespace DAVA
 			return MetaInfo::Instance<MemberT>();
 		}
 
-		inline int GetSize()
+		inline int GetSize() const
 		{
 			return type_size;
 		}
