@@ -84,7 +84,7 @@ String VertexTypeStringFromEnum(GLenum type)
     return "";
 }
     
-const FastName uniformStrings[Shader::UNIFORM_COUNT] = 
+const char * uniformStrings[Shader::UNIFORM_COUNT] = 
     {
         "none",
         "modelViewProjectionMatrix",
@@ -94,7 +94,7 @@ const FastName uniformStrings[Shader::UNIFORM_COUNT] =
         "flatColor",
     };
 
-const FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] = 
+const char * attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] = 
     {
         "inPosition",
         "inNormal",
@@ -105,22 +105,20 @@ const FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
         "inTexCoord3",
         "inTangent",
         "inBinormal",
-        "inJointWeight" 
+        "inJointWeight"
     };
     
-Shader::eUniform Shader::GetUniformByName(const FastName &name)
+Shader::eUniform Shader::GetUniformByName(const char * name)
 {
-    for(int32 k = 0; k < UNIFORM_COUNT; ++k)
-        if(name == uniformStrings[k]) return (Shader::eUniform)k;
-
+    for (int32 k = 0; k < UNIFORM_COUNT; ++k)
+        if (strcmp(name, uniformStrings[k]) == 0)return (Shader::eUniform)k; 
     return Shader::UNIFORM_NONE;
 };
 
-int32 Shader::GetAttributeIndexByName(const FastName &name)
+int32 Shader::GetAttributeIndexByName(const char * name)
 {
-    for(int32 k = 0; k < VERTEX_FORMAT_STREAM_MAX_COUNT; ++k)
-        if(name == attributeStrings[k]) return k;
-
+    for (int32 k = 0; k < VERTEX_FORMAT_STREAM_MAX_COUNT; ++k)
+        if (strcmp(name, attributeStrings[k]) == 0)return k;
     return -1;
 }
     
@@ -257,13 +255,13 @@ bool Shader::Recompile()
     //Logger::Debug("shader loaded: %s attributeCount: %d", pathname.c_str(), activeAttributes);
     
     char attributeName[512];
-    attributeNames = new FastName[activeAttributes];
+    attributeNames = new String[activeAttributes];
     for (int32 k = 0; k < activeAttributes; ++k)
     {
         GLint size;
         GLenum type;
         RENDER_VERIFY(glGetActiveAttrib(program, k, 512, 0, &size, &type, attributeName));
-        attributeNames[k] = FastName(attributeName);
+        attributeNames[k] = attributeName;
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
         vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
@@ -276,7 +274,7 @@ bool Shader::Recompile()
     
     uniformLocations = new GLint[activeUniforms];
     uniformIDs = new eUniform[activeUniforms];
-    uniformNames = new FastName[activeUniforms];
+    uniformNames = new String[activeUniforms];
     for (int32 k = 0; k < activeUniforms; ++k)
     {
         GLint size;
@@ -284,8 +282,8 @@ bool Shader::Recompile()
         RENDER_VERIFY(glGetActiveUniform(program, k, 512, 0, &size, &type, attributeName));
         eUniform uniform = GetUniformByName(attributeName);
         //Logger::Debug("shader uniform: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
-        uniformNames[k] = FastName(attributeName);
-        uniformLocations[k] = glGetUniformLocation(program, attributeName);
+        uniformNames[k] = attributeName;
+        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
 //        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
@@ -506,7 +504,7 @@ void Shader::Bind()
     
 }
     
-int32 Shader::FindUniformLocationByName(const FastName &name)
+int32 Shader::FindUniformLocationByName(const String & name)
 {
     for (int32 k = 0; k < activeUniforms; ++k)
     {
@@ -515,7 +513,6 @@ int32 Shader::FindUniformLocationByName(const FastName &name)
             return uniformLocations[k];
         }
     }
-
     return -1;
 }
     
@@ -561,6 +558,5 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 
 
 }
-
 
 

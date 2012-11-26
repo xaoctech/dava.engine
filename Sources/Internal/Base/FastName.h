@@ -9,27 +9,17 @@
 
 #include "HashMap.h"
 #include "Debug/DVAssert.h"
-#include "Base/StaticSingleton.h"
 
 namespace DAVA
 {
 
-class FastNameData : public StaticSingleton<FastNameData>
-{
-public:
-	Vector<const char *> namesTable;
-	Vector<int> namesRefCounts;
-	Vector<int> namesEmptyIndexes;
-	HashMap<const char *, int> namesHashs;
-
-	FastNameData()
-		: namesHashs(HashMap<const char *, int>(4096, -1))
-	{ }
-};
-
 class FastName
 {
 private:
+	static Vector<const char *> namesTable;
+	static Vector<int> namesRefCounts;
+	static Vector<int> namesEmptyIndexes;
+	static HashMap<const char *, int> namesHash;
 
 public:
 	FastName();
@@ -39,21 +29,21 @@ public:
 	FastName(const FastName &_name)
 	{
 		index = _name.index;
-		FastNameData::Instance()->namesRefCounts[index]++;
+		namesRefCounts[index]++;
 	}
 
 	FastName& operator=(const FastName &_name)
 	{
 		index = _name.index;
-		FastNameData::Instance()->namesRefCounts[index]++;
+		namesRefCounts[index]++;
 		return *this;
 	}
 
 	const char* operator*() const
 	{
-		DVASSERT((size_t) index < FastNameData::Instance()->namesTable.size());
-		DVASSERT(NULL != FastNameData::Instance()->namesTable[index]);
-		return FastNameData::Instance()->namesTable[index];
+		DVASSERT((size_t) index < namesTable.size());
+		DVASSERT(NULL != namesTable[index]);
+		return namesTable[index];
 	}
 
 	bool operator==(const FastName &_name) const
