@@ -87,10 +87,13 @@ public:
     void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
 #endif
     
-    // changes size of image to required size, if new size is bigger, sets 0 to all new pixels
-    void Resize(int32 newWidth, int32 newHeight);
+    // changes size of image canvas to required size, if new size is bigger, sets 0 to all new pixels
+    void ResizeCanvas(int32 newWidth, int32 newHeight);
     
-    /*
+	// changes size of image to required size (without any filtration)
+	void ResizeImage(int32 newWidth, int32 newHeight);
+
+	/*
         \todo extract all image format conversion functions to separate functions to allow to use them in different places, like textures.
         enum eAlphaAction
         {  
