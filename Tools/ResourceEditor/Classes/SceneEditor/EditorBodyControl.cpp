@@ -151,6 +151,28 @@ void EditorBodyControl::SaveTexture(const String &path)
 		landscapeEditorVisibilityTool->SaveColorLayer(path);
 }
 
+void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+{
+	if(RulerToolIsActive())
+		return;
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return;
+
+	landscapeEditorCustomColors->LoadColorLayer(path);
+}
+
+String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+{
+	if(RulerToolIsActive())
+		return "";
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return "";
+
+	return landscapeEditorCustomColors->GetCurrentSaveFileName();
+}
+
 void RemoveDeepCamera(SceneNode * curr)
 {
 	SceneNode * cam;

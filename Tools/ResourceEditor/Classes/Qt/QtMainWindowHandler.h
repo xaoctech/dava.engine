@@ -45,7 +45,8 @@ public:
     
     void SetWaitingCursorEnabled(bool enabled);
     
-	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*);
+	//custom colors
+	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
 	
 	//visibility check tool
@@ -103,6 +104,7 @@ public slots:
     void SaveTextureCustomColors();
     void ChangeBrushSizeCustomColors(int newSize);
     void ChangeColorCustomColors(int newColorIndex);
+	void LoadTextureCustomColors();
 	
 	//visibility check tool
 	void ToggleVisibilityTool();
@@ -133,10 +135,12 @@ private:
     void ClearActions(int32 count, QAction **actions);
     
 private:
+	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;
 	QSlider* customColorsBrushSizeSlider;
 	QComboBox* customColorsColorComboBox;
+	QPushButton* customColorsLoadTextureButton;
 	
 	//visibility check tool
 	QPushButton* visibilityToolToggleButton;
