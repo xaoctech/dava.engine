@@ -43,26 +43,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(SolutionDir)\_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">_$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</IgnoreImportLibrary>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(SolutionDir)\_$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">_$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</LinkIncremental>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">PrepareForBuild</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PrepareForBuild</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;_GeneratedQt;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -76,8 +78,8 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glu32.lib;opengl32.lib;gdi32.lib;user32.lib;Win32Framework.lib;glew32.lib;$(DXSDK_DIR)/Lib/x86/DxErr.lib;$(DXSDK_DIR)/Lib/x86/d3d9.lib;shfolder.lib;Shell32.lib;OpenAL32.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\qtmaind.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGLd4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtGuid4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtNetworkd4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtCored4.lib;CORE_DB_Magick++_.lib;CORE_DB_magick_.lib;CORE_DB_bzlib_.lib;CORE_DB_coders_.lib;CORE_DB_filters_.lib;CORE_DB_jbig_.lib;CORE_DB_jp2_.lib;CORE_DB_jpeg_.lib;CORE_DB_lcms_.lib;CORE_DB_libxml_.lib;CORE_DB_tiff_.lib;CORE_DB_ttf_.lib;CORE_DB_wand_.lib;CORE_DB_wmf_.lib;CORE_DB_xlib_.lib;CORE_DB_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;msvcmrtd.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Debug Win32;../../../dava.resourceeditor.beast/beast/lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib;../../Projects\Win32Framework\DebugQt;../../Libs/glew/lib/;C:/Program Files/OpenAL 1.1 SDK/libs/win32/;C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glu32.lib;opengl32.lib;gdi32.lib;user32.lib;Win32Framework.lib;glew32.lib;$(DXSDK_DIR)/Lib/x86/DxErr.lib;$(DXSDK_DIR)/Lib/x86/d3d9.lib;shfolder.lib;Shell32.lib;"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32\OpenAL32.lib";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\qtmaind.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGLd4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtGuid4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtNetworkd4.lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib\QtCored4.lib;CORE_DB_Magick++_.lib;CORE_DB_magick_.lib;CORE_DB_bzlib_.lib;CORE_DB_coders_.lib;CORE_DB_filters_.lib;CORE_DB_jbig_.lib;CORE_DB_jp2_.lib;CORE_DB_jpeg_.lib;CORE_DB_lcms_.lib;CORE_DB_libxml_.lib;CORE_DB_tiff_.lib;CORE_DB_ttf_.lib;CORE_DB_wand_.lib;CORE_DB_wmf_.lib;CORE_DB_xlib_.lib;CORE_DB_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;msvcmrtd.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Debug Win32;../../../dava.resourceeditor.beast/beast/lib;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\lib;../../Projects\Win32Framework\DebugQt;../../Libs/glew/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -95,17 +97,32 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <CustomBuildStep>
+      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(SolutionDir)/alwaysrun</Outputs>
+      <Message>QT generate: MOC, UI, QRC</Message>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;./Classes/bullet;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./Classes;$(DXSDK_DIR)/include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;Classes/Qt;_GeneratedQt;.;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -139,8 +156,34 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>QT generate: MOC, UI, QRC</Message>
+      <Outputs>$(SolutionDir)/alwaysrun</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
@@ -287,16 +330,9 @@
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
+    <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ViewCommands.cpp" />
-    <ClCompile Include="Classes\davaglwidget.cpp">
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o $(Configuration)\moc_davaglwidget.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o $(Configuration)/moc_davaglwidget.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </ClCompile>
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
@@ -312,24 +348,50 @@
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
+    <ClCompile Include="Classes\Qt\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\FileSelectionModel.cpp" />
     <ClCompile Include="Classes\Qt\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\GraphModel.cpp" />
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
+    <ClCompile Include="Classes\Qt\main.cpp" />
+    <ClCompile Include="Classes\Qt\mainwindow.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
+    <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp" />
     <ClCompile Include="Classes\Qt\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureCache.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertor.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertorWork.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListModel.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureProperties.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\ResourcePackerScreen.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
-    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp" />
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp" />
@@ -368,20 +430,15 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
-    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp" />
     <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
-    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
@@ -398,11 +455,9 @@
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
-    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
-    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
@@ -418,24 +473,52 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="mainwindow.cpp">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 mainwindow.h -o $(Configuration)\moc_mainwindow.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 mainwindow.h -o $(Configuration)\moc_mainwindow.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </ClCompile>
-    <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp" />
-    <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_GraphModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_mainwindow.cpp" />
-    <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp" />
-    <ClCompile Include="QtBuildTool\moc_SceneData.cpp" />
-    <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp" />
-    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp" />
+    <ClCompile Include="_GeneratedQt\davaglwidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\FileSelectionModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\GUIState_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\LibraryModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\PointerHolder_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtMainWindowHandler_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtUtils_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneDataManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneData_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneGraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ScenePreviewDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureCache_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureList_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h" />
     <ClInclude Include="Classes\BulletObject.h" />
@@ -657,11 +740,11 @@
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
+    <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\Commands\ViewCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
-    <ClInclude Include="Classes\davaglwidget.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
@@ -672,29 +755,55 @@
     <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h" />
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h" />
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
+    <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
     <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
+    <ClInclude Include="Classes\Qt\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\FileSelectionModel.h" />
     <ClInclude Include="Classes\Qt\GraphItem.h" />
     <ClInclude Include="Classes\Qt\GraphModel.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
+    <ClInclude Include="Classes\Qt\mainwindow.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
+    <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h" />
     <ClInclude Include="Classes\Qt\QtUtils.h" />
     <ClInclude Include="Classes\Qt\SceneData.h" />
     <ClInclude Include="Classes\Qt\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureCache.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertor.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertorWork.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListModel.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureScrollArea.h" />
     <ClInclude Include="Classes\ResourcePackerScreen.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
-    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ColorPicker.h" />
     <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h" />
@@ -734,20 +843,15 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
-    <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h" />
     <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h" />
-    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h" />
     <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
-    <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
-    <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
-    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
     <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
@@ -765,11 +869,9 @@
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
-    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
-    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
     <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
@@ -785,139 +887,15 @@
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
-    <ClInclude Include="mainwindow.h" />
-    <ClInclude Include="ui_davaglwidget.h" />
-    <ClInclude Include="ui_mainwindow.h" />
+    <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
+    <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="_GeneratedQt\ui_texturedialog.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="Classes\davaglwidget.ui">
-      <FileType>Document</FileType>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;Classes\davaglwidget.ui;qglwidget.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe Classes\davaglwidget.ui -o ui_davaglwidget.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UIC Classes\davaglwidget.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ui_davaglwidget.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;Classes\davaglwidget.ui;qglwidget.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe Classes\davaglwidget.ui -o ui_davaglwidget.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">UIC Classes\davaglwidget.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">ui_davaglwidget.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;Classes\davaglwidget.ui;qglwidget.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe Classes\davaglwidget.ui -o ui_davaglwidget.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UIC Classes\davaglwidget.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ui_davaglwidget.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;Classes\davaglwidget.ui;qglwidget.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe Classes\davaglwidget.ui -o ui_davaglwidget.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">UIC Classes\davaglwidget.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">ui_davaglwidget.h;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="mainwindow.ui">
-      <FileType>Document</FileType>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;mainwindow.ui;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe mainwindow.ui -o ui_mainwindow.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UIC mainwindow.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ui_mainwindow.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;mainwindow.ui;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe mainwindow.ui -o ui_mainwindow.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">UIC mainwindow.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">ui_mainwindow.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;mainwindow.ui;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe mainwindow.ui -o ui_mainwindow.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UIC mainwindow.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ui_mainwindow.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe;mainwindow.ui;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe mainwindow.ui -o ui_mainwindow.h</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">UIC mainwindow.ui</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">ui_mainwindow.h;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="QtBuildTool\mainwindow.build">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 mainwindow.h -o QtBuildTool\moc_mainwindow.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 mainwindow.h -o QtBuildTool\moc_mainwindow.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\davaglwidget.build">
-      <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o QtBuildTool\moc_davaglwidget.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o QtBuildTool\moc_davaglwidget.cpp</Command>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\GraphModel.build">
-      <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphModel.h -o QtBuildTool\moc_GraphModel.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphModel.h -o QtBuildTool\moc_GraphModel.cpp</Command>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\SceneData.build">
-      <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneData.h -o QtBuildTool\moc_SceneData.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneData.h -o QtBuildTool\moc_SceneData.cpp</Command>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\SceneGraphModel.build">
-      <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneGraphModel.h -o QtBuildTool\moc_SceneGraphModel.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneGraphModel.h -o QtBuildTool\moc_SceneGraphModel.cpp</Command>
-    </CustomBuild>
-    <CustomBuild Include="QtIcons.qrc">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe -name QtIcons QtIcons.qrc -o QtBuildTool\qrc_QtIcons.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe -name QtIcons QtIcons.qrc -o QtBuildTool\qrc_QtIcons.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">QtBuildTool\qrc_(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe;Data\QtIcons\newscene.png;Data\QtIcons\openproject.png;Data\QtIcons\openscene.png;Data\QtIcons\savescene.png;QtIcons.qrc;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">QtBuildTool\qrc_(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe;Data\QtIcons\newscene.png;Data\QtIcons\openproject.png;Data\QtIcons\openscene.png;Data\QtIcons\savescene.png;QtIcons.qrc;%(AdditionalInputs)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">RCC QtIcons.qrc</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">RCC QtIcons.qrc</Message>
-    </CustomBuild>
-    <None Include="Data\QtIcons\materialeditor.png" />
-    <None Include="Data\QtIcons\newscene.png" />
-    <None Include="Data\QtIcons\openproject.png" />
-    <None Include="Data\QtIcons\openscene.png" />
-    <None Include="Data\QtIcons\savescene.png" />
-    <CustomBuild Include="QtBuildTool\FileSelectionModel.build">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/FileSelectionModel.h -o QtBuildTool\moc_FileSelectionModel.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/FileSelectionModel.h -o QtBuildTool\moc_FileSelectionModel.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\LibraryModel.build">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/LibraryModel.h -o QtBuildTool\moc_LibraryModel.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/LibraryModel.h -o QtBuildTool\moc_LibraryModel.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\QtMainWindowHandler.build">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/QtMainWindowHandler.h -o QtBuildTool\moc_QtMainWindowHandler.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/QtMainWindowHandler.h -o QtBuildTool\moc_QtMainWindowHandler.cpp</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-    </CustomBuild>
+    <None Include="DataQt\mainwindow.ui" />
+    <None Include="DataQt\materialbrowser.ui" />
+    <None Include="DataQt\texturedialog.ui" />
+    <None Include="MakefileQt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

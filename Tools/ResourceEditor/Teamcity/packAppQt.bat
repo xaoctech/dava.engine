@@ -1,4 +1,4 @@
-cd ..\ReleaseQt
+cd ..\_ReleaseQt
 
 if exist app rmdir /s /q app
 if exist app.zip del /q app.zip

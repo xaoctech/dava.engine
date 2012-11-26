@@ -1,7 +1,6 @@
 #include "SceneEditorScreenMain.h"
 
 #include "EditorBodyControl.h"
-#include "LibraryControl.h"
 
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
@@ -12,7 +11,6 @@
 #include "SceneValidator.h"
 
 #include "TextureTrianglesDialog.h"
-#include "TextureConverterDialog.h"
 
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
@@ -56,7 +54,6 @@ void SceneEditorScreenMain::LoadResources()
     Rect fullRect = GetRect();
     settingsDialog = new SettingsDialog(fullRect, this);
     textureTrianglesDialog = new TextureTrianglesDialog();
-    textureConverterDialog = new TextureConverterDialog(fullRect);
     materialEditor = new MaterialEditor();
 	particlesEditor = new ParticlesEditorControl();
     
@@ -82,7 +79,6 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(scenePreviewDialog);
 
     SafeRelease(helpDialog);
-    SafeRelease(textureConverterDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
     
@@ -741,19 +737,6 @@ void SceneEditorScreenMain::MaterialsTriggered()
     {
         RemoveControl(materialEditor);
         SceneValidator::Instance()->EnumerateSceneTextures();
-    }
-}
-
-void SceneEditorScreenMain::TextureConverterTriggered()
-{
-    ReleaseResizedControl(textureConverterDialog);
-    textureConverterDialog = new TextureConverterDialog(this->GetRect());
-    
-    if(textureConverterDialog)
-    {
-        BodyItem *body = FindCurrentBody();
-        
-        textureConverterDialog->Show(body->bodyControl->GetScene());
     }
 }
 

@@ -21,6 +21,7 @@
 		5CDC2533156CE21000742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2532156CE20F00742348 /* libz.dylib */; };
 		CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */; };
 		CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */; };
+		E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80842B81639147A002A6A77 /* TextureUtils.cpp */; };
 		E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C46161AE9B900B50BDA /* PVRTest.cpp */; };
 		FE76D9EE1163F2F0009E83B6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */; };
 		FE76D9EF1163F2F0009E83B6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */; };
@@ -82,6 +83,8 @@
 		CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		CEC6DA15162D959B009E5F1D /* KeyedArchiveYamlTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyedArchiveYamlTest.h; sourceTree = "<group>"; };
 		CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
+		E80842B81639147A002A6A77 /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtils.cpp; sourceTree = "<group>"; };
+		E80842B91639147A002A6A77 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureUtils.h; sourceTree = "<group>"; };
 		E80D2FB0164D518100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E8F98C46161AE9B900B50BDA /* PVRTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTest.cpp; sourceTree = "<group>"; };
 		E8F98C47161AE9B900B50BDA /* PVRTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRTest.h; sourceTree = "<group>"; };
@@ -134,6 +137,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E80842B81639147A002A6A77 /* TextureUtils.cpp */,
+				E80842B91639147A002A6A77 /* TextureUtils.h */,
 				5C8D42451580E4ED00441032 /* Config.h */,
 				5C8D42411580E4C300441032 /* TestSuite */,
 				5C7BE30F156E0EF400F9F538 /* Tests */,
@@ -368,6 +373,7 @@
 				FEC95C7115B409E500588BBF /* MemoryAllocatorsTest.cpp in Sources */,
 				02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */,
 				E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */,
+				E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */,
 				CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */,
 				CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */,
 			);

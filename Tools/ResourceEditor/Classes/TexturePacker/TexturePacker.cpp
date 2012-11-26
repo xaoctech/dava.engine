@@ -11,6 +11,9 @@
 #include "TexturePacker.h"
 #include "PngImage.h"
 #include "CommandLineParser.h" 
+#include "Render/TextureDescriptor.h"
+#include "../SceneEditor/PVRConverter.h"
+
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -187,11 +190,10 @@ void TexturePacker::PackToTexturesSeparate(const char * excludeFolder, const cha
 			{
 				printf("* ERROR: failed to write definition\n");
 			}
-			char textureExtension[5] = "png";
-			if (CommandLineParser::Instance()->IsFlagSet("--pvr"))strcpy(textureExtension, "pvr");
-			textureName += std::string(".") + textureExtension;
 
-			finalImage.Write(textureName.c_str());
+			char textureExtension[5] = "png";
+			textureName += std::string(".") + textureExtension;
+            ExportImage(&finalImage, textureName);
 		}
 	}
 }
@@ -235,10 +237,7 @@ void TexturePacker::PackToTextures(const char * excludeFolder, const char* outpu
 	if (CommandLineParser::Instance()->GetVerbose())
 		printf("* Packing tries started: ");
 	
-	bool isPvr = false;
-	if (CommandLineParser::Instance()->IsFlagSet("--pvr"))
-		isPvr = true;
-		
+	bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
 	for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 		 for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 		 {
@@ -295,11 +294,10 @@ void TexturePacker::PackToTextures(const char * excludeFolder, const char* outpu
 				printf("* ERROR: failed to write definition\n");
 			}
 		}
-		char textureExtension[5] = "png";
-		if (CommandLineParser::Instance()->IsFlagSet("--pvr"))strcpy(textureExtension, "pvr");
 
+		char textureExtension[5] = "png";
 		textureName += std::string(".") + textureExtension;
-		finalImage.Write(textureName.c_str());
+        ExportImage(&finalImage, textureName);
 	}else
 	{
 		// 
@@ -411,10 +409,11 @@ void TexturePacker::PackToMultipleTextures(const char * excludeFolder, const cha
 		ImagePacker * bestPackerForThisStep = 0;
 		std::vector<SizeSortItem> newWorkVector;
 		
+        bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
 		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
-				if (CommandLineParser::Instance()->IsFlagSet("--pvr") && (xResolution != yResolution))continue;
+				if (isPvr && (xResolution != yResolution))continue;
 
 				if ((onlySquareTextures) && (xResolution != yResolution))continue;
 				
@@ -492,8 +491,8 @@ void TexturePacker::PackToMultipleTextures(const char * excludeFolder, const cha
 		char temp[256];
 		sprintf(temp, "texture%d.png", image);
 		std::string textureName = std::string(outputPath) + std::string(temp);
-		finalImages[image]->Write(textureName.c_str());
-	}	
+        ExportImage(finalImages[image], textureName);
+	}
 
 	for (std::list<DefinitionFile*>::iterator defi = defList.begin(); defi != defList.end(); ++defi)
 	{
@@ -551,12 +550,9 @@ bool TexturePacker::WriteDefinition(const char * excludeFolder, const char * out
 //	replace(textureName, std::string(excludeFolder), std::string(""));
 	
 	fprintf(fp, "%d\n", 1);
-
-	char textureExtension[5] = "png";
-	if (CommandLineParser::Instance()->IsFlagSet("--pvr"))
-		strcpy(textureExtension, "pvr");
 	
-	fprintf(fp, "%s.%s\n", textureName.c_str(), textureExtension);
+	String textureExtension = TextureDescriptor::GetDescriptorExtension();
+	fprintf(fp, "%s%s\n", textureName.c_str(), textureExtension.c_str());
 	
 	fprintf(fp, "%d %d\n", defFile->spriteWidth, defFile->spriteHeight);
 	fprintf(fp, "%d\n", defFile->frameCount); 
@@ -591,9 +587,7 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 	std::string textureName = _textureName;
 //	replace(textureName, std::string(excludeFolder), std::string(""));
 	
-	char textureExtension[5] = "png";
-	if (CommandLineParser::Instance()->IsFlagSet("--pvr"))
-		strcpy(textureExtension, "pvr");
+	String textureExtension = TextureDescriptor::GetDescriptorExtension();
 	
 	std::vector<int> packerIndexArray;
 	packerIndexArray.resize(defFile->frameCount);
@@ -627,7 +621,7 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 		if (isUsed != packerIndexToFileIndex.end())
 		{
 			// here we write filename for i-th texture and write to map real index in file for this texture
-			fprintf(fp, "%s%d.%s\n", textureName.c_str(), i, textureExtension);
+			fprintf(fp, "%s%d%s\n", textureName.c_str(), i, textureExtension.c_str());
 			packerIndexToFileIndex[i] = realIndex++;
 		}
 	}
@@ -674,5 +668,81 @@ void TexturePacker::SetMaxTextureSize(int32 _maxTextureSize)
 	maxTextureSize = _maxTextureSize;
 }
 
+void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathname)
+{
+    TextureDescriptor *descriptor = CreateDescriptor();
 
+    image->DitherAlpha();
+    image->Write(exportedPathname.c_str());
+    
+    if (NULL != descriptor && FORMAT_INVALID != descriptor->pvrCompression.format)
+    {
+        PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, *descriptor);
+        FileSystem::Instance()->DeleteFile(exportedPathname);
+    }
+    
+#if defined TEXTURE_SPLICING_ENABLED
+    //TODO: need to enable texture splicing of 2D resources
+    //        descriptor->ExportAndSlice(descriptorPathname, texturePathname);
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    descriptor->Export(TextureDescriptor::GetDescriptorPathname(exportedPathname));
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+    
+    SafeRelease(descriptor);
+}
+
+
+TextureDescriptor * TexturePacker::CreateDescriptor()
+{
+    TextureDescriptor *descriptor = new TextureDescriptor();
+    if(descriptor)
+    {
+        descriptor->wrapModeS = descriptor->wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+        descriptor->generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+        if(descriptor->generateMipMaps)
+        {
+            descriptor->minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+            descriptor->magFilter = Texture::FILTER_LINEAR;
+        }
+        else
+        {
+            descriptor->minFilter = Texture::FILTER_LINEAR;
+            descriptor->magFilter = Texture::FILTER_LINEAR;
+        }
+        
+        if(CommandLineParser::Instance()->IsFlagSet("--pvr"))
+        {
+            descriptor->textureFileFormat = PVR_FILE;
+
+            descriptor->pvrCompression.format = DetectPixelFormatFromFlags();
+        }
+        else if(CommandLineParser::Instance()->IsFlagSet("--dxt"))
+        {
+            descriptor->textureFileFormat = DXT_FILE;
+            
+            descriptor->dxtCompression.format = DetectPixelFormatFromFlags();
+        }
+        else
+        {
+            descriptor->textureFileFormat = PNG_FILE;
+        }
+    }
+    
+    return descriptor;
+}
+
+PixelFormat TexturePacker::DetectPixelFormatFromFlags()
+{
+    for(int32 i = FORMAT_INVALID; i < FORMAT_COUNT; ++i)
+    {
+        PixelFormat format = (PixelFormat)i;
+        String formatFlag = String("--") + String(Texture::GetPixelFormatString(format));
+        if(CommandLineParser::Instance()->IsFlagSet(formatFlag))
+        {
+            return format;
+        }
+    }
+    
+    return FORMAT_INVALID;
+}
 

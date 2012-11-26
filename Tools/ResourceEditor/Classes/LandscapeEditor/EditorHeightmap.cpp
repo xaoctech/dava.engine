@@ -101,11 +101,6 @@ void EditorHeightmap::InitializeTableOfChanges()
 }
 
     
-bool EditorHeightmap::IsPowerOf2(int32 num)
-{
-    return ((num & (num - 1)) == 0);
-}
-
 uint16 EditorHeightmap::GetHeightValue(int32 posX, int32 posY, int32 muliplier)
 {
     uint32 sum = 0;

@@ -1,6 +1,10 @@
 #include "LodDistanceControl.h"
 #include "ControlsFactory.h"
 
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
+#include "../EditorScene.h"
+
 LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)
 {
@@ -50,8 +54,18 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
         
         trianglesTextValues[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
         trianglesTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
-        
     }
+    
+    distanceToCameraText = new UIStaticText(Rect(0, 0, rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
+    distanceToCameraText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    distanceToCameraText->SetFont(ControlsFactory::GetFontLight());
+    distanceToCameraText->SetText(WideString(L"From Camera:"));
+    AddControl(distanceToCameraText);
+    
+    distanceToCameraValue = new UIStaticText(Rect(rect.dx / 2.f, 0, rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
+    distanceToCameraValue->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    distanceToCameraValue->SetFont(ControlsFactory::GetFontLight());
+    AddControl(distanceToCameraValue);
 }
 
 LodDistanceControl::~LodDistanceControl()
@@ -65,6 +79,9 @@ LodDistanceControl::~LodDistanceControl()
         SafeRelease(trianglesTextValues[iDist]);
     }
     
+    SafeRelease(distanceToCameraText);
+    SafeRelease(distanceToCameraValue);
+    
     ReleaseControls();
 }
 
@@ -74,6 +91,34 @@ void LodDistanceControl::WillDisappear()
     ReleaseControls();    
 
     UIControl::WillDisappear();
+}
+
+
+void LodDistanceControl::Update(float32 timeElapsed)
+{
+    UpdateDistanceToCamera();
+    UIControl::Update(timeElapsed);
+}
+
+void LodDistanceControl::UpdateDistanceToCamera()
+{
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    DVASSERT(activeScene);
+
+    EditorScene *scene = activeScene->GetScene();
+    DVASSERT(scene);
+
+    SceneNode *selection = scene->GetSelection();
+    if(selection)
+    {
+        Camera *activeCamera = scene->GetCurrentCamera();
+        
+        Vector3 cameraPosition = activeCamera->GetPosition();
+        Vector3 selectionCenter = selection->GetWTMaximumBoundingBoxSlow().GetCenter();
+        
+        float32 distanceToCamera = (cameraPosition-selectionCenter).Length();
+        distanceToCameraValue->SetText(Format(L"%f", distanceToCamera));
+    }
 }
 
 void LodDistanceControl::ReleaseControls()
@@ -104,7 +149,7 @@ void LodDistanceControl::ReleaseControls()
 void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles, int32 newCount)
 {
     Vector2 newSize = GetSize();
-    newSize.y = (float32)((newCount*2 + 1) * ControlsFactory::BUTTON_HEIGHT);
+    newSize.y = GetControlHeightForLodCount(newCount);
     SetSize(newSize);
     
     ReleaseControls();
@@ -195,6 +240,10 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles
             trianglesTextValues[iDist]->SetText(Format(L"%d", triangles[iDist]));
         }
     }
+    
+    float32 distanceToCameraY = (count * 2.f + 1.f) * (float32)ControlsFactory::BUTTON_HEIGHT;
+    distanceToCameraText->SetPosition(Vector2(0, distanceToCameraY));
+    distanceToCameraValue->SetPosition(Vector2(x, distanceToCameraY));
 }
 
 void LodDistanceControl::Input(UIEvent *currentInput)
@@ -396,4 +445,10 @@ bool LodDistanceControl::TextFieldKeyPressed(UITextField * textField, int32 repl
     }
     return true;
 };
+
+
+const float32 LodDistanceControl::GetControlHeightForLodCount(int32 lodCount)
+{
+    return (lodCount * 2.0f + 2.0f) * (float32)ControlsFactory::BUTTON_HEIGHT;
+}
 

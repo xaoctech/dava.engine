@@ -342,8 +342,8 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
-        uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-        Logger::Info("[GETROOTNODE TIME] %dms", (endTime - startTime));
+        uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
+        Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
 	it = rootNodes.find(rootNodePath);
@@ -567,8 +567,6 @@ void Scene::Draw()
 
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		shadowRect->Draw();
-
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);

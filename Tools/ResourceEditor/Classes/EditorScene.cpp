@@ -155,7 +155,13 @@ SceneNode * GetLodParent(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+    {
+        uint32 flags = selection->GetDebugFlags();
+        uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        newFlags &= ~SceneNode::DEBUG_DRAW_NORMALS;
+
+		selection->SetDebugFlags(newFlags);
+    }
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -307,6 +313,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     {
         uint32 flags = selection->GetDebugFlags();
         uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        newFlags &= ~SceneNode::DEBUG_DRAW_NORMALS;
         
         SetNodeDebugFlags(selection, newFlags);
     }
@@ -336,7 +343,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if(selection)
     {
         uint32 flags = selection->GetDebugFlags();
-        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS | SceneNode::DEBUG_DRAW_NORMALS;
         
         SetNodeDebugFlags(selection, newFlags);
     }

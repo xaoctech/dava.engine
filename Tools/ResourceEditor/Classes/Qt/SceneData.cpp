@@ -68,16 +68,6 @@ SceneData::~SceneData()
 }
 
 
-void SceneData::SetScene(EditorScene *newScene)
-{
-    ReleaseScene();
-    
-    scene = SafeRetain(newScene);
-    sceneGraphModel->SetScene(scene);
-    cameraController->SetScene(scene);
-    landscapesController->SetScene(scene);
-}
-
 void SceneData::RebuildSceneGraph()
 {
     sceneGraphModel->Rebuild();
@@ -180,6 +170,16 @@ CameraController * SceneData::GetCameraController()
     return cameraController;
 }
 
+void SceneData::SetScene(EditorScene *newScene)
+{
+    ReleaseScene();
+    
+    scene = SafeRetain(newScene);
+    sceneGraphModel->SetScene(scene);
+    cameraController->SetScene(scene);
+    landscapesController->SetScene(scene);
+}
+
 void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
@@ -211,7 +211,6 @@ void SceneData::CreateScene(bool createEditorCameras)
         createdScene->AddNode(cam);
         createdScene->AddCamera(cam);
         createdScene->SetCurrentCamera(cam);
-        cameraController->SetScene(createdScene);
         
         SafeRelease(cam);
         
@@ -230,6 +229,7 @@ void SceneData::CreateScene(bool createEditorCameras)
     }
     
     SetScene(createdScene);
+    SafeRelease(createdScene);
 }
 
 void SceneData::AddScene(const String &scenePathname)
@@ -269,15 +269,22 @@ void SceneData::AddScene(const String &scenePathname)
         mod.CreateTranslation(nodePos);
         rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
     }
+
+	List<LandscapeNode *> landscapes;
+	rootNode->GetChildNodes(landscapes);
+
+	bool needUpdateLandscapeController = !landscapes.empty();
+
     SafeRelease(rootNode);
 
-    //TODO: need selection?
-//    SelectNode(scene->GetSelection());
-    
-    SceneValidator::Instance()->ValidateScene(scene);
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 
-    landscapesController->SetScene(scene);
+	if(needUpdateLandscapeController)
+	{
+		landscapesController->SetScene(scene);
+	}
     
     RebuildSceneGraph();
 }
@@ -306,10 +313,8 @@ void SceneData::EditScene(const String &scenePathname)
     }
 
     
-    //TODO: need selection?
-//    SelectNode(scene->GetSelection());
-    
-    SceneValidator::Instance()->ValidateScene(scene);
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
    
     landscapesController->SetScene(scene);
@@ -363,11 +368,10 @@ void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
 	}
 	SafeRelease(refNode);
 
-	//TODO: need selection?
-	//    SelectNode(scene->GetSelection());
-
 	RebuildSceneGraph();
-	SceneValidator::Instance()->ValidateScene(scene);
+
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
 	SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
@@ -424,14 +428,14 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         QMenu menu;
 
         String extension = FileSystem::Instance()->GetExtension(filePathname);
-        if(0 == CompareStrings(String(".sc2"), extension))
+        if(0 == CompareCaseInsensitive(String(".sc2"), extension))
         {
             AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
             AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
             AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
             AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
         }
-        else if(0 == CompareStrings(String(".dae"), extension))
+        else if(0 == CompareCaseInsensitive(String(".dae"), extension))
         {
             AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
         }
@@ -609,7 +613,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
     if(screen && !skipLibraryPreview)
     {
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
-        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
+        if(0 == CompareCaseInsensitive(extension, String(".sc2")) && isFile)
         {
             screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
         }
@@ -684,13 +688,14 @@ void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command
 
 void SceneData::ToggleNotPassableLandscape()
 {
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
+    UIScreen *screen = UIScreenManager::Instance()->GetScreen();
+    if (IsPointerToExactClass<SceneEditorScreenMain>(screen))
     {
-        if(screen->TileMaskEditorEnabled())
+        if(((SceneEditorScreenMain *)screen)->TileMaskEditorEnabled())
         {
             return;
         }
+
     }
     
     landscapesController->ToggleNotPassableLandscape();
@@ -732,3 +737,11 @@ void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 	}
 }
 
+void SceneData::ResetLandsacpeSelection()
+{
+	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
+	if(selectedNode)
+	{
+		SelectNode(NULL);
+	}
+}

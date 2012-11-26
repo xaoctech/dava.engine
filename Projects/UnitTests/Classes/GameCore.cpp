@@ -255,11 +255,10 @@ void GameCore::FlushTestResults()
         return;
     }
 
-    //TODO: test
+//    //TODO: test
 //    dbClient->DropCollection();
 //    dbClient->DropDatabase();
-    //end of test
-    
+//    //end of test
     
     time_t logStartTime = time(0);
     String testTimeString = Format("%lld", logStartTime);

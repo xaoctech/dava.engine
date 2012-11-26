@@ -76,22 +76,65 @@ namespace DAVA
 // REDEFINED OPENGL FUNCTIONS
     
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-#define glBindBuffer glBindBufferARB
-#define glGenBuffers glGenBuffersARB
-#define glDeleteBuffers glDeleteBuffersARB
-#define glBufferData glBufferDataARB
+    #define glBindBuffer glBindBufferARB
+    #define glGenBuffers glGenBuffersARB
+    #define glDeleteBuffers glDeleteBuffersARB
+    #define glBufferData glBufferDataARB
 
-#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
-#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
-#define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
-#define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
-#define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
-    
-#endif
+    #define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+    #define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+    #define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+    #define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
+    #define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+#endif //#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+
 
 #if defined (__DAVAENGINE_IPHONE__)
-#define GL_HALF_FLOAT GL_HALF_FLOAT_OES
-#endif //#if defined (__DAVAENGINE_IPHONE__)    
+    
+    #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+    #define glDeleteFramebuffers glDeleteFramebuffersOES
+    #define glDeleteRenderbuffers glDeleteRenderbuffersOES
+    #define glGenerateMipmap glGenerateMipmapOES
+	#define glBindFramebuffer glBindFramebufferOES
+#if !defined GL_DEPTH_COMPONENT
+    #define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+#endif //#if !defined GL_DEPTH_COMPONENT
+    
+#elif defined(__DAVAENGINE_ANDROID__)
+    
+    #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+#if !defined GL_DEPTH_COMPONENT
+	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+#endif //#if !defined GL_DEPTH_COMPONENT
+    
+#elif defined(__DAVAENGINE_MACOS__)
+	
+    #define glDeleteFramebuffers glDeleteFramebuffersEXT
+    #define glDeleteRenderbuffers glDeleteRenderbuffersEXT
+    #define glGenerateMipmap glGenerateMipmapEXT
+	#define glBindFramebuffer glBindFramebufferEXT
+	#define glGenRenderbuffers glGenRenderbuffersEXT
+	#define glBindRenderbuffer glBindRenderbufferEXT
+#if !defined(GL_RENDERBUFFER)
+	#define GL_RENDERBUFFER GL_RENDERBUFFER_EXT
+#endif //#if !defined(GL_RENDERBUFFER)
+	#define glRenderbufferStorage glRenderbufferStorageEXT
+#if !defined(GL_FRAMEBUFFER)
+	#define GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
+#endif //#if !defined(GL_FRAMEBUFFER)
+#if !defined(GL_DEPTH_ATTACHMENT)
+	#define GL_DEPTH_ATTACHMENT GL_DEPTH_ATTACHMENT_EXT
+#endif //#if !defined(GL_DEPTH_ATTACHMENT)
+#if !defined(GL_RENDERBUFFER)
+    #define GL_RENDERBUFFER GL_RENDERBUFFER_EXT
+#endif //#if !defined(GL_RENDERBUFFER)
+    #define glCheckFramebufferStatus glCheckFramebufferStatusEXT
+#if !defined(GL_FRAMEBUFFER_COMPLETE)
+    #define GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT
+#endif //#if !defined(GL_FRAMEBUFFER_COMPLETE)
+    
+#elif defined(__DAVAENGINE_WIN32__)
+#endif //#if defined (__DAVAENGINE_IPHONE__)
     
     
 };

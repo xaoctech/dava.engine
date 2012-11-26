@@ -10,10 +10,12 @@
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
 #include "../Commands/LandscapeOptionsCommands.h"
+#include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/EditorBodyControl.h"
 #include "GUIState.h"
 #include "SceneDataManager.h"
 #include "SceneData.h"
@@ -44,6 +46,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
+    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -63,7 +66,8 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
-    
+    ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+
     CommandsManager::Instance()->Release();
 }
 
@@ -137,6 +141,21 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 void QtMainWindowHandler::Materials()
 {
     Execute(new CommandMaterials());
+	/*
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
+
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			materialBrowser.SetScene(mainScreenScene);
+		}
+	}
+
+	materialBrowser.show();
+	*/
 }
 
 void QtMainWindowHandler::HeightmapEditor()
@@ -151,7 +170,19 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-    Execute(new CommandTextureConverter());
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
+
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			textureBrowser.setScene(mainScreenScene);
+		}
+	}
+
+	textureBrowser.show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
@@ -293,6 +324,19 @@ void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
     va_end(vl);
 }
 
+void QtMainWindowHandler::RegisterTextureFormatActions(DAVA::int32 count, ...)
+{
+    DVASSERT((FILE_FORMAT_COUNT == count) && "Wrong count of actions");
+    
+    va_list vl;
+    va_start(vl, count);
+    
+    RegisterActions(textureFileFormatActions, count, vl);
+    
+    va_end(vl);
+}
+
+
 
 void QtMainWindowHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
 {
@@ -411,9 +455,33 @@ void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
     }
 }
 
+void QtMainWindowHandler::MenuViewOptionsWillShow()
+{
+    uint8 textureFileFormat = (uint8)EditorSettings::Instance()->GetTextureViewFileFormat();
+    
+    for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
+    {
+        textureFileFormatActions[i]->setCheckable(true);
+        textureFileFormatActions[i]->setChecked(i == textureFileFormat);
+    }
+}
+
 void QtMainWindowHandler::RulerTool()
 {
     Execute(new CommandRulerTool());
+}
+
+void QtMainWindowHandler::ReloadAsPNG()
+{
+    Execute(new ReloadTexturesAsCommand(PNG_FILE));
+}
+void QtMainWindowHandler::ReloadAsPVR()
+{
+    Execute(new ReloadTexturesAsCommand(PVR_FILE));
+}
+void QtMainWindowHandler::ReloadAsDXT()
+{
+    Execute(new ReloadTexturesAsCommand(DXT_FILE));
 }
 
 void QtMainWindowHandler::ToggleCustomColors()

@@ -9,7 +9,7 @@ using namespace DAVA;
 class TextureFormatDialogDelegate
 {
 public:
-    virtual void OnFormatSelected(int32 newFormat, bool generateMimpaps) = 0;
+    virtual void OnFormatSelected(PixelFormat newFormat, bool generateMimpaps) = 0;
 };
 
 class UICheckBox;

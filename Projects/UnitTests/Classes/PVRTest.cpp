@@ -29,6 +29,7 @@
 =====================================================================================*/
 
 #include "PVRTest.h"
+#include "TextureUtils.h"
 
 static const PixelFormat formats[] =
 {
@@ -48,6 +49,10 @@ static const PixelFormat formats[] =
 PVRTest::PVRTest()
 : TestTemplate<PVRTest>("PVRTest")
 {
+    String testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + String("/PVRTest/");
+    FileSystem::Instance()->CreateDirectory(testFolder, true);
+
+    
     pngSprite = NULL;
     pvrSprite = NULL;
     decompressedPNGSprite = NULL;
@@ -58,6 +63,18 @@ PVRTest::PVRTest()
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
         RegisterFunction(this, &PVRTest::TestFunction, Format("PVRTest of %s", formatDescriptor.name.c_str()), NULL);
     }
+    
+    
+//Temporary code for descriptors generation 
+//    String documentsPath = FileSystem::Instance()->GetUserDocumentsPath();
+//    TextureDescriptor *descriptor = new TextureDescriptor();
+//    descriptor->textureFileFormat = Texture::PNG_FILE;
+//    descriptor->Export(documentsPath + "/TemplatePNGDescriptor.tex");
+//
+//    descriptor->textureFileFormat = Texture::PVR_FILE;
+//    descriptor->Export(documentsPath + "/TemplatePVRDescriptor.tex");
+//
+//    SafeRelease(descriptor);
 }
 
 void PVRTest::LoadResources()
@@ -65,6 +82,8 @@ void PVRTest::LoadResources()
     GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
 
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    DVASSERT(font);
+
     font->SetSize(20);
     font->SetColor(Color::White());
 
@@ -75,22 +94,6 @@ void PVRTest::LoadResources()
     AddControl(compareResultText);
 
     SafeRelease(font);
-}
-
-
-Sprite * PVRTest::CreateSpriteFromTexture(const String &texturePathname)
-{
-    Sprite *createdSprite = NULL;
-    
-    
-    Texture *texture = Texture::CreateFromFile(texturePathname);
-    if(texture)
-    {
-        createdSprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->GetWidth(), (float32)texture->GetHeight());
-        texture->Release();
-    }
-    
-    return createdSprite;
 }
 
 
@@ -109,22 +112,63 @@ void PVRTest::TestFunction(PerfFuncData * data)
 {
     DVASSERT(currentTest < TESTS_COUNT);
     
-    ReloadSprites();
-    
-    CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
-    float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
-    
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-    data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
-                                 result.difference, differencePersentage, 100.f - differencePersentage);
-    
-    compareResultText->SetText(StringToWString(data->testData.message));
-    Logger::Debug(data->testData.message.c_str());
-    
-    TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
+    if(IsCurrentTestAccepted())
+    {
+        ReloadSprites();
+        
+        TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, pvrSprite, formats[currentTest]);
+        float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+        
+        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+        data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
+                                        differencePersentage, 100.f - differencePersentage);
+        
+        compareResultText->SetText(StringToWString(data->testData.message));
+        Logger::Debug(data->testData.message.c_str());
+        
+        TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
+        
+        
+        //Save images for visual comparision
+        Image *firstComparer = TextureUtils::CreateImageAsRGBA8888(decompressedPNGSprite);
+        Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(pvrSprite);
+        
+        String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+        ImageLoader::Save(firstComparer, documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
+        ImageLoader::Save(secondComparer, documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
+    }
     
     ++currentTest;
 }
+
+bool PVRTest::IsCurrentTestAccepted()
+{
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    
+#if defined (__DAVAENGINE_ANDROID__)
+    if((formats[currentTest] == FORMAT_PVR2) && !deviceCaps.isPVRTCSupported)
+    {
+        return false;
+    }
+    if((formats[currentTest] == FORMAT_PVR4) && !deviceCaps.isPVRTCSupported)
+    {
+        return false;
+    }
+    
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+    if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)
+    {
+        return false;
+    }
+    
+    if((formats[currentTest] == FORMAT_RGBA32323232) && !deviceCaps.isFloat32Supported)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
 void PVRTest::ReloadSprites()
 {
@@ -132,13 +176,9 @@ void PVRTest::ReloadSprites()
     SafeRelease(pvrSprite);
     SafeRelease(decompressedPNGSprite);
     
-    Image::EnableAlphaPremultiplication(false);
-    
-    pngSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PNG/number_%d.png", currentTest)));
-    pvrSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PVR/number_%d.pvr", currentTest)));
-    decompressedPNGSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
-    
-    Image::EnableAlphaPremultiplication(true);
+    pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/PNG/number_%d.png", currentTest)));
+    pvrSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/PVR/number_%d.pvr", currentTest)));
+    decompressedPNGSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
 }
 
 void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
@@ -162,65 +202,6 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
     }
     
     TestTemplate<PVRTest>::Draw(geometricData);
-}
-
-PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
-{
-    DVASSERT(first->GetHeight() == second->GetHeight());
-    DVASSERT(first->GetWidth() == second->GetWidth());
-    
-    Image *firstComparer = CreateImageAsRGBA8888(first);
-    Image *secondComparer = CreateImageAsRGBA8888(second);
-
-    CompareResult compareResult = {0};
-
-    
-    int32 imageSizeInBytes = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format));
-
-    int32 step = 1;
-    int32 startIndex = 0;
-    
-    if(FORMAT_A8 == formats[currentTest])
-    {
-        compareResult.bytesCount = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8));
-        step = 4;
-        startIndex = 3;
-    }
-    else
-    {
-        compareResult.bytesCount = imageSizeInBytes;
-    }
-
-    for(int32 i = startIndex; i < imageSizeInBytes; i += step)
-    {
-        compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
-    }
-    
-    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    firstComparer->Save(documentsPath + Format("src_number_%d.png", currentTest));
-    secondComparer->Save(documentsPath + Format("dst_number_%d.png", currentTest));
-    
-    
-    SafeRelease(firstComparer);
-    SafeRelease(secondComparer);
-    return compareResult;
-}
-
-Image * PVRTest::CreateImageAsRGBA8888(Sprite *sprite)
-{
-    Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
-    RenderManager::Instance()->SetRenderTarget(renderTarget);
-    
-    sprite->SetPosition(0, 0);
-    sprite->Draw();
-    
-    RenderManager::Instance()->RestoreRenderTarget();
-    
-    Texture *renderTargetTexture = renderTarget->GetTexture();
-    Image *resultImage = renderTargetTexture->CreateImageFromMemory();
-    
-    SafeRelease(renderTarget);
-    return resultImage;
 }
 
 

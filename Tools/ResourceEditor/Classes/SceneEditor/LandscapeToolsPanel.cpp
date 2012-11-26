@@ -5,6 +5,12 @@
 
 #include "EditorSettings.h"
 
+
+const float32 LandscapeToolsPanel::SLIDER_WIDTH = 250.0f;
+const float32 LandscapeToolsPanel::TEXTFIELD_WIDTH = 40.0f;
+const float32 LandscapeToolsPanel::TEXT_WIDTH = 60.0f;
+
+
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
     ,   delegate(newDelegate)
