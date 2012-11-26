@@ -56,7 +56,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 # include modules
 $(call import-add-path,$(DAVA_ROOT)/Sources)
-$(call import-add-path,$(DAVA_ROOT)/Sources/External)
-$(call import-add-path,$(DAVA_ROOT)/Sources/External/Box2D)
-$(call import-add-path,$(DAVA_ROOT)/Sources/Internal)
+#$(call import-add-path,$(DAVA_ROOT)/Sources/External)
+#$(call import-add-path,$(DAVA_ROOT)/Sources/External/Box2D)
+#$(call import-add-path,$(DAVA_ROOT)/Sources/Internal)
 $(call import-module,Internal)
