@@ -10,10 +10,10 @@ namespace DAVA
 {
 
 // namesHash init. size will be 4096 and default values for int will be -1
-Vector<const char *> FastName::namesTable;
-Vector<int> FastName::namesRefCounts;
-Vector<int> FastName::namesEmptyIndexes;
-HashMap<const char *, int> FastName::namesHash = HashMap<const char *, int>(4096, -1);
+//Vector<const char *> FastName::namesTable;
+//Vector<int> FastName::namesRefCounts;
+//Vector<int> FastName::namesEmptyIndexes;
+//HashMap<const char *, int> FastName::namesHashs = ;
 
 FastName::FastName()
 	: index(-1)
@@ -25,11 +25,11 @@ FastName::FastName(const char *name)
 	DVASSERT(NULL != name);
 
 	// search if that name is already in hash
-	if(namesHash.HasKey(name))
+	if(FastNameData::Instance()->namesHashs.HasKey(name))
 	{
 		// already exist, so we just need to set the same index to this object
-		index = namesHash[name];
-		namesRefCounts[index]++;
+		index = FastNameData::Instance()->namesHashs[name];
+		FastNameData::Instance()->namesRefCounts[index]++;
 	}
 	else
 	{
@@ -40,47 +40,47 @@ FastName::FastName(const char *name)
 		memcpy(nameCopy, name, nameLen + 1);
 
 		// search for empty indexes in names table
-		if(namesEmptyIndexes.size() > 0)
+		if(FastNameData::Instance()->namesEmptyIndexes.size() > 0)
 		{
 			// take last empty index from emptyIndexes table
-			index = namesEmptyIndexes.back();
-			namesEmptyIndexes.pop_back();
+			index = FastNameData::Instance()->namesEmptyIndexes.back();
+			FastNameData::Instance()->namesEmptyIndexes.pop_back();
 		}
 		else
 		{
 			// index will be a new row in names table
-			index = namesTable.size();
-			namesTable.resize(index + 1);
-			namesRefCounts.resize(index + 1);
+			index = FastNameData::Instance()->namesTable.size();
+			FastNameData::Instance()->namesTable.resize(index + 1);
+			FastNameData::Instance()->namesRefCounts.resize(index + 1);
 		}
 
 		// set name to names table
-		namesTable[index] = nameCopy;
-		namesRefCounts[index] = 1;
+		FastNameData::Instance()->namesTable[index] = nameCopy;
+		FastNameData::Instance()->namesRefCounts[index] = 1;
 
 		// add name and its index into hash
-		namesHash.Insert(name, index);
+		FastNameData::Instance()->namesHashs.Insert(name, index);
 	}
 }
 
 FastName::~FastName()
 {
-	namesRefCounts[index]--;
-	const char *tmp = namesTable[index];
+	FastNameData::Instance()->namesRefCounts[index]--;
+	const char *tmp = FastNameData::Instance()->namesTable[index];
 
-	if(0 == namesRefCounts[index])
+	if(0 == FastNameData::Instance()->namesRefCounts[index])
 	{
 		// remove name and index from hash
-		namesHash.Remove(namesTable[index]);
+		FastNameData::Instance()->namesHashs.Remove(FastNameData::Instance()->namesTable[index]);
 
 		// delete allocated memory for this string
-		delete[] namesTable[index];
+		delete[] FastNameData::Instance()->namesTable[index];
 
 		// remove name from names table
-		namesTable[index] = NULL;
+		FastNameData::Instance()->namesTable[index] = NULL;
 
 		// remember that this index is empty already
-		namesEmptyIndexes.push_back(index);
+		FastNameData::Instance()->namesEmptyIndexes.push_back(index);
 	}
 }
 
