@@ -52,8 +52,8 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</LinkIncremental>
-    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
-    </CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">PrepareForBuild</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PrepareForBuild</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
@@ -98,20 +98,19 @@
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <CustomBuildStep>
-      <Command>
-      </Command>
+      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
-      <Message>
-      </Message>
+      <Outputs>$(SolutionDir)/alwaysrun</Outputs>
+      <Message>QT generate: MOC, UI, QRC</Message>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>QT generate: MOC, UI, QRC</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
@@ -157,6 +156,19 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>QT generate: MOC, UI, QRC</Message>
+      <Outputs>$(SolutionDir)/alwaysrun</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp" />
@@ -344,6 +356,12 @@
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\mainwindow.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
@@ -462,6 +480,12 @@
     <ClCompile Include="_GeneratedQt\GUIState_moc.cpp" />
     <ClCompile Include="_GeneratedQt\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\mainwindow_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\PointerHolder_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtMainWindowHandler_moc.cpp" />
@@ -744,6 +768,12 @@
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\mainwindow.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeItem.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h" />
+    <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
@@ -863,6 +893,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui" />
+    <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\texturedialog.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>
