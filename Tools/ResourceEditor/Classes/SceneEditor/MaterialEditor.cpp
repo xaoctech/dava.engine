@@ -12,6 +12,7 @@
 #include "SceneValidator.h"
 
 #include "MaterialPropertyControl.h"
+#include "EditorSettings.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
@@ -295,6 +296,9 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         float32 y = (CellHeight(forList, index) - boxSize) / 2;
         float32 x = forList->GetRect().dx - boxSize;
         
+        
+        Texture::SetDefaultFileFormat(NOT_FILE);
+        
         Rect r = Rect(x, y, boxSize, boxSize);
         UIControl *sceneFlagBox = new UIControl(r);
         sceneFlagBox->SetName("flagBox");
@@ -303,6 +307,8 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         sceneFlagBox->SetInputEnabled(false);
         c->AddControl(sceneFlagBox);
         SafeRelease(sceneFlagBox);
+        
+        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 
     Material *mat = GetMaterial(index);
