@@ -42,7 +42,7 @@ FastName::FastName(const char *name)
 		// search for empty indexes in names table
 		if(namesEmptyIndexes.size() > 0)
 		{
-			// take last emty index from emptyIndexes table
+			// take last empty index from emptyIndexes table
 			index = namesEmptyIndexes.back();
 			namesEmptyIndexes.pop_back();
 		}
@@ -70,8 +70,6 @@ FastName::~FastName()
 
 	if(0 == namesRefCounts[index])
 	{
-		printf("111\n");
-		/*
 		// remove name and index from hash
 		namesHash.Remove(namesTable[index]);
 
@@ -83,7 +81,6 @@ FastName::~FastName()
 
 		// remember that this index is empty already
 		namesEmptyIndexes.push_back(index);
-		*/
 	}
 }
 
