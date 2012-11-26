@@ -101,7 +101,9 @@ namespace DAVA
 #elif defined(__DAVAENGINE_ANDROID__)
     
     #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+#if !defined GL_DEPTH_COMPONENT
 	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
+#endif //#if !defined GL_DEPTH_COMPONENT
     
 #elif defined(__DAVAENGINE_MACOS__)
 	
