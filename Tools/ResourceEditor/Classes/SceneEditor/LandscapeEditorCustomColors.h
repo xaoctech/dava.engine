@@ -37,6 +37,8 @@ public:
 	void SetColor(const Color &newColor);
 	void SetRadius(int radius);
 	void SaveColorLayer(const String &pathName);
+	void LoadColorLayer(const String &pathName);
+	String GetCurrentSaveFileName();
 
 protected:
 
@@ -47,7 +49,14 @@ protected:
 	virtual void UpdateCursor();
     virtual void UndoAction();
     virtual void RedoAction();
-	
+
+	String GetScenePath();
+	String GetRelativePathToScenePath(const String& absolutePath);
+	String GetAbsolutePathFromScenePath(const String& relativePath);
+	void StoreSaveFileName(const String& fileName);
+
+	void LoadTextureAction(const String& pathToFile);
+
     virtual void RecreateHeightmapNode();
 	void UpdateCircleTexture(bool setTransparent);
 

@@ -257,12 +257,14 @@ void QtMainWindow::SetupCustomColorsDock()
     connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
     connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
     connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
+	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
 
 	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
 		ui->buttonCustomColorsEnable,
 		ui->buttonCustomColorsSave,
 		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors);
+		ui->comboboxCustomColors,
+		ui->buttonCustomColorsLoad);
     
     QSize iconSize = ui->comboboxCustomColors->iconSize();
     iconSize = iconSize.expandedTo(QSize(100, 0));

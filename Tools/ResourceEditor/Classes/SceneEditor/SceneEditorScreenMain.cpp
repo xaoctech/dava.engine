@@ -776,6 +776,18 @@ void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
     iBody->bodyControl->SaveTexture(path);
 }
 
+void SceneEditorScreenMain::CustomColorsLoadTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->CustomColorsLoadTexture(path);
+}
+
+String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
+{
+	BodyItem *iBody = FindCurrentBody();
+	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
+}
+
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
 {
     BodyItem *iBody = FindCurrentBody();

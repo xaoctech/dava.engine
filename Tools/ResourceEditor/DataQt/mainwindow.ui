@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -449,6 +449,13 @@ size:</string>
          </widget>
         </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonCustomColorsLoad">
+       <property name="text">
+        <string>Load Texture</string>
+       </property>
       </widget>
      </item>
      <item>

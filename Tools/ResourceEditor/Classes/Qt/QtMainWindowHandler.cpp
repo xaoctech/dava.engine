@@ -471,6 +471,11 @@ void QtMainWindowHandler::SaveTextureCustomColors()
     Execute(new CommandSaveTextureCustomColors());
 }
 
+void QtMainWindowHandler::LoadTextureCustomColors()
+{
+	Execute(new CommandLoadTextureCustomColors());
+}
+
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
     Execute(new CommandChangeBrushSizeCustomColors(newSize));
@@ -481,12 +486,13 @@ void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
     Execute(new CommandChangeColorCustomColors(newColorIndex));
 }
 
-void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox)
+void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
 {
 	this->customColorsToggleButton = toggleButton;
 	this->customColorsSaveTextureButton = saveTextureButton;
 	this->customColorsBrushSizeSlider = brushSizeSlider;
 	this->customColorsColorComboBox = colorComboBox;
+	this->customColorsLoadTextureButton = loadTextureButton;
 }
 
 void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
@@ -494,7 +500,8 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	DVASSERT(customColorsToggleButton &&
 			 customColorsSaveTextureButton &&
 			 customColorsBrushSizeSlider &&
-			 customColorsColorComboBox);
+			 customColorsColorComboBox &&
+			 customColorsLoadTextureButton);
 
 	customColorsToggleButton->blockSignals(true);
 	customColorsToggleButton->setCheckable(state);
@@ -507,9 +514,11 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	customColorsSaveTextureButton->setEnabled(state);
 	customColorsBrushSizeSlider->setEnabled(state);
 	customColorsColorComboBox->setEnabled(state);
+	customColorsLoadTextureButton->setEnabled(state);
 	customColorsSaveTextureButton->blockSignals(!state);
 	customColorsBrushSizeSlider->blockSignals(!state);
 	customColorsColorComboBox->blockSignals(!state);
+	customColorsLoadTextureButton->blockSignals(!state);
 
 	if(state == true)
 	{
