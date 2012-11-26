@@ -40,14 +40,11 @@ protected:
     void PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog);
     
     
-    void EnumerateTextures(Scene *sceneNode, Set<String> &errorLog);
     void ExportTextures(Scene *scene, Set<String> &errorLog);
     
     void ReleaseTextures();
     
     void CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog);
-    
-    void CollectTextureForExport(Texture *texture);
     
     
 protected:
@@ -58,7 +55,7 @@ protected:
 
     ImageFileFormat exportFormat;
     
-    Set<String>texturesForExport;
+    Map<String, Texture *> texturesForExport;
     Map<String, String>exportedTextures;
 };
 

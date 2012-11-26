@@ -283,7 +283,7 @@ void LandscapeEditorCustomColors::UpdateCircleTexture()
 		return;
 	}
 	SafeRelease(cursorTexture);
-	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2, true);
+	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2, false);
 	//check addref
 	delete[] texArr;
 }
