@@ -2,7 +2,7 @@ import re
 import os
 import sys
 
-os.system("del /q ..\\ReleaseQt\\*.zip")
+os.system("del /q ..\\_ReleaseQt\\*.zip")
 
 file_git_time="gitTime.txt"
 os.chdir('../../../')
@@ -11,7 +11,7 @@ commitNumber = re.sub('[: +]','_', data).rstrip()
 
 os.chdir('Tools/ResourceEditor/Teamcity')
 os.system("packAppQt.bat " + commitNumber)
-os.system("xcopy /y ..\\ReleaseQt\\ResourceEditor_win_" + commitNumber + ".zip \\\\winserver\win\development")
+os.system("xcopy /y ..\\_ReleaseQt\\ResourceEditor_win_" + commitNumber + ".zip \\\\winserver\win\development")
 
 file_in = '\\\\winserver\\win\\launcher\\configs\\development.yaml'
 file_out = 'development_temp.yaml'
