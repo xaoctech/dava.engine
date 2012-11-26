@@ -89,6 +89,8 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
 
 void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     SceneNode *n = (SceneNode *)node;
     UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
     text->SetText(StringToWString(n->GetName()));
@@ -116,6 +118,8 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     {
         cell->SetSelected(false, false);
     }
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
