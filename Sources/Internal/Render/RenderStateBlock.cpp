@@ -374,9 +374,9 @@ inline void RenderStateBlock::SetColorInHW() const
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
     {
 #if defined (LOG_FINAL_RENDER_STATE)
-        Logger::Debug("RenderState::color = (%f, %f, %f, %f)", color.r * color.a, color.g * color.a, color.b * color.a, color.a);
+        Logger::Debug("RenderState::color = (%f, %f, %f, %f)", color.r, color.g, color.b, color.a);
 #endif
-        RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+        RENDER_VERIFY(glColor4f(color.r, color.g, color.b, color.a));
     }
 }
     
