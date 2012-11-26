@@ -1155,6 +1155,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\dxtHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1974,6 +1977,9 @@
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\dxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
