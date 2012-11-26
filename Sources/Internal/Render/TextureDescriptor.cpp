@@ -387,7 +387,7 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
 }
 
 
-bool TextureDescriptor::GetGenerateMipMaps()
+bool TextureDescriptor::GetGenerateMipMaps() const
 {
     return (OPTION_DISABLED != generateMipMaps);
 }

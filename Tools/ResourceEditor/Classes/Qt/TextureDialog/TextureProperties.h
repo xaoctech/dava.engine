@@ -6,6 +6,7 @@
 #include "QtPropertyBrowser/qtgroupboxpropertybrowser.h"
 
 #include <QMap>
+#include <QSize>
 
 class QtGroupPropertyManager;
 class QtIntPropertyManager;
@@ -26,13 +27,21 @@ public:
 	TextureProperties(QWidget *parent = 0);
 	~TextureProperties();
 
+	typedef enum PropertiesType
+	{
+		TYPE_COMMON,
+		TYPE_PVR,
+		TYPE_DXT
+	};
+
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
+	void setOriginalImageSize(const QSize &size);
 
 	const DAVA::Texture* getTexture();
 	const DAVA::TextureDescriptor* getTextureDescriptor();
 
 signals:
-	void propertyChanged();
+	void propertyChanged(const int propGroup);
 
 private slots:
 	void propertyChanged(QtProperty * property);
@@ -103,6 +112,7 @@ private:
 
 	DAVA::Texture *curTexture;
 	DAVA::TextureDescriptor *curTextureDescriptor;
+	QSize origImageSize;
 
 	bool reactOnPropertyChange;
 
@@ -131,12 +141,8 @@ private:
 
 	void Save();
 
-
-	void InitMipMapSizes(int baseWidth, int baseHeight);
-	/*
-	int GetBaseSizeIndex(QtProperty *enumPropetie, int baseWidth, int baseHeight);
-	QSize GetBaseSize(QtProperty *enumPropetie, int index);
-	*/
+	void MipMapSizesInit(int baseWidth, int baseHeight);
+	void MipMapSizesReset();
 };
 
 #endif // __TEXTURE_PROPERTIES_H__

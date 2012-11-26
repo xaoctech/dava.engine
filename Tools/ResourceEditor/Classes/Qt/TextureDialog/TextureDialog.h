@@ -74,7 +74,7 @@ private:
 
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
-	void updateInfoOriginal();
+	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
 
 private slots:
@@ -87,7 +87,7 @@ private slots:
 	void textureColorChannelPressed(bool checked);
 	void textureBorderPressed(bool checked);
 	void textureBgMaskPressed(bool checked);
-	void texturePropertyChanged();
+	void texturePropertyChanged(const int propGroup);
 	void textureViewPVR(bool checked);
 	void textureViewDXT(bool checked);
 	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);

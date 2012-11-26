@@ -9,7 +9,7 @@
 #include "Render/RenderManager.h"
 #include "TextureDialog/TextureConvertorWork.h"
 
-#define CONVERT_JOB_COUNT 2
+#define CONVERT_JOB_COUNT 1
 
 class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor>
 {

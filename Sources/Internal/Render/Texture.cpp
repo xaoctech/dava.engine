@@ -497,7 +497,7 @@ Texture * Texture::CreateFromImage(File *file, TextureDescriptor *descriptor)
     return texture;
 }
     
-bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
+bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
 {
     Vector<Image *> imageSet = ImageLoader::CreateFromFile(file);
     if(0 != imageSet.size())
@@ -674,9 +674,18 @@ TextureDescriptor * Texture::CreateDescriptor() const
     return NULL;
 }
     
-void Texture::ReloadAs(ImageFileFormat fileFormat, TextureDescriptor *descriptor)
+void Texture::ReloadAs(ImageFileFormat fileFormat)
+{
+	TextureDescriptor *descriptor = CreateDescriptor();
+	ReloadAs(fileFormat, descriptor);
+	SafeRelease(descriptor);
+}
+
+void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
+	
+	DVASSERT(NULL != descriptor);
     
     String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
@@ -727,8 +736,6 @@ void Texture::ReloadAs(ImageFileFormat fileFormat, TextureDescriptor *descriptor
     
     SafeRelease(file);
 }
-    
-    
     
 int32 Texture::Release()
 {

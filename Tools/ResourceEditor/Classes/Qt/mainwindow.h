@@ -17,7 +17,6 @@ public:
    ~QtMainWindow();
     
     virtual bool eventFilter(QObject *, QEvent *);
-
     
 private:
     void SetupMainMenu();
