@@ -35,7 +35,6 @@
 #include "Render/VertexBuffer.h"
 #include "Base/BaseMath.h"
 #include "Base/Data.h"
-#include "Base/FastName.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -82,17 +81,21 @@ public:
     
     virtual void Bind();
     static void Unbind();
-    virtual int32 FindUniformLocationByName(const FastName & name);
+    virtual int32 FindUniformLocationByName(const String & name);
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
     int32 GetAttributeCount();
+    
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
     void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
+
+
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);
+
 
     /**
         This function return vertex format required by shader
@@ -117,23 +120,22 @@ private:
     GLuint fragmentShader;
     GLuint program;
     
-    FastName *attributeNames;
+    String * attributeNames;
     GLint activeAttributes;
     GLint activeUniforms;
     
     
     eUniform *uniformIDs;
-    FastName *uniformNames;
-    GLint *uniformLocations;
+    String * uniformNames;
+    GLint * uniformLocations;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources);    
     GLint LinkProgram(GLuint prog);
     void DeleteShaders();
-
-    eUniform GetUniformByName(const FastName &name);
-    int32 GetAttributeIndexByName(const FastName &name);
+    eUniform GetUniformByName(const char * name);
+    int32 GetAttributeIndexByName(const char * name);
     
     static GLuint activeProgram;
     String defines;
