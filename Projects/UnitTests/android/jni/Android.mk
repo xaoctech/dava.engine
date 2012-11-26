@@ -4,6 +4,9 @@
 #set local path
 LOCAL_PATH := $(call my-dir)
 
+MY_PROJECT_ROOT := $(LOCAL_PATH)/../..
+DAVA_ROOT := $(MY_PROJECT_ROOT)/../..
+
 # clear all variables
 include $(CLEAR_VARS)
 
@@ -42,6 +45,8 @@ LOCAL_CFLAGS := -g -O2
 
 LOCAL_LDLIBS := -lz -lOpenSLES -landroid -fuse-ld=gold -fno-exceptions
 
+LOCAL_ARM_MODE := arm
+
 # set included libraries
 #LOCAL_STATIC_LIBRARIES := libInternal libbox2d
 LOCAL_STATIC_LIBRARIES := libInternal
@@ -50,4 +55,8 @@ LOCAL_STATIC_LIBRARIES := libInternal
 include $(BUILD_SHARED_LIBRARY)
 
 # include modules
-$(call import-module, Internal)
+$(call import-add-path,$(DAVA_ROOT)/Sources)
+$(call import-add-path,$(DAVA_ROOT)/Sources/External)
+$(call import-add-path,$(DAVA_ROOT)/Sources/External/Box2D)
+$(call import-add-path,$(DAVA_ROOT)/Sources/Internal)
+$(call import-module,Internal)
