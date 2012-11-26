@@ -15,12 +15,12 @@
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/EditorBodyControl.h"
 #include "GUIState.h"
 #include "SceneDataManager.h"
 #include "SceneData.h"
 #include "QtUtils.h"
 #include "mainwindow.h"
-#include "TextureDialog/TextureDialog.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -140,7 +140,20 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 
 void QtMainWindowHandler::Materials()
 {
-    Execute(new CommandMaterials());
+    //Execute(new CommandMaterials());
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
+
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			materialBrowser.SetScene(mainScreenScene);
+		}
+	}
+
+	materialBrowser.show();
 }
 
 void QtMainWindowHandler::HeightmapEditor()
@@ -155,10 +168,19 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-    //Execute(new CommandTextureConverter());
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
 
-	TextureDialog ctd;
-	ctd.exec();
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			textureBrowser.setScene(mainScreenScene);
+		}
+	}
+
+	textureBrowser.show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
