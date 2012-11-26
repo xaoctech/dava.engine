@@ -242,7 +242,9 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 
 				Rect2i rect;
 				rect.SetSize(Size2i(visibilityAreaSize * 2 + 10, visibilityAreaSize * 2 + 10));
-				rect.SetCenter(Point2i((int32)visibilityAreaCenter.x, (int32)visibilityAreaCenter.y));
+				int32 tmpX = (int32)visibilityAreaCenter.x;
+				int32 tmpY = (int32)visibilityAreaCenter.y;
+				rect.SetCenter(Point2i(tmpX, tmpY));
 
 				Image* undoTextureImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
 				rect = FitRectToImage(undoTextureImage, rect);
@@ -550,7 +552,7 @@ void LandscapeEditorVisibilityCheckTool::UndoAction()
 			Image* image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
 			CopyImageRectToImage(undoImage, rect, image, imagePos);
 
-			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
 			Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
 
 			RecreateVisibilityAreaSprite();
@@ -588,7 +590,7 @@ void LandscapeEditorVisibilityCheckTool::RedoAction()
 			Image* image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
 			CopyImageRectToImage(redoImage, rect, image, imagePos);
 
-			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(),false);
 			Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
 
 			RecreateVisibilityAreaSprite();
@@ -654,7 +656,7 @@ void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToF
         Image *img = saveSprite->GetTexture()->CreateImageFromMemory();
         if(img)
         {
-            img->Save(pathToFile);
+			ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
         }
 		
