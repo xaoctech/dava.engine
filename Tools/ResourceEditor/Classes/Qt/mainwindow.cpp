@@ -96,6 +96,7 @@ void QtMainWindow::SetupMainMenu()
 	QAction *actionReferences = ui->dockReferences->toggleViewAction();
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
+	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -104,12 +105,13 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionEntities, actionDataGraph);
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
+	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors);
+                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool);
 
 
     ui->dockDataGraph->hide();
@@ -234,6 +236,7 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDropIndicatorShown(true);
     
     SetupCustomColorsDock();
+	SetupVisibilityToolDock();
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
@@ -250,12 +253,14 @@ void QtMainWindow::SetupCustomColorsDock()
     connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
     connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
     connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
+	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
 
 	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
 		ui->buttonCustomColorsEnable,
 		ui->buttonCustomColorsSave,
 		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors);
+		ui->comboboxCustomColors,
+		ui->buttonCustomColorsLoad);
     
     QSize iconSize = ui->comboboxCustomColors->iconSize();
     iconSize = iconSize.expandedTo(QSize(100, 0));
@@ -279,6 +284,35 @@ void QtMainWindow::SetupCustomColorsDock()
         ui->comboboxCustomColors->addItem(icon, description.c_str());
     }
     handler->SetCustomColorsWidgetsState(false);
+}
+
+void QtMainWindow::SetupVisibilityToolDock()
+{
+	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+	
+	connect(ui->buttonVisibilityToolEnable, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityTool()));
+
+	ui->buttonVisibilityToolSave->blockSignals(true);
+	ui->buttonVisibilityToolSetArea->blockSignals(true);
+	ui->buttonVisibilityToolSetPoint->blockSignals(true);
+	ui->sliderVisibilityToolAreaSize->blockSignals(true);
+	
+	connect(ui->buttonVisibilityToolSave,		SIGNAL(clicked()),
+			handler,							SLOT(SaveTextureVisibilityTool()));
+	connect(ui->buttonVisibilityToolSetArea,	SIGNAL(clicked()),
+			handler,							SLOT(SetVisibilityAreaVisibilityTool()));
+	connect(ui->buttonVisibilityToolSetPoint,	SIGNAL(clicked()),
+			handler,							SLOT(SetVisibilityPointVisibilityTool()));
+	connect(ui->sliderVisibilityToolAreaSize,	SIGNAL(valueChanged(int)),
+			handler,							SLOT(ChangleAreaSizeVisibilityTool(int)));
+	
+	handler->RegisterWidgetsVisibilityTool(ui->buttonVisibilityToolEnable,
+										   ui->buttonVisibilityToolSave,
+										   ui->buttonVisibilityToolSetPoint,
+										   ui->buttonVisibilityToolSetArea,
+										   ui->sliderVisibilityToolAreaSize);
+	
+	handler->SetWidgetsStateVisibilityTool(false);
 }
 
 void QtMainWindow::MenuFileWillShow()
