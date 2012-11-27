@@ -79,6 +79,7 @@ public:
 	virtual void	RemoveNode(SceneNode * node);
 	virtual SceneNode * GetChild(int32 index);
 	virtual int32   GetChildrenCount();
+    virtual int32   GetChildrenCountRecursive();
 	virtual void	RemoveAllChildren();
         
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);

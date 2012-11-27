@@ -350,6 +350,7 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
+        int32 nowCount = node->GetNode()->GetChildrenCountRecursive();
 		return node->GetNode();
 	}
     return 0;

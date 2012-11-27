@@ -58,6 +58,8 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     
     GenerateCode(materialGraph);
     
+    
+    
     Shader * shader = new Shader();
     shader->Load("~doc:/temp.vsh", "~doc:/temp.fsh");
     shader->Recompile();
