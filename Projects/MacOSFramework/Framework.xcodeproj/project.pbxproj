@@ -11,6 +11,8 @@
 		0224B70415989FD900CDEF9E /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224B70215989FD900CDEF9E /* TheoraPlayer.cpp */; };
 		0224B70515989FD900CDEF9E /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224B70315989FD900CDEF9E /* TheoraPlayer.h */; };
 		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
+		17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */; };
+		17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A436471664E9DE00A15BDB /* ParticleEffectNode.h */; };
 		4730931113A7E08200C28765 /* UIHierarchyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4730930F13A7E08200C28765 /* UIHierarchyNode.h */; };
 		4730931213A7E08200C28765 /* UIHierarchyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4730931013A7E08200C28765 /* UIHierarchyNode.cpp */; };
 		473DB5B0139E87C3007F2498 /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 473DB5AE139E87C3007F2498 /* UIScrollBar.h */; };
@@ -595,6 +597,8 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
+		17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
+		17A436471664E9DE00A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		3239C08413E301A7002CBBF2 /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
 		3239C08513E301A7002CBBF2 /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
@@ -1824,6 +1828,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */,
+				17A436471664E9DE00A15BDB /* ParticleEffectNode.h */,
 				CCFF221115EE10E400363446 /* SwitchNode.cpp */,
 				CCFF221215EE10E400363446 /* SwitchNode.h */,
 				C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */,
@@ -2339,6 +2345,7 @@
 				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
 				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
+				17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2669,6 +2676,7 @@
 				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
 				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
+				17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
