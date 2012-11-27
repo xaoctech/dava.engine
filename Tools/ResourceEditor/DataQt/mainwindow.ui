@@ -33,7 +33,7 @@
   </property>
   <widget class="DavaGLWidget" name="davaGLWidget">
    <property name="focusPolicy">
-    <enum>Qt::NoFocus</enum>
+    <enum>Qt::StrongFocus</enum>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
@@ -156,9 +156,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="propertiesBody">
-    <zorder>davaGLWidget</zorder>
-   </widget>
+   <widget class="QWidget" name="propertiesBody"/>
   </widget>
   <widget class="QDockWidget" name="dockEntities">
    <property name="minimumSize">
