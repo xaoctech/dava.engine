@@ -237,13 +237,15 @@ void SceneData::AddScene(const String &scenePathname)
     String extension = FileSystem::Instance()->GetExtension(scenePathname);
     DVASSERT((".sc2" == extension) && "Wrong file extension.");
     
-    SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
+    SceneNode * rootNode = scene->GetRootNode(scenePathname);
+    SceneNode * nodeToAdd = rootNode->GetChild(0)->Clone();
     
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
+    
+    KeyedArchive * customProperties = nodeToAdd->GetCustomProperties();
     customProperties->SetString("editor.referenceToOwner", scenePathname);
     
-    rootNode->SetSolid(true);
-    scene->AddNode(rootNode);
+    //rootNode->SetSolid(true);
+    scene->AddNode(nodeToAdd);
     
     Camera *currCamera = scene->GetCurrentCamera();
     if(currCamera)
@@ -267,9 +269,9 @@ void SceneData::AddScene(const String &scenePathname)
         
         Matrix4 mod;
         mod.CreateTranslation(nodePos);
-        rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+        nodeToAdd->SetLocalTransform(nodeToAdd->GetLocalTransform() * mod);
     }
-    SafeRelease(rootNode);
+    SafeRelease(nodeToAdd);
 
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
@@ -290,6 +292,7 @@ void SceneData::EditScene(const String &scenePathname)
     SceneNode * rootNode = scene->GetRootNode(scenePathname);
     if(rootNode)
     {
+        int32 nowCount = rootNode->GetChildrenCountRecursive();
         SetScenePathname(scenePathname);
 		Vector<SceneNode*> tempV;
 		tempV.reserve(rootNode->GetChildrenCount());

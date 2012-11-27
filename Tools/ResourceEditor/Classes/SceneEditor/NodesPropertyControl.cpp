@@ -122,10 +122,12 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddIntProperty("property.scenenode.retaincount", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.ptr", PropertyList::PROPERTY_IS_READ_ONLY);
         
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());
+        propertyList->SetStringPropertyValue("property.scenenode.ptr", Format("%p", sceneNode));
         
         AABBox3 unitBox = sceneNode->GetWTMaximumBoundingBoxSlow();
         if((-AABBOX_INFINITY != unitBox.max.x) && (AABBOX_INFINITY != unitBox.min.x))
