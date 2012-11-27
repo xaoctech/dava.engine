@@ -9,19 +9,19 @@ TextureListModel::TextureListModel(QObject *parent /* = 0 */)
 
 int TextureListModel::rowCount(const QModelIndex & /* parent */) const
 {
-	return texturesFiltredSorted.size();
+	return textureDescriptorsFiltredSorted.size();
 }
 
 QVariant TextureListModel::data(const QModelIndex &index, int role) const
 {
 	if(index.isValid())
 	{
-		const DAVA::Texture *curTexture = texturesFiltredSorted[index.row()];
+		const DAVA::TextureDescriptor *curTextureDescriptor = textureDescriptorsFiltredSorted[index.row()];
 
 		switch(role)
 		{
 		case Qt::DisplayRole:
-			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).fileName());
+			return QVariant(QFileInfo(curTextureDescriptor->GetSourceTexturePathname().c_str()).fileName());
 			break;
 
 		default:
@@ -35,10 +35,11 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 {
 	DAVA::Texture *ret = NULL;
+	DAVA::TextureDescriptor *desc = getDescriptor(index);
 
-	if(index.isValid() && texturesFiltredSorted.size() > index.row())
+	if(index.isValid() && texturesAll.contains(desc))
 	{
-		ret = texturesFiltredSorted[index.row()];
+		ret = texturesAll[desc];
 	}
 
 	return ret;
@@ -47,19 +48,18 @@ DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 DAVA::TextureDescriptor* TextureListModel::getDescriptor(const QModelIndex &index) const
 {
 	DAVA::TextureDescriptor *ret = NULL;
-	DAVA::Texture *tex = getTexture(index);
 
-	if(index.isValid() && textureDescriptors.contains(tex))
+	if(index.isValid() && textureDescriptorsFiltredSorted.size() > index.row())
 	{
-		ret = textureDescriptors[tex];
+		ret = textureDescriptorsFiltredSorted[index.row()];
 	}
 
 	return ret;
 }
 
-void TextureListModel::dataReady(const DAVA::Texture *texture)
+void TextureListModel::dataReady(const DAVA::TextureDescriptor *desc)
 {
-	int i = texturesFiltredSorted.indexOf((DAVA::Texture * const) texture);
+	int i = textureDescriptorsFiltredSorted.indexOf((DAVA::TextureDescriptor * const) desc);
 	emit dataChanged(this->index(i), this->index(i));
 }
 
@@ -83,8 +83,8 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 {
 	beginResetModel();
 
-	texturesAll.clear();
-	texturesFiltredSorted.clear();
+	textureDescriptorsAll.clear();
+	textureDescriptorsFiltredSorted.clear();
 
 	// Parse scene and find it all Textures
 	{
@@ -179,7 +179,7 @@ void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
 	}
 }
 
-void TextureListModel::addTexture(DAVA::Texture *texture)
+void TextureListModel::addTexture(const DAVA::String &descPath, DAVA::Texture *texture)
 {
 	if(NULL != texture && !texture->isRenderTarget && !texture->GetPathname().empty())
 	{
