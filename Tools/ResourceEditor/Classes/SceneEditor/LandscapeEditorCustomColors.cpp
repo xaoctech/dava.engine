@@ -328,6 +328,7 @@ void LandscapeEditorCustomColors::HideAction()
 {
 	SaveTextureAction(GetCurrentSaveFileName());
 
+	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
@@ -345,6 +346,7 @@ void LandscapeEditorCustomColors::ShowAction()
     landscapeSize = settings->maskSize;
 
 	workingLandscape->CursorEnable();
+	workingLandscape->SetFog(false);
 
 	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 
