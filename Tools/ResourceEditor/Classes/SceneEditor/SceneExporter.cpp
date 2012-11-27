@@ -396,7 +396,11 @@ bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &er
 void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
 {
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
-    DVASSERT(descriptor && "Decriptors mast be created for all textures");
+    if(!descriptor)
+    {
+        Logger::Error("[SceneExporter::ExportTextureDescriptor] Can't cerate descriptor for pathname% %s", texturePathname.c_str());
+        return;
+    }
 
     descriptor->textureFileFormat = exportFormat;
     
