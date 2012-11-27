@@ -292,9 +292,10 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
     landscapeRenderer->RebuildVertexes(changedRect);
     renderedHeightmap->HeghtWasChanged(changedRect);
 
-    if(IsPointerToExactClass<EditorLandscapeNode>(currentLandscape))
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
+    if(editorLandscape)
     {
-        ((EditorLandscapeNode *)currentLandscape)->HeihghtmapUpdated(changedRect);
+        editorLandscape->HeihghtmapUpdated(changedRect);
     }
 }
 
