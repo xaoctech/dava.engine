@@ -12,6 +12,8 @@
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "EditorBodyControl.h"
+#include "SceneGraph.h"
 #include "../Qt/QtMainWindowHandler.h"
 #include "../Qt/SceneDataManager.h"
 #include "../Qt/SceneData.h"
@@ -543,6 +545,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
 	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
 	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
 						   GetRelativePathToScenePath(fileName));
+	parent->GetSceneGraph()->UpdatePropertyPanel();
 }
 
 String LandscapeEditorCustomColors::GetCurrentSaveFileName()
