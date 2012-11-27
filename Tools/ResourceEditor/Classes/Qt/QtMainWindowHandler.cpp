@@ -171,6 +171,7 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
+	TextureDialog *textureBrowser = new TextureDialog();
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -179,11 +180,12 @@ void QtMainWindowHandler::ConvertTextures()
 		if(NULL != body && NULL != body->bodyControl)
 		{
 			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			textureBrowser.setScene(mainScreenScene);
+			textureBrowser->setScene(mainScreenScene);
 		}
 	}
 
-	textureBrowser.show();
+	textureBrowser->exec();
+	delete textureBrowser;
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
