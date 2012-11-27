@@ -144,9 +144,10 @@ void EditorLandscapeNode::Draw()
 
 void EditorLandscapeNode::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
-    if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+    if(editorLandscape)
     {
-        ((EditorLandscapeNode *)nestedLandscape)->HeihghtmapUpdated(forRect);
+        editorLandscape->HeihghtmapUpdated(forRect);
     }
 }
 
