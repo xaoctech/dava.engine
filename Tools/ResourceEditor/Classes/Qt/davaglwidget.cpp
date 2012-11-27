@@ -188,5 +188,6 @@ void DavaGLWidget::Render()
 
 void DavaGLWidget::Quit()
 {
-
+    DAVA::Logger::Info("[QUIT]");
+    exit(0);
 }
