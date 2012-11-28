@@ -1319,3 +1319,42 @@ void DirectDrawSurface::printInfo() const
 	}
 }
 
+bool DirectDrawSurface::getFormat(nvtt::Format * retFormat) const
+{
+	if(!isSupported())
+	{
+		return false;
+	}
+	
+	uint flags = header.pf.flags ;
+	bool normalFlag =  flags &= DDPF_NORMAL > 0 ? true : false;
+
+	if(header.pf.flags == DDPF_RGB)
+	{
+		*retFormat = nvtt::Format_RGB;
+	}
+
+	switch (header.pf.fourcc) 
+	{
+	case FOURCC_DXT1:
+		*retFormat = nvtt::Format_DXT1;
+		break;
+	case FOURCC_DXT3:
+		*retFormat = nvtt::Format_DXT3;
+		break;
+	case FOURCC_DXT5:
+		*retFormat = normalFlag ? nvtt::Format_DXT5 : nvtt::Format_DXT5n;
+		break;
+	case FOURCC_ATI1:
+		*retFormat = nvtt::Format_BC4;
+		break;
+	case FOURCC_ATI2:
+		*retFormat = nvtt::Format_BC5;
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+
