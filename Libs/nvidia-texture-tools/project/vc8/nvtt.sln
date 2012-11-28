@@ -297,7 +297,6 @@ Global
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Release (no cuda)|Any CPU.ActiveCfg = Release|Any CPU
-		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Release (no cuda)|Any CPU.Build.0 = Release|Any CPU
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Release (no cuda)|Win32.ActiveCfg = Release|Any CPU
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Release (no cuda)|x64.ActiveCfg = Release|Any CPU
 		{CAB55C39-8FA9-4912-98D9-E52669C8911D}.Release|Any CPU.ActiveCfg = Release|Any CPU
