@@ -66,7 +66,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 TextureDialog::~TextureDialog()
 {
 	// return listview delegate back to default
-	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
+	// ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
 
 	delete textureListImagesDelegate;
 	delete textureListModel;
@@ -330,9 +330,8 @@ void TextureDialog::setupStatusBar()
 void TextureDialog::setupTexturesList()
 {
 	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
-	QObject::connect(textureListImagesDelegate, SIGNAL(needRedraw(const DAVA::TextureDescriptor *)), this, SLOT(textureListItemNeedRedraw(const DAVA::TextureDescriptor *)));
 
-	textureListDefaultDelegate = ui->listViewTextures->itemDelegate();
+	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
 	ui->listViewTextures->setModel(textureListModel);
 }
 
@@ -446,7 +445,7 @@ void TextureDialog::textureListViewText(bool checked)
 	ui->actionViewImagesList->setChecked(false);
 	ui->actionViewTextList->setChecked(true);
 
-	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
+	textureListImagesDelegate->setDrawRule(TextureListDelegate::DRAW_PREVIEW_SMALL);
 	ui->listViewTextures->reset();
 }
 
@@ -455,7 +454,7 @@ void TextureDialog::textureListViewImages(bool checked)
 	ui->actionViewTextList->setChecked(false);
 	ui->actionViewImagesList->setChecked(true);
 
-	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
+	textureListImagesDelegate->setDrawRule(TextureListDelegate::DRAW_PREVIEW_BIG);
 	ui->listViewTextures->reset();
 }
 
@@ -467,14 +466,6 @@ void TextureDialog::textureListFilterChanged(const QString &text)
 void TextureDialog::textureListSortChanged(const QString &text)
 {
 	textureListModel->setSortMode((TextureListModel::TextureListSortMode) textureListSortModes[text]);
-}
-
-void TextureDialog::textureListItemNeedRedraw(const DAVA::Texture *texture)
-{
-	if(NULL != texture)
-	{
-		// textureListModel->dataReady(texture);
-	}
 }
 
 void TextureDialog::textureColorChannelPressed(bool checked)
