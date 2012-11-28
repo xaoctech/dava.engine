@@ -330,6 +330,10 @@ public:
 	//temporary solution
 	Entity * entity;
     
+    
+    void SetFog_Kostil(float32 density, const Color &color);
+    
+    
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
