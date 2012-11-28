@@ -43,7 +43,6 @@ private:
 
 	TextureListModel *textureListModel;
 	TextureListDelegate *textureListImagesDelegate;
-	QAbstractItemDelegate *textureListDefaultDelegate;
 
 	QSlider *toolbarZoomSlider;
 	QLabel *toolbarZoomSliderValue;
@@ -83,7 +82,6 @@ private slots:
 	void textureListViewText(bool checked);
 	void textureListFilterChanged(const QString &text);
 	void textureListSortChanged(const QString &text);
-	void textureListItemNeedRedraw(const DAVA::Texture *texture);
 	void texturePressed(const QModelIndex & index);
 	void textureColorChannelPressed(bool checked);
 	void textureBorderPressed(bool checked);
