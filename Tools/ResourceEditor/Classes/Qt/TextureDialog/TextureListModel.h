@@ -17,6 +17,7 @@ public:
 	};
 
 	TextureListModel(QObject *parent = 0);
+	~TextureListModel();
 
 	void setScene(DAVA::Scene *scene);
 	void setFilter(QString filter);
@@ -29,17 +30,19 @@ public:
 	void dataReady(const DAVA::TextureDescriptor *descriptor);
 
 	DAVA::Texture* getTexture(const QModelIndex &index) const;
+	DAVA::Texture* getTexture(const DAVA::TextureDescriptor* descriptor) const;
 	DAVA::TextureDescriptor* getDescriptor(const QModelIndex &index) const;
 
 private:
 	DAVA::Scene *scene;
 	QVector<DAVA::TextureDescriptor *> textureDescriptorsAll;
 	QVector<DAVA::TextureDescriptor *> textureDescriptorsFiltredSorted;
-	QMap<DAVA::TextureDescriptor *, DAVA::Texture *> texturesAll;
+	QMap<const DAVA::TextureDescriptor *, DAVA::Texture *> texturesAll;
 
 	TextureListSortMode curSortMode;
 	QString	curFilter;
 
+	void clear();
 	void applyFilterAndSort();
 
 	void searchTexturesInMaterial(DAVA::SceneNode *parentNode);

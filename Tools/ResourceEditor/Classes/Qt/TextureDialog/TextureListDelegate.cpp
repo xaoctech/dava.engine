@@ -16,20 +16,27 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFont("Arial", 10, QFont::Bold)
 	, nameFontMetrics(nameFont)
 {
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::Texture *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::Texture *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	const TextureListModel *curModel = (TextureListModel *) index.model();
+	DAVA::TextureDescriptor *curTextureDescriptor = curModel->getDescriptor(index);
 	DAVA::Texture *curTexture = curModel->getTexture(index);
 
-	if(NULL != curTexture)
+	if(NULL != curTextureDescriptor)
 	{
-		QString texturePath = curTexture->GetPathname().c_str();
+		QString texturePath = curTextureDescriptor->GetSourceTexturePathname().c_str();
 		QString textureName = QFileInfo(texturePath).fileName();
-		QSize textureDimension = QSize(curTexture->width, curTexture->height);
-		QVariant textureDataSize = curTexture->GetDataSize();
+		QSize textureDimension = QSize();
+		QVariant textureDataSize = 0;
+
+		if(NULL != curTexture)
+		{
+			textureDimension = QSize(curTexture->width, curTexture->height);
+			textureDataSize = curTexture->GetDataSize();
+		}
 
 		painter->save();
 		painter->setClipRect(option.rect);
@@ -40,7 +47,7 @@ void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
 
-		QImage img = TextureCache::Instance()->getOriginal(curTexture);
+		QImage img = TextureCache::Instance()->getOriginal(curTextureDescriptor);
 
 		// draw image preview
 		if(!img.isNull())
@@ -55,7 +62,7 @@ void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 		{
 			// there is no image for this texture in cache
 			// so load it async
-			TextureConvertor::Instance()->loadOriginal(curTexture);
+			TextureConvertor::Instance()->loadOriginal(curTextureDescriptor);
 		}
 
 		// draw text info
@@ -116,11 +123,11 @@ QImage TextureListDelegate::getImage(const QString path) const
 }
 */
 
-void TextureListDelegate::textureReadyOriginal(const DAVA::Texture *texture, const QImage &image)
+void TextureListDelegate::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
-		TextureCache::Instance()->setOriginal(texture, image);
-		emit needRedraw(texture);
+		TextureCache::Instance()->setOriginal(descriptor, image);
+		emit needRedraw(descriptor);
 	}
 }

@@ -20,10 +20,10 @@ public:
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 private slots:
-	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 
 signals:
-	void needRedraw(const DAVA::Texture *texture);
+	void needRedraw(const DAVA::TextureDescriptor *descriptor);
 
 private:
 	QFont nameFont;
