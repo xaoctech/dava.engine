@@ -151,6 +151,7 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -379,6 +380,7 @@
     <ClCompile Include="..\..\..\src\nvtt\CompressRGB.cpp" />
     <ClCompile Include="..\..\..\src\nvtt\cuda\CudaCompressDXT.cpp" />
     <ClCompile Include="..\..\..\src\nvtt\cuda\CudaUtils.cpp" />
+    <ClCompile Include="..\..\..\src\nvtt\Decompressor.cpp" />
     <ClCompile Include="..\..\..\src\nvtt\InputOptions.cpp" />
     <ClCompile Include="..\..\..\src\nvtt\nvtt.cpp" />
     <ClCompile Include="..\..\..\src\nvtt\nvtt_wrapper.cpp" />
@@ -438,6 +440,7 @@
     <ClInclude Include="..\..\..\src\nvtt\cuda\CudaCompressDXT.h" />
     <ClInclude Include="..\..\..\src\nvtt\cuda\CudaMath.h" />
     <ClInclude Include="..\..\..\src\nvtt\cuda\CudaUtils.h" />
+    <ClInclude Include="..\..\..\src\nvtt\Decompressor.h" />
     <ClInclude Include="..\..\..\src\nvtt\InputOptions.h" />
     <ClInclude Include="..\..\..\src\nvtt\nvtt.h" />
     <ClInclude Include="..\..\..\src\nvtt\nvtt_wrapper.h" />

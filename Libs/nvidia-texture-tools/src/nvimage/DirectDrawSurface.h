@@ -25,6 +25,7 @@
 #define NV_IMAGE_DIRECTDRAWSURFACE_H
 
 #include <nvimage/nvimage.h>
+#include <nvtt/nvtt.h>
 
 namespace nv
 {
@@ -130,6 +131,7 @@ namespace nv
 		//	void mipmap(FloatImage * img, uint f, uint m);
 		
 		void printInfo() const;
+		bool getFormat(nvtt::Format * retFormat) const;
 
 	private:
 		
