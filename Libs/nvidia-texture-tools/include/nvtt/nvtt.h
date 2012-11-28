@@ -310,9 +310,11 @@ namespace nvtt
 		NVTT_API bool getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const;
 
 		// Decompress file from path to data in format ARGB8888, false return - fail;
-		NVTT_API bool process(void * data, unsigned int size, unsigned int mimpmapNumber) const;
+		NVTT_API bool process(void * data, unsigned int size) const;
 
 		NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
+		
+		NVTT_API bool getCompressionFormat(Format * comprFormat) const;
 		
 	};
 	

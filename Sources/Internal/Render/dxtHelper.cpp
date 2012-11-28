@@ -61,6 +61,7 @@ void DxtWrapper::WriteDxtFile(const char* file_name, int32 width, int32 height, 
 		return;
 	}
 	
+	/*
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(TextureType_2D, width, height);
 	inputOptions.setMipmapData(data, width, height);
@@ -73,6 +74,51 @@ void DxtWrapper::WriteDxtFile(const char* file_name, int32 width, int32 height, 
 	
 	Compressor compressor;
 	compressor.process(inputOptions, compressionOptions, outputOptions);
+	*/
+
+	Decompressor decompressor;
+	nvtt::Format mformat;
+	bool ret =false;
+
+	/*
+	
+	*/
+
+	decompressor.initWithDDSFile("c:/dds/bc1.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc1a.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc1n.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc2.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc3.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc3n.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc4.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/bc5.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
+
+	decompressor.initWithDDSFile("c:/dds/rgb.dds");
+	ret = decompressor.getCompressionFormat( &mformat);
+	decompressor.erase();
 
 	///* initialize stuff */
 	//png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
