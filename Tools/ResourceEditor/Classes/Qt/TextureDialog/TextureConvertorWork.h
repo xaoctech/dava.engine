@@ -16,15 +16,14 @@ struct JobItem
 	JobItem()
 		: forceConvert(false)
 		, type(JobOriginal)
-		, texture(NULL)
 		, descriptor(NULL)
 	{ }
 
 	bool forceConvert;
 	JobItemType type;
-	const DAVA::Texture *texture;
 	const DAVA::TextureDescriptor *descriptor;
 
+	// grant thread safe access to descriptor
 	DAVA::TextureDescriptor descriptorCopy;
 };
 

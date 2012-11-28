@@ -40,6 +40,9 @@ public:
 	const DAVA::Texture* getTexture();
 	const DAVA::TextureDescriptor* getTextureDescriptor();
 
+public slots:
+	void resetCommonProp();
+
 signals:
 	void propertyChanged(const int propGroup);
 
