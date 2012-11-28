@@ -359,8 +359,14 @@ void WASDCameraController::LockAtSelection()
     Camera * camera = currScene->GetCurrentCamera();
     if (!camera)return;
 
-    if (!selection || dynamic_cast<Camera*>(selection))
+    if (    !selection
+        ||  dynamic_cast<Camera*>(selection)
+        ||  dynamic_cast<LandscapeNode *>(selection)
+        )
+    {
         return;
+    }
+    
 
     AABBox3 box = selection->GetWTMaximumBoundingBoxSlow();
     float32 boxSize = ((box.max - box.min).Length());
