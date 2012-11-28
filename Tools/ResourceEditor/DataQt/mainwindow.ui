@@ -744,6 +744,9 @@ Area Size:</string>
    <property name="text">
     <string>Tile Map Editor</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
   </action>
   <action name="actionTextureConverter">
    <property name="text">
@@ -812,10 +815,16 @@ Area Size:</string>
    <property name="text">
     <string>Show Not Passable Landscape</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
   </action>
   <action name="actionRulerTool">
    <property name="text">
     <string>Ruler Tool</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionReloadAsPNG">

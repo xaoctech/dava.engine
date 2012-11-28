@@ -7,21 +7,26 @@ TextureListModel::TextureListModel(QObject *parent /* = 0 */)
 	, curSortMode(TextureListModel::SortByName)
 {}
 
+TextureListModel::~TextureListModel()
+{
+	clear();
+}
+
 int TextureListModel::rowCount(const QModelIndex & /* parent */) const
 {
-	return texturesFiltredSorted.size();
+	return textureDescriptorsFiltredSorted.size();
 }
 
 QVariant TextureListModel::data(const QModelIndex &index, int role) const
 {
 	if(index.isValid())
 	{
-		const DAVA::Texture *curTexture = texturesFiltredSorted[index.row()];
+		const DAVA::TextureDescriptor *curTextureDescriptor = textureDescriptorsFiltredSorted[index.row()];
 
 		switch(role)
 		{
 		case Qt::DisplayRole:
-			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).fileName());
+			return QVariant(QFileInfo(curTextureDescriptor->GetSourceTexturePathname().c_str()).fileName());
 			break;
 
 		default:
@@ -35,10 +40,23 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 {
 	DAVA::Texture *ret = NULL;
+	DAVA::TextureDescriptor *desc = getDescriptor(index);
 
-	if(index.isValid() && texturesFiltredSorted.size() > index.row())
+	if(index.isValid() && texturesAll.contains(desc))
 	{
-		ret = texturesFiltredSorted[index.row()];
+		ret = texturesAll[desc];
+	}
+
+	return ret;
+}
+
+DAVA::Texture* TextureListModel::getTexture(const DAVA::TextureDescriptor* descriptor) const
+{
+	DAVA::Texture *ret = NULL;
+
+	if(texturesAll.contains(descriptor))
+	{
+		ret = texturesAll[descriptor];
 	}
 
 	return ret;
@@ -47,19 +65,18 @@ DAVA::Texture* TextureListModel::getTexture(const QModelIndex &index) const
 DAVA::TextureDescriptor* TextureListModel::getDescriptor(const QModelIndex &index) const
 {
 	DAVA::TextureDescriptor *ret = NULL;
-	DAVA::Texture *tex = getTexture(index);
 
-	if(index.isValid() && textureDescriptors.contains(tex))
+	if(index.isValid() && textureDescriptorsFiltredSorted.size() > index.row())
 	{
-		ret = textureDescriptors[tex];
+		ret = textureDescriptorsFiltredSorted[index.row()];
 	}
 
 	return ret;
 }
 
-void TextureListModel::dataReady(const DAVA::Texture *texture)
+void TextureListModel::dataReady(const DAVA::TextureDescriptor *desc)
 {
-	int i = texturesFiltredSorted.indexOf((DAVA::Texture * const) texture);
+	int i = textureDescriptorsFiltredSorted.indexOf((DAVA::TextureDescriptor * const) desc);
 	emit dataChanged(this->index(i), this->index(i));
 }
 
@@ -83,8 +100,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 {
 	beginResetModel();
 
-	texturesAll.clear();
-	texturesFiltredSorted.clear();
+	clear();
 
 	// Parse scene and find it all Textures
 	{
@@ -124,7 +140,7 @@ void TextureListModel::searchTexturesInMaterial(DAVA::SceneNode *parentNode)
 						continue;
 					}
 
-					addTexture(material->GetTexture((DAVA::Material::eTextureLevel) t));
+					addTexture(material->GetTextureName((DAVA::Material::eTextureLevel) t), material->GetTexture((DAVA::Material::eTextureLevel) t));
 				}
 			}
 		}
@@ -146,7 +162,7 @@ void TextureListModel::searchTexturesInLandscapes(DAVA::SceneNode *parentNode)
 			{
 				for(int t = 0; t < DAVA::LandscapeNode::TEXTURE_COUNT; ++t)
 				{
-					addTexture(landscape->GetTexture((DAVA::LandscapeNode::eTextureLevel) t));
+					addTexture(landscape->GetTextureName((DAVA::LandscapeNode::eTextureLevel) t), landscape->GetTexture((DAVA::LandscapeNode::eTextureLevel) t));
 				}
 			}
 		}
@@ -171,7 +187,7 @@ void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
 					DAVA::MeshInstanceNode::LightmapData *ldata = mesh->GetLightmapDataForIndex(t);
 					if(NULL != ldata)
 					{
-						addTexture(ldata->lightmap);
+						addTexture(ldata->lightmapName, ldata->lightmap);
 					}
 				}
 			}
@@ -179,59 +195,93 @@ void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
 	}
 }
 
-void TextureListModel::addTexture(DAVA::Texture *texture)
+void TextureListModel::addTexture(const DAVA::String &descPath, DAVA::Texture *texture)
 {
-	if(NULL != texture && !texture->isRenderTarget && !texture->GetPathname().empty())
+	if(DAVA::FileSystem::GetExtension(descPath) != DAVA::TextureDescriptor::GetDescriptorExtension())
 	{
-		// if there is no such texture in vector - add it
-		if(-1 == texturesAll.indexOf(texture))
-		{
-			texturesAll.push_back(texture);
+		return;
+	}
 
-			DAVA::TextureDescriptor * descriptor = texture->CreateDescriptor();
+	if(!descPath.empty())
+	{
+		bool alreadyInVector = false;
+
+		// search if there is no the same descriptorPath
+		for(int i = 0; i < textureDescriptorsAll.size(); ++i)
+		{
+			if(descPath == textureDescriptorsAll[i]->pathname)
+			{
+				alreadyInVector = true;
+				break;
+			}
+		}
+
+		// if there is no the same descriprot and this file exists
+		if(!alreadyInVector && DAVA::FileSystem::Instance()->IsFile(descPath))
+		{
+			DAVA::TextureDescriptor * descriptor = DAVA::TextureDescriptor::CreateFromFile(descPath);
+
 			if(NULL != descriptor)
 			{
-				textureDescriptors[texture] = descriptor;
+				// if there is no such texture in vector - add it
+				if(-1 == textureDescriptorsAll.indexOf(descriptor))
+				{
+					textureDescriptorsAll.push_back(descriptor);
+
+					if(NULL != descriptor)
+					{
+						texturesAll[descriptor] = texture;
+					}
+				}
 			}
 		}
 	}
 }
 
+void TextureListModel::clear()
+{
+	texturesAll.clear();
+	textureDescriptorsFiltredSorted.clear();
+
+	for(int i = 0; i < textureDescriptorsAll.size(); ++i)
+	{
+		DAVA::SafeRelease(textureDescriptorsAll[i]);
+	}
+
+	textureDescriptorsAll.clear();
+}
+
 void TextureListModel::applyFilterAndSort()
 {
-	texturesFiltredSorted.clear();
+	textureDescriptorsFiltredSorted.clear();
 
-	for(int i = 0; i < (int) texturesAll.size(); ++i)
+	for(int i = 0; i < (int) textureDescriptorsAll.size(); ++i)
 	{
-		if(curFilter.isEmpty() || DAVA::String::npos != texturesAll[i]->GetPathname().find(curFilter.toStdString()))
+		if(curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.find(curFilter.toStdString()))
 		{
-			texturesFiltredSorted.push_back(texturesAll[i]);
-		}
-		else
-		{
-			QString s(texturesAll[i]->GetPathname().c_str());
+			textureDescriptorsFiltredSorted.push_back(textureDescriptorsAll[i]);
 		}
 	}
 
 	switch(curSortMode)
 	{
 	case SortByName:
-		std::sort(texturesFiltredSorted.begin(), texturesFiltredSorted.end(), TextureListModel::sortFnByName);
+		std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), TextureListModel::sortFnByName);
 		break;
 	case SortBySize:
-		std::sort(texturesFiltredSorted.begin(), texturesFiltredSorted.end(), TextureListModel::sortFnBySize);
+		std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), TextureListModel::sortFnBySize);
 		break;
 	default:
 		break;
 	}
 }
 
-bool TextureListModel::sortFnByName(const DAVA::Texture* t1, const DAVA::Texture* t2)
+bool TextureListModel::sortFnByName(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-	return QFileInfo(t1->GetPathname().c_str()).completeBaseName() < QFileInfo(t2->GetPathname().c_str()).completeBaseName();
+	return QFileInfo(t1->pathname.c_str()).completeBaseName() < QFileInfo(t2->pathname.c_str()).completeBaseName();
 }
 
-bool TextureListModel::sortFnBySize(const DAVA::Texture* t1, const DAVA::Texture* t2)
+bool TextureListModel::sortFnBySize(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-	return (t1->GetDataSize() < t2->GetDataSize());
+	return QFileInfo(t1->GetSourceTexturePathname().c_str()).size() < QFileInfo(t2->GetSourceTexturePathname().c_str()).size();
 }

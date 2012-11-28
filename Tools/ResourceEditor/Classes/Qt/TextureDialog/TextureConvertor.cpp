@@ -22,13 +22,12 @@ TextureConvertor::TextureConvertor()
 	}
 }
 
-void TextureConvertor::getPVR( const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
+void TextureConvertor::getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
 {
-	if(NULL != texture && NULL != descriptor)
+	if(NULL != descriptor)
 	{
 		JobItem newJob;
 		newJob.type = JobItem::JobPVR;
-		newJob.texture = texture;
 		newJob.descriptor = descriptor;
 		newJob.forceConvert = forceConver;
 
@@ -37,13 +36,12 @@ void TextureConvertor::getPVR( const DAVA::Texture *texture, const DAVA::Texture
 	}
 }
 
-void TextureConvertor::getDXT( const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
+void TextureConvertor::getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver /*= false*/ )
 {
-	if(NULL != texture && NULL != descriptor)
+	if(NULL != descriptor)
 	{
 		JobItem newJob;
 		newJob.type = JobItem::JobDXT;
-		newJob.texture = texture;
 		newJob.descriptor = descriptor;
 		newJob.forceConvert = forceConver;
 
@@ -52,13 +50,13 @@ void TextureConvertor::getDXT( const DAVA::Texture *texture, const DAVA::Texture
 	}
 }
 
-void TextureConvertor::loadOriginal(const DAVA::Texture *texture)
+void TextureConvertor::loadOriginal(const DAVA::TextureDescriptor *descriptor)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
 		// we dont care about job-type and descriptor when starting job to load original texture
 		JobItem newJob;
-		newJob.texture = texture;
+		newJob.descriptor = descriptor;
 
 		jobStackOriginal.push(newJob);
 		jobRunNextOriginal();
@@ -122,11 +120,9 @@ QImage TextureConvertor::loadOriginalThread(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
     
-	if(NULL != item && NULL != item->texture)
+	if(NULL != item && NULL != item->descriptor)
 	{
-		DAVA::TextureDescriptor *descriptor = item->texture->CreateDescriptor();
-		img = QImage(descriptor->GetSourceTexturePathname().c_str());
-		SafeRelease(descriptor);
+		img = QImage(item->descriptor->GetSourceTexturePathname().c_str());
 	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
@@ -187,20 +183,17 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 	}
 	else
 	{
-		QRect r(0, 0, item->texture->width, item->texture->height);
+		QRect r(0, 0, 200, 200);
 		qtImage = QImage(r.size(), QImage::Format_ARGB32);
 
 		QFont font;
 		font.setPointSize(18);
 
 		QPainter p(&qtImage);
-		p.setRenderHint(QPainter::TextAntialiasing, true);
-        p.setBrush(QBrush(QColor(100, 100, 100)));
-        p.setPen(QColor(255, 255, 255));
+        p.setBrush(QBrush(QColor(0, 0, 0, 0)));
+        p.setPen(QColor(200, 0, 0));
 		p.setFont(font);
 
-		r.adjust(0, 0, -1, -1);
-        p.drawRect(r);
 		p.drawText(r, "Wrong PVR format", QTextOption(Qt::AlignCenter));
 	}
 
@@ -220,10 +213,20 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	// ...
 
 	// debug -->
-	convertedImage = QImage(item->texture->width, item->texture->height, QImage::Format_ARGB32);
+
+	QRect r(0, 0, 200, 200);
+	convertedImage = QImage(r.size(), QImage::Format_ARGB32);
+
+	QFont font;
+	font.setPointSize(18);
+
 	QPainter p(&convertedImage);
 	p.setBrush(QColor(0,255,0));
-	p.drawEllipse(QPoint(item->texture->width/2, item->texture->height/2), item->texture->width/2 - 4, item->texture->height/2 - 4);
+	p.setPen(QColor(155, 0, 0));
+	p.setFont(font);
+
+	p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+
 	// <--
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
@@ -234,7 +237,9 @@ void TextureConvertor::threadOriginalFinished()
 {
 	if(loadOriginalWatcher.isFinished() && NULL != curJobOriginal)
 	{
-		emit readyOriginal(curJobOriginal->texture, loadOriginalWatcher.result());
+		emit readyOriginal(curJobOriginal->descriptor, loadOriginalWatcher.result());
+
+		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptor->pathname.c_str());
 
 		delete curJobOriginal;
 		curJobOriginal = NULL;
@@ -254,10 +259,10 @@ void TextureConvertor::threadConvertFinished()
 			switch(curJobConvert[doneIndex]->type)
 			{
 			case JobItem::JobPVR:
-				emit readyPVR(curJobConvert[doneIndex]->texture, &curJobConvert[doneIndex]->descriptorCopy, convertWatcher[doneIndex].result());
+				emit readyPVR(curJobConvert[doneIndex]->descriptor, convertWatcher[doneIndex].result());
 				break;
 			case JobItem::JobDXT:
-				emit readyDXT(curJobConvert[doneIndex]->texture, &curJobConvert[doneIndex]->descriptorCopy, convertWatcher[doneIndex].result());
+				emit readyDXT(curJobConvert[doneIndex]->descriptor, convertWatcher[doneIndex].result());
 				break;
 			default:
 				break;
