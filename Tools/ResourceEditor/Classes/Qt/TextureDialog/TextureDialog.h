@@ -72,6 +72,7 @@ private:
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setTextureView(TextureView view, bool forceConvert = false);
 
+	void updateConvertedImageAndInfo(const QImage &image);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
@@ -90,9 +91,9 @@ private slots:
 	void texturePropertyChanged(const int propGroup);
 	void textureViewPVR(bool checked);
 	void textureViewDXT(bool checked);
-	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);
-	void textureReadyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);

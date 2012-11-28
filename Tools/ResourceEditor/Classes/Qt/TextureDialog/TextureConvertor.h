@@ -9,7 +9,7 @@
 #include "Render/RenderManager.h"
 #include "TextureDialog/TextureConvertorWork.h"
 
-#define CONVERT_JOB_COUNT 1
+#define CONVERT_JOB_COUNT 2
 
 class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor>
 {
@@ -18,9 +18,9 @@ class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor
 public:
 	TextureConvertor();
 
-	void loadOriginal(const DAVA::Texture *texture);
-	void getPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
-	void getDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
+	void loadOriginal(const DAVA::TextureDescriptor *descriptor);
+	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
+	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
 private:
 	QFutureWatcher<QImage> loadOriginalWatcher;
@@ -45,9 +45,9 @@ private:
 	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
 
 signals:
-	void readyOriginal(const DAVA::Texture *texture, const QImage &image);
-	void readyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void convertStatus(const JobItem *jobCur, int jobLeft);
 
 private slots:
