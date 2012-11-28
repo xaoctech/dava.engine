@@ -396,24 +396,25 @@ void SceneValidator::ReloadTextures(int32 asFile)
     }
 
     //Reload textures
+    for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); ++it)
+    {
+        SafeRetain(it->second);
+    }
+    
+    
 	for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); )
 	{
-        Texture *texture = it->second;
-        if(texture == Texture::GetPinkPlaceholder())
+        Texture *texture = ReloadTexture(it->first, it->second, asFile);
+        if(texture == it->second)
         {
-            it->second = Texture::CreateFromFile(it->first);
-            ++it;
+            SafeRelease(it->second);
+            textures.erase(it++);
         }
         else
         {
-            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
-            if(descriptor)
-            {
-                texture->ReloadAs((ImageFileFormat)asFile, descriptor);
-                SafeRelease(descriptor);
-            }
-        
-            textures.erase(it++);
+            SafeRelease(it->second);
+            it->second = texture;
+            ++it;
         }
 	}
     
@@ -435,7 +436,32 @@ void SceneValidator::ReloadTextures(int32 asFile)
             }
         }
     }
+    
+    //Release textures
+    for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); ++it)
+    {
+        SafeRelease(it->second);
+    }
+
 }
+
+Texture * SceneValidator::ReloadTexture(const String &descriptorPathname, Texture *prevTexture, int32 asFile)
+{
+    if(prevTexture == Texture::GetPinkPlaceholder())
+    {
+        return Texture::CreateFromFile(descriptorPathname);
+    }
+
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+    if(descriptor)
+    {
+        prevTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+        SafeRelease(descriptor);
+    }
+
+    return prevTexture;
+}
+
 
 
 void SceneValidator::FindTexturesForCompression()

@@ -89,6 +89,9 @@ public:
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
     void ReloadTextures(int32 asFile);
+
+    //Need Release returned Texture
+    Texture * ReloadTexture(const String &descriptorPathname, Texture *prevTexture, int32 asFile);
     
     static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
     
