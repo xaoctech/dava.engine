@@ -115,6 +115,23 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	return number->GetValue(time);
 } */
 
+void ParticleEmitter::Play()
+{
+    Pause(false);
+    Restart(false);
+}
+    
+void ParticleEmitter::Stop()
+{
+    Restart(true);
+    Pause(true);
+}
+    
+bool ParticleEmitter::IsStopped()
+{
+    // Currently the same as isPaused.
+    return isPaused;
+}
 
 void ParticleEmitter::Restart(bool isDeleteAllParticles)
 {
@@ -141,7 +158,12 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	if(isAutorestart && (time > lifeTime))
 	{
 		time -= lifeTime;
+
+        // Restart() resets repeatCount, so store it locally and then revert.
+        int16 curRepeatCount = repeatCount;
 		Restart(true);
+        repeatCount = curRepeatCount;
+
 		repeatCount ++;
 	}
 
