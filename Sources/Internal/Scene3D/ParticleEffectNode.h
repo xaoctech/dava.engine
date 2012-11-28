@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef __FrameworkQt__ParticleEffectNode__
-#define __FrameworkQt__ParticleEffectNode__
+#ifndef __DAVAENGINE_PARTICLE_EFFECT_NODE_H__
+#define __DAVAENGINE_PARTICLE_EFFECT_NODE_H__
 
 #include "SceneNode.h"
 #include "ParticleEmitterNode.h"
@@ -25,8 +25,7 @@ public:
      */
 	virtual void	AddNode(SceneNode * node);
     virtual void    InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode);
-	virtual void	RemoveNode(SceneNode * node);
-    
+   
     /**
      \brief Save Particle Effect Node to KeyedArchive
      */
@@ -59,19 +58,17 @@ public:
 	 */
 	virtual void Update(float32 timeElapsed);
 
-	/**
-     \brief Overloaded function of GameObject to draw emitter when GameObjectManager draws GameObject.
-     */
-	virtual void Draw();
-
     /**
      \brief Set the message to be called when Playback is complete.
      */
     void SetPlaybackCompleteMessage(const Message& msg);
 
 protected:
-    // Check whether Node is Particle Emitter one, add to map if yes.
-    void AddParticleEmitterNodeToMap(SceneNode* node);
+    // Check whether Node is Particle Emitter one and check the duration.
+    bool PrepareNewParticleEmitterNode(SceneNode* node);
+    
+    // Update the duration for all the child nodes.
+    void UpdateDurationForChildNodes(float32 newEmitterLifeTime);
     
     // Do we need to stop emitter?
     bool IsStopEmitter(ParticleEmitter* emitter) const;
@@ -80,15 +77,6 @@ protected:
     void CheckPlaybackComplete();
     
 private:
-    // States of Particle Emitter Nodes - whether they are started or not.
-    typedef Map<SceneNode*, bool> EMITTERPLAYBACKSTATEMAP;
-    typedef EMITTERPLAYBACKSTATEMAP::iterator EMITTERPLAYBACKSTATEMAPITER;
-
-    EMITTERPLAYBACKSTATEMAP emitterPlaybackStatesMap;
-    
-    // Set of Particle Emitter nodes currently playing.
-    Set<SceneNode*> emitterNodesCurrentlyPlaying;
-    
     // "Stop after N repeats" value.
     int32 stopAfterNRepeats;
     
@@ -101,7 +89,13 @@ private:
     // Playback complete message.
     bool playbackCompleteMessageSet;
     Message playbackComplete;
+    
+    // Effect duration - common for all emitters.
+    float32 effectDuration;
+    
+    // Count of emitters currently stopped.
+    int32 emittersCurrentlyStopped;
 };
 
 }
-#endif /* defined(__FrameworkQt__ParticleEffectNode__) */
+#endif /* defined(#ifndef __DAVAENGINE_PARTICLE_EFFECT_NODE_H__) */
