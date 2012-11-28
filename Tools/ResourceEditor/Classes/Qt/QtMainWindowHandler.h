@@ -142,9 +142,6 @@ private:
 	QWidget *defaultFocusWidget;
     
     QStatusBar *statusBar;
-
-	MaterialBrowser materialBrowser;
-	TextureDialog textureBrowser;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__

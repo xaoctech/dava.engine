@@ -502,6 +502,15 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
     Vector<Image *> imageSet = ImageLoader::CreateFromFile(file);
     if(0 != imageSet.size())
     {
+        bool isSizeCorrect = CheckImageSize(imageSet);
+        if(!isSizeCorrect)
+        {
+            for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+            return false;
+        }
+        
+        
+        
         RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
         GenerateID();
@@ -581,7 +590,18 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
     return false;
 }
     
+bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
+{
+    for (int32 i = 0; i < (int32)imageSet.size(); ++i)
+    {
+        if(!IsPowerOf2(imageSet[i]->GetWidth()) || !IsPowerOf2(imageSet[i]->GetHeight()))
+        {
+            return false;
+        }
+    }
     
+    return true;
+}
 	
 void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
 {
