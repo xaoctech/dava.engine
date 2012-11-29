@@ -25,16 +25,6 @@ public:
      */
 	virtual void	AddNode(SceneNode * node);
     virtual void    InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode);
-   
-    /**
-     \brief Save Particle Effect Node to KeyedArchive
-     */
-    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-    
-    /**
-     \brief Load Particle Effect Node from KeyedArchive
-     */
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 
     /**
      \brief Start the playback for all inner nodes.
@@ -87,7 +77,6 @@ private:
     bool needEmitPlaybackComplete;
     
     // Playback complete message.
-    bool playbackCompleteMessageSet;
     Message playbackComplete;
     
     // Effect duration - common for all emitters.
