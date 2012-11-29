@@ -1104,6 +1104,9 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ColorControl.cpp">
+      <Filter>Sources\SceneEditor\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2050,6 +2053,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.h">
       <Filter>Sources\SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ColorControl.h">
+      <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

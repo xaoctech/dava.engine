@@ -73,8 +73,16 @@ public:
     int32 GetTextureViewFileFormat();
     void SetTextureViewFileFormat(int32 forma);
     
+	void SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular);
+	Color GetMaterialAmbientColor();
+	Color GetMaterialDiffuseColor();
+	Color GetMaterialSpecularColor();
+
     
 protected:
+
+	Vector4 ToVector4(const Color &color);
+	Color ToColor(const Vector4 &colorVector);
 
     KeyedArchive *settings;
 };

@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -292,6 +292,7 @@
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionUserNode"/>
     <addaction name="actionSwitchNode"/>
+    <addaction name="actionParticleEffectNode"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -843,6 +844,11 @@ Area Size:</string>
   <action name="actionReloadAsDXT">
    <property name="text">
     <string>As DXT</string>
+   </property>
+  </action>
+  <action name="actionParticleEffectNode">
+   <property name="text">
+    <string>Particle Effect Node</string>
    </property>
   </action>
  </widget>
