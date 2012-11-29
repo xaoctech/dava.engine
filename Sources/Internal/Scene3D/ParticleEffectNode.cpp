@@ -10,16 +10,16 @@
 #include "KeyedArchive.h"
 
 using namespace DAVA;
-
-#define PARTICLE_EFFECT_NODE_EMITTERS_COUNT "particleEffectNode.emittersCount"
+REGISTER_CLASS(ParticleEffectNode);
 
 ParticleEffectNode::ParticleEffectNode() : SceneNode()
 {
     this->stopAfterNRepeats = -1;
     this->stopWhenEmpty = false;
-    this->playbackCompleteMessageSet = false;
     this->effectDuration = 0.0f;
     this->emittersCurrentlyStopped = 0;
+    
+    SetName("Particle effect");
 }
 
 void ParticleEffectNode::AddNode(SceneNode* node)
@@ -162,41 +162,11 @@ void ParticleEffectNode::CheckPlaybackComplete()
     {
         // Playback is finished!
         this->emittersCurrentlyStopped = 0;
-        if (this->playbackCompleteMessageSet)
-        {
-            this->playbackComplete(this, 0);
-        }
+        this->playbackComplete(this, 0);
     }
 }
 
 void ParticleEffectNode::SetPlaybackCompleteMessage(const Message& msg)
 {
-    this->playbackCompleteMessageSet = true;
     this->playbackComplete = msg;
-}
-
-void ParticleEffectNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
-{
-    SceneNode::Save(archive, sceneFileV2);
-
-    int32 childrenCount = this->GetChildrenCount();
-    archive->SetInt32(PARTICLE_EFFECT_NODE_EMITTERS_COUNT, childrenCount);
-    for (int32 i = 0; i < childrenCount; i ++)
-    {
-        ParticleEmitterNode* emitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
-        emitterNode->Save(archive, sceneFileV2);
-    }
-}
-
-void ParticleEffectNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
-{
-    SceneNode::Load(archive, sceneFileV2);
-
-    int32 emittersCount = archive->GetInt32(PARTICLE_EFFECT_NODE_EMITTERS_COUNT, 0);
-    for (int32 i = 0; i < emittersCount; i ++)
-    {
-        ParticleEmitterNode* childNode = new ParticleEmitterNode();
-        childNode->Load(archive, sceneFileV2);
-        SceneNode::AddNode(childNode);
-    }
 }
