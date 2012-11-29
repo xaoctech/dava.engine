@@ -24,10 +24,12 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 		helperDXTFormats.push_back("None", DAVA::FORMAT_INVALID);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888), DAVA::FORMAT_RGBA8888);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA5551), DAVA::FORMAT_RGBA5551);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA4444), DAVA::FORMAT_RGBA4444);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGB565), DAVA::FORMAT_RGB565);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_A8), DAVA::FORMAT_A8);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1), DAVA::FORMAT_DXT1);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1NM), DAVA::FORMAT_DXT1NM);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1A), DAVA::FORMAT_DXT1A);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT3), DAVA::FORMAT_DXT3);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5), DAVA::FORMAT_DXT5);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5NM), DAVA::FORMAT_DXT5NM);
 
 		helperWrapModes.push_back("Clamp", DAVA::Texture::WRAP_CLAMP_TO_EDGE);
 		helperWrapModes.push_back("Repeat", DAVA::Texture::WRAP_REPEAT);
