@@ -22,9 +22,9 @@
 
 #include "SceneExporter.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/ScenePreviewDialog.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/ScenePreviewDialog.h"
 #include "FileSystem/FileSystem.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()

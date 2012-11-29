@@ -1,9 +1,9 @@
 #include "SceneDataManager.h"
 
-#include "SceneData.h"
-#include "SceneGraphModel.h"
+#include "Scene/SceneData.h"
+#include "Main/SceneGraphModel.h"
 
-#include "LibraryModel.h"
+#include "Main/LibraryModel.h"
 
 #include "../EditorScene.h"
 

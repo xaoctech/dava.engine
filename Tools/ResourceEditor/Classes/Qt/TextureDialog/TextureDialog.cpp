@@ -3,7 +3,7 @@
 #include "TextureDialog/TextureListDelegate.h"
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
-#include "Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 #include "Render/LibPVRHelper.h"
 #include "SceneEditor/EditorSettings.h"
 

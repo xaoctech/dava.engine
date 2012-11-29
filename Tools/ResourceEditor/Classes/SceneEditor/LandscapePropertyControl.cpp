@@ -4,7 +4,7 @@
 #include "ControlsFactory.h"
 #include "Scene3D/Heightmap.h"
 
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 #include "SceneValidator.h"
 #include "ErrorNotifier.h"
 

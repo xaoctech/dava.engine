@@ -2,12 +2,12 @@
 #include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Qt/QtMainWindowHandler.h"
-#include "Classes/Qt/GUIState.h"
+#include "Classes/Qt/Main/QtMainWindowHandler.h"
+#include "Classes/Qt/Main/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/Qt/SceneDataManager.h"
+#include "Classes/Qt/Scene/SceneDataManager.h"
 
-#include "Classes/Qt/PointerHolder.h"
+#include "Classes/Qt/Main/PointerHolder.h"
 #include "LibraryModel.h"
 
 #include <QToolBar>

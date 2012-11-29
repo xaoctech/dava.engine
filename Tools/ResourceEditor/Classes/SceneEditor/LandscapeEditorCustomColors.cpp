@@ -14,9 +14,9 @@
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "EditorBodyControl.h"
 #include "SceneGraph.h"
-#include "../Qt/QtMainWindowHandler.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 
 #define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
