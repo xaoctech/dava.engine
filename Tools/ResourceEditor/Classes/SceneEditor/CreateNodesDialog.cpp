@@ -183,7 +183,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		case ResourceEditor::NODE_PARTICLE_EFFECT:
 			{
 				SetHeader(L"Particle Effect");
-				sceneNode = new SceneNode();
+				sceneNode = new ParticleEffectNode();
 				sceneNode->SetName("Particle Effect");
 			}
 			break;

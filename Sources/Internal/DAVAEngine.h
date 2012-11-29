@@ -213,6 +213,7 @@
 #include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/Heightmap.h"
