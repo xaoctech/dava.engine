@@ -171,6 +171,8 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 #endif
+
+	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
 }
 
 bool RenderManager::IsDeviceLost()

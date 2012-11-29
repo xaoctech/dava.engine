@@ -75,6 +75,7 @@ public:
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
+		bool isDXTSupported;
 	};
     
     struct Stats

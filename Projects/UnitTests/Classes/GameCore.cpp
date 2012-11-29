@@ -42,6 +42,7 @@
 #include "SplitTest.h"
 #include "PVRTest.h"
 #include "KeyedArchiveYamlTest.h"
+#include "DXTTest.h"
 
 using namespace DAVA;
 
@@ -74,7 +75,8 @@ void GameCore::OnAppStarted()
 	new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
-    
+	new DXTTest();
+
     errors.reserve(TestCount());
 
     RunTests();
@@ -189,7 +191,7 @@ void GameCore::RunTests()
 void GameCore::FinishTests()
 {
     FlushTestResults();
-    Core::Instance()->Quit();
+//    Core::Instance()->Quit();
 }
 
 void GameCore::LogMessage(const String &message)
@@ -248,6 +250,8 @@ void GameCore::ProcessTests()
 
 void GameCore::FlushTestResults()
 {
+	return;
+
     bool connected = ConnectToDB();
     if(!connected)
     {
@@ -333,6 +337,8 @@ void GameCore::RegisterError(const String &command, const String &fileName, int3
 
 bool GameCore::ConnectToDB()
 {
+	return true;
+
     DVASSERT(NULL == dbClient);
     
     dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
@@ -348,6 +354,8 @@ bool GameCore::ConnectToDB()
 
 MongodbObject * GameCore::CreateLogObject(const String &logName, const String &runTime)
 {
+	return 0;
+
     MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
@@ -416,6 +424,8 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
 
 MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {
+	return 0;
+
     MongodbObject *subObject = new MongodbObject();
     if(dbObject)
     {
