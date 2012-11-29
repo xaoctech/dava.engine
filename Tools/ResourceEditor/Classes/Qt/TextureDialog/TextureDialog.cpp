@@ -434,6 +434,37 @@ void TextureDialog::resetTextureInfo()
 	updateInfoConverted();
 }
 
+void TextureDialog::reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format)
+{
+	if(NULL != descriptor && NULL != texture)
+	{
+		DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
+
+		// reload only when editor view format is the same as given texture format
+		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
+		if(DAVA::NOT_FILE == format || format == curEditorImageFormatForTextures)
+		{
+			DAVA::Texture *newTexture = NULL;
+
+			// TODO: uncomment
+			// newTexture = texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
+			texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
+
+			if(NULL != newTexture)
+			{
+				// need reset cur texture to newly loaded
+				if(curTexture == texture)
+				{
+					curTexture = newTexture;
+				}
+
+				// need to set new Texture into Textures list model
+				textureListModel->setTexture(descriptor, newTexture);
+			}
+		}
+	}
+}
+
 void TextureDialog::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
@@ -495,22 +526,27 @@ void TextureDialog::textureBgMaskPressed(bool checked)
 
 void TextureDialog::texturePropertyChanged(const int propGroup)
 {
-	DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-
+	// pvr specific changes
 	if(propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVR)
 	{
 		// set current Texture view and force texture convertion
+		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
 	}
+	// dxt specific chanes
 	else if(propGroup == TextureProperties::TYPE_DXT && curTextureView == ViewDXT)
 	{
 		// set current Texture view and force texture convertion
+		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
+
 	}
-	else
+	// common settings
+	else if(propGroup == TextureProperties::TYPE_COMMON)
 	{
-		// common settings: We should reload in scene this texture
-		curTexture->ReloadAs(curEditorImageFormatForTextures, ui->textureProperties->getTextureDescriptor());
+		// common settings
+		// new texture can be applyed to scene immediately
+		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::NOT_FILE);
 	}
 }
 
@@ -562,11 +598,7 @@ void TextureDialog::textureReadyPVR(const DAVA::TextureDescriptor *descriptor, c
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-			if(curEditorImageFormatForTextures == DAVA::PVR_FILE)
-			{
-				((DAVA::Texture *) texture)->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			}
+			reloadTextureToScene(texture, descriptor, DAVA::PVR_FILE);
 		}
 	}
 }
@@ -587,11 +619,7 @@ void TextureDialog::textureReadyDXT(const DAVA::TextureDescriptor *descriptor, c
 		if(NULL != texture)
 		{
 			// reload this texture into scene
-			DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-			if(curEditorImageFormatForTextures == DAVA::DXT_FILE)
-			{
-				((DAVA::Texture *) texture)->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			}
+			reloadTextureToScene(texture, descriptor, DAVA::DXT_FILE);
 		}
 	}
 }

@@ -33,6 +33,8 @@ public:
 	DAVA::Texture* getTexture(const DAVA::TextureDescriptor* descriptor) const;
 	DAVA::TextureDescriptor* getDescriptor(const QModelIndex &index) const;
 
+	void setTexture(const DAVA::TextureDescriptor* descriptor, DAVA::Texture *texture);
+
 private:
 	DAVA::Scene *scene;
 	QVector<DAVA::TextureDescriptor *> textureDescriptorsAll;

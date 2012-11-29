@@ -74,6 +74,14 @@ DAVA::TextureDescriptor* TextureListModel::getDescriptor(const QModelIndex &inde
 	return ret;
 }
 
+void TextureListModel::setTexture(const DAVA::TextureDescriptor* descriptor, DAVA::Texture *texture)
+{
+	if(texturesAll.contains(descriptor))
+	{
+		texturesAll[descriptor] = texture;
+	}
+}
+
 void TextureListModel::dataReady(const DAVA::TextureDescriptor *desc)
 {
 	int i = textureDescriptorsFiltredSorted.indexOf((DAVA::TextureDescriptor * const) desc);
