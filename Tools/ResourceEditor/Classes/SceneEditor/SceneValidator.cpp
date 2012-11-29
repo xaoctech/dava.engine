@@ -6,9 +6,9 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
 
-#include "../Qt/QtUtils.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
 #include "PVRConverter.h"

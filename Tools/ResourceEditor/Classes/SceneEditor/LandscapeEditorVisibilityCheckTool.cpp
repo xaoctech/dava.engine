@@ -12,7 +12,7 @@
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 #include "EditorBodyControl.h"
 #include "cmath"

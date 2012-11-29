@@ -18,10 +18,10 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "GUIState.h"
-#include "SceneDataManager.h"
-#include "SceneData.h"
-#include "QtUtils.h"
-#include "mainwindow.h"
+#include "Scene/SceneDataManager.h"
+#include "Scene/SceneData.h"
+#include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 
 #include <QPoint>
 #include <QMenu>

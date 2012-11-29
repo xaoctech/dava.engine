@@ -7,8 +7,8 @@
 
 #include "SceneValidator.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)

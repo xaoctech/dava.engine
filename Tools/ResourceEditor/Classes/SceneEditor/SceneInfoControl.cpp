@@ -4,7 +4,7 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 
 
 SceneInfoControl::SceneInfoControl(const Rect &rect)

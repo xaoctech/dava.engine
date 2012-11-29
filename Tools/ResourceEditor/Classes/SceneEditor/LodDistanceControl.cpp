@@ -1,8 +1,8 @@
 #include "LodDistanceControl.h"
 #include "ControlsFactory.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../EditorScene.h"
 
 LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, const Rect &rect, bool rectInAbsoluteCoordinates)

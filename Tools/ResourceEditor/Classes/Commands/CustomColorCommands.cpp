@@ -1,9 +1,9 @@
 #include "CustomColorCommands.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
-#include "../Qt/GUIState.h"
 
 CommandToggleCustomColors::CommandToggleCustomColors()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)

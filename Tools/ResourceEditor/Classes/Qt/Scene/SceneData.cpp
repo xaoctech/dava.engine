@@ -1,5 +1,5 @@
-#include "SceneData.h"
-#include "SceneGraphModel.h"
+#include "Scene/SceneData.h"
+#include "Main/SceneGraphModel.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -13,14 +13,14 @@
 
 #include "../LandscapeEditor/LandscapesController.h"
 
-#include "QtMainWindowHandler.h"
+#include "Main/QtMainWindowHandler.h"
 
 
-#include "QtUtils.h"
-#include "PointerHolder.h"
+#include "Main/QtUtils.h"
+#include "Main/PointerHolder.h"
 
-#include "LibraryModel.h"
-#include "FileSelectionModel.h"
+#include "Main/LibraryModel.h"
+#include "Main/FileSelectionModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>

@@ -13,10 +13,10 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "../LandscapeEditor/LandscapeRenderer.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../LandscapeEditor/LandscapesController.h"
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 
 #include "EditorSettings.h"
 
