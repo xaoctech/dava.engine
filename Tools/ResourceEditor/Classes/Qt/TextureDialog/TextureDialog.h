@@ -77,6 +77,8 @@ private:
 	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
 
+	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
+
 private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
