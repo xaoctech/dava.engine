@@ -17,6 +17,8 @@
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
+#include "../Commands/CustomColorCommands.h"
+#include "../Commands/CommandsManager.h"
 
 #define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
@@ -326,7 +328,7 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorCustomColors::HideAction()
 {
-	SaveTextureAction(GetCurrentSaveFileName());
+	//SaveTextureAction(GetCurrentSaveFileName());
 
 	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
@@ -444,6 +446,11 @@ void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 
     if(colorSprite)
     {
+		if(pathToFile.empty())
+		{
+
+		}
+
         Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
@@ -589,4 +596,13 @@ String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &r
 	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
 
 	return absolutePath;
+}
+
+void LandscapeEditorCustomColors::SaveTexture()
+{
+	Command * saveCommand = new CommandSaveTextureCustomColors;
+	CommandsManager::Instance()->Execute(saveCommand);
+	SafeRelease(saveCommand);
+
+	Close();
 }
