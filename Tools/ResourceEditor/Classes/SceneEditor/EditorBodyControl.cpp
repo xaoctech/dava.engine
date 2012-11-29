@@ -375,9 +375,16 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                     break;
                     
                 case DVKEY_X:
-                    PropcessIsSolidChanging();
-                    break;
+                {
+                    bool Z = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_Z);
+                    bool C = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_C);
+                    if(!Z && !C)
+                    {
+                        PropcessIsSolidChanging();
+                    }
                     
+                    break;
+                }
                     
                 default:
                     break;
