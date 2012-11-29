@@ -1,5 +1,5 @@
 #include <QtGui/QApplication>
-#include "mainwindow.h"
+#include "Main/mainwindow.h"
 
 #include "DAVAEngine.h"
 
