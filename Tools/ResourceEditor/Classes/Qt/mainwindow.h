@@ -8,6 +8,7 @@ namespace Ui {
 class MainWindow;
 }
 
+class LibraryModel;
 class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -42,6 +43,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
+    
+    LibraryModel *libraryModel;
+
 };
 
 

@@ -8,6 +8,7 @@
 #include "Classes/Qt/SceneDataManager.h"
 
 #include "Classes/Qt/PointerHolder.h"
+#include "LibraryModel.h"
 
 #include <QToolBar>
 
@@ -17,6 +18,7 @@
 
 #include <QApplication>
 #include <QPixmap>
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
@@ -30,8 +32,12 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     new QtMainWindowHandler(this);
     QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
+    libraryModel = new LibraryModel(this);
+
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
+    libraryModel->Activate(ui->libraryView);
     
     RegisterBasePointerTypes();
     
@@ -67,6 +73,8 @@ QtMainWindow::~QtMainWindow()
     GUIState::Instance()->Release();
     
     delete ui;
+
+    SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
