@@ -3,6 +3,8 @@
 #include "SceneData.h"
 #include "SceneGraphModel.h"
 
+#include "LibraryModel.h"
+
 #include "../EditorScene.h"
 
 #include <QTreeView>
@@ -13,6 +15,7 @@ SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
     ,   libraryView(NULL)
+    ,   libraryModel(NULL)
 {
 }
 
@@ -39,7 +42,7 @@ void SceneDataManager::ActivateScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView, libraryView);
+    currentScene->Activate(sceneGraphView, libraryView, libraryModel);
 }
 
 SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
@@ -132,4 +135,10 @@ void SceneDataManager::SetLibraryView(QTreeView *view)
 {
     libraryView = view;
 }
+
+void SceneDataManager::SetLibraryModel(LibraryModel *model)
+{
+    libraryModel = model;
+}
+
 

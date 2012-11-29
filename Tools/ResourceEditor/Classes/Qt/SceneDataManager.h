@@ -8,6 +8,7 @@ class QTreeView;
 
 class SceneData;
 class EditorScene;
+class LibraryModel;
 class SceneDataManager: public DAVA::Singleton<SceneDataManager>
 {
 public:
@@ -25,6 +26,7 @@ public:
 
     void SetSceneGraphView(QTreeView *view);
     void SetLibraryView(QTreeView *view);
+    void SetLibraryModel(LibraryModel *model);
     
 protected:
 
@@ -37,6 +39,7 @@ protected:
     
     QTreeView *sceneGraphView;
     QTreeView *libraryView;
+    LibraryModel *libraryModel;
     
 };
 
