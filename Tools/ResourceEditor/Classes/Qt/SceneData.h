@@ -53,7 +53,7 @@ public:
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *graphview, QTreeView *libraryView);
+    void Activate(QTreeView *graphview, QTreeView *libraryView, LibraryModel *libModel);
     void Deactivate();
 
     void ReloadRootNode(const DAVA::String &scenePathname);
@@ -119,7 +119,6 @@ protected:
     //DATA
     //ENTITY
     //PROPERTY
-    //LIBRARY
     LibraryModel *libraryModel;
     
     //reload root nodes

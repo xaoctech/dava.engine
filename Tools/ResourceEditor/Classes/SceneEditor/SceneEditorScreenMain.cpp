@@ -776,6 +776,18 @@ void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
     iBody->bodyControl->SaveTexture(path);
 }
 
+void SceneEditorScreenMain::CustomColorsLoadTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->CustomColorsLoadTexture(path);
+}
+
+String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
+{
+	BodyItem *iBody = FindCurrentBody();
+	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
+}
+
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
 {
     BodyItem *iBody = FindCurrentBody();
@@ -869,4 +881,34 @@ void SceneEditorScreenMain::RulerToolTriggered()
 {
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->RulerToolTriggered();
+}
+
+void SceneEditorScreenMain::VisibilityToolTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_VISIBILITY_CHECK_TOOL);
+}
+
+void SceneEditorScreenMain::VisibilityToolSaveTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SaveTexture(path);
+}
+
+void SceneEditorScreenMain::VisibilityToolSetPoint()
+{
+	BodyItem *iBody = FindCurrentBody();
+	iBody->bodyControl->VisibilityToolSetPoint();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetArea()
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetArea();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetAreaSize(uint32 size)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetAreaSize(size);
 }

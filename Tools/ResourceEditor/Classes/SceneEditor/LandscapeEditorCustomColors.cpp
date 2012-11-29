@@ -12,9 +12,13 @@
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "EditorBodyControl.h"
+#include "SceneGraph.h"
 #include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/SceneDataManager.h"
+#include "../Qt/SceneData.h"
 
-
+#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
 LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -36,8 +40,11 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	texSurf = NULL;
 	circleTexture = NULL;
 
-	SetRadius(64);
-		
+	
+	isCursorTransparent = false;
+
+	radius = 64;
+	UpdateCircleTexture(false);
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
@@ -46,7 +53,6 @@ LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
     SafeRelease(savedHeightmap);
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
-	SafeRelease(circleTexture);
 }
 
 
@@ -62,7 +68,7 @@ void LandscapeEditorCustomColors::Draw(const DAVA::UIGeometricData &geometricDat
 
 void LandscapeEditorCustomColors::PrepareRenderLayers()
 {
-	UpdateCircleTexture();
+	UpdateCircleTexture(false);
 
     Sprite* blankSprite = Sprite::CreateFromTexture(circleTexture, 0, 0, (float32)circleTexture->width, (float32)circleTexture->height);
     
@@ -71,7 +77,7 @@ void LandscapeEditorCustomColors::PrepareRenderLayers()
 	
 	Vector2 newPoint = workingLandscape->GetCursor()->GetCursorPosition(); 
     newPoint *= 2; 
-    RenderManager::Instance()->SetColor(paintColor);
+	RenderManager::Instance()->SetColor(paintColor);
 	
     blankSprite->SetPosition(newPoint); 
 	blankSprite->Draw();
@@ -170,7 +176,7 @@ void LandscapeEditorCustomColors::DrawCircle(Vector<Vector<bool> >& matrixForCir
 	}
 }
 
-uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format)
+uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent)
 {
 	if(FORMAT_RGBA8888 != format || radius == 0)
 		return NULL;
@@ -206,40 +212,23 @@ uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DA
 				texArr[blockOffset]		= 0xff;
 				texArr[blockOffset + 1] = 0xff;
 				texArr[blockOffset + 2] = 0xff;
-				texArr[blockOffset + 3] = 0xff;
+				if(setTransparent)
+				{
+					texArr[blockOffset + 3] = 0x00;
+				}
+				else
+				{
+					texArr[blockOffset + 3] = 0xff;
+				}
+				
+				
 			}
 		}
 	}
 
+	isCursorTransparent = setTransparent;
+
 	return texArr;
-}
-
-void LandscapeEditorCustomColors::UpdateTool()
-{
-	if(currentTool && currentTool->sprite && currentTool->size)
-	{
-		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
-        Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
-        if(pos != prevDrawPos)
-        {
-            wasTileMaskToolUpdate = true;
-
-			UpdateCircleTexture();
-
-			Sprite* blankSprite = Sprite::CreateFromTexture(circleTexture, 0, 0, (float32)circleTexture->width, (float32)circleTexture->height);
-			
-			//fill color sprite to get opportunity to save its texture separately 
-			RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
-			RenderManager::Instance()->SetColor(paintColor);
-			
-			blankSprite->Draw();//
-			RenderManager::Instance()->RestoreRenderTarget();
-			RenderManager::Instance()->ResetColor();
-			SafeRelease(blankSprite);
-
-			currentTool->sprite->SetPosition(pos);
-        }
-	}
 }
 
 void LandscapeEditorCustomColors::UpdateCursor()
@@ -247,7 +236,7 @@ void LandscapeEditorCustomColors::UpdateCursor()
 	if(currentTool && currentTool->sprite && currentTool->size)
 	{
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
-		UpdateCircleTexture();
+		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
 		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
@@ -258,7 +247,7 @@ void LandscapeEditorCustomColors::UpdateCursor()
 void LandscapeEditorCustomColors::SetRadius(int _radius)
 {
 	radius = _radius;
-	UpdateCircleTexture();
+	UpdateCircleTexture(true);
 }
 
 void LandscapeEditorCustomColors::SetColor(const Color &newColor)
@@ -271,19 +260,27 @@ void LandscapeEditorCustomColors::SaveColorLayer(const String &pathName)
 	SaveTextureAction(pathName);
 }
 
-void LandscapeEditorCustomColors::UpdateCircleTexture()
+void LandscapeEditorCustomColors::LoadColorLayer(const String &pathName)
 {
-	if(NULL != circleTexture && circleTexture->width == radius * 2 )
+	LoadTextureAction(pathName);
+}
+
+void LandscapeEditorCustomColors::UpdateCircleTexture(bool setTransparent)
+{
+	if(isCursorTransparent == setTransparent)
 	{
-		return;
+		if(NULL != circleTexture  )
+		{
+			return;
+		}
 	}
-	uint8* texArr = DrawFilledCircleWithFormat(radius, FORMAT_RGBA8888);
+	uint8* texArr = DrawFilledCircleWithFormat(radius, FORMAT_RGBA8888, setTransparent);
 	if(!texArr)
 	{
 		return;
 	}
-	SafeRelease(cursorTexture);
-	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2, false);
+	SafeRelease(circleTexture);
+	circleTexture = Texture::CreateFromData(FORMAT_RGBA8888, texArr, radius*2, radius*2,false);
 	//check addref
 	delete[] texArr;
 }
@@ -323,27 +320,20 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             break;
     }
     
-
-    UpdateTool(); 
-
+    UpdateCircleTexture(false);
+	wasTileMaskToolUpdate = true;
 }
 
 void LandscapeEditorCustomColors::HideAction()
 {
+	SaveTextureAction(GetCurrentSaveFileName());
+
+	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
     SafeRelease(editedHeightmap);
     SafeRelease(savedHeightmap);
-
-	//restore tool
-	RenderManager::Instance()->SetRenderTarget(currentTool->sprite);
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	currentToolSprite->Draw();//
-	RenderManager::Instance()->RestoreRenderTarget();
-	
-	SafeRelease(currentToolSprite);
-	currentToolSprite = NULL;
 
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
@@ -353,23 +343,20 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-	//
     landscapeSize = settings->maskSize;
 
 	workingLandscape->CursorEnable();
+	workingLandscape->SetFog(false);
 
-	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)); 
+	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 
-	
-	Texture* texSpr = currentTool->sprite->GetTexture();
-	currentToolSprite =  Sprite::CreateAsRenderTarget(texSpr->width, texSpr->height, FORMAT_RGBA8888);
-	RenderManager::Instance()->SetRenderTarget(currentToolSprite);
-	currentTool->sprite->Draw();//
-	RenderManager::Instance()->RestoreRenderTarget();
+	String loadFileName = GetCurrentSaveFileName();
+	if(!loadFileName.empty())
+		LoadTextureAction(loadFileName);
 
 	if(NULL == colorSprite)
 	{
-		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL); 
+		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
 		colorSprite = Sprite::CreateAsRenderTarget(tex->width, tex->height, FORMAT_RGBA8888);
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
@@ -379,11 +366,9 @@ void LandscapeEditorCustomColors::ShowAction()
 		}
 		RenderManager::Instance()->RestoreRenderTarget();
 	}
-	else
-	{
-		PerformLandscapeDraw();
-	}
-	
+
+	PerformLandscapeDraw();
+
 	//
 	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_COLORIZE);
 	UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
@@ -400,8 +385,11 @@ void LandscapeEditorCustomColors::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
+        //Image::EnableAlphaPremultiplication(false);
+        
         Texture *tex = UNDOManager::Instance()->UndoColorize();
-
+        
+        //Image::EnableAlphaPremultiplication(true);
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
 		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
@@ -415,6 +403,8 @@ void LandscapeEditorCustomColors::UndoAction()
 		RenderManager::Instance()->RestoreRenderTarget();
 
 		PerformLandscapeDraw();
+
+		SafeRelease(tex);
     }
 }
 
@@ -423,7 +413,11 @@ void LandscapeEditorCustomColors::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
+//        Image::EnableAlphaPremultiplication(false);
+        
         Texture *tex = UNDOManager::Instance()->RedoColorize();
+        
+//        Image::EnableAlphaPremultiplication(true);
 
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
@@ -438,20 +432,64 @@ void LandscapeEditorCustomColors::RedoAction()
 		RenderManager::Instance()->RestoreRenderTarget();
 
 		PerformLandscapeDraw();
+
+		SafeRelease(tex);
     }
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 {
+	if(pathToFile.empty())
+		return;
+
     if(colorSprite)
     {
         Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            ImageLoader::Save(img, pathToFile);
+			StoreSaveFileName(pathToFile);
+			ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
         }
     }
+}
+
+void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
+{
+	if(pathToFile.empty())
+		return;
+
+	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
+	if(images.empty())
+		return;
+
+	Image* image = images.front();
+	if(image)
+	{
+		Texture* texture = Texture::CreateFromData(image->GetPixelFormat(),
+												   image->GetData(),
+												   image->GetWidth(),
+												   image->GetHeight(),
+												   false);
+
+		if(colorSprite != 0)
+			UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
+
+		SafeRelease(colorSprite);
+		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
+		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		RenderManager::Instance()->SetRenderTarget(colorSprite);
+		sprite->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+		PerformLandscapeDraw();
+
+		SafeRelease(sprite);
+		SafeRelease(texture);
+		for_each(images.begin(), images.end(), SafeRelease<Image>);
+
+		StoreSaveFileName(pathToFile);
+	}
 }
 
 NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect &rect)
@@ -500,7 +538,55 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
         ErrorNotifier::Instance()->ShowError("Cannot start color editor. Remove EditorLandscapeNode from scene");
         return false;
     }
-    
+
     return LandscapeEditorBase::SetScene(newScene);
 }
 
+void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
+{
+	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
+						   GetRelativePathToScenePath(fileName));
+	parent->GetSceneGraph()->UpdatePropertyPanel();
+}
+
+String LandscapeEditorCustomColors::GetCurrentSaveFileName()
+{
+	String currentSaveName = "";
+
+	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+	if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+
+	return GetAbsolutePathFromScenePath(currentSaveName);
+}
+
+String LandscapeEditorCustomColors::GetScenePath()
+{
+	String sceneFilePath = SceneDataManager::Instance()->GetActiveScene()->GetScenePathname();
+	String sceneFileName = "";
+	FileSystem::Instance()->SplitPath(sceneFilePath, sceneFilePath, sceneFileName);
+
+	return sceneFilePath;
+}
+
+String LandscapeEditorCustomColors::GetRelativePathToScenePath(const String &absolutePath)
+{
+	if(absolutePath.empty())
+		return "";
+
+	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(GetScenePath(), absolutePath);
+
+	return relativePath;
+}
+
+String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
+{
+	if(relativePath.empty())
+		return "";
+
+	String absolutePath = GetScenePath() + relativePath;
+	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+
+	return absolutePath;
+}

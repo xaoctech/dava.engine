@@ -109,7 +109,7 @@ TextBlock::~TextBlock()
 void TextBlock::SetFont(Font * _font)
 {
 	DVASSERT(_font);
-	if (!constFont || constFont->IsEqual(_font))
+	if (!constFont || !constFont->IsEqual(_font))
 	{
 		needRedraw = true;
 	}

@@ -11,6 +11,8 @@
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
 		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
 		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
+		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
+		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
 		4F292A01165BB438009D6961 /* davaglwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F2929D6165BB438009D6961 /* davaglwidget_moc.cpp */; };
 		4F292A02165BB438009D6961 /* FileSelectionModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F2929D7165BB438009D6961 /* FileSelectionModel_moc.cpp */; };
 		4F292A03165BB438009D6961 /* GraphItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F2929D8165BB438009D6961 /* GraphItem_moc.cpp */; };
@@ -340,6 +342,7 @@
 		E89DFC70163ECD1600B51706 /* TextureProperties.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFC65163ECD1600B51706 /* TextureProperties.cpp */; };
 		E89DFC71163ECD1600B51706 /* TextureScrollArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89DFC67163ECD1600B51706 /* TextureScrollArea.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
+		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
 		E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F020C916103E84000969AF /* RulerToolLandscape.cpp */; };
 		E8F316B3164BABB100A0EDF2 /* QtPosSaver.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F316B1164BABB100A0EDF2 /* QtPosSaver.cpp */; };
@@ -380,6 +383,10 @@
 		4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorCustomColors.h; path = Classes/SceneEditor/LandscapeEditorCustomColors.h; sourceTree = "<group>"; };
 		4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeToolsPanelCustomColors.cpp; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.cpp; sourceTree = "<group>"; };
 		4940AF70164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeToolsPanelCustomColors.h; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.h; sourceTree = "<group>"; };
+		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
+		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
+		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
+		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
 		4F2929D6165BB438009D6961 /* davaglwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = davaglwidget_moc.cpp; path = _GeneratedQt/davaglwidget_moc.cpp; sourceTree = "<group>"; };
 		4F2929D7165BB438009D6961 /* FileSelectionModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileSelectionModel_moc.cpp; path = _GeneratedQt/FileSelectionModel_moc.cpp; sourceTree = "<group>"; };
 		4F2929D8165BB438009D6961 /* GraphItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphItem_moc.cpp; path = _GeneratedQt/GraphItem_moc.cpp; sourceTree = "<group>"; };
@@ -1082,6 +1089,8 @@
 		E89DFC67163ECD1600B51706 /* TextureScrollArea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureScrollArea.cpp; path = Classes/Qt/TextureDialog/TextureScrollArea.cpp; sourceTree = "<group>"; };
 		E89DFC68163ECD1600B51706 /* TextureScrollArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureScrollArea.h; path = Classes/Qt/TextureDialog/TextureScrollArea.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
+		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
+		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
 		E8EE7E57160DBCA000645405 /* RulerTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerTool.cpp; path = Classes/RulerTool/RulerTool.cpp; sourceTree = "<group>"; };
 		E8EE7E58160DBCA000645405 /* RulerTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerTool.h; path = Classes/RulerTool/RulerTool.h; sourceTree = "<group>"; };
 		E8F020C916103E84000969AF /* RulerToolLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolLandscape.cpp; path = Classes/LandscapeEditor/RulerToolLandscape.cpp; sourceTree = "<group>"; };
@@ -1733,6 +1742,10 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E8C9B3E1166794EB00810605 /* ColorControl.cpp */,
+				E8C9B3E2166794EB00810605 /* ColorControl.h */,
+				498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */,
+				498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */,
 				4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */,
 				4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */,
 				4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */,
@@ -1908,6 +1921,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
+				498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */,
 				E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */,
 				E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */,
 				4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */,
@@ -2539,6 +2554,8 @@
 				4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */,
 				4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */,
 				4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */,
+				498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */,
+				498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */,
 				4F292A01165BB438009D6961 /* davaglwidget_moc.cpp in Build Sources */,
 				4F292A02165BB438009D6961 /* FileSelectionModel_moc.cpp in Build Sources */,
 				4F292A03165BB438009D6961 /* GraphItem_moc.cpp in Build Sources */,
@@ -2577,6 +2594,7 @@
 				E86671F41663F23700F33A54 /* MaterialTreeModel.cpp in Build Sources */,
 				E86671F51663F23700F33A54 /* MaterialView.cpp in Build Sources */,
 				E86671F61663F23700F33A54 /* MaterialViewModel.cpp in Build Sources */,
+				E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

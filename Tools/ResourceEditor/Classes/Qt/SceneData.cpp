@@ -36,6 +36,7 @@ SceneData::SceneData()
     ,   scene(NULL)
     ,   sceneGraphModel(NULL)
 {
+    libraryModel = NULL;
     libraryView = NULL;
     sceneGraphView = NULL;
     
@@ -46,14 +47,11 @@ SceneData::SceneData()
     sceneGraphModel->SetScene(NULL);
     
 
-    libraryModel = new LibraryModel(this);
-    
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
     skipLibraryPreview = false;
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
-    connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
 }
 
 SceneData::~SceneData()
@@ -62,7 +60,6 @@ SceneData::~SceneData()
     
     SafeRelease(landscapesController);
     
-    SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
 }
@@ -391,27 +388,34 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
+void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView, LibraryModel *libModel)
 {
     sceneGraphView = graphview;
 	libraryView = _libraryView;
 		
     sceneGraphModel->Activate(sceneGraphView);
-    libraryModel->Activate(libraryView);
     
     connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
     connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
     
+    libraryModel = libModel;
+    connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
+
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
 }
 
 void SceneData::Deactivate()
 {
+    if(libraryModel)
+    {
+        disconnect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
+        libraryModel = NULL;
+    }
+    
     disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
     disconnect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
     
     sceneGraphModel->Deactivate();
-    libraryModel->Deactivate();
 }
 
 void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
