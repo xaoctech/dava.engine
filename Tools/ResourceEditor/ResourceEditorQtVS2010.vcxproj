@@ -333,6 +333,7 @@
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ViewCommands.cpp" />
+    <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
@@ -393,6 +394,7 @@
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ColorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp" />
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp" />
@@ -423,6 +425,7 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorCustomColors.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
@@ -743,6 +746,7 @@
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\Commands\ViewCommands.h" />
+    <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
     <ClInclude Include="Classes\DebugNode.h" />
@@ -805,6 +809,7 @@
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ColorControl.h" />
     <ClInclude Include="Classes\SceneEditor\ColorPicker.h" />
     <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h" />
     <ClInclude Include="Classes\SceneEditor\ComboBox.h" />
@@ -836,6 +841,7 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorCustomColors.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeTool.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
