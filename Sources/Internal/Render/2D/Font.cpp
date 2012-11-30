@@ -78,11 +78,16 @@ const Color & Font::GetColor() const
 
 bool Font::IsEqual(Font *font)
 {
+    if(!font)
+    {
+        return false;
+    }
+    
 	if (fontType != font->fontType) 
 	{
 		return false;
 	}
-	if (size != size || color != font->color || verticalSpacing != font->verticalSpacing) 
+	if (size != font->size || color != font->color || verticalSpacing != font->verticalSpacing)
 	{
 		return false;
 	}

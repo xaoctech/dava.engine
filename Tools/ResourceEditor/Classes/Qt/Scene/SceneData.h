@@ -53,7 +53,7 @@ public:
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *graphview, QTreeView *libraryView);
+    void Activate(QTreeView *graphview, QTreeView *libraryView, LibraryModel *libModel);
     void Deactivate();
 
     void ReloadRootNode(const DAVA::String &scenePathname);
@@ -71,6 +71,10 @@ public:
     void OpenLibraryForFile(const DAVA::String &filePathname);
     
 	void ResetLandsacpeSelection();
+
+signals:
+	void SceneChanged(EditorScene *scene);
+	void SceneNodeSelected(DAVA::SceneNode *node);
 
 protected:
     
@@ -90,7 +94,7 @@ protected:
 
 protected slots:
     
-    void SceneNodeSelected(DAVA::SceneNode *node);
+    void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
     
     //library
     void LibraryContextMenuRequested(const QPoint &point);
@@ -119,7 +123,6 @@ protected:
     //DATA
     //ENTITY
     //PROPERTY
-    //LIBRARY
     LibraryModel *libraryModel;
     
     //reload root nodes

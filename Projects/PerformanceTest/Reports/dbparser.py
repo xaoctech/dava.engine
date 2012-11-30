@@ -41,7 +41,7 @@ report.write('</head> <body>')
 connection = None;
 try:
 	# connection = pymongo.Connection("localhost", 27017)
-	connection = pymongo.Connection("10.128.128.131", 27017)
+	connection = pymongo.Connection("by2-buildmachine.wargaming.net", 27017)
 except:
 	connection = None
 

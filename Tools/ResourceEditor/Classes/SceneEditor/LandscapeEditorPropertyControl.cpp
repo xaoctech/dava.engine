@@ -30,6 +30,33 @@ LandscapeEditorPropertyControl::~LandscapeEditorPropertyControl()
     SafeRelease(settings);
 }
 
+void LandscapeEditorPropertyControl::Input(DAVA::UIEvent *currentInput)
+{
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    {
+        if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        {
+            if(DVKEY_1 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskred", true);
+            }
+            if(DVKEY_2 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskgreen", true);
+            }
+            if(DVKEY_3 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskblue", true);
+            }
+            if(DVKEY_4 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskalpha", true);
+            }
+        }
+    }
+
+    LandscapePropertyControl::Input(currentInput);
+}
 
 void LandscapeEditorPropertyControl::OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {

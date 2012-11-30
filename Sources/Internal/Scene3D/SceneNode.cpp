@@ -780,5 +780,18 @@ SceneNode * SceneNode::GetNodeByPathID(SceneNode * root, String pathID)
 	}
 	return result;
 }
+    
+void SceneNode::SetFog_Kostil(float32 density, const Color &color)
+{
+    Vector<Material *> materials;
+    GetDataNodes(materials);
+    
+    for(int32 i = 0; i < (int32)materials.size(); ++i)
+    {
+        materials[i]->SetFogDensity(density);
+        materials[i]->SetFogColor(color);
+    }
+}
+
 
 };

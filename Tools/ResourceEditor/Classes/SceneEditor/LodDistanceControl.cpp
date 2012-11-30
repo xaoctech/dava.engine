@@ -1,8 +1,8 @@
 #include "LodDistanceControl.h"
 #include "ControlsFactory.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../EditorScene.h"
 
 LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, const Rect &rect, bool rectInAbsoluteCoordinates)
@@ -227,7 +227,7 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles
             distanceText[iDist]->SetText(Format(L"Distance_%d:", iDist));
 
             AddControl(distanceTextValues[iDist]);
-            distanceTextValues[iDist]->SetText(Format(L"%3.0f", distances[iDist]));
+            distanceTextValues[iDist]->SetText(Format(L"%.0f", distances[iDist]));
             
             
             float32 y = (float32)(count + iDist + 1) * (float32)ControlsFactory::BUTTON_HEIGHT;
@@ -348,7 +348,7 @@ void LodDistanceControl::UpdateSliderPos()
         }
         
         distances[activeLodIndex] = newDistance;
-        distanceTextValues[activeLodIndex]->SetText(Format(L"%3.0f", newDistance));
+        distanceTextValues[activeLodIndex]->SetText(Format(L"%.0f", newDistance));
     }
 }
 
@@ -400,7 +400,7 @@ void LodDistanceControl::TextFieldLostFocus(UITextField * textField)
             r.dx -= deltaX;
             zones[iText]->SetRect(r);
 
-            textField->SetText(Format(L"%3.0f", newDistance));
+            textField->SetText(Format(L"%.0f", newDistance));
             distances[iText] = newDistance;
             if(delegate)
             {

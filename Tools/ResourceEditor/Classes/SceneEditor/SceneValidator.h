@@ -42,7 +42,7 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTextureAndShowErrors(Texture *texture);
+    void ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
@@ -50,7 +50,7 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     
-    void ValidateTexture(Texture *texture, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog);
 
 
     /*
@@ -89,6 +89,9 @@ public:
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
     void ReloadTextures(int32 asFile);
+
+    //Need Release returned Texture
+    Texture * ReloadTexture(const String &descriptorPathname, Texture *prevTexture, int32 asFile);
     
     static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
     
@@ -116,7 +119,7 @@ protected:
     
     void ShowErrors();
     
-    bool ValidatePathname(const String &pathForValidation);
+    bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
     bool NodeRemovingDisabled(SceneNode *node);
     

@@ -1,9 +1,7 @@
 #include "SceneDataManager.h"
 
-#include "SceneData.h"
-#include "SceneGraphModel.h"
-
-#include "../EditorScene.h"
+#include "Main/SceneGraphModel.h"
+#include "Main/LibraryModel.h"
 
 #include <QTreeView>
 
@@ -13,6 +11,7 @@ SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
     ,   libraryView(NULL)
+    ,   libraryModel(NULL)
 {
 }
 
@@ -26,7 +25,7 @@ SceneDataManager::~SceneDataManager()
     scenes.clear();
 }
 
-void SceneDataManager::ActivateScene(EditorScene *scene)
+void SceneDataManager::SetActiveScene(EditorScene *scene)
 {
     if(currentScene)
     {
@@ -39,7 +38,9 @@ void SceneDataManager::ActivateScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView, libraryView);
+    currentScene->Activate(sceneGraphView, libraryView, libraryModel);
+
+	emit SceneActivated(currentScene);
 }
 
 SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
@@ -62,7 +63,7 @@ SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
 
 SceneData * SceneDataManager::GetActiveScene()
 {
-    return currentScene;
+	return currentScene;
 }
 
 SceneData *SceneDataManager::GetLevelScene()
@@ -82,6 +83,8 @@ EditorScene * SceneDataManager::RegisterNewScene()
 
     scenes.push_back(data);
     
+	connect(data, SIGNAL(SceneChanged(EditorScene *)), this, SLOT(InSceneData_SceneChanged(EditorScene *)));
+	connect(data, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::SceneNode *)));
     return data->GetScene();
 }
 
@@ -93,7 +96,9 @@ void SceneDataManager::ReleaseScene(EditorScene *scene)
         SceneData *sceneData = *it;
         if(sceneData->GetScene() == scene)
         {
-            if(currentScene == sceneData)
+			emit SceneReleased(sceneData);
+
+			if(currentScene == sceneData)
             {
                 DVASSERT((0 < scenes.size()) && "There is no main level scene.")
                 currentScene = *scenes.begin(); // maybe we need to activate next or prev tab?
@@ -133,3 +138,19 @@ void SceneDataManager::SetLibraryView(QTreeView *view)
     libraryView = view;
 }
 
+void SceneDataManager::SetLibraryModel(LibraryModel *model)
+{
+    libraryModel = model;
+}
+
+void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
+{
+	SceneData *sceneData = (SceneData *) QObject::sender();
+	emit SceneChanged(sceneData);
+}
+
+void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
+{
+	SceneData *sceneData = (SceneData *) QObject::sender();
+	emit SceneNodeSelected(sceneData, node);
+}
