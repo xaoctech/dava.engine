@@ -53,6 +53,8 @@ public:
      */
     void SetPlaybackCompleteMessage(const Message& msg);
 
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+
 protected:
     // Check whether Node is Particle Emitter one and check the duration.
     bool PrepareNewParticleEmitterNode(SceneNode* node);
