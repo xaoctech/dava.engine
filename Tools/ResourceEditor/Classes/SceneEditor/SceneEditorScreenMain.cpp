@@ -152,7 +152,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     HideScenePreview();
     
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
-    SceneDataManager::Instance()->ActivateScene(scene);
+    SceneDataManager::Instance()->SetActiveScene(scene);
     
     BodyItem *c = new BodyItem();
     
@@ -217,7 +217,7 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
     AddControl(bodies[btn->GetTag()]->bodyControl);
     bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
     
-    SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+    SceneDataManager::Instance()->SetActiveScene(bodies[btn->GetTag()]->bodyControl->GetScene());
 }
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
 {

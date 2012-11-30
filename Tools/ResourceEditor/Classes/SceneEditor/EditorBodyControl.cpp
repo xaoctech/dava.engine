@@ -1145,7 +1145,6 @@ void EditorBodyControl::PropcessIsSolidChanging()
                 activeScene->OpenLibraryForFile(filePathname);
             }
             
-            
             sceneGraph->SelectNode(selectedNode);
         }
     }

@@ -51,7 +51,7 @@ SceneData::SceneData()
     
     skipLibraryPreview = false;
     
-    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
+    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelectedInGraph(DAVA::SceneNode *)));
 }
 
 SceneData::~SceneData()
@@ -118,7 +118,7 @@ void SceneData::SelectNode(DAVA::SceneNode *node)
     sceneGraphModel->SelectNode(node);
 }
 
-void SceneData::SceneNodeSelected(SceneNode *node)
+void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
 {
     if(scene)   scene->SetSelection(node);
     
@@ -145,6 +145,8 @@ void SceneData::SceneNodeSelected(SceneNode *node)
             scene->SetCurrentCamera(cam);
         }
     }
+
+	emit SceneNodeSelected(node);
 }
 
 
@@ -315,6 +317,9 @@ void SceneData::EditScene(const String &scenePathname)
     SceneValidator::Instance()->EnumerateSceneTextures();
    
     landscapesController->SetScene(scene);
+
+	scene->Update(0);
+	emit SceneChanged(scene);
 
     RebuildSceneGraph();
 }
@@ -510,8 +515,6 @@ void SceneData::ReloadLibrary()
     libraryModel->Reload();
 }
 
-
-
 void SceneData::BakeNode(DAVA::SceneNode *node)
 {
     if(node->GetSolid())
@@ -585,7 +588,6 @@ void SceneData::BakeScene()
     }
 }
 
-
 void SceneData::LibraryContextMenuRequested(const QPoint &point)
 {
     QModelIndex itemIndex = libraryView->indexAt(point);
@@ -597,7 +599,6 @@ void SceneData::ProcessContextMenuAction(QAction *action)
     Command *command = PointerHolder<Command *>::ToPointer(action->data());
     Execute(command);
 }
-
 
 void SceneData::LibraryMenuTriggered(QAction *action)
 {
@@ -729,7 +730,6 @@ LandscapesController * SceneData::GetLandscapesController()
 {
     return landscapesController;
 }
-
 
 void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 {
