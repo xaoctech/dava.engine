@@ -142,7 +142,9 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 void QtMainWindowHandler::Materials()
 {
     Execute(new CommandMaterials());
+
 	/*
+	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -171,7 +173,7 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-	TextureDialog *textureBrowser = new TextureDialog();
+	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -184,8 +186,7 @@ void QtMainWindowHandler::ConvertTextures()
 		}
 	}
 
-	textureBrowser->exec();
-	delete textureBrowser;
+	textureBrowser->show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)

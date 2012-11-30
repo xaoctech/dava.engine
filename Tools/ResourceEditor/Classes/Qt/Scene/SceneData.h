@@ -72,6 +72,10 @@ public:
     
 	void ResetLandsacpeSelection();
 
+signals:
+	void SceneChanged(EditorScene *scene);
+	void SceneNodeSelected(DAVA::SceneNode *node);
+
 protected:
     
     void BakeNode(DAVA::SceneNode *node);
@@ -90,7 +94,7 @@ protected:
 
 protected slots:
     
-    void SceneNodeSelected(DAVA::SceneNode *node);
+    void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
     
     //library
     void LibraryContextMenuRequested(const QPoint &point);

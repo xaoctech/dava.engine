@@ -52,7 +52,6 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
-
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
         if(activeScene)
         {

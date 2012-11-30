@@ -2,20 +2,22 @@
 #define __SCENE_DATA_MANAGER_H__
 
 #include "DAVAEngine.h"
+#include "EditorScene.h"
+#include "Scene/SceneData.h"
 
 #include <QItemSelection>
 class QTreeView;
 
-class SceneData;
-class EditorScene;
 class LibraryModel;
-class SceneDataManager: public DAVA::Singleton<SceneDataManager>
+class SceneDataManager: public QObject, public DAVA::Singleton<SceneDataManager>
 {
+	Q_OBJECT
+
 public:
     SceneDataManager();
     virtual ~SceneDataManager();
 
-    void ActivateScene(EditorScene *scene);
+    void SetActiveScene(EditorScene *scene);
     SceneData *GetActiveScene();
     SceneData *GetLevelScene();
 
@@ -28,6 +30,16 @@ public:
     void SetLibraryView(QTreeView *view);
     void SetLibraryModel(LibraryModel *model);
     
+signals:
+	void SceneActivated(SceneData *scene);
+	void SceneChanged(SceneData *scene);
+	void SceneReleased(SceneData *scene);
+	void SceneNodeSelected(SceneData *scene, SceneNode *node);
+
+protected slots:
+	void InSceneData_SceneChanged(EditorScene *scene);
+	void InSceneData_SceneNodeSelected(DAVA::SceneNode *node);
+
 protected:
 
     SceneData * FindDataForScene(EditorScene *scene);
