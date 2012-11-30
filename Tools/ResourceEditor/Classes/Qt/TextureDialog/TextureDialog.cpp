@@ -3,7 +3,8 @@
 #include "TextureDialog/TextureListDelegate.h"
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
-#include "../Qt/Main/QtUtils.h"
+#include "Main/QtUtils.h"
+#include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
@@ -14,10 +15,12 @@
 #include <QStatusBar>
 #include <QToolButton>
 #include <QFileInfo>
+#include <QList>
 
 TextureDialog::TextureDialog(QWidget *parent)
     : QDialog(parent)
 	, ui(new Ui::TextureDialog)
+	, curScene(NULL)
 	, curTextureView(ViewPVR)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
@@ -35,6 +38,12 @@ TextureDialog::TextureDialog(QWidget *parent)
 	textureListSortModes["Name"] = TextureListModel::SortByName;
 	textureListSortModes["Size"] = TextureListModel::SortBySize;
 
+	// global scene manager signals
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
+
+	// convertor signals
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyPVR(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyPVR(const DAVA::TextureDescriptor *, const QImage &)));
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyDXT(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyDXT(const DAVA::TextureDescriptor *, const QImage &)));
@@ -60,18 +69,18 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setTexture(curTexture, curDescriptor);
 	setTextureView(curTextureView);
 
+	// ui->splitter->setSizes(QList<int>() << 60 << 0 << 40);
+
 	posSaver.Attach(this, __FUNCTION__);
 }
 
 TextureDialog::~TextureDialog()
 {
-	// return listview delegate back to default
-	// ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
-
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
 
+	DAVA::SafeRelease(curScene);
 	TextureCache::Instance()->Release();
 	TextureConvertor::Instance()->Release();
 }
@@ -141,8 +150,6 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 
 void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 {
-	// DAVA::TextureDescriptor *curTextureDescriptor = ui->textureProperties->getTextureDescriptor();
-
 	// if force convert - clear cached images
 	if(forceConvert)
 	{
@@ -731,5 +738,51 @@ void TextureDialog::convertStatus(const JobItem *jobCur, int jobLeft)
 
 void TextureDialog::setScene(DAVA::Scene *scene)
 {
-	textureListModel->setScene(scene);
+	DAVA::SafeRelease(curScene);
+	curScene = DAVA::SafeRetain(scene);
+
+	textureListModel->setScene(curScene);
+}
+
+void TextureDialog::sceneChanged(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// reload current scene if it is the same as changed
+		// or if there is no current scene now - set it
+		if(scene == curScene || curScene == NULL)
+		{
+			setScene(scene);
+		}
+	}
+}
+
+void TextureDialog::sceneActivated(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// set new scene
+		setScene(scene);
+	}
+}
+
+void TextureDialog::sceneReleased(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// close current scene
+		if(scene == curScene)
+		{
+			setScene(NULL);
+		}
+	}
 }
