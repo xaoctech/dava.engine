@@ -24,8 +24,8 @@
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../RulerTool/RulerTool.h"
 
 #include "../SceneEditor/EditorConfig.h"
@@ -1144,7 +1144,6 @@ void EditorBodyControl::PropcessIsSolidChanging()
                 String filePathname = properties->GetString(String("editor.referenceToOwner"));
                 activeScene->OpenLibraryForFile(filePathname);
             }
-            
             
             sceneGraph->SelectNode(selectedNode);
         }

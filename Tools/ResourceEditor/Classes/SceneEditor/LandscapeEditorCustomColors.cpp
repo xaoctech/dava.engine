@@ -14,9 +14,9 @@
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "EditorBodyControl.h"
 #include "SceneGraph.h"
-#include "../Qt/QtMainWindowHandler.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/CommandsManager.h"
 

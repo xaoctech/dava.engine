@@ -5,6 +5,7 @@
 #include <QMap>
 #include "DAVAEngine.h"
 #include "QtPosSaver/QtPosSaver.h"
+#include "Scene/SceneDataManager.h"
 
 class QModelIndex;
 class TextureListDelegate;
@@ -52,6 +53,7 @@ private:
 	
 	QMap<QString, int> textureListSortModes;
 
+	DAVA::Scene *curScene;
 	TextureView curTextureView;
 
 	DAVA::Texture *curTexture;
@@ -77,6 +79,8 @@ private:
 	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
 
+	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
+
 private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
@@ -99,6 +103,10 @@ private slots:
 	void textureAreaWheel(int delta);
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
+
+	void sceneActivated(SceneData *scene);
+	void sceneChanged(SceneData *scene);
+	void sceneReleased(SceneData *scene);
 };
 
 #endif // __TEXTURE_DIALOG_H__

@@ -31,6 +31,8 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
 		EPCID_PARTICLE_EMITTER,
 
 		EPCID_SWITCH,
+
+		EPCID_PARTICLE_EFFECT,
         
         EPCID_COUNT
     };

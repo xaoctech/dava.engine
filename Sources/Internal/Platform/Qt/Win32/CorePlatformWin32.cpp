@@ -246,6 +246,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 		{
 			InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)message->wParam);
 			*result = 0;
+			return true;
 		}
 		break;
 
@@ -277,6 +278,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 			InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)message->wParam);
 
 			*result = 0;
+			return true;
 		}
 		break;
 
@@ -305,6 +307,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 			}
 			*result = 0;
+			return true;
 		}
 		break;
 

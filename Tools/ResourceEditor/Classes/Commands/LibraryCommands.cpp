@@ -1,8 +1,8 @@
 #include "LibraryCommands.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 

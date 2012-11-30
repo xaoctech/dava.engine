@@ -20,8 +20,6 @@ private:
 	Vector<LightmapAtlasingData> atlasingData;
 
 	Vector2 GetTextureSize(const String & filePath);
-
-	PixelFormat compressFormat;
 };
 
 #endif //__LIGHTMAPS_PACKER_H__
