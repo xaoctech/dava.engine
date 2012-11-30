@@ -1327,11 +1327,14 @@ bool DirectDrawSurface::getFormat(nvtt::Format * retFormat) const
 	}
 	
 	uint flags = header.pf.flags ;
-	bool normalFlag =  flags &= DDPF_NORMAL > 0 ? true : false;
-
-	if(header.pf.flags == DDPF_RGB)
+	bool normalFlag = flags &= DDPF_NORMAL != 0 ? true : false;
+	
+	flags = header.pf.flags ;
+	bool isRgb = flags &= DDPF_RGB != 0 ? true : false;
+	if(isRgb)
 	{
 		*retFormat = nvtt::Format_RGB;
+		return true;
 	}
 
 	switch (header.pf.fourcc) 
@@ -1343,7 +1346,7 @@ bool DirectDrawSurface::getFormat(nvtt::Format * retFormat) const
 		*retFormat = nvtt::Format_DXT3;
 		break;
 	case FOURCC_DXT5:
-		*retFormat = normalFlag ? nvtt::Format_DXT5 : nvtt::Format_DXT5n;
+		*retFormat = normalFlag ? nvtt::Format_DXT5n : nvtt::Format_DXT5;
 		break;
 	case FOURCC_ATI1:
 		*retFormat = nvtt::Format_BC4;

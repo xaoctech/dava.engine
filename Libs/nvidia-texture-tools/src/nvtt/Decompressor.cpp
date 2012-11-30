@@ -1,3 +1,26 @@
+// Copyright NVIDIA Corporation 2008 -- Ignacio Castano <icastano@nvidia.com>
+// 
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+
 #include <nvtt/nvtt.h>
 
 #include <nvcore/Memory.h>
@@ -26,9 +49,6 @@ Decompressor::~Decompressor()
 	delete &m;
 }
 
-
-
-//NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
 bool Decompressor::initWithDDSFile(const char * pathToDDSFile)
 {
 	return m.initWithDDSFile(pathToDDSFile);
@@ -40,20 +60,21 @@ bool Decompressor::Private::initWithDDSFile(const char * pathToDDSFile)
 	{
 		return false;
 	}
-	nv::DirectDrawSurface dds(pathToDDSFile);
-	if (!dds.isValid())
+	m_dds = new nv::DirectDrawSurface(pathToDDSFile);
+	
+	if (!m_dds->isValid())
 	{
 		printf("The file '%s' is not a valid DDS file.\n", pathToDDSFile);
 		return false;
 	}
-	m_dds = new nv::DirectDrawSurface(dds);
+	
 	return true;
 }
 
 //NVTT_API void erase();
 void Decompressor::erase()
 {
-	//m.erase();
+	m.erase();
 }
 
 void Decompressor::Private::erase()
@@ -65,21 +86,20 @@ void Decompressor::Private::erase()
 }
 
 //NVTT_API bool getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const;
-bool Decompressor::getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const
+bool Decompressor::getDecompressedSize(unsigned int * width, unsigned int * height) const
 {
-	return m.getDecompressedSize(mipmapNumber, size);
+	return m.getDecompressedSize(width, height);
 }
 
-bool Decompressor::Private::getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const
+bool Decompressor::Private::getDecompressedSize(unsigned int * width, unsigned int * height) const
 {
-	if(NULL == size || NULL == m_dds)
+	if(NULL == width || NULL == height || NULL == m_dds)
 	{
 		return false;
 	}
 
-	nv::Image img;
-	m_dds->mipmap(&img, 0, mipmapNumber); // get first image
-	*size = img.width() * img.height() * sizeof(Color32);
+	*width = m_dds->width();
+	*height= m_dds->height();
 	return true;
 }
 		

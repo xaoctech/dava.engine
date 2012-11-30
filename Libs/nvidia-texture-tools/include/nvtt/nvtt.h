@@ -305,11 +305,11 @@ namespace nvtt
 		NVTT_API ~Decompressor();
 		
 		NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
+		
 		NVTT_API void erase();
 
-		NVTT_API bool getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const;
+		NVTT_API bool getDecompressedSize(unsigned int * width, unsigned int * height) const;
 
-		// Decompress file from path to data in format ARGB8888, false return - fail;
 		NVTT_API bool process(void * data, unsigned int size) const;
 
 		NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;

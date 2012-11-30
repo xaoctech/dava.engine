@@ -21,7 +21,7 @@ namespace nvtt
 		
 		void erase();
 
-		bool getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const;
+		bool getDecompressedSize(unsigned int * width, unsigned int * height) const;
 
 		bool decompress(void * data, unsigned int size) const;
 
