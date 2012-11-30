@@ -498,14 +498,8 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
 	{
-		if(IsPointerToExactClass<SceneNode>(dstNode))
-		{
-			dstNode = new SceneNode();
-		}
-		else
-		{
-			DVASSERT_MSG(false, "Can clone only SceneNode");
-		}
+		DVASSERT_MSG(IsPointerToExactClass<SceneNode>(this), "Can clone only SceneNode");
+		dstNode = new SceneNode();
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
