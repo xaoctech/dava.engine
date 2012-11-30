@@ -30,6 +30,10 @@ public:
      \brief Start the playback for all inner nodes.
      */
     void Start();
+
+	void Stop();
+
+	void Restart();
     
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.

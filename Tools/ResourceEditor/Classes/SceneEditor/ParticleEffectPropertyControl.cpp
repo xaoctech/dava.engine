@@ -35,11 +35,12 @@ void ParticleEffectPropertyControl::OnStart(BaseObject * object, void * userData
 void ParticleEffectPropertyControl::OnStop(BaseObject * object, void * userData, void * callerData)
 {
 	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
+	particleEffect->Stop();
 }
 
 void ParticleEffectPropertyControl::OnRestart(BaseObject * object, void * userData, void * callerData)
 {
 	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
-
+	particleEffect->Restart();
 }
 

@@ -98,6 +98,27 @@ void ParticleEffectNode::Start()
     this->emittersCurrentlyStopped = 0;
 }
 
+void ParticleEffectNode::Stop()
+{
+	int32 childrenCount = GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
+		particleEmitterNode->GetEmitter()->Stop();
+		emittersCurrentlyStopped++;
+	}
+}
+
+void ParticleEffectNode::Restart()
+{
+	int32 childrenCount = GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
+		particleEmitterNode->GetEmitter()->Restart(true);
+	}
+}
+
 void ParticleEffectNode::StopAfterNRepeats(int32 numberOfRepeats)
 {
     this->stopAfterNRepeats = numberOfRepeats;
@@ -184,3 +205,5 @@ SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
 
 	return dstNode;
 }
+
+
