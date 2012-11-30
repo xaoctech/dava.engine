@@ -294,6 +294,7 @@ private:
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
     bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
+    bool CheckImageSize(const Vector<Image *> &imageSet);
     
     
 	static PixelFormat defaultRGBAFormat;

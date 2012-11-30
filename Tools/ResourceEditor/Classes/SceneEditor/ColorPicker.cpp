@@ -2,6 +2,8 @@
 #include "ControlsFactory.h"
 #include "ColorPickerDelegate.h"
 
+#include "EditorSettings.h"
+
 //*************  ColorDetailControl  *************
 ColorDetailControl::ColorDetailControl(const Rect &rect)
 :   UIControl(rect)
@@ -346,6 +348,9 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     :   ExtendedDialog()
     ,   delegate(newDelegate)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
+    
     draggableDialog->SetRect(GetDialogRect());
     
     colorMapControl = new ColorMapControl(Rect(ControlsFactory::OFFSET, ControlsFactory::OFFSET, 
@@ -419,6 +424,8 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     SafeRelease(btnOk);
     
     SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 ColorPicker::~ColorPicker()

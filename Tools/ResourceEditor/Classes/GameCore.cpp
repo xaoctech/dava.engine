@@ -25,7 +25,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "Qt/SceneDataManager.h"
+#include "Qt/Scene/SceneDataManager.h"
 
 
 using namespace DAVA;

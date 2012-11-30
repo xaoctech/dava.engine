@@ -5,6 +5,7 @@
 #include <QMap>
 #include "DAVAEngine.h"
 #include "QtPosSaver/QtPosSaver.h"
+#include "Scene/SceneDataManager.h"
 
 class QModelIndex;
 class TextureListDelegate;
@@ -43,7 +44,6 @@ private:
 
 	TextureListModel *textureListModel;
 	TextureListDelegate *textureListImagesDelegate;
-	QAbstractItemDelegate *textureListDefaultDelegate;
 
 	QSlider *toolbarZoomSlider;
 	QLabel *toolbarZoomSliderValue;
@@ -53,6 +53,7 @@ private:
 	
 	QMap<QString, int> textureListSortModes;
 
+	DAVA::Scene *curScene;
 	TextureView curTextureView;
 
 	DAVA::Texture *curTexture;
@@ -72,17 +73,19 @@ private:
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setTextureView(TextureView view, bool forceConvert = false);
 
+	void updateConvertedImageAndInfo(const QImage &image);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
+
+	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
 
 private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
 	void textureListFilterChanged(const QString &text);
 	void textureListSortChanged(const QString &text);
-	void textureListItemNeedRedraw(const DAVA::Texture *texture);
 	void texturePressed(const QModelIndex & index);
 	void textureColorChannelPressed(bool checked);
 	void textureBorderPressed(bool checked);
@@ -90,9 +93,9 @@ private slots:
 	void texturePropertyChanged(const int propGroup);
 	void textureViewPVR(bool checked);
 	void textureViewDXT(bool checked);
-	void textureReadyOriginal(const DAVA::Texture *texture, const QImage &image);
-	void textureReadyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void textureReadyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void textureReadyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 	void texturePixelOver(const QPoint &pos);
 	void textureZoomSlide(int value);
 	void textureZoom100(bool checked);
@@ -100,6 +103,10 @@ private slots:
 	void textureAreaWheel(int delta);
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
+
+	void sceneActivated(SceneData *scene);
+	void sceneChanged(SceneData *scene);
+	void sceneReleased(SceneData *scene);
 };
 
 #endif // __TEXTURE_DIALOG_H__

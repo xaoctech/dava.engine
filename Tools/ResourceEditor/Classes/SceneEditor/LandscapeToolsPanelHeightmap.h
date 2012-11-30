@@ -19,6 +19,9 @@ public:
     virtual void WillAppear();
     virtual void Update(float32 timeElapsed);
 
+    virtual void Input(UIEvent *currentInput);
+
+    
     //UITextFieldDelegate
     virtual void TextFieldShouldReturn(UITextField * textField);
     virtual void TextFieldShouldCancel(UITextField * textField);

@@ -4,6 +4,9 @@
 # set local path for lib
 LOCAL_PATH := $(call my-dir)
 
+DAVA_ROOT := $(LOCAL_PATH)
+
+
 # clear all variables
 include $(CLEAR_VARS)
 
@@ -33,6 +36,7 @@ LOCAL_SRC_FILES :=  \
                     Base/Data.cpp \
                     Base/DynamicObjectCache.cpp \
                     Base/EventDispatcher.cpp \
+                    Base/FastName.cpp \
                     Base/FixedSizePoolAllocator.cpp \
                     Base/Message.cpp \
                     Base/ObjectFactory.cpp \
@@ -209,6 +213,7 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/SkeletonNode.cpp \
                     Scene3D/SphereNode.cpp \
                     Scene3D/SpriteNode.cpp \
+                    Scene3D/SwitchNode.cpp \
                     Scene3D/UserNode.cpp \
                     \
                     Sound/Sound.cpp \
@@ -288,4 +293,9 @@ LOCAL_STATIC_LIBRARIES := libbox2d
 include $(BUILD_STATIC_LIBRARY)
 
 # include modules
+$(call import-add-path,$(DAVA_ROOT)/..)
+$(call import-add-path,$(DAVA_ROOT)/../External)
+$(call import-add-path,$(DAVA_ROOT)/../External/Box2D)
+$(call import-add-path,$(DAVA_ROOT))
+
 $(call import-module,box2d)

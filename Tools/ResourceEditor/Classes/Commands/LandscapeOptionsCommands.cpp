@@ -1,8 +1,8 @@
 #include "LandscapeOptionsCommands.h"
 
 #include "DAVAEngine.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 
 
 using namespace DAVA;

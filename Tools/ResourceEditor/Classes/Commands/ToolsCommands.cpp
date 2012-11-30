@@ -3,10 +3,10 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-#include "../Qt/GUIState.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 
 using namespace DAVA;

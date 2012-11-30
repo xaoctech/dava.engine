@@ -1,7 +1,7 @@
 #include "LightmapsPacker.h"
 
 #include "SceneEditor/PVRConverter.h"
-#include "Qt/QtUtils.h"
+#include "Qt/Main/QtUtils.h"
 
 LightmapsPacker::LightmapsPacker()
 {

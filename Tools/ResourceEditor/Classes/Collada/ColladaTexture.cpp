@@ -7,7 +7,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
 #include "../SceneEditor/PVRConverter.h"
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 
 ///*
 // INCLUDE DevIL

@@ -3,8 +3,8 @@
 #include "SceneEditorScreenMain.h"
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
-#include "Qt/SceneDataManager.h"
-#include "Qt/SceneData.h"
+#include "Qt/Scene/SceneDataManager.h"
+#include "Qt/Scene/SceneData.h"
 
 MeshInstancePropertyControl::MeshInstancePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)

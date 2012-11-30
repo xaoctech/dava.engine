@@ -341,3 +341,22 @@ void TextureProperties::MipMapSizesReset()
 	enumBaseDXTMipmapLevel->setEnabled(false);
 	enumBasePVRMipmapLevel->setEnabled(false);
 }
+
+void TextureProperties::resetCommonProp()
+{
+	if(NULL != curTextureDescriptor)
+	{
+		curTextureDescriptor->SetDefaultValues();
+
+		// mipmap
+		propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
+
+		// wrap mode
+		propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
+		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+
+		// min gl filter
+		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
+	}
+}

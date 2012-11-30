@@ -12,15 +12,16 @@
 #include "../Commands/LandscapeOptionsCommands.h"
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
+#include "../Commands/VisibilityCheckToolCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "GUIState.h"
-#include "SceneDataManager.h"
-#include "SceneData.h"
-#include "QtUtils.h"
-#include "mainwindow.h"
+#include "Scene/SceneDataManager.h"
+#include "Scene/SceneData.h"
+#include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -141,7 +142,9 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 void QtMainWindowHandler::Materials()
 {
     Execute(new CommandMaterials());
+
 	/*
+	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -170,6 +173,7 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
+	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	if(NULL != screen)
 	{
@@ -178,11 +182,11 @@ void QtMainWindowHandler::ConvertTextures()
 		if(NULL != body && NULL != body->bodyControl)
 		{
 			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			textureBrowser.setScene(mainScreenScene);
+			textureBrowser->setScene(mainScreenScene);
 		}
 	}
 
-	textureBrowser.show();
+	textureBrowser->show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
@@ -494,6 +498,11 @@ void QtMainWindowHandler::SaveTextureCustomColors()
     Execute(new CommandSaveTextureCustomColors());
 }
 
+void QtMainWindowHandler::LoadTextureCustomColors()
+{
+	Execute(new CommandLoadTextureCustomColors());
+}
+
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
     Execute(new CommandChangeBrushSizeCustomColors(newSize));
@@ -504,33 +513,128 @@ void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
     Execute(new CommandChangeColorCustomColors(newColorIndex));
 }
 
-void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox)
+void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
 {
 	this->customColorsToggleButton = toggleButton;
 	this->customColorsSaveTextureButton = saveTextureButton;
 	this->customColorsBrushSizeSlider = brushSizeSlider;
 	this->customColorsColorComboBox = colorComboBox;
+	this->customColorsLoadTextureButton = loadTextureButton;
 }
 
 void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 {
+	DVASSERT(customColorsToggleButton &&
+			 customColorsSaveTextureButton &&
+			 customColorsBrushSizeSlider &&
+			 customColorsColorComboBox &&
+			 customColorsLoadTextureButton);
+
 	customColorsToggleButton->blockSignals(true);
+	customColorsToggleButton->setCheckable(state);
 	customColorsToggleButton->setChecked(state);
 	customColorsToggleButton->blockSignals(false);
 
-	QString buttonText = state ? "Disable Custom Colors" : "Enable Custom Colors";
+	QString buttonText = state ? tr("Disable Custom Colors") : tr("Enable Custom Colors");
 	customColorsToggleButton->setText(buttonText);
 
 	customColorsSaveTextureButton->setEnabled(state);
 	customColorsBrushSizeSlider->setEnabled(state);
 	customColorsColorComboBox->setEnabled(state);
+	customColorsLoadTextureButton->setEnabled(state);
 	customColorsSaveTextureButton->blockSignals(!state);
 	customColorsBrushSizeSlider->blockSignals(!state);
 	customColorsColorComboBox->blockSignals(!state);
+	customColorsLoadTextureButton->blockSignals(!state);
 
 	if(state == true)
 	{
 		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
 		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
 	}
+}
+
+void QtMainWindowHandler::ToggleVisibilityTool()
+{
+	Execute(new CommandToggleVisibilityTool());
+}
+
+void QtMainWindowHandler::SaveTextureVisibilityTool()
+{
+	Execute(new CommandSaveTextureVisibilityTool());
+}
+
+void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
+{
+	Execute(new CommandChangeAreaSizeVisibilityTool(newSize));
+}
+
+void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
+{
+	Execute(new CommandSetPointVisibilityTool());
+}
+
+void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
+{
+	Execute(new CommandSetAreaVisibilityTool());
+}
+
+void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
+{
+	visibilityToolToggleButton = toggleButton;
+	visibilityToolSaveTextureButton = saveTextureButton;
+	visibilityToolSetPointButton = setPointButton;
+	visibilityToolSetAreaButton = setAreaButton;
+	visibilityToolAreaSizeSlider = areaSizeSlider;
+}
+
+void QtMainWindowHandler::SetWidgetsStateVisibilityTool(bool state)
+{
+	DVASSERT(visibilityToolToggleButton &&
+			 visibilityToolSetPointButton &&
+			 visibilityToolSetAreaButton &&
+			 visibilityToolSaveTextureButton &&
+			 visibilityToolAreaSizeSlider);
+	
+	visibilityToolToggleButton->blockSignals(true);
+	visibilityToolToggleButton->setCheckable(state);
+	visibilityToolToggleButton->setChecked(state);
+	visibilityToolToggleButton->blockSignals(false);
+	
+	QString toggleButtonText = state ? tr("Disable Visibility Check Tool"): tr("Enable Visibility Check Tool");
+	visibilityToolToggleButton->setText(toggleButtonText);
+
+	visibilityToolSaveTextureButton->setEnabled(state);
+	visibilityToolSetPointButton->setEnabled(state);
+	visibilityToolSetAreaButton->setEnabled(state);
+	visibilityToolAreaSizeSlider->setEnabled(state);
+	visibilityToolSaveTextureButton->blockSignals(!state);
+	visibilityToolSetPointButton->blockSignals(!state);
+	visibilityToolSetAreaButton->blockSignals(!state);
+	visibilityToolAreaSizeSlider->blockSignals(!state);
+	
+	if(state == true)
+	{
+		ChangleAreaSizeVisibilityTool(visibilityToolAreaSizeSlider->value());
+	}
+}
+
+void QtMainWindowHandler::SetPointButtonStateVisibilityTool(bool state)
+{
+	DVASSERT(visibilityToolSetPointButton);
+
+	bool b = visibilityToolSetPointButton->signalsBlocked();
+	visibilityToolSetPointButton->blockSignals(true);
+	visibilityToolSetPointButton->setChecked(state);
+	visibilityToolSetPointButton->blockSignals(b);
+}
+
+void QtMainWindowHandler::SetAreaButtonStateVisibilityTool(bool state)
+{
+	DVASSERT(visibilityToolSetAreaButton);
+
+	bool b = visibilityToolSetAreaButton->signalsBlocked();
+	visibilityToolSetAreaButton->blockSignals(true);
+	visibilityToolSetAreaButton->setChecked(state);
+	visibilityToolSetAreaButton->blockSignals(b);
 }
