@@ -247,7 +247,6 @@
 		5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E115B44BB70038AF3A /* UISpriteEditor.cpp */; };
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
-		5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */; };
 		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
 		5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */; };
 		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
@@ -941,8 +940,6 @@
 		5C7F49E415B44BB70038AF3A /* VertexOctTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexOctTree.h; path = Classes/VertexOctTree.h; sourceTree = "<group>"; };
 		5C7F49F615B44EE50038AF3A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
-		5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FuckingErrorDialog.cpp; path = Classes/SceneEditor/FuckingErrorDialog.cpp; sourceTree = "<group>"; };
-		5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuckingErrorDialog.h; path = Classes/SceneEditor/FuckingErrorDialog.h; sourceTree = "<group>"; };
 		5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandCreateNode.cpp; path = Classes/Commands/CommandCreateNode.cpp; sourceTree = "<group>"; };
 		5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandCreateNode.h; path = Classes/Commands/CommandCreateNode.h; sourceTree = "<group>"; };
 		5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandViewport.cpp; path = Classes/Commands/CommandViewport.cpp; sourceTree = "<group>"; };
@@ -1706,8 +1703,6 @@
 				C78621891602175100C96AA8 /* EditorConfig.h */,
 				5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */,
 				5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */,
-				5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */,
-				5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */,
 				5C7F48CE15B44B7A0038AF3A /* BoxPropertyControl.cpp */,
 				5C7F48CF15B44B7A0038AF3A /* BoxPropertyControl.h */,
 				5C7F48D015B44B7A0038AF3A /* CameraController.cpp */,
@@ -2426,7 +2421,6 @@
 				5C7F49F115B44BB70038AF3A /* UIScrollView.cpp in Build Sources */,
 				5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */,
 				5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */,
-				5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */,
 				5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */,
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
 				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
