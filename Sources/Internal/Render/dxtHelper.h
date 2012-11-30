@@ -18,11 +18,21 @@ class DxtWrapper
 {
 public:
     
-	static bool IsDxtFile(File *file) {return false;};
-    
-	static int ReadDxtFile(const char *file, Image * image){return 0;};
-	static int ReadDxtFile(File *infile, Image * image){return 0;};
-	static void WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+	static bool IsDxtFile(const char *fileName);
+
+	static bool WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat);
+
+	static uint32 GetMipMapLevelsCount(const char *fileName);
+
+	static Image * ReadDxtFile(const char *fileName);
+
+	static PixelFormat GetPixelFormat(const char* fileName);
+
+	static bool getDecompressedSize(const char *fileName, uint32 * width,  uint32 * height);
+
+	static void Test();
+	
+	static Image * CreateImageAsBGRA8888(Sprite *sprite);
 
 };
 /*

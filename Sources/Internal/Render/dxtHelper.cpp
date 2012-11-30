@@ -10,209 +10,268 @@
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/LibPngHelpers.h"
 
 using namespace DAVA;
 using namespace nvtt;
 
-
-void DxtWrapper::WriteDxtFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
+PixelFormat DxtWrapper::GetPixelFormat(const char* filePathname)
 {
-	printf("* Writing DXT(*.DDS) file (%d x %d): %s\n", width, height, file_name);
-	/*
-	png_color_8 sig_bit;
-	
-	png_structp png_ptr;
-	png_infop info_ptr;
-    
-    
-	png_byte color_type = PNG_COLOR_TYPE_RGBA;
-	png_byte bit_depth = 8;
-    
-    int32 bytes_for_color = 4;
-    if(FORMAT_A8 == format)
-    {
-        color_type = PNG_COLOR_TYPE_GRAY;
-        bytes_for_color = 1;
-    }
-    else if(FORMAT_A16 == format)
-    {
-        bit_depth = 16;
-        color_type = PNG_COLOR_TYPE_GRAY;
-        bytes_for_color = 2;
-    }
-    
-	png_bytep * row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
-    
-    
-	for (int y = 0; y < height; y++)
+	PixelFormat retValue = FORMAT_INVALID;
+
+	nvtt::Decompressor dec;
+	bool res = false;
+	nvtt::Format innerFormat;
+
+	res = dec.initWithDDSFile(filePathname);
+	if(!res)
 	{
-//		row_pointers[y] = (png_byte*) &data[y * width * 4];
-		row_pointers[y] = (png_byte*) &data[y * width * bytes_for_color];
+		return FORMAT_INVALID;
 	}
-	
-	*/
-	/* create file */
-	FILE *fp = fopen(file_name, "wb");
-	if (!fp)
+
+	res = dec.getCompressionFormat(&innerFormat);
+	//dec.erase();
+
+	if(!res)
 	{
-		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name);
-		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
-		return;
+		return FORMAT_INVALID;
 	}
+
+	switch (innerFormat)
+	{
+	case Format_RGB:
+		retValue = FORMAT_RGBA8888;
+		break;
+	case Format_DXT1:
+		retValue = FORMAT_DXT1;
+		break;
+	case Format_DXT3:
+		retValue = FORMAT_DXT3;
+		break;
+	case Format_DXT5:
+		retValue = FORMAT_DXT5;
+		break;
+	case Format_DXT5n:
+		retValue = FORMAT_DXT5NM;
+		break;
+	case Format_BC4:
+	case Format_BC5:
+	default:
+		retValue = FORMAT_INVALID;
+		break;
+
+	}
+
+	return retValue;
+}
+
+bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat)
+{
+	if(NULL == fileName)
+		return false;
+
+	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5) )
+		return false;
+
+	printf("* Writing DXT(*.DDS) file (%d x %d): %s\n", width, height, fileName);
+
 	
-	/*
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(TextureType_2D, width, height);
+	inputOptions.setMipmapGeneration(false);
 	inputOptions.setMipmapData(data, width, height);
 
 	OutputOptions outputOptions;
-	outputOptions.setFileName("testt.dds");
-	
+	outputOptions.setFileName(fileName);
 	CompressionOptions compressionOptions;
-	compressionOptions.setFormat(Format_DXT1);
+
+	nvtt::Format innerComprFormat;
+	switch (compressionFormat)
+	{
+	case FORMAT_DXT1:
+		innerComprFormat = nvtt::Format_DXT1;
+		break;
+	case FORMAT_DXT1NM:
+		innerComprFormat = nvtt::Format_DXT1;
+		compressionOptions.setColorWeights(1, 1, 0);
+		break;
+	case FORMAT_DXT1A:
+		innerComprFormat = nvtt::Format_DXT1a;
+		break;
+	case FORMAT_DXT3:
+		innerComprFormat = nvtt::Format_DXT3;
+		break;
+	case FORMAT_DXT5:
+		innerComprFormat = nvtt::Format_DXT5;
+		break;
+	case FORMAT_DXT5NM:
+		innerComprFormat = nvtt::Format_DXT5n;
+		break;
+	case FORMAT_RGBA8888:
+		innerComprFormat = nvtt::Format_RGBA;
+		break;
+	default:
+		return false;
+	}
+
+	compressionOptions.setFormat(innerComprFormat);
 	
 	Compressor compressor;
 	compressor.process(inputOptions, compressionOptions, outputOptions);
-	*/
-
-	Decompressor decompressor;
-	nvtt::Format mformat;
-	bool ret =false;
-
-	/*
 	
-	*/
+	return true;
+}
 
-	decompressor.initWithDDSFile("c:/dds/bc1.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+bool DxtWrapper::IsDxtFile(const char *filePathname)
+{
+	nvtt::Decompressor dec;
+	bool res = false;
 
-	decompressor.initWithDDSFile("c:/dds/bc1a.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	res = dec.initWithDDSFile(filePathname);
+	//dec.erase();
 
-	decompressor.initWithDDSFile("c:/dds/bc1n.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	return res;
+}
 
-	decompressor.initWithDDSFile("c:/dds/bc2.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+uint32 DxtWrapper::GetMipMapLevelsCount(const char *fileName)
+{
+	nvtt::Decompressor dec;
+	uint32 number = 0;
 
-	decompressor.initWithDDSFile("c:/dds/bc3.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	if(dec.initWithDDSFile(fileName))
+	{
+		if(!dec.getMipMapCount(&number))
+		{
+			number = 0;
+		}
+	}
 
-	decompressor.initWithDDSFile("c:/dds/bc3n.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	//dec.erase();
+	return number;
+}
 
-	decompressor.initWithDDSFile("c:/dds/bc4.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+Image * DxtWrapper::ReadDxtFile(const char *fileName)
+{
+	Image * retVal = NULL;
+	if(NULL == fileName )
+	{
+		return retVal;
+	}
+	nvtt::Decompressor dec;
 
-	decompressor.initWithDDSFile("c:/dds/bc5.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	if(dec.initWithDDSFile(fileName))
+	{
+		uint32 width = 0;
+		uint32 height = 0;
+		if(dec.getDecompressedSize(&width, &height))
+		{
+			if(0 != width || 0 != height)
+			{
+				Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
+				uint32 size = width * height * 4;
+				if(dec.process(innerImage->data, size))
+				{
+					retVal = innerImage;
+				}
+				else
+				{
+					SafeRelease(innerImage);
+				}
+			}
+		}
+	}
 
-	decompressor.initWithDDSFile("c:/dds/rgb.dds");
-	ret = decompressor.getCompressionFormat( &mformat);
-	decompressor.erase();
+	//dec.erase();
+	return retVal;
+}
 
-	///* initialize stuff */
-	//png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	//
-	//
-	//
-	//info_ptr = png_create_info_struct(png_ptr);
-	//if (!info_ptr)
-	//{
-	//	Logger::Error("[LibPngWrapper::WritePngFile] png_create_info_struct failed");
-	//
-	//	//abort_("[write_png_file] png_create_info_struct failed");
-	//	return;
-	//}
-	//
-	//if (setjmp(png_jmpbuf(png_ptr)))
-	//{
-	//	Logger::Error("[LibPngWrapper::WritePngFile] Error during init_io");
-	//	//abort_("[write_png_file] Error during init_io");
-	//	return;
-	//}
-	//
-	//png_init_io(png_ptr, fp);
+bool DxtWrapper::getDecompressedSize(const char *fileName, uint32 * width, uint32 * height)
+{
+	bool retVal = false;
+	nvtt::Decompressor dec;
+	if(dec.initWithDDSFile(fileName))
+	{
+		if(dec.getDecompressedSize(width, height))
+		{
+			retVal = true;
+		}
+	}
+
+
+	//dec.erase();
+	return retVal;
+}
+
+void DxtWrapper::Test()
+{
+	const char* fnamePng = "C:\\dds\\1\\3.png";
+	const char* fnameDds = "C:\\dds\\1\\3.dds";
+	bool res = false;
 	
-	
-	///* write header */
-	//if (setjmp(png_jmpbuf(png_ptr)))
+	//Image * img = new Image();
+	//int pngInt = LibPngWrapper::ReadPngFile(fnamePng, img);
+	//
+	//uint8* imgData = img->data;
+	//uint32 imgDataSize = img->width * img->height *4;
+	//for(uint32 i = 0; i < imgDataSize; i+=4)
 	//{
-	//	Logger::Error("[LibPngWrapper::WritePngFile] Error during writing header");
-	//	//abort_("[write_png_file] Error during writing header");
-	//	return;
+	//	//RGBA -> BGRA
+	//	uint8* rComponent = imgData + i;
+	//	
+	//	uint8* bComponent = imgData + i + 2;
+	//	uint8 tmp = *rComponent;
+	//	*rComponent = *bComponent;
+	//	*bComponent = tmp;
 	//}
-    //
-	//
-	//png_set_IHDR(png_ptr, info_ptr, width, height,
-	//			 bit_depth, color_type, PNG_INTERLACE_NONE,
-	//			 PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-	//
-	//
-    //if(FORMAT_A8 == format)
-    //{
-    //    sig_bit.red = 0;
-    //    sig_bit.green = 0;
-    //    sig_bit.blue = 0;
-    //    
-    //    sig_bit.gray = 8;
-    //    sig_bit.alpha = 0;
-    //}
-    //else if(FORMAT_A16 == format)
-    //{
-    //    sig_bit.red = 0;
-    //    sig_bit.green = 0;
-    //    sig_bit.blue = 0;
-    //    
-    //    sig_bit.gray = 16;
-    //    sig_bit.alpha = 0;
-    //}
-    //else 
-    //{
-    //    sig_bit.red = 8;
-    //    sig_bit.green = 8;
-    //    sig_bit.blue = 8;
-    //    sig_bit.alpha = 8;
-    //}
-	//
-	//png_set_sBIT(png_ptr, info_ptr, &sig_bit);
-	//
-    //
-	//png_write_info(png_ptr, info_ptr);
-	//png_set_shift(png_ptr, &sig_bit);
-	//png_set_packing(png_ptr);
+	Texture* pngTex = Texture::CreateFromFile(fnamePng);
+	Sprite* pngSprite = Sprite::CreateFromTexture(pngTex, 0, 0, (float32)pngTex->width, (float32)pngTex->height);
+	Image * img  = CreateImageAsBGRA8888(pngSprite);
+	res = WriteDxtFile(fnameDds, img->width, img->height, img->data, PixelFormat::FORMAT_DXT1);
+
+	res = IsDxtFile(fnameDds);
 	
-	///* write bytes */
-	//if (setjmp(png_jmpbuf(png_ptr)))
-	//{
-	//	Logger::Error("[LibPngWrapper::WritePngFile] Error during writing bytes");
-	//	//abort_("[write_png_file] Error during writing bytes");
-	//	return;
-	//}
-	//
-	//png_write_image(png_ptr, row_pointers);
-	//
-	//
-	///* end write */
-	//if (setjmp(png_jmpbuf(png_ptr)))
-	//{
-	//	Logger::Error("[LibPngWrapper::WritePngFile] Error during end of write");
-	//	//abort_("[write_png_file] Error during end of write");
-	//	return;
-	//}
-	//
-	//png_write_end(png_ptr, NULL);
-	//
-	//free(row_pointers);
+	uint32 mapCount = GetMipMapLevelsCount(fnameDds);
+
+	Image * retImg = ReadDxtFile(fnameDds);
+	LibPngWrapper::WritePngFile("C:\\dds\\1\\1_out.png",retImg->width,retImg->height,retImg->data,PixelFormat::FORMAT_RGBA8888);
+
+	PixelFormat retFormat = GetPixelFormat(fnameDds);
+
+	uint32 w = 0;
+	uint32 h = 0;
+	res = getDecompressedSize(fnameDds, &w, &h);
+}
+
+
+Image * DxtWrapper::CreateImageAsBGRA8888(Sprite *sprite)
+{
+
+    Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
+    RenderManager::Instance()->SetRenderTarget(renderTarget);
+    
+    sprite->SetPosition(0, 0);
+    sprite->Draw();
+    
+    RenderManager::Instance()->RestoreRenderTarget();
+    
+    Texture *renderTargetTexture = renderTarget->GetTexture();
+    Image *resultImage = renderTargetTexture->CreateImageFromMemory();
+    
+	uint8* imgData = resultImage->data;
+	uint32 imgDataSize = resultImage->width * resultImage->height *4;
+	for(uint32 i = 0; i < imgDataSize; i+=4)
+	{
+		//RGBA -> BGRA
 	
-	fclose(fp);
+		uint8* rComponent = imgData + i;
+		
+		uint8* bComponent = imgData + i + 2;
+		uint8 tmp = *rComponent;
+		*rComponent = *bComponent;
+		*bComponent = tmp;
+	}
+    SafeRelease(renderTarget);
+    return resultImage;
 }
