@@ -28,14 +28,13 @@ void ParticleEffectPropertyControl::ReadFrom(SceneNode * sceneNode)
 void ParticleEffectPropertyControl::OnStart(BaseObject * object, void * userData, void * callerData)
 {
 	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
+	particleEffect->Start();
 
 }
 
 void ParticleEffectPropertyControl::OnStop(BaseObject * object, void * userData, void * callerData)
 {
 	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
-
-
 }
 
 void ParticleEffectPropertyControl::OnRestart(BaseObject * object, void * userData, void * callerData)
