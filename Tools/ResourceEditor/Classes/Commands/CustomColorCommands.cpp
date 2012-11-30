@@ -72,9 +72,7 @@ void CommandLoadTextureCustomColors::Execute()
 		FileSystem::SplitPath(sceneFilePath, currentPath, sceneFileName);
 	}
 
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Load texture"), QString(currentPath.c_str()), QString("PNG image (*.png)"));
-
-	String selectedPathname = PathnameToDAVAStyle(filePath);
+	String selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
 	if(!selectedPathname.empty())
 	{
 		screen->CustomColorsLoadTexture(selectedPathname);

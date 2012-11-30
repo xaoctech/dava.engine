@@ -3,8 +3,9 @@
 #include "HeightmapNode.h"
 #include "EditorSettings.h"
 #include "../EditorScene.h"
-#include "ErrorNotifier.h"
 #include "EditorBodyControl.h"
+
+#include "../Qt/Main/QtUtils.h"
 
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
@@ -73,7 +74,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
     if(!workingLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("No landscape at level.");
+        ShowErrorDialog(String("No landscape at level."));
         return false;
     }
     

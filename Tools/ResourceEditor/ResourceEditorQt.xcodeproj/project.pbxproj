@@ -178,8 +178,6 @@
 		5C7F497715B44B7A0038AF3A /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48ED15B44B7A0038AF3A /* EditorSettings.cpp */; };
 		5C7F497815B44B7A0038AF3A /* EntitiesGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48EF15B44B7A0038AF3A /* EntitiesGraph.cpp */; };
 		5C7F497915B44B7A0038AF3A /* EntityPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */; };
-		5C7F497A15B44B7A0038AF3A /* ErrorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */; };
-		5C7F497B15B44B7A0038AF3A /* ErrorNotifier.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */; };
 		5C7F497C15B44B7A0038AF3A /* ExporterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */; };
 		5C7F497D15B44B7A0038AF3A /* ExtendedDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */; };
 		5C7F497E15B44B7A0038AF3A /* FogControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48FB15B44B7A0038AF3A /* FogControl.cpp */; };
@@ -800,10 +798,6 @@
 		5C7F48F015B44B7A0038AF3A /* EntitiesGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitiesGraph.h; path = Classes/SceneEditor/EntitiesGraph.h; sourceTree = "<group>"; };
 		5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityPropertyControl.cpp; path = Classes/SceneEditor/EntityPropertyControl.cpp; sourceTree = "<group>"; };
 		5C7F48F215B44B7A0038AF3A /* EntityPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityPropertyControl.h; path = Classes/SceneEditor/EntityPropertyControl.h; sourceTree = "<group>"; };
-		5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorDialog.cpp; path = Classes/SceneEditor/ErrorDialog.cpp; sourceTree = "<group>"; };
-		5C7F48F415B44B7A0038AF3A /* ErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ErrorDialog.h; path = Classes/SceneEditor/ErrorDialog.h; sourceTree = "<group>"; };
-		5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorNotifier.cpp; path = Classes/SceneEditor/ErrorNotifier.cpp; sourceTree = "<group>"; };
-		5C7F48F615B44B7A0038AF3A /* ErrorNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ErrorNotifier.h; path = Classes/SceneEditor/ErrorNotifier.h; sourceTree = "<group>"; };
 		5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExporterScreen.cpp; path = Classes/SceneEditor/ExporterScreen.cpp; sourceTree = "<group>"; };
 		5C7F48F815B44B7A0038AF3A /* ExporterScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExporterScreen.h; path = Classes/SceneEditor/ExporterScreen.h; sourceTree = "<group>"; };
 		5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtendedDialog.cpp; path = Classes/SceneEditor/ExtendedDialog.cpp; sourceTree = "<group>"; };
@@ -1743,10 +1737,6 @@
 				5C7F48F015B44B7A0038AF3A /* EntitiesGraph.h */,
 				5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */,
 				5C7F48F215B44B7A0038AF3A /* EntityPropertyControl.h */,
-				5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */,
-				5C7F48F415B44B7A0038AF3A /* ErrorDialog.h */,
-				5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */,
-				5C7F48F615B44B7A0038AF3A /* ErrorNotifier.h */,
 				5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */,
 				5C7F48F815B44B7A0038AF3A /* ExporterScreen.h */,
 				5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */,
@@ -2358,8 +2348,6 @@
 				5C7F497715B44B7A0038AF3A /* EditorSettings.cpp in Build Sources */,
 				5C7F497815B44B7A0038AF3A /* EntitiesGraph.cpp in Build Sources */,
 				5C7F497915B44B7A0038AF3A /* EntityPropertyControl.cpp in Build Sources */,
-				5C7F497A15B44B7A0038AF3A /* ErrorDialog.cpp in Build Sources */,
-				5C7F497B15B44B7A0038AF3A /* ErrorNotifier.cpp in Build Sources */,
 				5C7F497C15B44B7A0038AF3A /* ExporterScreen.cpp in Build Sources */,
 				5C7F497D15B44B7A0038AF3A /* ExtendedDialog.cpp in Build Sources */,
 				5C7F497E15B44B7A0038AF3A /* FogControl.cpp in Build Sources */,

@@ -3,7 +3,6 @@
 #include "LandscapeTool.h"
 #include "LandscapeToolsPanelCustomColors.h"
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
 
@@ -13,6 +12,7 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Main/QtUtils.h"
 
 #include "EditorBodyControl.h"
 #include "cmath"
@@ -270,7 +270,7 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 		}
 		else
 		{
-			ErrorNotifier::Instance()->ShowError("Cannot check visibility without visibility point is set. Please set visibility point");
+			ShowErrorDialog(String("Cannot check visibility without visibility point is set. Please set visibility point"));
 		}
 	}
 	
@@ -708,7 +708,7 @@ bool LandscapeEditorVisibilityCheckTool::SetScene(EditorScene *newScene)
     EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
     if(editorLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene");
+        ShowErrorDialog(String("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene"));
         return false;
     }
     

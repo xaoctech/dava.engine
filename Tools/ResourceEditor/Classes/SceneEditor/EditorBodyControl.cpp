@@ -10,8 +10,6 @@
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
 
-#include "ErrorNotifier.h"
-
 #include "LandscapeEditorColor.h"
 #include "LandscapeEditorHeightmap.h"
 #include "SceneEditorScreenMain.h"

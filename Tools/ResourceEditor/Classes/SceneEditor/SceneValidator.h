@@ -105,9 +105,10 @@ public:
     void EnumerateTextures(Map<String, Texture *> &textures, Scene *scene);
     void RestoreTextures(Map<String, Texture *> &textures, Scene *scene);
     
+    
+    bool IsPathCorrectForProject(const String &pathname);
+
 protected:
-    
-    
     
     int32 EnumerateSceneNodes(SceneNode *node);
     
@@ -117,8 +118,6 @@ protected:
 
 	void CreateDescriptorIfNeed(const String &forPathname);
     
-    void ShowErrors();
-    
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
     bool NodeRemovingDisabled(SceneNode *node);
@@ -126,7 +125,6 @@ protected:
     void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
     
     bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
-    bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);
     
