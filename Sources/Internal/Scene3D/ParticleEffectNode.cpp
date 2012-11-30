@@ -196,6 +196,7 @@ SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEffectNode>(this), "Can clone only ParticleEffectNode");
 		dstNode = new ParticleEffectNode();
 	}
 

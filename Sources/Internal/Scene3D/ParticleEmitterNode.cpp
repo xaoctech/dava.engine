@@ -69,6 +69,7 @@ SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitterNode>(this), "Can clone only ParticleEmitterNode");
 		dstNode = new ParticleEmitterNode();
 	}
 

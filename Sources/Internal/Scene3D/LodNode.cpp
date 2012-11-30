@@ -377,6 +377,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
+		DVASSERT_MSG(IsPointerToExactClass<LodNode>(this), "Can clone only LodNode");
         dstNode = new LodNode();
     }
     
