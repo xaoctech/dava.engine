@@ -13,7 +13,6 @@
 #include "TextureTrianglesDialog.h"
 
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 
 #include "HintManager.h"
 #include "HelpDialog.h"
@@ -25,6 +24,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Main/ScenePreviewDialog.h"
+#include "../Qt/Main/QtUtils.h"
 #include "FileSystem/FileSystem.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
@@ -36,7 +36,6 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 
 void SceneEditorScreenMain::LoadResources()
 {
-    new ErrorNotifier();
     new HintManager();
     new UNDOManager();
     new PropertyControlCreator();
@@ -90,7 +89,6 @@ void SceneEditorScreenMain::UnloadResources()
         
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
-    ErrorNotifier::Instance()->Release();
     UNDOManager::Instance()->Release();
 }
 
@@ -488,7 +486,7 @@ bool SceneEditorScreenMain::SaveIsAvailable()
 {
     if(FindCurrentBody()->bodyControl->LandscapeEditorActive())
     {
-        ErrorNotifier::Instance()->ShowError("Can't save level at Landscape Editor Mode.");
+        ShowErrorDialog(String("Can't save level at Landscape Editor Mode."));
         return false;
     }
 
@@ -615,10 +613,7 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
     
 	iBody->bodyControl->PopDebugCamera();
     
-    if(0 < errorsLog.size())
-    {
-        ErrorNotifier::Instance()->ShowError(errorsLog);
-    }
+    ShowErrorDialog(errorsLog);
 
 	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
 	CopyFile(filePath);
@@ -683,10 +678,7 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
     
 	iBody->bodyControl->PopDebugCamera();
     
-    if(0 < errorsLog.size())
-    {
-        ErrorNotifier::Instance()->ShowError(errorsLog);
-    }
+    ShowErrorDialog(errorsLog);
 }
 
 

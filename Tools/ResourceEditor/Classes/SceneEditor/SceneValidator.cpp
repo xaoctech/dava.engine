@@ -1,5 +1,4 @@
 #include "SceneValidator.h"
-#include "ErrorNotifier.h"
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
 
@@ -35,13 +34,8 @@ bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
 
     ValidateScene(scene, errorMessages);
 
-    if(0 < errorMessages.size())
-    {
-        ShowErrors();
-        return true;
-    }
-    
-    return false;
+    ShowErrorDialog(errorMessages);
+    return (!errorMessages.empty());
 }
 
 
@@ -208,7 +202,7 @@ void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String
     errorMessages.clear();
 
     ValidateTexture(texture, validatedObjectName, errorMessages);
-    ShowErrors();
+    ShowErrorDialog(errorMessages);
 }
 
 void SceneValidator::ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog)
@@ -266,13 +260,6 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     }
 }
 
-void SceneValidator::ShowErrors()
-{
-    if(0 < errorMessages.size())
-    {
-        ErrorNotifier::Instance()->ShowError(errorMessages);
-    }
-}
 
 void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog)
 {

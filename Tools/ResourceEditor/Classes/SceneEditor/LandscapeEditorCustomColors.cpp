@@ -3,7 +3,6 @@
 #include "LandscapeTool.h"
 #include "LandscapeToolsPanelCustomColors.h"
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
 
@@ -17,6 +16,7 @@
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/CommandsManager.h"
 
@@ -542,7 +542,7 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
     EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
     if(editorLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("Cannot start color editor. Remove EditorLandscapeNode from scene");
+        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscapeNode from scene"));
         return false;
     }
 
