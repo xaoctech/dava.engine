@@ -6,9 +6,9 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
 
-#include "../Qt/QtUtils.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
 #include "PVRConverter.h"
@@ -203,29 +203,29 @@ bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
 }
 
 
-void SceneValidator::ValidateTextureAndShowErrors(Texture *texture)
+void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName)
 {
     errorMessages.clear();
 
-    ValidateTexture(texture, errorMessages);
+    ValidateTexture(texture, validatedObjectName, errorMessages);
     ShowErrors();
 }
 
-void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
+void SceneValidator::ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog)
 {
 	if(!texture) return;
 
-	bool pathIsCorrect = ValidatePathname(texture->GetPathname());
+	bool pathIsCorrect = ValidatePathname(texture->GetPathname(), validatedObjectName);
 	if(!pathIsCorrect)
 	{
 		String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-		errorsLog.insert("Wrong path of: " + path);
+		errorsLog.insert("Wrong path of: " + path + " for object: " + validatedObjectName);
 	}
 	
 	if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
 	{
 		String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-		errorsLog.insert("Wrong size of " + path);
+		errorsLog.insert("Wrong size of " + path + " for object: " + validatedObjectName);
 	}
     
 	// if there is no descriptor file for this texture - generate it
@@ -255,10 +255,10 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
 		}
         
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
+        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
     }
     
-    bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname());
+    bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
@@ -303,7 +303,7 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
             meshNode->GetLightmapDataForIndex(iLight)->lightmapName = TextureDescriptor::GetDescriptorPathname(lightmapName);
 		}
         
-        ValidateTexture(meshNode->GetLightmapDataForIndex(iLight)->lightmap, errorsLog);
+        ValidateTexture(meshNode->GetLightmapDataForIndex(iLight)->lightmap, Format("Mesh %s. Lightmap %d", meshNode->GetName().c_str(), iLight), errorsLog);
     }
 }
 
@@ -315,7 +315,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
         Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
         if(texture)
         {
-            ValidateTexture(texture, errorsLog);
+            ValidateTexture(texture, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
             // TODO:
             // new texture path
@@ -711,8 +711,7 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 }
 
 
-#include "FuckingErrorDialog.h"
-bool SceneValidator::ValidatePathname(const String &pathForValidation)
+bool SceneValidator::ValidatePathname(const String &pathForValidation, const String &validatedObjectName)
 {
     DVASSERT(0 < pathForChecking.length()); 
     //Need to set path to DataSource/3d for path correction  
@@ -727,17 +726,7 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
         return true;   
     }
     
-    bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
-    if(!pathIsCorrect)
-    {
-        UIScreen *screen = UIScreenManager::Instance()->GetScreen();
-        
-        FuckingErrorDialog *dlg = new FuckingErrorDialog(screen->GetRect(), String("Wrong path: ") + pathForValidation);
-        screen->AddControl(dlg);
-        SafeRelease(dlg);
-    }
-    
-    return pathIsCorrect;
+    return IsPathCorrectForProject(pathForValidation);
 }
 
 bool SceneValidator::IsPathCorrectForProject(const String &pathname)
