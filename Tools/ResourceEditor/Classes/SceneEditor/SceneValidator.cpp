@@ -711,7 +711,6 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 }
 
 
-#include "FuckingErrorDialog.h"
 bool SceneValidator::ValidatePathname(const String &pathForValidation, const String &validatedObjectName)
 {
     DVASSERT(0 < pathForChecking.length()); 
@@ -727,17 +726,7 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation, const Str
         return true;   
     }
     
-    bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
-    if(!pathIsCorrect)
-    {
-        UIScreen *screen = UIScreenManager::Instance()->GetScreen();
-        
-        FuckingErrorDialog *dlg = new FuckingErrorDialog(screen->GetRect(), String("Wrong path: ") + pathForValidation + String(" At Object: ") + validatedObjectName);
-        screen->AddControl(dlg);
-        SafeRelease(dlg);
-    }
-    
-    return pathIsCorrect;
+    return IsPathCorrectForProject(pathForValidation);
 }
 
 bool SceneValidator::IsPathCorrectForProject(const String &pathname)
