@@ -56,7 +56,7 @@ bool ParticleEffectNode::PrepareNewParticleEmitterNode(SceneNode* node)
     }
 
     // Default Node State is Stopped.
-    emitter->Stop();
+    //emitter->Stop();
     
     // The effect duration is the same as longest lifetime of the child nodes.
     float32 newEmitterLifeTime = emitter->GetLifeTime();
@@ -169,4 +169,18 @@ void ParticleEffectNode::CheckPlaybackComplete()
 void ParticleEffectNode::SetPlaybackCompleteMessage(const Message& msg)
 {
     this->playbackComplete = msg;
+}
+
+SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ParticleEffectNode();
+	}
+
+	SceneNode::Clone(dstNode);
+	ParticleEffectNode *nd = (ParticleEffectNode *)dstNode;
+	nd->effectDuration = effectDuration;
+
+	return dstNode;
 }
