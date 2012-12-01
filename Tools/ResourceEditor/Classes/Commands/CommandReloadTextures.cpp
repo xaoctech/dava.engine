@@ -1,8 +1,8 @@
 #include "CommandReloadTextures.h"
 
 #include "DAVAEngine.h"
-#include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/EditorSettings.h"
 
 using namespace DAVA;
 
@@ -15,12 +15,6 @@ CommandReloadTextures::CommandReloadTextures()
 
 void CommandReloadTextures::Execute()
 {
-    SceneValidator::Instance()->ReloadTextures();
-
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->RecreteFullTilingTexture();
-    }
+    SceneValidator::Instance()->ReloadTextures((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 

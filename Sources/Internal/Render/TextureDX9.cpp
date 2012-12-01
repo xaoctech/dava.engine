@@ -225,7 +225,8 @@ LPDIRECT3DTEXTURE9 Texture::CreateTextureNative(Vector2 & size, PixelFormat & fo
 		colorFormat = FORMAT_RGBA4444;
 	}
 	
-	bool enableAllMipMapLevels = Texture::isMipmapGenerationEnabled;
+//	bool enableAllMipMapLevels = Texture::isMipmapGenerationEnabled;
+	bool enableAllMipMapLevels = true; //TODO: need to set up real value (readed from texture descriptor)
 
 	DWORD textureFlags = (isRenderTarget) ? (D3DUSAGE_RENDERTARGET) : (0);
 

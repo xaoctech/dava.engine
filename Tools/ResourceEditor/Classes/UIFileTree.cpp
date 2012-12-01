@@ -207,7 +207,7 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 				String ext = FileSystem::GetExtension(fileList->GetFilename(fi));
 				for (size_t ei = 0; ei < extsSize; ++ei)
                 {
-                    if(0 == CompareStrings(extensions[ei], ext))
+                    if(0 == CompareCaseInsensitive(extensions[ei], ext))
 					{
 						addElement = true;
 						break;

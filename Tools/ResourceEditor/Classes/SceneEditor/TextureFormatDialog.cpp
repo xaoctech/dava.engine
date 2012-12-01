@@ -143,7 +143,7 @@ void TextureFormatDialog::OnConvert(DAVA::BaseObject *, void *, void *)
     {
         if(delegate)
         {
-            const int32 formats[] = 
+            const PixelFormat formats[] =
             {
                 FORMAT_PVR4,
                 FORMAT_PVR2

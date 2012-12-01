@@ -42,6 +42,9 @@ public:
 	LandscapeEditorPropertyControl(const Rect & rect, bool createNodeProperties, eEditorMode mode);
 	virtual ~LandscapeEditorPropertyControl();
 
+    virtual void Input(UIEvent *currentInput);
+
+    
 	virtual void ReadFrom(SceneNode * sceneNode);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);

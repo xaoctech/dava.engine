@@ -862,7 +862,6 @@ namespace DAVA
 	
 	void UIControl::SystemWillDisappear()
 	{
-		WillDisappear();
         if (GetHover()) 
         {
             UIControlSystem::Instance()->SetHoveredControl(NULL);
@@ -887,6 +886,8 @@ namespace DAVA
 			}
 			++it;
 		}
+
+		WillDisappear();
 	}
 	
 	void UIControl::SystemDidAppear()

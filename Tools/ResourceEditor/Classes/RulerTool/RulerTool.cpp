@@ -30,14 +30,14 @@
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "../SceneEditor/HeightmapNode.h"
 #include "../LandscapeEditor/RulerToolLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -98,6 +98,9 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
+	SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+	activeScene->ResetLandsacpeSelection();
+
     if(landscapesController)
     {
         landscapesController->ReleaseRulerToolLandscape();

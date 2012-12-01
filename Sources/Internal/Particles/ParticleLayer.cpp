@@ -567,7 +567,7 @@ void ParticleLayer::Draw()
 	}
 	else 
 	{
-		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
 	switch(type)
@@ -646,9 +646,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		relativeSpriteName = relativePathName;
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
-		Image::EnableAlphaPremultiplication(false);
 		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
-		Image::EnableAlphaPremultiplication(true);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{

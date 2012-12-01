@@ -13,10 +13,12 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "../LandscapeEditor/LandscapeRenderer.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../LandscapeEditor/LandscapesController.h"
+#include "../Qt/Main/QtUtils.h"
 
+#include "EditorSettings.h"
 
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -111,7 +113,7 @@ Image *LandscapeEditorHeightmap::CreateToolImage(int32 sideSize)
     Image *image = currentTool->image;
     Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888);
     Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
-                                              image->GetWidth(), image->GetHeight());
+                                              image->GetWidth(), image->GetHeight(), false);
     Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());
     
     RenderManager::Instance()->SetRenderTarget(dstSprite);
@@ -238,8 +240,10 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 if(tex)
                 {
                     tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData(), 0);
+                    //TODO: is code useful?
                     tex->GenerateMipmaps();
                     tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+                    //ENDOFTODO
                 }
             }
         }
@@ -376,7 +380,7 @@ void LandscapeEditorHeightmap::HideAction()
     if(tilemaskImage && tilemaskWasChanged)
     {
         tilemaskWasChanged = false;
-        tilemaskImage->Save(tilemaskPathname);
+        ImageLoader::Save(tilemaskImage, tilemaskPathname);
     }
 
     SafeRelease(tilemaskImage);
@@ -426,14 +430,9 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     Texture *mask = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
     if(mask)
     {
-        Image::EnableAlphaPremultiplication(false);
-        
         tilemaskPathname = mask->GetPathname();
-        tilemaskImage = Image::CreateFromFile(tilemaskPathname);
-        
-        tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight());
-        
-        Image::EnableAlphaPremultiplication(true);
+        tilemaskImage = CreateTopLevelImage(TextureDescriptor::GetPathnameForFormat(tilemaskPathname, (ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat()));
+        tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
     }
     
     LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
@@ -509,7 +508,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
         if(tilemaskImage && tilemaskWasChanged)
         {
             tilemaskWasChanged = false;
-            tilemaskImage->Save(tilemaskPathname);
+            ImageLoader::Save(tilemaskImage, tilemaskPathname);
         }
     }
 }

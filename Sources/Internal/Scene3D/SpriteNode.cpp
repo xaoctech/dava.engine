@@ -274,7 +274,7 @@ void SpriteNode::Draw()
 	eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
 //    RenderManager::Instance()->EnableBlending(true);

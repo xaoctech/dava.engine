@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
-		506AD82516108FDC00EDD303 /* ParserTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 506AD82316108FDC00EDD303 /* ParserTest.cpp */; };
-		50A570B315F2A9DA0042C403 /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */; };
 		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
@@ -17,6 +15,10 @@
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */; };
+		E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */; };
+		E87BB1E4162D5CCB001A5448 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */; };
+		E87E23B7161334E5005DB5A8 /* PVRTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E87E23B5161334E5005DB5A8 /* PVRTest.cpp */; };
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
 		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE9892E511638EF700500198 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E111638EF700500198 /* InfoPlist.strings */; };
@@ -57,10 +59,6 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
-		506AD82316108FDC00EDD303 /* ParserTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserTest.cpp; path = Classes/ParserTest.cpp; sourceTree = "<group>"; };
-		506AD82416108FDC00EDD303 /* ParserTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParserTest.h; path = Classes/ParserTest.h; sourceTree = "<group>"; };
-		50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompilerTest.cpp; path = Classes/MaterialCompilerTest.cpp; sourceTree = "<group>"; };
-		50A570B215F2A9DA0042C403 /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompilerTest.h; path = Classes/MaterialCompilerTest.h; sourceTree = "<group>"; };
 		5C44737515B5A0FD00028948 /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
 		5C44737615B5A0FD00028948 /* SoundTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -77,6 +75,14 @@
 		5CF2253E157E555D00DF5395 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseScreen.cpp; path = Classes/BaseScreen.cpp; sourceTree = "<group>"; };
 		5CF2253F157E555D00DF5395 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseScreen.h; path = Classes/BaseScreen.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveTest.cpp; path = Classes/KeyedArchiveTest.cpp; sourceTree = "<group>"; };
+		E83604EE163FEB4C0061A636 /* KeyedArchiveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyedArchiveTest.h; path = Classes/KeyedArchiveTest.h; sourceTree = "<group>"; };
+		E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveYamlTest.cpp; path = Classes/KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
+		E83604F0163FEB4C0061A636 /* KeyedArchiveYamlTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyedArchiveYamlTest.h; path = Classes/KeyedArchiveYamlTest.h; sourceTree = "<group>"; };
+		E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtils.cpp; path = Classes/TextureUtils.cpp; sourceTree = "<group>"; };
+		E87BB1E3162D5CCB001A5448 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureUtils.h; path = Classes/TextureUtils.h; sourceTree = "<group>"; };
+		E87E23B5161334E5005DB5A8 /* PVRTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRTest.cpp; path = Classes/PVRTest.cpp; sourceTree = "<group>"; };
+		E87E23B6161334E5005DB5A8 /* PVRTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRTest.h; path = Classes/PVRTest.h; sourceTree = "<group>"; };
 		FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE9892E211638EF700500198 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = MacOSSpecific/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -195,29 +201,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		506AD82616108FE000EDD303 /* ParserTest */ = {
-			isa = PBXGroup;
-			children = (
-				506AD82316108FDC00EDD303 /* ParserTest.cpp */,
-				506AD82416108FDC00EDD303 /* ParserTest.h */,
-			);
-			name = ParserTest;
-			sourceTree = "<group>";
-		};
-		50A570AF15F2A9CB0042C403 /* MaterialCompilerTest */ = {
-			isa = PBXGroup;
-			children = (
-				50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */,
-				50A570B215F2A9DA0042C403 /* MaterialCompilerTest.h */,
-			);
-			name = MaterialCompilerTest;
-			sourceTree = "<group>";
-		};
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				506AD82616108FE000EDD303 /* ParserTest */,
-				50A570AF15F2A9CB0042C403 /* MaterialCompilerTest */,
+				E83604EC163FEB370061A636 /* KeyedArchiveTest */,
+				E87E23B416133497005DB5A8 /* PVRTests */,
 				029E4D8815D40386004A4167 /* SplitTest */,
 				5C44737415B5A0EB00028948 /* SoundTest */,
 				FEA8F70615A0A54700EED3DC /* HashMap */,
@@ -258,9 +246,31 @@
 			name = TestSuite;
 			sourceTree = "<group>";
 		};
+		E83604EC163FEB370061A636 /* KeyedArchiveTest */ = {
+			isa = PBXGroup;
+			children = (
+				E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */,
+				E83604EE163FEB4C0061A636 /* KeyedArchiveTest.h */,
+				E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */,
+				E83604F0163FEB4C0061A636 /* KeyedArchiveYamlTest.h */,
+			);
+			name = KeyedArchiveTest;
+			sourceTree = "<group>";
+		};
+		E87E23B416133497005DB5A8 /* PVRTests */ = {
+			isa = PBXGroup;
+			children = (
+				E87E23B5161334E5005DB5A8 /* PVRTest.cpp */,
+				E87E23B6161334E5005DB5A8 /* PVRTest.h */,
+			);
+			name = PVRTests;
+			sourceTree = "<group>";
+		};
 		FE445A961153C27800F5EFD6 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */,
+				E87BB1E3162D5CCB001A5448 /* TextureUtils.h */,
 				5CE56F9D157F2804006C953B /* Config.h */,
 				5CF2253D157E3FDE00DF5395 /* TestSuite */,
 				5C1066D8156D351400912A45 /* Tests */,
@@ -421,8 +431,10 @@
 				FEA8F70915A0A55600EED3DC /* HashMapTest.cpp in Sources */,
 				5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */,
 				029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */,
-				50A570B315F2A9DA0042C403 /* MaterialCompilerTest.cpp in Sources */,
-				506AD82516108FDC00EDD303 /* ParserTest.cpp in Sources */,
+				E87E23B7161334E5005DB5A8 /* PVRTest.cpp in Sources */,
+				E87BB1E4162D5CCB001A5448 /* TextureUtils.cpp in Sources */,
+				E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */,
+				E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +480,6 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Debug;
@@ -483,7 +494,6 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Release;
@@ -504,6 +514,7 @@
 					/opt/local/include/,
 					../../Libs/include,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -528,6 +539,7 @@
 					/opt/local/include/,
 					../../Libs/include,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",

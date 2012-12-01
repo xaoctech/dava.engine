@@ -315,7 +315,7 @@ void Core::CalculateScaleMultipliers()
         TextBlock::ScreenResolutionChanged();
     }
 			
-	Logger::Debug("[Core] CalculateScaleMultipliers desirableIndex: %d", desirableIndex);
+//	Logger::Debug("[Core] CalculateScaleMultipliers desirableIndex: %d", desirableIndex);
 		
 }
 	
@@ -353,7 +353,7 @@ const Vector2 &Core::GetPhysicalDrawOffset()
 
 void Core::SetPhysicalScreenSize(int32 width, int32 height)
 {
-	Logger::Info("Setting physical screen size to %dx%d", width, height);
+//	Logger::Info("Setting physical screen size to %dx%d", width, height);
 	screenWidth = (float32)width;
 	screenHeight = (float32)height;
 	needTorecalculateMultipliers = true;

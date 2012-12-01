@@ -71,9 +71,7 @@ void TestScreen::LoadResources()
 	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
 	manager->AddObject(bigBoxEmitterClone);
 
-	Texture::EnableMipmapGeneration();
 	testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
-	Texture::DisableMipmapGeneration();
 
 	sndClick = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
 

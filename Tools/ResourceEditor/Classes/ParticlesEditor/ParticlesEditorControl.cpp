@@ -1,6 +1,6 @@
 #include "ParticlesEditorControl.h" 
 #include "../SceneEditor/ControlsFactory.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "../SpritesPacker.h"
 
 ParticlesEditorControl::ParticlesEditorControl()

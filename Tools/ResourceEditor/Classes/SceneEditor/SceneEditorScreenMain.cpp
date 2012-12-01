@@ -1,7 +1,6 @@
 #include "SceneEditorScreenMain.h"
 
 #include "EditorBodyControl.h"
-#include "LibraryControl.h"
 
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
@@ -12,7 +11,6 @@
 #include "SceneValidator.h"
 
 #include "TextureTrianglesDialog.h"
-#include "TextureConverterDialog.h"
 
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
@@ -24,9 +22,9 @@
 
 #include "SceneExporter.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/ScenePreviewDialog.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/ScenePreviewDialog.h"
 #include "FileSystem/FileSystem.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
@@ -56,7 +54,6 @@ void SceneEditorScreenMain::LoadResources()
     Rect fullRect = GetRect();
     settingsDialog = new SettingsDialog(fullRect, this);
     textureTrianglesDialog = new TextureTrianglesDialog();
-    textureConverterDialog = new TextureConverterDialog(fullRect);
     materialEditor = new MaterialEditor();
 	particlesEditor = new ParticlesEditorControl();
     
@@ -82,7 +79,6 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(scenePreviewDialog);
 
     SafeRelease(helpDialog);
-    SafeRelease(textureConverterDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
     
@@ -156,7 +152,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     HideScenePreview();
     
     EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
-    SceneDataManager::Instance()->ActivateScene(scene);
+    SceneDataManager::Instance()->SetActiveScene(scene);
     
     BodyItem *c = new BodyItem();
     
@@ -221,7 +217,7 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
     AddControl(bodies[btn->GetTag()]->bodyControl);
     bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
     
-    SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+    SceneDataManager::Instance()->SetActiveScene(bodies[btn->GetTag()]->bodyControl->GetScene());
 }
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
 {
@@ -744,19 +740,6 @@ void SceneEditorScreenMain::MaterialsTriggered()
     }
 }
 
-void SceneEditorScreenMain::TextureConverterTriggered()
-{
-    ReleaseResizedControl(textureConverterDialog);
-    textureConverterDialog = new TextureConverterDialog(this->GetRect());
-    
-    if(textureConverterDialog)
-    {
-        BodyItem *body = FindCurrentBody();
-        
-        textureConverterDialog->Show(body->bodyControl->GetScene());
-    }
-}
-
 void SceneEditorScreenMain::HeightmapTriggered()
 {
     BodyItem *iBody = FindCurrentBody();
@@ -791,6 +774,18 @@ void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SaveTexture(path);
+}
+
+void SceneEditorScreenMain::CustomColorsLoadTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->CustomColorsLoadTexture(path);
+}
+
+String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
+{
+	BodyItem *iBody = FindCurrentBody();
+	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
 }
 
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
@@ -886,4 +881,34 @@ void SceneEditorScreenMain::RulerToolTriggered()
 {
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->RulerToolTriggered();
+}
+
+void SceneEditorScreenMain::VisibilityToolTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_VISIBILITY_CHECK_TOOL);
+}
+
+void SceneEditorScreenMain::VisibilityToolSaveTexture(const String &path)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SaveTexture(path);
+}
+
+void SceneEditorScreenMain::VisibilityToolSetPoint()
+{
+	BodyItem *iBody = FindCurrentBody();
+	iBody->bodyControl->VisibilityToolSetPoint();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetArea()
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetArea();
+}
+
+void SceneEditorScreenMain::VisibilityToolSetAreaSize(uint32 size)
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->VisibilityToolSetAreaSize(size);
 }

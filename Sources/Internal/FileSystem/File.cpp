@@ -32,6 +32,11 @@
 #include "FileSystem/ResourceArchive.h"
 #include "FileSystem/DynamicMemoryFile.h"
 
+#include "Utils/StringFormat.h"
+
+#include <sys/stat.h>
+#include <time.h>
+
 
 namespace DAVA 
 {
@@ -285,4 +290,28 @@ bool File::WriteLine(const String & string)
 
 }
 
+String File::GetModificationDate(const String & filePathname)
+{
+    String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
+    
+    struct stat fileInfo = {0};
+    int32 ret = stat(realPathname.c_str(), &fileInfo);
+    if(0 == ret)
+    {
+#if defined (__DAVAENGINE_WIN32__)
+		tm* utcTime = gmtime(&fileInfo.st_mtime);
+#elif defined (__DAVAENGINE_ANDROID__)
+		tm* utcTime = gmtime((const time_t *)&fileInfo.st_mtime);
+#elif defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
+        tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
+#endif
+        return String(Format("%04d.%02d.%02d %02d:%02d:%02d",
+                       utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
+                       utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec));
+    }
+    return String("");
+}
+
+    
+    
 }

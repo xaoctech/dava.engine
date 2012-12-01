@@ -14,13 +14,11 @@ public:
     virtual ~SceneValidator();
 
     /*
-     \brief Function to validate Scene errors
-
-     Displays errors log at Errors Dialog
-     
+     \brief Function to validate Scene errors and Displays errors log at Errors Dialog
      \param[in] scene scene for validation
+     \returns true if errors were found
 	 */
-    void ValidateScene(Scene *scene);
+    bool ValidateSceneAndShowErrors(Scene *scene);
     
     /*
      \brief Function to validate Scene errors
@@ -44,7 +42,7 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTexture(Texture *texture);
+    void ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
@@ -52,16 +50,8 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     
-    void ValidateTexture(Texture *texture, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog);
 
-    /*
-     \brief Function to validate LandscapeNode errors
-     
-     Displays errors log at Errors Dialog
-     
-     \param[in] landscape landscape for validation
-	 */
-    void ValidateLandscape(LandscapeNode *landscape);
 
     /*
      \brief Function to validate LandscapeNode errors
@@ -69,16 +59,7 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     void ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog);
-    
-    /*
-     \brief Function to validate SceneNode errors
-     
-     Displays errors log at Errors Dialog
-     
-     \param[in] sceneNode sceneNode for validation
-	 */
-    void ValidateSceneNode(SceneNode *sceneNode);
-    
+        
     /*
      \brief Function to validate SceneNode errors
      \param[in] sceneNode sceneNode for validation
@@ -86,15 +67,6 @@ public:
 	 */
     void ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog);
     
-    /*
-     \brief Function to validate Material errors
-
-     Displays errors log at Errors Dialog
-     
-     \param[in] material material for validation
-	 */
-    void ValidateMaterial(Material *material);
-
     /*
      \brief Function to validate Material errors
      \param[in] material material for validation
@@ -116,11 +88,26 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-    static bool IsntPower2(int32 num);
+    void ReloadTextures(int32 asFile);
 
-    void ReloadTextures();
+    //Need Release returned Texture
+    Texture * ReloadTexture(const String &descriptorPathname, Texture *prevTexture, int32 asFile);
+    
+    static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
+    
+    void FindTexturesForCompression();
+    
+	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
+	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
+
+    void CreateDefaultDescriptors(const String &folderPathname);
+
+    void EnumerateTextures(Map<String, Texture *> &textures, Scene *scene);
+    void RestoreTextures(Map<String, Texture *> &textures, Scene *scene);
     
 protected:
+    
+    
     
     int32 EnumerateSceneNodes(SceneNode *node);
     
@@ -128,15 +115,24 @@ protected:
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 
+	void CreateDescriptorIfNeed(const String &forPathname);
     
     void ShowErrors();
     
-    bool ValidatePathname(const String &pathForValidation);
+    bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
     bool NodeRemovingDisabled(SceneNode *node);
     
+    void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
     
-    Set<SceneNode*> emptyNodesForDeletion;
+    bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
+    bool IsPathCorrectForProject(const String &pathname);
+
+	bool IsTextureDescriptorPath(const String &path);
+    
+    bool IsFBOTexture(Texture *texture);
+    
+    Set<SceneNode *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
     SceneInfoControl *infoControl;
