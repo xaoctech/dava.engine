@@ -32,6 +32,9 @@
 #include "LandscapeRenderer.h"
 #include "RulerToolLandscape.h"
 
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+
 using namespace DAVA;
 
 LandscapesController::LandscapesController()
@@ -135,6 +138,10 @@ void LandscapesController::ToggleNotPassableLandscape()
     
     if(notPassableTerrain)
     {
+		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		activeScene->ResetLandsacpeSelection();
+
+
         bool hidden = HideEditorLandscape(notPassableTerrain);
         if(hidden)
         {
@@ -204,10 +211,10 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     }
     else
     {
-        EditorLandscapeNode *editorNestedLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
-        if(editorNestedLandscape)
+        EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+        if(editorLandscape)
         {
-            editorNestedLandscape->SetParentLandscape(NULL);
+            editorLandscape->SetParentLandscape(NULL);
         }
         
         SceneNode *parentNode = hiddingLandscape->GetParent();
@@ -234,8 +241,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
 
 bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscapeForDetection);
-    return (NULL == editorLandscape);
+    return !(IsPointerToExactClass<EditorLandscapeNode>(landscapeForDetection));
 }
 
 
@@ -286,10 +292,10 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
     landscapeRenderer->RebuildVertexes(changedRect);
     renderedHeightmap->HeghtWasChanged(changedRect);
 
-    EditorLandscapeNode *landscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
-    if(landscape)
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
+    if(editorLandscape)
     {
-        landscape->HeihghtmapUpdated(changedRect);
+        editorLandscape->HeihghtmapUpdated(changedRect);
     }
 }
 

@@ -187,7 +187,7 @@ typedef std::string		String;
 #if defined(__DAVAENGINE_ANDROID__)
 	typedef std::basic_string<wchar_t>	WideString;
 #else //#if defined(__DAVAENGINE_ANDROID__)
-typedef std::wstring	WideString;
+	typedef std::wstring	WideString;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	
@@ -247,7 +247,13 @@ inline T Clamp(T val, T a, T b)
 }
 	
 
+#if defined(__DAVAENGINE_WIN32__)
+#define Snprinf	_snprintf	
+#else //#if defined(__DAVAENGINE_WIN32__)
+#define Snprinf	snprintf	
+#endif //#if defined(__DAVAENGINE_WIN32__)
 
+#define Memcmp memcmp
 #define Memcpy memcpy
 #define Memset memset
 #define Alloc malloc

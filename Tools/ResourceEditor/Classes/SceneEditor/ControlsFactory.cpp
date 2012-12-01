@@ -2,6 +2,8 @@
 
 #include "PropertyList.h"
 
+#include "EditorSettings.h"
+
 Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
 Font* ControlsFactory::fontError = NULL;
@@ -56,12 +58,16 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
 
 void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+    
     UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
     expandable->SetInputEnabled(false);
     expandable->SetSprite("~res:/Gfx/UI/arrowdown", 0);
     btn->AddControl(expandable);
     
     SafeRelease(expandable);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 
@@ -385,6 +391,9 @@ void ControlsFactory::CustomizeDialog(UIControl *c)
 
 void ControlsFactory::SetScrollbar(DAVA::UIList *l)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
+    
     UIControl *c = l->FindByName("ScrollBar");
     if(c) return;
     
@@ -406,6 +415,8 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     
     SafeRelease(scrollSpr);
     SafeRelease(scrollBar);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 void ControlsFactory::RemoveScrollbar(UIList *l)
@@ -420,6 +431,8 @@ void ControlsFactory::RemoveScrollbar(UIList *l)
 
 void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+    
     Rect fr = h->GetRect();
     
     Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
@@ -437,6 +450,8 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     
     SafeRelease(scrollSpr);
     SafeRelease(scrollBar);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 void ControlsFactory::AddBorder(DAVA::UIControl *c)

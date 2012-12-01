@@ -232,7 +232,8 @@
 
 - (BOOL)resignFirstResponder
 {	
-	return YES;
+//	return YES;
+    return NO;
 }
 
 
@@ -403,7 +404,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
     [super mouseEntered:theEvent];
 
-	NSLog(@"mouse ENTERED");
+//	NSLog(@"mouse ENTERED");
     if(RenderManager::Instance()->GetCursor())
     {
         if(RenderManager::Instance()->GetCursor()->IsShow())
@@ -418,7 +419,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
     [super mouseExited:theEvent];
 
 	
-    NSLog(@"mouse EXITED");
+//    NSLog(@"mouse EXITED");
     [NSCursor unhide];
 //	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }

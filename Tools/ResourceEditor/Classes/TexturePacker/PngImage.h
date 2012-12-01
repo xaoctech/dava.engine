@@ -37,7 +37,13 @@ public:
 	
 	inline int32 GetWidth();
 	inline int32 GetHeight();
-private:	
+    
+    void DitherAlpha();
+    
+private:
+    
+    Color GetDitheredColorForPoint(int32 x, int32 y);
+    
 	int32		width;
 	int32		height;
 	uint8  *	data;

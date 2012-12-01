@@ -37,12 +37,9 @@ class EditorBodyControl;
 class EditorScene;
 class RulerTool: public DAVA::BaseObject
 {
-    enum eConst
-    {
-        PREDEFINED_SIZE = 10,
-        APPROXIMATION_COUNT = 10,
-        RAY_TRACING_DISTANCE = 1000
-    };
+    static const DAVA::int32 PREDEFINED_SIZE = 10;
+    static const DAVA::int32 APPROXIMATION_COUNT = 10;
+    static const DAVA::int32 RAY_TRACING_DISTANCE = 1000;
     
 public:
 

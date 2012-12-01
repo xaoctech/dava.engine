@@ -24,7 +24,7 @@ EditorScene::EditorScene()
 :Scene()
 {
     selectedMeshInstance = NULL;
-    
+    originalHandler = NULL;
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
@@ -200,6 +200,62 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+void EditorScene::JuncCollWorldToLandscapeCollWorld()
+{
+	
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		originalHandler = landscapeObjects[i]->getBroadphaseHandle();
+		collisionWorld->addCollisionObject(landscapeObjects[i]);
+	}
+}
+
+void EditorScene::SeparateCollWorldFromLandscapeCollWorld()
+{
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		collisionWorld->removeCollisionObject(landscapeObjects[i]);
+		landscapeObjects[i]->setBroadphaseHandle(originalHandler);
+	}
+}
+
+bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
+{
+	if (selection)
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+
+	btVector3 pos(from.x, from.y, from.z);
+    btVector3 to(target.x, target.y, target.z);
+
+    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
+    
+	collisionWorld->rayTest(pos, to, cb);
+
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
+    {
+		//there is some obj before target
+		//cb.m_hitPointWorld - contain coord of breaker
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+	
+}
+
 bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::Vector3 &direction, DAVA::Vector3 &point)
 {
 	btVector3 pos(from.x, from.y, from.z);
@@ -210,7 +266,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	uint64 time2;
     landCollisionWorld->rayTest(pos, to, cb);
 	time2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("raytest %lld", time2-time1);
+	//Logger::Debug("raytest %lld", time2-time1);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {

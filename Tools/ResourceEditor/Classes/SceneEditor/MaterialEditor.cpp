@@ -12,6 +12,7 @@
 #include "SceneValidator.h"
 
 #include "MaterialPropertyControl.h"
+#include "EditorSettings.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
@@ -39,18 +40,30 @@ MaterialEditor::MaterialEditor()
     btnSelected->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSelectedPressed));
 
 
-    Rect setupRect(GetRect().dx - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
-    btnSetupFog = ControlsFactory::CreateButton(setupRect, LocalizedString(L"materialeditor.setupfog"));
+    Rect setupFogRect(GetRect().dx - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
+    btnSetupFog = ControlsFactory::CreateButton(setupFogRect, LocalizedString(L"materialeditor.setupfog"));
     btnSetupFog->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSetupFog));
     AddControl(btnSetupFog);
 
-    line = ControlsFactory::CreateLine(Rect(GetRect().dx - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2, ControlsFactory::BUTTON_WIDTH*2, 1),
+	Rect setupColorRect(setupFogRect);
+	setupColorRect.x -= ControlsFactory::BUTTON_WIDTH;
+	btnSetupColor = ControlsFactory::CreateButton(setupColorRect, L"Setup Color");
+	btnSetupColor->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSetupColor));
+	AddControl(btnSetupColor);
+
+
+
+    line = ControlsFactory::CreateLine(Rect(GetRect().dx - ControlsFactory::BUTTON_WIDTH*3, ControlsFactory::BUTTON_HEIGHT * 2, ControlsFactory::BUTTON_WIDTH*3, 1),
                                                   Color::White());
     AddControl(line);
     
-    Rect fogRect(setupRect.x - ControlsFactory::BUTTON_WIDTH, setupRect.dy + setupRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
+    Rect fogRect(setupFogRect.x - ControlsFactory::BUTTON_WIDTH, setupFogRect.dy + setupFogRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
     fogControl = new FogControl(fogRect, this);
     
+	Rect colorRect(setupColorRect.x - ControlsFactory::BUTTON_WIDTH, setupColorRect.dy + setupColorRect.y, ControlsFactory::BUTTON_WIDTH * 3, ControlsFactory::BUTTON_HEIGHT * 5);
+	colorControl = new ColorControl(colorRect, this);
+
+
     materialsList = new UIList(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2, 
                                     materialListWidth, size.y - ControlsFactory::BUTTON_HEIGHT * 2), 
                                UIList::ORIENTATION_VERTICAL);
@@ -89,18 +102,13 @@ MaterialEditor::MaterialEditor()
 MaterialEditor::~MaterialEditor()
 {
     SafeRelease(btnSetupFog);
+	SafeRelease(btnSetupColor);
     SafeRelease(line);
 
-    
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
     materials.clear();
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
+
+	for_each(workingNodeMaterials.begin(), workingNodeMaterials.end(),  SafeRelease<Material>);
     workingNodeMaterials.clear();
 
     SafeRelease(workingMaterial);
@@ -117,10 +125,7 @@ MaterialEditor::~MaterialEditor()
 
 void MaterialEditor::UpdateInternalMaterialsVector()
 {
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
     materials.clear();
     
     workingScene->GetDataNodes(materials);
@@ -133,11 +138,7 @@ void MaterialEditor::UpdateInternalMaterialsVector()
 
 void MaterialEditor::UpdateNodeMaterialsVector()
 {
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
-
+	for_each(workingNodeMaterials.begin(), workingNodeMaterials.end(),  SafeRelease<Material>);
     workingNodeMaterials.clear();
     if(workingSceneNode)
     {
@@ -172,15 +173,9 @@ void MaterialEditor::WillAppear()
 
 void MaterialEditor::WillDisappear()
 {
-    for (int32 k = 0; k < (int32)materials.size(); ++k)
-    {
-        SafeRelease(materials[k]);
-    }
+	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
     materials.clear();
-    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
-    {
-        SafeRelease(workingNodeMaterials[k]);
-    }
+	for_each(workingNodeMaterials.begin(), workingNodeMaterials.end(),  SafeRelease<Material>);
     workingNodeMaterials.clear();
     
     SelectMaterial(-1);
@@ -314,6 +309,9 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         float32 y = (CellHeight(forList, index) - boxSize) / 2;
         float32 x = forList->GetRect().dx - boxSize;
         
+        
+        Texture::SetDefaultFileFormat(NOT_FILE);
+        
         Rect r = Rect(x, y, boxSize, boxSize);
         UIControl *sceneFlagBox = new UIControl(r);
         sceneFlagBox->SetName("flagBox");
@@ -322,6 +320,8 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         sceneFlagBox->SetInputEnabled(false);
         c->AddControl(sceneFlagBox);
         SafeRelease(sceneFlagBox);
+        
+        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 
     Material *mat = GetMaterial(index);
@@ -467,6 +467,13 @@ void MaterialEditor::OnSetupFog(BaseObject *, void *, void *)
     }
 }
 
+void MaterialEditor::OnSetupColor(BaseObject * object, void * userData, void * callerData)
+{
+	if(colorControl)
+	{
+		AddControl(colorControl);
+	}
+}
 
 void MaterialEditor::NodesPropertyChanged()
 {
@@ -497,17 +504,34 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
     }
 }
 
+void MaterialEditor::SetupColor(const Color &ambient, const Color &diffuse, const Color &specular)
+{
+	for(int32 i = 0; i < (int32)materials.size(); ++i)
+	{
+		materials[i]->SetAmbientColor(ambient);
+		materials[i]->SetDiffuseColor(diffuse);
+		materials[i]->SetSpecularColor(specular);
+	}
+}
+
+
 void MaterialEditor::SetSize(const Vector2 &newSize)
 {
     DraggableDialog::SetSize(newSize);
     
     btnSetupFog->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
-    line->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2));
+	btnSetupColor->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT));
+    line->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH*3, ControlsFactory::BUTTON_HEIGHT * 3));
     
 
-    Rect setupRect(newSize.x - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
-    Rect fogRect(setupRect.x - ControlsFactory::BUTTON_WIDTH, setupRect.dy + setupRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
+    Rect setupFogRect(newSize.x - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
+    Rect fogRect(setupFogRect.x - ControlsFactory::BUTTON_WIDTH, setupFogRect.dy + setupFogRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
     fogControl->SetRect(fogRect);
+
+	Rect setupColorRect(setupFogRect);
+	setupColorRect.x -= ControlsFactory::BUTTON_WIDTH;
+	Rect colorRect(setupColorRect.x - ControlsFactory::BUTTON_WIDTH, setupColorRect.dy + setupColorRect.y, ControlsFactory::BUTTON_WIDTH * 3, ControlsFactory::BUTTON_HEIGHT * 5);
+	colorControl->SetRect(colorRect);
     
     
     float32 materialListWidth = materialsList->GetSize().x;

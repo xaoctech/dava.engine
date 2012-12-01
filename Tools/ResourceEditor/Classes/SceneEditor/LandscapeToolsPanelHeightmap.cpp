@@ -145,6 +145,30 @@ void LandscapeToolsPanelHeightmap::WillAppear()
     copyTilemask->SetChecked(copyTilemask->Checked(), true);    
 }
 
+void LandscapeToolsPanelHeightmap::Input(DAVA::UIEvent *currentInput)
+{
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    {
+        if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        {
+            if(DVKEY_1 == currentInput->tid)
+            {
+                relative->SetChecked(true, true);
+            }
+            if(DVKEY_2 == currentInput->tid)
+            {
+                average->SetChecked(true, true);
+            }
+            if(DVKEY_3 == currentInput->tid)
+            {
+                absoluteDropper->SetChecked(true, true);
+            }
+        }
+    }
+    
+    LandscapeToolsPanel::Input(currentInput);
+}
+
 
 UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
 {

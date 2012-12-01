@@ -210,8 +210,14 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FastName.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Meta.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observer.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h" />
@@ -415,6 +421,8 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
@@ -438,6 +446,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Texture.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\UberShader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\VertexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\2D\Font.h" />
@@ -475,6 +484,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
@@ -540,6 +550,8 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
@@ -597,6 +609,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
@@ -715,6 +728,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
@@ -738,6 +752,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\StaticIndexBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\StaticVertexBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Texture.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\TextureDX9.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\2D\Font.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\2D\FontManager.cpp" />
@@ -748,7 +763,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\PolygonGroup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\StaticMesh.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\TexturePVR.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\UberShader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.cpp" />
@@ -775,6 +789,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />

@@ -2,8 +2,6 @@
 #define __SCENE_EDITOR_SCREEN_MAIN_H__
 
 #include "DAVAEngine.h"
-#include "LibraryControl.h"
-#include "MenuPopupControl.h"
 
 #include "CreateNodesDialog.h"
 
@@ -20,7 +18,6 @@ class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
-class TextureConverterDialog;
 class HelpDialog;
 class ParticlesEditorControl;
 class SceneEditorScreenMain: 
@@ -29,14 +26,9 @@ class SceneEditorScreenMain:
     public SettingsDialogDelegate
 {
 
-    enum eConst
-    {        
-        LINE_HEIGHT = 1,
-
-        BODY_Y_OFFSET = 50,
-        
-        TAB_BUTTONS_OFFSET = 250,
-    };
+    static const int32 LINE_HEIGHT = 1;
+    static const int32 BODY_Y_OFFSET = 50;
+    static const int32 TAB_BUTTONS_OFFSET = 250;
 
     enum DIALOG_OPERATION
     {
@@ -71,6 +63,7 @@ public:
         ELEMID_HEIGHTMAP = 0,
         ELEMID_COLOR_MAP,
         ELEMID_CUSTOM_COLORS,
+		ELEMID_VISIBILITY_CHECK_TOOL,
         
         ELEMID_COUNT
     };
@@ -163,7 +156,6 @@ private:
     SettingsDialog *settingsDialog;
     
     TextureTrianglesDialog *textureTrianglesDialog;
-    TextureConverterDialog *textureConverterDialog;
     
     // general
     Font *font;
@@ -200,14 +192,24 @@ public: //For Qt integration
     void SetViewport(ResourceEditor::eViewportType viewportType);
     
     void MaterialsTriggered();
-    void TextureConverterTriggered();
     void HeightmapTriggered();
     void TilemapTriggered();
     void RulerToolTriggered();
+	
+	//custom colors
     void CustomColorsTriggered();
 	void CustomColorsSetRadius(uint32 newRadius);
 	void CustomColorsSetColor(uint32 indexInSet);
 	void CustomColorsSaveTexture(const String &path);
+	void CustomColorsLoadTexture(const String& path);
+	String CustomColorsGetCurrentSaveFileName();
+	
+	//visibility check tool
+	void VisibilityToolTriggered();
+	void VisibilityToolSaveTexture(const String& path);
+	void VisibilityToolSetPoint();
+	void VisibilityToolSetArea();
+	void VisibilityToolSetAreaSize(uint32 size);
     
     void ToggleSceneInfo();
     void ShowSettings();

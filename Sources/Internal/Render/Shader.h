@@ -35,6 +35,7 @@
 #include "Render/VertexBuffer.h"
 #include "Base/BaseMath.h"
 #include "Base/Data.h"
+#include "Base/FastName.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #if !defined(GLchar)
@@ -119,8 +120,11 @@ public:
     int32 GetUniformArraySize(int32 index);
 
     int32 GetUniformLocation(int32 index);
-    int32 FindUniformLocationByName(const String & name);
-
+    int32 FindUniformLocationByName(const FastName & name);
+    
+    
+    int32 GetAttributeIndex(eVertexFormat vertexFormat);
+    int32 GetAttributeCount();
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
@@ -129,11 +133,8 @@ public:
     void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
-
-
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);
-
 
     
     void Dump();
@@ -144,12 +145,12 @@ public:
     //virtual uint32 GetVertexFormat();
     //virtual uint32 GetAttributeIndex(eVertexFormat fmt);
     
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-	virtual void SaveToSystemMemory();
-	virtual void Lost();
-	virtual void Invalidate();
-    String relativeFileName;
-#endif //#if defined(__DAVAENGINE_ANDROID__) 
+//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//	virtual void SaveToSystemMemory();
+//	virtual void Lost();
+//	virtual void Invalidate();
+//    String relativeFileName;
+//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
     
 private:
@@ -161,7 +162,7 @@ private:
     GLuint fragmentShader;
     GLuint program;
     
-    String * attributeNames;
+    FastName *attributeNames;
     GLint activeAttributes;
     GLint activeUniforms;
     
@@ -176,7 +177,7 @@ private:
     struct Uniform
     {
         eUniform        id;
-        String          name;
+        FastName        name;
         GLint           location;
         GLint           size;
         eUniformType    type;
@@ -188,8 +189,9 @@ private:
     GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
     void DeleteShaders();
-    eUniform GetUniformByName(const char * name);
-    int32 GetAttributeIndexByName(const char * name);
+
+    eUniform GetUniformByName(const FastName &name);
+    int32 GetAttributeIndexByName(const FastName &name);
     
     static GLuint activeProgram;
     String vertexShaderDefines;

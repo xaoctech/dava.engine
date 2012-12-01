@@ -13,7 +13,9 @@ public:
         ACTION_NONE = -1,
         ACTION_HEIGHTMAP = 0,
         ACTION_TILEMASK,
-		ACTION_COLORIZE
+		ACTION_COLORIZE,
+		ACTION_VISIBILITY_AREA,
+		ACTION_VISIBILITY_POINT
     };
     
     UNDOAction();
@@ -29,10 +31,7 @@ public:
 
 class UNDOManager: public Singleton<UNDOManager>
 {    
-    enum eConst
-    {
-        UNDO_HISTORY_SIZE = 20
-    };
+    static const int32 UNDO_HISTORY_SIZE = 20;
     
 public:
  
@@ -50,7 +49,12 @@ public:
 	void SaveColorize(Texture *colTex);
     Texture * UndoColorize();
     Texture * RedoColorize();
-    
+
+	void SaveVisibilityArea(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint);
+	void SaveVisibilityPoint(Image* undoImage, bool visibilityPointSet, const Vector2& visibilityPoint);
+	void UndoVisibility(Image** undoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
+	void RedoVisibility(Image** redoImage, Point2i* imagePosition, bool* visibilityPointSet, Vector2* visibilityPoint);
+
     UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
     
@@ -64,6 +68,7 @@ protected:
     UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
     UNDOAction *CreateTilemaskAction(Texture *tilemask);
     UNDOAction *CreateColorizeAction(Texture *tilemask);
+	UNDOAction* CreateVisibilityAction(Image* undoImage, Image* redoImage, const Point2i& imagePosition, bool visibilityPointSet, const Vector2& visibilityPoint);
     
     String TimeString();
     

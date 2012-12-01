@@ -60,7 +60,7 @@ void MD5::ForFile(const String & pathName, unsigned char * digest)
 	SafeRelease(f);
 	md5.Final();
 
-	memcpy(digest, md5.GetDigest(), 16);
+	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
 void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive)
@@ -70,7 +70,7 @@ void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive
 	MD5::RecursiveDirectoryMD5(pathName, md5, isRecursive);
 	md5.Final();
 
-	memcpy(digest, md5.GetDigest(), 16);
+	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
 void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive)
@@ -96,9 +96,9 @@ void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecur
 			// update MD5 according to the file
 			md5.Update((uint8*)fileList->GetPathname(i).c_str(), (uint32)fileList->GetPathname(i).size());
 			
-			uint8 fileDigest[16];
+			uint8 fileDigest[DIGEST_SIZE];
 			MD5::ForFile(fileList->GetPathname(i), fileDigest);
-			md5.Update(fileDigest, 16);
+			md5.Update(fileDigest, DIGEST_SIZE);
 
 			//bool success = DeleteFile(fileList->GetPathname(i));
 			//Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
@@ -108,6 +108,68 @@ void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecur
 	SafeRelease(fileList);
 }
 
+void MD5::HashToChar(const uint8 * hash, char8 *buffer, uint32 bufferSize)
+{
+    DVASSERT(((MD5::DIGEST_SIZE*2 + 1) <= bufferSize) && "To small buffer. Must be enought to put 32 characters of hash and \0");
+    
+    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
+    {
+        buffer[2*i] = GetCharacterFromNumber(hash[i] & 0x0F);
+        buffer[2*i + 1] = GetCharacterFromNumber( (hash[i] & 0xF0) >> 4 );
+    }
+    
+    buffer[2 * MD5::DIGEST_SIZE] = 0;
+}
+    
+void MD5::CharToHash(const char8 *buffer, uint8 * hash)
+{
+    int32 bufferSize = strlen(buffer);
+    if((MD5::DIGEST_SIZE * 2) != bufferSize)
+    {
+        Logger::Error("[MD5::CharToHash] char string has wrong size (%d). Must be 32 characters", bufferSize);
+        return;
+    }
+    
+    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
+    {
+        uint8 low = GetNumberFromCharacter(buffer[2*i]);
+        uint8 high = GetNumberFromCharacter(buffer[2*i + 1]);
+        
+        hash[i] = (high << 4) | (low);
+    }
+}
+
+uint8 MD5::GetNumberFromCharacter(char8 character)
+{
+    if('0' <= character && character <= '9')
+    {
+        return (character - '0');
+    }
+    else if('a' <= character && character <= 'f')
+    {
+        return (character - 'a' + 10);
+    }
+    else if('A' <= character && character <= 'F')
+    {
+        return (character - 'A' + 10);
+    }
+    
+    Logger::Error("[MD5::GetNumberFromCharacter] hash has wrong symbol (%c).", character);
+    return 0;
+}
+
+char8 MD5::GetCharacterFromNumber(uint8 number)
+{
+    if(0 <= number && number <= 9)
+    {
+        return (number + '0');
+    }
+    
+    return (number + 'A' - 10);
+}
+
+    
+    
 
 static void Transform(uint32 *buf, uint32 *in);
 
@@ -337,6 +399,8 @@ static void Transform (uint32 *buf, uint32 *in)
   buf[3] += d;
 }
 
+    
+    
 
 };
 /*

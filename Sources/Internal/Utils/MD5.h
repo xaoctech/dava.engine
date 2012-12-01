@@ -68,9 +68,17 @@ void MD5Final (MD5_CTX *mdContext);
 class MD5
 {
 public:
+    
+    static const int32 DIGEST_SIZE = 16;
+    
 	static void ForFile(const String & pathName, uint8 * buffer);
 	static void ForDirectory(const String & pathName, uint8 * buffer, bool isRecursive);
 
+    static void HashToChar(const uint8 * hash, char8 *buffer, uint32 bufferSize);
+	static void CharToHash(const char8 *buffer, uint8 * hash);
+
+    
+    
 	void Init ();
 	void Update (uint8 *inBuf, uint32 inLen);
 	void Final ();
@@ -78,11 +86,15 @@ public:
 	uint8 * GetDigest() { return digest; };
 private:
 	static void RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive);
+    
+    static uint8 GetNumberFromCharacter(char8 character);
+    static char8 GetCharacterFromNumber(uint8 number);
+
 
 	uint32 i[2];                   /* number of _bits_ handled mod 2^64 */
 	uint32 buf[4];                                    /* scratch buffer */
 	uint8 in[64];                              /* input buffer */
-	uint8 digest[16];     /* actual digest after MD5Final call */
+	uint8 digest[DIGEST_SIZE];     /* actual digest after MD5Final call */
 };
 
 

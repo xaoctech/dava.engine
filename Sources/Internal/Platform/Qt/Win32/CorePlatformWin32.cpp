@@ -247,7 +247,8 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 			InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)message->wParam);
 			*result = 0;
 			return true;
-		};
+		}
+		break;
 
 	case WM_KEYDOWN:
 		{
@@ -278,7 +279,8 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 
 			*result = 0;
 			return true;
-		};
+		}
+		break;
 
 	case WM_CHAR:
 		{
@@ -334,8 +336,8 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 
 // 				*result = 0;
 // 				return true;
-			break;
 		}
+		break;
 	}
 
 	return false;

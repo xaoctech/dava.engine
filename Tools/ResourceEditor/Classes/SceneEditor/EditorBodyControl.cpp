@@ -1,7 +1,5 @@
 #include "EditorBodyControl.h"
 #include "ControlsFactory.h"
-#include "OutputManager.h"
-#include "OutputPanelControl.h"
 #include "../BeastProxy.h"
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"
@@ -19,14 +17,15 @@
 #include "SceneEditorScreenMain.h"
 #include "LandscapeToolsSelection.h"
 #include "LandscapeEditorCustomColors.h"
+#include "LandscapeEditorVisibilityCheckTool.h"
 
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../RulerTool/RulerTool.h"
 
 #include "../SceneEditor/EditorConfig.h"
@@ -141,12 +140,37 @@ void EditorBodyControl::SaveTexture(const String &path)
 	if(RulerToolIsActive())
         return;
     
-	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	if(!currentLandscapeEditor)
 	{
 		return;
 	}
+	
+	if(currentLandscapeEditor == landscapeEditorCustomColors)
+		landscapeEditorCustomColors->SaveColorLayer(path);
+	else if(currentLandscapeEditor == landscapeEditorVisibilityTool)
+		landscapeEditorVisibilityTool->SaveColorLayer(path);
+}
 
-	landscapeEditorCustomColors->SaveColorLayer(path);
+void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+{
+	if(RulerToolIsActive())
+		return;
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return;
+
+	landscapeEditorCustomColors->LoadColorLayer(path);
+}
+
+String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+{
+	if(RulerToolIsActive())
+		return "";
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return "";
+
+	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -351,9 +375,16 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                     break;
                     
                 case DVKEY_X:
-                    PropcessIsSolidChanging();
-                    break;
+                {
+                    bool Z = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_Z);
+                    bool C = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_C);
+                    if(!Z && !C)
+                    {
+                        PropcessIsSolidChanging();
+                    }
                     
+                    break;
+                }
                     
                 default:
                     break;
@@ -920,6 +951,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     landscapeEditorCustomColors = new LandscapeEditorCustomColors(this, this, toolsRect);
+	landscapeEditorVisibilityTool = new LandscapeEditorVisibilityCheckTool(this, this, toolsRect);
     
     Rect rect = GetRect();
     landscapeToolsSelection = new LandscapeToolsSelection(NULL, 
@@ -935,9 +967,10 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
-	SafeRelease(landscapeEditorCustomColors);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
+	SafeRelease(landscapeEditorCustomColors);
+	SafeRelease(landscapeEditorVisibilityTool);
 }
 
 bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
@@ -956,7 +989,10 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     } else if(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS == landscapeEditorMode)
     {
         requestedEditor = landscapeEditorCustomColors;
-    }
+    } else if(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL == landscapeEditorMode)
+	{
+		requestedEditor = landscapeEditorVisibilityTool;
+	}
     
     if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
         return false;
@@ -999,6 +1035,7 @@ void EditorBodyControl::LandscapeEditorStarted()
     
     LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
     scene->SetSelection(landscape);
+	SelectNodeAtTree(NULL);
     SelectNodeAtTree(landscape);
     
     landscapeToolsSelection->Show();
@@ -1108,7 +1145,6 @@ void EditorBodyControl::PropcessIsSolidChanging()
                 activeScene->OpenLibraryForFile(filePathname);
             }
             
-            
             sceneGraph->SelectNode(selectedNode);
         }
     }
@@ -1142,4 +1178,19 @@ bool EditorBodyControl::RulerToolTriggered()
 bool EditorBodyControl::RulerToolIsActive()
 {
     return (NULL != landscapeRulerTool);
+}
+
+void EditorBodyControl::VisibilityToolSetPoint()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_POINT);
+}
+
+void EditorBodyControl::VisibilityToolSetArea()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_AREA);
+}
+
+void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
+{
+	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
 }

@@ -1,14 +1,16 @@
 #include "LibraryCommands.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
 
 #include "../Collada/ColladaConvert.h"
 
+#include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/EditorSettings.h"
 
 #include "DAVAEngine.h"
 
@@ -23,7 +25,7 @@ LibraryCommand::LibraryCommand(const DAVA::String &pathname, eCommandType _type)
 bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 {
     String extension = FileSystem::Instance()->GetExtension(filePathname);
-    return (0 == CompareStrings(extension, extenstionToChecking));
+    return (0 == CompareCaseInsensitive(extension, extenstionToChecking));
 }
 
 
@@ -110,7 +112,8 @@ CommandConvertScene::CommandConvertScene(const DAVA::String &pathname)
 void CommandConvertScene::Execute()
 {
     DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
-
+    SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
+    
     ConvertDaeToSce(filePathname);
     
     // load sce to scene object

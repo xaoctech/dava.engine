@@ -7,12 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		502ADC30165C2BD600590867 /* MaterialCompiler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 502ADC23165C2BD600590867 /* MaterialCompiler.cpp */; };
-		502ADC31165C2BD600590867 /* MaterialGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 502ADC25165C2BD600590867 /* MaterialGraph.cpp */; };
-		502ADC32165C2BD600590867 /* MaterialGraphNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 502ADC27165C2BD600590867 /* MaterialGraphNode.cpp */; };
-		502ADC34165C2BD600590867 /* ShaderParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 502ADC2C165C2BD600590867 /* ShaderParser.cpp */; };
-		502ADC37165C2C0800590867 /* NMaterial.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 502ADC29165C2BD600590867 /* NMaterial.cpp */; };
-		502ADC38165C2C3300590867 /* RenderOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */; };
+		17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -248,6 +243,7 @@
 		5C5D9A9A15B0230D0058B43A /* UtilsMacOS.mm in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D999015B0230D0058B43A /* UtilsMacOS.mm */; };
 		5C5D9AA115B0272B0058B43A /* libBox2D_MacOS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB117415AE0749008F64BB /* libBox2D_MacOS.a */; };
 		5C8A70A615DD41C20043B097 /* QtLayer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8A70A515DD41C10043B097 /* QtLayer.cpp */; };
+		5CBF71B415C6DF5E00CD1736 /* RenderOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */; };
 		5CFB114E15AE05F2008F64BB /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB114D15AE05F2008F64BB /* Cocoa.framework */; };
 		5CFB115015AE05F8008F64BB /* ApplicationServices.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */; };
 		5CFB115215AE05FE008F64BB /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB115115AE05FE008F64BB /* OpenAL.framework */; };
@@ -262,10 +258,13 @@
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
 		5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116D15AE0696008F64BB /* libtheora_macos.a */; };
 		CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */; };
+		E84779BC16690254004CD20A /* FastName.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B216690254004CD20A /* FastName.cpp */; };
+		E84779BD16690254004CD20A /* FixedSizePoolAllocator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B516690254004CD20A /* FixedSizePoolAllocator.cpp */; };
+		E856CF00162420180065E32B /* TextureDescriptor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E856CEFE162420180065E32B /* TextureDescriptor.cpp */; };
+		E8674D031637311700748959 /* ImageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8674D011637311700748959 /* ImageLoader.cpp */; };
 		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
-		E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9627161C49A500F156A2 /* TexturePVR.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -286,17 +285,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		502ADC23165C2BD600590867 /* MaterialCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialCompiler.cpp; sourceTree = "<group>"; };
-		502ADC24165C2BD600590867 /* MaterialCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCompiler.h; sourceTree = "<group>"; };
-		502ADC25165C2BD600590867 /* MaterialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGraph.cpp; sourceTree = "<group>"; };
-		502ADC26165C2BD600590867 /* MaterialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGraph.h; sourceTree = "<group>"; };
-		502ADC27165C2BD600590867 /* MaterialGraphNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGraphNode.cpp; sourceTree = "<group>"; };
-		502ADC28165C2BD600590867 /* MaterialGraphNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGraphNode.h; sourceTree = "<group>"; };
-		502ADC29165C2BD600590867 /* NMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterial.cpp; sourceTree = "<group>"; };
-		502ADC2A165C2BD600590867 /* NMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterial.h; sourceTree = "<group>"; };
-		502ADC2B165C2BD600590867 /* NMaterialConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterialConsts.h; sourceTree = "<group>"; };
-		502ADC2C165C2BD600590867 /* ShaderParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderParser.cpp; sourceTree = "<group>"; };
-		502ADC2D165C2BD600590867 /* ShaderParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderParser.h; sourceTree = "<group>"; };
+		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
+		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -820,6 +810,20 @@
 		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
+		E84779B216690254004CD20A /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
+		E84779B316690254004CD20A /* FastName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastName.h; sourceTree = "<group>"; };
+		E84779B416690254004CD20A /* FastNameMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastNameMap.h; sourceTree = "<group>"; };
+		E84779B516690254004CD20A /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
+		E84779B616690254004CD20A /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
+		E84779B716690254004CD20A /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		E84779B816690254004CD20A /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
+		E84779B916690254004CD20A /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
+		E84779BA16690254004CD20A /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mallocator.h; sourceTree = "<group>"; };
+		E84779BB16690254004CD20A /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		E856CEFE162420180065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
+		E856CEFF162420180065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
+		E8674D011637311700748959 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
+		E8674D021637311700748959 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
 		E86DF3A1161F10AE00A5400A /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
 		E86DF3A2161F10AF00A5400A /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
 		E86DF3A3161F10AF00A5400A /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
@@ -827,7 +831,6 @@
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
-		E89E9627161C49A500F156A2 /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -881,24 +884,6 @@
 				5CFB113D15AE0100008F64BB /* Products */,
 			);
 			name = FrameworkQt;
-			sourceTree = "<group>";
-		};
-		502ADC22165C2BD600590867 /* Material */ = {
-			isa = PBXGroup;
-			children = (
-				502ADC23165C2BD600590867 /* MaterialCompiler.cpp */,
-				502ADC24165C2BD600590867 /* MaterialCompiler.h */,
-				502ADC25165C2BD600590867 /* MaterialGraph.cpp */,
-				502ADC26165C2BD600590867 /* MaterialGraph.h */,
-				502ADC27165C2BD600590867 /* MaterialGraphNode.cpp */,
-				502ADC28165C2BD600590867 /* MaterialGraphNode.h */,
-				502ADC29165C2BD600590867 /* NMaterial.cpp */,
-				502ADC2A165C2BD600590867 /* NMaterial.h */,
-				502ADC2B165C2BD600590867 /* NMaterialConsts.h */,
-				502ADC2C165C2BD600590867 /* ShaderParser.cpp */,
-				502ADC2D165C2BD600590867 /* ShaderParser.h */,
-			);
-			path = Material;
 			sourceTree = "<group>";
 		};
 		5C5D971E15B022930058B43A /* Internal */ = {
@@ -977,6 +962,16 @@
 		5C5D975415B0230D0058B43A /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E84779B216690254004CD20A /* FastName.cpp */,
+				E84779B316690254004CD20A /* FastName.h */,
+				E84779B416690254004CD20A /* FastNameMap.h */,
+				E84779B516690254004CD20A /* FixedSizePoolAllocator.cpp */,
+				E84779B616690254004CD20A /* FixedSizePoolAllocator.h */,
+				E84779B716690254004CD20A /* Hash.h */,
+				E84779B816690254004CD20A /* HashMap.h */,
+				E84779B916690254004CD20A /* Introspection.h */,
+				E84779BA16690254004CD20A /* Mallocator.h */,
+				E84779BB16690254004CD20A /* Meta.h */,
 				E86DF3A1161F10AE00A5400A /* Observable.cpp */,
 				E86DF3A2161F10AF00A5400A /* Observable.h */,
 				E86DF3A3161F10AF00A5400A /* Observer.h */,
@@ -1297,7 +1292,6 @@
 			children = (
 				5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */,
 				5CBF71B315C6DF5E00CD1736 /* RenderOptions.h */,
-				502ADC22165C2BD600590867 /* Material */,
 				5C5D987315B0230D0058B43A /* 2D */,
 				5C5D988115B0230D0058B43A /* 3D */,
 				5C5D988A15B0230D0058B43A /* Cursor.h */,
@@ -1310,12 +1304,17 @@
 				5C5D989115B0230D0058B43A /* DynamicVertexBuffer.cpp */,
 				5C5D989215B0230D0058B43A /* DynamicVertexBuffer.h */,
 				5C5D989315B0230D0058B43A /* Effects */,
+				E8674D011637311700748959 /* ImageLoader.cpp */,
+				E8674D021637311700748959 /* ImageLoader.h */,
 				5C5D989C15B0230D0058B43A /* Image.cpp */,
 				5C5D989D15B0230D0058B43A /* Image.h */,
 				5C5D989E15B0230D0058B43A /* ImageConvert.h */,
 				5C5D989F15B0230D0058B43A /* IndexBuffer.h */,
 				5C5D98A015B0230D0058B43A /* LibPngHelpers.cpp */,
 				5C5D98A115B0230D0058B43A /* LibPngHelpers.h */,
+				E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */,
+				E89E9625161C49A500F156A2 /* LibPVRHelper.h */,
+				E89E9626161C49A500F156A2 /* PVRDefines.h */,
 				5C5D98A215B0230D0058B43A /* Light.h */,
 				5C5D98A315B0230D0058B43A /* Material.cpp */,
 				5C5D98A415B0230D0058B43A /* Material.h */,
@@ -1352,10 +1351,8 @@
 				5C5D98C315B0230D0058B43A /* StaticIndexBuffer.h */,
 				5C5D98C415B0230D0058B43A /* StaticVertexBuffer.cpp */,
 				5C5D98C515B0230D0058B43A /* StaticVertexBuffer.h */,
-				E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */,
-				E89E9625161C49A500F156A2 /* LibPVRHelper.h */,
-				E89E9626161C49A500F156A2 /* PVRDefines.h */,
-				E89E9627161C49A500F156A2 /* TexturePVR.cpp */,
+				E856CEFE162420180065E32B /* TextureDescriptor.cpp */,
+				E856CEFF162420180065E32B /* TextureDescriptor.h */,
 				5C5D98C615B0230D0058B43A /* Texture.cpp */,
 				5C5D98C715B0230D0058B43A /* Texture.h */,
 				5C5D98C815B0230D0058B43A /* TextureDX9.cpp */,
@@ -1446,6 +1443,8 @@
 		5C5D98DF15B0230D0058B43A /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */,
+				17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */,
 				5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */,
 				5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */,
 				5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */,
@@ -1963,19 +1962,18 @@
 				5C5D9A9815B0230D0058B43A /* UTF8Utils.cpp in Build Sources */,
 				5C5D9A9915B0230D0058B43A /* Utils.cpp in Build Sources */,
 				5C5D9A9A15B0230D0058B43A /* UtilsMacOS.mm in Build Sources */,
+				5CBF71B415C6DF5E00CD1736 /* RenderOptions.cpp in Build Sources */,
 				5C8A70A615DD41C20043B097 /* QtLayer.cpp in Build Sources */,
 				5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */,
 				5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */,
 				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 				E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */,
-				E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */,
 				E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */,
-				502ADC30165C2BD600590867 /* MaterialCompiler.cpp in Build Sources */,
-				502ADC31165C2BD600590867 /* MaterialGraph.cpp in Build Sources */,
-				502ADC32165C2BD600590867 /* MaterialGraphNode.cpp in Build Sources */,
-				502ADC34165C2BD600590867 /* ShaderParser.cpp in Build Sources */,
-				502ADC37165C2C0800590867 /* NMaterial.cpp in Build Sources */,
-				502ADC38165C2C3300590867 /* RenderOptions.cpp in Build Sources */,
+				E856CF00162420180065E32B /* TextureDescriptor.cpp in Build Sources */,
+				E8674D031637311700748959 /* ImageLoader.cpp in Build Sources */,
+				17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */,
+				E84779BC16690254004CD20A /* FastName.cpp in Build Sources */,
+				E84779BD16690254004CD20A /* FixedSizePoolAllocator.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

@@ -55,11 +55,12 @@ void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
     SafeRelease(nestedLandscape);
     nestedLandscape = SafeRetain(landscapeNode);
     
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscapeNode);
     if(editorLandscape)
     {
         editorLandscape->SetParentLandscape(this);
     }
+    
     
     SetDebugFlags(nestedLandscape->GetDebugFlags());
     
@@ -80,9 +81,9 @@ void EditorLandscapeNode::SetHeightmap(DAVA::Heightmap *height)
     SafeRelease(heightmap);
     heightmap = SafeRetain(height);
     
-    EditorHeightmap *editorHeightmap = dynamic_cast<EditorHeightmap *>(height);
-    if(editorHeightmap)
+    if(IsPointerToExactClass<EditorHeightmap>(height))
     {
+        EditorHeightmap *editorHeightmap = (EditorHeightmap *)height;
         HeihghtmapUpdated(Rect(0, 0, (float32)editorHeightmap->Size() - 1.f, (float32)editorHeightmap->Size() - 1.f));
     }
 }
@@ -221,10 +222,12 @@ void EditorLandscapeNode::DrawFullTiledTexture(DAVA::Texture *renderTarget, cons
 {
     Texture *fullTiledTexture = nestedLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
     Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
+
     background->SetPosition(0.f, 0.f);
     background->SetScaleSize((float32)renderTarget->GetWidth(), (float32)renderTarget->GetHeight());
-    
     background->Draw();
+    
+    SafeRelease(background);
 }
 
 void EditorLandscapeNode::UpdateFullTiledTexture()

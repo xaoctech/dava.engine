@@ -108,8 +108,10 @@
 
 // 2D Graphics
 #include "Render/2D/Sprite.h"
+#include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "Render/Shader.h"
 
 #include "Core/DisplayMode.h"
@@ -217,6 +219,7 @@
 #include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/Heightmap.h"

@@ -11,6 +11,8 @@
 		0224B70415989FD900CDEF9E /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224B70215989FD900CDEF9E /* TheoraPlayer.cpp */; };
 		0224B70515989FD900CDEF9E /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224B70315989FD900CDEF9E /* TheoraPlayer.h */; };
 		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
+		17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */; };
+		17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A436471664E9DE00A15BDB /* ParticleEffectNode.h */; };
 		4730931113A7E08200C28765 /* UIHierarchyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4730930F13A7E08200C28765 /* UIHierarchyNode.h */; };
 		4730931213A7E08200C28765 /* UIHierarchyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4730931013A7E08200C28765 /* UIHierarchyNode.cpp */; };
 		473DB5B0139E87C3007F2498 /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 473DB5AE139E87C3007F2498 /* UIScrollBar.h */; };
@@ -112,9 +114,18 @@
 		CCFF221415EE10E400363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF221215EE10E400363446 /* SwitchNode.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
+		E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E856CF0F162420420065E32B /* TextureDescriptor.cpp */; };
+		E856CF12162420420065E32B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E856CF10162420420065E32B /* TextureDescriptor.h */; };
 		E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */; };
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
-		E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C80161B171800B50BDA /* TexturePVR.cpp */; };
+		E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E86F952616381BAD0014B4C0 /* ImageLoader.cpp */; };
+		E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E86F952716381BAD0014B4C0 /* ImageLoader.h */; };
+		E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89ECC7B1663A9A100D17C41 /* FastName.cpp */; };
+		E89ECC821663A9A100D17C41 /* FastName.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7C1663A9A100D17C41 /* FastName.h */; };
+		E89ECC831663A9A100D17C41 /* FastNameMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7D1663A9A100D17C41 /* FastNameMap.h */; };
+		E89ECC841663A9A100D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7E1663A9A100D17C41 /* Hash.h */; };
+		E89ECC851663A9A100D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7F1663A9A100D17C41 /* Introspection.h */; };
+		E89ECC861663A9A100D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC801663A9A100D17C41 /* Meta.h */; };
 		E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C96161B418100B50BDA /* LibPVRHelper.h */; };
 		E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C97161B418100B50BDA /* PVRDefines.h */; };
@@ -224,7 +235,6 @@
 		FEA4D9421328FD6A00E261D0 /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA4D9411328FD6A00E261D0 /* Random.h */; };
 		FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */; };
 		FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */; };
-		FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */; };
 		FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6FD15A09AD800EED3DC /* HashMap.h */; };
 		FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */; };
 		FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */; };
@@ -595,6 +605,8 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
+		17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
+		17A436471664E9DE00A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		3239C08413E301A7002CBBF2 /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
 		3239C08513E301A7002CBBF2 /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
@@ -703,9 +715,18 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E856CF0F162420420065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
+		E856CF10162420420065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
 		E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
-		E8F98C80161B171800B50BDA /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
+		E86F952616381BAD0014B4C0 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
+		E86F952716381BAD0014B4C0 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
+		E89ECC7B1663A9A100D17C41 /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
+		E89ECC7C1663A9A100D17C41 /* FastName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastName.h; sourceTree = "<group>"; };
+		E89ECC7D1663A9A100D17C41 /* FastNameMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastNameMap.h; sourceTree = "<group>"; };
+		E89ECC7E1663A9A100D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		E89ECC7F1663A9A100D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
+		E89ECC801663A9A100D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
 		E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C96161B418100B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C97161B418100B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -815,7 +836,6 @@
 		FEA4D9411328FD6A00E261D0 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
 		FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
 		FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
-		FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
 		FEA8F6FD15A09AD800EED3DC /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
 		FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
 		FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mallocator.h; path = ../Base/Mallocator.h; sourceTree = "<group>"; };
@@ -1454,6 +1474,12 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E89ECC7B1663A9A100D17C41 /* FastName.cpp */,
+				E89ECC7C1663A9A100D17C41 /* FastName.h */,
+				E89ECC7D1663A9A100D17C41 /* FastNameMap.h */,
+				E89ECC7E1663A9A100D17C41 /* Hash.h */,
+				E89ECC7F1663A9A100D17C41 /* Introspection.h */,
+				E89ECC801663A9A100D17C41 /* Meta.h */,
 				C2F0A51D161DEAEE003A2006 /* Observable.cpp */,
 				C2F0A51E161DEAEE003A2006 /* Observable.h */,
 				C2F0A51F161DEAEE003A2006 /* Observer.h */,
@@ -1482,7 +1508,6 @@
 				FE25F78C145DB88B00A72F9C /* Data.cpp */,
 				FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */,
 				FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */,
-				FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */,
 				FEA8F6FD15A09AD800EED3DC /* HashMap.h */,
 			);
 			path = Base;
@@ -1711,6 +1736,8 @@
 				FECFC17612E87E3000C71562 /* DynamicVertexBuffer.h */,
 				FE044F3A140EEA32002A6D27 /* RenderDataObject.cpp */,
 				FE044F3B140EEA32002A6D27 /* RenderDataObject.h */,
+				E86F952616381BAD0014B4C0 /* ImageLoader.cpp */,
+				E86F952716381BAD0014B4C0 /* ImageLoader.h */,
 				FECFC17712E87E3000C71562 /* Image.cpp */,
 				FECFC17812E87E3000C71562 /* Image.h */,
 				FECFC17912E87E3000C71562 /* IndexBuffer.h */,
@@ -1744,7 +1771,8 @@
 				E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */,
 				E8F98C96161B418100B50BDA /* LibPVRHelper.h */,
 				E8F98C97161B418100B50BDA /* PVRDefines.h */,
-				E8F98C80161B171800B50BDA /* TexturePVR.cpp */,
+				E856CF0F162420420065E32B /* TextureDescriptor.cpp */,
+				E856CF10162420420065E32B /* TextureDescriptor.h */,
 				FECFC19112E87E3000C71562 /* Texture.cpp */,
 				FECFC19212E87E3000C71562 /* Texture.h */,
 				FECFC19312E87E3000C71562 /* TextureDX9.cpp */,
@@ -1824,6 +1852,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */,
+				17A436471664E9DE00A15BDB /* ParticleEffectNode.h */,
 				CCFF221115EE10E400363446 /* SwitchNode.cpp */,
 				CCFF221215EE10E400363446 /* SwitchNode.h */,
 				C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */,
@@ -2339,6 +2369,14 @@
 				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
 				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
+				E856CF12162420420065E32B /* TextureDescriptor.h in Headers */,
+				E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */,
+				E89ECC821663A9A100D17C41 /* FastName.h in Headers */,
+				E89ECC831663A9A100D17C41 /* FastNameMap.h in Headers */,
+				E89ECC841663A9A100D17C41 /* Hash.h in Headers */,
+				E89ECC851663A9A100D17C41 /* Introspection.h in Headers */,
+				E89ECC861663A9A100D17C41 /* Meta.h in Headers */,
+				17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2654,7 +2692,6 @@
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
 				FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */,
-				FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */,
 				C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */,
 				5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */,
 				5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */,
@@ -2667,8 +2704,11 @@
 				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
 				E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */,
 				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
-				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
+				E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */,
+				E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */,
+				E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */,
+				17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

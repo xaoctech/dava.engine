@@ -264,7 +264,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
         }
     }
     
-    SceneValidator::Instance()->ValidateScene(editorScene);
+    SceneValidator::Instance()->ValidateSceneAndShowErrors(editorScene);
     
     return retError;
 }
