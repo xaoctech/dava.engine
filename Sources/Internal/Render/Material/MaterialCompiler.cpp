@@ -41,7 +41,6 @@ namespace DAVA
 MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _materialGraph, uint32 maxLights, NMaterial ** resultMaterial)
 {
     materialGraph = _materialGraph;
-    MaterialGraphNode * shifter1 = materialGraph->GetNodeByName("shifter1");
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
     if (!rootResultNode)
     {
@@ -57,8 +56,6 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
     MaterialGraphNode::RecursiveSetRealUsageForward(rootResultNode);
     
     GenerateCode(materialGraph);
-    
-    
     
     Shader * shader = new Shader();
     shader->Load("~doc:/temp.vsh", "~doc:/temp.fsh");
