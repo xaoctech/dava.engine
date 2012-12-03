@@ -88,9 +88,13 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 		{
 			scene->AddNode(tempV[i]);
 		}
+		
+		ExportScene(scene, fileName, errorLog);
     }
-    
-    ExportScene(scene, fileName, errorLog);
+	else
+	{
+		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", fileName.c_str()));
+	}
 
     SafeRelease(scene);
 }
