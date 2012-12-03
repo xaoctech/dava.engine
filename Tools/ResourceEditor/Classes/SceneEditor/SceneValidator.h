@@ -95,8 +95,6 @@ public:
 
     void CreateDefaultDescriptors(const String &folderPathname);
 
-    void EnumerateTextures(Map<String, Texture *> &textures, SceneNode *sceneNode);
-    
     bool IsPathCorrectForProject(const String &pathname);
 
 protected:

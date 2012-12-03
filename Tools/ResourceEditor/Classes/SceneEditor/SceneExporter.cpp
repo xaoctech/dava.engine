@@ -4,6 +4,7 @@
 #include "PVRConverter.h"
 
 #include "Render/TextureDescriptor.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 
 using namespace DAVA;
@@ -115,7 +116,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     texturesForExport.clear();
-    SceneValidator::Instance()->EnumerateTextures(texturesForExport, scene);
+    SceneDataManager::EnumerateTextures(scene, texturesForExport);
 
     ExportTextures(scene, errorLog);
     ExportLandscape(scene, errorLog);
