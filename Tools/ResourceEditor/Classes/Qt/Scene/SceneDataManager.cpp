@@ -64,12 +64,12 @@ SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
 }
 
 
-SceneData * SceneDataManager::GetActiveScene()
+SceneData * SceneDataManager::SceneGetActive()
 {
 	return currentScene;
 }
 
-SceneData *SceneDataManager::GetLevelScene()
+SceneData *SceneDataManager::SceneGetLevel()
 {
     if(0 < scenes.size())
     {
@@ -79,7 +79,7 @@ SceneData *SceneDataManager::GetLevelScene()
     return NULL;
 }
 
-DAVA::SceneNode* SceneDataManager::GetSelectedNode(SceneData *scene)
+DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 {
 	DAVA::SceneNode *node = NULL;
 
@@ -180,7 +180,7 @@ void SceneDataManager::EnumerateTextures( DAVA::Map<DAVA::String, DAVA::Texture 
 }
 
 
-void SceneDataManager::CompressNotCompressedTextures()
+void SceneDataManager::TextureCompressAllNotCompressed()
 {
 	Map<String, Texture *> textures;
 	EnumerateTextures(textures);
@@ -236,7 +236,7 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 	}
 }
 
-void SceneDataManager::ReloadTextures( int32 asFile )
+void SceneDataManager::TextureReloadAll( int32 asFile )
 {
 	Map<String, Texture *> textures;
 	EnumerateTextures(textures);
@@ -244,11 +244,11 @@ void SceneDataManager::ReloadTextures( int32 asFile )
 	Map<String, Texture *>::const_iterator endIt = textures.end();
 	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
 	{
-		Texture *newTexture = ReloadTexture(it->first, it->second, asFile);
+		Texture *newTexture = TextureReload(it->first, it->second, asFile);
 	}
 }
 
-DAVA::Texture * SceneDataManager::ReloadTexture( const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile )
+DAVA::Texture * SceneDataManager::TextureReload( const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile )
 {
 	if(prevTexture == Texture::GetPinkPlaceholder())
 	{

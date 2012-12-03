@@ -102,7 +102,7 @@ void LodDistanceControl::Update(float32 timeElapsed)
 
 void LodDistanceControl::UpdateDistanceToCamera()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     DVASSERT(activeScene);
 
     EditorScene *scene = activeScene->GetScene();
