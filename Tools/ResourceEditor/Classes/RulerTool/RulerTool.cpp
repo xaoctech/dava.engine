@@ -31,6 +31,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../SceneEditor/HeightmapNode.h"
 #include "../LandscapeEditor/RulerToolLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
@@ -127,8 +128,7 @@ bool RulerTool::Input(DAVA::UIEvent *touch)
             bool isIntersect = GetIntersectionPoint(touch->point, point);
             if(isIntersect)
             {
-                bool commandKeyIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
-                if(commandKeyIsPressed)
+                if(IsKeyModificatorPressed(DVKEY_SHIFT))
                 {
                     SetStartPoint(point);
                 }

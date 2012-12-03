@@ -31,6 +31,8 @@
 #include "CameraController.h"
 
 #include "EditorSettings.h"
+#include "../Qt/Main/QtUtils.h"
+
 
 namespace DAVA 
 {
@@ -87,8 +89,8 @@ void WASDCameraController::Update(float32 timeElapsed)
     {
         float32 moveSpeed = speed * timeElapsed;        
 
+		if(!IsKeyModificatorsPressed())
         {
-            
             bool moveUp = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_UP) | 
                            InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_W));
             if(moveUp)
@@ -192,132 +194,88 @@ void WASDCameraController::Input(UIEvent * event)
     if (!camera)return;
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {   
-        switch (event->tid) 
-        {
-            case DVKEY_Z:
-            {
-                LockAtSelection();
-//				SceneNode * sel = selection;
-////				if (sel == 0)
-////				{
-////					sel = currScene;
-////				}
-//                if (sel)
-//                {
-//                    if (dynamic_cast<Camera*>(sel))
-//                        break;				
-//                    AABBox3 box = sel->GetWTMaximumBoundingBox();						
-//                    float32 boxSize = ((box.max - box.min).Length());
-//                    
-//                    const Vector3 & pos = camera->GetPosition();
-//                    const Vector3 & targ = camera->GetTarget();
-//                    
-//                    Vector3 dir = targ - pos;
-//                    dir.Normalize();
-//                    
-//                    const Vector3 & c = box.GetCenter();
-//                    
-//                    camera->SetTarget(c);
-//                    camera->SetPosition(c - (dir * boxSize));
-//                }
+		if(!IsKeyModificatorsPressed())
+		{
+			switch (event->tid) 
+			{
+			case DVKEY_Z:
+				{
+					LockAtSelection();
+					break;
+				}
+			case DVKEY_T:
+				{
+					if (!camera)return;
+
+					viewZAngle = 0;
+					viewYAngle = MAX_ANGLE;
+
+					Matrix4 mt, mt2;
+					mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+					mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+					mt2 *= mt;
+					Vector3 vect = Vector3(0,0, 200);
+
+					Vector3 position = vect + Vector3(0, 10, 0) * mt2;
+
+					camera->SetTarget(position);
+					camera->SetPosition(vect);					
+					break;					
+				}
+
+			case DVKEY_1:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(0);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_2:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(1);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_3:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(2);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_4:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(3);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_9:
+				{
+					if (speed - 50 >= 0)
+					{
+						speed -= 50;
+					}
+					break;
+				}
+
+			case DVKEY_0:
+				{        
+					if (speed + 50 <= 5000)
+					{
+						speed += 50;
+					}
+					break;
+				}
+
+			default:
 				break;
-			}
-            case DVKEY_T:
-            {
-				if (!camera)return;
-				
-				viewZAngle = 0;
-				viewYAngle = MAX_ANGLE;
-				
-				Matrix4 mt, mt2;
-				mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
-				mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
-				mt2 *= mt;
-				Vector3 vect = Vector3(0,0, 200);
-				
-				Vector3 position = vect + Vector3(0, 10, 0) * mt2;
-				
-				camera->SetTarget(position);
-				camera->SetPosition(vect);					
-				break;					
-			}
-                
-            case DVKEY_1:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(0);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_2:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(1);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_3:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(2);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_4:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(3);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_9:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    if (speed - 50 >= 0)
-                    {
-                        speed -= 50;
-                    }
-                }
-                break;
-            }
-                
-            case DVKEY_0:
-            {        
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    if (speed + 50 <= 5000)
-                    {
-                        speed += 50;
-                    }
-                }
-                break;
-            }
-                
-            default:
-                break;
-        }
+			}		
+		}
     } 
 
-	bool altBut3 = (selection && event->tid == UIEvent::BUTTON_3 && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT));
+	bool altBut3 = (selection && event->tid == UIEvent::BUTTON_3 && IsKeyModificatorPressed(DVKEY_ALT));
 	
 	
 	if(UIEvent::PHASE_BEGAN == event->phase)

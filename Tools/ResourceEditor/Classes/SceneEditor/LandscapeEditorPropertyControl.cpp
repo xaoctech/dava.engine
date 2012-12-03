@@ -1,4 +1,5 @@
 #include "LandscapeEditorPropertyControl.h"
+#include "../Qt/Main/QtUtils.h"
 
 //*********************  LandscapeEditorSettings  **********************
 LandscapeEditorSettings::LandscapeEditorSettings()
@@ -34,7 +35,7 @@ void LandscapeEditorPropertyControl::Input(DAVA::UIEvent *currentInput)
 {
     if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
     {
-        if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        if(IsKeyModificatorPressed(DVKEY_CTRL))
         {
             if(DVKEY_1 == currentInput->tid)
             {
