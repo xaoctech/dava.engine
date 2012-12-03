@@ -744,6 +744,21 @@
     <string>Zoom to fit</string>
    </property>
   </action>
+  <action name="actionFilterSelectedNode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIconsTextureDialog/filter.png</normaloff>:/QtIconsTextureDialog/filter.png</iconset>
+   </property>
+   <property name="text">
+    <string>filterSelectedNode</string>
+   </property>
+   <property name="toolTip">
+    <string>filterSelectedNode</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
