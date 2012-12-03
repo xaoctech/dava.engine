@@ -660,13 +660,13 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 	SafeRelease(fileList);
 }
 
-void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, Scene *scene)
+void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, SceneNode *sceneNode)
 {
-    if(!scene)  return;
+    if(!sceneNode)  return;
     
     //materials
     Vector<Material*> materials;
-    scene->GetDataNodes(materials);
+    sceneNode->GetDataNodes(materials);
     for(int32 m = 0; m < (int32)materials.size(); ++m)
     {
         for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
@@ -681,7 +681,7 @@ void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, Scene *
     
     //landscapes
     Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
+    sceneNode->GetChildNodes(landscapes);
     for(int32 l = 0; l < (int32)landscapes.size(); ++l)
     {
         for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
@@ -696,7 +696,7 @@ void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, Scene *
     
     //lightmaps
     Vector<MeshInstanceNode *> meshInstances;
-    scene->GetChildNodes(meshInstances);
+    sceneNode->GetChildNodes(meshInstances);
     for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
     {
         for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
