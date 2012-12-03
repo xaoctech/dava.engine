@@ -1,10 +1,12 @@
 #include "QtUtils.h"
+#include "../../SceneEditor/SceneValidator.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include "QtMainWindowHandler.h"
 
-#include "Render/TextureDescriptor.h"
 
+#include "DAVAEngine.h"
 using namespace DAVA;
 
 
@@ -21,7 +23,15 @@ DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &path
     
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-    return PathnameToDAVAStyle(filePath);
+    String openedPathname = PathnameToDAVAStyle(filePath);
+    if(!SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
+    {
+        //Need to Show Error
+        ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.c_str())));
+        openedPathname = String("");
+    }
+    
+    return openedPathname;
 }
 
 
@@ -64,4 +74,35 @@ DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname)
     return image;
 }
 
+void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
+{
+    if(errors.empty())
+        return;
+    
+    String errorMessage = String("");
+    Set<String>::const_iterator endIt = errors.end();
+    for(Set<String>::const_iterator it = errors.begin(); it != endIt; ++it)
+    {
+        errorMessage += *it + String("\n");
+    }
+    
+    ShowErrorDialog(errorMessage);
+}
 
+void ShowErrorDialog(const DAVA::String &errorMessage)
+{
+    QMessageBox msgBox;
+    msgBox.setText(QString(errorMessage.c_str()));
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.exec();
+}
+
+bool IsKeyModificatorPressed(int32 key)
+{
+	return InputSystem::Instance()->GetKeyboard()->IsKeyPressed(key);
+}
+
+bool IsKeyModificatorsPressed()
+{
+	return (IsKeyModificatorPressed(DVKEY_SHIFT) || IsKeyModificatorPressed(DVKEY_CTRL) || IsKeyModificatorPressed(DVKEY_ALT));
+}

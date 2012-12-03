@@ -1,8 +1,8 @@
 #include "LibraryCommands.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
@@ -41,7 +41,7 @@ void CommandAddScene::Execute()
 {
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->AddScene(filePathname);
 }
 
@@ -73,7 +73,7 @@ void CommandEditScene::Execute()
         screen->AddBodyItem(StringToWString(name), true);
     }
 
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->EditScene(filePathname);
     
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname);
@@ -91,7 +91,7 @@ void CommandReloadScene::Execute()
 {
     DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
 
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->ReloadRootNode(filePathname);
 }
 
@@ -143,6 +143,6 @@ CommandAddReferenceScene::CommandAddReferenceScene(const DAVA::String &pathname)
 
 void CommandAddReferenceScene::Execute()
 {
-	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	sceneData->AddReferenceScene(filePathname);
 }

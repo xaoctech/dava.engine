@@ -70,7 +70,67 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 }
 
 
-void Image::Resize(int32 newWidth, int32 newHeight)
+  
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+
+#else //other platforms
+
+#endif //PLATFORMS	
+
+
+void Image::ResizeImage(int32 newWidth, int32 newHeight)
+{
+	if(newWidth>0 && newHeight>0)
+	{
+		uint8 * newData = NULL;
+		uint8 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+
+		if(formatSize>0)
+		{
+			newData = new uint8[newWidth * newHeight * formatSize];
+			memset(newData, 0, newWidth * newHeight * formatSize);
+
+			float32 kx = (float32)width / (float32)newWidth;
+			float32 ky = (float32)height / (float32)newHeight;
+
+			float32 xx = 0, yy = 0;
+			int32 offset = 0;
+			int32 offsetOld = 0;
+			int32 posX, posY;
+			for (int32 y = 0; y < newHeight; ++y)
+			{
+				for (int32 x = 0; x < newWidth; ++x)
+				{
+					posX = (int32)(xx + 0.5f);
+					posY = (int32)(yy + 0.5f);
+					if (posX >= width)
+						posX = width - 1;
+
+					if (posY >= height)
+						posY = height - 1;
+
+
+					offsetOld = (posY * width + posX) * formatSize;
+					memcpy(newData + offset, data + offsetOld, formatSize);
+
+					xx += kx;
+					offset += formatSize;
+				}
+				yy += ky;
+				xx = 0;
+			}
+
+			// resized data
+			width = newWidth;
+			height = newHeight;
+			SafeDeleteArray(data);
+			data = newData;
+		}
+	}
+
+}
+
+void Image::ResizeCanvas(int32 newWidth, int32 newHeight)
 {
     if(newWidth>0 && newHeight>0)
     {

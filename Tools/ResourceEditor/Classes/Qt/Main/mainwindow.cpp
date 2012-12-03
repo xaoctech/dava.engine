@@ -2,12 +2,13 @@
 #include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Qt/QtMainWindowHandler.h"
-#include "Classes/Qt/GUIState.h"
+#include "Classes/Qt/Main/QtMainWindowHandler.h"
+#include "Classes/Qt/Main/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/Qt/SceneDataManager.h"
+#include "Classes/Qt/Scene/SceneDataManager.h"
 
-#include "Classes/Qt/PointerHolder.h"
+#include "Classes/Qt/Main/PointerHolder.h"
+#include "LibraryModel.h"
 
 #include <QToolBar>
 
@@ -18,32 +19,32 @@
 #include <QApplication>
 #include <QPixmap>
 
+
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	ui->centralWidget->setFocus();
+	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
     
     new QtMainWindowHandler(this);
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
+	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+
+    libraryModel = new LibraryModel(this);
 
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-
+    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
+    libraryModel->Activate(ui->libraryView);
     
     RegisterBasePointerTypes();
     
     if(DAVA::Core::Instance())
     {
-        DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-        if(options)
-        {
-            QString titleStr(options->GetString("title", "Project Title").c_str());
-            this->setWindowTitle(titleStr);
-        }
+		ProjectChanged();
     }
     
     new GUIState();
@@ -51,11 +52,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
     SetupMainMenu();
-    
     SetupToolBar();
-    
     SetupDockWidgets();
-
     SetupProjectPath();
     
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
@@ -71,6 +69,8 @@ QtMainWindow::~QtMainWindow()
     GUIState::Instance()->Release();
     
     delete ui;
+
+    SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -135,7 +135,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,
                                        ui->actionUserNode,
-									   ui->actionSwitchNode
+									   ui->actionSwitchNode,
+									   ui->actionParticleEffectNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 
@@ -257,12 +258,14 @@ void QtMainWindow::SetupCustomColorsDock()
     connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
     connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
     connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
+	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
 
 	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
 		ui->buttonCustomColorsEnable,
 		ui->buttonCustomColorsSave,
 		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors);
+		ui->comboboxCustomColors,
+		ui->buttonCustomColorsLoad);
     
     QSize iconSize = ui->comboboxCustomColors->iconSize();
     iconSize = iconSize.expandedTo(QSize(100, 0));
@@ -362,6 +365,16 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     
     return QMainWindow::eventFilter(obj, event);
+}
+
+void QtMainWindow::ProjectChanged()
+{
+	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
+	if(options)
+	{
+		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
+		this->setWindowTitle(titleStr);
+	}
 }
 
 

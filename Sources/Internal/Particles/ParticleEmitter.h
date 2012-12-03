@@ -137,6 +137,22 @@ public:
 	 */
 	void Restart(bool isDeleteAllParticles = true);
 	
+    /**
+     \brief Function to start generation from this emitter
+	 */
+	void Play();
+
+    /**
+     \brief Function to stop generation from this emitter
+	 */
+	void Stop();
+
+	/**
+     \brief Function returns is emitter stopped
+     \returns is emitter stopped
+	 */
+	bool IsStopped();
+
 	/**
 		\brief Function to pause generation from this emitter
 		\param[in] isPaused true if you want to pause the generation, false if you want to resume it

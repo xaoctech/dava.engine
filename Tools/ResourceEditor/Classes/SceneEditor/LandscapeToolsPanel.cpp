@@ -55,6 +55,8 @@ LandscapeToolsPanel::~LandscapeToolsPanel()
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
 {
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     UISlider *slider = new UISlider(rect);
     slider->SetMinMaxValue(0.f, 1.0f);
     slider->SetValue(0.5f);
@@ -68,6 +70,8 @@ UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
     slider->SetMaxLeftRightStretchCap(5);
 
     slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     
     return slider;
 }

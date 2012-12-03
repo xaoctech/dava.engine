@@ -16,11 +16,12 @@
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/EditorBodyControl.h"
 #include "GUIState.h"
-#include "SceneDataManager.h"
-#include "SceneData.h"
-#include "QtUtils.h"
-#include "mainwindow.h"
+#include "Scene/SceneDataManager.h"
+#include "Scene/SceneData.h"
+#include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 #include "TextureDialog/TextureDialog.h"
 
 #include <QPoint>
@@ -102,6 +103,7 @@ void QtMainWindowHandler::OpenScene()
 void QtMainWindowHandler::OpenProject()
 {
     Execute(new CommandOpenProject());
+	emit ProjectChanged();
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
@@ -142,6 +144,23 @@ void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 void QtMainWindowHandler::Materials()
 {
     Execute(new CommandMaterials());
+
+	/*
+	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
+
+		if(NULL != body && NULL != body->bodyControl)
+		{
+			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
+			materialBrowser->SetScene(mainScreenScene);
+		}
+	}
+
+	materialBrowser->show();
+	*/
 }
 
 void QtMainWindowHandler::HeightmapEditor()
@@ -156,10 +175,12 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-    //Execute(new CommandTextureConverter());
-
-	TextureDialog ctd;
-	ctd.exec();
+	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
+	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
+	
+	textureBrowser->sceneActivated(activeScene);
+	textureBrowser->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
+	textureBrowser->show();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
@@ -471,6 +492,11 @@ void QtMainWindowHandler::SaveTextureCustomColors()
     Execute(new CommandSaveTextureCustomColors());
 }
 
+void QtMainWindowHandler::LoadTextureCustomColors()
+{
+	Execute(new CommandLoadTextureCustomColors());
+}
+
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
     Execute(new CommandChangeBrushSizeCustomColors(newSize));
@@ -481,12 +507,13 @@ void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
     Execute(new CommandChangeColorCustomColors(newColorIndex));
 }
 
-void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox)
+void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
 {
 	this->customColorsToggleButton = toggleButton;
 	this->customColorsSaveTextureButton = saveTextureButton;
 	this->customColorsBrushSizeSlider = brushSizeSlider;
 	this->customColorsColorComboBox = colorComboBox;
+	this->customColorsLoadTextureButton = loadTextureButton;
 }
 
 void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
@@ -494,7 +521,8 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	DVASSERT(customColorsToggleButton &&
 			 customColorsSaveTextureButton &&
 			 customColorsBrushSizeSlider &&
-			 customColorsColorComboBox);
+			 customColorsColorComboBox &&
+			 customColorsLoadTextureButton);
 
 	customColorsToggleButton->blockSignals(true);
 	customColorsToggleButton->setCheckable(state);
@@ -507,9 +535,11 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	customColorsSaveTextureButton->setEnabled(state);
 	customColorsBrushSizeSlider->setEnabled(state);
 	customColorsColorComboBox->setEnabled(state);
+	customColorsLoadTextureButton->setEnabled(state);
 	customColorsSaveTextureButton->blockSignals(!state);
 	customColorsBrushSizeSlider->blockSignals(!state);
 	customColorsColorComboBox->blockSignals(!state);
+	customColorsLoadTextureButton->blockSignals(!state);
 
 	if(state == true)
 	{

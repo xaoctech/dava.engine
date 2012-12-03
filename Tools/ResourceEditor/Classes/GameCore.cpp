@@ -25,7 +25,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "Qt/SceneDataManager.h"
+#include "Qt/Scene/SceneDataManager.h"
 
 
 using namespace DAVA;
@@ -118,7 +118,7 @@ void GameCore::OnResume()
     
     if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
-        SceneValidator::Instance()->FindTexturesForCompression();
+        SceneDataManager::Instance()->TextureCompressAllNotCompressed();
     }
 }
 

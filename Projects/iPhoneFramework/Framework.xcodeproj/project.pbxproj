@@ -142,6 +142,14 @@
 		E856CF24162420F10065E32B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E856CF22162420F10065E32B /* TextureDescriptor.h */; };
 		E85D7A6B1609E37F00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */; };
 		E85D7A6C1609E37F00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */; };
+		E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89ECC901663AA2700D17C41 /* FastName.cpp */; };
+		E89ECC971663AA2700D17C41 /* FastName.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC911663AA2700D17C41 /* FastName.h */; };
+		E89ECC981663AA2700D17C41 /* FastNameMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC921663AA2700D17C41 /* FastNameMap.h */; };
+		E89ECC991663AA2700D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC931663AA2700D17C41 /* Hash.h */; };
+		E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC941663AA2700D17C41 /* Introspection.h */; };
+		E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC951663AA2700D17C41 /* Meta.h */; };
+		E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */; };
+		E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */; };
 		E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C85161B301E00B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C83161B301E00B50BDA /* LibPVRHelper.h */; };
 		E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C86161B326200B50BDA /* PVRDefines.h */; };
@@ -706,6 +714,14 @@
 		E856CF22162420F10065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
 		E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
+		E89ECC901663AA2700D17C41 /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
+		E89ECC911663AA2700D17C41 /* FastName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastName.h; sourceTree = "<group>"; };
+		E89ECC921663AA2700D17C41 /* FastNameMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastNameMap.h; sourceTree = "<group>"; };
+		E89ECC931663AA2700D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		E89ECC941663AA2700D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
+		E89ECC951663AA2700D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
+		E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C83161B301E00B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C86161B326200B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -1348,6 +1364,12 @@
 		FECFB33E12E5904400C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E89ECC901663AA2700D17C41 /* FastName.cpp */,
+				E89ECC911663AA2700D17C41 /* FastName.h */,
+				E89ECC921663AA2700D17C41 /* FastNameMap.h */,
+				E89ECC931663AA2700D17C41 /* Hash.h */,
+				E89ECC941663AA2700D17C41 /* Introspection.h */,
+				E89ECC951663AA2700D17C41 /* Meta.h */,
 				C2F0A4F9161DEA8C003A2006 /* Observable.cpp */,
 				C2F0A4FA161DEA8C003A2006 /* Observable.h */,
 				C2F0A4FB161DEA8C003A2006 /* Observer.h */,
@@ -1731,6 +1753,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */,
+				E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */,
 				CCFF223415EE15B100363446 /* SwitchNode.cpp */,
 				CCFF223515EE15B100363446 /* SwitchNode.h */,
 				C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */,
@@ -2230,6 +2254,12 @@
 				E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */,
 				E856CF24162420F10065E32B /* TextureDescriptor.h in Headers */,
 				E80842B6163913B7002A6A77 /* ImageLoader.h in Headers */,
+				E89ECC971663AA2700D17C41 /* FastName.h in Headers */,
+				E89ECC981663AA2700D17C41 /* FastNameMap.h in Headers */,
+				E89ECC991663AA2700D17C41 /* Hash.h in Headers */,
+				E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */,
+				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
+				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2551,6 +2581,8 @@
 				E856CF23162420F10065E32B /* TextureDescriptor.cpp in Sources */,
 				E80842B5163913B7002A6A77 /* ImageLoader.cpp in Sources */,
 				492A98DC1644149F006AAE2A /* Image.mm in Sources */,
+				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
+				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

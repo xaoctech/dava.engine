@@ -1,6 +1,6 @@
 #include "TextureOptionsCommands.h"
 #include "../SceneEditor/EditorSettings.h"
-#include "../SceneEditor/SceneValidator.h"
+#include "../Qt/Scene//SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -17,6 +17,6 @@ void ReloadTexturesAsCommand::Execute()
     EditorSettings::Instance()->SetTextureViewFileFormat(fileFormat);
     EditorSettings::Instance()->Save();
     
-    SceneValidator::Instance()->ReloadTextures(fileFormat);
+    SceneDataManager::Instance()->TextureReloadAll(fileFormat);
 }
 

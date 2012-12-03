@@ -2,6 +2,7 @@
 #define DAVAGLWIDGET_H
 
 #include <QWidget>
+#include <QTimer>
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -16,24 +17,21 @@ class DavaGLWidget : public QWidget, public DAVA::QtLayerDelegate
 public:
     explicit DavaGLWidget(QWidget *parent = 0);
     ~DavaGLWidget();
-    
-    virtual void Quit();
 
+	void SetMaxFPS(int fps);
+	int GetMaxFPS();
+	int GetFPS();
+    
 	virtual QPaintEngine *paintEngine() const;
-
+	
+	virtual void paintEvent(QPaintEvent *);
     
-protected:
-
 	virtual void resizeEvent(QResizeEvent *);
     virtual void moveEvent(QMoveEvent *);
-
-    virtual void paintEvent(QPaintEvent *);
 
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
 
-	virtual void closeEvent(QCloseEvent *);
-    
     virtual void focusInEvent(QFocusEvent *);
     virtual void focusOutEvent(QFocusEvent *);
     
@@ -45,24 +43,16 @@ protected:
 	virtual bool winEvent(MSG *message, long *result);
 #endif //#if defined(Q_WS_WIN)
 
-    
 protected slots:
-    
-    void FpsTimerDone();
-    void ReadyToQuit();
-    
-private:
-
-	void InitFrameTimer();
-	void DisableWidgetBlinking();
+	void Render();
 
 private:
+	Ui::DavaGLWidget *ui;
 
-    int frameTime;
-	bool willClose;
+	int maxFPS;
+    int minFrameTimeMs;
 
-private:
-    Ui::DavaGLWidget *ui;
+	void Quit();
 };
 
 #endif // DAVAGLWIDGET_H

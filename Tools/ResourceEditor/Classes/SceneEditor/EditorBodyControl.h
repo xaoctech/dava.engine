@@ -115,6 +115,8 @@ public:
 	void SetBrushRadius(uint32 size);
 	void SetColorIndex(uint32 indexInSet);
 	void SaveTexture(const String &path);
+	void CustomColorsLoadTexture(const String& path);
+	String CustomColorsGetCurrentSaveFileName();
 	
 	//visibility check tool
 	void VisibilityToolSetPoint();

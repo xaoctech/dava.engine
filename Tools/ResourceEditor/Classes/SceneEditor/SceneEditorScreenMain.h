@@ -195,10 +195,14 @@ public: //For Qt integration
     void HeightmapTriggered();
     void TilemapTriggered();
     void RulerToolTriggered();
+	
+	//custom colors
     void CustomColorsTriggered();
 	void CustomColorsSetRadius(uint32 newRadius);
 	void CustomColorsSetColor(uint32 indexInSet);
 	void CustomColorsSaveTexture(const String &path);
+	void CustomColorsLoadTexture(const String& path);
+	String CustomColorsGetCurrentSaveFileName();
 	
 	//visibility check tool
 	void VisibilityToolTriggered();

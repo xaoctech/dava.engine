@@ -1157,6 +1157,17 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\dxtHelper.h">
       <Filter>Internal\Render</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Base\Meta.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\FastName.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h">
+      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1981,6 +1992,11 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\dxtHelper.cpp">
       <Filter>Internal\Render</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
+      <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

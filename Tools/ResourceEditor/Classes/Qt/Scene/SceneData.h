@@ -53,7 +53,7 @@ public:
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *graphview, QTreeView *libraryView);
+    void Activate(QTreeView *graphview, QTreeView *libraryView, LibraryModel *libModel);
     void Deactivate();
 
     void ReloadRootNode(const DAVA::String &scenePathname);
@@ -72,6 +72,14 @@ public:
     
 	void ResetLandsacpeSelection();
 
+	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+
+
+signals:
+	void SceneChanged(EditorScene *scene);
+	void SceneNodeSelected(DAVA::SceneNode *node);
+
 protected:
     
     void BakeNode(DAVA::SceneNode *node);
@@ -88,9 +96,11 @@ protected:
 
     void ProcessContextMenuAction(QAction *action);
 
+	void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
+
 protected slots:
     
-    void SceneNodeSelected(DAVA::SceneNode *node);
+    void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
     
     //library
     void LibraryContextMenuRequested(const QPoint &point);
@@ -119,7 +129,6 @@ protected:
     //DATA
     //ENTITY
     //PROPERTY
-    //LIBRARY
     LibraryModel *libraryModel;
     
     //reload root nodes

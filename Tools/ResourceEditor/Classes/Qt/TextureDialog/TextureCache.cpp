@@ -1,63 +1,63 @@
 #include "TextureDialog/TextureCache.h"
 
 
-QImage TextureCache::getOriginal(const DAVA::Texture *texture)
+QImage TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
 {
 	QImage img;
 
-	if(NULL != texture && cacheOriginal.contains(texture))
+	if(NULL != descriptor && cacheOriginal.contains(descriptor))
 	{
-		img = cacheOriginal[texture];
+		img = cacheOriginal[descriptor];
 	}
 
 	return img;
 }
 
-QImage TextureCache::getPVR(const DAVA::Texture *texture)
+QImage TextureCache::getPVR(const DAVA::TextureDescriptor *descriptor)
 {
 	QImage img;
 
-	if(NULL != texture && cacheOriginal.contains(texture))
+	if(NULL != descriptor && cacheOriginal.contains(descriptor))
 	{
-		img = cachePVR[texture];
+		img = cachePVR[descriptor];
 	}
 
 	return img;
 }
 
-QImage TextureCache::getDXT(const DAVA::Texture *texture)
+QImage TextureCache::getDXT(const DAVA::TextureDescriptor *descriptor)
 {
 	QImage img;
 
-	if(NULL != texture && cacheOriginal.contains(texture))
+	if(NULL != descriptor && cacheOriginal.contains(descriptor))
 	{
-		img = cacheDXT[texture];
+		img = cacheDXT[descriptor];
 	}
 
 	return img;
 }
 
-void TextureCache::setOriginal(const DAVA::Texture *texture, const QImage &image)
+void TextureCache::setOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
-		cacheOriginal[texture] = image;
+		cacheOriginal[descriptor] = image;
 	}
 }
 
-void TextureCache::setPVR(const DAVA::Texture *texture, const QImage &image)
+void TextureCache::setPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
-		cachePVR[texture] = image;
+		cachePVR[descriptor] = image;
 	}
 }
 
-void TextureCache::setDXT(const DAVA::Texture *texture, const QImage &image)
+void TextureCache::setDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
-		cacheDXT[texture] = image;
+		cacheDXT[descriptor] = image;
 	}
 }
 
@@ -68,17 +68,17 @@ void TextureCache::clearAll()
 	cacheDXT.clear();
 }
 
-void TextureCache::clearOriginal(const DAVA::Texture *texture)
+void TextureCache::clearOriginal(const DAVA::TextureDescriptor *descriptor)
 {
-	cacheOriginal.remove(texture);
+	cacheOriginal.remove(descriptor);
 }
 
-void TextureCache::clearPVR(const DAVA::Texture *texture)
+void TextureCache::clearPVR(const DAVA::TextureDescriptor *descriptor)
 {
-	cachePVR.remove(texture);
+	cachePVR.remove(descriptor);
 }
 
-void TextureCache::clearDXT(const DAVA::Texture *texture)
+void TextureCache::clearDXT(const DAVA::TextureDescriptor *descriptor)
 {
-	cacheDXT.remove(texture);
+	cacheDXT.remove(descriptor);
 }

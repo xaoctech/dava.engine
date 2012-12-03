@@ -8,7 +8,8 @@
 #define __DAVAENGINE_HASH_MAP__
 
 #include "Base/BaseTypes.h"
-#include "Hash.h"
+#include "Base/Hash.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {

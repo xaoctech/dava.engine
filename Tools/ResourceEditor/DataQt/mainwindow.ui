@@ -31,7 +31,7 @@
   <property name="dockOptions">
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
-  <widget class="DavaGLWidget" name="centralWidget">
+  <widget class="DavaGLWidget" name="davaGLWidget">
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
    </property>
@@ -292,6 +292,7 @@
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionUserNode"/>
     <addaction name="actionSwitchNode"/>
+    <addaction name="actionParticleEffectNode"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -449,6 +450,13 @@ size:</string>
          </widget>
         </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonCustomColorsLoad">
+       <property name="text">
+        <string>Load Texture</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -729,6 +737,9 @@ Area Size:</string>
    <property name="text">
     <string>Height Map Editor</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionTileMapEditor">
    <property name="checkable">
@@ -736,6 +747,9 @@ Area Size:</string>
    </property>
    <property name="text">
     <string>Tile Map Editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionTextureConverter">
@@ -805,10 +819,16 @@ Area Size:</string>
    <property name="text">
     <string>Show Not Passable Landscape</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
   </action>
   <action name="actionRulerTool">
    <property name="text">
     <string>Ruler Tool</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionReloadAsPNG">
@@ -824,6 +844,11 @@ Area Size:</string>
   <action name="actionReloadAsDXT">
    <property name="text">
     <string>As DXT</string>
+   </property>
+  </action>
+  <action name="actionParticleEffectNode">
+   <property name="text">
+    <string>Particle Effect Node</string>
    </property>
   </action>
  </widget>

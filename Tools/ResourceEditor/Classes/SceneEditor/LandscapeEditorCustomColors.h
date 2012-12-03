@@ -25,8 +25,7 @@ public:
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
     virtual bool SetScene(EditorScene *newScene);
-	virtual void SaveTexture()
-	{ Close(); };
+	virtual void SaveTexture();
     
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
@@ -37,6 +36,8 @@ public:
 	void SetColor(const Color &newColor);
 	void SetRadius(int radius);
 	void SaveColorLayer(const String &pathName);
+	void LoadColorLayer(const String &pathName);
+	String GetCurrentSaveFileName();
 
 protected:
 
@@ -47,7 +48,14 @@ protected:
 	virtual void UpdateCursor();
     virtual void UndoAction();
     virtual void RedoAction();
-	
+
+	String GetScenePath();
+	String GetRelativePathToScenePath(const String& absolutePath);
+	String GetAbsolutePathFromScenePath(const String& relativePath);
+	void StoreSaveFileName(const String& fileName);
+
+	void LoadTextureAction(const String& pathToFile);
+
     virtual void RecreateHeightmapNode();
 	void UpdateCircleTexture(bool setTransparent);
 
