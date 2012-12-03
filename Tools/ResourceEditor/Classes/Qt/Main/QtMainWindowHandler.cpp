@@ -102,6 +102,7 @@ void QtMainWindowHandler::OpenScene()
 void QtMainWindowHandler::OpenProject()
 {
     Execute(new CommandOpenProject());
+	emit ProjectChanged();
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)

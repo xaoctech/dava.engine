@@ -320,6 +320,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
+		DVASSERT_MSG(IsPointerToExactClass<MeshInstanceNode>(this), "Can clone only MeshInstanceNode");
         dstNode = new MeshInstanceNode();
     }
 

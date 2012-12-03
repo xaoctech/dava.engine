@@ -125,7 +125,10 @@ public slots:
 	void SaveParticleEditorConfig();
 	void OpenParticleEditorSprite();
 	
-    
+signals:
+
+	void ProjectChanged();
+
 private:
     //create node
     void CreateNode(ResourceEditor::eNodeType type);

@@ -497,8 +497,9 @@ Matrix4 SceneNode::AccamulateLocalTransform(SceneNode *fromParent)
 SceneNode* SceneNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
-    {
-        dstNode = new SceneNode();
+	{
+		DVASSERT_MSG(IsPointerToExactClass<SceneNode>(this), "Can clone only SceneNode");
+		dstNode = new SceneNode();
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     

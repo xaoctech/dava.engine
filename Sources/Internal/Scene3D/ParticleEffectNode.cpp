@@ -56,7 +56,7 @@ bool ParticleEffectNode::PrepareNewParticleEmitterNode(SceneNode* node)
     }
 
     // Default Node State is Stopped.
-    emitter->Stop();
+    //emitter->Stop();
     
     // The effect duration is the same as longest lifetime of the child nodes.
     float32 newEmitterLifeTime = emitter->GetLifeTime();
@@ -96,6 +96,27 @@ void ParticleEffectNode::Start()
     }
 
     this->emittersCurrentlyStopped = 0;
+}
+
+void ParticleEffectNode::Stop()
+{
+	int32 childrenCount = GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
+		particleEmitterNode->GetEmitter()->Stop();
+		emittersCurrentlyStopped++;
+	}
+}
+
+void ParticleEffectNode::Restart()
+{
+	int32 childrenCount = GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
+		particleEmitterNode->GetEmitter()->Restart(true);
+	}
 }
 
 void ParticleEffectNode::StopAfterNRepeats(int32 numberOfRepeats)
@@ -170,3 +191,20 @@ void ParticleEffectNode::SetPlaybackCompleteMessage(const Message& msg)
 {
     this->playbackComplete = msg;
 }
+
+SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEffectNode>(this), "Can clone only ParticleEffectNode");
+		dstNode = new ParticleEffectNode();
+	}
+
+	SceneNode::Clone(dstNode);
+	ParticleEffectNode *nd = (ParticleEffectNode *)dstNode;
+	nd->effectDuration = effectDuration;
+
+	return dstNode;
+}
+
+

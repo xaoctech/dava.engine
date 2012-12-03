@@ -410,8 +410,6 @@
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
-    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
@@ -441,6 +439,7 @@
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp" />
     <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
@@ -825,8 +824,6 @@
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
     <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h" />
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h" />
-    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
-    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
@@ -856,6 +853,7 @@
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h" />
     <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />

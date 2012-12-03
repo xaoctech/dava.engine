@@ -30,6 +30,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     qApp->installEventFilter(this);
     
     new QtMainWindowHandler(this);
+	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
     QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
     libraryModel = new LibraryModel(this);
@@ -43,12 +44,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     
     if(DAVA::Core::Instance())
     {
-        DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-        if(options)
-        {
-            QString titleStr(options->GetString("title", "Project Title").c_str());
-            this->setWindowTitle(titleStr);
-        }
+		ProjectChanged();
     }
     
     new GUIState();
@@ -369,6 +365,16 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     }
     
     return QMainWindow::eventFilter(obj, event);
+}
+
+void QtMainWindow::ProjectChanged()
+{
+	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
+	if(options)
+	{
+		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
+		this->setWindowTitle(titleStr);
+	}
 }
 
 

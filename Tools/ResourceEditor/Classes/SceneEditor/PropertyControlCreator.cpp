@@ -12,7 +12,7 @@
 #include "Entity/Entity.h"
 #include "ParticleEmitterPropertyControl.h"
 #include "SwitchNodePropertyControl.h"
-
+#include "ParticleEffectPropertyControl.h"
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -86,6 +86,13 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 	{
 		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
 	}
+
+	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode*>(sceneNode);
+	if(particleEffect)
+	{
+		return CreateControlForNode(EPCID_PARTICLE_EFFECT, rect, createNodeProperties);
+	}
+
 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
@@ -164,6 +171,11 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
 			case EPCID_SWITCH:
 				controls[controlID] = new SwitchNodePropertyControl(rect, createNodeProperties);
 				break;
+
+			case EPCID_PARTICLE_EFFECT:
+				controls[controlID] = new ParticleEffectPropertyControl(rect, createNodeProperties);
+				break;
+
                 
             default:
                 break; 

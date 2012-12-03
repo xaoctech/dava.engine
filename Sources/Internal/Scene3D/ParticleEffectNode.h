@@ -30,6 +30,10 @@ public:
      \brief Start the playback for all inner nodes.
      */
     void Start();
+
+	void Stop();
+
+	void Restart();
     
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.
@@ -52,6 +56,8 @@ public:
      \brief Set the message to be called when Playback is complete.
      */
     void SetPlaybackCompleteMessage(const Message& msg);
+
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 protected:
     // Check whether Node is Particle Emitter one and check the duration.
