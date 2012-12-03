@@ -37,8 +37,8 @@ public:
 	DAVA::SceneNode* GetSelectedNode(SceneData *scene);
     
 	void CompressNotCompressedTextures();
-	void ReloadTextures(int32 asFile);
-	DAVA::Texture * ReloadTexture(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile);
+	void ReloadTextures(DAVA::ImageFileFormat asFile);
+	DAVA::Texture * ReloadTexture(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
 	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 

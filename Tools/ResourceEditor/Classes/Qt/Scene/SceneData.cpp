@@ -136,7 +136,7 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
     Camera * cam = dynamic_cast<Camera*>(node);
     if (cam)
     {
-        if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
+        if (IsKeyModificatorPressed(DVKEY_ALT))
         {
             scene->SetClipCamera(cam);
         }
