@@ -19,4 +19,7 @@ DAVA::Image * CreateTopLevelImage(const DAVA::String &imagePathname);
 void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors);
 void ShowErrorDialog(const DAVA::String &errorMessage);
 
+bool IsKeyModificatorPressed(DAVA::int32 key);
+bool IsKeyModificatorsPressed();
+
 #endif // __QT_UTILS_H__

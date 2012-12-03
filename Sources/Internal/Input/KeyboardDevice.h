@@ -201,6 +201,8 @@ public:
     void OnSystemKeyPressed(int32 systemKeyCode);
     void OnSystemKeyUnpressed(int32 systemKeyCode);
 
+	void ClearAllKeys();
+
 protected:
     
     void PrepareKeyTranslator();
