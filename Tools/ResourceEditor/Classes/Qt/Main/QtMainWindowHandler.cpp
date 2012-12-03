@@ -174,18 +174,10 @@ void QtMainWindowHandler::TilemapEditor()
 void QtMainWindowHandler::ConvertTextures()
 {
 	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
-	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
-
-		if(NULL != body && NULL != body->bodyControl)
-		{
-			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			textureBrowser->setScene(mainScreenScene);
-		}
-	}
-
+	SceneData *activeScene =  SceneDataManager::Instance()->GetActiveScene();
+	
+	textureBrowser->sceneActivated(activeScene);
+	textureBrowser->sceneNodeSelected(activeScene, SceneDataManager::Instance()->GetSelectedNode(activeScene));
 	textureBrowser->show();
 }
 

@@ -17,9 +17,11 @@ public:
     SceneDataManager();
     virtual ~SceneDataManager();
 
+	// TODO:
+	// this part need refactor -->
     void SetActiveScene(EditorScene *scene);
-    SceneData *GetActiveScene();
-    SceneData *GetLevelScene();
+	SceneData *GetActiveScene();
+	SceneData *GetLevelScene();
 
     EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
@@ -29,12 +31,16 @@ public:
     void SetSceneGraphView(QTreeView *view);
     void SetLibraryView(QTreeView *view);
     void SetLibraryModel(LibraryModel *model);
+	// <--
+
+public:
+	DAVA::SceneNode* GetSelectedNode(SceneData *scene);
     
 signals:
 	void SceneActivated(SceneData *scene);
 	void SceneChanged(SceneData *scene);
 	void SceneReleased(SceneData *scene);
-	void SceneNodeSelected(SceneData *scene, SceneNode *node);
+	void SceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
 protected slots:
 	void InSceneData_SceneChanged(EditorScene *scene);
