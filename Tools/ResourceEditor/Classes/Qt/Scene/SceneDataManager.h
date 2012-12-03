@@ -37,8 +37,8 @@ public:
 	SceneData*			SceneGetLevel();
     
 	void				TextureCompressAllNotCompressed();
-	void				TextureReloadAll(int32 asFile);
-	DAVA::Texture*		TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile);
+	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
+	DAVA::Texture*		TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
 	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 

@@ -236,7 +236,7 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 	}
 }
 
-void SceneDataManager::TextureReloadAll( int32 asFile )
+void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 {
 	Map<String, Texture *> textures;
 	EnumerateTextures(textures);
@@ -248,7 +248,7 @@ void SceneDataManager::TextureReloadAll( int32 asFile )
 	}
 }
 
-DAVA::Texture * SceneDataManager::TextureReload( const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile )
+DAVA::Texture * SceneDataManager::TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
 {
 	if(prevTexture == Texture::GetPinkPlaceholder())
 	{
