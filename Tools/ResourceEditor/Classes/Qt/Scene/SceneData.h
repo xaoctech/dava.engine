@@ -72,6 +72,10 @@ public:
     
 	void ResetLandsacpeSelection();
 
+	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
@@ -91,6 +95,8 @@ protected:
     void ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point);
 
     void ProcessContextMenuAction(QAction *action);
+
+	void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
 
 protected slots:
     

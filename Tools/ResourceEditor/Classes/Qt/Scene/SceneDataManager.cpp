@@ -3,6 +3,9 @@
 #include "Main/SceneGraphModel.h"
 #include "Main/LibraryModel.h"
 
+#include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/PVRConverter.h"
+
 #include <QTreeView>
 
 using namespace DAVA;
@@ -154,3 +157,115 @@ void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneNodeSelected(sceneData, node);
 }
+
+void SceneDataManager::EnumerateTextures( DAVA::Map<DAVA::String, DAVA::Texture *> &textures )
+{
+	List<SceneData *>::const_iterator endIt = scenes.end();
+	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
+	{
+		(*it)->EnumerateTextures(textures);
+	}
+}
+
+
+void SceneDataManager::CompressNotCompressedTextures()
+{
+	Map<String, Texture *> textures;
+	EnumerateTextures(textures);
+
+	List<Texture *>texturesForPVRCompression;
+	List<Texture *>texturesForDXTCompression;
+
+	Map<String, Texture *>::const_iterator endIt = textures.end();
+	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
+	{
+		if(SceneValidator::Instance()->IsTextureChanged(it->first, PVR_FILE))
+		{
+			texturesForPVRCompression.push_back(SafeRetain(it->second));
+		}
+		else if(SceneValidator::Instance()->IsTextureChanged(it->first, DXT_FILE))
+		{
+			texturesForDXTCompression.push_back(SafeRetain(it->second));
+		}
+	}
+
+	CompressTextures(texturesForPVRCompression, PVR_FILE);
+	CompressTextures(texturesForDXTCompression, DXT_FILE);
+
+	for_each(texturesForPVRCompression.begin(), texturesForPVRCompression.end(),  SafeRelease<Texture>);
+	for_each(texturesForDXTCompression.begin(), texturesForDXTCompression.end(),  SafeRelease<Texture>);
+}
+
+void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
+{
+	//TODO: need to run compression at thread
+
+// 	List<Texture *>::const_iterator endIt = texturesForCompression.end();
+// 	for(List<Texture *>::const_iterator it = texturesForCompression.begin(); it != endIt; ++it)
+// 	{
+// 		Texture *texture = *it;
+// 		//TODO: compress texture
+// 		TextureDescriptor *descriptor = texture->CreateDescriptor();
+// 		if(descriptor)
+// 		{
+// 			if(fileFormat == PVR_FILE)
+// 			{
+// 				PVRConverter::Instance()->ConvertPngToPvr(descriptor->GetSourceTexturePathname(), *descriptor);
+// 			}
+// 			else if(fileFormat == DXT_FILE)
+// 			{
+// 
+// 			}
+// 
+// 			descriptor->UpdateDateAndCrcForFormat(fileFormat);
+// 			descriptor->Save();
+// 			SafeRelease(descriptor);
+// 		}
+// 	}
+}
+
+void SceneDataManager::ReloadTextures( int32 asFile )
+{
+	Map<String, Texture *> textures;
+	EnumerateTextures(textures);
+
+	Map<String, Texture *>::const_iterator endIt = textures.end();
+	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
+	{
+		Texture *newTexture = ReloadTexture(it->first, it->second, asFile);
+	}
+}
+
+DAVA::Texture * SceneDataManager::ReloadTexture( const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, int32 asFile )
+{
+	if(prevTexture == Texture::GetPinkPlaceholder())
+	{
+		Texture *newTexture = Texture::CreateFromFile(descriptorPathname);
+		RestoreTexture(descriptorPathname, newTexture);
+
+		DVASSERT_MSG(1 < newTexture->GetRetainCount(), "Can be more than 1");
+		newTexture->Release();
+
+		return newTexture;
+	}
+
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
+	if(descriptor)
+	{
+		prevTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+		SafeRelease(descriptor);
+	}
+
+	return prevTexture;
+}
+
+void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )
+{
+	List<SceneData *>::const_iterator endIt = scenes.end();
+	for(List<SceneData *>::const_iterator it = scenes.begin(); it != endIt; ++it)
+	{
+		(*it)->RestoreTexture(descriptorPathname, texture);
+	}
+}
+
+
