@@ -487,6 +487,9 @@ void TextureDialog::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
+
+	// zoom fit selected texture
+	textureZoomFit(true);
 }
 
 void TextureDialog::textureListViewText(bool checked)
