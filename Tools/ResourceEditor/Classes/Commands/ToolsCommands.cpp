@@ -65,7 +65,7 @@ void CommandHeightmapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
 }
 
@@ -116,7 +116,7 @@ CommandBakeScene::CommandBakeScene()
 
 void CommandBakeScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->BakeScene();
 }
 
@@ -158,7 +158,7 @@ void CommandRulerTool::Execute()
         screen->RulerToolTriggered();
     }
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
     
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());

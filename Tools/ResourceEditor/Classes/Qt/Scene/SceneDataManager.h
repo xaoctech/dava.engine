@@ -20,10 +20,8 @@ public:
 	// TODO:
 	// this part need refactor -->
     void SetActiveScene(EditorScene *scene);
-	SceneData *GetActiveScene();
-	SceneData *GetLevelScene();
 
-    EditorScene * RegisterNewScene();
+	EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
     DAVA::int32 ScenesCount();
     SceneData *GetScene(DAVA::int32 index);
@@ -34,14 +32,15 @@ public:
 	// <--
 
 public:
-	DAVA::SceneNode* GetSelectedNode(SceneData *scene);
+	DAVA::SceneNode*	SceneGetSelectedNode(SceneData *scene);
+	SceneData*			SceneGetActive();
+	SceneData*			SceneGetLevel();
     
-	void CompressNotCompressedTextures();
-	void ReloadTextures(DAVA::ImageFileFormat asFile);
-	DAVA::Texture * ReloadTexture(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
+	void				TextureCompressAllNotCompressed();
+	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
+	DAVA::Texture*		TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
 	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
-
 
 signals:
 	void SceneActivated(SceneData *scene);
