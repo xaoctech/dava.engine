@@ -82,6 +82,19 @@ void TextureListModel::setTexture(const DAVA::TextureDescriptor* descriptor, DAV
 	}
 }
 
+bool TextureListModel::isHighlited(const QModelIndex &index) const
+{
+	bool ret = false;
+	DAVA::TextureDescriptor *descriptor = getDescriptor(index);
+
+	if(NULL != descriptor)
+	{
+		ret = textureDescriptorsHighlight.contains(descriptor);
+	}
+
+	return ret;
+}
+
 void TextureListModel::dataReady(const DAVA::TextureDescriptor *desc)
 {
 	int i = textureDescriptorsFiltredSorted.indexOf((DAVA::TextureDescriptor * const) desc);
@@ -125,6 +138,16 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	applyFilterAndSort();
 
 	endResetModel();
+}
+
+void TextureListModel::setHighlight(DAVA::SceneNode *node)
+{
+	textureDescriptorsHighlight.clear();
+	if(textureDescriptorsFiltredSorted.size() > 0)
+	{
+		textureDescriptorsHighlight.push_back(textureDescriptorsFiltredSorted[0]);
+		emit dataChanged(createIndex(0, 0), createIndex(textureDescriptorsFiltredSorted.size() - 1, 1));
+	}
 }
 
 void TextureListModel::searchTexturesInMaterial(DAVA::SceneNode *parentNode)
@@ -249,6 +272,7 @@ void TextureListModel::addTexture(const DAVA::String &descPath, DAVA::Texture *t
 void TextureListModel::clear()
 {
 	texturesAll.clear();
+	textureDescriptorsHighlight.clear();
 	textureDescriptorsFiltredSorted.clear();
 
 	for(int i = 0; i < textureDescriptorsAll.size(); ++i)

@@ -153,11 +153,11 @@ void QtMainWindowHandler::Materials()
 		if(NULL != body && NULL != body->bodyControl)
 		{
 			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			materialBrowser.SetScene(mainScreenScene);
+			materialBrowser->SetScene(mainScreenScene);
 		}
 	}
 
-	materialBrowser.show();
+	materialBrowser->show();
 	*/
 }
 

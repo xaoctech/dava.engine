@@ -102,6 +102,11 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		// draw border
 		QRect borderRect = option.rect;
 		borderRect.adjust(BORDER_MARGIN, BORDER_MARGIN, -BORDER_MARGIN, -BORDER_MARGIN);
+		if(curModel->isHighlited(index))
+		{
+			// draw highlight
+			painter->setBrush(option.palette.toolTipBase());
+		}
 		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
 
@@ -191,9 +196,16 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 		painter->save();
 		painter->setClipRect(option.rect);
 
+
+
 		// draw border
 		QRect borderRect = option.rect;
 		borderRect.adjust(BORDER_MARGIN, BORDER_MARGIN, -BORDER_MARGIN, -BORDER_MARGIN);
+		if(curModel->isHighlited(index))
+		{
+			// draw highlight
+			painter->setBrush(QBrush(QColor(255, 255, 200)));
+		}
 		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
 

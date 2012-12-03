@@ -94,6 +94,9 @@
     <Filter Include="QtGenerated\Scene">
       <UniqueIdentifier>{112a8070-e234-41b7-8958-114f01fccf0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\QtTaskRunner">
+      <UniqueIdentifier>{1f9fcd6e-20ff-48cc-ad6a-cf5ce47f32ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
