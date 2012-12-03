@@ -381,8 +381,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 {
     if(UIEvent::PHASE_KEYCHAR == event->phase)
     {
-        bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-        if(altIsPressed)
+        if(IsKeyModificatorPressed(DVKEY_ALT))
         {
             int32 key = event->tid - DVKEY_1;
             if(0 <= key && key < 8)

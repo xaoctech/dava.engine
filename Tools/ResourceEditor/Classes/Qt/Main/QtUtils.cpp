@@ -96,3 +96,13 @@ void ShowErrorDialog(const DAVA::String &errorMessage)
     msgBox.setIcon(QMessageBox::Critical);
     msgBox.exec();
 }
+
+bool IsKeyModificatorPressed(int32 key)
+{
+	return InputSystem::Instance()->GetKeyboard()->IsKeyPressed(key);
+}
+
+bool IsKeyModificatorsPressed()
+{
+	return (IsKeyModificatorPressed(DVKEY_SHIFT) || IsKeyModificatorPressed(DVKEY_CTRL) || IsKeyModificatorPressed(DVKEY_ALT));
+}

@@ -3,6 +3,9 @@
 
 #include <QTreeView>
 #include <QMimeData>
+#include <QApplication>
+
+#include "QtUtils.h"
 
 #include "PointerHolder.h"
 
@@ -206,30 +209,28 @@ QStringList GraphModel::mimeTypes() const
 
 QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
 {
-    bool keyPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
-    if(!keyPressed)
-    {
-        return NULL;
-    }
-    
-    
-    QMimeData *mimeData = new QMimeData();
-    QByteArray encodedData;
-    
-    QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    
-    foreach (const QModelIndex &index, indexes)
-    {
-        if (index.isValid())
-        {
-            GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
-            QVariant uData = PointerHolder<GraphItem *>::ToQVariant(item);
-            stream << uData;
-        }
-    }
-    
-    mimeData->setData("application/tree.userdata", encodedData);
-    return mimeData;
+	if(QApplication::keyboardModifiers() & Qt::ShiftModifier)
+	{
+		QMimeData *mimeData = new QMimeData();
+		QByteArray encodedData;
+
+		QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+		foreach (const QModelIndex &index, indexes)
+		{
+			if (index.isValid())
+			{
+				GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
+				QVariant uData = PointerHolder<GraphItem *>::ToQVariant(item);
+				stream << uData;
+			}
+		}
+
+		mimeData->setData("application/tree.userdata", encodedData);
+		return mimeData;
+	}
+	
+	return NULL;
 }
 
 bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
