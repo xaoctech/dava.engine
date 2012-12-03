@@ -76,6 +76,18 @@ SceneData *SceneDataManager::GetLevelScene()
     return NULL;
 }
 
+DAVA::SceneNode* SceneDataManager::GetSelectedNode(SceneData *scene)
+{
+	DAVA::SceneNode *node = NULL;
+
+	if(NULL != scene)
+	{
+		node = scene->GetSelectedNode();
+	}
+
+	return node;
+}
+
 EditorScene * SceneDataManager::RegisterNewScene()
 {
     SceneData *data = new SceneData();
