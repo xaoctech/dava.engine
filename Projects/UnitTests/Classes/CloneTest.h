@@ -45,7 +45,8 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 
-    void TestFunction(PerfFuncData * data);
+    void CloneOneType(PerfFuncData * data);
+    void CloneTwoTypes(PerfFuncData * data);
 };
 
 

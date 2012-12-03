@@ -33,7 +33,8 @@
 CloneTest::CloneTest()
 : TestTemplate<CloneTest>("CloneTest")
 {
-    RegisterFunction(this, &CloneTest::TestFunction, "CloneTest", NULL);
+    RegisterFunction(this, &CloneTest::CloneOneType, "CloneOneType", NULL);
+    RegisterFunction(this, &CloneTest::CloneTwoTypes, "CloneTwoTypes", NULL);
 }
 
 void CloneTest::LoadResources()
@@ -53,13 +54,11 @@ bool CloneNode()
     Node *srcNode = new Node();
     srcNode->SetName("Tested Node");
     
-    
     Node *dstNullNode = (Node *)srcNode->Clone();
     
-    Node *dstNode = new Node();
-    srcNode->Clone(dstNode);
+    Node *dstNode = NULL;
+    dstNode = (Node *)srcNode->Clone(dstNode);
     
-//    bool compareResult = (*dstNode == *dstNullNode);
     bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
     SafeRelease(srcNode);
     SafeRelease(dstNode);
@@ -68,16 +67,13 @@ bool CloneNode()
     return compareResult;
 }
 
-
-void CloneTest::TestFunction(PerfFuncData * data)
+void CloneTest::CloneOneType(PerfFuncData * data)
 {
 //    TEST_VERIFY(CloneNode<BillboardNode>());
 //    TEST_VERIFY(CloneNode<BoneNode>());
 //    TEST_VERIFY(CloneNode<BVNode>());
     
     TEST_VERIFY(CloneNode<Camera>());
-    
-//    TEST_VERIFY(CloneNode<CubeNode>());
     
     TEST_VERIFY(CloneNode<ImposterNode>());
 //    TEST_VERIFY(CloneNode<LandscapeNode>()); // Do wee need Clone() ?
@@ -87,8 +83,6 @@ void CloneTest::TestFunction(PerfFuncData * data)
     TEST_VERIFY(CloneNode<ParticleEffectNode>());
     TEST_VERIFY(CloneNode<ParticleEmitterNode>());
     TEST_VERIFY(CloneNode<ReferenceNode>());
-    
-//    TEST_VERIFY(CloneNode<RotatingCubeNode>());
     
 //    TEST_VERIFY(CloneNode<Scene>()); //Do we need Clone() ?
     TEST_VERIFY(CloneNode<SceneNode>());
@@ -100,5 +94,78 @@ void CloneTest::TestFunction(PerfFuncData * data)
     
 //    TEST_VERIFY(CloneNode<SpriteNode>()); //Do we need Clone()?
     TEST_VERIFY(CloneNode<UserNode>());
+}
+
+
+template <class SrcNode, class DestNode>
+bool CloneDifferentNodes()
+{
+    SrcNode *srcNode = new SrcNode();
+    srcNode->SetName("Tested Node");
+    
+    DestNode *dstNullNode = dynamic_cast<DestNode *>(srcNode->Clone());
+    
+    DestNode *dstNode = NULL;
+    dstNode = dynamic_cast<DestNode *>(srcNode->Clone(dstNode));
+    
+    
+    if(dstNode && dstNullNode)
+    {
+        bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
+        SafeRelease(srcNode);
+        SafeRelease(dstNode);
+        SafeRelease(dstNullNode);
+        return compareResult;
+    }
+    
+    return false;
+}
+
+void CloneTest::CloneTwoTypes(PerfFuncData * data)
+{
+    bool ret = CloneDifferentNodes<SceneNode, Camera>();
+    TEST_VERIFY(ret == false);
+    
+    ret = CloneDifferentNodes<SceneNode, ImposterNode>();
+    TEST_VERIFY(ret == false);
+    
+//    ret = CloneDifferentNodes<SceneNode, LandscapeNode>();
+//    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, LightNode>();
+    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, LodNode>();
+    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, MeshInstanceNode>();
+    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, ParticleEffectNode>();
+    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, ParticleEmitterNode>();
+    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, ReferenceNode>();
+    TEST_VERIFY(ret == false);
+    
+//    ret = CloneDifferentNodes<SceneNode, Scene>();
+//    TEST_VERIFY(ret == false);
+    
+//    ret = CloneDifferentNodes<SceneNode, SceneNodeAnimationList>();
+//    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, ShadowVolumeNode>();
+    TEST_VERIFY(ret == false);
+
+//    ret = CloneDifferentNodes<SceneNode, SkeletonNode>();
+//    TEST_VERIFY(ret == false);
+
+//    ret = CloneDifferentNodes<SceneNode, SpriteNode>();
+//    TEST_VERIFY(ret == false);
+
+    ret = CloneDifferentNodes<SceneNode, UserNode>();
+    TEST_VERIFY(ret == false);
 }
 
