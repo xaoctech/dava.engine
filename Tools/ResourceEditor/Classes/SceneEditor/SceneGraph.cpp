@@ -204,7 +204,7 @@ void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
 
 void SceneGraph::OnRemoveNodeButtonPressed(BaseObject *, void *, void *)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RemoveSceneNode(workingNode);
 }
 

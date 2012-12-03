@@ -398,7 +398,7 @@ void LandscapeEditorHeightmap::ShowAction()
 {
     prevToolSize = 0.f;
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     landscapesController = activeScene->GetLandscapesController();
     landscapesController->CreateEditorLandscapeNode();
     SafeRetain(landscapesController);

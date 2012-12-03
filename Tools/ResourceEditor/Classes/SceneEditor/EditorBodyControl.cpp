@@ -338,7 +338,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                     UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
                     if(c == this || c == scene3dView)
                     {
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
                         activeScene->SelectNode(NULL);
                     }
                     
@@ -352,7 +352,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                     {
                         sceneGraph->RemoveWorkingNode();
                         
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
                         activeScene->SelectNode(NULL);
                         activeScene->RebuildSceneGraph();
                     }
@@ -809,7 +809,7 @@ EditorScene * EditorBodyControl::GetScene()
 
 void EditorBodyControl::AddNode(SceneNode *node)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->AddSceneNode(node);
 }
 
@@ -820,7 +820,7 @@ SceneNode * EditorBodyControl::GetSelectedSGNode()
 
 void EditorBodyControl::RemoveSelectedSGNode()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RemoveSceneNode(GetSelectedSGNode());
 }
 
@@ -833,7 +833,7 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SelectNode(node);
 }
 
@@ -899,7 +899,7 @@ void EditorBodyControl::ToggleSceneInfo()
 
 void EditorBodyControl::PackLightmaps()
 {
-	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
 	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
@@ -1133,7 +1133,7 @@ void EditorBodyControl::PropcessIsSolidChanging()
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
             
-            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             activeScene->RebuildSceneGraph();
             
             KeyedArchive *properties = selectedNode->GetCustomProperties();
