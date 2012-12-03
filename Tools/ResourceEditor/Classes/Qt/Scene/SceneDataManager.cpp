@@ -175,7 +175,8 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
 	if(!forNode)  return;
 
 	//materials
-	Vector<Material*> materials = EnumerateMaterials(forNode);
+	Vector<Material*> materials;
+	EnumerateMaterials(forNode, materials);
 	for(int32 m = 0; m < (int32)materials.size(); ++m)
 	{
 		for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
@@ -329,12 +330,12 @@ void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, D
 	}
 }
 
-Vector<Material *> SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode)
+void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> materials)
 {
-	Vector<Material *>materials;
-	forNode->GetDataNodes(materials);
-
-	return materials;
+	if(forNode)
+	{
+		forNode->GetDataNodes(materials);
+	}
 }
 
 
