@@ -160,7 +160,8 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 
 void TextureListModel::setHighlight(DAVA::SceneNode *node)
 {
-	bool found = false;
+	beginResetModel();
+
 	textureDescriptorsHighlight.clear();
 
 	DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
@@ -174,20 +175,16 @@ void TextureListModel::setHighlight(DAVA::SceneNode *node)
 			if(textureDescriptorsAll[i]->pathname == descPath)
 			{
 				textureDescriptorsHighlight.push_back(textureDescriptorsAll[i]);
-				found = true;
 			}
 		}
 	}
 
-	if(found)
+	if(curFilterBySelectedNode)
 	{
-		if(curFilterBySelectedNode)
-		{
-			applyFilterAndSort();
-		}
-
-		emit dataChanged(createIndex(0, 0), createIndex(textureDescriptorsFiltredSorted.size() - 1, 1));
+		applyFilterAndSort();
 	}
+
+	endResetModel();
 }
 
 void TextureListModel::clear()
