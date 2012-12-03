@@ -351,7 +351,7 @@ void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, D
 	}
 }
 
-void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> materials)
+void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials)
 {
 	if(forNode)
 	{
