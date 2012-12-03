@@ -142,7 +142,7 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
 
 void GraphBase::NodesPropertyChanged()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
 }
 

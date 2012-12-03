@@ -52,7 +52,7 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
         if(activeScene)
         {
             activeScene->ReloadLibrary();
@@ -123,7 +123,7 @@ CommandSaveScene::CommandSaveScene()
 
 void CommandSaveScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     if(activeScene->CanSaveScene())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
