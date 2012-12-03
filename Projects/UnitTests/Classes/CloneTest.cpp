@@ -95,8 +95,6 @@ void CloneTest::CloneOneType(PerfFuncData * data)
     TEST_VERIFY(CloneNode<ShadowVolumeNode>());
 //    TEST_VERIFY(CloneNode<SkeletonNode>()); //Do we need Clone() ?
     
-//    TEST_VERIFY(CloneNode<SphereNode>());
-    
 //    TEST_VERIFY(CloneNode<SpriteNode>()); //Do we need Clone()?
     TEST_VERIFY(CloneNode<UserNode>());
 }
