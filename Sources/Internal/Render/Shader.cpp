@@ -66,7 +66,6 @@ Shader::Shader()
 //#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 //    relativeFileName = "";
 //#endif //#if defined(__DAVAENGINE_ANDROID__) 
-
 }
 
 String VertexTypeStringFromEnum(GLenum type); // Fucking XCode 4 analyzer
@@ -82,7 +81,7 @@ String VertexTypeStringFromEnum(GLenum type)
     return "";
 }
     
-const FastName uniformStrings[Shader::UNIFORM_COUNT] = 
+FastName uniformStrings[Shader::UNIFORM_COUNT] =
     {
         "none",
         "modelViewProjectionMatrix",
@@ -93,7 +92,7 @@ const FastName uniformStrings[Shader::UNIFORM_COUNT] =
         "globalTime",
     };
 
-const FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] = 
+FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     {
         "inPosition",
         "inNormal",
@@ -107,19 +106,140 @@ const FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
         "inJointWeight"
     };
     
-Shader::eUniform Shader::GetUniformByName(const FastName &name)
+Shader::eUniform Shader::GetUniformByName(const FastName & name)
 {
     for (int32 k = 0; k < UNIFORM_COUNT; ++k)
-        if(name == uniformStrings[k]) return (Shader::eUniform)k;
-
+        if (name == uniformStrings[k])return (Shader::eUniform)k;
     return Shader::UNIFORM_NONE;
 };
     
-int32 Shader::GetAttributeIndexByName(const FastName &name)
+int32 Shader::GetUniformCount()
+{
+    return activeUniforms;
+}
+    
+Shader::eUniformType Shader::GetUniformType(int32 index)
+{
+    return uniforms[index].type;
+}
+    
+int32 Shader::GetUniformTypeSize(eUniformType type)
+{
+    switch(type)
+    {
+        case UT_FLOAT:
+            return 4;
+        case UT_FLOAT_VEC2:
+            return 4 * 2;
+        case UT_FLOAT_VEC3:
+            return 4 * 3;
+        case UT_FLOAT_VEC4:
+            return 4 * 4;
+        case UT_INT:
+            return 4 * 1;
+        case UT_INT_VEC2:
+            return 4 * 2;
+        case UT_INT_VEC3:
+            return 4 * 3;
+        case UT_INT_VEC4:
+            return 4 * 4;
+        case UT_BOOL:
+            return 4 * 1;
+        case UT_BOOL_VEC2:
+            return 4 * 2;
+        case UT_BOOL_VEC3:
+            return 4 * 3;
+        case UT_BOOL_VEC4:
+            return 4 * 4;
+        case UT_FLOAT_MAT2:
+            return 4 * 2 * 2;
+        case UT_FLOAT_MAT3:
+            return 4 * 3 * 3;
+        case UT_FLOAT_MAT4:
+            return 4 * 4 * 4;
+        case UT_SAMPLER_2D:
+            return 4;
+        case UT_SAMPLER_CUBE:
+            return 4;
+    };
+}
+    
+    
+const char * Shader::GetUniformTypeSLName(eUniformType type)
+{
+    switch(type)
+    {
+        case UT_FLOAT:
+            return "float";
+        case UT_FLOAT_VEC2:
+            return "vec2";
+        case UT_FLOAT_VEC3:
+            return "vec3";
+        case UT_FLOAT_VEC4:
+            return "vec4";
+        case UT_INT:
+            return "int";
+        case UT_INT_VEC2:
+            return "ivec2";
+        case UT_INT_VEC3:
+            return "ivec3";
+        case UT_INT_VEC4:
+            return "ivec4";
+        case UT_BOOL:
+            return "bool";
+        case UT_BOOL_VEC2:
+            return "bvec2";
+        case UT_BOOL_VEC3:
+            return "bvec3";
+        case UT_BOOL_VEC4:
+            return "bvec4";
+        case UT_FLOAT_MAT2:
+            return "mat2";
+        case UT_FLOAT_MAT3:
+            return "mat3";
+        case UT_FLOAT_MAT4:
+            return "mat4";
+        case UT_SAMPLER_2D:
+            return "sampler2D";
+        case UT_SAMPLER_CUBE:
+            return "samplerCube";
+    };
+}
+
+    
+    
+const char * Shader::GetUniformName(int32 index)
+{
+    return uniforms[index].name.c_str();
+}
+
+int32 Shader::GetUniformLocation(int32 index)
+{
+    return uniforms[index].location;
+}
+    
+int32 Shader::GetUniformArraySize(int32 index)
+{
+    return uniforms[index].size;
+}
+
+int32 Shader::FindUniformLocationByName(const FastName & name)
+{
+    for (int32 k = 0; k < activeUniforms; ++k)
+    {
+        if (uniforms[k].name == name)
+        {
+            return uniforms[k].location;
+        }
+    }
+    return -1;
+}
+
+    
+int32 Shader::GetAttributeIndexByName(const FastName & name)
 {
     for (int32 k = 0; k < VERTEX_FORMAT_STREAM_MAX_COUNT; ++k)
-        if(name == attributeStrings[k]) return k;
-
+        if (name == attributeStrings[k]) return k;
     return -1;
 }
     
@@ -202,7 +322,7 @@ bool Shader::LoadFromYaml(const String & pathname)
     vertexShaderPath = glslVertexNode->AsString();
     fragmentShaderPath = glslFragmentNode->AsString();
     SafeRelease(parser);
-    
+
     Load(pathOnly + vertexShaderPath, pathOnly + fragmentShaderPath);
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
@@ -216,7 +336,7 @@ bool Shader::Load(const String & _vertexShaderPath, const String & _fragmentShad
     vertexShaderPath = _vertexShaderPath;
     fragmentShaderPath = _fragmentShaderPath;
     uint32 vertexShaderSize = 0, fragmentShaderSize = 0;
-
+        
     uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(vertexShaderPath, vertexShaderSize);
     vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
     
@@ -278,7 +398,7 @@ bool Shader::Recompile()
         GLint size;
         GLenum type;
         RENDER_VERIFY(glGetActiveAttrib(program, k, 512, 0, &size, &type, attributeName));
-        attributeNames[k] = FastName(attributeName);
+        attributeNames[k] = attributeName;
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
         vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
@@ -512,7 +632,7 @@ void Shader::Bind()
                 const Color & c = RenderManager::Instance()->GetColor();
                 RENDER_VERIFY(glUniform4fv(uniforms[k].location, 1, &c.r));
                 break;
-            }  
+            }
         case UNIFORM_GLOBAL_TIME:
             {
                 float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
@@ -530,7 +650,7 @@ void Shader::Dump()
 {
     Logger::Debug("Attributes: ");
     for (int32 k = 0; k < activeAttributes; ++k)
-{
+    {
         int32 flagIndex = GetAttributeIndexByName(attributeNames[k].c_str());
         Logger::Debug("Attribute: %s location: %d vertexFormatIndex:%x", attributeNames[k].c_str(), vertexFormatAttribIndeces[flagIndex], flagIndex);
     }
@@ -548,7 +668,7 @@ void Shader::Dump()
 //        uniformTypes[k] = (eUniformType)type;
         eUniform uniform = GetUniformByName(uniforms[k].name.c_str());
         Logger::Debug("uniform: %s(%d) type: %s", uniforms[k].name.c_str(), uniform, VertexTypeStringFromEnum(uniforms[k].type).c_str());
-        }
+    }
 
     
 }
@@ -573,6 +693,7 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 //{
 //    RenderResource::Lost();
 //}
+//
 //void Shader::Lost()
 //{
 ////    Logger::Debug("[Shader::Lost]");

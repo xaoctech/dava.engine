@@ -87,6 +87,11 @@ FastName::~FastName()
 	}
 }
 
+const char* FastName::c_str() const
+{
+    return FastNameDB::Instance()->namesTable[index];
+}
+
 FastName& FastName::operator=(const FastName &_name)
 {
 	index = _name.index;

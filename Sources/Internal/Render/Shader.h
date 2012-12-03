@@ -116,15 +116,13 @@ public:
     eUniformType GetUniformType(int32 index);
     static int32 GetUniformTypeSize(eUniformType type);
     static const char * GetUniformTypeSLName(eUniformType type);
-    const String & GetUniformName(int32 index);
+    const char * GetUniformName(int32 index);
     int32 GetUniformArraySize(int32 index);
 
     int32 GetUniformLocation(int32 index);
     int32 FindUniformLocationByName(const FastName & name);
     
     
-    int32 GetAttributeIndex(eVertexFormat vertexFormat);
-    int32 GetAttributeCount();
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
