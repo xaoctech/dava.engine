@@ -497,11 +497,20 @@ Texture * Texture::CreateFromImage(File *file, TextureDescriptor *descriptor)
     return texture;
 }
     
-bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
+bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
 {
     Vector<Image *> imageSet = ImageLoader::CreateFromFile(file);
     if(0 != imageSet.size())
     {
+        bool isSizeCorrect = CheckImageSize(imageSet);
+        if(!isSizeCorrect)
+        {
+            for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+            return false;
+        }
+        
+        
+        
         RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
         GenerateID();
@@ -581,7 +590,18 @@ bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
     return false;
 }
     
+bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
+{
+    for (int32 i = 0; i < (int32)imageSet.size(); ++i)
+    {
+        if(!IsPowerOf2(imageSet[i]->GetWidth()) || !IsPowerOf2(imageSet[i]->GetHeight()))
+        {
+            return false;
+        }
+    }
     
+    return true;
+}
 	
 void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
 {
@@ -674,9 +694,18 @@ TextureDescriptor * Texture::CreateDescriptor() const
     return NULL;
 }
     
-void Texture::ReloadAs(ImageFileFormat fileFormat, TextureDescriptor *descriptor)
+void Texture::ReloadAs(ImageFileFormat fileFormat)
+{
+	TextureDescriptor *descriptor = CreateDescriptor();
+	ReloadAs(fileFormat, descriptor);
+	SafeRelease(descriptor);
+}
+
+void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     ReleaseTextureData();
+	
+	DVASSERT(NULL != descriptor);
     
     String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
@@ -727,8 +756,6 @@ void Texture::ReloadAs(ImageFileFormat fileFormat, TextureDescriptor *descriptor
     
     SafeRelease(file);
 }
-    
-    
     
 int32 Texture::Release()
 {

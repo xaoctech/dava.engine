@@ -3,8 +3,8 @@
 
 #include "EditorSettings.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   delegate(newDelegate)
@@ -142,7 +142,7 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
 
 void GraphBase::NodesPropertyChanged()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
 }
 

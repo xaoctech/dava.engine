@@ -53,7 +53,7 @@ TextureDescriptor::TextureDescriptor()
 {
     pathname = String("");
     
-    SetDefaultValues();
+    InitializeValues();
 }
 
 TextureDescriptor::~TextureDescriptor()
@@ -80,15 +80,9 @@ TextureDescriptor *TextureDescriptor::CreateFromFile(const String &filePathname)
 }
     
     
-void TextureDescriptor::SetDefaultValues()
+void TextureDescriptor::InitializeValues()
 {
-    wrapModeS = Texture::WRAP_REPEAT;
-    wrapModeT = Texture::WRAP_REPEAT;
-    
-    generateMipMaps = OPTION_ENABLED;
-
-    minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-    magFilter = Texture::FILTER_LINEAR;
+    SetDefaultValues();
     
     pvrCompression.Clear();
     dxtCompression.Clear();
@@ -98,6 +92,17 @@ void TextureDescriptor::SetDefaultValues()
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
     textureFileFormat = PNG_FILE;
+}
+    
+void TextureDescriptor::SetDefaultValues()
+{
+    wrapModeS = Texture::WRAP_REPEAT;
+    wrapModeT = Texture::WRAP_REPEAT;
+    
+    generateMipMaps = OPTION_ENABLED;
+    
+    minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+    magFilter = Texture::FILTER_LINEAR;
 }
     
 void TextureDescriptor::UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const
@@ -387,7 +392,7 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
 }
 
 
-bool TextureDescriptor::GetGenerateMipMaps()
+bool TextureDescriptor::GetGenerateMipMaps() const
 {
     return (OPTION_DISABLED != generateMipMaps);
 }

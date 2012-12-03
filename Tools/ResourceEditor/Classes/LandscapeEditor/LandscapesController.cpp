@@ -32,8 +32,8 @@
 #include "LandscapeRenderer.h"
 #include "RulerToolLandscape.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -138,7 +138,7 @@ void LandscapesController::ToggleNotPassableLandscape()
     
     if(notPassableTerrain)
     {
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 		activeScene->ResetLandsacpeSelection();
 
 
@@ -292,9 +292,10 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
     landscapeRenderer->RebuildVertexes(changedRect);
     renderedHeightmap->HeghtWasChanged(changedRect);
 
-    if(IsPointerToExactClass<EditorLandscapeNode>(currentLandscape))
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
+    if(editorLandscape)
     {
-        ((EditorLandscapeNode *)currentLandscape)->HeihghtmapUpdated(changedRect);
+        editorLandscape->HeihghtmapUpdated(changedRect);
     }
 }
 

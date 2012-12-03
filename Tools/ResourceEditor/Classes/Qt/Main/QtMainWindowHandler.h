@@ -10,6 +10,9 @@
 #include "../Constants.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
+#include "TextureDialog/TextureDialog.h"
+#include "MaterialBrowser/MaterialBrowser.h"
+
 class Command;
 class QMenu;
 class QAction;
@@ -18,6 +21,7 @@ class QStatusBar;
 class QPushButton;
 class QSlider;
 class QComboBox;
+
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
@@ -45,7 +49,8 @@ public:
     
     void SetWaitingCursorEnabled(bool enabled);
     
-	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*);
+	//custom colors
+	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
 	
 	//visibility check tool
@@ -103,6 +108,7 @@ public slots:
     void SaveTextureCustomColors();
     void ChangeBrushSizeCustomColors(int newSize);
     void ChangeColorCustomColors(int newColorIndex);
+	void LoadTextureCustomColors();
 	
 	//visibility check tool
 	void ToggleVisibilityTool();
@@ -119,7 +125,10 @@ public slots:
 	void SaveParticleEditorConfig();
 	void OpenParticleEditorSprite();
 	
-    
+signals:
+
+	void ProjectChanged();
+
 private:
     //create node
     void CreateNode(ResourceEditor::eNodeType type);
@@ -133,10 +142,12 @@ private:
     void ClearActions(int32 count, QAction **actions);
     
 private:
+	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;
 	QSlider* customColorsBrushSizeSlider;
 	QComboBox* customColorsColorComboBox;
+	QPushButton* customColorsLoadTextureButton;
 	
 	//visibility check tool
 	QPushButton* visibilityToolToggleButton;

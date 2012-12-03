@@ -3,7 +3,6 @@
 #include "LandscapeTool.h"
 #include "LandscapeToolsPanelCustomColors.h"
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 #include "EditorScene.h"
 #include "EditorConfig.h"
 
@@ -12,9 +11,16 @@
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "EditorBodyControl.h"
+#include "SceneGraph.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Commands/CustomColorCommands.h"
+#include "../Commands/CommandsManager.h"
 
-
+#define CUSTOM_COLOR_TEXTURE_PROP "customColorTexture"
 
 LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -256,6 +262,11 @@ void LandscapeEditorCustomColors::SaveColorLayer(const String &pathName)
 	SaveTextureAction(pathName);
 }
 
+void LandscapeEditorCustomColors::LoadColorLayer(const String &pathName)
+{
+	LoadTextureAction(pathName);
+}
+
 void LandscapeEditorCustomColors::UpdateCircleTexture(bool setTransparent)
 {
 	if(isCursorTransparent == setTransparent)
@@ -317,6 +328,9 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorCustomColors::HideAction()
 {
+	//SaveTextureAction(GetCurrentSaveFileName());
+
+	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
@@ -334,12 +348,17 @@ void LandscapeEditorCustomColors::ShowAction()
     landscapeSize = settings->maskSize;
 
 	workingLandscape->CursorEnable();
+	workingLandscape->SetFog(false);
 
-	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)); 
+	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+
+	String loadFileName = GetCurrentSaveFileName();
+	if(!loadFileName.empty())
+		LoadTextureAction(loadFileName);
 
 	if(NULL == colorSprite)
 	{
-		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL); 
+		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
 		colorSprite = Sprite::CreateAsRenderTarget(tex->width, tex->height, FORMAT_RGBA8888);
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
@@ -349,11 +368,9 @@ void LandscapeEditorCustomColors::ShowAction()
 		}
 		RenderManager::Instance()->RestoreRenderTarget();
 	}
-	else
-	{
-		PerformLandscapeDraw();
-	}
-	
+
+	PerformLandscapeDraw();
+
 	//
 	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_COLORIZE);
 	UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
@@ -424,15 +441,62 @@ void LandscapeEditorCustomColors::RedoAction()
 
 void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 {
+	if(pathToFile.empty())
+		return;
+
     if(colorSprite)
     {
+		if(pathToFile.empty())
+		{
+
+		}
+
         Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
+			StoreSaveFileName(pathToFile);
 			ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
         }
     }
+}
+
+void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
+{
+	if(pathToFile.empty())
+		return;
+
+	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
+	if(images.empty())
+		return;
+
+	Image* image = images.front();
+	if(image)
+	{
+		Texture* texture = Texture::CreateFromData(image->GetPixelFormat(),
+												   image->GetData(),
+												   image->GetWidth(),
+												   image->GetHeight(),
+												   false);
+
+		if(colorSprite != 0)
+			UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
+
+		SafeRelease(colorSprite);
+		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
+		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		RenderManager::Instance()->SetRenderTarget(colorSprite);
+		sprite->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+		PerformLandscapeDraw();
+
+		SafeRelease(sprite);
+		SafeRelease(texture);
+		for_each(images.begin(), images.end(), SafeRelease<Image>);
+
+		StoreSaveFileName(pathToFile);
+	}
 }
 
 NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect &rect)
@@ -478,10 +542,67 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
     EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
     if(editorLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("Cannot start color editor. Remove EditorLandscapeNode from scene");
+        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscapeNode from scene"));
         return false;
     }
-    
+
     return LandscapeEditorBase::SetScene(newScene);
 }
 
+void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
+{
+	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
+						   GetRelativePathToScenePath(fileName));
+	parent->GetSceneGraph()->UpdatePropertyPanel();
+}
+
+String LandscapeEditorCustomColors::GetCurrentSaveFileName()
+{
+	String currentSaveName = "";
+
+	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+	if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+
+	return GetAbsolutePathFromScenePath(currentSaveName);
+}
+
+String LandscapeEditorCustomColors::GetScenePath()
+{
+	String sceneFilePath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
+	String sceneFileName = "";
+	FileSystem::Instance()->SplitPath(sceneFilePath, sceneFilePath, sceneFileName);
+
+	return sceneFilePath;
+}
+
+String LandscapeEditorCustomColors::GetRelativePathToScenePath(const String &absolutePath)
+{
+	if(absolutePath.empty())
+		return "";
+
+	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(GetScenePath(), absolutePath);
+
+	return relativePath;
+}
+
+String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
+{
+	if(relativePath.empty())
+		return "";
+
+	String absolutePath = GetScenePath() + relativePath;
+	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+
+	return absolutePath;
+}
+
+void LandscapeEditorCustomColors::SaveTexture()
+{
+	Command * saveCommand = new CommandSaveTextureCustomColors;
+	CommandsManager::Instance()->Execute(saveCommand);
+	SafeRelease(saveCommand);
+
+	Close();
+}

@@ -33,7 +33,7 @@
 #include "CommandLineTool.h"
 #include "SceneExporter.h"
 
-#include "ErrorNotifier.h"
+#include "../Qt/Main/QtUtils.h"
 
 void ExporterScreen::LoadResources()
 {
@@ -127,19 +127,7 @@ void ExporterScreen::DidAppear()
             ++index;
         }
         
-        bool needRelease = false;
-        if(!ErrorNotifier::Instance())
-        {
-            new ErrorNotifier();
-        }
-        
-        ErrorNotifier::Instance()->ShowError(errorLog);
-        
-        if(needRelease)
-        {
-            ErrorNotifier::Instance()->Release();
-        }
-        
+        ShowErrorDialog(errorLog);
     }
 
     bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))

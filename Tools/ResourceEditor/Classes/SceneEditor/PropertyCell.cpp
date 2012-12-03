@@ -16,7 +16,7 @@
 #include "UISliderWithText.h"
 #include "HintManager.h"
 
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 
 
 
@@ -255,10 +255,15 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     keyName->size.x = width/KEY_NAME_DEVIDER;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
 
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     float32 checkBoxWidth = GetHeightForWidth(width - keyName->size.x);
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(keyName->size.x, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+
     
     SetData(prop);
 }
@@ -699,6 +704,8 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
         maxValue = NULL;
     }
 
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
     slider->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
@@ -709,6 +716,9 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
     slider->SetMaxLeftRightStretchCap(5);
     slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
     AddControl(slider);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+
 
     SetData(prop);
 }
@@ -760,10 +770,16 @@ PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *pro
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
     keyName->SetVisible(false, false);
     
+
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     float32 checkBoxWidth = GetHeightForWidth(width)/2;
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
+
 
     previewControl = new UIControl(Rect(keyName->size.x, 0, width - keyName->size.x, GetHeightForWidth(width)));
     previewControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyTexturePreviewCell::OnClick));

@@ -10,8 +10,6 @@
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
 
-#include "ErrorNotifier.h"
-
 #include "LandscapeEditorColor.h"
 #include "LandscapeEditorHeightmap.h"
 #include "SceneEditorScreenMain.h"
@@ -24,8 +22,9 @@
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../RulerTool/RulerTool.h"
 
 #include "../SceneEditor/EditorConfig.h"
@@ -149,6 +148,28 @@ void EditorBodyControl::SaveTexture(const String &path)
 		landscapeEditorCustomColors->SaveColorLayer(path);
 	else if(currentLandscapeEditor == landscapeEditorVisibilityTool)
 		landscapeEditorVisibilityTool->SaveColorLayer(path);
+}
+
+void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+{
+	if(RulerToolIsActive())
+		return;
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return;
+
+	landscapeEditorCustomColors->LoadColorLayer(path);
+}
+
+String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+{
+	if(RulerToolIsActive())
+		return "";
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return "";
+
+	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -310,62 +331,71 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
         {
             modificationPanel->Input(event);
             
-            Camera * newCamera = 0;
-            switch(event->tid)
-            {
+			if(!IsKeyModificatorsPressed())
+			{
+				Camera * newCamera = 0;
+				switch(event->tid)
+				{
 				case DVKEY_ESCAPE:
-                {
-                    UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
-                    if(c == this || c == scene3dView)
-                    {
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-                        activeScene->SelectNode(NULL);
-                    }
-                    
-                    break;
-                }
-					
+					{
+						UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
+						if(c == this || c == scene3dView)
+						{
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+							activeScene->SelectNode(NULL);
+						}
+
+						break;
+					}
+
 				case DVKEY_BACKSPACE:
-                {
-                    bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
-                    if(cmdIsPressed)
-                    {
-                        sceneGraph->RemoveWorkingNode();
-                        
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-                        activeScene->SelectNode(NULL);
-                        activeScene->RebuildSceneGraph();
-                    }
-                    break;
-                }
-					
-                    
-                case DVKEY_C:
-                    newCamera = scene->GetCamera(2);
-                    break;
-                    
-                case DVKEY_V:
-                    newCamera = scene->GetCamera(3);
-                    break;
-                    
-                case DVKEY_B:
-                    newCamera = scene->GetCamera(4);
-                    break;
-                    
-                case DVKEY_X:
-                    PropcessIsSolidChanging();
-                    break;
-                    
-                    
-                default:
-                    break;
-            }
-            
-            if (newCamera)
-            {
-                scene->SetCurrentCamera(newCamera);
-                scene->SetClipCamera(scene->GetCamera(0));
-            }
+					{
+						bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+						if(cmdIsPressed)
+						{
+							sceneGraph->RemoveWorkingNode();
+
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+							activeScene->SelectNode(NULL);
+							activeScene->RebuildSceneGraph();
+						}
+						break;
+					}
+
+				case DVKEY_C:
+					newCamera = scene->GetCamera(2);
+					break;
+
+				case DVKEY_V:
+					newCamera = scene->GetCamera(3);
+					break;
+
+				case DVKEY_B:
+					newCamera = scene->GetCamera(4);
+					break;
+
+				case DVKEY_X:
+					{
+						bool Z = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_Z);
+						bool C = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_C);
+						if(!Z && !C)
+						{
+							PropcessIsSolidChanging();
+						}
+
+						break;
+					}
+
+				default:
+					break;
+				}
+
+				if (newCamera)
+				{
+					scene->SetCurrentCamera(newCamera);
+					scene->SetClipCamera(scene->GetCamera(0));
+				}
+			}
         }
 	}
 	
@@ -782,7 +812,7 @@ EditorScene * EditorBodyControl::GetScene()
 
 void EditorBodyControl::AddNode(SceneNode *node)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->AddSceneNode(node);
 }
 
@@ -793,7 +823,7 @@ SceneNode * EditorBodyControl::GetSelectedSGNode()
 
 void EditorBodyControl::RemoveSelectedSGNode()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RemoveSceneNode(GetSelectedSGNode());
 }
 
@@ -806,7 +836,7 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SelectNode(node);
 }
 
@@ -872,7 +902,7 @@ void EditorBodyControl::ToggleSceneInfo()
 
 void EditorBodyControl::PackLightmaps()
 {
-	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
 	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
@@ -1106,7 +1136,7 @@ void EditorBodyControl::PropcessIsSolidChanging()
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
             
-            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             activeScene->RebuildSceneGraph();
             
             KeyedArchive *properties = selectedNode->GetCustomProperties();
@@ -1115,7 +1145,6 @@ void EditorBodyControl::PropcessIsSolidChanging()
                 String filePathname = properties->GetString(String("editor.referenceToOwner"));
                 activeScene->OpenLibraryForFile(filePathname);
             }
-            
             
             sceneGraph->SelectNode(selectedNode);
         }

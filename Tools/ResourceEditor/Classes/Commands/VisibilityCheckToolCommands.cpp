@@ -1,7 +1,7 @@
 #include "VisibilityCheckToolCommands.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/GUIState.h"
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Main/QtUtils.h"
 #include <QFileDialog>
 
 CommandToggleVisibilityTool::CommandToggleVisibilityTool()

@@ -400,8 +400,8 @@ inline Size2Base<TYPE> Rect2Base<TYPE>::GetSize() const
 template <class TYPE> 
 inline void Rect2Base<TYPE>::SetCenter(const Point2Base<TYPE>& center)
 {
-	x = center.x - dx*0.5f;
-	y = center.y - dy*0.5f;
+	x = (TYPE)(center.x - dx*0.5f);
+	y = (TYPE)(center.y - dy*0.5f);
 }
 
 template <class TYPE> 

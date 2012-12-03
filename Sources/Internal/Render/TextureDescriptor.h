@@ -92,7 +92,7 @@ public:
     void Export(const String &filePathname);
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
-    bool GetGenerateMipMaps();
+    bool GetGenerateMipMaps() const;
 
     String GetSourceTexturePathname() const; 
     static String GetSourceTextureExtension(); 
@@ -105,6 +105,8 @@ public:
     bool IsSourceValidForFormat(ImageFileFormat fileFormat);
     
     static String GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat);
+
+    void SetDefaultValues();
     
 protected:
     
@@ -113,7 +115,7 @@ protected:
     void LoadNotCompressed(File *file);
     void LoadCompressed(File *file);
     
-    void SetDefaultValues();
+    void InitializeValues();
     
     void ReadGeneralSettings(File *file);
     void WriteGeneralSettings(File *file) const;

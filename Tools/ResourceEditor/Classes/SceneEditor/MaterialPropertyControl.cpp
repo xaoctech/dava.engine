@@ -4,8 +4,7 @@
 
 #include "ControlsFactory.h"
 
-//#include "../Qt/QtUtils.h"
-#include "ErrorNotifier.h"
+#include "../Qt/Main/QtUtils.h"
 
 static const String textureNames[] = 
 {
@@ -254,7 +253,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
 	bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
 	if(!isCorrect)
 	{
-		ErrorNotifier::Instance()->ShowError(errorLog);
+		ShowErrorDialog(errorLog);
 		return;
 	}
 
@@ -268,7 +267,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
-                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx);
+                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
             }
             else 
             {

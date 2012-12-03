@@ -84,6 +84,7 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
 {
     if(!dstNode)
     {
+		DVASSERT_MSG(IsPointerToExactClass<LightNode>(this), "Can clone only LightNode");
         dstNode = new LightNode();
     }
     

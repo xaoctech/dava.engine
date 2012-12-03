@@ -1,8 +1,8 @@
 #include "SceneGraphModel.h"
 #include "SceneGraphItem.h"
 
-#include "SceneData.h"
-#include "SceneDataManager.h"
+#include "Qt/Scene/SceneData.h"
+#include "Qt/Scene/SceneDataManager.h"
 #include "../EditorScene.h"
 
 #include "GraphItem.h"

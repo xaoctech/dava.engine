@@ -240,3 +240,41 @@ void EditorSettings::SetTextureViewFileFormat(int32 format)
 }
 
 
+void EditorSettings::SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular)
+{
+    Vector4 ambientVector = ToVector4(ambient);
+    Vector4 diffuseVector = ToVector4(diffuse);
+    Vector4 specularVector = ToVector4(specular);
+	settings->SetVector4(String("materials.ambient"), ambientVector);
+	settings->SetVector4(String("materials.diffuse"), diffuseVector);
+	settings->SetVector4(String("materials.specular"), specularVector);
+}
+
+Color EditorSettings::GetMaterialAmbientColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.ambient"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+Color EditorSettings::GetMaterialDiffuseColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.diffuse"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+
+Color EditorSettings::GetMaterialSpecularColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.specular"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+
+Vector4 EditorSettings::ToVector4(const Color &color)
+{
+	Vector4 vect(color.r, color.g, color.b, color.a);
+	return vect;
+}
+
+Color EditorSettings::ToColor(const Vector4 &colorVector)
+{
+	Color color(colorVector.x, colorVector.y, colorVector.z, colorVector.w);
+	return color;
+}

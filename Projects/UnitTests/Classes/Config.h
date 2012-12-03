@@ -30,7 +30,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define DATABASE_IP               String("10.128.128.131")
+//#define DATABASE_IP               String("10.128.128.131")
+#define DATABASE_IP               String("by2-buildmachine.wargaming.net")
 //#define DATABASE_IP                 String("127.0.0.1")
 #define DATAPASE_PORT               27017
 
