@@ -178,8 +178,6 @@
 		5C7F497715B44B7A0038AF3A /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48ED15B44B7A0038AF3A /* EditorSettings.cpp */; };
 		5C7F497815B44B7A0038AF3A /* EntitiesGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48EF15B44B7A0038AF3A /* EntitiesGraph.cpp */; };
 		5C7F497915B44B7A0038AF3A /* EntityPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */; };
-		5C7F497A15B44B7A0038AF3A /* ErrorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */; };
-		5C7F497B15B44B7A0038AF3A /* ErrorNotifier.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */; };
 		5C7F497C15B44B7A0038AF3A /* ExporterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */; };
 		5C7F497D15B44B7A0038AF3A /* ExtendedDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */; };
 		5C7F497E15B44B7A0038AF3A /* FogControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48FB15B44B7A0038AF3A /* FogControl.cpp */; };
@@ -269,6 +267,7 @@
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8C9B44416679E3100810605 /* davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3ED16679E3100810605 /* davaglwidget.cpp */; };
@@ -799,10 +798,6 @@
 		5C7F48F015B44B7A0038AF3A /* EntitiesGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitiesGraph.h; path = Classes/SceneEditor/EntitiesGraph.h; sourceTree = "<group>"; };
 		5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityPropertyControl.cpp; path = Classes/SceneEditor/EntityPropertyControl.cpp; sourceTree = "<group>"; };
 		5C7F48F215B44B7A0038AF3A /* EntityPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityPropertyControl.h; path = Classes/SceneEditor/EntityPropertyControl.h; sourceTree = "<group>"; };
-		5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorDialog.cpp; path = Classes/SceneEditor/ErrorDialog.cpp; sourceTree = "<group>"; };
-		5C7F48F415B44B7A0038AF3A /* ErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ErrorDialog.h; path = Classes/SceneEditor/ErrorDialog.h; sourceTree = "<group>"; };
-		5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorNotifier.cpp; path = Classes/SceneEditor/ErrorNotifier.cpp; sourceTree = "<group>"; };
-		5C7F48F615B44B7A0038AF3A /* ErrorNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ErrorNotifier.h; path = Classes/SceneEditor/ErrorNotifier.h; sourceTree = "<group>"; };
 		5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExporterScreen.cpp; path = Classes/SceneEditor/ExporterScreen.cpp; sourceTree = "<group>"; };
 		5C7F48F815B44B7A0038AF3A /* ExporterScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExporterScreen.h; path = Classes/SceneEditor/ExporterScreen.h; sourceTree = "<group>"; };
 		5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtendedDialog.cpp; path = Classes/SceneEditor/ExtendedDialog.cpp; sourceTree = "<group>"; };
@@ -975,6 +970,8 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
+		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
@@ -1691,6 +1688,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */,
+				E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */,
 				E8C9B3E1166794EB00810605 /* ColorControl.cpp */,
 				E8C9B3E2166794EB00810605 /* ColorControl.h */,
 				498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */,
@@ -1738,10 +1737,6 @@
 				5C7F48F015B44B7A0038AF3A /* EntitiesGraph.h */,
 				5C7F48F115B44B7A0038AF3A /* EntityPropertyControl.cpp */,
 				5C7F48F215B44B7A0038AF3A /* EntityPropertyControl.h */,
-				5C7F48F315B44B7A0038AF3A /* ErrorDialog.cpp */,
-				5C7F48F415B44B7A0038AF3A /* ErrorDialog.h */,
-				5C7F48F515B44B7A0038AF3A /* ErrorNotifier.cpp */,
-				5C7F48F615B44B7A0038AF3A /* ErrorNotifier.h */,
 				5C7F48F715B44B7A0038AF3A /* ExporterScreen.cpp */,
 				5C7F48F815B44B7A0038AF3A /* ExporterScreen.h */,
 				5C7F48F915B44B7A0038AF3A /* ExtendedDialog.cpp */,
@@ -2353,8 +2348,6 @@
 				5C7F497715B44B7A0038AF3A /* EditorSettings.cpp in Build Sources */,
 				5C7F497815B44B7A0038AF3A /* EntitiesGraph.cpp in Build Sources */,
 				5C7F497915B44B7A0038AF3A /* EntityPropertyControl.cpp in Build Sources */,
-				5C7F497A15B44B7A0038AF3A /* ErrorDialog.cpp in Build Sources */,
-				5C7F497B15B44B7A0038AF3A /* ErrorNotifier.cpp in Build Sources */,
 				5C7F497C15B44B7A0038AF3A /* ExporterScreen.cpp in Build Sources */,
 				5C7F497D15B44B7A0038AF3A /* ExtendedDialog.cpp in Build Sources */,
 				5C7F497E15B44B7A0038AF3A /* FogControl.cpp in Build Sources */,
@@ -2639,6 +2632,7 @@
 				E8C9B51C16679EC000810605 /* TextureListModel_moc.cpp in Build Sources */,
 				E8C9B51D16679EC000810605 /* TextureProperties_moc.cpp in Build Sources */,
 				E8C9B51E16679EC000810605 /* TextureScrollArea_moc.cpp in Build Sources */,
+				E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

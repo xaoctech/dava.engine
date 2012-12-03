@@ -616,22 +616,15 @@ Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textu
 void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {
     SafeRelease(textures[level]);
-    textures[level] = SafeRetain(texture);
-    
+	textureNames[level] = String("");
+
+	textures[level] = SafeRetain(texture);
     if(textures[level])
     {
-        if(textures[level]->isRenderTarget)
-        {
-            textureNames[level] = String("");
-        }
-        else 
+        if(!textures[level]->isRenderTarget)
         {
             textureNames[level] = textures[level]->GetPathname();
         }
-    }
-    else 
-    {
-        textureNames[level] = String("");
     }
 }
 

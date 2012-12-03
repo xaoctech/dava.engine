@@ -148,6 +148,8 @@
 		E89ECC991663AA2700D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC931663AA2700D17C41 /* Hash.h */; };
 		E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC941663AA2700D17C41 /* Introspection.h */; };
 		E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC951663AA2700D17C41 /* Meta.h */; };
+		E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */; };
+		E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */; };
 		E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C85161B301E00B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C83161B301E00B50BDA /* LibPVRHelper.h */; };
 		E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C86161B326200B50BDA /* PVRDefines.h */; };
@@ -718,6 +720,8 @@
 		E89ECC931663AA2700D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		E89ECC941663AA2700D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
 		E89ECC951663AA2700D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
+		E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C83161B301E00B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C86161B326200B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -1749,6 +1753,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				E8C6B12316692EF7001EBE09 /* ParticleEffectNode.cpp */,
+				E8C6B12416692EF7001EBE09 /* ParticleEffectNode.h */,
 				CCFF223415EE15B100363446 /* SwitchNode.cpp */,
 				CCFF223515EE15B100363446 /* SwitchNode.h */,
 				C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */,
@@ -2253,6 +2259,7 @@
 				E89ECC991663AA2700D17C41 /* Hash.h in Headers */,
 				E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */,
 				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
+				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2575,6 +2582,7 @@
 				E80842B5163913B7002A6A77 /* ImageLoader.cpp in Sources */,
 				492A98DC1644149F006AAE2A /* Image.mm in Sources */,
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
+				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

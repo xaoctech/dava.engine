@@ -32,7 +32,11 @@ private:
 	void SetupVisibilityToolDock();
     
     void SetCustomColorsDockControlsEnabled(bool enabled);
-        
+      
+public  slots:
+	
+	void ProjectChanged();
+
 private slots:
 
     void MenuFileWillShow();
