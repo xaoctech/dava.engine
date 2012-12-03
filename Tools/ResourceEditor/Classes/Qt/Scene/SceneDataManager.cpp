@@ -188,26 +188,47 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
 	//landscapes
 	Vector<LandscapeNode *> landscapes;
 	forNode->GetChildNodes(landscapes);
+	LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(forNode);
+	if(landscape)
+	{
+		landscapes.push_back(landscape);
+	}
+
 	for(int32 l = 0; l < (int32)landscapes.size(); ++l)
 	{
-		for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
-		{
-			CollectTexture(textures, landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t), landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t));
-		}
+		CollectLandscapeTextures(textures, landscapes[l]);
 	}
 
 	//lightmaps
 	Vector<MeshInstanceNode *> meshInstances;
 	forNode->GetChildNodes(meshInstances);
+	MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(forNode);
+	if(mesh)
+	{
+		meshInstances.push_back(mesh);
+	}
 	for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
 	{
-		for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
+		CollectMeshTextures(textures, meshInstances[m]);
+	}
+}
+
+void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
+{
+	for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+	{
+		CollectTexture(textures, forNode->GetTextureName((LandscapeNode::eTextureLevel)t), forNode->GetTexture((LandscapeNode::eTextureLevel)t));
+	}
+}
+
+void SceneDataManager::CollectMeshTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, MeshInstanceNode *forNode)
+{
+	for (int32 li = 0; li < forNode->GetLightmapCount(); ++li)
+	{
+		MeshInstanceNode::LightmapData * ld = forNode->GetLightmapDataForIndex(li);
+		if (ld)
 		{
-			MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-			if (ld)
-			{
-				CollectTexture(textures, ld->lightmapName, ld->lightmap);
-			}
+			CollectTexture(textures, ld->lightmapName, ld->lightmap);
 		}
 	}
 }
