@@ -54,17 +54,22 @@ bool CloneNode()
     Node *srcNode = new Node();
     srcNode->SetName("Tested Node");
     
-    Node *dstNullNode = (Node *)srcNode->Clone();
+    Node *dstNullNode = dynamic_cast<Node *>(srcNode->Clone());
     
     Node *dstNode = NULL;
-    dstNode = (Node *)srcNode->Clone(dstNode);
+    dstNode = dynamic_cast<Node *>(srcNode->Clone(dstNode));
     
-    bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
-    SafeRelease(srcNode);
-    SafeRelease(dstNode);
-    SafeRelease(dstNullNode);
-    
-    return compareResult;
+	if(dstNode && dstNullNode)
+	{
+		bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
+		SafeRelease(srcNode);
+		SafeRelease(dstNode);
+		SafeRelease(dstNullNode);
+		
+		return compareResult;
+	}
+
+    return false;
 }
 
 void CloneTest::CloneOneType(PerfFuncData * data)
