@@ -415,6 +415,7 @@ SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ImposterNode>(this), "Can clone only ImposterNode");
 		dstNode = new ImposterNode();
 	}
 

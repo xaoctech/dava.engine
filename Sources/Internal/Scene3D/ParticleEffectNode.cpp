@@ -8,6 +8,8 @@
 
 #include "ParticleEffectNode.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Render/RenderManager.h"
+#include "Render/RenderHelper.h"
 
 using namespace DAVA;
 REGISTER_CLASS(ParticleEffectNode);
@@ -148,6 +150,32 @@ void ParticleEffectNode::Update(float32 timeElapsed)
     }
 }
 
+void DAVA::ParticleEffectNode::Draw()
+{
+	SceneNode::Draw();
+
+	if (debugFlags != DEBUG_DRAW_NONE)
+	{
+		if (!(flags & SceneNode::NODE_VISIBLE))return;
+
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
+
+		Vector3 position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
+		Matrix3 rotationPart(GetWorldTransform());
+		Vector3 direction = Vector3(0.0f, 0.0f, 1.0f) * rotationPart;
+		direction.Normalize();
+
+		RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f); 
+
+		RenderHelper::Instance()->DrawLine(position, position + direction * 10, 2.f);        
+
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+}
+
+
 bool ParticleEffectNode::IsStopEmitter(ParticleEmitter* emitter) const
 {
     if (!emitter)
@@ -196,6 +224,7 @@ SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEffectNode>(this), "Can clone only ParticleEffectNode");
 		dstNode = new ParticleEffectNode();
 	}
 
@@ -205,5 +234,4 @@ SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
 
 	return dstNode;
 }
-
 

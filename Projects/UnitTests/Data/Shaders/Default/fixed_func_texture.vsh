@@ -19,6 +19,6 @@ varying mediump vec2 varTexCoord;
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
-	varColor = flatColor * flatColor.a;
+	varColor = flatColor;
 	varTexCoord = inTexCoord0;
 }

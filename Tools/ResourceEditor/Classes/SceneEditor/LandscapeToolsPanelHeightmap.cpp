@@ -1,7 +1,7 @@
 #include "LandscapeToolsPanelHeightmap.h"
 #include "ControlsFactory.h"
 #include "LandscapeTool.h"
-
+#include "../Qt/Main/QtUtils.h"
 
 LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   LandscapeToolsPanel(newDelegate, rect)
@@ -149,7 +149,7 @@ void LandscapeToolsPanelHeightmap::Input(DAVA::UIEvent *currentInput)
 {
     if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
     {
-        if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        if(IsKeyModificatorPressed(DVKEY_CTRL))
         {
             if(DVKEY_1 == currentInput->tid)
             {

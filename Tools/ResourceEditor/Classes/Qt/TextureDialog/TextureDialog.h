@@ -36,7 +36,14 @@ public:
     explicit TextureDialog(QWidget *parent = 0);
     ~TextureDialog();
 
-	void setScene(DAVA::Scene *scene);
+protected:
+	void closeEvent(QCloseEvent * e);
+
+public slots:
+	void sceneActivated(SceneData *scene);
+	void sceneChanged(SceneData *scene);
+	void sceneReleased(SceneData *scene);
+	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
 private:
     Ui::TextureDialog *ui;
@@ -58,6 +65,8 @@ private:
 
 	DAVA::Texture *curTexture;
 	DAVA::TextureDescriptor *curDescriptor;
+
+	void setScene(DAVA::Scene *scene);
 
 	void setupTextureListToolbar();
 	void setupTextureToolbar();
@@ -85,6 +94,7 @@ private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
 	void textureListFilterChanged(const QString &text);
+	void textureListFilterSelectedNodeChanged(bool checked);
 	void textureListSortChanged(const QString &text);
 	void texturePressed(const QModelIndex & index);
 	void textureColorChannelPressed(bool checked);
@@ -103,10 +113,6 @@ private slots:
 	void textureAreaWheel(int delta);
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
-
-	void sceneActivated(SceneData *scene);
-	void sceneChanged(SceneData *scene);
-	void sceneReleased(SceneData *scene);
 };
 
 #endif // __TEXTURE_DIALOG_H__

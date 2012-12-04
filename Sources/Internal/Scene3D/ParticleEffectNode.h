@@ -52,6 +52,8 @@ public:
 	 */
 	virtual void Update(float32 timeElapsed);
 
+	virtual void Draw();
+
     /**
      \brief Set the message to be called when Playback is complete.
      */

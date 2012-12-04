@@ -786,8 +786,16 @@ void Material::SetTexture(eTextureLevel level, Texture * texture)
     if (texture == textures[level])return;
     
     SafeRelease(textures[level]);
-    names[level] = "";
+	names[level] = String("");
+
     textures[level] = SafeRetain(texture);
+	if(textures[level])
+	{
+		if(!textures[level]->isRenderTarget)
+		{
+			names[level] = textures[level]->GetPathname();
+		}
+	}
 }
 
 void Material::SetTexture(eTextureLevel level, const String & textureName)

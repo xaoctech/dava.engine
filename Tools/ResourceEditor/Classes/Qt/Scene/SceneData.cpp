@@ -136,7 +136,7 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
     Camera * cam = dynamic_cast<Camera*>(node);
     if (cam)
     {
-        if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
+        if (IsKeyModificatorPressed(DVKEY_ALT))
         {
             scene->SetClipCamera(cam);
         }
@@ -160,7 +160,7 @@ void SceneData::LockAtSelectedNode()
 {
     if(cameraController)
     {
-        cameraController->LockAtSelection();
+        cameraController->LookAtSelection();
     }
 }
 
@@ -749,3 +749,52 @@ void SceneData::ResetLandsacpeSelection()
 		SelectNode(NULL);
 	}
 }
+
+
+void SceneData::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )
+{
+	//materials
+	Vector<Material*> materials;
+	scene->GetDataNodes(materials);
+	for(int32 m = 0; m < (int32)materials.size(); ++m)
+	{
+		for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+		{
+			if(materials[m]->GetTextureName((Material::eTextureLevel)t) == descriptorPathname)
+			{
+				materials[m]->SetTexture((Material::eTextureLevel)t, texture);
+			}
+		}
+	}
+
+	//landscapes
+	Vector<LandscapeNode *> landscapes;
+	scene->GetChildNodes(landscapes);
+	for(int32 l = 0; l < (int32)landscapes.size(); ++l)
+	{
+		for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+		{
+			if(landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t) == descriptorPathname)
+			{
+				landscapes[l]->SetTexture((LandscapeNode::eTextureLevel)t, texture);
+			}
+		}
+	}
+
+	//lightmaps
+	Vector<MeshInstanceNode *> meshInstances;
+	scene->GetChildNodes(meshInstances);
+	for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
+	{
+		for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
+		{
+			MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
+			if (ld)
+			{
+				SafeRelease(ld->lightmap);
+				ld->lightmap = SafeRetain(texture);
+			}
+		}
+	}
+}
+

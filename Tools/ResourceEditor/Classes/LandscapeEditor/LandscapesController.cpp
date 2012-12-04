@@ -138,7 +138,7 @@ void LandscapesController::ToggleNotPassableLandscape()
     
     if(notPassableTerrain)
     {
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 		activeScene->ResetLandsacpeSelection();
 
 

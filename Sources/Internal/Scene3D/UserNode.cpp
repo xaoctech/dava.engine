@@ -87,6 +87,7 @@ SceneNode* UserNode::Clone(SceneNode *dstNode)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<UserNode>(this), "Can clone only UserNode");
 		dstNode = new UserNode();
 	}
 	SceneNode::Clone(dstNode);

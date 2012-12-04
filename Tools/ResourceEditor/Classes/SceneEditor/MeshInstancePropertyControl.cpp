@@ -236,6 +236,6 @@ void MeshInstancePropertyControl::OnConvertToShadowVolume(BaseObject * object, v
 {
 	((MeshInstanceNode*)currentSceneNode)->ConvertToShadowVolume();
 
-	SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	activeScene->RemoveSceneNode(currentSceneNode);
 }

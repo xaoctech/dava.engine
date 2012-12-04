@@ -15,7 +15,7 @@ CommandNotPassableTerrain::CommandNotPassableTerrain()
 
 void CommandNotPassableTerrain::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->ToggleNotPassableLandscape();
 }
 

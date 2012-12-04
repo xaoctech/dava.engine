@@ -1,5 +1,4 @@
 #include "SceneValidator.h"
-#include "ErrorNotifier.h"
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
 
@@ -35,13 +34,8 @@ bool SceneValidator::ValidateSceneAndShowErrors(Scene *scene)
 
     ValidateScene(scene, errorMessages);
 
-    if(0 < errorMessages.size())
-    {
-        ShowErrors();
-        return true;
-    }
-    
-    return false;
+    ShowErrorDialog(errorMessages);
+    return (!errorMessages.empty());
 }
 
 
@@ -208,7 +202,7 @@ void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String
     errorMessages.clear();
 
     ValidateTexture(texture, validatedObjectName, errorMessages);
-    ShowErrors();
+    ShowErrorDialog(errorMessages);
 }
 
 void SceneValidator::ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog)
@@ -266,13 +260,6 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     }
 }
 
-void SceneValidator::ShowErrors()
-{
-    if(0 < errorMessages.size())
-    {
-        ErrorNotifier::Instance()->ShowError(errorMessages);
-    }
-}
 
 void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog)
 {
@@ -380,149 +367,6 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
 {
     sceneStats = newStats;
     infoControl->SetRenderStats(sceneStats);
-}
-
-
-void SceneValidator::ReloadTextures(int32 asFile)
-{
-    Map<String, Texture *> textures;
-    
-    //Enumerate textures
-    int32 count = SceneDataManager::Instance()->ScenesCount();
-    for(int32 i = 0; i < count; ++i)
-    {
-        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
-        EnumerateTextures(textures, sceneData->GetScene());
-    }
-
-    //Reload textures
-    for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); ++it)
-    {
-        SafeRetain(it->second);
-    }
-    
-    
-	for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); )
-	{
-        Texture *texture = ReloadTexture(it->first, it->second, asFile);
-        if(texture == it->second)
-        {
-            SafeRelease(it->second);
-            textures.erase(it++);
-        }
-        else
-        {
-            SafeRelease(it->second);
-            it->second = texture;
-            ++it;
-        }
-	}
-    
-    //reload landscape full tiled texures, which were created as FBO
-    for(int32 i = 0; i < count; ++i)
-    {
-        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
-        EditorScene *scene = sceneData->GetScene();
-        
-        RestoreTextures(textures, scene);
-
-        LandscapeNode *landscape = scene->GetLandScape(scene);
-        if(landscape)
-        {
-            Texture *fullTiled = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
-            if(fullTiled && fullTiled->isRenderTarget)
-            {
-                landscape->UpdateFullTiledTexture();
-            }
-        }
-    }
-    
-    //Release textures
-    for(Map<String, Texture *>::iterator it = textures.begin(); it != textures.end(); ++it)
-    {
-        SafeRelease(it->second);
-    }
-
-}
-
-Texture * SceneValidator::ReloadTexture(const String &descriptorPathname, Texture *prevTexture, int32 asFile)
-{
-    if(prevTexture == Texture::GetPinkPlaceholder())
-    {
-        return Texture::CreateFromFile(descriptorPathname);
-    }
-
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-    if(descriptor)
-    {
-        prevTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
-        SafeRelease(descriptor);
-    }
-
-    return prevTexture;
-}
-
-
-
-void SceneValidator::FindTexturesForCompression()
-{
-    Map<String, Texture *> textures;
-    
-    //Enumerate textures
-    int32 count = SceneDataManager::Instance()->ScenesCount();
-    for(int32 i = 0; i < count; ++i)
-    {
-        SceneData *sceneData = SceneDataManager::Instance()->GetScene(i);
-        EnumerateTextures(textures, sceneData->GetScene());
-    }
-
-    List<Texture *>texturesForPVRCompression;
-    List<Texture *>texturesForDXTCompression;
-
-    Map<String, Texture *>::const_iterator endIt = textures.end();
-	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endIt; ++it)
-	{
-        if(IsTextureChanged(it->first, PVR_FILE))
-        {
-            texturesForPVRCompression.push_back(SafeRetain(it->second));
-        }
-        else if(IsTextureChanged(it->first, DXT_FILE))
-        {
-            texturesForDXTCompression.push_back(SafeRetain(it->second));
-        }
-	}
-
-    CompressTextures(texturesForPVRCompression, PVR_FILE);
-    CompressTextures(texturesForDXTCompression, DXT_FILE);
-    
-	for_each(texturesForPVRCompression.begin(), texturesForPVRCompression.end(),  SafeRelease<Texture>);
-	for_each(texturesForDXTCompression.begin(), texturesForDXTCompression.end(),  SafeRelease<Texture>);
-}
-
-void SceneValidator::CompressTextures(const List<DAVA::Texture *> texturesForCompression, DAVA::ImageFileFormat fileFormat)
-{
-    List<Texture *>::const_iterator endIt = texturesForCompression.end();
-	for(List<Texture *>::const_iterator it = texturesForCompression.begin(); it != endIt; ++it)
-	{
-		Texture *texture = *it;
-        //TODO: compress texture
-        TextureDescriptor *descriptor = texture->CreateDescriptor();
-        if(descriptor)
-        {
-            if(fileFormat == PVR_FILE)
-            {
-                PVRConverter::Instance()->ConvertPngToPvr(descriptor->GetSourceTexturePathname(), *descriptor);
-            }
-            else if(fileFormat == DXT_FILE)
-            {
-                    
-            }
-            
-			descriptor->UpdateDateAndCrcForFormat(fileFormat);
-			descriptor->Save();
-            SafeRelease(descriptor);
-        }
-	}
 }
 
 
@@ -816,113 +660,6 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 	SafeRelease(fileList);
 }
 
-void SceneValidator::EnumerateTextures(Map<String, Texture *> &textures, Scene *scene)
-{
-    if(!scene)  return;
-    
-    //materials
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for(int32 m = 0; m < (int32)materials.size(); ++m)
-    {
-        for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-        {
-            String path = materials[m]->GetTextureName((Material::eTextureLevel)t);
-            if(!path.empty() && IsPathCorrectForProject(path))
-            {
-                textures[path] = materials[m]->GetTexture((Material::eTextureLevel)t);
-            }
-        }
-    }
-    
-    //landscapes
-    Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
-    for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-    {
-        for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
-        {
-            String path = landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t);
-            if(!path.empty() && IsPathCorrectForProject(path))
-            {
-                textures[path] = landscapes[l]->GetTexture((LandscapeNode::eTextureLevel)t);
-            }
-        }
-    }
-    
-    //lightmaps
-    Vector<MeshInstanceNode *> meshInstances;
-    scene->GetChildNodes(meshInstances);
-    for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-    {
-        for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
-        {
-            MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-            if (ld)
-            {
-                if(!ld->lightmapName.empty() && IsPathCorrectForProject(ld->lightmapName))
-                {
-                    textures[ld->lightmapName] = ld->lightmap;
-                }
-            }
-        }
-    }
-}
 
-void SceneValidator::RestoreTextures(Map<String, Texture *> &textures, Scene *scene)
-{
-    if(!scene)  return;
-    
-    //materials
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for(int32 m = 0; m < (int32)materials.size(); ++m)
-    {
-        for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-        {
-            String path = materials[m]->GetTextureName((Material::eTextureLevel)t);
-            Map<String, Texture *>::iterator it = textures.find(path);
-            if(it != textures.end())
-            {
-                materials[m]->SetTexture((Material::eTextureLevel)t, path);
-            }
-        }
-    }
-    
-    //landscapes
-    Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
-    for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-    {
-        for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
-        {
-            String path = landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t);
-            Map<String, Texture *>::iterator it = textures.find(path);
-            if(it != textures.end())
-            {
-                landscapes[l]->SetTexture((LandscapeNode::eTextureLevel)t, it->second);
-            }
-        }
-    }
-    
-    //lightmaps
-    Vector<MeshInstanceNode *> meshInstances;
-    scene->GetChildNodes(meshInstances);
-    for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-    {
-        for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
-        {
-            MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-            if (ld)
-            {
-                Map<String, Texture *>::iterator it = textures.find(ld->lightmapName);
-                if(it != textures.end())
-                {
-                    SafeRelease(ld->lightmap);
-                    ld->lightmap = SafeRetain(it->second);
-                }
-            }
-        }
-    }
-}
+
 
