@@ -17,6 +17,6 @@ void ReloadTexturesAsCommand::Execute()
     EditorSettings::Instance()->SetTextureViewFileFormat(fileFormat);
     EditorSettings::Instance()->Save();
     
-    SceneDataManager::Instance()->ReloadTextures(fileFormat);
+    SceneDataManager::Instance()->TextureReloadAll(fileFormat);
 }
 

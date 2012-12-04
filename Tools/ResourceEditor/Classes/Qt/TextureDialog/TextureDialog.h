@@ -94,6 +94,7 @@ private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
 	void textureListFilterChanged(const QString &text);
+	void textureListFilterSelectedNodeChanged(bool checked);
 	void textureListSortChanged(const QString &text);
 	void texturePressed(const QModelIndex & index);
 	void textureColorChannelPressed(bool checked);

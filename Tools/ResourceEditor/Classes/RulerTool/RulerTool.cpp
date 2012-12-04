@@ -31,6 +31,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../SceneEditor/HeightmapNode.h"
 #include "../LandscapeEditor/RulerToolLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
@@ -77,7 +78,7 @@ bool RulerTool::EnableTool(EditorScene *scene)
         
         if(0 < landscapes.size())
         {
-            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             landscapesController = SafeRetain(activeScene->GetLandscapesController());
             rulerToolLandscape = SafeRetain(landscapesController->CreateRulerToolLandscape());
             rulerToolLandscape->SetPoints(linePoints);
@@ -98,7 +99,7 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
-	SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	activeScene->ResetLandsacpeSelection();
 
     if(landscapesController)
@@ -127,8 +128,7 @@ bool RulerTool::Input(DAVA::UIEvent *touch)
             bool isIntersect = GetIntersectionPoint(touch->point, point);
             if(isIntersect)
             {
-                bool commandKeyIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
-                if(commandKeyIsPressed)
+                if(IsKeyModificatorPressed(DVKEY_SHIFT))
                 {
                     SetStartPoint(point);
                 }
