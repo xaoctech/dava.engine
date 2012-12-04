@@ -903,3 +903,9 @@ void SceneEditorScreenMain::VisibilityToolSetAreaSize(uint32 size)
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->VisibilityToolSetAreaSize(size);
 }
+
+void SceneEditorScreenMain::ProcessIsSolidChanging()
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ProcessIsSolidChanging();
+}

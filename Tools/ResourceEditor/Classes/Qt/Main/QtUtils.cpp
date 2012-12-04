@@ -1,5 +1,7 @@
 #include "QtUtils.h"
 #include "../../SceneEditor/SceneValidator.h"
+#include "../../SceneEditor/CommandLineTool.h"
+
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -24,10 +26,10 @@ DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &path
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     String openedPathname = PathnameToDAVAStyle(filePath);
-    if(!SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
+    if(!openedPathname.empty() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
     {
         //Need to Show Error
-        ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.c_str())));
+		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.c_str())));
         openedPathname = String("");
     }
     
@@ -91,10 +93,15 @@ void ShowErrorDialog(const DAVA::Set<DAVA::String> &errors)
 
 void ShowErrorDialog(const DAVA::String &errorMessage)
 {
-    QMessageBox msgBox;
-    msgBox.setText(QString(errorMessage.c_str()));
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.exec();
+	bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
+					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+	if(!forceMode)
+	{
+		QMessageBox msgBox;
+		msgBox.setText(QString(errorMessage.c_str()));
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.exec();
+	}
 }
 
 bool IsKeyModificatorPressed(int32 key)
