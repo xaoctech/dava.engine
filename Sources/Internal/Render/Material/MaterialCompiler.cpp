@@ -328,7 +328,7 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
     }
 
         
-    return NO_ERROR;
+    return COMPILE_NO_ERROR;
 }
 
 

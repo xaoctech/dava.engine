@@ -84,6 +84,8 @@ bool NMaterialInstance::LoadFromYaml(const String & pathname)
     
     
     SafeRelease(parser);
+
+	return true;
 }
     
 void NMaterialInstance::SetUniformData(uint32 uniformIndex, void * data, uint32 size)

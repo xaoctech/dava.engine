@@ -49,7 +49,7 @@ YamlNode::YamlNode(eType _type)
 
 YamlNode::~YamlNode()
 {
-	for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
+	for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
 	{
 		YamlNode * object = t->second;
 		SafeRelease(object);
@@ -82,7 +82,7 @@ void YamlNode::Print(int32 identation)
 	}else if (type == TYPE_MAP)
 	{
 		printf("{");
-		for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
+		for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
 		{
 			printf("key(%s, %d): ", t->first.c_str(), t->second->mapIndex);
 			t->second->Print(identation + 1);
@@ -141,7 +141,7 @@ void YamlNode::PrintToFile(DAVA::File* file, uint32 identationDepth)
 		delete[] spacesBuffer;
 
         file->WriteNonTerminatedString("\r\n" + spaces );
-        for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t )
+        for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t )
         {
 
             String strToFile( t->first + ": ");
@@ -299,9 +299,9 @@ VariantType YamlNode::AsVariantType()
 {
     VariantType retValue;
     
-    std::multimap<String, YamlNode*> & mapFromNode = AsMap();
+    MultiMap<String, YamlNode*> & mapFromNode = AsMap();
         
-    for(std::multimap<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
+    for(MultiMap<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
         String innerTypeName = it->first;
         
@@ -438,7 +438,7 @@ Vector<YamlNode*> & YamlNode::AsVector()
 	return objectArray;
 }
 
-std::multimap<String, YamlNode*> & YamlNode::AsMap()
+MultiMap<String, YamlNode*> & YamlNode::AsMap()
 {
 	return objectMap;
 }
@@ -469,8 +469,8 @@ const String &	YamlNode::GetItemKeyName(int32 index)
 {
 	if (type == TYPE_MAP)
 	{
-		Map<String, YamlNode*>::const_iterator end = objectMap.end();
-		for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != end; ++t)
+		MultiMap<String, YamlNode*>::const_iterator end = objectMap.end();
+		for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != end; ++t)
 		{	
 			YamlNode * n = t->second;
 			if (n->mapIndex == index)return t->first;
@@ -483,7 +483,7 @@ YamlNode * YamlNode::Get(const String & name)
 {
 	if (type == TYPE_MAP)
 	{
-		Map<String, YamlNode*>::iterator t;
+		MultiMap<String, YamlNode*>::iterator t;
 		if ((t = objectMap.find(name)) != objectMap.end())
 		{
 			return t->second;

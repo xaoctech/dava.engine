@@ -121,6 +121,9 @@
     <Filter Include="Internal\Platform\Qt\MacOS">
       <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Render\Material">
+      <UniqueIdentifier>{08283861-a6e9-4e98-88c8-2cfd8d75e035}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1167,6 +1170,24 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1993,6 +2014,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp">
       <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

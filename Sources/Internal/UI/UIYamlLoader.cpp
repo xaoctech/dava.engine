@@ -169,7 +169,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	
 	YamlNode * rootNode = parser->GetRootNode();
 	
-	for (Map<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
 	{
 		YamlNode * node = t->second;
 		YamlNode * typeNode = node->Get("type");

@@ -59,7 +59,7 @@ public:
     
     enum eCompileError
     {
-        NO_ERROR = 1,
+        COMPILE_NO_ERROR = 1,
         ERROR_NOT_ENOUGH_CONNECTORS,
         ERROR_UNUSED_NODE,
     };

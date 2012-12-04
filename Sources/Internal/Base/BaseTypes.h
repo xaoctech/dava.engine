@@ -207,8 +207,13 @@ template<	class _Kty,
 			class _Ty,
 			class _Pr = std::less<_Kty>,
 			class _Alloc = std::allocator<std::pair<const _Kty, _Ty> > >
-
 class Map : public std::map<_Kty, _Ty, _Pr, _Alloc> {};
+
+template<	class _Kty,
+			class _Ty,
+			class _Pr = std::less<_Kty>,
+			class _Alloc = std::allocator<std::pair<const _Kty, _Ty> > >
+class MultiMap : public std::multimap<_Kty, _Ty, _Pr, _Alloc> {};
 
 template < class T, class Container = std::deque<T> > class Stack : public std::stack< T, Container > {};
 

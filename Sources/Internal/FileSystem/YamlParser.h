@@ -73,7 +73,7 @@ public:
 	const String &	AsString();
 	const WideString & AsWString();
 	Vector<YamlNode*> & AsVector();
-    std::multimap<String, YamlNode*> & AsMap();
+    MultiMap<String, YamlNode*> & AsMap();
 	
 	/*
 		These functions work only if type of node is array
@@ -111,7 +111,7 @@ private:
 	WideString				stringValue;
 	String					 nwStringValue;
 	Vector<YamlNode*>		 objectArray;
-    std::multimap<String, YamlNode*>	objectMap;
+    MultiMap<String, YamlNode*>	objectMap;
 	friend class YamlParser;
 };
 
