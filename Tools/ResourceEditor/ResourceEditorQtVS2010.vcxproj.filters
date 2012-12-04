@@ -168,9 +168,6 @@
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -322,9 +319,6 @@
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h">
@@ -1117,7 +1111,13 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Properties</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
+      <Filter>QtGenerated\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1194,9 +1194,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h">
@@ -2070,7 +2067,10 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
+      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2132,9 +2132,6 @@
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
-      <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp">

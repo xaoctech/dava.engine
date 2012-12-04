@@ -6,7 +6,6 @@
 
 #include "../Qt/Main/QtUtils.h"
 #include "SceneValidator.h"
-#include "ErrorNotifier.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -260,7 +259,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 	else
 	{
-		ErrorNotifier::Instance()->ShowError(errorsLog);
+		ShowErrorDialog(errorsLog);
 	}
 }
 

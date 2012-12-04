@@ -102,6 +102,7 @@ void QtMainWindowHandler::OpenScene()
 void QtMainWindowHandler::OpenProject()
 {
     Execute(new CommandOpenProject());
+	emit ProjectChanged();
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
@@ -153,11 +154,11 @@ void QtMainWindowHandler::Materials()
 		if(NULL != body && NULL != body->bodyControl)
 		{
 			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			materialBrowser.SetScene(mainScreenScene);
+			materialBrowser->SetScene(mainScreenScene);
 		}
 	}
 
-	materialBrowser.show();
+	materialBrowser->show();
 	*/
 }
 
@@ -174,18 +175,10 @@ void QtMainWindowHandler::TilemapEditor()
 void QtMainWindowHandler::ConvertTextures()
 {
 	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
-	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(NULL != screen)
-	{
-		SceneEditorScreenMain::BodyItem *body = screen->FindCurrentBody();
-
-		if(NULL != body && NULL != body->bodyControl)
-		{
-			DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
-			textureBrowser->setScene(mainScreenScene);
-		}
-	}
-
+	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
+	
+	textureBrowser->sceneActivated(activeScene);
+	textureBrowser->sceneNodeSelected(activeScene, SceneDataManager::Instance()->SceneGetSelectedNode(activeScene));
 	textureBrowser->show();
 }
 

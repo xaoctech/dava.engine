@@ -4,8 +4,7 @@
 
 #include "ControlsFactory.h"
 
-//#include "../Qt/QtUtils.h"
-#include "ErrorNotifier.h"
+#include "../Qt/Main/QtUtils.h"
 
 static const String textureNames[] = 
 {
@@ -258,7 +257,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
 	bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
 	if(!isCorrect)
 	{
-		ErrorNotifier::Instance()->ShowError(errorLog);
+		ShowErrorDialog(errorLog);
 		return;
 	}
 

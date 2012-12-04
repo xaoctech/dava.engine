@@ -101,6 +101,8 @@ void CoreWin32Platform::InitArgs()
 
 bool CoreWin32Platform::SetupWindow(HINSTANCE hInstance, HWND hWindow)
 {
+    needToSkipMouseUp = false;
+
 	//single instance check
 	TCHAR fileName[MAX_PATH];
 	GetModuleFileName(NULL, fileName, MAX_PATH);
@@ -245,8 +247,12 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	case WM_KEYUP:
 		{
 			InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)message->wParam);
-			*result = 0;
-			return true;
+
+			// translate this to WM_CHAR message
+			TranslateMessage(message);
+
+//			*result = 0;
+//			return true;
 		}
 		break;
 
@@ -277,8 +283,11 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 
 			InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)message->wParam);
 
-			*result = 0;
-			return true;
+			// translate this to WM_CHAR message
+			TranslateMessage(message);
+
+			//*result = 0;
+			//return true;
 		}
 		break;
 
@@ -314,12 +323,22 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_MBUTTONDOWN:
+            
+            if(needToSkipMouseUp)
+            {
+                break;
+            }
 		//		case WM_XBUTTONDOWN:
 
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
 	case WM_MBUTTONUP:
 		//		case WM_XBUTTONUP:
+            if(needToSkipMouseUp)
+            {
+                needToSkipMouseUp = false;
+                break;
+            }
 
 	case WM_MOUSEMOVE:
 		{
@@ -341,6 +360,11 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	}
 
 	return false;
+}
+    
+void CoreWin32Platform::NeedToSkipMouseUp()
+{
+    needToSkipMouseUp = true;
 }
 	
 }

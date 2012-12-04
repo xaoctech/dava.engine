@@ -223,7 +223,7 @@
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/Heightmap.h"
-
+#include "Scene3D/UserNode.h"
 
 // Application core 
 #include "Core/Core.h"

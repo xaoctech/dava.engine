@@ -1,109 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Common">
-      <UniqueIdentifier>{110bfd48-b942-42d6-9f31-c34eafade538}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{f6fef41f-da28-4bac-ab91-b3306c6ea79c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Win32Specific">
-      <UniqueIdentifier>{e55bb3b1-e945-4700-9c18-9271a3ed5649}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="TestSuite">
-      <UniqueIdentifier>{a1d2209f-7378-4554-9b63-0aa77b2ca427}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="Classes\BaseScreen.cpp" />
+    <ClCompile Include="Classes\EntityTest.cpp" />
+    <ClCompile Include="Classes\FrameworkMain.cpp" />
+    <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\HashMapTest.cpp" />
+    <ClCompile Include="Classes\KeyedArchiveTest.cpp" />
+    <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp" />
+    <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
+    <ClCompile Include="Classes\PVRTest.cpp" />
+    <ClCompile Include="Classes\SampleTest.cpp" />
+    <ClCompile Include="Classes\SoundTest.cpp" />
+    <ClCompile Include="Classes\SplitTest.cpp" />
+    <ClCompile Include="Classes\TestTemplate.cpp" />
+    <ClCompile Include="Classes\TextureUtils.cpp" />
+    <ClCompile Include="Win32Specific\main.cpp" />
+    <ClCompile Include="Classes\CloneTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\FrameworkMain.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\GameCore.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TestTemplate.h">
-      <Filter>TestSuite</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\BaseScreen.h">
-      <Filter>TestSuite</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Config.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SampleTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\EntityTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SoundTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\HashMapTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\MemoryAllocatorsTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SplitTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\PVRTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TextureUtils.h">
-      <Filter>Common</Filter>
-    <ClInclude Include="Classes\KeyedArchiveTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\KeyedArchiveYamlTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Classes\FrameworkMain.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\GameCore.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32Specific\main.cpp">
-      <Filter>Win32Specific</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TestTemplate.cpp">
-      <Filter>TestSuite</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\BaseScreen.cpp">
-      <Filter>TestSuite</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SampleTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\EntityTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SoundTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\HashMapTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\MemoryAllocatorsTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SplitTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\PVRTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TextureUtils.cpp">
-      <Filter>Common</Filter>
-    <ClCompile Include="Classes\KeyedArchiveTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
+    <ClInclude Include="Classes\BaseScreen.h" />
+    <ClInclude Include="Classes\Config.h" />
+    <ClInclude Include="Classes\EntityTest.h" />
+    <ClInclude Include="Classes\FrameworkMain.h" />
+    <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\HashMapTest.h" />
+    <ClInclude Include="Classes\KeyedArchiveTest.h" />
+    <ClInclude Include="Classes\KeyedArchiveYamlTest.h" />
+    <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
+    <ClInclude Include="Classes\PVRTest.h" />
+    <ClInclude Include="Classes\SampleTest.h" />
+    <ClInclude Include="Classes\SoundTest.h" />
+    <ClInclude Include="Classes\SplitTest.h" />
+    <ClInclude Include="Classes\TestTemplate.h" />
+    <ClInclude Include="Classes\TextureUtils.h" />
+    <ClInclude Include="Classes\CloneTest.h" />
   </ItemGroup>
 </Project>

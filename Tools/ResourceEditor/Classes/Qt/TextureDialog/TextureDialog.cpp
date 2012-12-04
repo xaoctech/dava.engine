@@ -42,6 +42,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
 
 	// convertor signals
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
@@ -83,6 +84,12 @@ TextureDialog::~TextureDialog()
 	DAVA::SafeRelease(curScene);
 	TextureCache::Instance()->Release();
 	TextureConvertor::Instance()->Release();
+}
+
+void TextureDialog::closeEvent(QCloseEvent * e)
+{
+	QDialog::closeEvent(e);
+	this->deleteLater();
 }
 
 void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
@@ -408,9 +415,13 @@ void TextureDialog::setupTextureListToolbar()
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
 
+	ui->textureListToolbar->addSeparator();
+	ui->textureListToolbar->addAction(ui->actionFilterSelectedNode);
+
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
+	QObject::connect(ui->actionFilterSelectedNode, SIGNAL(triggered(bool)), this, SLOT(textureListFilterSelectedNodeChanged(bool)));
 }
 
 void TextureDialog::setupTextureListFilter()
@@ -476,6 +487,9 @@ void TextureDialog::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
+
+	// zoom fit selected texture
+	textureZoomFit(true);
 }
 
 void TextureDialog::textureListViewText(bool checked)
@@ -499,6 +513,11 @@ void TextureDialog::textureListViewImages(bool checked)
 void TextureDialog::textureListFilterChanged(const QString &text)
 {
 	textureListModel->setFilter(text);
+}
+
+void TextureDialog::textureListFilterSelectedNodeChanged(bool checked)
+{
+	textureListModel->setFilterBySelectedNode(checked);
 }
 
 void TextureDialog::textureListSortChanged(const QString &text)
@@ -753,7 +772,7 @@ void TextureDialog::sceneChanged(SceneData *sceneData)
 
 		// reload current scene if it is the same as changed
 		// or if there is no current scene now - set it
-		if(scene == curScene || curScene == NULL)
+		//if(scene == curScene || curScene == NULL)
 		{
 			setScene(scene);
 		}
@@ -785,4 +804,9 @@ void TextureDialog::sceneReleased(SceneData *sceneData)
 			setScene(NULL);
 		}
 	}
+}
+
+void TextureDialog::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+{
+	textureListModel->setHighlight(node);
 }

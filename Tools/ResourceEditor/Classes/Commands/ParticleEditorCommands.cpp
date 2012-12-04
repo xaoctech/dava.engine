@@ -35,10 +35,7 @@ void CommandOpenParticleEditorConfig::Execute()
 		currentPath = editor->GetConfigsPath();
 	}
 
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
-
-	String selectedPathname = PathnameToDAVAStyle(filePath);
-
+	String selectedPathname = GetOpenFileName(String("Open particle effect"), currentPath, String("Effect File (*.yaml)"));
 	if(selectedPathname.length() > 0)
 	{
 		screen->GetParticlesEditor()->LoadFromYaml(selectedPathname);
@@ -99,10 +96,7 @@ void CommandOpenParticleEditorSprite::Execute()
 		currentPath = editor->GetActiveConfigFolder()+currentPath;
 	}
 
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString(currentPath.c_str()), QString("Sprite (*.txt)"));
-
-	String selectedPathname = PathnameToDAVAStyle(filePath);
-
+	String selectedPathname = GetOpenFileName(String("Open sprite"), currentPath, String("Sprite (*.txt)"));
 	if(selectedPathname.length() > 0)
 	{
 		uint32 pos = selectedPathname.find(".txt");

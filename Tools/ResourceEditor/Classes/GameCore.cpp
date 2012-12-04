@@ -118,7 +118,7 @@ void GameCore::OnResume()
     
     if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
-        SceneValidator::Instance()->FindTexturesForCompression();
+        SceneDataManager::Instance()->TextureCompressAllNotCompressed();
     }
 }
 

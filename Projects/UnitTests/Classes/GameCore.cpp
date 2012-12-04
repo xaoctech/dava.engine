@@ -43,6 +43,7 @@
 #include "MaterialCompilerTest.h"
 #include "PVRTest.h"
 #include "KeyedArchiveYamlTest.h"
+#include "CloneTest.h"
 
 using namespace DAVA;
 
@@ -75,6 +76,7 @@ void GameCore::OnAppStarted()
 //    new SoundTest();
 //    new SplitTest();
     new MaterialCompilerTest();
+    new CloneTest();
     new PVRTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();

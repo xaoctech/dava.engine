@@ -96,16 +96,12 @@ namespace DAVA
     #define glDeleteRenderbuffers glDeleteRenderbuffersOES
     #define glGenerateMipmap glGenerateMipmapOES
 	#define glBindFramebuffer glBindFramebufferOES
-#if !defined GL_DEPTH_COMPONENT
-    #define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
-#endif //#if !defined GL_DEPTH_COMPONENT
+    #define DAVA_GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
     
 #elif defined(__DAVAENGINE_ANDROID__)
     
     #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
-#if !defined GL_DEPTH_COMPONENT
-	#define GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
-#endif //#if !defined GL_DEPTH_COMPONENT
+	#define DAVA_GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT16_OES
     
 #elif defined(__DAVAENGINE_MACOS__)
 	
@@ -134,6 +130,7 @@ namespace DAVA
 #endif //#if !defined(GL_FRAMEBUFFER_COMPLETE)
     
 #elif defined(__DAVAENGINE_WIN32__)
+	#define DAVA_GL_DEPTH_COMPONENT GL_DEPTH_COMPONENT
 #endif //#if defined (__DAVAENGINE_IPHONE__)
     
     

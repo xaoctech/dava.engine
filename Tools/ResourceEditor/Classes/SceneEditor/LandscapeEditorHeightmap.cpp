@@ -282,7 +282,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 
 void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
-    bool dropper = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+    bool dropper = IsKeyModificatorPressed(DVKEY_CTRL);
     if(dropper)
     {
         switch(phase)
@@ -356,7 +356,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorHeightmap::CopyPasteBegin()
 {
-    bool start = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+    bool start = IsKeyModificatorPressed(DVKEY_ALT);
     if(start)
     {
         copyFromCenter = landscapePoint;
@@ -398,7 +398,7 @@ void LandscapeEditorHeightmap::ShowAction()
 {
     prevToolSize = 0.f;
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     landscapesController = activeScene->GetLandscapesController();
     landscapesController->CreateEditorLandscapeNode();
     SafeRetain(landscapesController);

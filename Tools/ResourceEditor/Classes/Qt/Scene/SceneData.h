@@ -72,6 +72,8 @@ public:
     
 	void ResetLandsacpeSelection();
 
+	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
