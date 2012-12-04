@@ -271,7 +271,8 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
-                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
+                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, material->GetTextureName((Material::eTextureLevel)textureTypes[i]),
+					Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
             }
             else 
             {
