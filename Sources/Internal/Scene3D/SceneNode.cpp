@@ -452,6 +452,12 @@ void SceneNode::Draw()
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
 		AABBox3 box = GetWTMaximumBoundingBoxSlow();
+		if(box == AABBox3())
+		{
+			box.min = Vector3(0, 0, 0) * GetWorldTransform();
+			box.max = box.min;
+		}
+
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);

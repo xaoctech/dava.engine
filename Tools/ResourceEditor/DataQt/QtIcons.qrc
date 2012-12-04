@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIconsTextureDialog/filter.png</file>
     <file>QtIconsTextureDialog/alpha.png</file>
     <file>QtIconsTextureDialog/editclear.png</file>
     <file>QtIconsTextureDialog/blue.png</file>

@@ -415,9 +415,13 @@ void TextureDialog::setupTextureListToolbar()
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
 
+	ui->textureListToolbar->addSeparator();
+	ui->textureListToolbar->addAction(ui->actionFilterSelectedNode);
+
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
+	QObject::connect(ui->actionFilterSelectedNode, SIGNAL(triggered(bool)), this, SLOT(textureListFilterSelectedNodeChanged(bool)));
 }
 
 void TextureDialog::setupTextureListFilter()
@@ -483,6 +487,9 @@ void TextureDialog::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
+
+	// zoom fit selected texture
+	textureZoomFit(true);
 }
 
 void TextureDialog::textureListViewText(bool checked)
@@ -506,6 +513,11 @@ void TextureDialog::textureListViewImages(bool checked)
 void TextureDialog::textureListFilterChanged(const QString &text)
 {
 	textureListModel->setFilter(text);
+}
+
+void TextureDialog::textureListFilterSelectedNodeChanged(bool checked)
+{
+	textureListModel->setFilterBySelectedNode(checked);
 }
 
 void TextureDialog::textureListSortChanged(const QString &text)

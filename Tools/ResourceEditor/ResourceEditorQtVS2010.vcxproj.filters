@@ -94,9 +94,6 @@
     <Filter Include="QtGenerated\Scene">
       <UniqueIdentifier>{112a8070-e234-41b7-8958-114f01fccf0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\QtTaskRunner">
-      <UniqueIdentifier>{1f9fcd6e-20ff-48cc-ad6a-cf5ce47f32ed}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1114,7 +1111,13 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Properties</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
+      <Filter>QtGenerated\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2064,7 +2067,10 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties</Filter>
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
+      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

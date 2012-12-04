@@ -191,7 +191,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     {
         if(UIEvent::BUTTON_1 == touch->tid)
         {
-            inverseDrawingEnabled = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+            inverseDrawingEnabled = IsKeyModificatorPressed(DVKEY_ALT);
             
             if(UIEvent::PHASE_BEGAN == touch->phase)
             {
@@ -228,12 +228,12 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     
     if(UIEvent::PHASE_KEYCHAR == touch->phase)
     {
-        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_CTRL))
         {
             UndoAction();
             return true;
         }
-        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
         {
             RedoAction();
             return true;

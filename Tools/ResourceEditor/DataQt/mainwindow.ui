@@ -69,7 +69,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeView" name="sceneGraphTree">
+      <widget class="QSceneGraphTreeView" name="sceneGraphTree">
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -859,6 +859,11 @@ Area Size:</string>
    <extends>QWidget</extends>
    <header>davaglwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QSceneGraphTreeView</class>
+   <extends>QTreeView</extends>
+   <header>QSceneGraphTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

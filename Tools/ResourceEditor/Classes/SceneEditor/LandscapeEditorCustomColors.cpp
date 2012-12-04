@@ -570,7 +570,7 @@ String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 
 String LandscapeEditorCustomColors::GetScenePath()
 {
-	String sceneFilePath = SceneDataManager::Instance()->GetActiveScene()->GetScenePathname();
+	String sceneFilePath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
 	String sceneFileName = "";
 	FileSystem::Instance()->SplitPath(sceneFilePath, sceneFilePath, sceneFileName);
 

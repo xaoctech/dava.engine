@@ -180,7 +180,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     }
 
     
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     c->bodyControl->SetScene(sceneData->GetScene());
     c->bodyControl->SetCameraController(sceneData->GetCameraController());
     c->bodyControl->SetTag(count);
@@ -381,8 +381,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 {
     if(UIEvent::PHASE_KEYCHAR == event->phase)
     {
-        bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-        if(altIsPressed)
+        if(IsKeyModificatorPressed(DVKEY_ALT))
         {
             int32 key = event->tid - DVKEY_1;
             if(0 <= key && key < 8)
@@ -434,7 +433,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneData *levelScene = SceneDataManager::Instance()->GetLevelScene();
+    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
     levelScene->EditScene(pathToFile);
     levelScene->SetScenePathname(pathToFile);
 }
@@ -474,7 +473,7 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 
 void SceneEditorScreenMain::NewScene()
 {
-    SceneData *levelScene = SceneDataManager::Instance()->GetLevelScene();
+    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
     levelScene->CreateScene(true);
     
     bodies[0]->bodyControl->SetScene(levelScene->GetScene());
@@ -495,7 +494,7 @@ bool SceneEditorScreenMain::SaveIsAvailable()
 
 String SceneEditorScreenMain::CurrentScenePathname()
 {
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     String pathname = sceneData->GetScenePathname();
     if (0 < pathname.length())
     {
@@ -508,7 +507,7 @@ String SceneEditorScreenMain::CurrentScenePathname()
 
 void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
 {
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SetScenePathname(pathToFile);
 
     BodyItem *iBody = FindCurrentBody();
@@ -580,7 +579,7 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     String filePath = sceneData->GetScenePathname();
     String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
     String::size_type pos = filePath.find(dataSourcePath);
@@ -647,7 +646,7 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     String filePath = sceneData->GetScenePathname();
     String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
     String::size_type pos = filePath.find(dataSourcePath);
@@ -903,4 +902,10 @@ void SceneEditorScreenMain::VisibilityToolSetAreaSize(uint32 size)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->VisibilityToolSetAreaSize(size);
+}
+
+void SceneEditorScreenMain::ProcessIsSolidChanging()
+{
+	BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ProcessIsSolidChanging();
 }
