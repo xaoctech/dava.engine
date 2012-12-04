@@ -23,7 +23,6 @@ ParticleEmitterNode::~ParticleEmitterNode()
 
 void ParticleEmitterNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
 	if(emitter)
 	{
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);

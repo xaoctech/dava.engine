@@ -28,7 +28,6 @@ LightNode * EditorLightNode::CreateSceneAndEditorLight()
 
 void EditorLightNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
 	LightNode * parent = (LightNode*)GetParent();
 	if(type != parent->GetType())
 	{

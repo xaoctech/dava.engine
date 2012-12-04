@@ -43,6 +43,7 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
+#include "Scene3D/Components/TransformSystem.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -127,6 +128,7 @@ void Core::CreateSingletons()
 #endif //#if defined __DAVAENGINE_IPHONE__
 	
 	new UIScreenManager();
+	new TransformSystem();
 
 #ifdef __DAVAENGINE_AUTOTESTING__
     new AutotestingSystem();
@@ -149,6 +151,7 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
+	TransformSystem::Instance()->Release();
 	Texture::ReleasePinkPlaceholder();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();

@@ -39,7 +39,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
 #include "Entity/Entity.h"
-#include "iostream"
+#include "Scene3D/Components/TransformSystem.h"
 
 namespace DAVA
 {
@@ -53,6 +53,7 @@ SceneNode::SceneNode()
     , inUpdate(false)
     , tag(0)
 	, entity(0)
+	, transform(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
 
@@ -65,6 +66,8 @@ SceneNode::SceneNode()
 	userData = 0;
     
     customProperties = new KeyedArchive();
+
+	transform = TransformSystem::Instance()->CreateTransform();
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.SceneNode.Update", "SceneNode update time");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.SceneNode.Draw", "SceneNode draw time");
@@ -84,8 +87,9 @@ SceneNode::~SceneNode()
     
     RemoveAllChildren();
 	SafeRelease(userData);
-
     SafeRelease(customProperties);
+
+	TransformSystem::Instance()->DeleteTransform(transform);
 //  Logger::Debug("~SceneNode: %p", this);
 
 	//TODO: delete entity?
@@ -288,7 +292,6 @@ void SceneNode::BakeTransforms()
         AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
         
         //worldTransform = Matrix4
-        Update(0.0f);
         for (uint32 c = 0; c < size; ++c)
         {
             children[c]->BakeTransforms();
@@ -324,80 +327,80 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 }
 
     
-void SceneNode::Update(float32 timeElapsed)
-{
-    //Stats::Instance()->BeginTimeMeasure("Scene.Update.SceneNode.Update", this);
-
-//    if (!(flags & NODE_UPDATABLE))return;
-
-    inUpdate = true;
-	// TODO - move node update to render because any of objects can change params of other objects
-	if (nodeAnimations.size() != 0)
-	{
-		Quaternion blendedRotation;
-		Vector3 blendedTranslation;
-		float32 accumWeight = 0.0f;
-		std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
-		for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
-		{
-			SceneNodeAnimation * animation = *it;
-			SceneNodeAnimationKey & key = animation->Intepolate(animation->GetCurrentTime());
-			if (accumWeight == 0.0f)
-			{
-				blendedTranslation = key.translation;
-				blendedRotation = key.rotation;
-				accumWeight = animation->weight;
-			}else
-			{
-				float32 factor = animation->weight / (accumWeight + animation->weight);
-				accumWeight += accumWeight;
-				blendedTranslation.Lerp(blendedTranslation, key.translation, factor);
-				blendedRotation.Slerp(blendedRotation, key.rotation, factor);
-			}
-			//key.GetMatrix(localTransform);
-		}
-		Matrix4 localTransformTrans;
-		Matrix4 localTransformRot;
-		Matrix4 localTransformFinal;
-		localTransformTrans.CreateTranslation(blendedTranslation);
-		localTransformRot = blendedRotation.GetMatrix();
-		
-		localTransform = localTransformRot * localTransformTrans;
-		
-//		if (nodeAnimations.size() != 1)
+//void SceneNode::Update(float32 timeElapsed)
+//{
+//    //Stats::Instance()->BeginTimeMeasure("Scene.Update.SceneNode.Update", this);
+//
+////    if (!(flags & NODE_UPDATABLE))return;
+//
+//    inUpdate = true;
+//	// TODO - move node update to render because any of objects can change params of other objects
+//	if (nodeAnimations.size() != 0)
+//	{
+//		Quaternion blendedRotation;
+//		Vector3 blendedTranslation;
+//		float32 accumWeight = 0.0f;
+//		std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
+//		for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
 //		{
-//			printf("-- blended node: %s\n", name.c_str());
-//			std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
-//			for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
+//			SceneNodeAnimation * animation = *it;
+//			SceneNodeAnimationKey & key = animation->Intepolate(animation->GetCurrentTime());
+//			if (accumWeight == 0.0f)
 //			{
-//				SceneNodeAnimation * animation = *it;
-//				printf(">>> blend: %s wei: %f inDelay: %f\n", animation->GetParent()->name.c_str(), animation->weight, animation->delayTime);
+//				blendedTranslation = key.translation;
+//				blendedRotation = key.rotation;
+//				accumWeight = animation->weight;
+//			}else
+//			{
+//				float32 factor = animation->weight / (accumWeight + animation->weight);
+//				accumWeight += accumWeight;
+//				blendedTranslation.Lerp(blendedTranslation, key.translation, factor);
+//				blendedRotation.Slerp(blendedRotation, key.rotation, factor);
 //			}
+//			//key.GetMatrix(localTransform);
 //		}
-	}
-	
-	UpdateTransform();
-	uint32 size = (uint32)children.size();
-	for (uint32 c = 0; c < size; ++c)
-	{
-		children[c]->Update(timeElapsed);
-	}
-
-	//printf("- node: %s tr: %f %f %f\n", name.c_str(), localTransform.data[12], localTransform.data[13], localTransform.data[14]); 
-	
-	
-	inUpdate = false;
-
-    if (!removedCache.empty()) 
-    {
-        for (std::deque<SceneNode*>::iterator t = removedCache.begin(); t != removedCache.end(); ++t)
-        {
-            RemoveNode(*t);
-        }
-        removedCache.clear();
-    }
-    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
-}
+//		Matrix4 localTransformTrans;
+//		Matrix4 localTransformRot;
+//		Matrix4 localTransformFinal;
+//		localTransformTrans.CreateTranslation(blendedTranslation);
+//		localTransformRot = blendedRotation.GetMatrix();
+//		
+//		localTransform = localTransformRot * localTransformTrans;
+//		
+////		if (nodeAnimations.size() != 1)
+////		{
+////			printf("-- blended node: %s\n", name.c_str());
+////			std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
+////			for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
+////			{
+////				SceneNodeAnimation * animation = *it;
+////				printf(">>> blend: %s wei: %f inDelay: %f\n", animation->GetParent()->name.c_str(), animation->weight, animation->delayTime);
+////			}
+////		}
+//	}
+//	
+//	UpdateTransform();
+//	uint32 size = (uint32)children.size();
+//	for (uint32 c = 0; c < size; ++c)
+//	{
+//		children[c]->Update(timeElapsed);
+//	}
+//
+//	//printf("- node: %s tr: %f %f %f\n", name.c_str(), localTransform.data[12], localTransform.data[13], localTransform.data[14]); 
+//	
+//	
+//	inUpdate = false;
+//
+//    if (!removedCache.empty()) 
+//    {
+//        for (std::deque<SceneNode*>::iterator t = removedCache.begin(); t != removedCache.end(); ++t)
+//        {
+//            RemoveNode(*t);
+//        }
+//        removedCache.clear();
+//    }
+//    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
+//}
 
 void SceneNode::UpdateTransformNow()
 {

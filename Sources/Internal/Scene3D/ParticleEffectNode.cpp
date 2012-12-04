@@ -133,8 +133,6 @@ void ParticleEffectNode::StopWhenEmpty(bool value)
 
 void ParticleEffectNode::Update(float32 timeElapsed)
 {
-    SceneNode::Update(timeElapsed);
-
     int32 childrenCount = GetChildrenCount();
     for (int32 i = 0; i < childrenCount; i ++)
     {

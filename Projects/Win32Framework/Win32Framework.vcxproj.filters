@@ -124,6 +124,9 @@
     <Filter Include="Internal\Render\Material">
       <UniqueIdentifier>{08283861-a6e9-4e98-88c8-2cfd8d75e035}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Scene3D\Components">
+      <UniqueIdentifier>{1700d8b4-3d61-41d7-b54a-7dfd9c355a4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1188,6 +1191,12 @@
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\Transform.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2026,6 +2035,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp">
       <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
