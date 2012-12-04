@@ -267,7 +267,7 @@ void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel 
 {
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
     landscape->SetTexture(level, texturePathname);
-    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), Format("Landscape. TextureLevel %d", level));
+    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
 
     if(LandscapeNode::TEXTURE_TILE_FULL != level)
     {
