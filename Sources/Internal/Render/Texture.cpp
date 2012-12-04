@@ -816,7 +816,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
     {
         glGenRenderbuffers(1, &tx->rboID);
         glBindRenderbuffer(GL_RENDERBUFFER, tx->rboID);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, dx, dy);
+        glRenderbufferStorage(GL_RENDERBUFFER, DAVA_GL_DEPTH_COMPONENT, dx, dy);
     }
 		
 	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
