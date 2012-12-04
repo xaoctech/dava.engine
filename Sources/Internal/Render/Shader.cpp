@@ -511,9 +511,9 @@ GLint Shader::LinkProgram(GLuint prog)
     
     RENDER_VERIFY(glLinkProgram(prog));
     
-    GLint logLength;
+    GLint logLength = 0;
     RENDER_VERIFY(glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength));
-    if (logLength > 0)
+    if (logLength > 1)
     {
         GLchar *log = (GLchar *)malloc(logLength);
         RENDER_VERIFY(glGetProgramInfoLog(prog, logLength, &logLength, log));
@@ -561,9 +561,9 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     RENDER_VERIFY(glCompileShader(*shader));					// compile shader
     
 //#if defined(DEBUG)
-    GLint logLength;
+    GLint logLength = 0;
     RENDER_VERIFY(glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength));
-    if (logLength > 0)
+    if (logLength > 1)
     {
         GLchar *log = (GLchar *)malloc(logLength);
         RENDER_VERIFY(glGetShaderInfoLog(*shader, logLength, &logLength, log));
