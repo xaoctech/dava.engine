@@ -123,10 +123,11 @@ public:
 	void VisibilityToolSetArea();
 	void VisibilityToolSetAreaSize(uint32 size);
 
+    void ProcessIsSolidChanging();
+    
 protected:
 
     void InitControls();
-    void PropcessIsSolidChanging();
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();

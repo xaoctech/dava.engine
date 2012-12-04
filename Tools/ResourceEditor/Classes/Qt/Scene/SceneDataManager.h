@@ -40,7 +40,8 @@ public:
 	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
 	DAVA::Texture*		TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
-	void EnumerateTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	static void EnumerateTextures(DAVA::SceneNode *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	static void EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials);
 
 signals:
 	void SceneActivated(SceneData *scene);
@@ -56,7 +57,10 @@ protected:
 
     SceneData * FindDataForScene(EditorScene *scene);
     
+	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::LandscapeNode *forNode);
+	static void CollectMeshTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::MeshInstanceNode *forNode);
 
+	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 	void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
 

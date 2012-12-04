@@ -1,10 +1,12 @@
 #include "TextureListModel.h"
+#include "Scene/SceneDataManager.h"
 #include <QPainter>
 #include <QFileInfo>
 
 TextureListModel::TextureListModel(QObject *parent /* = 0 */) 
 	: QAbstractListModel(parent)
 	, curSortMode(TextureListModel::SortByName)
+	, curFilterBySelectedNode(false)
 {}
 
 TextureListModel::~TextureListModel()
@@ -109,6 +111,14 @@ void TextureListModel::setFilter(QString filter)
 	endResetModel();
 }
 
+void TextureListModel::setFilterBySelectedNode(bool enabled)
+{
+	beginResetModel();
+	curFilterBySelectedNode = enabled;
+	applyFilterAndSort();
+	endResetModel();
+}
+
 void TextureListModel::setSortMode(TextureListModel::TextureListSortMode sortMode)
 {
 	beginResetModel();
@@ -123,16 +133,24 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 
 	clear();
 
-	// Parse scene and find it all Textures
+	DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
+	SceneDataManager::EnumerateTextures(scene, texturesInNode);
+
+	for(DAVA::Map<DAVA::String, DAVA::Texture *>::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 	{
-		// Search textures in materials
-		searchTexturesInMaterial(scene);
+		const DAVA::String descPath = t->first;
 
-		// Search textures in landscapes
-		searchTexturesInLandscapes(scene);
+		// if there is no the same descriptor and this file exists
+		if(DAVA::FileSystem::Instance()->IsFile(descPath))
+		{
+			DAVA::TextureDescriptor * descriptor = DAVA::TextureDescriptor::CreateFromFile(descPath);
 
-		// Search textures in mesh
-		searchTexturesInMesh(scene);
+			if(NULL != descriptor)
+			{
+				textureDescriptorsAll.push_back(descriptor);
+				texturesAll[descriptor] = t->second;
+			}
+		}
 	}
 
 	applyFilterAndSort();
@@ -142,131 +160,31 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 
 void TextureListModel::setHighlight(DAVA::SceneNode *node)
 {
+	beginResetModel();
+
 	textureDescriptorsHighlight.clear();
-	if(textureDescriptorsFiltredSorted.size() > 0)
+
+	DAVA::Map<DAVA::String, DAVA::Texture *> texturesInNode;
+	SceneDataManager::EnumerateTextures(node, texturesInNode);
+
+	for(DAVA::Map<DAVA::String, DAVA::Texture *>::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
 	{
-		textureDescriptorsHighlight.push_back(textureDescriptorsFiltredSorted[0]);
-		emit dataChanged(createIndex(0, 0), createIndex(textureDescriptorsFiltredSorted.size() - 1, 1));
-	}
-}
-
-void TextureListModel::searchTexturesInMaterial(DAVA::SceneNode *parentNode)
-{
-	if(NULL != parentNode)
-	{
-		DAVA::Vector<DAVA::Material *> allMaterials;
-
-		parentNode->GetDataNodes(allMaterials);
-		for(int i = 0; i < (int) allMaterials.size(); ++i)
-		{
-			DAVA::Material *material = allMaterials[i];
-
-			if(NULL != material)
-			{
-				for(int t = 0; t < DAVA::Material::TEXTURE_COUNT; ++t)
-				{
-					if(material->type == DAVA::Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP &&
-						t > DAVA::Material::TEXTURE_DIFFUSE)
-					{
-						continue;
-					}
-
-					addTexture(material->GetTextureName((DAVA::Material::eTextureLevel) t), material->GetTexture((DAVA::Material::eTextureLevel) t));
-				}
-			}
-		}
-	}
-}
-
-void TextureListModel::searchTexturesInLandscapes(DAVA::SceneNode *parentNode)
-{
-	if(NULL != parentNode)
-	{
-		DAVA::Vector<DAVA::LandscapeNode *> allLandscapes;
-
-		parentNode->GetChildNodes(allLandscapes);
-		for(int i = 0; i < (int) allLandscapes.size(); ++i)
-		{
-			DAVA::LandscapeNode *landscape = allLandscapes[i];
-
-			if(NULL != landscape)
-			{
-				for(int t = 0; t < DAVA::LandscapeNode::TEXTURE_COUNT; ++t)
-				{
-					addTexture(landscape->GetTextureName((DAVA::LandscapeNode::eTextureLevel) t), landscape->GetTexture((DAVA::LandscapeNode::eTextureLevel) t));
-				}
-			}
-		}
-	}
-}
-
-void TextureListModel::searchTexturesInMesh(DAVA::SceneNode *parentNode)
-{
-	if(NULL != parentNode)
-	{
-		DAVA::Vector<DAVA::MeshInstanceNode *> allMeshes;
-
-		parentNode->GetChildNodes(allMeshes);
-		for(int i = 0; i < (int) allMeshes.size(); ++i)
-		{
-			DAVA::MeshInstanceNode *mesh = allMeshes[i];
-
-			if(NULL != mesh)
-			{
-				for(int t = 0; t < mesh->GetLightmapCount(); ++t)
-				{
-					DAVA::MeshInstanceNode::LightmapData *ldata = mesh->GetLightmapDataForIndex(t);
-					if(NULL != ldata)
-					{
-						addTexture(ldata->lightmapName, ldata->lightmap);
-					}
-				}
-			}
-		}
-	}
-}
-
-void TextureListModel::addTexture(const DAVA::String &descPath, DAVA::Texture *texture)
-{
-	if(DAVA::FileSystem::GetExtension(descPath) != DAVA::TextureDescriptor::GetDescriptorExtension())
-	{
-		return;
-	}
-
-	if(!descPath.empty())
-	{
-		bool alreadyInVector = false;
-
-		// search if there is no the same descriptorPath
+		const DAVA::String descPath = t->first;
 		for(int i = 0; i < textureDescriptorsAll.size(); ++i)
 		{
-			if(descPath == textureDescriptorsAll[i]->pathname)
+			if(textureDescriptorsAll[i]->pathname == descPath)
 			{
-				alreadyInVector = true;
-				break;
-			}
-		}
-
-		// if there is no the same descriprot and this file exists
-		if(!alreadyInVector && DAVA::FileSystem::Instance()->IsFile(descPath))
-		{
-			DAVA::TextureDescriptor * descriptor = DAVA::TextureDescriptor::CreateFromFile(descPath);
-
-			if(NULL != descriptor)
-			{
-				// if there is no such texture in vector - add it
-				if(-1 == textureDescriptorsAll.indexOf(descriptor))
-				{
-					textureDescriptorsAll.push_back(descriptor);
-
-					if(NULL != descriptor)
-					{
-						texturesAll[descriptor] = texture;
-					}
-				}
+				textureDescriptorsHighlight.push_back(textureDescriptorsAll[i]);
 			}
 		}
 	}
+
+	if(curFilterBySelectedNode)
+	{
+		applyFilterAndSort();
+	}
+
+	endResetModel();
 }
 
 void TextureListModel::clear()
@@ -289,7 +207,8 @@ void TextureListModel::applyFilterAndSort()
 
 	for(int i = 0; i < (int) textureDescriptorsAll.size(); ++i)
 	{
-		if(curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.find(curFilter.toStdString()))
+		if( (curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.find(curFilter.toStdString())) &&	// text filter
+			(!curFilterBySelectedNode || textureDescriptorsHighlight.contains(textureDescriptorsAll[i])))						// cur selected node filter
 		{
 			textureDescriptorsFiltredSorted.push_back(textureDescriptorsAll[i]);
 		}

@@ -124,6 +124,8 @@ public:
 
     void UpdateModificationPanel(void);
 
+    void ProcessIsSolidChanging();
+
 private:
     
     void InitControls();
