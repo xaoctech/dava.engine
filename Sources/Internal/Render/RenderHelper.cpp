@@ -453,7 +453,7 @@ void RenderHelper::DrawBox(const AABBox3 & box)
 	
 	void RenderHelper::DrawCornerBox(AABBox3 bbox)
 	{
-		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f;
+		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f + 0.05f;
 		Vector3 off = Vector3(offs, offs, offs);
 		AABBox3 newBox(bbox.min - off, bbox.max + off);
 		offs *= 2.0f;
