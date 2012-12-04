@@ -52,7 +52,6 @@ void SkeletonNode::EnableDebugDraw(bool _enableDebugDraw)
 
 void SkeletonNode::Update(float32 timeElapsed)
 {
-	BoneNode::Update(timeElapsed);
 
 //	//if (isMatrixesChanged)
 //	{

@@ -107,7 +107,6 @@ void LightNode::Update(float32 timeElapsed)
         needUpdateVars = true;
         GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
     }
-    SceneNode::Update(timeElapsed);
     
     if (needUpdateVars)
     {

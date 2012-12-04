@@ -96,8 +96,6 @@ void RotatingCubeNode::SetupCube()
 
 void RotatingCubeNode::Update(float32 timeElapsed)
 {
-
-	SceneNode::Update(timeElapsed);
 }
 	
 void RotatingCubeNode::Draw()

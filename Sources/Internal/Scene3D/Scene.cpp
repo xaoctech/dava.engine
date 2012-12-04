@@ -447,8 +447,6 @@ void Scene::Update(float timeElapsed)
 		SceneNodeAnimationList * anim = animations[animationIndex];
 		anim->Update(timeElapsed);
 	}
-	
-	SceneNode::Update(timeElapsed);
 
 	referenceNodeSuffixChanged = false;
 	

@@ -169,8 +169,6 @@ void MeshInstanceNode::Update(float32 timeElapsed)
 			UpdateLights();
 		}
     }
-    SceneNode::Update(timeElapsed);
-    
     if (needUpdateTransformBox)
 	{
         bbox.GetTransformedBox(worldTransform, transformedBox);
@@ -200,11 +198,11 @@ void MeshInstanceNode::Draw()
     if (flags & NODE_CLIPPED_THIS_FRAME)
     {
         // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
-        return;
+        //return;
     }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
+	Matrix4 meshFinalMatrix = *(transform->matrix) * prevMatrix;
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
 //    /* float32 proj[16];
