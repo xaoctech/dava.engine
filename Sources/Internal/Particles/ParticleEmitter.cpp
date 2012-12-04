@@ -47,6 +47,7 @@ ParticleEmitter::ParticleEmitter()
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
+	rotationMatrix.Identity();
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
@@ -326,7 +327,10 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
         
         Vector3 vel = Vector3(1.0f, 0.0f, 0.0f);
         if(emissionVector)
+		{
             vel = emissionVector->GetValue(0);
+			vel = vel*rotationMatrix;
+		}
         
         Vector3 rotVect(0, 0, 1);
         float32 phi = PI*2*(float32)Random::Instance()->RandFloat();
