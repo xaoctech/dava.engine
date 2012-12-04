@@ -200,7 +200,7 @@ void WASDCameraController::Input(UIEvent * event)
 			{
 			case DVKEY_Z:
 				{
-					LockAtSelection();
+					LookAtSelection();
 					break;
 				}
 			case DVKEY_T:
@@ -310,7 +310,7 @@ void WASDCameraController::Input(UIEvent * event)
 	}	
 }
     
-void WASDCameraController::LockAtSelection()
+void WASDCameraController::LookAtSelection()
 {
     DVASSERT(currScene);
     
@@ -338,7 +338,7 @@ void WASDCameraController::LockAtSelection()
     const Vector3 & c = box.GetCenter();
     
     camera->SetTarget(c);
-    camera->SetPosition(c - (dir * boxSize));
+    camera->SetPosition(c - (dir * (boxSize + camera->GetZNear() * 1.5f)));
 }
     
 
