@@ -428,6 +428,11 @@
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
@@ -442,6 +447,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
@@ -732,6 +738,10 @@
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
