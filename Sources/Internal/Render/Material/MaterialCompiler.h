@@ -41,6 +41,7 @@ namespace DAVA
 class MaterialGraph;
 class MaterialGraphNode;
 class NMaterial;
+class PolygonGroup;
 
 struct MaterialShaders
 {
@@ -64,7 +65,7 @@ public:
         ERROR_UNUSED_NODE,
     };
     
-    eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, NMaterial ** resultMaterial);
+    eCompileResult Compile(MaterialGraph * materialGraph, PolygonGroup * polygonGroup, uint32 maxLights, NMaterial ** resultMaterial);
     eCompileError GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader);
 
 private:
@@ -88,12 +89,15 @@ private:
     void FixNodesWithoutProperInputs();
 
     MaterialGraph * materialGraph;
+    PolygonGroup * polygonGroup;
     NMaterial * currentMaterial;
     
     String pixelShaderCode;
     String vertexShaderCode;
     String finalPixelShaderCode;
     String finalVertexShaderCode;
+    String materialCompiledVshName;
+    String materialCompiledFshName;
     
     Map<String, Shader::eUniformType> vertexShaderAdditionaUniforms;
     Map<String, Shader::eUniformType> pixelShaderAdditionaUniforms;

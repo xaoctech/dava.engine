@@ -31,6 +31,7 @@
 #include "Render/Material/MaterialGraph.h"
 #include "Render/Material/MaterialGraphNode.h"
 #include "Render/Material/NMaterial.h"
+#include "Render/3D/PolygonGroup.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Shader.h"
 #include "Utils/StringFormat.h"
@@ -38,10 +39,11 @@
 namespace DAVA
 {
     
-MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _materialGraph, uint32 maxLights, NMaterial ** resultMaterial)
+MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _materialGraph, PolygonGroup * _polygonGroup, uint32 maxLights, NMaterial ** resultMaterial)
 {
     materialGraph = _materialGraph;
-    MaterialGraphNode * shifter1 = materialGraph->GetNodeByName("shifter1");
+    polygonGroup = _polygonGroup;
+    
     MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
     if (!rootResultNode)
     {
@@ -55,11 +57,19 @@ MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * _mate
 
     MaterialGraphNode::RecursiveSetRealUsageBack(rootResultNode);
     MaterialGraphNode::RecursiveSetRealUsageForward(rootResultNode);
+
+    materialCompiledVshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".vsh");
+    materialCompiledFshName = materialGraph->GetMaterialPath() + FileSystem::ReplaceExtension(materialGraph->GetMaterialFilename(), ".fsh");
+
+#if 1
+    materialCompiledVshName = "~doc:/temp.vsh";
+    materialCompiledFshName = "~doc:/temp.fsh";
+#endif
     
     GenerateCode(materialGraph);
     
     Shader * shader = new Shader();
-    shader->Load("~doc:/temp.vsh", "~doc:/temp.fsh");
+    shader->Load(materialCompiledVshName, materialCompiledFshName);
     shader->Recompile();
     
     currentMaterial->SetShader(0, shader);
@@ -105,12 +115,13 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
     String originalVertexShader = FileSystem::Instance()->ReadFileContents(vertexShaderPath);
     String originalFragmentShader = FileSystem::Instance()->ReadFileContents(fragmentShaderPath);
     
-    File * resultVsh = File::Create("~doc:/temp.vsh", File::CREATE | File::WRITE);
+    
+    File * resultVsh = File::Create(materialCompiledVshName, File::CREATE | File::WRITE);
     resultVsh->WriteString(finalVertexShaderCode, false); // Save without null terminator
     resultVsh->WriteString(originalVertexShader);
     SafeRelease(resultVsh);
     
-    File * resultFsh = File::Create("~doc:/temp.fsh", File::CREATE | File::WRITE);
+    File * resultFsh = File::Create(materialCompiledFshName, File::CREATE | File::WRITE);
     resultFsh->WriteString(finalPixelShaderCode, false); // Save without null terminator
     resultFsh->WriteString(originalFragmentShader);
     //resultFsh->Write(fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
@@ -281,6 +292,33 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
         finalPixelShaderCode += Format("#define NUM_TEX_COORDS %d\n", materialGraph->GetUsedTextureCoordsCount());
         
         finalVertexShaderCode += Format("#define NUM_TEX_COORDS %d\n", materialGraph->GetUsedTextureCoordsCount());
+        
+        
+        /*
+         #define ATTRIBUTE_POSITION
+         #define ATTRIBUTE_NORMAL
+         #define ATTRIBUTE_TEX0
+         #define ATTRIBUTE_TEX1
+         #define ATTRIBUTE_TANGENT
+         #define ATTRIBUTE_COLOR
+         */
+        
+        if (polygonGroup->GetFormat() & EVF_VERTEX)
+            finalVertexShaderCode += "#define ATTRIBUTE_POSITION\n";
+        if (polygonGroup->GetFormat() & EVF_NORMAL)
+            finalVertexShaderCode += "#define ATTRIBUTE_NORMAL\n";
+        if (polygonGroup->GetFormat() & EVF_TEXCOORD0)
+            finalVertexShaderCode += "#define ATTRIBUTE_TEX0\n";
+        if (polygonGroup->GetFormat() & EVF_TEXCOORD1)
+            finalVertexShaderCode += "#define ATTRIBUTE_TEX1\n";
+        if (polygonGroup->GetFormat() & EVF_TEXCOORD2)
+            finalVertexShaderCode += "#define ATTRIBUTE_TEX2\n";
+        if (polygonGroup->GetFormat() & EVF_TEXCOORD3)
+            finalVertexShaderCode += "#define ATTRIBUTE_TEX3\n";
+        if (polygonGroup->GetFormat() & EVF_TANGENT)
+            finalVertexShaderCode += "#define ATTRIBUTE_TANGENT\n";
+        if (polygonGroup->GetFormat() & EVF_COLOR)
+            finalVertexShaderCode += "#define ATTRIBUTE_COLOR\n";
         
         if (connectorEmissive)
             finalPixelShaderCode += Format("#define IN_EMISSIVE %s\n", connectorEmissive->GetNode()->GetName().c_str());
