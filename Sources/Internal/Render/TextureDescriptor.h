@@ -45,7 +45,7 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 3;
+    static const int8 CURRENT_VERSION = 4;
     
 public:
 	enum eOptionsState
@@ -121,11 +121,13 @@ protected:
     void WriteGeneralSettings(File *file) const;
     
     void ReadCompression(File *file, Compression &compression);
+	void ReadCompressionWithDateOld(File *file, Compression &compression);
     void WriteCompression(File *file, const Compression &compression) const;
     
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
     void LoadVersion2(int32 signature, File *file);
+	void LoadVersion3(int32 signature, File *file);
     
 public:
     
