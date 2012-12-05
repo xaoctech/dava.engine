@@ -548,7 +548,7 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 		descriptor->textureFileFormat = PNG_FILE;
         
         String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-		descriptor->Save(descriptorPathname);
+//		descriptor->Save(descriptorPathname);
     }
     
     SafeRelease(descriptor);
@@ -635,6 +635,8 @@ bool SceneValidator::IsTextureDescriptorPath(const String &path)
 void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 {
 	FileList * fileList = new FileList(folderPathname);
+    if(!fileList) return;
+    
 	for (int32 fi = 0; fi < fileList->GetCount(); ++fi)
 	{
 		if (fileList->IsDirectory(fi))
