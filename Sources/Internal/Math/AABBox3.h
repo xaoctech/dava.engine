@@ -104,6 +104,10 @@ public:
 	//! \brief copy operator of bounding box class
 	inline AABBox3 & operator =(const AABBox3 & _bbox);
 
+	//! \brief compare operator of bounding box class
+	bool operator == (const AABBox3 & _bbox) const { return (min == _bbox.min) && (max == _bbox.max); }
+
+
     void GetTransformedBox(const Matrix4 & transform, AABBox3 & result) const;
     void GetCorners(Vector3 * cornersArray) const;
 };

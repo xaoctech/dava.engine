@@ -160,7 +160,7 @@ void SceneData::LockAtSelectedNode()
 {
     if(cameraController)
     {
-        cameraController->LockAtSelection();
+        cameraController->LookAtSelection();
     }
 }
 

@@ -59,8 +59,15 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	{
 		String filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
 		FILE * file = fopen(filename.c_str(), "ab");
-		fwrite(tmp, sizeof(char), strlen(tmp), file);
-		fclose(file);
+		if(!file)
+		{
+			file = fopen(filename.c_str(), "wb");
+		}
+		if(file)
+		{
+			fwrite(tmp, sizeof(char), strlen(tmp), file);
+			fclose(file);
+		}
 	}
 }
 

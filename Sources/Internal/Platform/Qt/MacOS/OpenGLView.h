@@ -47,6 +47,7 @@ using namespace DAVA;
 	bool willQuit;
     
     bool keyboardLocked;
+    bool needToSkipMouseUp;
     
     Vector2 windowOffset;
 }
