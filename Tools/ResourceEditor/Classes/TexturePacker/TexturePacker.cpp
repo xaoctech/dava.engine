@@ -675,11 +675,20 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
     image->DitherAlpha();
     image->Write(exportedPathname.c_str());
     
-    if (NULL != descriptor && FORMAT_INVALID != descriptor->pvrCompression.format)
+    if (NULL != descriptor  )
     {
-        PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, *descriptor);
-        FileSystem::Instance()->DeleteFile(exportedPathname);
+		if(FORMAT_INVALID != descriptor->pvrCompression.format)
+		{
+			PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, *descriptor);
+			FileSystem::Instance()->DeleteFile(exportedPathname);
+		}
+		else if(FORMAT_INVALID != descriptor->dxtCompression.format)
+		{
+
+		}
+        
     }
+
     
 #if defined TEXTURE_SPLICING_ENABLED
     //TODO: need to enable texture splicing of 2D resources

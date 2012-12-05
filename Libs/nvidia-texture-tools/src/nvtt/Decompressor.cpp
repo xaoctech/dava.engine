@@ -82,6 +82,7 @@ void Decompressor::Private::erase()
 	if(NULL != m_dds)
 	{
 		delete m_dds;
+		m_dds = NULL;
 	}
 }
 
@@ -104,12 +105,12 @@ bool Decompressor::Private::getDecompressedSize(unsigned int * width, unsigned i
 }
 		
 //NVTT_API bool process(void * data, unsigned int size, unsigned int mimpmapNumber) const;
-bool Decompressor::process(void * data, unsigned int size) const
+bool Decompressor::process(void * data, unsigned int size, unsigned int mipmapNumber) const
 {
-	return m.decompress( data, size);
+	return m.decompress( data, size, mipmapNumber);
 }
 
-bool Decompressor::Private::decompress(void * data, unsigned int size) const
+bool Decompressor::Private::decompress(void * data, unsigned int size, unsigned int mipmapNumber) const
 {
 	if(NULL == m_dds || NULL == data || 0 == size)
 	{
@@ -117,7 +118,7 @@ bool Decompressor::Private::decompress(void * data, unsigned int size) const
 	}
 
 	nv::Image img;
-	m_dds->mipmap(&img, 0, 0); 
+	m_dds->mipmap(&img, 0, mipmapNumber); 
 	
 	Color32 * innerContent = img.pixels();
 	uint innerSize = img.width() * img.height() ;
@@ -129,26 +130,7 @@ bool Decompressor::Private::decompress(void * data, unsigned int size) const
 		return false;
 	}
 
-	if(img.format() == Image::Format_ARGB)
-	{
-		memcpy(data, innerContent, rawSize);
-	}
-	else if(img.format() == Image::Format_RGB)
-	{
-		for(uint i = 0 ; i < innerSize; ++i)
-		{
-			Color32 * sourcePointer = innerContent + i;
-			Color32 * destPointer = (Color32 *)data + i;
-			(*destPointer).r = (*sourcePointer).r;
-			(*destPointer).g = (*sourcePointer).g;
-			(*destPointer).b = (*sourcePointer).b;
-			(*destPointer).b = 0xff;
-		}
-	}
-	else
-	{
-		return false;
-	}
+	memcpy(data, innerContent, rawSize);
 
 	return true;
 }
