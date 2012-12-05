@@ -87,6 +87,7 @@ private:
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
+	void updatePropertiesWarning();
 
 	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
 
