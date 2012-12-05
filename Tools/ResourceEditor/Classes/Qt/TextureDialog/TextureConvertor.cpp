@@ -211,23 +211,40 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	// TODO:
 	// convert
 	// ...
+	if(NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
+	{
+		
+		item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+		item->descriptorCopy.Save();
 
-	// debug -->
+		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		
+		std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(sourcePath);
 
-	QRect r(0, 0, 200, 200);
-	convertedImage = QImage(r.size(), QImage::Format_ARGB32);
+		if(davaImages.size() > 0)
+		{
+			DAVA::Image *davaImage = davaImages[0];
+			convertedImage = fromDavaImage(davaImage);
+		}
 
-	QFont font;
-	font.setPointSize(18);
+		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+		
+	}
+	else
+	{
+		QRect r(0, 0, 200, 200);
+		convertedImage = QImage(r.size(), QImage::Format_ARGB32);
 
-	QPainter p(&convertedImage);
-	p.setBrush(QColor(0,255,0));
-	p.setPen(QColor(155, 0, 0));
-	p.setFont(font);
+		QFont font;
+		font.setPointSize(18);
 
-	p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+		QPainter p(&convertedImage);
+		p.setBrush(QColor(0,255,0));
+		p.setPen(QColor(155, 0, 0));
+		p.setFont(font);
 
-	// <--
+		p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return convertedImage;

@@ -1,2010 +1,636 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="External">
-      <UniqueIdentifier>{4e46aae7-90c4-4fd8-a85a-2d1a2fc60b22}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D">
-      <UniqueIdentifier>{243367d4-6971-4ce9-b57f-98bb38b5327d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Collision">
-      <UniqueIdentifier>{8751008f-5d5d-41f3-b973-1de0262469c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Collision\Shapes">
-      <UniqueIdentifier>{28292208-57d4-4037-bb1c-15914fefccb9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Common">
-      <UniqueIdentifier>{fb5de757-8ccc-492e-9709-dfa38396a4f7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Dynamics">
-      <UniqueIdentifier>{c59a56b8-c802-465e-81fd-0c16a423613f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Dynamics\Contacts">
-      <UniqueIdentifier>{4934f1b4-31f7-4dd5-abe6-ea18522a5409}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\Box2D\Dynamics\Joints">
-      <UniqueIdentifier>{ce06b154-b8a0-4b9b-a2e1-f330d7eb8340}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal">
-      <UniqueIdentifier>{ffd93e08-e98d-4f64-85eb-9e318a1b40d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Animation">
-      <UniqueIdentifier>{e4419564-37b6-45e5-af66-ca4a81622456}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Base">
-      <UniqueIdentifier>{78ebdcc1-0929-4b86-9891-f78d4fbb9178}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Collision">
-      <UniqueIdentifier>{17a22bce-5d03-4a5c-ada6-12268db296c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Core">
-      <UniqueIdentifier>{3e5b59fe-6846-4fdd-881c-c8d9f18d09cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Debug">
-      <UniqueIdentifier>{1e8caf25-d8a7-4c69-b0ac-93af317d160d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\FileSystem">
-      <UniqueIdentifier>{7447acc9-870d-4018-b9a0-1a2a7b8c584e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Input">
-      <UniqueIdentifier>{44e01c50-024b-4c52-b3a3-3417ec7ae4a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Math">
-      <UniqueIdentifier>{db136e4a-2d63-4b5c-b6b2-c7e83a7850f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Network">
-      <UniqueIdentifier>{ecc1ae9a-59b4-4d30-a5ae-f3963d830982}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Particles">
-      <UniqueIdentifier>{8f9ce965-d39f-4679-9a1c-8d6228b1a1d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform">
-      <UniqueIdentifier>{3dee422f-a3ac-43fb-a3ca-32d2b8ed05e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\TemplateiOS">
-      <UniqueIdentifier>{f5d0f973-b101-49d7-83f5-444c3cebefb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\TemplateMacOS">
-      <UniqueIdentifier>{b69fca1f-b86a-415a-a523-a7bb307c59f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\TemplateWin32">
-      <UniqueIdentifier>{f21eeb05-df0b-4fd6-bdff-8d0c36593c3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Render">
-      <UniqueIdentifier>{1693bde0-540d-4fad-9656-a799282ef4a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Render\2D">
-      <UniqueIdentifier>{6208229d-d42b-43fc-ad3d-4c24b9fc25d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Render\3D">
-      <UniqueIdentifier>{08999e7d-bd4f-4ac8-8753-c98708969699}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Scene2D">
-      <UniqueIdentifier>{fb37a545-8edc-4cc5-81e9-c2b046c44999}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Scene3D">
-      <UniqueIdentifier>{850b119c-ce65-4e7c-9e9e-edb33274ccd0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Sound">
-      <UniqueIdentifier>{150754bb-93ac-47c1-bde1-ed32e9fe0765}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\UI">
-      <UniqueIdentifier>{0b935a97-3f7e-4a1c-8f71-377eadc9b136}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Utils">
-      <UniqueIdentifier>{190e9a7b-9cd9-4a83-86a7-64af948b776d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Render\Effects">
-      <UniqueIdentifier>{61100d52-442d-45fd-b286-f3baf188d2bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Scene3D\Imposter">
-      <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Autotesting">
-      <UniqueIdentifier>{9c48b596-2306-460c-82bd-f3a4279468b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Entity">
-      <UniqueIdentifier>{8f66ae0b-aa43-4803-a2d8-3f693710b865}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Database">
-      <UniqueIdentifier>{aacba949-a20d-4b44-821d-8170cd6d7aa2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Entity\Components">
-      <UniqueIdentifier>{a5ec0fc5-fc27-47e4-90f3-6665b4a190a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\Qt">
-      <UniqueIdentifier>{9ccf6d8e-2ffb-4645-862d-59b75598b00e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\Qt\Win32">
-      <UniqueIdentifier>{802c9b10-286b-4081-add3-d26ed34ac6d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\Qt\MacOS">
-      <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollideCircle.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollideEdge.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollidePolygon.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2Collision.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2Distance.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2DynamicTree.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2TimeOfImpact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2ChainShape.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2CircleShape.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2EdgeShape.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2PolygonShape.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2BlockAllocator.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2Math.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2Settings.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2StackAllocator.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Body.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2ContactManager.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Fixture.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Island.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2World.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2WorldCallbacks.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2CircleContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2Contact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ContactSolver.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonContact.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2DistanceJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2FrictionJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2GearJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2Joint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2MouseJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PulleyJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
+    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\AnimatedObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\Animation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\AnimationManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\Interpolation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\KeyframeAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\LinearAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseMath.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseObjectChecker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\DynamicObjectCache.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\EventDispatcher.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Message.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\ObjectFactory.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionObject2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionPolygons.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\Collisions.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\ApplicationCore.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\Core.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\Logger.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\ResourceArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\InputSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\AABBox2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\BezierSpline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Math2D.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Polygon2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\Particle.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\SystemTimer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\D3D9Helpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\dxtHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerDX.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerFactory.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\StaticIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\StaticVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Texture.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\TextureDX9.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\Font.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\FontManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\FTFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\GraphicsFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\Sprite.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\PolygonGroup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\StaticMesh.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\UberShader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundDataProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundInstance.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundOVProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundWVProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIButton.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControl.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControlBackground.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControlSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIEvent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIFadeTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIFileSystemDialog.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchy.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyCell.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHoleTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIJoypad.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIListCell.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UILoadingTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIMoveInTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
-      <Filter>External\Box2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.h">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2Collision.h">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2Distance.h">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2DynamicTree.h">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2TimeOfImpact.h">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2BlockAllocator.h">
-      <Filter>External\Box2D\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2GrowableStack.h">
-      <Filter>External\Box2D\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2Math.h">
-      <Filter>External\Box2D\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2Settings.h">
-      <Filter>External\Box2D\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2StackAllocator.h">
-      <Filter>External\Box2D\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Body.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2ContactManager.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Fixture.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Island.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2TimeStep.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2World.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2WorldCallbacks.h">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h">
-      <Filter>Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h">
-      <Filter>Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h">
-      <Filter>Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\AnimationManager.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\Interpolation.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\KeyframeAnimation.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\LinearAnimation.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Animation\NamedAnimationsList.h">
-      <Filter>Internal\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\BaseMath.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\BaseObject.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\BaseObjectChecker.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\BaseTypes.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\DynamicObjectCache.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\EventDispatcher.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Exception.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Message.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\ObjectCreator.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\ObjectFactory.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\RefPtr.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Singleton.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\StaticSingleton.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionObject2.h">
-      <Filter>Internal\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionPolygons.h">
-      <Filter>Internal\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Collision\Collisions.h">
-      <Filter>Internal\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Core\ApplicationCore.h">
-      <Filter>Internal\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Core\Core.h">
-      <Filter>Internal\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.h">
-      <Filter>Internal\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.h">
-      <Filter>Internal\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Core\DisplayMode.h">
-      <Filter>Internal\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssert.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\List.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileList.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileSystem.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchive.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationIPhone.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\Logger.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\VariantType.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\XMLParser.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlArchive.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlParser.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h">
-      <Filter>Internal\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Input\AccelerometeriPhone.h">
-      <Filter>Internal\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Circle.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Color.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Math2D.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Math2DTemplateClasses.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\MathConstants.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\MathHelpers.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Matrix2.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Matrix3.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Matrix4.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\OOBBox.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Plane.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Polygon2.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Polygon3.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Quaternion.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Ray.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Rect.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Sphere.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Spline.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Vector.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\BaseNetworkConnection.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\BTNetworkConnection.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnection.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnectionIPhone.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\NetworkDelegate.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\NetworkPacket.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\TCPServer.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Network\WFNetworkConnection.h">
-      <Filter>Internal\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\Particle.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h">
-      <Filter>Internal\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\SystemTimer.h">
-      <Filter>Internal\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h">
-      <Filter>Internal\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLView.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLViewController.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES1Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES2Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ESRenderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\HelperAppDelegate.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\AppDelegate.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\MainWindowController.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\OpenGLView.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\D3D9Helpers.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Light.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderEffect.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderManager.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Shader.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Texture.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\VertexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\Font.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\FontManager.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\FTFont.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\GraphicsFont.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\GridSprite.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\Sprite.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlock.h">
-      <Filter>Internal\Render\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.h">
-      <Filter>Internal\Render\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\3D\PolygonGroup.h">
-      <Filter>Internal\Render\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\3D\StaticMesh.h">
-      <Filter>Internal\Render\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DHelper.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObject.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectManager.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundChannel.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundDataProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundInstance.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundOVProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundWVProvider.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIButton.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIControl.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIControlBackground.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIControlSystem.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIEvent.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIFadeTransition.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchy.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyCell.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyNode.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIHoleTransition.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIJoypad.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIList.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIListCell.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UILoadingTransition.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIMoveInTransition.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManager.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhone.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhoneImpl.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\Random.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\StringFormat.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\ResourceArchive.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h">
-      <Filter>Internal\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2ChainShape.h">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2CircleShape.h">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2EdgeShape.h">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2PolygonShape.h">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2Shape.h">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2DistanceJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2FrictionJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2GearJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2Joint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2MouseJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PulleyJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.h">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2CircleContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2Contact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ContactSolver.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonContact.h">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderDataObject.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.h">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Data.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\UberShader.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h">
-      <Filter>Internal\Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Input\InputSystem.h">
-      <Filter>Internal\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h">
-      <Filter>Internal\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h">
-      <Filter>Internal\Render\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
-      <Filter>Internal\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
-      <Filter>Internal\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h">
-      <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h">
-      <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
-      <Filter>Internal\Platform\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Observer.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Observable.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\dxtHelper.h">
-      <Filter>Internal\Render</Filter>
-    <ClInclude Include="..\..\Sources\Internal\Base\Meta.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\FastName.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h">
-      <Filter>Internal\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2Collision.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2Distance.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2DynamicTree.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\b2TimeOfImpact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2ChainShape.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2CircleShape.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2EdgeShape.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2PolygonShape.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Collision\Shapes\b2Shape.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2BlockAllocator.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2GrowableStack.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2Math.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2Settings.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Common\b2StackAllocator.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Body.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2ContactManager.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Fixture.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2Island.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2TimeStep.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2World.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\b2WorldCallbacks.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2CircleContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2Contact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ContactSolver.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonContact.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2DistanceJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2FrictionJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2GearJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2Joint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2MouseJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PrismaticJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PulleyJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RevoluteJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.h" />
+    <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FastName.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FastNameMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Meta.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Observable.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Observer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
+    <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
+    <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\AnimationManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\Interpolation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\KeyframeAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\LinearAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\NamedAnimationsList.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseMath.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseObjectChecker.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\DynamicObjectCache.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\EventDispatcher.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Exception.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Message.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\ObjectCreator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\ObjectFactory.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\RefPtr.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Singleton.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\StaticSingleton.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionObject2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionPolygons.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\Collisions.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\ApplicationCore.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\Core.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\DisplayMode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\List.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileList.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationIPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\Logger.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\ResourceArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\VariantType.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\XMLParser.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlParser.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\AccelerometeriPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\InputSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Circle.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Color.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Math2D.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Math2DTemplateClasses.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\MathConstants.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\MathHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix4.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\OOBBox.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Plane.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Polygon2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Polygon3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Quaternion.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Ray.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Rect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Sphere.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Spline.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Vector.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\BaseNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\BTNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnectionIPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkDelegate.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkPacket.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\TCPServer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\WFNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\Particle.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\SystemTimer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLView.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLViewController.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES1Renderer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES2Renderer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ESRenderer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\HelperAppDelegate.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\AppDelegate.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\MainWindowController.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\OpenGLView.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\D3D9Helpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\dxtHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Light.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderDataObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Texture.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\UberShader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\VertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\Font.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\FontManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\FTFont.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\GraphicsFont.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\GridSprite.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\Sprite.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\PolygonGroup.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\StaticMesh.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundChannel.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundDataProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundInstance.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundOVProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundWVProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIButton.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControl.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControlBackground.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControlSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIEvent.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIFadeTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchy.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyCell.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHoleTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIJoypad.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIList.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIListCell.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UILoadingTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIMoveInTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhoneImpl.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\StringFormat.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollideCircle.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollideEdge.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2CollidePolygon.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2Collision.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2Distance.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2DynamicTree.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2TimeOfImpact.cpp">
-      <Filter>External\Box2D\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2BlockAllocator.cpp">
-      <Filter>External\Box2D\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2Math.cpp">
-      <Filter>External\Box2D\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2Settings.cpp">
-      <Filter>External\Box2D\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Common\b2StackAllocator.cpp">
-      <Filter>External\Box2D\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Body.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2ContactManager.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Fixture.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2Island.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2World.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\b2WorldCallbacks.cpp">
-      <Filter>External\Box2D\Dynamics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp">
-      <Filter>Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\AnimatedObject.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\Animation.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\AnimationManager.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\Interpolation.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\KeyframeAnimation.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Animation\LinearAnimation.cpp">
-      <Filter>Internal\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\BaseMath.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\BaseObjectChecker.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\DynamicObjectCache.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\EventDispatcher.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\Message.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\ObjectFactory.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionObject2.cpp">
-      <Filter>Internal\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionPolygons.cpp">
-      <Filter>Internal\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Collision\Collisions.cpp">
-      <Filter>Internal\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Core\ApplicationCore.cpp">
-      <Filter>Internal\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Core\Core.cpp">
-      <Filter>Internal\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS.cpp">
-      <Filter>Internal\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp">
-      <Filter>Internal\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp">
-      <Filter>Internal\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp">
-      <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp">
-      <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileList.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileSystem.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchive.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\Logger.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp">
-      <Filter>Internal\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\AABBox2.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\BezierSpline.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\Math2D.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\Matrix4.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\Polygon2.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp">
-      <Filter>Internal\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp">
-      <Filter>Internal\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp">
-      <Filter>Internal\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\Particle.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp">
-      <Filter>Internal\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\SystemTimer.cpp">
-      <Filter>Internal\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp">
-      <Filter>Internal\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp">
-      <Filter>Internal\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\D3D9Helpers.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManager.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerDX.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\StaticIndexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\StaticVertexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Texture.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\TextureDX9.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\Font.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\FontManager.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\FTFont.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\GraphicsFont.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\Sprite.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlock.cpp">
-      <Filter>Internal\Render\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp">
-      <Filter>Internal\Render\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\3D\PolygonGroup.cpp">
-      <Filter>Internal\Render\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\3D\StaticMesh.cpp">
-      <Filter>Internal\Render\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DHelper.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObject.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectManager.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundDataProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundInstance.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundOVProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundWVProvider.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIButton.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIControl.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIControlBackground.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIControlSystem.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIEvent.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIFadeTransition.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchy.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyCell.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyNode.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIHoleTransition.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIJoypad.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIList.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIListCell.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UILoadingTransition.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIMoveInTransition.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerFactory.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\ResourceArchive.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2ChainShape.cpp">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2CircleShape.cpp">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2EdgeShape.cpp">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Collision\Shapes\b2PolygonShape.cpp">
-      <Filter>External\Box2D\Collision\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2GearJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2Joint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.cpp">
-      <Filter>External\Box2D\Dynamics\Joints</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2Contact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
-      <Filter>External\Box2D\Dynamics\Contacts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.cpp">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp">
-      <Filter>Internal\Render\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\UberShader.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp">
-      <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\UIFileSystemDialog.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Input\InputSystem.cpp">
-      <Filter>Internal\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp">
-      <Filter>Internal\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp">
-      <Filter>Internal\Render\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp">
-      <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
-      <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
-      <Filter>Internal\Scene3D\Imposter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp">
-      <Filter>Internal\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp">
-      <Filter>Internal\Database</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp">
-      <Filter>Internal\Database</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp">
-      <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp">
-      <Filter>Internal\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
-      <Filter>Internal\Autotesting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
-      <Filter>Internal\Platform\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\dxtHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
-      <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm" />
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm" />
   </ItemGroup>
 </Project>

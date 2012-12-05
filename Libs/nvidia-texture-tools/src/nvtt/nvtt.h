@@ -310,7 +310,7 @@ namespace nvtt
 
 		NVTT_API bool getDecompressedSize(unsigned int * width, unsigned int * height) const;
 
-		NVTT_API bool process(void * data, unsigned int size) const;
+		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
 		NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
 		

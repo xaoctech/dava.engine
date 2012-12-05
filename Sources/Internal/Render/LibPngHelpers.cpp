@@ -47,9 +47,6 @@
 #include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
 
-//tmp
-#include "Render\dxtHelper.h"
-
 using namespace DAVA;
 
 
@@ -277,7 +274,6 @@ bool LibPngWrapper::IsPngFile(File *file)
 
 void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
-	DxtWrapper::WriteDxtFile(file_name, width, height, data, format);
 	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
 	

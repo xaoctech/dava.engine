@@ -23,7 +23,7 @@ namespace nvtt
 
 		bool getDecompressedSize(unsigned int * width, unsigned int * height) const;
 
-		bool decompress(void * data, unsigned int size) const;
+		bool decompress(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
 		bool getMipMapCount(unsigned int * mipmapCount) const;
 

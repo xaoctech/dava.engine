@@ -32,7 +32,7 @@ PixelFormat DxtWrapper::GetPixelFormat(const char* filePathname)
 	}
 
 	res = dec.getCompressionFormat(&innerFormat);
-	//dec.erase();
+	dec.erase();
 
 	if(!res)
 	{
@@ -67,20 +67,22 @@ PixelFormat DxtWrapper::GetPixelFormat(const char* filePathname)
 	return retValue;
 }
 
-bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat)
+bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmapLevelNumber)
 {
 	if(NULL == fileName)
 		return false;
 
-	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5) )
+	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM) )
 		return false;
-
-	printf("* Writing DXT(*.DDS) file (%d x %d): %s\n", width, height, fileName);
-
 	
+	uint32 imgDataSize = width * height *4;
+
+
+	ConvertFromBGRAtoRGBA(data, imgDataSize);
+
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(TextureType_2D, width, height);
-	inputOptions.setMipmapGeneration(false);
+	//inputOptions.setMipmapGeneration(true, mipmapLevelNumber);
 	inputOptions.setMipmapData(data, width, height);
 
 	OutputOptions outputOptions;
@@ -108,6 +110,7 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 		break;
 	case FORMAT_DXT5NM:
 		innerComprFormat = nvtt::Format_DXT5n;
+		inputOptions.setNormalMap(true);
 		break;
 	case FORMAT_RGBA8888:
 		innerComprFormat = nvtt::Format_RGBA;
@@ -119,9 +122,8 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 	compressionOptions.setFormat(innerComprFormat);
 	
 	Compressor compressor;
-	compressor.process(inputOptions, compressionOptions, outputOptions);
-	
-	return true;
+
+	return compressor.process(inputOptions, compressionOptions, outputOptions);
 }
 
 bool DxtWrapper::IsDxtFile(const char *filePathname)
@@ -130,7 +132,7 @@ bool DxtWrapper::IsDxtFile(const char *filePathname)
 	bool res = false;
 
 	res = dec.initWithDDSFile(filePathname);
-	//dec.erase();
+	dec.erase();
 
 	return res;
 }
@@ -148,13 +150,19 @@ uint32 DxtWrapper::GetMipMapLevelsCount(const char *fileName)
 		}
 	}
 
-	//dec.erase();
+	dec.erase();
 	return number;
 }
 
-Image * DxtWrapper::ReadDxtFile(const char *fileName)
+bool DxtWrapper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet)
 {
-	Image * retVal = NULL;
+	for(uint32 i = 0; i < imageSet.size(); ++i)
+	{
+		SafeRelease(imageSet[i]);
+	}
+	
+
+	bool retVal = false;
 	if(NULL == fileName )
 	{
 		return retVal;
@@ -163,33 +171,59 @@ Image * DxtWrapper::ReadDxtFile(const char *fileName)
 
 	if(dec.initWithDDSFile(fileName))
 	{
-		uint32 width = 0;
-		uint32 height = 0;
-		if(dec.getDecompressedSize(&width, &height))
+		uint32 mipmapNumber = 0;
+		if(dec.getMipMapCount(&mipmapNumber))
 		{
-			if(0 != width || 0 != height)
+			imageSet.clear();
+			
+			uint32 width = 0;
+			uint32 height = 0;
+			if(dec.getDecompressedSize(&width, &height))
 			{
-				Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
-				uint32 size = width * height * 4;
-				if(dec.process(innerImage->data, size))
+				if(0 == width || 0 == height)
 				{
-					retVal = innerImage;
+					retVal = false;
 				}
 				else
 				{
-					SafeRelease(innerImage);
+					for(uint32 i = 0; i < mipmapNumber; ++i)
+					{
+						if(i != 0)
+						{
+							height /= 2;
+							width /= 2;
+						}
+						Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
+						uint32 size = width * height * 4;
+						if(dec.process(innerImage->data, size, i))
+						{
+							ConvertFromBGRAtoRGBA(innerImage->data, size);
+							imageSet.push_back(innerImage);
+							retVal = true;
+						}
+						else
+						{
+							SafeRelease(innerImage);
+							retVal = false;
+							break;
+						}
+					}
 				}
 			}
 		}
 	}
 
-	//dec.erase();
+	dec.erase();
 	return retVal;
 }
 
 bool DxtWrapper::getDecompressedSize(const char *fileName, uint32 * width, uint32 * height)
 {
 	bool retVal = false;
+	if(NULL == fileName )
+	{
+		return retVal;
+	}
 	nvtt::Decompressor dec;
 	if(dec.initWithDDSFile(fileName))
 	{
@@ -198,45 +232,40 @@ bool DxtWrapper::getDecompressedSize(const char *fileName, uint32 * width, uint3
 			retVal = true;
 		}
 	}
-
-
-	//dec.erase();
+	dec.erase();
 	return retVal;
 }
 
 void DxtWrapper::Test()
 {
-	const char* fnamePng = "C:\\dds\\1\\3.png";
-	const char* fnameDds = "C:\\dds\\1\\3.dds";
+	const char* fnamePng = "C:\\dds\\1\\nm.png";
+	const char* fnameDds = "C:\\dds\\1\\nm.dds";
+	const char* fnameDds1 = "C:\\dds\\1\\nm1.dds";
 	bool res = false;
 	
-	//Image * img = new Image();
-	//int pngInt = LibPngWrapper::ReadPngFile(fnamePng, img);
-	//
-	//uint8* imgData = img->data;
-	//uint32 imgDataSize = img->width * img->height *4;
-	//for(uint32 i = 0; i < imgDataSize; i+=4)
-	//{
-	//	//RGBA -> BGRA
-	//	uint8* rComponent = imgData + i;
-	//	
-	//	uint8* bComponent = imgData + i + 2;
-	//	uint8 tmp = *rComponent;
-	//	*rComponent = *bComponent;
-	//	*bComponent = tmp;
-	//}
+	//Image testImg;
+	//LibPngWrapper::ReadPngFile(fnamePng, &testImg);
+
 	Texture* pngTex = Texture::CreateFromFile(fnamePng);
 	Sprite* pngSprite = Sprite::CreateFromTexture(pngTex, 0, 0, (float32)pngTex->width, (float32)pngTex->height);
-	Image * img  = CreateImageAsBGRA8888(pngSprite);
-	res = WriteDxtFile(fnameDds, img->width, img->height, img->data, PixelFormat::FORMAT_DXT1);
+	
+	Image *imgToSaveTest = pngSprite->GetTexture()->CreateImageFromMemory();   
+
+	Image * img  = CreateImageAsRGBA8888(pngSprite);
+
+	res = WriteDxtFile(fnameDds, img->width, img->height, img->data, PixelFormat::FORMAT_DXT5NM, 0);
 
 	res = IsDxtFile(fnameDds);
 	
 	uint32 mapCount = GetMipMapLevelsCount(fnameDds);
 
-	Image * retImg = ReadDxtFile(fnameDds);
-	LibPngWrapper::WritePngFile("C:\\dds\\1\\1_out.png",retImg->width,retImg->height,retImg->data,PixelFormat::FORMAT_RGBA8888);
+	Vector<Image *> vec;
 
+	res = ReadDxtFile(fnameDds, vec);
+	for(uint32 i = 0; i < vec.size(); ++i)
+	{
+		LibPngWrapper::WritePngFile("C:\\dds\\1\\nm_out.png",vec[i]->width, vec[i]->height, vec[i]->data, PixelFormat::FORMAT_RGBA8888);
+	}
 	PixelFormat retFormat = GetPixelFormat(fnameDds);
 
 	uint32 w = 0;
@@ -245,9 +274,8 @@ void DxtWrapper::Test()
 }
 
 
-Image * DxtWrapper::CreateImageAsBGRA8888(Sprite *sprite)
+Image * DxtWrapper::CreateImageAsRGBA8888(Sprite *sprite)
 {
-
     Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
     RenderManager::Instance()->SetRenderTarget(renderTarget);
     
@@ -258,20 +286,22 @@ Image * DxtWrapper::CreateImageAsBGRA8888(Sprite *sprite)
     
     Texture *renderTargetTexture = renderTarget->GetTexture();
     Image *resultImage = renderTargetTexture->CreateImageFromMemory();
-    
-	uint8* imgData = resultImage->data;
-	uint32 imgDataSize = resultImage->width * resultImage->height *4;
-	for(uint32 i = 0; i < imgDataSize; i+=4)
+
+    SafeRelease(renderTarget);
+    return resultImage;
+}
+
+void DxtWrapper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
+{
+	for(uint32 i = 0; i < size; i+=4)
 	{
 		//RGBA -> BGRA
 	
-		uint8* rComponent = imgData + i;
+		uint8* rComponent = data + i;
 		
-		uint8* bComponent = imgData + i + 2;
+		uint8* bComponent = data + i + 2;
 		uint8 tmp = *rComponent;
 		*rComponent = *bComponent;
 		*bComponent = tmp;
 	}
-    SafeRelease(renderTarget);
-    return resultImage;
 }

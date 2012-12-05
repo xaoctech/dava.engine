@@ -20,46 +20,28 @@ public:
     
 	static bool IsDxtFile(const char *fileName);
 
-	static bool WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat);
+	//input data only in RGBA8888
+	static bool WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmapLevelNumber);
 
 	static uint32 GetMipMapLevelsCount(const char *fileName);
 
-	static Image * ReadDxtFile(const char *fileName);
+	static bool ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet);
 
 	static PixelFormat GetPixelFormat(const char* fileName);
 
 	static bool getDecompressedSize(const char *fileName, uint32 * width,  uint32 * height);
 
 	static void Test();
-	
-	static Image * CreateImageAsBGRA8888(Sprite *sprite);
 
+private:
+
+	
+	
+	static Image * CreateImageAsRGBA8888(Sprite *sprite);
+
+	static void ConvertFromBGRAtoRGBA(uint8* data, uint32 size);
 };
-/*
-class PngImage : public BaseObject
-{
-public:
-	PngImage();
-	~PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const char * filename);
-	bool Save(const char * filename);
-	
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
 
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;		
-};*/
 };
 
 #endif // __DXT_HELPER_H__

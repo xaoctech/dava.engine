@@ -143,7 +143,7 @@ void DXTTest::ReloadSprites()
 
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/PNG/number_%d.png", currentTest)));
 	//TODO: dxtSprite should be loaded from *.dds file instead of png. Change ext after engine is able to load *.dds files
-    dxtSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/DXT/number_%d.png", currentTest)));
+    dxtSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/DXT/number_%d.dds", currentTest)));
     decompressedPNGSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/DecompressedPNG/number_%d.png", currentTest)));
 }
 
