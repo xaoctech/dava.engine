@@ -164,27 +164,25 @@ void WASDCameraController::SetScene(Scene *_scene)
 		return;
 	Camera * camera = currScene->GetCurrentCamera();	
     if (!camera)return;
-	
+
 	Vector3 dir = camera->GetDirection();
 	
-	Vector2 dirXY(dir.x, dir.y);
-	Vector2 dirYZ(dir.y, dir.z);	
-	dirXY.Normalize();
-	dirYZ.Normalize();
+ 	Vector2 dirXY(dir.x, dir.y);
+ 	dirXY.Normalize();
+ 	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
 	
-	viewYAngle = -RadToDeg(dirYZ.Angle());
+	Vector3 dirXY0(dir.x, dir.y, 0.0f);
+	dirXY0.Normalize();
 
-	if(viewYAngle > MAX_ANGLE)
-		viewYAngle -= 360.f;
-
-	if(viewYAngle < -MAX_ANGLE)
-		viewYAngle += 360.f;
-
-	
-	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0f);
+	float32 cosA = dirXY0.DotProduct(dir);
+	viewYAngle = RadToDeg(acos(cosA));
+ 
+ 	if(viewYAngle > MAX_ANGLE)
+ 		viewYAngle -= 360;
+ 
+ 	if(viewYAngle < -MAX_ANGLE)
+ 		viewYAngle += 360;
 }
-	
-	
 	
 void WASDCameraController::Input(UIEvent * event)
 {
@@ -200,7 +198,7 @@ void WASDCameraController::Input(UIEvent * event)
 			{
 			case DVKEY_Z:
 				{
-					LockAtSelection();
+					LookAtSelection();
 					break;
 				}
 			case DVKEY_T:
@@ -310,7 +308,7 @@ void WASDCameraController::Input(UIEvent * event)
 	}	
 }
     
-void WASDCameraController::LockAtSelection()
+void WASDCameraController::LookAtSelection()
 {
     DVASSERT(currScene);
     
@@ -338,7 +336,7 @@ void WASDCameraController::LockAtSelection()
     const Vector3 & c = box.GetCenter();
     
     camera->SetTarget(c);
-    camera->SetPosition(c - (dir * boxSize));
+    camera->SetPosition(c - (dir * (boxSize + camera->GetZNear() * 1.5f)));
 }
     
 

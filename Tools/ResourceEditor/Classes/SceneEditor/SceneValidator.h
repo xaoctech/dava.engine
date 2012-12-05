@@ -42,7 +42,7 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName);
+    void ValidateTextureAndShowErrors(Texture *texture, const String &textureName, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
@@ -50,7 +50,7 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     
-    void ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const String &texturePathname, const String &validatedObjectName, Set<String> &errorsLog);
 
 
     /*

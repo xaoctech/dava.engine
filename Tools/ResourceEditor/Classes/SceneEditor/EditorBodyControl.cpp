@@ -380,7 +380,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 						bool C = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_C);
 						if(!Z && !C)
 						{
-							PropcessIsSolidChanging();
+							ProcessIsSolidChanging();
 						}
 
 						break;
@@ -1125,7 +1125,7 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
 
 
 
-void EditorBodyControl::PropcessIsSolidChanging()
+void EditorBodyControl::ProcessIsSolidChanging()
 {
     SceneNode *selectedNode = scene->GetSelection();
     if(selectedNode)

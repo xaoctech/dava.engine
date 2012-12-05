@@ -197,35 +197,43 @@ bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
 }
 
 
-void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String &validatedObjectName)
+void SceneValidator::ValidateTextureAndShowErrors(Texture *texture, const String &textureName, const String &validatedObjectName)
 {
     errorMessages.clear();
 
-    ValidateTexture(texture, validatedObjectName, errorMessages);
+    ValidateTexture(texture, textureName, validatedObjectName, errorMessages);
     ShowErrorDialog(errorMessages);
 }
 
-void SceneValidator::ValidateTexture(Texture *texture, const String &validatedObjectName, Set<String> &errorsLog)
+void SceneValidator::ValidateTexture(Texture *texture, const String &texturePathname, const String &validatedObjectName, Set<String> &errorsLog)
 {
 	if(!texture) return;
+	
+	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texturePathname);
+	String textureInfo = path + " for object: " + validatedObjectName;
 
-	bool pathIsCorrect = ValidatePathname(texture->GetPathname(), validatedObjectName);
-	if(!pathIsCorrect)
+	if(texture == Texture::GetPinkPlaceholder())
 	{
-		String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-		errorsLog.insert("Wrong path of: " + path + " for object: " + validatedObjectName);
+		errorsLog.insert("Can't load texture: " + textureInfo);
+	}
+
+	bool pathIsCorrect = ValidatePathname(texturePathname, validatedObjectName);
+	if(pathIsCorrect)
+	{
+		if(!IsFBOTexture(texture))
+		{
+			// if there is no descriptor file for this texture - generate it
+			CreateDescriptorIfNeed(texturePathname);
+		}
+	}
+	else
+	{
+		errorsLog.insert("Wrong path of: " + textureInfo);
 	}
 	
 	if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
 	{
-		String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-		errorsLog.insert("Wrong size of " + path + " for object: " + validatedObjectName);
-	}
-    
-	// if there is no descriptor file for this texture - generate it
-	if(pathIsCorrect && !IsFBOTexture(texture))
-	{
-		CreateDescriptorIfNeed(texture->GetPathname());
+		errorsLog.insert("Wrong size of " + textureInfo);
 	}
 }
 
@@ -236,7 +244,9 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
-        if(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
+        if(		(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i) 
+			||	(LandscapeNode::TEXTURE_TILE_FULL == (LandscapeNode::eTextureLevel)i 
+				&&	landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK))
         {
             continue;
         }
@@ -249,7 +259,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
 		}
         
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
+        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), landscape->GetTextureName((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
     }
     
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -290,7 +300,8 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
             meshNode->GetLightmapDataForIndex(iLight)->lightmapName = TextureDescriptor::GetDescriptorPathname(lightmapName);
 		}
         
-        ValidateTexture(meshNode->GetLightmapDataForIndex(iLight)->lightmap, Format("Mesh %s. Lightmap %d", meshNode->GetName().c_str(), iLight), errorsLog);
+		DAVA::MeshInstanceNode::LightmapData *ln = meshNode->GetLightmapDataForIndex(iLight);
+        ValidateTexture(ln->lightmap, ln->lightmapName, Format("Mesh %s. Lightmap %d", meshNode->GetName().c_str(), iLight), errorsLog);
     }
 }
 
@@ -302,7 +313,7 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
         Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
         if(texture)
         {
-            ValidateTexture(texture, Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
+            ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
             
             // TODO:
             // new texture path

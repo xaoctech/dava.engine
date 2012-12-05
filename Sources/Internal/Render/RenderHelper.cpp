@@ -102,7 +102,7 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
 }
     
     
-void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end)
+void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 lineWidth)
 {
     vertices[0] = start.x;						
     vertices[1] = start.y;
@@ -116,7 +116,14 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end)
     vertexStream->Set(TYPE_FLOAT, 3, 0, vertices);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
+
+#ifdef __DAVAENGINE_OPENGL__
+	glLineWidth(lineWidth);
+#endif
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
+#ifdef __DAVAENGINE_OPENGL__
+	glLineWidth(1.f);
+#endif
 }
 
 
@@ -453,7 +460,7 @@ void RenderHelper::DrawBox(const AABBox3 & box)
 	
 	void RenderHelper::DrawCornerBox(AABBox3 bbox)
 	{
-		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f;
+		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f + 0.05f;
 		Vector3 off = Vector3(offs, offs, offs);
 		AABBox3 newBox(bbox.min - off, bbox.max + off);
 		offs *= 2.0f;
