@@ -115,6 +115,7 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 	// set texture to properties control.
 	// this should be done as a first step
 	ui->textureProperties->setTexture(curTexture, curDescriptor);
+	updatePropertiesWarning();
 
 	// if texture is ok - set it and enable texture views
 	if(NULL != curTexture)
@@ -217,6 +218,23 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 	}
 
 	updateInfoConverted();
+}
+
+void TextureDialog::updatePropertiesWarning()
+{
+	if(NULL != curDescriptor && NULL != curTexture)
+	{
+		QString warningText = "";
+
+		// for PVR4 and PVR2 only square textures are allowed.
+		if((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2) && 
+			curTexture->width != curTexture->height)
+		{
+			warningText += "WARNING: Not square PVR2/PVR4 texture.\n";
+		}
+
+		ui->warningLabel->setText(warningText);
+	}
 }
 
 void TextureDialog::updateConvertedImageAndInfo(const QImage &image)
@@ -429,6 +447,10 @@ void TextureDialog::setupTextureListFilter()
 void TextureDialog::setupTextureProperties()
 {
 	QObject::connect(ui->textureProperties, SIGNAL(propertyChanged(const int)), this, SLOT(texturePropertyChanged(const int)));
+
+	QPalette palette = ui->warningLabel->palette();
+	palette.setColor(ui->warningLabel->foregroundRole(), Qt::red);
+	ui->warningLabel->setPalette(palette);
 }
 
 void TextureDialog::setupTextureViewToolbar()
@@ -567,6 +589,9 @@ void TextureDialog::texturePropertyChanged(const int propGroup)
 		// new texture can be applyed to scene immediately
 		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::NOT_FILE);
 	}
+
+	// update warning message
+	updatePropertiesWarning();
 }
 
 void TextureDialog::textureViewPVR(bool checked)
