@@ -59,7 +59,7 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	{
 		String filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
 		FILE * file = fopen(filename.c_str(), "ab");
-		if(!file)
+		if(file)
 		{
 			fwrite(tmp, sizeof(char), strlen(tmp), file);
 			fclose(file);
@@ -83,7 +83,7 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	{
 		String filename = FileSystem::Instance()->GetCurrentDocumentsDirectory()+logFilename;
 		FILE * file = fopen(filename.c_str(), "ab");
-		if(!file)
+		if(file)
 		{
             fwrite(tmp, sizeof(wchar_t), wcslen(tmp), file);
             fclose(file);
