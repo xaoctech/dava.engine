@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressDialog>
 #include "QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
@@ -33,9 +34,10 @@ private:
     
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
-public  slots:
+public slots:
 	
 	void ProjectChanged();
+	void TextureCheckConvetAndWait();
 
 private slots:
 
@@ -43,13 +45,16 @@ private slots:
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
+	void ConvertWaitDone(QObject *destroyed);
+	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
         
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
+
+	QProgressDialog *convertWaitDialog;
     
     LibraryModel *libraryModel;
-
 };
 
 
