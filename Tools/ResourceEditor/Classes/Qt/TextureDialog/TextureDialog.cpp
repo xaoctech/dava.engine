@@ -25,10 +25,6 @@ TextureDialog::TextureDialog(QWidget *parent)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
 {
-	// init singletones
-	new TextureCache();
-	new TextureConvertor();
-
 	ui->setupUi(this);
 	setWindowFlags(Qt::Window);
 
@@ -82,8 +78,9 @@ TextureDialog::~TextureDialog()
     delete ui;
 
 	DAVA::SafeRelease(curScene);
-	TextureCache::Instance()->Release();
-	TextureConvertor::Instance()->Release();
+
+	// clear cache
+	TextureCache::Instance()->clearAll();
 }
 
 void TextureDialog::closeEvent(QCloseEvent * e)

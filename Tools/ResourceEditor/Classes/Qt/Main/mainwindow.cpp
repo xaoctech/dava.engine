@@ -7,6 +7,7 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
+#include "Classes/Qt/TextureDialog/TextureConvertor.h"
 
 #include "Classes/Qt/Main/PointerHolder.h"
 #include "LibraryModel.h"
@@ -16,21 +17,25 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
+#include "../SceneEditor/CommandLineTool.h"
 
 #include <QApplication>
 #include <QPixmap>
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
-    :   QMainWindow(parent)
-    ,   ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+	, convertWaitDialog(NULL)
 {
     ui->setupUi(this);
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
     
+	new SceneDataManager();
     new QtMainWindowHandler(this);
+
 	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
     QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
@@ -66,6 +71,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	QtMainWindowHandler::Instance()->Release();
+	SceneDataManager::Instance()->Release();
     
     GUIState::Instance()->Release();
     
@@ -361,6 +367,8 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 QtLayer::Instance()->OnResume();
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
+
+			TextureCheckConvetAndWait();
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -368,7 +376,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             if(QtLayer::Instance())
             {
                 QtLayer::Instance()->OnSuspend();
-                Core::Instance()->GetApplicationCore()->OnResume();
+                Core::Instance()->GetApplicationCore()->OnSuspend();
             }
         }
     }
@@ -386,4 +394,39 @@ void QtMainWindow::ProjectChanged()
 	}
 }
 
+void QtMainWindow::TextureCheckConvetAndWait()
+{
+	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && NULL == convertWaitDialog)
+	{
+		// check if we have textures to convert - 
+		// if we have function will return true and conversion will start in new thread
+		// signal 'readyAll' will be emited when convention finishes
+		if(TextureConvertor::Instance()->checkAndCompressAll())
+		{
+			convertWaitDialog = new QProgressDialog(this);
+			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
+			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
+			QObject::connect(convertWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(ConvertWaitDone(QObject *)));
+			convertWaitDialog->setModal(true);
+			convertWaitDialog->setCancelButton(NULL);
+			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
+			convertWaitDialog->setWindowFlags(convertWaitDialog->windowFlags() & (~Qt::WindowCloseButtonHint));
+			convertWaitDialog->show();
+		}
+	}
+}
 
+void QtMainWindow::ConvertWaitDone(QObject *destroyed)
+{
+	convertWaitDialog = NULL;
+}
+
+void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
+{
+	if(NULL != convertWaitDialog)
+	{
+		convertWaitDialog->setRange(0, jobCount);
+		convertWaitDialog->setValue(curJob);
+		convertWaitDialog->setLabelText(curPath);
+	}
+}
