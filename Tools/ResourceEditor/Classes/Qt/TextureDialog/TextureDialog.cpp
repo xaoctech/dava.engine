@@ -459,11 +459,7 @@ void TextureDialog::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Tex
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::NOT_FILE == format || format == curEditorImageFormatForTextures)
 		{
-			DAVA::Texture *newTexture = NULL;
-
-			// TODO: uncomment
-			// newTexture = texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
+			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor->GetSourceTexturePathname(), texture, curEditorImageFormatForTextures);
 
 			if(NULL != newTexture)
 			{
