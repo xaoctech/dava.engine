@@ -11,20 +11,32 @@
 
 #define CONVERT_JOB_COUNT 2
 
-class TextureConvertor : public QObject, public DAVA::Singleton<TextureConvertor>
+class TextureConvertor : public QObject, public DAVA::StaticSingleton<TextureConvertor>
 {
 	Q_OBJECT
 
 public:
 	TextureConvertor();
+	~TextureConvertor();
 
 	void loadOriginal(const DAVA::TextureDescriptor *descriptor);
 	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
+	bool checkAndCompressAll();
+
+signals:
+	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void readyAll();
+
+	void convertStatus(const QString &curPath, int curJob, int jobCount);
+
 private:
 	QFutureWatcher<QImage> loadOriginalWatcher;
 	QFutureWatcher<QImage> convertWatcher[CONVERT_JOB_COUNT];
+	QFutureWatcher<void> convertAllWatcher;
 
 	JobStack jobStackConvert;
 	JobItem *curJobConvert[CONVERT_JOB_COUNT];
@@ -35,9 +47,12 @@ private:
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
 
+	bool converAllStart();
+
 	QImage loadOriginalThread(JobItem *item);
 	QImage convertThreadPVR(JobItem *item);
 	QImage convertThreadDXT(JobItem *item);
+	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures);
 
 	QImage fromDavaImage(DAVA::Image *image);
 
@@ -45,14 +60,13 @@ private:
 	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
 
 signals:
-	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void readyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
-	void convertStatus(const JobItem *jobCur, int jobLeft);
+	void convertStatusFromThread(const QString &curPath, int curJob, int jobCount);
 
 private slots:
 	void threadOriginalFinished();
 	void threadConvertFinished();
+	void threadConvertAllFinished();
+	void threadConvertStatus(const QString &curPath, int curJob, int jobCount);
 
 };
 
