@@ -1113,6 +1113,15 @@
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2062,6 +2071,12 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\DXTConverter.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

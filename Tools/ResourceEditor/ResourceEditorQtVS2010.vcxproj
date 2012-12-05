@@ -430,6 +430,7 @@
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\DataGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
@@ -876,6 +877,7 @@
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\DataGraph.h" />
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\DXTConverter.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />

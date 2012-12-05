@@ -67,9 +67,9 @@ PixelFormat DxtWrapper::GetPixelFormat(const char* filePathname)
 	return retValue;
 }
 
-bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmapLevelNumber)
+bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmupNumber)
 {
-	if(NULL == fileName)
+	if(NULL == fileName )
 		return false;
 
 	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM) )
@@ -82,7 +82,10 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(TextureType_2D, width, height);
-	//inputOptions.setMipmapGeneration(true, mipmapLevelNumber);
+	if(mipmupNumber > 0)
+	{
+		inputOptions.setMipmapGeneration(mipmupNumber);
+	}
 	inputOptions.setMipmapData(data, width, height);
 
 	OutputOptions outputOptions;
@@ -122,8 +125,8 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 	compressionOptions.setFormat(innerComprFormat);
 	
 	Compressor compressor;
-
-	return compressor.process(inputOptions, compressionOptions, outputOptions);
+	bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
+	return ret;
 }
 
 bool DxtWrapper::IsDxtFile(const char *filePathname)
@@ -237,7 +240,7 @@ bool DxtWrapper::getDecompressedSize(const char *fileName, uint32 * width, uint3
 }
 
 void DxtWrapper::Test()
-{
+{/*
 	const char* fnamePng = "C:\\dds\\1\\nm.png";
 	const char* fnameDds = "C:\\dds\\1\\nm.dds";
 	const char* fnameDds1 = "C:\\dds\\1\\nm1.dds";
@@ -270,7 +273,7 @@ void DxtWrapper::Test()
 
 	uint32 w = 0;
 	uint32 h = 0;
-	res = getDecompressedSize(fnameDds, &w, &h);
+	res = getDecompressedSize(fnameDds, &w, &h);*/
 }
 
 
