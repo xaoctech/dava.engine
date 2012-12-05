@@ -6,6 +6,7 @@
 #include "Classes/Qt/Main/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
+#include "Classes/SceneEditor/CommandLineTool.h"
 
 #include "Classes/Qt/Main/PointerHolder.h"
 #include "LibraryModel.h"
@@ -225,11 +226,19 @@ void QtMainWindow::SetupToolBar()
 
 void QtMainWindow::SetupProjectPath()
 {
-    DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
-    while(0 == projectPath.length())
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
-        QtMainWindowHandler::Instance()->OpenProject();
-        projectPath = EditorSettings::Instance()->GetProjectPath();
+        DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+        if(projectPath.empty())
+        {
+            QtMainWindowHandler::Instance()->OpenProject();
+            projectPath = EditorSettings::Instance()->GetProjectPath();
+
+            if(projectPath.empty())
+            {
+                QtLayer::Instance()->Quit();
+            }
+        }
     }
 }
 
