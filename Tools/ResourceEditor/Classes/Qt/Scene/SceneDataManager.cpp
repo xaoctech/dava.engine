@@ -127,12 +127,12 @@ void SceneDataManager::ReleaseScene(EditorScene *scene)
     }
 }
 
-DAVA::int32 SceneDataManager::ScenesCount()
+DAVA::int32 SceneDataManager::SceneCount()
 {
     return (int32)scenes.size();
 }
 
-SceneData *SceneDataManager::GetScene(DAVA::int32 index)
+SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
 {
     DVASSERT((0 <= index) && (index < (int32)scenes.size()));
     

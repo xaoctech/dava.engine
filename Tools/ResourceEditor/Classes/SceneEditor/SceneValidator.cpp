@@ -613,8 +613,8 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
 bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat)
 {
     bool isChanged = false;
-    
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
+
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
         isChanged = descriptor->IsSourceValidForFormat(fileFormat);

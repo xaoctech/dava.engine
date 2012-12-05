@@ -25,7 +25,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "Qt/Scene/SceneDataManager.h"
+#include "TextureDialog/TextureConvertor.h"
 
 
 using namespace DAVA;
@@ -72,8 +72,6 @@ void GameCore::OnAppStarted()
     PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
 #endif
 
-    new SceneDataManager();
-    
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     exporterScreen = new ExporterScreen();
@@ -97,7 +95,6 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
-    SceneDataManager::Instance()->Release();
 	PVRConverter::Instance()->Release();
     SceneValidator::Instance()->Release();
     
@@ -115,11 +112,6 @@ void GameCore::OnSuspend()
 void GameCore::OnResume()
 {
     ApplicationCore::OnResume();
-    
-    if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
-    {
-        SceneDataManager::Instance()->TextureCompressAllNotCompressed();
-    }
 }
 
 void GameCore::OnBackground()
