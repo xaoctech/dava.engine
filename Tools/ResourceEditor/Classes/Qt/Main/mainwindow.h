@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QProgressDialog>
+#include "Base/Singleton.h"
 #include "QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
@@ -10,7 +11,7 @@ class MainWindow;
 }
 
 class LibraryModel;
-class QtMainWindow : public QMainWindow
+class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
     Q_OBJECT
     
@@ -35,9 +36,8 @@ private:
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
 public slots:
-	
 	void ProjectChanged();
-	void TextureCheckConvetAndWait();
+	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 
 private slots:
 

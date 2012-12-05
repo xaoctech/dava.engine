@@ -394,14 +394,14 @@ void QtMainWindow::ProjectChanged()
 	}
 }
 
-void QtMainWindow::TextureCheckConvetAndWait()
+void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
 	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread
 		// signal 'readyAll' will be emited when convention finishes
-		if(TextureConvertor::Instance()->checkAndCompressAll())
+		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
 		{
 			convertWaitDialog = new QProgressDialog(this);
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
@@ -410,7 +410,7 @@ void QtMainWindow::TextureCheckConvetAndWait()
 			convertWaitDialog->setModal(true);
 			convertWaitDialog->setCancelButton(NULL);
 			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
-			convertWaitDialog->setWindowFlags(convertWaitDialog->windowFlags() & (~Qt::WindowCloseButtonHint));
+			convertWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
 			convertWaitDialog->show();
 		}
 	}

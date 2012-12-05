@@ -269,7 +269,8 @@ void TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DA
 			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
 		}
 
-		if(texture->width != texture->height)
+		if((descriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || descriptor->pvrCompression.format == DAVA::FORMAT_PVR2) &&
+			texture->width != texture->height)
 		{
 			QRect r = rect;
 			r.setHeight(FORMAT_INFO_WIDTH * 2);

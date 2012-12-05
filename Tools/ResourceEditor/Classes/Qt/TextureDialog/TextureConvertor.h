@@ -23,7 +23,7 @@ public:
 	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
-	bool checkAndCompressAll();
+	bool checkAndCompressAll(bool forceConvertAll);
 
 signals:
 	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
@@ -47,12 +47,10 @@ private:
 	void jobRunNextConvert();
 	void jobRunNextOriginal();
 
-	bool converAllStart();
-
 	QImage loadOriginalThread(JobItem *item);
 	QImage convertThreadPVR(JobItem *item);
 	QImage convertThreadDXT(JobItem *item);
-	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures);
+	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures, bool forceConverAll);
 
 	QImage fromDavaImage(DAVA::Image *image);
 

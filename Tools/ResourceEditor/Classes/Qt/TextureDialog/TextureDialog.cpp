@@ -4,6 +4,7 @@
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
 #include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "SceneEditor/EditorSettings.h"
@@ -16,6 +17,7 @@
 #include <QToolButton>
 #include <QFileInfo>
 #include <QList>
+#include <QMessageBox>
 
 TextureDialog::TextureDialog(QWidget *parent)
     : QDialog(parent)
@@ -51,6 +53,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setupTextureListToolbar();
 	setupTextureToolbar();
 	setupTextureListFilter();
+	setupTextureConverAllButton();
 	setupTextureProperties();
 	setupTextureViewToolbar();
 
@@ -354,6 +357,11 @@ void TextureDialog::setupStatusBar()
 	ui->mainLayout->addWidget(statusBar);
 
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
+}
+
+void TextureDialog::setupTextureConverAllButton()
+{
+	QObject::connect(ui->convertAll, SIGNAL(pressed()), this, SLOT(textureConverAll()));
 }
 
 void TextureDialog::setupTexturesList()
@@ -754,6 +762,22 @@ void TextureDialog::textureAreaWheel(int delta)
 	v += delta / 20;
 	v -= v % toolbarZoomSlider->singleStep();
 	toolbarZoomSlider->setValue(v);
+}
+
+void TextureDialog::textureConverAll()
+{
+	QMessageBox msgBox(this);
+	msgBox.setText("You chose to convert all textures.");
+	msgBox.setInformativeText("This could take a long time. Would you like to continue?");
+	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Cancel);
+	msgBox.setIcon(QMessageBox::Warning);
+	int ret = msgBox.exec();
+
+	if(ret == QMessageBox::Ok)
+	{
+		QtMainWindow::Instance()->TextureCheckConvetAndWait(true);
+	}
 }
 
 void TextureDialog::convertStatus(const JobItem *jobCur, int jobLeft)
