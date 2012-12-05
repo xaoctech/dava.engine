@@ -4,6 +4,7 @@
 
 int main(int argc, char *argv[])
 {
+	int ret = 0;
     QApplication a(argc, argv);
 
 #if defined (__DAVAENGINE_MACOS__)
@@ -15,8 +16,12 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
-    QtMainWindow w;
-    w.show();
+    new QtMainWindow();
+    QtMainWindow::Instance()->show();
 
-	return a.exec();
+	ret = a.exec();
+
+	QtMainWindow::Instance()->Release();
+
+	return ret;
 }

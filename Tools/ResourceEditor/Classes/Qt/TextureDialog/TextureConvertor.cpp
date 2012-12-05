@@ -78,9 +78,39 @@ void TextureConvertor::loadOriginal(const DAVA::TextureDescriptor *descriptor)
 	}
 }
 
-bool TextureConvertor::checkAndCompressAll()
+bool TextureConvertor::checkAndCompressAll(bool forceConvertAll)
 {
-	return converAllStart();
+	bool ret = false;
+
+	convertAllWatcher.cancel();
+
+	DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures = new DAVA::Map<DAVA::String, DAVA::Texture *>();
+	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
+	{
+		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
+		if(NULL != sceneData)
+		{
+			SceneDataManager::Instance()->EnumerateTextures(sceneData->GetScene(), *allTextures);
+		}
+	}
+
+	if(allTextures->size() > 0)
+	{
+		if(convertAllWatcher.isFinished() || convertAllWatcher.isCanceled())
+		{
+			QFuture<void> f = QtConcurrent::run(this, &TextureConvertor::convertAllThread, allTextures, forceConvertAll);
+			convertAllWatcher.setFuture(f);
+		}
+
+		ret = true;
+	}
+	else
+	{
+		delete allTextures;
+	}
+
+	// true means we have textures to convert
+	return ret;
 }
 
 void TextureConvertor::jobRunNextConvert()
@@ -119,41 +149,6 @@ void TextureConvertor::jobRunNextConvert()
 			emit convertStatus("All done", 0, 0);
 		}
 	}
-}
-
-bool TextureConvertor::converAllStart()
-{
-	bool ret = false;
-
-	convertAllWatcher.cancel();
-
-	DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures = new DAVA::Map<DAVA::String, DAVA::Texture *>();
-	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
-	{
-		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
-		if(NULL != sceneData)
-		{
-			SceneDataManager::Instance()->EnumerateTextures(sceneData->GetScene(), *allTextures);
-		}
-	}
-
-	if(allTextures->size() > 0)
-	{
-		if(convertAllWatcher.isFinished() || convertAllWatcher.isCanceled())
-		{
-			QFuture<void> f = QtConcurrent::run(this, &TextureConvertor::convertAllThread, allTextures);
-			convertAllWatcher.setFuture(f);
-		}
-
-		ret = true;
-	}
-	else
-	{
-		delete allTextures;
-	}
-
-	// true means we have textures to convert
-	return ret;
 }
 
 void TextureConvertor::jobRunNextOriginal()
@@ -287,7 +282,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	return convertedImage;
 }
 
-void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures)
+void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures, bool forceConverAll)
 {
 	if(NULL != allTextures)
 	{
@@ -298,38 +293,46 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 		for(i = allTextures->begin(); i != allTextures->end(); ++i)
 		{
-			if(SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
+			if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
 			{
 				TextureDescriptor *descriptor = i->second->CreateDescriptor();
 
-				QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
-
-				command += "/";
-				command += PVRConverter::Instance()->GetCommandLinePVR(descriptor->GetSourceTexturePathname(), *descriptor).c_str();
-
 				emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
 
-				QProcess p;
-				p.start(command);
-				p.waitForFinished(-1);
+				if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+				{
+					QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
 
-				descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
-				descriptor->Save();
+					command += "/";
+					command += PVRConverter::Instance()->GetCommandLinePVR(descriptor->GetSourceTexturePathname(), *descriptor).c_str();
+
+					QProcess p;
+					p.start(command);
+					p.waitForFinished(-1);
+
+					descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+					descriptor->Save();
+				}
+
 				SafeRelease(descriptor);
 			}
 
-			if(SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
+			if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
 			{
 				TextureDescriptor *descriptor = i->second->CreateDescriptor();
 
-				// TODO:
-				// DXT convert
-				// ...
-
 				emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
 
-				descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
-				descriptor->Save();
+				if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+				{
+					// TODO:
+					// DXT convert
+					// ...
+
+					descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+					descriptor->Save();
+				}
+
 				SafeRelease(descriptor);
 			}
 		}

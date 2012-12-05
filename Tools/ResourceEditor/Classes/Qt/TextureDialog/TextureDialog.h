@@ -73,6 +73,7 @@ private:
 	void setupTexturesList();
 	void setupImagesScrollAreas();
 	void setupTextureListFilter();
+	void setupTextureConverAllButton();
 	void setupStatusBar();
 	void setupTextureProperties();
 	void setupTextureViewToolbar();
@@ -112,6 +113,7 @@ private slots:
 	void textureZoom100(bool checked);
 	void textureZoomFit(bool checked);
 	void textureAreaWheel(int delta);
+	void textureConverAll();
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
 };
