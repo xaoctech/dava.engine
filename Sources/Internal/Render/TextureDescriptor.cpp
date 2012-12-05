@@ -146,7 +146,7 @@ bool TextureDescriptor::Load(const String &filePathname)
     if(version != CURRENT_VERSION)
     {
         ConvertToCurrentVersion(version, signature, file);
-        Save();
+        SafeRelease(file);
         return true;
     }
     
@@ -172,7 +172,7 @@ bool TextureDescriptor::Load(const String &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT(!pathname.empty() && "Can use this method only after calling Load()");
+    DVASSERT_MSG(!pathname.empty(), "Can use this method only after calling Load()");
     Save(pathname);
 }
     
