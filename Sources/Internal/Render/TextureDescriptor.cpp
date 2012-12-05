@@ -146,6 +146,7 @@ bool TextureDescriptor::Load(const String &filePathname)
     if(version != CURRENT_VERSION)
     {
         ConvertToCurrentVersion(version, signature, file);
+        SafeRelease(file);
         return true;
     }
     
