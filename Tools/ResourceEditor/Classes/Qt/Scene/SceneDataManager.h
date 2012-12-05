@@ -38,7 +38,7 @@ public:
     
 	void				TextureCompressAllNotCompressed();
 	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
-	DAVA::Texture*		TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
+	DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
 	static void EnumerateTextures(DAVA::SceneNode *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 	static void EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials);
