@@ -21,7 +21,7 @@ public:
 	static bool IsDxtFile(const char *fileName);
 
 	//input data only in RGBA8888
-	static bool WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmapLevelNumber);
+	static bool WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmupNumber);
 
 	static uint32 GetMipMapLevelsCount(const char *fileName);
 

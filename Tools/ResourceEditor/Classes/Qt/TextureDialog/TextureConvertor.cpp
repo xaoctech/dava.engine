@@ -4,6 +4,7 @@
 #include <QTextOption>
 #include "TextureDialog/TextureConvertor.h"
 #include "SceneEditor/PVRConverter.h"
+#include "SceneEditor/DXTConverter.h"
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -211,26 +212,30 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	// TODO:
 	// convert
 	// ...
+	bool flag = true;
 	if(NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
-		
-		item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
-		item->descriptorCopy.Save();
-
 		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		
-		std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(sourcePath);
-
-		if(davaImages.size() > 0)
+		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		if(outputPath.length() > 0)
 		{
-			DAVA::Image *davaImage = davaImages[0];
-			convertedImage = fromDavaImage(davaImage);
-		}
+			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+			item->descriptorCopy.Save();
+			
+			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
-		for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
-		
+			if(davaImages.size() > 0)
+			{
+				DAVA::Image *davaImage = davaImages[0];
+				convertedImage = fromDavaImage(davaImage);
+			}
+
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+			flag = false;
+		}
 	}
-	else
+
+	if(flag)
 	{
 		QRect r(0, 0, 200, 200);
 		convertedImage = QImage(r.size(), QImage::Format_ARGB32);
