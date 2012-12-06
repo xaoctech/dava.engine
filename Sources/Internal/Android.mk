@@ -115,6 +115,7 @@ LOCAL_SRC_FILES :=  \
                     Particles/ParticleLayer3D.cpp \
                     Particles/ParticlePropertyLine.cpp \
                     Particles/ParticleSystem.cpp \
+                    Particles/ParticleLayerLong.cpp \
                     \
                     Platform/TemplateAndroid/CorePlatformAndroid.cpp \
                     \
@@ -195,6 +196,8 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/LodNode.cpp \
                     Scene3D/MeshInstanceNode.cpp \
                     Scene3D/PathManip.cpp \
+                    Scene3D/ParticleEffectNode.cpp \
+                    Scene3D/ParticleEmitterNode.cpp \
                     Scene3D/ProxyNode.cpp \
                     Scene3D/QuadTree.cpp \
                     Scene3D/ReferenceNode.cpp \
