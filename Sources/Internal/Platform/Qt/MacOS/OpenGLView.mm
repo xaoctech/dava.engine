@@ -94,6 +94,7 @@
 	
     willQuit = false;
     keyboardLocked = true;
+    needToSkipMouseUp = false;
     
     
     windowOffset = Vector2(0.0f, 0.0f);
@@ -365,7 +366,8 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
     [super mouseDown:theEvent];
     
-	[self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
+    if(!needToSkipMouseUp)
+        [self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -390,6 +392,12 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseUp:(NSEvent *)theEvent
 {
     [super mouseUp:theEvent];
+
+    if(needToSkipMouseUp)
+    {
+        needToSkipMouseUp = false;
+        return;
+    }
 
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
@@ -543,6 +551,10 @@ static int32 oldModifersFlags = 0;
 - (void) LockKeyboardInput:(bool) locked
 {
     keyboardLocked = locked;
+    if(keyboardLocked)
+    {
+        needToSkipMouseUp = true;
+    }
 }
 
 

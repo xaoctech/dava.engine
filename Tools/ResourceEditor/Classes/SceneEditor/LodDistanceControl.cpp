@@ -1,8 +1,8 @@
 #include "LodDistanceControl.h"
 #include "ControlsFactory.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../EditorScene.h"
 
 LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, const Rect &rect, bool rectInAbsoluteCoordinates)
@@ -102,7 +102,7 @@ void LodDistanceControl::Update(float32 timeElapsed)
 
 void LodDistanceControl::UpdateDistanceToCamera()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     DVASSERT(activeScene);
 
     EditorScene *scene = activeScene->GetScene();

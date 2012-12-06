@@ -303,3 +303,8 @@ void TextureScrollArea::sutupCustomTiledBg()
 	p.drawRect(QRect(0,0,15,15));
 	p.drawRect(QRect(15,15,15,15));
 }
+
+QImage TextureScrollArea::getImage()
+{
+	return currentTextureImage;
+}

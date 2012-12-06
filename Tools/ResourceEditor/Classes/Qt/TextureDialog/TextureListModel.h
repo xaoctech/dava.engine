@@ -13,42 +13,72 @@ public:
 	enum TextureListSortMode
 	{
 		SortByName,
-		SortBySize
+		SortByFileSize,
+		SortByImageSize,
+		SortByDataSize
 	};
 
 	TextureListModel(QObject *parent = 0);
+	~TextureListModel();
 
 	void setScene(DAVA::Scene *scene);
+	void setHighlight(DAVA::SceneNode *node);
 	void setFilter(QString filter);
+	void setFilterBySelectedNode(bool enabled);
 	void setSortMode(TextureListModel::TextureListSortMode sortMode);
 
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-	void dataReady(const DAVA::Texture *texture);
+	void dataReady(const DAVA::TextureDescriptor *descriptor);
 
 	DAVA::Texture* getTexture(const QModelIndex &index) const;
+	DAVA::Texture* getTexture(const DAVA::TextureDescriptor* descriptor) const;
 	DAVA::TextureDescriptor* getDescriptor(const QModelIndex &index) const;
+	void setTexture(const DAVA::TextureDescriptor* descriptor, DAVA::Texture *texture);
+
+	bool isHighlited(const QModelIndex &index) const;
 
 private:
-	DAVA::Scene *scene;
-	QVector<DAVA::Texture *> texturesAll;
-	QVector<DAVA::Texture *> texturesFiltredSorted;
-	QMap<DAVA::Texture *, DAVA::TextureDescriptor *> textureDescriptors;
+	QVector<DAVA::TextureDescriptor *> textureDescriptorsAll;
+	QVector<DAVA::TextureDescriptor *> textureDescriptorsFiltredSorted;
+	QVector<DAVA::TextureDescriptor *> textureDescriptorsHighlight;
+	QMap<const DAVA::TextureDescriptor *, DAVA::Texture *> texturesAll;
 
 	TextureListSortMode curSortMode;
 	QString	curFilter;
+	bool curFilterBySelectedNode;
 
+	void clear();
 	void applyFilterAndSort();
+};
 
-	void searchTexturesInMaterial(DAVA::SceneNode *parentNode);
-	void searchTexturesInLandscapes(DAVA::SceneNode *parentNode);
-	void searchTexturesInMesh(DAVA::SceneNode *parentNode);
-	void addTexture(DAVA::Texture *texture);
+struct SortFnByName
+{
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+};
 
-	static bool sortFnByName(const DAVA::Texture* t1, const DAVA::Texture* t2);
-	static bool sortFnBySize(const DAVA::Texture* t1, const DAVA::Texture* t2);
+struct SortFnByFileSize
+{
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+};
+
+struct SortFnByImageSize
+{
+	SortFnByImageSize(const TextureListModel *m) : model(m) { }
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+
+protected:
+	const TextureListModel *model;
+};
+
+struct SortFnByDataSize
+{
+	SortFnByDataSize(const TextureListModel *m) : model(m) { }
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+
+protected:
+	const TextureListModel *model;
 };
 
 #endif // __TEXTURE_LIST_MODEL_H__

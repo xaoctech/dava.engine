@@ -70,7 +70,9 @@ String FileSystem::virtualBundlePath = "";
 	{
 		if(virtualBundlePath.empty())
 		{
-			return Format("./Data/%s", relativePathname);
+			String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
+			currentFolder = FileSystem::Instance()->GetCanonicalPath(currentFolder);
+			return Format("%s/Data/%s", currentFolder.c_str(), relativePathname);
 		}
 		else
 		{

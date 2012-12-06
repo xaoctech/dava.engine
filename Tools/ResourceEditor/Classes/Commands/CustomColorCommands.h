@@ -24,6 +24,14 @@ protected:
     virtual void Execute();
 };
 
+class CommandLoadTextureCustomColors: public Command
+{
+public:
+    CommandLoadTextureCustomColors();
+protected:
+    virtual void Execute();
+};
+
 class CommandChangeBrushSizeCustomColors: public Command
 {
 public:

@@ -3,10 +3,10 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-#include "../Qt/GUIState.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 
 using namespace DAVA;
@@ -65,7 +65,7 @@ void CommandHeightmapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
 }
 
@@ -116,7 +116,7 @@ CommandBakeScene::CommandBakeScene()
 
 void CommandBakeScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->BakeScene();
 }
 
@@ -158,7 +158,7 @@ void CommandRulerTool::Execute()
         screen->RulerToolTriggered();
     }
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
     
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());

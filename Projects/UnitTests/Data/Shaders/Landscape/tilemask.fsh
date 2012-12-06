@@ -39,7 +39,7 @@ void main()
     lowp vec4 mask = texture2D(tileMask, varTexCoordOrig);
     lowp vec4 lightMask = texture2D(colorTexture, varTexCoordOrig);
 
-    lowp vec3 color = (mask.r * color0 + mask.g * color1 + mask.b * color2 + mask.a * color3) * lightMask.rgb;
+    lowp vec3 color = (mask.r * color0 + mask.g * color1 + mask.b * color2 + mask.a * color3) * lightMask.rgb * 2.0;
     
 #ifdef EDITOR_CURSOR
 	vec4 colorCursor = texture2D(cursorTexture, varTexCoordCursor);

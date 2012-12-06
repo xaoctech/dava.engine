@@ -3,7 +3,9 @@
 #include "TextureDialog/TextureListDelegate.h"
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
-#include "Qt/QtUtils.h"
+#include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
+#include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
@@ -14,30 +16,38 @@
 #include <QStatusBar>
 #include <QToolButton>
 #include <QFileInfo>
+#include <QList>
+#include <QMessageBox>
 
 TextureDialog::TextureDialog(QWidget *parent)
     : QDialog(parent)
 	, ui(new Ui::TextureDialog)
+	, curScene(NULL)
 	, curTextureView(ViewPVR)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
 {
-	// init singletones
-	new TextureCache();
-	new TextureConvertor();
-
 	ui->setupUi(this);
 	setWindowFlags(Qt::Window);
 
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
 
+	textureListSortModes["File size"] = TextureListModel::SortByFileSize;
+	textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
+	textureListSortModes["Image size"] = TextureListModel::SortByImageSize;
 	textureListSortModes["Name"] = TextureListModel::SortByName;
-	textureListSortModes["Size"] = TextureListModel::SortBySize;
 
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::Texture *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::Texture *, const QImage &)));
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyPVR(const DAVA::Texture *, const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyPVR(const DAVA::Texture *, const DAVA::TextureDescriptor *, const QImage &)));
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyDXT(const DAVA::Texture *, const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyDXT(const DAVA::Texture *, const DAVA::TextureDescriptor *, const QImage &)));
+	// global scene manager signals
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+
+	// convertor signals
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyOriginal(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyPVR(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyPVR(const DAVA::TextureDescriptor *, const QImage &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(readyDXT(const DAVA::TextureDescriptor *, const QImage &)), this, SLOT(textureReadyDXT(const DAVA::TextureDescriptor *, const QImage &)));
 
 	setupStatusBar();
 	setupTexturesList();
@@ -45,6 +55,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setupTextureListToolbar();
 	setupTextureToolbar();
 	setupTextureListFilter();
+	setupTextureConverAllButton();
 	setupTextureProperties();
 	setupTextureViewToolbar();
 
@@ -60,20 +71,27 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setTexture(curTexture, curDescriptor);
 	setTextureView(curTextureView);
 
+	// ui->splitter->setSizes(QList<int>() << 60 << 0 << 40);
+
 	posSaver.Attach(this, __FUNCTION__);
 }
 
 TextureDialog::~TextureDialog()
 {
-	// return listview delegate back to default
-	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
-
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
 
-	TextureCache::Instance()->Release();
-	TextureConvertor::Instance()->Release();
+	DAVA::SafeRelease(curScene);
+
+	// clear cache
+	TextureCache::Instance()->clearAll();
+}
+
+void TextureDialog::closeEvent(QCloseEvent * e)
+{
+	QDialog::closeEvent(e);
+	this->deleteLater();
 }
 
 void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor)
@@ -102,6 +120,7 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 	// set texture to properties control.
 	// this should be done as a first step
 	ui->textureProperties->setTexture(curTexture, curDescriptor);
+	updatePropertiesWarning();
 
 	// if texture is ok - set it and enable texture views
 	if(NULL != curTexture)
@@ -112,11 +131,11 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 
 		// load original image
 		// check if image is in cache
-		QImage img = TextureCache::Instance()->getOriginal(curTexture);
+		QImage img = TextureCache::Instance()->getOriginal(curDescriptor);
 		if(!img.isNull())
 		{
 			// image is in cache, so set it imidiatly (by calling image-ready slot)
-			textureReadyOriginal(curTexture, img);
+			textureReadyOriginal(curDescriptor, img);
 		}
 		else
 		{
@@ -125,7 +144,7 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 
 			// there is no image in cache - start loading it in different thread. image-ready slot will be called 
 			ui->textureAreaOriginal->setImage(QImage());
-			TextureConvertor::Instance()->loadOriginal(texture);
+			TextureConvertor::Instance()->loadOriginal(curDescriptor);
 
 			// show loading bar
 			ui->textureAreaOriginal->waitbarShow(true);
@@ -141,13 +160,11 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 
 void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 {
-	// DAVA::TextureDescriptor *curTextureDescriptor = ui->textureProperties->getTextureDescriptor();
-
 	// if force convert - clear cached images
 	if(forceConvert)
 	{
-		TextureCache::Instance()->clearPVR(curTexture);
-		TextureCache::Instance()->clearDXT(curTexture);
+		TextureCache::Instance()->clearPVR(curDescriptor);
+		TextureCache::Instance()->clearDXT(curDescriptor);
 	}
 
 	curTextureView = view;
@@ -170,16 +187,16 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 			{
 				ui->actionViewPVR->setChecked(true);
 
-				QImage img = TextureCache::Instance()->getPVR(curTexture);
-				if(!img.isNull())
+				QImage img = TextureCache::Instance()->getPVR(curDescriptor);
+				if(!forceConvert && !img.isNull())
 				{
-					// image already in cache, call its ready slot
-					textureReadyPVR(curTexture, curDescriptor, img);
+					// image already in cache, just draw it
+					updateConvertedImageAndInfo(img);
 				}
 				else
 				{
 					// Start PVR convert. Signal will be emited when conversion done
-					TextureConvertor::Instance()->getPVR(curTexture, curDescriptor, forceConvert);
+					TextureConvertor::Instance()->getPVR(curDescriptor, forceConvert);
 				}
 			}
 			break;
@@ -187,16 +204,16 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 			{
 				ui->actionViewDXT->setChecked(true);
 
-				QImage img = TextureCache::Instance()->getDXT(curTexture);
-				if(!img.isNull())
+				QImage img = TextureCache::Instance()->getDXT(curDescriptor);
+				if(!forceConvert && !img.isNull())
 				{
-					// image already in cache, call its ready slot
-					textureReadyDXT(curTexture, curDescriptor, img);
+					// image already in cache, just draw it
+					updateConvertedImageAndInfo(img);
 				}
 				else
 				{
 					// Start DXT convert. Signal will be emited when conversion done
-					TextureConvertor::Instance()->getDXT(curTexture, curDescriptor, forceConvert);
+					TextureConvertor::Instance()->getDXT(curDescriptor, forceConvert);
 				}
 			}
 			break;
@@ -205,6 +222,33 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 		}
 	}
 
+	updateInfoConverted();
+}
+
+void TextureDialog::updatePropertiesWarning()
+{
+	if(NULL != curDescriptor && NULL != curTexture)
+	{
+		QString warningText = "";
+
+		// for PVR4 and PVR2 only square textures are allowed.
+		if((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2) && 
+			curTexture->width != curTexture->height)
+		{
+			warningText += "WARNING: Not square PVR2/PVR4 texture.\n";
+		}
+
+		ui->warningLabel->setText(warningText);
+	}
+}
+
+void TextureDialog::updateConvertedImageAndInfo(const QImage &image)
+{
+	ui->textureAreaPVR->setImage(image);
+	ui->textureAreaPVR->setEnabled(true);
+	ui->textureAreaPVR->waitbarShow(false);
+
+	// set info about converted image
 	updateInfoConverted();
 }
 
@@ -317,12 +361,16 @@ void TextureDialog::setupStatusBar()
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
 }
 
+void TextureDialog::setupTextureConverAllButton()
+{
+	QObject::connect(ui->convertAll, SIGNAL(pressed()), this, SLOT(textureConverAll()));
+}
+
 void TextureDialog::setupTexturesList()
 {
 	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
-	QObject::connect(textureListImagesDelegate, SIGNAL(needRedraw(const DAVA::Texture *)), this, SLOT(textureListItemNeedRedraw(const DAVA::Texture *)));
 
-	textureListDefaultDelegate = ui->listViewTextures->itemDelegate();
+	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
 	ui->listViewTextures->setModel(textureListModel);
 }
 
@@ -392,9 +440,13 @@ void TextureDialog::setupTextureListToolbar()
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
 
+	ui->textureListToolbar->addSeparator();
+	ui->textureListToolbar->addAction(ui->actionFilterSelectedNode);
+
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
+	QObject::connect(ui->actionFilterSelectedNode, SIGNAL(triggered(bool)), this, SLOT(textureListFilterSelectedNodeChanged(bool)));
 }
 
 void TextureDialog::setupTextureListFilter()
@@ -405,6 +457,10 @@ void TextureDialog::setupTextureListFilter()
 void TextureDialog::setupTextureProperties()
 {
 	QObject::connect(ui->textureProperties, SIGNAL(propertyChanged(const int)), this, SLOT(texturePropertyChanged(const int)));
+
+	QPalette palette = ui->warningLabel->palette();
+	palette.setColor(ui->warningLabel->foregroundRole(), Qt::red);
+	ui->warningLabel->setPalette(palette);
 }
 
 void TextureDialog::setupTextureViewToolbar()
@@ -425,10 +481,40 @@ void TextureDialog::resetTextureInfo()
 	updateInfoConverted();
 }
 
+void TextureDialog::reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format)
+{
+	if(NULL != descriptor && NULL != texture)
+	{
+		DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
+
+		// reload only when editor view format is the same as given texture format
+		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
+		if(DAVA::NOT_FILE == format || format == curEditorImageFormatForTextures)
+		{
+			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageFormatForTextures);
+
+			if(NULL != newTexture)
+			{
+				// need reset cur texture to newly loaded
+				if(curTexture == texture)
+				{
+					curTexture = newTexture;
+				}
+
+				// need to set new Texture into Textures list model
+				textureListModel->setTexture(descriptor, newTexture);
+			}
+		}
+	}
+}
+
 void TextureDialog::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
+
+	// zoom fit selected texture
+	textureZoomFit(true);
 }
 
 void TextureDialog::textureListViewText(bool checked)
@@ -436,7 +522,7 @@ void TextureDialog::textureListViewText(bool checked)
 	ui->actionViewImagesList->setChecked(false);
 	ui->actionViewTextList->setChecked(true);
 
-	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
+	textureListImagesDelegate->setDrawRule(TextureListDelegate::DRAW_PREVIEW_SMALL);
 	ui->listViewTextures->reset();
 }
 
@@ -445,7 +531,7 @@ void TextureDialog::textureListViewImages(bool checked)
 	ui->actionViewTextList->setChecked(false);
 	ui->actionViewImagesList->setChecked(true);
 
-	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
+	textureListImagesDelegate->setDrawRule(TextureListDelegate::DRAW_PREVIEW_BIG);
 	ui->listViewTextures->reset();
 }
 
@@ -454,17 +540,14 @@ void TextureDialog::textureListFilterChanged(const QString &text)
 	textureListModel->setFilter(text);
 }
 
+void TextureDialog::textureListFilterSelectedNodeChanged(bool checked)
+{
+	textureListModel->setFilterBySelectedNode(checked);
+}
+
 void TextureDialog::textureListSortChanged(const QString &text)
 {
 	textureListModel->setSortMode((TextureListModel::TextureListSortMode) textureListSortModes[text]);
-}
-
-void TextureDialog::textureListItemNeedRedraw(const DAVA::Texture *texture)
-{
-	if(NULL != texture)
-	{
-		textureListModel->dataReady(texture);
-	}
 }
 
 void TextureDialog::textureColorChannelPressed(bool checked)
@@ -494,23 +577,30 @@ void TextureDialog::textureBgMaskPressed(bool checked)
 
 void TextureDialog::texturePropertyChanged(const int propGroup)
 {
-	DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-
+	// pvr specific changes
 	if(propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVR)
 	{
 		// set current Texture view and force texture convertion
+		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
 	}
+	// dxt specific chanes
 	else if(propGroup == TextureProperties::TYPE_DXT && curTextureView == ViewDXT)
 	{
 		// set current Texture view and force texture convertion
+		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
 	}
-	else
+	// common settings
+	else if(propGroup == TextureProperties::TYPE_COMMON)
 	{
-		// common settings: We should reload in scene this texture
-		curTexture->ReloadAs(curEditorImageFormatForTextures, ui->textureProperties->getTextureDescriptor());
+		// common settings
+		// new texture can be applyed to scene immediately
+		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::NOT_FILE);
 	}
+
+	// update warning message
+	updatePropertiesWarning();
 }
 
 void TextureDialog::textureViewPVR(bool checked)
@@ -523,14 +613,14 @@ void TextureDialog::textureViewDXT(bool checked)
 	setTextureView(ViewDXT);
 }
 
-void TextureDialog::textureReadyOriginal(const DAVA::Texture *texture, const QImage &image)
+void TextureDialog::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
-	if(NULL != texture)
+	if(NULL != descriptor)
 	{
 		// put this image into cache
-		TextureCache::Instance()->setOriginal(texture, image);
+		TextureCache::Instance()->setOriginal(descriptor, image);
 
-		if(curTexture == texture)
+		if(curDescriptor == descriptor)
 		{
 			ui->textureAreaOriginal->setImage(image);
 			ui->textureAreaOriginal->setEnabled(true);
@@ -545,54 +635,44 @@ void TextureDialog::textureReadyOriginal(const DAVA::Texture *texture, const QIm
 	}
 }
 
-void TextureDialog::textureReadyPVR(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureDialog::textureReadyPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
 	// put this image into cache
-	TextureCache::Instance()->setPVR(texture, image);
+	TextureCache::Instance()->setPVR(descriptor, image);
 
-	if(curTexture == texture && curTextureView == ViewPVR)
+	if(curDescriptor == descriptor && curTextureView == ViewPVR)
 	{
-		ui->textureAreaPVR->setImage(image);
-		ui->textureAreaPVR->setEnabled(true);
-		ui->textureAreaPVR->waitbarShow(false);
+		updateConvertedImageAndInfo(image);
+	}
 
-		if(NULL != texture && NULL != descriptor)
+	if(NULL != descriptor)
+	{
+		DAVA::Texture *texture = textureListModel->getTexture(descriptor);
+		if(NULL != texture)
 		{
 			// reload this texture into scene
-			DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-			if(curEditorImageFormatForTextures == DAVA::PVR_FILE)
-			{
-				((DAVA::Texture *) texture)->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			}
-
-			// set info about converted image
-			updateInfoConverted();
+			reloadTextureToScene(texture, descriptor, DAVA::PVR_FILE);
 		}
 	}
 }
 
-void TextureDialog::textureReadyDXT(const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, const QImage &image)
+void TextureDialog::textureReadyDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image)
 {
 	// put this image into cache
-	TextureCache::Instance()->setDXT(texture, image);
+	TextureCache::Instance()->setDXT(descriptor, image);
 
-	if(curTexture == texture && curTextureView == ViewDXT)
+	if(curDescriptor == descriptor && curTextureView == ViewDXT)
 	{
-		ui->textureAreaPVR->setImage(image);
-		ui->textureAreaPVR->setEnabled(true);
-		ui->textureAreaPVR->waitbarShow(false);
+		updateConvertedImageAndInfo(image);
+	}
 
-		if(NULL != texture && NULL != descriptor)
+	if(NULL != descriptor)
+	{
+		DAVA::Texture *texture = textureListModel->getTexture(descriptor);
+		if(NULL != texture)
 		{
 			// reload this texture into scene
-			DAVA::ImageFileFormat curEditorImageFormatForTextures = (DAVA::ImageFileFormat) EditorSettings::Instance()->GetTextureViewFileFormat();
-			if(curEditorImageFormatForTextures == DAVA::DXT_FILE)
-			{
-				((DAVA::Texture *) texture)->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			}
-
-			// set info about converted image
-			updateInfoConverted();
+			reloadTextureToScene(texture, descriptor, DAVA::DXT_FILE);
 		}
 	}
 }
@@ -645,13 +725,28 @@ void TextureDialog::textureZoomFit(bool checked)
 {
 	if(NULL != curTexture)
 	{
-		if(0 != curTexture->width && 0 != curTexture->height)
+		int w = 0;
+		int h = 0;
+
+		if(curTexture == Texture::GetPinkPlaceholder())
+		{
+			QImage img = ui->textureAreaOriginal->getImage();
+			w = img.width();
+			h = img.height();
+		}
+		else
+		{
+			w = curTexture->width;
+			h = curTexture->height;
+		}
+
+		if(0 != w && 0 != h)
 		{
 			int v = 0;
 			float needWidth = (float) ui->textureAreaOriginal->width();
 			float needHeight = (float) ui->textureAreaOriginal->height();
-			float scaleX = needWidth / (float) curTexture->width;
-			float scaleY = needHeight / (float) curTexture->height;
+			float scaleX = needWidth / (float) w;
+			float scaleY = needHeight / (float) h;
 			float scale = DAVA::Min(scaleX, scaleY);
 
 			v = (int) ((scale - 1.0) * 100.0);
@@ -685,13 +780,29 @@ void TextureDialog::textureAreaWheel(int delta)
 	toolbarZoomSlider->setValue(v);
 }
 
+void TextureDialog::textureConverAll()
+{
+	QMessageBox msgBox(this);
+	msgBox.setText("You chose to convert all textures.");
+	msgBox.setInformativeText("This could take a long time. Would you like to continue?");
+	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Cancel);
+	msgBox.setIcon(QMessageBox::Warning);
+	int ret = msgBox.exec();
+
+	if(ret == QMessageBox::Ok)
+	{
+		QtMainWindow::Instance()->TextureCheckConvetAndWait(true);
+	}
+}
+
 void TextureDialog::convertStatus(const JobItem *jobCur, int jobLeft)
 {
 	QString statusText;
 
-	if(NULL != jobCur && NULL != jobCur->texture)
+	if(NULL != jobCur && NULL != jobCur->descriptor)
 	{
-		statusText += QString("Converting %1").arg(QString(jobCur->texture->GetPathname().c_str()));
+		statusText += QString("Converting %1").arg(QString(jobCur->descriptor->pathname.c_str()));
 	}
 
 	if(jobLeft > 0)
@@ -704,5 +815,56 @@ void TextureDialog::convertStatus(const JobItem *jobCur, int jobLeft)
 
 void TextureDialog::setScene(DAVA::Scene *scene)
 {
-	textureListModel->setScene(scene);
+	DAVA::SafeRelease(curScene);
+	curScene = DAVA::SafeRetain(scene);
+
+	textureListModel->setScene(curScene);
+}
+
+void TextureDialog::sceneChanged(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// reload current scene if it is the same as changed
+		// or if there is no current scene now - set it
+		//if(scene == curScene || curScene == NULL)
+		{
+			setScene(scene);
+		}
+	}
+}
+
+void TextureDialog::sceneActivated(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// set new scene
+		setScene(scene);
+	}
+}
+
+void TextureDialog::sceneReleased(SceneData *sceneData)
+{
+	DAVA::Scene *scene = NULL;
+	if(NULL != sceneData)
+	{
+		scene = sceneData->GetScene();
+
+		// close current scene
+		if(scene == curScene)
+		{
+			setScene(NULL);
+		}
+	}
+}
+
+void TextureDialog::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+{
+	textureListModel->setHighlight(node);
 }

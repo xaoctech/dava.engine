@@ -32,8 +32,8 @@
 #include "LandscapeRenderer.h"
 #include "RulerToolLandscape.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -138,7 +138,7 @@ void LandscapesController::ToggleNotPassableLandscape()
     
     if(notPassableTerrain)
     {
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 		activeScene->ResetLandsacpeSelection();
 
 

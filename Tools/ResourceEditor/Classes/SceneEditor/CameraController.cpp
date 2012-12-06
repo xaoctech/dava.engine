@@ -31,6 +31,8 @@
 #include "CameraController.h"
 
 #include "EditorSettings.h"
+#include "../Qt/Main/QtUtils.h"
+
 
 namespace DAVA 
 {
@@ -87,8 +89,8 @@ void WASDCameraController::Update(float32 timeElapsed)
     {
         float32 moveSpeed = speed * timeElapsed;        
 
+		if(!IsKeyModificatorsPressed())
         {
-            
             bool moveUp = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_UP) | 
                            InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_W));
             if(moveUp)
@@ -162,27 +164,25 @@ void WASDCameraController::SetScene(Scene *_scene)
 		return;
 	Camera * camera = currScene->GetCurrentCamera();	
     if (!camera)return;
-	
+
 	Vector3 dir = camera->GetDirection();
 	
-	Vector2 dirXY(dir.x, dir.y);
-	Vector2 dirYZ(dir.y, dir.z);	
-	dirXY.Normalize();
-	dirYZ.Normalize();
+ 	Vector2 dirXY(dir.x, dir.y);
+ 	dirXY.Normalize();
+ 	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
 	
-	viewYAngle = -RadToDeg(dirYZ.Angle());
+	Vector3 dirXY0(dir.x, dir.y, 0.0f);
+	dirXY0.Normalize();
 
-	if(viewYAngle > MAX_ANGLE)
-		viewYAngle -= 360.f;
-
-	if(viewYAngle < -MAX_ANGLE)
-		viewYAngle += 360.f;
-
-	
-	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0f);
+	float32 cosA = dirXY0.DotProduct(dir);
+	viewYAngle = RadToDeg(acos(cosA));
+ 
+ 	if(viewYAngle > MAX_ANGLE)
+ 		viewYAngle -= 360;
+ 
+ 	if(viewYAngle < -MAX_ANGLE)
+ 		viewYAngle += 360;
 }
-	
-	
 	
 void WASDCameraController::Input(UIEvent * event)
 {
@@ -192,132 +192,88 @@ void WASDCameraController::Input(UIEvent * event)
     if (!camera)return;
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {   
-        switch (event->tid) 
-        {
-            case DVKEY_Z:
-            {
-                LockAtSelection();
-//				SceneNode * sel = selection;
-////				if (sel == 0)
-////				{
-////					sel = currScene;
-////				}
-//                if (sel)
-//                {
-//                    if (dynamic_cast<Camera*>(sel))
-//                        break;				
-//                    AABBox3 box = sel->GetWTMaximumBoundingBox();						
-//                    float32 boxSize = ((box.max - box.min).Length());
-//                    
-//                    const Vector3 & pos = camera->GetPosition();
-//                    const Vector3 & targ = camera->GetTarget();
-//                    
-//                    Vector3 dir = targ - pos;
-//                    dir.Normalize();
-//                    
-//                    const Vector3 & c = box.GetCenter();
-//                    
-//                    camera->SetTarget(c);
-//                    camera->SetPosition(c - (dir * boxSize));
-//                }
+		if(!IsKeyModificatorsPressed())
+		{
+			switch (event->tid) 
+			{
+			case DVKEY_Z:
+				{
+					LookAtSelection();
+					break;
+				}
+			case DVKEY_T:
+				{
+					if (!camera)return;
+
+					viewZAngle = 0;
+					viewYAngle = MAX_ANGLE;
+
+					Matrix4 mt, mt2;
+					mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+					mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+					mt2 *= mt;
+					Vector3 vect = Vector3(0,0, 200);
+
+					Vector3 position = vect + Vector3(0, 10, 0) * mt2;
+
+					camera->SetTarget(position);
+					camera->SetPosition(vect);					
+					break;					
+				}
+
+			case DVKEY_1:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(0);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_2:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(1);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_3:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(2);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_4:
+				{
+					EditorSettings::Instance()->SetCameraSpeedIndex(3);
+					SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+					break;
+				}
+
+			case DVKEY_9:
+				{
+					if (speed - 50 >= 0)
+					{
+						speed -= 50;
+					}
+					break;
+				}
+
+			case DVKEY_0:
+				{        
+					if (speed + 50 <= 5000)
+					{
+						speed += 50;
+					}
+					break;
+				}
+
+			default:
 				break;
-			}
-            case DVKEY_T:
-            {
-				if (!camera)return;
-				
-				viewZAngle = 0;
-				viewYAngle = MAX_ANGLE;
-				
-				Matrix4 mt, mt2;
-				mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
-				mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
-				mt2 *= mt;
-				Vector3 vect = Vector3(0,0, 200);
-				
-				Vector3 position = vect + Vector3(0, 10, 0) * mt2;
-				
-				camera->SetTarget(position);
-				camera->SetPosition(vect);					
-				break;					
-			}
-                
-            case DVKEY_1:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(0);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_2:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(1);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_3:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(2);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_4:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    EditorSettings::Instance()->SetCameraSpeedIndex(3);
-                    SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
-                }
-                break;
-            }
-                
-            case DVKEY_9:
-            {
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    if (speed - 50 >= 0)
-                    {
-                        speed -= 50;
-                    }
-                }
-                break;
-            }
-                
-            case DVKEY_0:
-            {        
-                bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                if(!altIsPressed)
-                {
-                    if (speed + 50 <= 5000)
-                    {
-                        speed += 50;
-                    }
-                }
-                break;
-            }
-                
-            default:
-                break;
-        }
+			}		
+		}
     } 
 
-	bool altBut3 = (selection && event->tid == UIEvent::BUTTON_3 && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT));
+	bool altBut3 = (selection && event->tid == UIEvent::BUTTON_3 && IsKeyModificatorPressed(DVKEY_ALT));
 	
 	
 	if(UIEvent::PHASE_BEGAN == event->phase)
@@ -352,7 +308,7 @@ void WASDCameraController::Input(UIEvent * event)
 	}	
 }
     
-void WASDCameraController::LockAtSelection()
+void WASDCameraController::LookAtSelection()
 {
     DVASSERT(currScene);
     
@@ -380,7 +336,7 @@ void WASDCameraController::LockAtSelection()
     const Vector3 & c = box.GetCenter();
     
     camera->SetTarget(c);
-    camera->SetPosition(c - (dir * boxSize));
+    camera->SetPosition(c - (dir * (boxSize + camera->GetZNear() * 1.5f)));
 }
     
 
