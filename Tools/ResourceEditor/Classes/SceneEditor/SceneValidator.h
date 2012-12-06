@@ -97,6 +97,8 @@ public:
 
     bool IsPathCorrectForProject(const String &pathname);
 
+	void CreateDescriptorIfNeed(const String &forPathname);
+    
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);
@@ -105,7 +107,6 @@ protected:
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 
-	void CreateDescriptorIfNeed(const String &forPathname);
     
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
