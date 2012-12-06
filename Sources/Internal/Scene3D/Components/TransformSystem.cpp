@@ -28,6 +28,7 @@ Transform * TransformSystem::CreateTransform()
 {
     Transform * transform = new Transform();
     transform->matrix = &matrixArray[matrixCount];
+	*(transform->matrix) = Matrix4::IDENTITY;
     transform->parent = 0;
     parentMatrixArray[matrixCount] = 0;
     referenceCounter[matrixCount] = 1;
@@ -56,7 +57,16 @@ void TransformSystem::LinkTransform(Transform * transformParent, Transform * chi
 
 void TransformSystem::Process()
 {
-    
+	Matrix4 ** parentMatrix = parentMatrixArray;
+    for(int32 i = 0; i < matrixCount; ++i)
+	{
+		if(*parentMatrix)
+		{
+
+		}
+
+		parentMatrix++;
+	}
 }
     
 int32 TransformSystem::GetMatrixIndex(Matrix4 * matrix)
