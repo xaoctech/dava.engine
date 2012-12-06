@@ -590,7 +590,6 @@ void TextureDialog::texturePropertyChanged(const int propGroup)
 		// set current Texture view and force texture convertion
 		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
-
 	}
 	// common settings
 	else if(propGroup == TextureProperties::TYPE_COMMON)
