@@ -98,11 +98,7 @@ void GameCore::OnAppFinished()
 	PVRConverter::Instance()->Release();
     SceneValidator::Instance()->Release();
 
-#ifdef __DAVAENGINE_BEAST__
-	BeastProxyImpl::Instance()->Release();
-#else 
-	new BeastProxy::Instance()->Release();
-#endif //__DAVAENGINE_BEAST__
+	BeastProxy::Instance()->Release();
 
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
