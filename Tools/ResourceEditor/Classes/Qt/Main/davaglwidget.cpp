@@ -13,7 +13,7 @@
 #include <QFocusEvent>
 
 #if defined (__DAVAENGINE_MACOS__)
-	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
+	#include "Platform/Qt/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
 	#include "Platform/Qt/Win32/QtLayerWin32.h"
 	#include "Platform/Qt/Win32/CorePlatformWin32.h"
@@ -35,10 +35,10 @@ DavaGLWidget::DavaGLWidget(QWidget *parent)
 
 #if defined (__DAVAENGINE_MACOS__)
 		setMouseTracking(true);
-		DAVA::QtLayerMacOS *qtLayer = new DAVA::QtLayerMacOS();
+		DAVA::QtLayerMacOS *qtLayer = (DAVA::QtLayerMacOS *) DAVA::QtLayer::Instance();
 		qtLayer->InitializeGlWindow((void *)this->winId(), this->size().width(), this->size().height());
 #elif defined (__DAVAENGINE_WIN32__)
-		DAVA::QtLayerWin32 *qtLayer = new DAVA::QtLayerWin32();
+		DAVA::QtLayerWin32 *qtLayer = (DAVA::QtLayerWin32 *) DAVA::QtLayer::Instance();
 		HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 		qtLayer->SetWindow(hInstance, this->winId(), this->size().width(), this->size().height());
 		qtLayer->OnResume();
@@ -65,8 +65,6 @@ DavaGLWidget::DavaGLWidget(QWidget *parent)
 
 DavaGLWidget::~DavaGLWidget()
 {
-    DAVA::QtLayer::Instance()->Release();
-
     delete ui;
 }
 
