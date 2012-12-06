@@ -56,9 +56,14 @@ public:
 	LPDIRECT3D9 d3d9;
 #endif //#if defined(__DAVAENGINE_DIRECTX9__)
 
+    
+    void SetFocused(bool focused);
+
 private:
 
 	bool willQuit;
+    bool needToSkipMouseUp;
+	bool isFocused;
 };	
 };
 #endif // #if defined(__DAVAENGINE_WIN32__)

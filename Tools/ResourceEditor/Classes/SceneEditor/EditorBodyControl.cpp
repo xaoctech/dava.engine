@@ -10,21 +10,21 @@
 #include "SceneValidator.h"
 #include "../LightmapsPacker.h"
 
-#include "ErrorNotifier.h"
-
 #include "LandscapeEditorColor.h"
 #include "LandscapeEditorHeightmap.h"
 #include "SceneEditorScreenMain.h"
 #include "LandscapeToolsSelection.h"
 #include "LandscapeEditorCustomColors.h"
+#include "LandscapeEditorVisibilityCheckTool.h"
 
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../RulerTool/RulerTool.h"
 
 #include "../SceneEditor/EditorConfig.h"
@@ -139,12 +139,37 @@ void EditorBodyControl::SaveTexture(const String &path)
 	if(RulerToolIsActive())
         return;
     
-	if(!currentLandscapeEditor || (currentLandscapeEditor != landscapeEditorCustomColors))
+	if(!currentLandscapeEditor)
 	{
 		return;
 	}
+	
+	if(currentLandscapeEditor == landscapeEditorCustomColors)
+		landscapeEditorCustomColors->SaveColorLayer(path);
+	else if(currentLandscapeEditor == landscapeEditorVisibilityTool)
+		landscapeEditorVisibilityTool->SaveColorLayer(path);
+}
 
-	landscapeEditorCustomColors->SaveColorLayer(path);
+void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+{
+	if(RulerToolIsActive())
+		return;
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return;
+
+	landscapeEditorCustomColors->LoadColorLayer(path);
+}
+
+String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+{
+	if(RulerToolIsActive())
+		return "";
+
+	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
+		return "";
+
+	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -306,62 +331,71 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
         {
             modificationPanel->Input(event);
             
-            Camera * newCamera = 0;
-            switch(event->tid)
-            {
+			if(!IsKeyModificatorsPressed())
+			{
+				Camera * newCamera = 0;
+				switch(event->tid)
+				{
 				case DVKEY_ESCAPE:
-                {
-                    UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
-                    if(c == this || c == scene3dView)
-                    {
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-                        activeScene->SelectNode(NULL);
-                    }
-                    
-                    break;
-                }
-					
+					{
+						UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
+						if(c == this || c == scene3dView)
+						{
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+							activeScene->SelectNode(NULL);
+						}
+
+						break;
+					}
+
 				case DVKEY_BACKSPACE:
-                {
-                    bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
-                    if(cmdIsPressed)
-                    {
-                        sceneGraph->RemoveWorkingNode();
-                        
-                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-                        activeScene->SelectNode(NULL);
-                        activeScene->RebuildSceneGraph();
-                    }
-                    break;
-                }
-					
-                    
-                case DVKEY_C:
-                    newCamera = scene->GetCamera(2);
-                    break;
-                    
-                case DVKEY_V:
-                    newCamera = scene->GetCamera(3);
-                    break;
-                    
-                case DVKEY_B:
-                    newCamera = scene->GetCamera(4);
-                    break;
-                    
-                case DVKEY_X:
-                    PropcessIsSolidChanging();
-                    break;
-                    
-                    
-                default:
-                    break;
-            }
-            
-            if (newCamera)
-            {
-                scene->SetCurrentCamera(newCamera);
-                scene->SetClipCamera(scene->GetCamera(0));
-            }
+					{
+						bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+						if(cmdIsPressed)
+						{
+							sceneGraph->RemoveWorkingNode();
+
+                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+							activeScene->SelectNode(NULL);
+							activeScene->RebuildSceneGraph();
+						}
+						break;
+					}
+
+				case DVKEY_C:
+					newCamera = scene->GetCamera(2);
+					break;
+
+				case DVKEY_V:
+					newCamera = scene->GetCamera(3);
+					break;
+
+				case DVKEY_B:
+					newCamera = scene->GetCamera(4);
+					break;
+
+				case DVKEY_X:
+					{
+						bool Z = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_Z);
+						bool C = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_C);
+						if(!Z && !C)
+						{
+							ProcessIsSolidChanging();
+						}
+
+						break;
+					}
+
+				default:
+					break;
+				}
+
+				if (newCamera)
+				{
+					scene->SetCurrentCamera(newCamera);
+					scene->SetClipCamera(scene->GetCamera(0));
+				}
+			}
         }
 	}
 	
@@ -370,6 +404,10 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 
 bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
+	if(event->touchLocker != this)
+		return false;
+
+
 	SceneNode * selection = scene->GetProxy();
 	//selection with second mouse button
     
@@ -435,7 +473,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
                         selection->SetLocalTransform(currTransform);
                         if(currentGraph)
                         {
-                            currentGraph->UpdatePropertiesForCurrentNode();
+                            currentGraph->UpdateMatricesForCurrentNode();
                         }
                     }
 				}
@@ -778,7 +816,7 @@ EditorScene * EditorBodyControl::GetScene()
 
 void EditorBodyControl::AddNode(SceneNode *node)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->AddSceneNode(node);
 }
 
@@ -789,7 +827,7 @@ SceneNode * EditorBodyControl::GetSelectedSGNode()
 
 void EditorBodyControl::RemoveSelectedSGNode()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RemoveSceneNode(GetSelectedSGNode());
 }
 
@@ -802,7 +840,7 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SelectNode(node);
 }
 
@@ -868,7 +906,7 @@ void EditorBodyControl::ToggleSceneInfo()
 
 void EditorBodyControl::PackLightmaps()
 {
-	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
 	String inputDir = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	String outputDir = sceneData->GetScenePathname() + "_lightmaps/";
 	FileSystem::Instance()->MoveFile(inputDir+"landscape.png", "test_landscape.png"); 
@@ -918,6 +956,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     landscapeEditorCustomColors = new LandscapeEditorCustomColors(this, this, toolsRect);
+	landscapeEditorVisibilityTool = new LandscapeEditorVisibilityCheckTool(this, this, toolsRect);
     
     Rect rect = GetRect();
     landscapeToolsSelection = new LandscapeToolsSelection(NULL, 
@@ -933,9 +972,10 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
-	SafeRelease(landscapeEditorCustomColors);
     SafeRelease(landscapeEditorHeightmap);
     SafeRelease(landscapeToolsSelection);
+	SafeRelease(landscapeEditorCustomColors);
+	SafeRelease(landscapeEditorVisibilityTool);
 }
 
 bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
@@ -954,7 +994,10 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     } else if(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS == landscapeEditorMode)
     {
         requestedEditor = landscapeEditorCustomColors;
-    }
+    } else if(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL == landscapeEditorMode)
+	{
+		requestedEditor = landscapeEditorVisibilityTool;
+	}
     
     if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
         return false;
@@ -1086,7 +1129,7 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
 
 
 
-void EditorBodyControl::PropcessIsSolidChanging()
+void EditorBodyControl::ProcessIsSolidChanging()
 {
     SceneNode *selectedNode = scene->GetSelection();
     if(selectedNode)
@@ -1097,7 +1140,7 @@ void EditorBodyControl::PropcessIsSolidChanging()
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
             
-            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             activeScene->RebuildSceneGraph();
             
             KeyedArchive *properties = selectedNode->GetCustomProperties();
@@ -1106,7 +1149,6 @@ void EditorBodyControl::PropcessIsSolidChanging()
                 String filePathname = properties->GetString(String("editor.referenceToOwner"));
                 activeScene->OpenLibraryForFile(filePathname);
             }
-            
             
             sceneGraph->SelectNode(selectedNode);
         }
@@ -1141,4 +1183,19 @@ bool EditorBodyControl::RulerToolTriggered()
 bool EditorBodyControl::RulerToolIsActive()
 {
     return (NULL != landscapeRulerTool);
+}
+
+void EditorBodyControl::VisibilityToolSetPoint()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_POINT);
+}
+
+void EditorBodyControl::VisibilityToolSetArea()
+{
+	landscapeEditorVisibilityTool->SetState(VCT_STATE_SET_AREA);
+}
+
+void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
+{
+	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
 }

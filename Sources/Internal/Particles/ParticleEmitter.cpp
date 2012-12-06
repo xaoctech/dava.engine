@@ -47,6 +47,7 @@ ParticleEmitter::ParticleEmitter()
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
+	rotationMatrix.Identity();
 	// number = new PropertyLineValue<float>(1.0f);
 
 	time = 0.0f;
@@ -115,6 +116,23 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	return number->GetValue(time);
 } */
 
+void ParticleEmitter::Play()
+{
+    Pause(false);
+    Restart(false);
+}
+    
+void ParticleEmitter::Stop()
+{
+    Restart(true);
+    Pause(true);
+}
+    
+bool ParticleEmitter::IsStopped()
+{
+    // Currently the same as isPaused.
+    return isPaused;
+}
 
 void ParticleEmitter::Restart(bool isDeleteAllParticles)
 {
@@ -141,7 +159,12 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	if(isAutorestart && (time > lifeTime))
 	{
 		time -= lifeTime;
+
+        // Restart() resets repeatCount, so store it locally and then revert.
+        int16 curRepeatCount = repeatCount;
 		Restart(true);
+        repeatCount = curRepeatCount;
+
 		repeatCount ++;
 	}
 
@@ -304,7 +327,10 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
         
         Vector3 vel = Vector3(1.0f, 0.0f, 0.0f);
         if(emissionVector)
+		{
             vel = emissionVector->GetValue(0);
+			vel = vel*rotationMatrix;
+		}
         
         Vector3 rotVect(0, 0, 1);
         float32 phi = PI*2*(float32)Random::Instance()->RandFloat();

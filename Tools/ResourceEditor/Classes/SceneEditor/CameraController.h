@@ -71,7 +71,7 @@ public:
     virtual void Update(float32 timeElapsed);
 	virtual void SetScene(Scene *_scene);
 
-    void LockAtSelection();
+    void LookAtSelection();
     
     
 protected:

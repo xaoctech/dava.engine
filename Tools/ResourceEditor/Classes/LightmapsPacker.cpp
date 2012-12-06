@@ -1,11 +1,10 @@
 #include "LightmapsPacker.h"
 
 #include "SceneEditor/PVRConverter.h"
-#include "Qt/QtUtils.h"
+#include "Qt/Main/QtUtils.h"
 
 LightmapsPacker::LightmapsPacker()
 {
-	compressFormat = FORMAT_PVR4;
 }
 
 void LightmapsPacker::ParseSpriteDescriptors()
@@ -34,10 +33,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
 		String originalTextureName = outputDir + "/" + String(buf, readSize);
-		if(FORMAT_PVR4 == compressFormat || FORMAT_PVR2 == compressFormat)
-		{
-			data.textureName = FileSystem::Instance()->ReplaceExtension(originalTextureName, ".pvr");
-		}
+		data.textureName = originalTextureName;
 
 		file->ReadLine(buf, sizeof(buf)); //image size
 
@@ -67,7 +63,8 @@ Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
 {
 	Vector2 ret;
 
-    Image * image = CreateTopLevelImage(filePath);
+	String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(filePath, TextureDescriptor::GetSourceTextureExtension());
+    Image * image = CreateTopLevelImage(sourceTexturePathname);
     if(image)
     {
         ret.x = (float32)image->GetWidth();
@@ -98,12 +95,6 @@ void LightmapsPacker::Compress()
 		}
 
 		TextureDescriptor descriptor;
-		descriptor.pvrCompression.format = compressFormat;
-		descriptor.generateMipMaps = TextureDescriptor::OPTION_ENABLED;
-        //TODO: need to set correct min/mag for Lightmaps?
-
-		String newName = PVRConverter::Instance()->ConvertPngToPvr(fileName, descriptor);
-        descriptor.UpdateDateAndCrcForFormat(PVR_FILE);
         descriptor.Save(TextureDescriptor::GetDescriptorPathname(fileName));
 	}
 

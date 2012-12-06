@@ -472,6 +472,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ShadowVolumeNode>(this), "Can clone only ShadowVolumeNode");
 		dstNode = new ShadowVolumeNode();
 	}
 
@@ -479,7 +480,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 	ShadowVolumeNode *nd = (ShadowVolumeNode *)dstNode;
 
 	nd->shadowPolygonGroup = shadowPolygonGroup;
-	nd->shadowPolygonGroup->Retain();
+    SafeRetain(nd->shadowPolygonGroup);
 
 	return dstNode;
 }

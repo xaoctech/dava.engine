@@ -7,28 +7,28 @@
 
 #include "TextureDialog/TextureConvertor.h"
 
-class TextureCache : public QObject, public DAVA::Singleton<TextureCache>
+class TextureCache : public QObject, public DAVA::StaticSingleton<TextureCache>
 {
 	Q_OBJECT
 
 public:
-	QImage getOriginal(const DAVA::Texture *texture);
-	QImage getPVR(const DAVA::Texture *texture);
-	QImage getDXT(const DAVA::Texture *texture);
+	QImage getOriginal(const DAVA::TextureDescriptor *descriptor);
+	QImage getPVR(const DAVA::TextureDescriptor *descriptor);
+	QImage getDXT(const DAVA::TextureDescriptor *descriptor);
 
-	void setOriginal(const DAVA::Texture *texture, const QImage &image);
-	void setPVR(const DAVA::Texture *texture, const QImage &image);
-	void setDXT(const DAVA::Texture *texture, const QImage &image);
+	void setOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void setPVR(const DAVA::TextureDescriptor *descriptor, const QImage &image);
+	void setDXT(const DAVA::TextureDescriptor *descriptor, const QImage &image);
 
 	void clearAll();
-	void clearOriginal(const DAVA::Texture *texture);
-	void clearPVR(const DAVA::Texture *texture);
-	void clearDXT(const DAVA::Texture *texture);
+	void clearOriginal(const DAVA::TextureDescriptor *descriptor);
+	void clearPVR(const DAVA::TextureDescriptor *descriptor);
+	void clearDXT(const DAVA::TextureDescriptor *descriptor);
 
 private:
-	QMap<const DAVA::Texture*, QImage> cacheOriginal;
-	QMap<const DAVA::Texture*, QImage> cachePVR;
-	QMap<const DAVA::Texture*, QImage> cacheDXT;
+	QMap<const DAVA::TextureDescriptor*, QImage> cacheOriginal;
+	QMap<const DAVA::TextureDescriptor*, QImage> cachePVR;
+	QMap<const DAVA::TextureDescriptor*, QImage> cacheDXT;
 };
 
 #endif // __TEXTURE_CACHE_H__

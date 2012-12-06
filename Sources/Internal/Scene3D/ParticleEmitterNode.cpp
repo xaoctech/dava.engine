@@ -4,6 +4,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Material.h"
 #include "Particles/ParticleEmitter3D.h"
+#include "Particles/ParticleLayer3D.h"
 
 namespace DAVA
 {
@@ -27,6 +28,7 @@ void ParticleEmitterNode::Update(float32 timeElapsed)
 	if(emitter)
 	{
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
+		emitter->rotationMatrix = Matrix3(worldTransform);;
 		emitter->SetPosition(position);
 		emitter->Update(timeElapsed);
 	}
@@ -69,6 +71,7 @@ SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitterNode>(this), "Can clone only ParticleEmitterNode");
 		dstNode = new ParticleEmitterNode();
 	}
 
@@ -95,6 +98,22 @@ void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	yamlPath = archive->GetString("yamlPath");
 	yamlPath = sceneFile->RelativeToAbsolute(yamlPath);
 	LoadFromYaml(yamlPath);
+}
+
+void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+	if(emitter)
+	{
+		int32 layersCount = emitter->GetLayers().size();
+		for(int32 i = 0; i < layersCount; ++i)
+		{
+			ParticleLayer3D * layer = dynamic_cast<ParticleLayer3D*>(emitter->GetLayers()[i]);
+			dataNodes.insert(layer->GetMaterial());
+		}
+	}
+	
+
+	SceneNode::GetDataNodes(dataNodes);
 }
 
 };

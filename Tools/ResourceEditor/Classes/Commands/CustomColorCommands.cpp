@@ -1,9 +1,9 @@
 #include "CustomColorCommands.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
-#include "../Qt/GUIState.h"
 
 CommandToggleCustomColors::CommandToggleCustomColors()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
@@ -31,19 +31,51 @@ CommandSaveTextureCustomColors::CommandSaveTextureCustomColors()
 
 void CommandSaveTextureCustomColors::Execute()
 {
-    String currentPath = FileSystem::Instance()->GetUserDocumentsPath();
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(currentPath.c_str()), QString("PNG image (*.png)"));
-    
-	String selectedPathname = PathnameToDAVAStyle(filePath);
-//	String selectedPathname = filePath.toStdString();
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(!screen)
+		return;
 
-	if(selectedPathname.length() > 0)
+	String selectedPathname = screen->CustomColorsGetCurrentSaveFileName();
+
+	if(selectedPathname.empty())
 	{
-		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-		if(screen)
-		{
-			screen->CustomColorsSaveTexture(selectedPathname);
-		}
+		String sceneFilePath = screen->CurrentScenePathname();
+		String sceneFileName = "";
+		FileSystem::SplitPath(sceneFilePath, selectedPathname, sceneFileName);
+	}
+
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save texture"), QString(selectedPathname.c_str()), QString("PNG image (*.png)"));
+
+	selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if(!selectedPathname.empty())
+		screen->CustomColorsSaveTexture(selectedPathname);
+}
+
+CommandLoadTextureCustomColors::CommandLoadTextureCustomColors()
+:	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+void CommandLoadTextureCustomColors::Execute()
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(!screen)
+		return;
+
+	String currentPath = screen->CustomColorsGetCurrentSaveFileName();
+
+	if(currentPath.empty())
+	{
+		String sceneFilePath = screen->CurrentScenePathname();
+		String sceneFileName = "";
+		FileSystem::SplitPath(sceneFilePath, currentPath, sceneFileName);
+	}
+
+	String selectedPathname = GetOpenFileName(String("Load texture"), currentPath, String("PNG image (*.png)"));
+	if(!selectedPathname.empty())
+	{
+		screen->CustomColorsLoadTexture(selectedPathname);
 	}
 }
 

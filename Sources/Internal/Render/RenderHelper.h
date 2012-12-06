@@ -68,7 +68,7 @@ public:
         \param pt1 starting point 
         \param pt2 ending point
 	 */
-	void DrawLine(const Vector3 & pt1, const Vector3 & pt2); 
+	void DrawLine(const Vector3 & pt1, const Vector3 & pt2, float32 lineWidth = 1.f); 
     
     
     

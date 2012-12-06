@@ -9,57 +9,51 @@
 
 #include "HashMap.h"
 #include "Debug/DVAssert.h"
+#include "Base/StaticSingleton.h"
 
 namespace DAVA
 {
 
+struct FastNameDB : public StaticSingleton<FastNameDB>
+{
+	FastNameDB()
+		// namesHash init. size will be 4096 and default values for int will be -1
+		: namesHash(HashMap<const char *, int>(4096, -1))
+	{};
+
+	~FastNameDB()
+	{
+		for(size_t i = 0; i < namesTable.size(); ++i)
+		{
+			if(NULL != namesTable[i])
+			{
+				free((void *) namesTable[i]);
+				namesTable[i] = NULL;
+			}
+		}
+	}
+
+	Vector<const char *> namesTable;
+	Vector<int> namesRefCounts;
+	Vector<int> namesEmptyIndexes;
+	HashMap<const char *, int> namesHash;
+};
+
 class FastName
 {
 private:
-	static Vector<const char *> namesTable;
-	static Vector<int> namesRefCounts;
-	static Vector<int> namesEmptyIndexes;
-	static HashMap<const char *, int> namesHash;
 
 public:
 	FastName();
 	FastName(const char *name);
+	FastName(const FastName &_name);
 	~FastName();
 
-	FastName(const FastName &_name)
-	{
-		index = _name.index;
-		namesRefCounts[index]++;
-	}
-
-	FastName& operator=(const FastName &_name)
-	{
-		index = _name.index;
-		namesRefCounts[index]++;
-		return *this;
-	}
-
-	const char* operator*() const
-	{
-		DVASSERT((size_t) index < namesTable.size());
-		DVASSERT(NULL != namesTable[index]);
-		return namesTable[index];
-	}
-
-	bool operator==(const FastName &_name) const
-	{
-		return index == _name.index;
-	}
-
-	bool operator!=(const FastName &_name) const
-	{
-		return index != _name.index;
-	}
-
-	int Index() const
-	{
-		return index;
-	}
+	const char* operator*() const;
+	FastName& operator=(const FastName &_name);
+	bool operator==(const FastName &_name) const;
+	bool operator!=(const FastName &_name) const;
+	int Index() const;
 
 private:
 	int index;

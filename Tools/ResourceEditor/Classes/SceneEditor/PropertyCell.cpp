@@ -16,7 +16,7 @@
 #include "UISliderWithText.h"
 #include "HintManager.h"
 
-#include "../Qt/QtUtils.h"
+#include "../Qt/Main/QtUtils.h"
 
 
 

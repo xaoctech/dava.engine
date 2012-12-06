@@ -40,6 +40,9 @@ public:
 	const DAVA::Texture* getTexture();
 	const DAVA::TextureDescriptor* getTextureDescriptor();
 
+public slots:
+	void resetCommonProp();
+
 signals:
 	void propertyChanged(const int propGroup);
 
@@ -114,6 +117,7 @@ private:
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	QSize origImageSize;
 
+	bool texturePropertiesChanged;
 	bool reactOnPropertyChange;
 
 	QtGroupPropertyManager *propertiesGroup;

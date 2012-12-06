@@ -27,6 +27,7 @@ class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
 class LandscapeEditorCustomColors;
+class LandscapeEditorVisibilityCheckTool;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -114,11 +115,19 @@ public:
 	void SetBrushRadius(uint32 size);
 	void SetColorIndex(uint32 indexInSet);
 	void SaveTexture(const String &path);
+	void CustomColorsLoadTexture(const String& path);
+	String CustomColorsGetCurrentSaveFileName();
+	
+	//visibility check tool
+	void VisibilityToolSetPoint();
+	void VisibilityToolSetArea();
+	void VisibilityToolSetAreaSize(uint32 size);
 
+    void ProcessIsSolidChanging();
+    
 protected:
 
     void InitControls();
-    void PropcessIsSolidChanging();
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
@@ -198,6 +207,7 @@ protected:
     LandscapeEditorColor *landscapeEditorColor;
     LandscapeEditorHeightmap *landscapeEditorHeightmap;
     LandscapeEditorCustomColors *landscapeEditorCustomColors;
+	LandscapeEditorVisibilityCheckTool* landscapeEditorVisibilityTool;
     LandscapeEditorBase *currentLandscapeEditor;
     LandscapeToolsSelection *landscapeToolsSelection;
     

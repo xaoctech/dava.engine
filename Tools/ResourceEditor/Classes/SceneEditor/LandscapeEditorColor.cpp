@@ -3,7 +3,6 @@
 #include "LandscapeTool.h"
 #include "LandscapeToolsPanelColor.h"
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 #include "EditorScene.h"
 
 #include "UNDOManager.h"
@@ -12,6 +11,7 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
+#include "../Qt/Main/QtUtils.h"
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -423,7 +423,7 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
     if(editorLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("Cannot start tile mask editor. Remove EditorLandscapeNode from scene");
+        ShowErrorDialog(String("Cannot start tile mask editor. Remove EditorLandscapeNode from scene"));
         return false;
     }
     

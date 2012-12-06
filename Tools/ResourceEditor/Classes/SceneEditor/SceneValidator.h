@@ -42,7 +42,7 @@ public:
      
      \param[in] texture texture for validation
 	 */
-    void ValidateTextureAndShowErrors(Texture *texture);
+    void ValidateTextureAndShowErrors(Texture *texture, const String &textureName, const String &validatedObjectName);
 
     /*
      \brief Function to validate Texture errors
@@ -50,7 +50,7 @@ public:
      \param[out] errorsLog set for validation erros
 	 */
     
-    void ValidateTexture(Texture *texture, Set<String> &errorsLog);
+    void ValidateTexture(Texture *texture, const String &texturePathname, const String &validatedObjectName, Set<String> &errorsLog);
 
 
     /*
@@ -88,23 +88,18 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-    void ReloadTextures(int32 asFile);
-    
     static bool IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat);
-    
-    void FindTexturesForCompression();
     
 	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
 	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
 
     void CreateDefaultDescriptors(const String &folderPathname);
 
-    void EnumerateTextures(Map<String, Texture *> &textures, Scene *scene);
-    void RestoreTextures(Map<String, Texture *> &textures, Scene *scene);
+    bool IsPathCorrectForProject(const String &pathname);
+
+	void CreateDescriptorIfNeed(const String &forPathname);
     
 protected:
-    
-    
     
     int32 EnumerateSceneNodes(SceneNode *node);
     
@@ -112,18 +107,12 @@ protected:
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 
-	void CreateDescriptorIfNeed(const String &forPathname);
     
-    void ShowErrors();
-    
-    bool ValidatePathname(const String &pathForValidation);
+    bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
     bool NodeRemovingDisabled(SceneNode *node);
     
-    void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
-    
     bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
-    bool IsPathCorrectForProject(const String &pathname);
 
 	bool IsTextureDescriptorPath(const String &path);
     

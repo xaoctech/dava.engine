@@ -6,11 +6,11 @@
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/SceneValidator.h"
 
-#include "../Qt/QtUtils.h"
-#include "../Qt/GUIState.h"
-#include "../Qt/QtMainWindowHandler.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
 #include <QString>
@@ -52,8 +52,7 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
-
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
         if(activeScene)
         {
             activeScene->ReloadLibrary();
@@ -124,7 +123,7 @@ CommandSaveScene::CommandSaveScene()
 
 void CommandSaveScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     if(activeScene->CanSaveScene())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());

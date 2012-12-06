@@ -26,6 +26,8 @@ public:
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
 private:
 	ParticleEmitter * emitter;
 	String yamlPath;

@@ -1,3 +1,4 @@
+
 /*==================================================================================
     Copyright (c) 2008, DAVA Consulting, LLC
     All rights reserved.
@@ -145,7 +146,7 @@ bool TextureDescriptor::Load(const String &filePathname)
     if(version != CURRENT_VERSION)
     {
         ConvertToCurrentVersion(version, signature, file);
-        Save();
+        SafeRelease(file);
         return true;
     }
     
@@ -171,7 +172,7 @@ bool TextureDescriptor::Load(const String &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT(!pathname.empty() && "Can use this method only after calling Load()");
+    DVASSERT_MSG(!pathname.empty(), "Can use this method only after calling Load()");
     Save(pathname);
 }
     
@@ -265,12 +266,16 @@ void TextureDescriptor::Export(const String &filePathname)
 
 void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
 {
-    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] from version %d", version);
+    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
     
     if(version == 2)
     {
         LoadVersion2(signature, file);
     }
+	if(version == 3)
+	{
+		LoadVersion3(signature, file);
+	}
 }
     
 void TextureDescriptor::LoadVersion2(int32 signature, DAVA::File *file)
@@ -304,11 +309,52 @@ void TextureDescriptor::LoadVersion2(int32 signature, DAVA::File *file)
         file->Read(&wrapModeT, sizeof(wrapModeT));
         file->Read(&generateMipMaps, sizeof(generateMipMaps));
         
-        ReadCompression(file, pvrCompression);
-        ReadCompression(file, dxtCompression);
+        ReadCompressionWithDateOld(file, pvrCompression);
+        ReadCompressionWithDateOld(file, dxtCompression);
     }
 }
-    
+ 
+void TextureDescriptor::LoadVersion3(int32 signature, DAVA::File *file)
+{
+	if(signature == COMPRESSED_FILE)
+	{
+#if defined TEXTURE_SPLICING_ENABLED
+		SafeRelease(textureFile);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
+		file->Read(&wrapModeS, sizeof(wrapModeS));
+		file->Read(&wrapModeT, sizeof(wrapModeT));
+		file->Read(&generateMipMaps, sizeof(generateMipMaps));
+		file->Read(&minFilter, sizeof(minFilter));
+		file->Read(&magFilter, sizeof(magFilter));
+		file->Read(&textureFileFormat, sizeof(textureFileFormat));
+
+#if defined TEXTURE_SPLICING_ENABLED
+		uint32 textureSize = file->GetSize() - file->GetPos();
+		uint8 *textureData = new uint8[textureSize];
+		if(textureData)
+		{
+			file->Read(textureData, textureSize);
+
+			textureFile = DynamicMemoryFile::Create(textureData, textureSize, File::WRITE | File::READ);
+			SafeDeleteArray(textureData);
+		}
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+	}
+	else if(signature == NOTCOMPRESSED_FILE)
+	{
+		file->Read(&wrapModeS, sizeof(wrapModeS));
+		file->Read(&wrapModeT, sizeof(wrapModeT));
+		file->Read(&generateMipMaps, sizeof(generateMipMaps));
+		file->Read(&minFilter, sizeof(minFilter));
+		file->Read(&magFilter, sizeof(magFilter));
+
+		ReadCompressionWithDateOld(file, pvrCompression);
+		ReadCompressionWithDateOld(file, dxtCompression);
+	}
+}
+
+
 void TextureDescriptor::LoadNotCompressed(File *file)
 {
     ReadGeneralSettings(file);
@@ -367,12 +413,38 @@ void TextureDescriptor::ReadCompression(File *file, Compression &compression)
 
     file->Read(&compression.compressToWidth, sizeof(compression.compressToWidth));
     file->Read(&compression.compressToHeight, sizeof(compression.compressToHeight));
-    
-    file->Read(compression.modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
-    
+
     char8 crcString[MD5::DIGEST_SIZE*2 + 1];
     file->Read(crcString, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
     MD5::CharToHash(crcString, compression.crc);
+
+	Memset(compression.modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
+	if(crcString[0])
+	{
+		String filePathname = GetSourceTexturePathname();
+		String date = File::GetModificationDate(filePathname);
+		if(!date.empty())
+		{
+			strncpy(compression.modificationDate, date.c_str(), DATE_BUFFER_SIZE-1);
+			compression.modificationDate[DATE_BUFFER_SIZE-1] = 0;
+		}
+	}
+}
+
+void TextureDescriptor::ReadCompressionWithDateOld( File *file, Compression &compression )
+{
+	int8 format;
+	file->Read(&format, sizeof(format));
+	compression.format = (PixelFormat)format;
+
+	file->Read(&compression.compressToWidth, sizeof(compression.compressToWidth));
+	file->Read(&compression.compressToHeight, sizeof(compression.compressToHeight));
+
+ 	file->Read(compression.modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
+
+	char8 crcString[MD5::DIGEST_SIZE*2 + 1];
+	file->Read(crcString, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
+	MD5::CharToHash(crcString, compression.crc);
 }
 
 void TextureDescriptor::WriteCompression(File *file, const Compression &compression) const
@@ -381,9 +453,6 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
     file->Write(&format, sizeof(format));
     file->Write(&compression.compressToWidth, sizeof(compression.compressToWidth));
     file->Write(&compression.compressToHeight, sizeof(compression.compressToHeight));
-    
-    //date
-    file->Write(compression.modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
     
     //crc
     char8 crcString[MD5::DIGEST_SIZE*2 + 1];
@@ -482,6 +551,7 @@ String TextureDescriptor::GetPathnameForFormat(const String &pathname, ImageFile
 
     return String("");
 }
+
 
 
 };

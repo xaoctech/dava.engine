@@ -299,13 +299,16 @@ void LandscapeNode::BuildLandscape()
     quadTreeHead.data.rdoQuad = -1;
     
     SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
-    
+ 
     allocatedMemoryForQuads = 0;
-    RecursiveBuild(&quadTreeHead, 0, lodLevelsCount);
-    FindNeighbours(&quadTreeHead);
-    
-    indices = new uint16[INDEX_ARRAY_COUNT];
-    
+
+    if(heightmap->Size())
+    {
+        RecursiveBuild(&quadTreeHead, 0, lodLevelsCount);
+        FindNeighbours(&quadTreeHead);
+        
+        indices = new uint16[INDEX_ARRAY_COUNT];
+    }
     
 //    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
 //    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
@@ -613,22 +616,15 @@ Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textu
 void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {
     SafeRelease(textures[level]);
-    textures[level] = SafeRetain(texture);
-    
+	textureNames[level] = String("");
+
+	textures[level] = SafeRetain(texture);
     if(textures[level])
     {
-        if(textures[level]->isRenderTarget)
-        {
-            textureNames[level] = String("");
-        }
-        else 
+        if(!textures[level]->isRenderTarget)
         {
             textureNames[level] = textures[level]->GetPathname();
         }
-    }
-    else 
-    {
-        textureNames[level] = String("");
     }
 }
 
