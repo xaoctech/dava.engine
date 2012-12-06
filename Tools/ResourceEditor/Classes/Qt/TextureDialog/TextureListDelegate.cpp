@@ -11,10 +11,11 @@
 #define SELECTION_BORDER_COLOR QColor(0, 0, 0, 50)
 #define SELECTION_COLOR_ALPHA 100
 #define INFO_TEXT_COLOR QColor(0, 0, 0, 100)
-#define FORMAT_INFO_WIDTH 3
+#define FORMAT_INFO_WIDTH 4
 #define FORMAT_INFO_SPACING 2
 #define FORMAT_PVR_COLOR QColor(0, 200, 0, 100)
 #define FORMAT_DXT_COLOR QColor(0, 0, 200, 100)
+#define NOT_SQUARE_COLOR QColor(150, 0, 0, 100)
 
 TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	: QAbstractItemDelegate(parent)
@@ -130,7 +131,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		}
 
 		// draw formats info
-		drawFormatInfo(painter, borderRect, curTextureDescriptor);
+		drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
 
 		// draw text info
 		{
@@ -190,6 +191,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 {
 	const TextureListModel *curModel = (TextureListModel *) index.model();
 	DAVA::TextureDescriptor *curTextureDescriptor = curModel->getDescriptor(index);
+	DAVA::Texture *curTexture = curModel->getTexture(index);
 
 	if(NULL != curTextureDescriptor)
 	{
@@ -217,7 +219,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 		painter->drawRect(previewRect);
 
 		// draw formats info
-		drawFormatInfo(painter, borderRect, curTextureDescriptor);
+		drawFormatInfo(painter, borderRect, curTexture, curTextureDescriptor);
 
 		// draw text
 		QRectF textRect = option.rect;
@@ -241,9 +243,9 @@ void TextureListDelegate::drawPreviewSmall(QPainter *painter, const QStyleOption
 	}
 }
 
-void TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DAVA::TextureDescriptor *descriptor) const
+void TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor) const
 {
-	if(NULL != descriptor)
+	if(NULL != descriptor && NULL != texture)
 	{
 		rect.adjust(FORMAT_INFO_SPACING, FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING, -FORMAT_INFO_SPACING);
 		rect.setX(rect.x() + rect.width() - FORMAT_INFO_WIDTH);
@@ -264,6 +266,19 @@ void TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DA
 			painter->setBrush(QBrush(FORMAT_DXT_COLOR));
 
 			painter->drawRect(rect);
+			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
+		}
+
+		if((descriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || descriptor->pvrCompression.format == DAVA::FORMAT_PVR2) &&
+			texture->width != texture->height)
+		{
+			QRect r = rect;
+			r.setHeight(FORMAT_INFO_WIDTH * 2);
+
+			painter->setPen(NOT_SQUARE_COLOR);
+			painter->setBrush(QBrush(NOT_SQUARE_COLOR));
+			painter->drawRect(r);
+
 			rect.adjust(-FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0, -FORMAT_INFO_WIDTH - FORMAT_INFO_SPACING, 0);
 		}
 	}

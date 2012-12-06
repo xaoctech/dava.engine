@@ -33,7 +33,7 @@ public:
     
     bool GraphOnScreen();
     bool PropertiesOnScreen();
-    void UpdatePropertiesForCurrentNode();
+    void UpdateMatricesForCurrentNode();
     
     virtual void SelectNode(BaseObject *node) = 0;
     virtual void UpdatePropertyPanel() = 0;

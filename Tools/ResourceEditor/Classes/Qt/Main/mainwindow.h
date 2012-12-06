@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressDialog>
+#include "Base/Singleton.h"
 #include "QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
@@ -9,7 +11,7 @@ class MainWindow;
 }
 
 class LibraryModel;
-class QtMainWindow : public QMainWindow
+class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
     Q_OBJECT
     
@@ -33,9 +35,9 @@ private:
     
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
-public  slots:
-	
+public slots:
 	void ProjectChanged();
+	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 
 private slots:
 
@@ -43,13 +45,16 @@ private slots:
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
+	void ConvertWaitDone(QObject *destroyed);
+	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
         
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
+
+	QProgressDialog *convertWaitDialog;
     
     LibraryModel *libraryModel;
-
 };
 
 

@@ -260,14 +260,15 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
 		ShowErrorDialog(errorLog);
 		return;
 	}
-
-    for (int i = 0; i < ME_TEX_COUNT; i++) 
+    
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
+    for (int32 i = 0; i < ME_TEX_COUNT; i++)
     {
         if (forKey == textureNames[i]) 
         {
             Material *material = dynamic_cast<Material *> (currentDataNode);
 
-            material->SetTexture((Material::eTextureLevel)textureTypes[i], newValue);
+            material->SetTexture((Material::eTextureLevel)textureTypes[i], descriptorPathname);
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {

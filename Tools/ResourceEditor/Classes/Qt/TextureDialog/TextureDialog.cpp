@@ -4,6 +4,7 @@
 #include "TextureDialog/TextureConvertor.h"
 #include "TextureDialog/TextureCache.h"
 #include "Main/QtUtils.h"
+#include "Main/mainwindow.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
 #include "SceneEditor/EditorSettings.h"
@@ -16,6 +17,7 @@
 #include <QToolButton>
 #include <QFileInfo>
 #include <QList>
+#include <QMessageBox>
 
 TextureDialog::TextureDialog(QWidget *parent)
     : QDialog(parent)
@@ -25,10 +27,6 @@ TextureDialog::TextureDialog(QWidget *parent)
 	, curTexture(NULL)
 	, curDescriptor(NULL)
 {
-	// init singletones
-	new TextureCache();
-	new TextureConvertor();
-
 	ui->setupUi(this);
 	setWindowFlags(Qt::Window);
 
@@ -55,6 +53,7 @@ TextureDialog::TextureDialog(QWidget *parent)
 	setupTextureListToolbar();
 	setupTextureToolbar();
 	setupTextureListFilter();
+	setupTextureConverAllButton();
 	setupTextureProperties();
 	setupTextureViewToolbar();
 
@@ -82,8 +81,9 @@ TextureDialog::~TextureDialog()
     delete ui;
 
 	DAVA::SafeRelease(curScene);
-	TextureCache::Instance()->Release();
-	TextureConvertor::Instance()->Release();
+
+	// clear cache
+	TextureCache::Instance()->clearAll();
 }
 
 void TextureDialog::closeEvent(QCloseEvent * e)
@@ -118,6 +118,7 @@ void TextureDialog::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *
 	// set texture to properties control.
 	// this should be done as a first step
 	ui->textureProperties->setTexture(curTexture, curDescriptor);
+	updatePropertiesWarning();
 
 	// if texture is ok - set it and enable texture views
 	if(NULL != curTexture)
@@ -220,6 +221,23 @@ void TextureDialog::setTextureView(TextureView view, bool forceConvert /* */)
 	}
 
 	updateInfoConverted();
+}
+
+void TextureDialog::updatePropertiesWarning()
+{
+	if(NULL != curDescriptor && NULL != curTexture)
+	{
+		QString warningText = "";
+
+		// for PVR4 and PVR2 only square textures are allowed.
+		if((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2) && 
+			curTexture->width != curTexture->height)
+		{
+			warningText += "WARNING: Not square PVR2/PVR4 texture.\n";
+		}
+
+		ui->warningLabel->setText(warningText);
+	}
 }
 
 void TextureDialog::updateConvertedImageAndInfo(const QImage &image)
@@ -341,6 +359,11 @@ void TextureDialog::setupStatusBar()
 	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
 }
 
+void TextureDialog::setupTextureConverAllButton()
+{
+	QObject::connect(ui->convertAll, SIGNAL(pressed()), this, SLOT(textureConverAll()));
+}
+
 void TextureDialog::setupTexturesList()
 {
 	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
@@ -432,6 +455,10 @@ void TextureDialog::setupTextureListFilter()
 void TextureDialog::setupTextureProperties()
 {
 	QObject::connect(ui->textureProperties, SIGNAL(propertyChanged(const int)), this, SLOT(texturePropertyChanged(const int)));
+
+	QPalette palette = ui->warningLabel->palette();
+	palette.setColor(ui->warningLabel->foregroundRole(), Qt::red);
+	ui->warningLabel->setPalette(palette);
 }
 
 void TextureDialog::setupTextureViewToolbar()
@@ -462,11 +489,7 @@ void TextureDialog::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Tex
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::NOT_FILE == format || format == curEditorImageFormatForTextures)
 		{
-			DAVA::Texture *newTexture = NULL;
-
-			// TODO: uncomment
-			// newTexture = texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
-			texture->ReloadAs(curEditorImageFormatForTextures, descriptor);
+			DAVA::Texture *newTexture = SceneDataManager::Instance()->TextureReload(descriptor, texture, curEditorImageFormatForTextures);
 
 			if(NULL != newTexture)
 			{
@@ -574,6 +597,9 @@ void TextureDialog::texturePropertyChanged(const int propGroup)
 		// new texture can be applyed to scene immediately
 		reloadTextureToScene(curTexture, ui->textureProperties->getTextureDescriptor(), DAVA::NOT_FILE);
 	}
+
+	// update warning message
+	updatePropertiesWarning();
 }
 
 void TextureDialog::textureViewPVR(bool checked)
@@ -736,6 +762,22 @@ void TextureDialog::textureAreaWheel(int delta)
 	v += delta / 20;
 	v -= v % toolbarZoomSlider->singleStep();
 	toolbarZoomSlider->setValue(v);
+}
+
+void TextureDialog::textureConverAll()
+{
+	QMessageBox msgBox(this);
+	msgBox.setText("You chose to convert all textures.");
+	msgBox.setInformativeText("This could take a long time. Would you like to continue?");
+	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Cancel);
+	msgBox.setIcon(QMessageBox::Warning);
+	int ret = msgBox.exec();
+
+	if(ret == QMessageBox::Ok)
+	{
+		QtMainWindow::Instance()->TextureCheckConvetAndWait(true);
+	}
 }
 
 void TextureDialog::convertStatus(const JobItem *jobCur, int jobLeft)

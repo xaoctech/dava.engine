@@ -18,6 +18,7 @@ ParticleLayer3D::ParticleLayer3D()
 	material->SetAlphablend(true);
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
+	material->SetName("ParticleLayer3D_material");
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -28,7 +29,20 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(Camera * camera)
 {
-	const Matrix4 & mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    Matrix4 rotationMatrix = Matrix4::IDENTITY;
+    switch(RenderManager::Instance()->GetRenderOrientation())
+    {
+        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+            //glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(90.0f));
+            break;
+        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+            //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+            rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
+            break;
+    }
+    Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
+    
 	Vector3 _up(mv._01, mv._11, mv._21);
 	Vector3 _left(mv._00, mv._10, mv._20);
 
@@ -166,6 +180,11 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 	ParticleLayer::Clone(dstLayer);
 
 	return dstLayer;
+}
+
+Material * ParticleLayer3D::GetMaterial()
+{
+	return material;
 }
 
 };
