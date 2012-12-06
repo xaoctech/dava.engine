@@ -34,7 +34,6 @@
 #include <QComboBox>
 #include <QStatusBar>
 
-#include "Render/dxthelper.h"
 using namespace DAVA;
 
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
@@ -485,8 +484,7 @@ void QtMainWindowHandler::ReloadAsDXT()
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-	DxtWrapper::Test();
-    //Execute(new CommandToggleCustomColors());
+    Execute(new CommandToggleCustomColors());
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()

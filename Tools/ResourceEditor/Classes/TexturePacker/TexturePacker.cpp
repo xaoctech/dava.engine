@@ -13,6 +13,7 @@
 #include "CommandLineParser.h" 
 #include "Render/TextureDescriptor.h"
 #include "../SceneEditor/PVRConverter.h"
+#include "../SceneEditor/DXTConverter.h"
 
 
 #ifdef WIN32
@@ -686,7 +687,8 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
 		}
 		else if(FORMAT_INVALID != descriptor->dxtCompression.format)
 		{
-
+			DXTConverter::Instance()->ConvertPngToDxt(exportedPathname, *descriptor);
+			FileSystem::Instance()->DeleteFile(exportedPathname);
 		}
         
     }
