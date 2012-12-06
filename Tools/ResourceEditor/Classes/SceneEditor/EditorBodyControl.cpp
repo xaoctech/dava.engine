@@ -404,10 +404,6 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 
 bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
-	if(event->touchLocker != this)
-		return false;
-
-
 	SceneNode * selection = scene->GetProxy();
 	//selection with second mouse button
     
@@ -465,7 +461,6 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && modificationPanel->IsModificationMode())
 				{
-                    
                     LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
                     if(!landscape)
                     {
