@@ -871,6 +871,21 @@ uint DirectDrawSurface::depth() const
 	else return 1;
 }
 
+uint DirectDrawSurface::size() const
+{
+	nvDebugCheck(isValid());
+	if (isTexture2D())
+	{
+		return faceSize();
+	}
+	else if(isTextureCube())
+	{
+		return 6 * faceSize();
+	}
+	else 
+		return 0;
+}
+
 bool DirectDrawSurface::isTexture1D() const
 {
 	nvDebugCheck(isValid());

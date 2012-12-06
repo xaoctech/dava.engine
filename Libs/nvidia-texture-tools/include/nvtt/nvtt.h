@@ -308,11 +308,9 @@ namespace nvtt
 		
 		NVTT_API void erase();
 
-		NVTT_API bool getDecompressedSize(unsigned int * width, unsigned int * height) const;
-
 		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
-		NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
+		NVTT_API bool getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * heigth, unsigned int * size) const;
 		
 		NVTT_API bool getCompressionFormat(Format * comprFormat) const;
 		

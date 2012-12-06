@@ -91,6 +91,7 @@ void ProcessRecourcePacker()
 	String toolName = String("/PVRTexToolCL.exe");
 #endif
     PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2] + toolName);
+	//PVRConverter::Instance()->SetPVRTexTool(commandLine[2] );
 
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
