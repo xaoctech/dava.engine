@@ -57,12 +57,13 @@ public:
 #endif //#if defined(__DAVAENGINE_DIRECTX9__)
 
     
-    void NeedToSkipMouseUp();
-    
+    void SetFocused(bool focused);
+
 private:
 
 	bool willQuit;
     bool needToSkipMouseUp;
+	bool isFocused;
 };	
 };
 #endif // #if defined(__DAVAENGINE_WIN32__)

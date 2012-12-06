@@ -404,6 +404,10 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 
 bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
+	if(event->touchLocker != this)
+		return false;
+
+
 	SceneNode * selection = scene->GetProxy();
 	//selection with second mouse button
     
@@ -469,7 +473,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
                         selection->SetLocalTransform(currTransform);
                         if(currentGraph)
                         {
-                            currentGraph->UpdatePropertiesForCurrentNode();
+                            currentGraph->UpdateMatricesForCurrentNode();
                         }
                     }
 				}
