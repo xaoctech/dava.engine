@@ -88,7 +88,7 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 	if(NULL == fileName )
 		return false;
 
-	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM) )
+	if( !(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM || compressionFormat == FORMAT_RGBA8888) )
 		return false;
 	
 	uint32 imgDataSize = width * height *4;

@@ -102,8 +102,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Win32Framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../Win32Framework/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Win32Framework.lib;nvtt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./../Win32Framework/$(Configuration);./../../Libs/nvidia-texture-tools/project/vc8/Release (no cuda).Win32/lib/</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>

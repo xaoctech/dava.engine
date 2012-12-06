@@ -4,7 +4,7 @@
 #include <QTextOption>
 #include "TextureDialog/TextureConvertor.h"
 #include "SceneEditor/PVRConverter.h"
-//#include "SceneEditor/DXTConverter.h"
+#include "SceneEditor/DXTConverter.h"
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -218,7 +218,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	if(NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
 		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-/*		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
 		if(outputPath.length() > 0)
 		{
 			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
@@ -234,7 +234,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
 			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
 			flag = false;
-		}*/
+		}
 	}
 
 	if(flag)
