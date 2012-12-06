@@ -34,5 +34,8 @@ int main(int argc, char *argv[])
 	QtMainWindow::Instance()->Release();
 	DAVA::QtLayer::Instance()->Release();
 
+	DAVA::Core::Instance()->ReleaseSingletons();
+	DAVA::Core::Instance()->Release();
+
 	return ret;
 }
