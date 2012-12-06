@@ -438,12 +438,12 @@ inline const int32 SceneNode::GetTag()
     
 inline const Matrix4 & SceneNode::GetLocalTransform() 
 { 
-    return localTransform; 
+    return *(transform->matrix); 
 }; 
 
 inline const Matrix4 & SceneNode::GetWorldTransform() 
 { 
-    return worldTransform; 
+    return *(transform->matrix); 
 };
     
 inline const Matrix4 & SceneNode::GetDefaultLocalTransform()

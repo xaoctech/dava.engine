@@ -12,6 +12,8 @@ class Transform
 {
 public:
 
+
+private:
 	Matrix4 * matrix;
 	SceneNode * parent;
 };
