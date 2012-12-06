@@ -26,6 +26,7 @@ public:
 	~TextureScrollArea();
 
 	void setImage(const QImage &image);
+	QImage getImage();
 	void setColorChannel(int mask);
 
 	QColor getPixelColor(QPoint pos);
