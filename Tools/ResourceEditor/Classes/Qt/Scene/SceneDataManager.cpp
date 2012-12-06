@@ -127,12 +127,12 @@ void SceneDataManager::ReleaseScene(EditorScene *scene)
     }
 }
 
-DAVA::int32 SceneDataManager::ScenesCount()
+DAVA::int32 SceneDataManager::SceneCount()
 {
     return (int32)scenes.size();
 }
 
-SceneData *SceneDataManager::GetScene(DAVA::int32 index)
+SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
 {
     DVASSERT((0 <= index) && (index < (int32)scenes.size()));
     
@@ -315,31 +315,39 @@ void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 	Map<String, Texture *>::const_iterator endItTextures = textures.end();
 	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endItTextures; ++it)
 	{
-		Texture *newTexture = TextureReload(it->first, it->second, asFile);
+		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
+		if(descriptor)
+		{
+			Texture *newTexture = TextureReload(descriptor, it->second, asFile);
+			SafeRelease(descriptor);
+		}
 	}
 }
 
-DAVA::Texture * SceneDataManager::TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
+DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
 {
-	if(prevTexture == Texture::GetPinkPlaceholder())
+	if(!descriptor)
+		return NULL;
+	
+	Texture *workingTexture = prevTexture;
+	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
-		Texture *newTexture = Texture::CreateFromFile(descriptorPathname);
-		RestoreTexture(descriptorPathname, newTexture);
+		//Create texture from descriptor pathname and real image file
+		workingTexture = Texture::CreateFromFile(descriptor->pathname);
+		RestoreTexture(descriptor->pathname, workingTexture);
 
-		DVASSERT_MSG(1 < newTexture->GetRetainCount(), "Can be more than 1");
-		newTexture->Release();
+		DVASSERT_MSG(1 < workingTexture->GetRetainCount(), "Can be more than 1");
+		workingTexture->Release();
 
-		return newTexture;
+		if(workingTexture == Texture::GetPinkPlaceholder())
+		{
+			return workingTexture;
+		}
 	}
 
-	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-	if(descriptor)
-	{
-		prevTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
-		SafeRelease(descriptor);
-	}
-
-	return prevTexture;
+	//apply descriptor parameters
+	workingTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+	return workingTexture;
 }
 
 void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )

@@ -7,7 +7,7 @@
 
 #include "TextureDialog/TextureConvertor.h"
 
-class TextureCache : public QObject, public DAVA::Singleton<TextureCache>
+class TextureCache : public QObject, public DAVA::StaticSingleton<TextureCache>
 {
 	Q_OBJECT
 

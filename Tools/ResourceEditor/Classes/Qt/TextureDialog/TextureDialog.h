@@ -73,6 +73,7 @@ private:
 	void setupTexturesList();
 	void setupImagesScrollAreas();
 	void setupTextureListFilter();
+	void setupTextureConverAllButton();
 	void setupStatusBar();
 	void setupTextureProperties();
 	void setupTextureViewToolbar();
@@ -87,6 +88,7 @@ private:
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
 	void updateInfoOriginal(const QImage &origImage);
 	void updateInfoConverted();
+	void updatePropertiesWarning();
 
 	void reloadTextureToScene(DAVA::Texture *texture, const DAVA::TextureDescriptor *descriptor, DAVA::ImageFileFormat format);
 
@@ -111,6 +113,7 @@ private slots:
 	void textureZoom100(bool checked);
 	void textureZoomFit(bool checked);
 	void textureAreaWheel(int delta);
+	void textureConverAll();
 
 	void convertStatus(const JobItem *jobCur, int jobLeft);
 };
