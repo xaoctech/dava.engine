@@ -23,6 +23,8 @@ public:
 
 	virtual void Draw(Camera * camera);
 
+	Material * GetMaterial();
+
 protected:
 	RenderDataObject * renderData;
 	Vector<float32> verts;

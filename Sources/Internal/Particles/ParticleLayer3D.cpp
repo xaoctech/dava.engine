@@ -18,6 +18,7 @@ ParticleLayer3D::ParticleLayer3D()
 	material->SetAlphablend(true);
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
+	material->SetName("ParticleLayer3D_material");
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -179,6 +180,11 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 	ParticleLayer::Clone(dstLayer);
 
 	return dstLayer;
+}
+
+Material * ParticleLayer3D::GetMaterial()
+{
+	return material;
 }
 
 };
