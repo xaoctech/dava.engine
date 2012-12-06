@@ -548,7 +548,7 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 		descriptor->textureFileFormat = PNG_FILE;
         
         String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-//		descriptor->Save(descriptorPathname);
+		descriptor->Save(descriptorPathname);
     }
     
     SafeRelease(descriptor);
