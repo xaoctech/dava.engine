@@ -33,8 +33,10 @@ TextureDialog::TextureDialog(QWidget *parent)
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
 
+	textureListSortModes["File size"] = TextureListModel::SortByFileSize;
+	textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
+	textureListSortModes["Image size"] = TextureListModel::SortByImageSize;
 	textureListSortModes["Name"] = TextureListModel::SortByName;
-	textureListSortModes["Size"] = TextureListModel::SortBySize;
 
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
