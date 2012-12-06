@@ -86,24 +86,6 @@ void Decompressor::Private::erase()
 	}
 }
 
-//NVTT_API bool getDecompressedSize(unsigned int mipmapNumber, unsigned int * size) const;
-bool Decompressor::getDecompressedSize(unsigned int * width, unsigned int * height) const
-{
-	return m.getDecompressedSize(width, height);
-}
-
-bool Decompressor::Private::getDecompressedSize(unsigned int * width, unsigned int * height) const
-{
-	if(NULL == width || NULL == height || NULL == m_dds)
-	{
-		return false;
-	}
-
-	*width = m_dds->width();
-	*height= m_dds->height();
-	return true;
-}
-		
 //NVTT_API bool process(void * data, unsigned int size, unsigned int mimpmapNumber) const;
 bool Decompressor::process(void * data, unsigned int size, unsigned int mipmapNumber) const
 {
@@ -136,18 +118,21 @@ bool Decompressor::Private::decompress(void * data, unsigned int size, unsigned 
 }
 
 //NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
-bool Decompressor::getMipMapCount(unsigned int * mipmapCount) const
+bool Decompressor::getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * height, unsigned int * size)  const
 {
-	return m.getMipMapCount(mipmapCount);
+	return m.getInfo(mipmapCount, width, height, size);
 }
 
-bool Decompressor::Private::getMipMapCount(unsigned int * mipmapCount) const
+bool Decompressor::Private::getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * height, unsigned int * size) const
 {
-	if(NULL == mipmapCount || NULL == m_dds)
+	if(NULL == mipmapCount || NULL == m_dds || NULL == width || NULL == height || NULL == size)
 	{
 		return false;
 	}
 	*mipmapCount = m_dds->mipmapCount();
+	*width = m_dds->width();
+	*height = m_dds->height();
+	*size = m_dds->size();
 	return true;
 }
 

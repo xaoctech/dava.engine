@@ -6,6 +6,7 @@
 #include "Main/QtUtils.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/dxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
 #include "ui_texturedialog.h"
@@ -313,7 +314,8 @@ void TextureDialog::updateInfoConverted()
 				filesize = QFileInfo(compressedTexturePath.c_str()).size();
 
 				// TODO: more accurate dxt data size calculation
-				datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				datasize = DxtWrapper::GetDataSize(compressedTexturePath.c_str());
 			}
 			break;
 		}
