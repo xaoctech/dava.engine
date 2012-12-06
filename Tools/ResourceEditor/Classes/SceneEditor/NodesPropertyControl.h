@@ -32,7 +32,10 @@ public:
     virtual void ReadFrom(DataNode *dataNode);
 	virtual void ReadFrom(Entity *entity);
     
+
+
     void UpdateFieldsForCurrentNode();
+	void UpdateMatricesForCurrentNode();
 
     
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
