@@ -724,13 +724,28 @@ void TextureDialog::textureZoomFit(bool checked)
 {
 	if(NULL != curTexture)
 	{
-		if(0 != curTexture->width && 0 != curTexture->height)
+		int w = 0;
+		int h = 0;
+
+		if(curTexture == Texture::GetPinkPlaceholder())
+		{
+			QImage img = ui->textureAreaOriginal->getImage();
+			w = img.width();
+			h = img.height();
+		}
+		else
+		{
+			w = curTexture->width;
+			h = curTexture->height;
+		}
+
+		if(0 != w && 0 != h)
 		{
 			int v = 0;
 			float needWidth = (float) ui->textureAreaOriginal->width();
 			float needHeight = (float) ui->textureAreaOriginal->height();
-			float scaleX = needWidth / (float) curTexture->width;
-			float scaleY = needHeight / (float) curTexture->height;
+			float scaleX = needWidth / (float) w;
+			float scaleY = needHeight / (float) h;
 			float scale = DAVA::Min(scaleX, scaleY);
 
 			v = (int) ((scale - 1.0) * 100.0);
