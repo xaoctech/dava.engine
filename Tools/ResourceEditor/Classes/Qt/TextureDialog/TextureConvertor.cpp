@@ -160,6 +160,9 @@ void TextureConvertor::jobRunNextOriginal()
 		curJobOriginal = jobStackOriginal.pop();
 		if(NULL != curJobOriginal)
 		{
+			// copy descriptor
+			curJobOriginal->descriptorCopy = *curJobOriginal->descriptor;
+
 			QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::loadOriginalThread, curJobOriginal);
 			loadOriginalWatcher.setFuture(f);
 		}
@@ -347,7 +350,7 @@ void TextureConvertor::threadOriginalFinished()
 	{
 		emit readyOriginal(curJobOriginal->descriptor, loadOriginalWatcher.result());
 
-		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptor->pathname.c_str());
+		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.c_str());
 
 		delete curJobOriginal;
 		curJobOriginal = NULL;

@@ -22,6 +22,7 @@
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
+#include "Project/ProjectManager.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -101,8 +102,11 @@ void QtMainWindowHandler::OpenScene()
 
 void QtMainWindowHandler::OpenProject()
 {
+	/*
     Execute(new CommandOpenProject());
 	emit ProjectChanged();
+	*/
+	ProjectManager::Instance()->ProjectOpenDialog();
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)

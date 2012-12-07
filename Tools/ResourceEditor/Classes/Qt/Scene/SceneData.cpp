@@ -36,8 +36,8 @@ SceneData::SceneData()
     ,   scene(NULL)
     ,   sceneGraphModel(NULL)
 {
-    libraryModel = NULL;
-    libraryView = NULL;
+    //libraryModel = NULL;
+    //libraryView = NULL;
     sceneGraphView = NULL;
     
     landscapesController = new LandscapesController();
@@ -49,7 +49,7 @@ SceneData::SceneData()
 
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
-    skipLibraryPreview = false;
+    //skipLibraryPreview = false;
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelectedInGraph(DAVA::SceneNode *)));
 }
@@ -393,24 +393,25 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView, LibraryModel *libModel)
+void SceneData::Activate(QTreeView *graphview/*, QTreeView *_libraryView, LibraryModel *libModel*/)
 {
     sceneGraphView = graphview;
-	libraryView = _libraryView;
+	//libraryView = _libraryView;
 		
     sceneGraphModel->Activate(sceneGraphView);
     
-    connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
+    //connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
     connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
     
-    libraryModel = libModel;
-    connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
+    //libraryModel = libModel;
+    //connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
 
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
+    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
 }
 
 void SceneData::Deactivate()
 {
+	/*
     if(libraryModel)
     {
         disconnect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
@@ -418,11 +419,13 @@ void SceneData::Deactivate()
     }
     
     disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
+	*/
     disconnect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
     
     sceneGraphModel->Deactivate();
 }
 
+/*
 void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
 {
     if(!index.isValid())
@@ -453,6 +456,7 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         menu.exec(point);
     }
 }
+*/
 
 void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
 {
@@ -510,10 +514,12 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
     }
 }
 
+/*
 void SceneData::ReloadLibrary()
 {
     libraryModel->Reload();
 }
+*/
 
 void SceneData::BakeNode(DAVA::SceneNode *node)
 {
@@ -587,19 +593,20 @@ void SceneData::BakeScene()
         RebuildSceneGraph();
     }
 }
-
+/*
 void SceneData::LibraryContextMenuRequested(const QPoint &point)
 {
     QModelIndex itemIndex = libraryView->indexAt(point);
     ShowLibraryMenu(itemIndex, QCursor::pos());
 }
+*/
 
 void SceneData::ProcessContextMenuAction(QAction *action)
 {
     Command *command = PointerHolder<Command *>::ToPointer(action->data());
     Execute(command);
 }
-
+/*
 void SceneData::LibraryMenuTriggered(QAction *action)
 {
     ProcessContextMenuAction(action);
@@ -630,6 +637,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
     
     skipLibraryPreview = false;
 }
+*/
 
 void SceneData::Execute(Command *command)
 {
@@ -731,6 +739,7 @@ LandscapesController * SceneData::GetLandscapesController()
     return landscapesController;
 }
 
+/*
 void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 {
     skipLibraryPreview = true;
@@ -740,6 +749,7 @@ void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 		skipLibraryPreview = false;
 	}
 }
+*/
 
 void SceneData::ResetLandsacpeSelection()
 {
@@ -751,7 +761,7 @@ void SceneData::ResetLandsacpeSelection()
 }
 
 
-void SceneData::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )
+void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture)
 {
 	//materials
 	Vector<Material*> materials;

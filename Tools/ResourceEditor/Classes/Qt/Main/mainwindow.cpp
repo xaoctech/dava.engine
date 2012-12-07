@@ -4,12 +4,12 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Main/GUIState.h"
-#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
+#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
 #include "Classes/Qt/TextureDialog/TextureConvertor.h"
-
 #include "Classes/Qt/Main/PointerHolder.h"
+#include "Classes/Qt/Project/ProjectManager.h"
 #include "LibraryModel.h"
 
 #include <QToolBar>
@@ -33,25 +33,30 @@ QtMainWindow::QtMainWindow(QWidget *parent)
  
     qApp->installEventFilter(this);
     
+	new ProjectManager();
 	new SceneDataManager();
     new QtMainWindowHandler(this);
 
-	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
-    libraryModel = new LibraryModel(this);
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+
+    //libraryModel = new LibraryModel(this);
 
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
-    libraryModel->Activate(ui->libraryView);
+
+    //SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+    //SceneDataManager::Instance()->SetLibraryModel(libraryModel);
+    //libraryModel->Activate(ui->libraryView);
     
     RegisterBasePointerTypes();
     
+	/*
     if(DAVA::Core::Instance())
     {
 		ProjectChanged();
     }
+	*/
     
     new GUIState();
 
@@ -77,7 +82,7 @@ QtMainWindow::~QtMainWindow()
     
     delete ui;
 
-    SafeDelete(libraryModel);
+    //SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -384,14 +389,9 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
-void QtMainWindow::ProjectChanged()
+void QtMainWindow::ProjectOpened(const QString &path)
 {
-	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-	if(options)
-	{
-		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
-		this->setWindowTitle(titleStr);
-	}
+	this->setWindowTitle(QString("Project - ") + path);
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)

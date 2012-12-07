@@ -17,6 +17,7 @@
 
 using namespace DAVA;
 
+#if 0
 //Open Project
 CommandOpenProject::CommandOpenProject()
     :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
@@ -52,15 +53,18 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
+		/* #### dock -->
 		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
         if(activeScene)
         {
             activeScene->ReloadLibrary();
         }
+		<-- */
 	}
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
+#endif
 
 
 //Open scene
