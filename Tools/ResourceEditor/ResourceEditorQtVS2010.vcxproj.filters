@@ -258,48 +258,6 @@
     <ClCompile Include="Classes\VertexOctTree.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
@@ -442,9 +400,6 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\BeastProxy.h">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LightmapAtlasingData.h">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Constants.h">
@@ -2080,45 +2035,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
-      <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
