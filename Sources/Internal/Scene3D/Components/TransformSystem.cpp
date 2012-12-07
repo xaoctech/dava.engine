@@ -7,30 +7,39 @@ namespace DAVA
 
 
 TransformSystem::TransformSystem()
-:	matrixArray(0),
-	parentMatrixArray(0),
+:	localMatrices(0),
+	parentWorldMatrices(0),
 	referenceCounter(0),
 	matrixCount(0)
 {
-	matrixArray = new Matrix4[POOL_SIZE];
-	parentMatrixArray = new Matrix4*[POOL_SIZE];
+	localMatrices = new Matrix4[POOL_SIZE];
+	worldMatrices = new Matrix4[POOL_SIZE];
+	parentWorldMatrices = new Matrix4*[POOL_SIZE];
 	referenceCounter = new uint32[POOL_SIZE];
 }
 
 TransformSystem::~TransformSystem()
 {
 	SafeDeleteArray(referenceCounter);
-	SafeDeleteArray(parentMatrixArray);
-	SafeDeleteArray(matrixArray);
+	SafeDeleteArray(parentWorldMatrices);
+	SafeDeleteArray(worldMatrices);
+	SafeDeleteArray(localMatrices);
 }
 
 Transform * TransformSystem::CreateTransform()
 {
     Transform * transform = new Transform();
-    transform->matrix = &matrixArray[matrixCount];
-	*(transform->matrix) = Matrix4::IDENTITY;
+
+    transform->localTransform = &localMatrices[matrixCount];
+	*(transform->localTransform) = Matrix4::IDENTITY;
+
+	transform->worldTransform = &worldMatrices[matrixCount];
+	*(transform->worldTransform) = Matrix4::IDENTITY;
+
     transform->parent = 0;
-    parentMatrixArray[matrixCount] = 0;
+	transform->index = matrixCount;
+
+    parentWorldMatrices[matrixCount] = 0;
     referenceCounter[matrixCount] = 1;
     matrixCount++;
 
@@ -50,28 +59,37 @@ void TransformSystem::DeleteTransform(Transform * transform)
 	}
 }
 
-void TransformSystem::LinkTransform(Transform * transformParent, Transform * child)
+void TransformSystem::LinkTransform(int32 parentIndex, int32 childIndex)
 {
-    
+    parentWorldMatrices[childIndex] = &(worldMatrices[parentIndex]);
+}
+
+void TransformSystem::UnlinkTransform(int32 childIndex)
+{
+	parentWorldMatrices[childIndex] = 0;
 }
 
 void TransformSystem::Process()
 {
-	Matrix4 ** parentMatrix = parentMatrixArray;
+	Matrix4 ** parentMatrixPtr = parentWorldMatrices;
+	Matrix4 * localMatrix = localMatrices;
+	Matrix4 * worldMatrix = worldMatrices;
     for(int32 i = 0; i < matrixCount; ++i)
 	{
-		if(*parentMatrix)
+		if(*parentMatrixPtr)
 		{
-
+			*worldMatrix = (*localMatrix) * (**parentMatrixPtr);
 		}
 
-		parentMatrix++;
+		parentMatrixPtr++;
+		localMatrix++;
+		worldMatrix++;
 	}
 }
     
 int32 TransformSystem::GetMatrixIndex(Matrix4 * matrix)
 {
-    int32 index = (matrix - matrixArray) / sizeof(Matrix4);
+    int32 index = (matrix - localMatrices) / sizeof(Matrix4);
     return index;
 }
 
@@ -116,6 +134,8 @@ void TransformSystem::SortAndThreadSplit()
     //    }
     //}*/
 }
+
+
 
 
 

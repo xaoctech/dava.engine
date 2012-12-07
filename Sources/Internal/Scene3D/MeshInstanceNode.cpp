@@ -202,7 +202,7 @@ void MeshInstanceNode::Draw()
     }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = *(transform->matrix) * prevMatrix;
+	Matrix4 meshFinalMatrix = *(transform->GetWorldTransform()) * prevMatrix;
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
 //    /* float32 proj[16];

@@ -327,6 +327,8 @@ public:
      */
     virtual void SceneDidLoaded();
 
+	inline Transform * GetTransform();
+
 	//temporary solution
 	Entity * entity;
     
@@ -438,12 +440,12 @@ inline const int32 SceneNode::GetTag()
     
 inline const Matrix4 & SceneNode::GetLocalTransform() 
 { 
-    return *(transform->matrix); 
+    return *(transform->GetLocalTransform()); 
 }; 
 
 inline const Matrix4 & SceneNode::GetWorldTransform() 
 { 
-    return *(transform->matrix); 
+    return *(transform->GetWorldTransform()); 
 };
     
 inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
@@ -459,7 +461,7 @@ inline Matrix4 & SceneNode::ModifyLocalTransform()
 
 inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
-	*(transform->matrix) = newMatrix;
+	transform->SetLocalTransform(&newMatrix);
 	uint32 size = (uint32)children.size();
 	for (uint32 c = 0; c < size; ++c)
 	{
@@ -533,6 +535,10 @@ void SceneNode::GetChildNodes(Container<T> & container)
     }	
 }
 
+Transform * SceneNode::GetTransform()
+{
+	return transform;
+}
 
 };
 

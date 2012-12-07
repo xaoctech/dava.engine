@@ -23,7 +23,8 @@ public:
     Transform * CreateTransform();
     Transform * GetTransformWithIncrement(Transform * transform);
     void DeleteTransform(Transform * transform);
-    void LinkTransform(Transform * transformParent, Transform * child);
+    void LinkTransform(int32 parentIndex, int32 childIndex);
+	void UnlinkTransform(int32 childIndex);
 	int32 GetMatrixIndex(Matrix4 * matrix);
     
     void Process();
@@ -31,8 +32,9 @@ public:
 private:
     void SortAndThreadSplit();
     
-    Matrix4 * matrixArray;
-    Matrix4 ** parentMatrixArray;
+    Matrix4 * localMatrices;
+	Matrix4 * worldMatrices;
+    Matrix4 ** parentWorldMatrices;
     uint32 * referenceCounter;
     uint32 matrixCount;
 
