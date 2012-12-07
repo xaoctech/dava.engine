@@ -21,6 +21,7 @@
     <ClInclude Include="Classes\KeyedArchiveTest.h" />
     <ClInclude Include="Classes\KeyedArchiveYamlTest.h" />
     <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
+    <ClInclude Include="Classes\ParamToPtrConvertionTest.h" />
     <ClInclude Include="Classes\PVRTest.h" />
     <ClInclude Include="Classes\SampleTest.h" />
     <ClInclude Include="Classes\SoundTest.h" />
@@ -38,6 +39,7 @@
     <ClCompile Include="Classes\KeyedArchiveTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp" />
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
+    <ClCompile Include="Classes\ParamToPtrConvertionTest.cpp" />
     <ClCompile Include="Classes\PVRTest.cpp" />
     <ClCompile Include="Classes\SampleTest.cpp" />
     <ClCompile Include="Classes\SoundTest.cpp" />
