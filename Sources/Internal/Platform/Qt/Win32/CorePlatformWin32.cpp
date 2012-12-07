@@ -71,7 +71,7 @@ int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 	return 0;
 
 }
-	
+
 void CoreWin32Platform::InitArgs()
 {
 	LPWSTR *szArglist;

@@ -21,6 +21,18 @@ struct FastNameDB : public StaticSingleton<FastNameDB>
 		: namesHash(HashMap<const char *, int>(4096, -1))
 	{};
 
+	~FastNameDB()
+	{
+		for(size_t i = 0; i < namesTable.size(); ++i)
+		{
+			if(NULL != namesTable[i])
+			{
+				free((void *) namesTable[i]);
+				namesTable[i] = NULL;
+			}
+		}
+	}
+
 	Vector<const char *> namesTable;
 	Vector<int> namesRefCounts;
 	Vector<int> namesEmptyIndexes;

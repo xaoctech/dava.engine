@@ -13,7 +13,9 @@ public:
 	enum TextureListSortMode
 	{
 		SortByName,
-		SortBySize
+		SortByFileSize,
+		SortByImageSize,
+		SortByDataSize
 	};
 
 	TextureListModel(QObject *parent = 0);
@@ -49,9 +51,34 @@ private:
 
 	void clear();
 	void applyFilterAndSort();
+};
 
-	static bool sortFnByName(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
-	static bool sortFnBySize(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+struct SortFnByName
+{
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+};
+
+struct SortFnByFileSize
+{
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+};
+
+struct SortFnByImageSize
+{
+	SortFnByImageSize(const TextureListModel *m) : model(m) { }
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+
+protected:
+	const TextureListModel *model;
+};
+
+struct SortFnByDataSize
+{
+	SortFnByDataSize(const TextureListModel *m) : model(m) { }
+	bool operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2);
+
+protected:
+	const TextureListModel *model;
 };
 
 #endif // __TEXTURE_LIST_MODEL_H__
