@@ -122,6 +122,7 @@ Scene * SceneNode::GetScene()
 void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
+	transform->SetParent(parent);
 }
 
 void SceneNode::AddNode(SceneNode * node)

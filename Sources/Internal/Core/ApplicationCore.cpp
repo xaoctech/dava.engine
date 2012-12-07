@@ -33,6 +33,7 @@
 #include "Render/RenderManager.h"
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
+#include "Scene3D/Components/TransformSystem.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"
@@ -55,6 +56,7 @@ void ApplicationCore::Update(float32 timeElapsed)
 {
 	SoundSystem::Instance()->Update();
 	AnimationManager::Instance()->Update(timeElapsed);
+	TransformSystem::Instance()->Process();
 	UIControlSystem::Instance()->Update();
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Update(timeElapsed);

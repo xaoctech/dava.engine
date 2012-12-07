@@ -2039,6 +2039,9 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\Transform.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
