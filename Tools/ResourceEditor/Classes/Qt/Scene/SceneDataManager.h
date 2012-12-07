@@ -25,7 +25,7 @@ public:
     void ReleaseScene(EditorScene *scene);
 
     void SetSceneGraphView(QTreeView *view);
-    void SetLibraryView(QTreeView *view);
+    //void SetLibraryView(QTreeView *view);
     void SetLibraryModel(LibraryModel *model);
 	// <--
 
@@ -70,8 +70,8 @@ protected:
     DAVA::List<SceneData *>scenes;
     
     QTreeView *sceneGraphView;
-    QTreeView *libraryView;
-    LibraryModel *libraryModel;
+    //QTreeView *libraryView;
+    //LibraryModel *libraryModel;
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

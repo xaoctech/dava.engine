@@ -13,8 +13,8 @@ using namespace DAVA;
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
-    ,   libraryView(NULL)
-    ,   libraryModel(NULL)
+//    ,   libraryView(NULL)
+//    ,   libraryModel(NULL)
 {
 }
 
@@ -41,7 +41,7 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView, libraryView, libraryModel);
+    currentScene->Activate(sceneGraphView /*, libraryView, libraryModel*/);
 
 	emit SceneActivated(currentScene);
 }
@@ -148,6 +148,7 @@ void SceneDataManager::SetSceneGraphView(QTreeView *view)
     sceneGraphView = view;
 }
 
+/*
 void SceneDataManager::SetLibraryView(QTreeView *view)
 {
     libraryView = view;
@@ -157,6 +158,7 @@ void SceneDataManager::SetLibraryModel(LibraryModel *model)
 {
     libraryModel = model;
 }
+*/
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {

@@ -94,6 +94,18 @@
     <Filter Include="QtGenerated\Scene">
       <UniqueIdentifier>{112a8070-e234-41b7-8958-114f01fccf0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockLibrary">
+      <UniqueIdentifier>{a32457da-16af-47bc-9e52-3a95a269bd7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockLibrary">
+      <UniqueIdentifier>{63adca46-3cec-4809-a2f9-792636411682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Project">
+      <UniqueIdentifier>{61289f99-0e95-43c6-9e52-611246cccd92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\Project">
+      <UniqueIdentifier>{0c4ce2d3-d15f-4fbf-b897-244bc25bfa2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1119,6 +1131,18 @@
     <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp">
+      <Filter>QtGenerated\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp">
+      <Filter>Sources\Qt\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp">
+      <Filter>QtGenerated\Project</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2071,6 +2095,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
       <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Project\ProjectManager.h">
+      <Filter>Sources\Qt\Project</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

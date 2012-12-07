@@ -36,11 +36,10 @@ private:
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
 public slots:
-	void ProjectChanged();
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 
 private slots:
-
+	void ProjectOpened(const QString &path);
     void MenuFileWillShow();
 	
 	//reference
@@ -54,7 +53,7 @@ private:
 
 	QProgressDialog *convertWaitDialog;
     
-    LibraryModel *libraryModel;
+    //LibraryModel *libraryModel;
 };
 
 
