@@ -117,6 +117,7 @@ private:
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	QSize origImageSize;
 
+	bool texturePropertiesChanged;
 	bool reactOnPropertyChange;
 
 	QtGroupPropertyManager *propertiesGroup;

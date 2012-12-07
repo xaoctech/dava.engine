@@ -33,8 +33,10 @@ TextureDialog::TextureDialog(QWidget *parent)
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
 
+	textureListSortModes["File size"] = TextureListModel::SortByFileSize;
+	textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
+	textureListSortModes["Image size"] = TextureListModel::SortByImageSize;
 	textureListSortModes["Name"] = TextureListModel::SortByName;
-	textureListSortModes["Size"] = TextureListModel::SortBySize;
 
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
@@ -588,7 +590,6 @@ void TextureDialog::texturePropertyChanged(const int propGroup)
 		// set current Texture view and force texture convertion
 		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
-
 	}
 	// common settings
 	else if(propGroup == TextureProperties::TYPE_COMMON)
@@ -724,13 +725,28 @@ void TextureDialog::textureZoomFit(bool checked)
 {
 	if(NULL != curTexture)
 	{
-		if(0 != curTexture->width && 0 != curTexture->height)
+		int w = 0;
+		int h = 0;
+
+		if(curTexture == Texture::GetPinkPlaceholder())
+		{
+			QImage img = ui->textureAreaOriginal->getImage();
+			w = img.width();
+			h = img.height();
+		}
+		else
+		{
+			w = curTexture->width;
+			h = curTexture->height;
+		}
+
+		if(0 != w && 0 != h)
 		{
 			int v = 0;
 			float needWidth = (float) ui->textureAreaOriginal->width();
 			float needHeight = (float) ui->textureAreaOriginal->height();
-			float scaleX = needWidth / (float) curTexture->width;
-			float scaleY = needHeight / (float) curTexture->height;
+			float scaleX = needWidth / (float) w;
+			float scaleY = needHeight / (float) h;
 			float scale = DAVA::Min(scaleX, scaleY);
 
 			v = (int) ((scale - 1.0) * 100.0);

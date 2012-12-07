@@ -44,6 +44,7 @@
 #include "PVRTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
+#include "ParamToPtrConvertionTest.h"
 
 using namespace DAVA;
 
@@ -84,6 +85,7 @@ void GameCore::OnAppStarted()
 	new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
+    new ParamToPtrConvertionTest();
     
     errors.reserve(TestCount());
 

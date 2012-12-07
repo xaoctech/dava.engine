@@ -67,6 +67,8 @@ namespace DAVA
 	float Core::physicalToVirtual = 0;
 	Vector2 Core::drawOffset;
 
+	static ApplicationCore * core = 0;
+
 Core::Core()
 {
 	globalFrameIndex = 1;
@@ -80,6 +82,8 @@ Core::Core()
 
 Core::~Core()
 {
+	SafeRelease(options);
+	SafeRelease(core);
 }
 
 
@@ -163,7 +167,6 @@ void Core::ReleaseSingletons()
 	Accelerometer::Instance()->Release();
 	//SoundSystem::Instance()->Release();
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	//RenderManager::Instance()->Release();
 	LocalizationSystem::Instance()->Release();
 	Logger::Debug("[Core::Release] successfull");
 	FileSystem::Instance()->Release();
@@ -173,6 +176,9 @@ void Core::ReleaseSingletons()
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Release();
 #endif
+
+	InputSystem::Instance()->Release();
+	Logger::Instance()->Release();
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)
@@ -549,9 +555,6 @@ void Core::Quit()
 	Logger::Debug("[Core::Quit] do not supported by platform implementation of core");
 }
 	
-	
-static ApplicationCore * core = 0;
-
 void Core::SetApplicationCore(ApplicationCore * _core)
 {
 	core = _core;
