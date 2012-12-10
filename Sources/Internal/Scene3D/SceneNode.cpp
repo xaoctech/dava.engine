@@ -57,7 +57,6 @@ SceneNode::SceneNode()
 {
 //    Logger::Debug("SceneNode: %p", this);
 
-	localTransform.Identity();
 	worldTransform.Identity();
     defaultLocalTransform.Identity();
 	//animation = 0;
@@ -286,7 +285,7 @@ void SceneNode::BakeTransforms()
     {
         for (uint32 c = 0; c < size; ++c)
         {
-            children[c]->SetLocalTransform(children[c]->GetLocalTransform() * localTransform);
+            children[c]->SetLocalTransform(children[c]->GetLocalTransform() * GetLocalTransform());
             children[c]->SetDefaultLocalTransform(children[c]->GetDefaultLocalTransform() * defaultLocalTransform);
         }
         SetLocalTransform(Matrix4::IDENTITY);
@@ -319,6 +318,7 @@ void SceneNode::PropagateBoolProperty(String name, bool value)
 	
 void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 {
+	const Matrix4 & localTransform = GetLocalTransform();
 	key.time = 0.0f;
 	key.translation.x = localTransform._30;
 	key.translation.y = localTransform._31;
@@ -403,42 +403,6 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 //    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
 //}
 
-void SceneNode::UpdateTransformNow()
-{
-	UpdateTransform();
-	uint32 size = (uint32)children.size();
-	for (uint32 c = 0; c < size; ++c)
-	{
-		children[c]->UpdateTransformNow();
-	}
-}
-
-void SceneNode::UpdateTransform()
-{
-	//if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
-	{
-		if (parent)
-		{
-			if (flags & NODE_LOCAL_MATRIX_IDENTITY)
-				worldTransform = parent->worldTransform;
-			else
-				worldTransform = localTransform * parent->worldTransform;
-		}
-		else
-		{
-			worldTransform = localTransform;
-		}
-
-		// need propagate changes to child nodes
-		flags |= NODE_WORLD_MATRIX_ACTUAL;
-		uint32 size = (uint32)children.size();
-		for (uint32 c = 0; c < size; ++c)
-		{
-			children[c]->InvalidateLocalTransform();
-		}
-	}
-}
-
 void SceneNode::Draw()
 {
     //Stats::Instance()->BeginTimeMeasure("Scene.Draw.SceneNode.Draw", this);
@@ -497,16 +461,6 @@ void SceneNode::SceneDidLoaded()
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
 		(*it)->SceneDidLoaded();
 }
-
-Matrix4 SceneNode::AccamulateLocalTransform(SceneNode *fromParent)
-{
-    if (fromParent == this) 
-    {
-        return localTransform;
-    }
-    return localTransform * parent->AccamulateLocalTransform(fromParent);
-}
-
     
 SceneNode* SceneNode::Clone(SceneNode *dstNode)
 {
@@ -517,7 +471,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    dstNode->localTransform = localTransform;
+    dstNode->transform = TransformSystem::Instance()->CloneTransform(transform);
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
@@ -646,7 +600,7 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
-    archive->SetByteArrayAsType("localTransform", localTransform);
+    archive->SetByteArrayAsType("localTransform", GetLocalTransform());
     archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
     
     archive->SetUInt32("flags", flags);
@@ -666,7 +620,8 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         
     name = archive->GetString("name", "");
     tag = archive->GetInt32("tag", 0);
-    localTransform = archive->GetByteArrayAsType("localTransform", localTransform);
+    const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
+	SetLocalTransform(localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
     flags = archive->GetUInt32("flags", NODE_VISIBLE);

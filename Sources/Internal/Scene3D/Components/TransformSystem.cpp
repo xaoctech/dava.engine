@@ -1,5 +1,6 @@
 #include "Scene3D/Components/TransformSystem.h"
 #include "Scene3D/Components/Transform.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -16,10 +17,12 @@ TransformSystem::TransformSystem()
 	worldMatrices = new Matrix4[POOL_SIZE];
 	parentWorldMatrices = new Matrix4*[POOL_SIZE];
 	referenceCounter = new uint32[POOL_SIZE];
+	transforms = new Transform*[POOL_SIZE];
 }
 
 TransformSystem::~TransformSystem()
 {
+	SafeDeleteArray(transforms);
 	SafeDeleteArray(referenceCounter);
 	SafeDeleteArray(parentWorldMatrices);
 	SafeDeleteArray(worldMatrices);
@@ -28,6 +31,7 @@ TransformSystem::~TransformSystem()
 
 Transform * TransformSystem::CreateTransform()
 {
+	DVASSERT(matrixCount <= POOL_SIZE-1);
     Transform * transform = new Transform();
 
     transform->localTransform = &localMatrices[matrixCount];
@@ -41,21 +45,58 @@ Transform * TransformSystem::CreateTransform()
 
     parentWorldMatrices[matrixCount] = 0;
     referenceCounter[matrixCount] = 1;
+	transforms[matrixCount] = transform;
+
     matrixCount++;
 
 	return transform;
 }
 
+Transform * TransformSystem::CloneTransform(Transform * oldTransform)
+{
+	Transform * newTransform = CreateTransform();
+	*(newTransform->localTransform) = *(oldTransform->localTransform);
+	*(newTransform->worldTransform) = *(oldTransform->worldTransform);
+	newTransform->parent = oldTransform->parent;
+
+	return newTransform;
+}
+
 Transform * TransformSystem::GetTransformWithIncrement(Transform * transform)
 {
-	return 0;
+	referenceCounter[transform->GetIndex()]++;
+	return transform;
 }
     
-void TransformSystem::DeleteTransform(Transform * transform)
+void TransformSystem::DeleteTransform(Transform * deletingTransform)
 {
-    if(transform)
+    if(deletingTransform)
 	{
+		int32 index = deletingTransform->GetIndex();
+		referenceCounter[index]--;
 
+		if(referenceCounter[index] == 0)
+		{
+			uint32 copyingCount = matrixCount-index-1;
+
+			Transform ** transformPtr = &(transforms[index+1]);
+			for(uint32 i = 0; i < copyingCount; ++i)
+			{
+				DVASSERT(*transformPtr);
+				Transform * transform = *transformPtr;
+				transform->localTransform--;
+				transform->worldTransform--;
+				transform->index--;
+
+				transformPtr++;
+			}
+			
+			Memmove(&(localMatrices[index]), &(localMatrices[index+1]), copyingCount*sizeof(Matrix4));
+			Memmove(&(worldMatrices[index]), &(worldMatrices[index+1]), copyingCount*sizeof(Matrix4));
+			Memmove(&(parentWorldMatrices[index]), &(parentWorldMatrices[index+1]), copyingCount*sizeof(Matrix4*));
+			Memmove(&(transforms[index]), &(transforms[index+1]), copyingCount*sizeof(Transform*));
+			Memmove(&(referenceCounter[index]), &(referenceCounter[index+1]), copyingCount*sizeof(uint32));
+		}
 	}
 }
 
@@ -74,7 +115,7 @@ void TransformSystem::Process()
 	Matrix4 ** parentMatrixPtr = parentWorldMatrices;
 	Matrix4 * localMatrix = localMatrices;
 	Matrix4 * worldMatrix = worldMatrices;
-    for(int32 i = 0; i < matrixCount; ++i)
+    for(uint32 i = 0; i < matrixCount; ++i)
 	{
 		if(*parentMatrixPtr)
 		{
@@ -134,13 +175,6 @@ void TransformSystem::SortAndThreadSplit()
     //    }
     //}*/
 }
-
-
-
-
-
-
-
 
 };
 

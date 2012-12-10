@@ -261,6 +261,7 @@ inline T Clamp(T val, T a, T b)
 #define Memcmp memcmp
 #define Memcpy memcpy
 #define Memset memset
+#define Memmove memmove
 #define Alloc malloc
 #define Free free
 #define Realloc realloc
