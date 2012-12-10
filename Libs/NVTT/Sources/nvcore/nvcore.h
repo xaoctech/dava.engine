@@ -71,7 +71,8 @@
 #elif defined POSH_CPU_PPC
 #	define NV_CPU_PPC 1
 #else
-#	error "Unsupported CPU"
+//commented to be able to build NVTT for ios
+//#	error "Unsupported CPU"
 #endif
 
 

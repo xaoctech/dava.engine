@@ -41,6 +41,14 @@
 		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		492A98DC1644149F006AAE2A /* Image.mm in Sources */ = {isa = PBXBuildFile; fileRef = 492A98DB1644149F006AAE2A /* Image.mm */; };
+		49C433131675F027000EA877 /* dxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C433111675F027000EA877 /* dxtHelper.cpp */; };
+		49C433141675F027000EA877 /* dxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C433121675F027000EA877 /* dxtHelper.h */; };
+		49C433151675F175000EA877 /* libnvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C433051675F008000EA877 /* libnvcore.a */; };
+		49C433161675F175000EA877 /* libnvimage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C433071675F008000EA877 /* libnvimage.a */; };
+		49C433171675F175000EA877 /* libnvmath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C433091675F008000EA877 /* libnvmath.a */; };
+		49C433181675F175000EA877 /* libnvtt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C4330F1675F008000EA877 /* libnvtt.a */; };
+		49C433191675F175000EA877 /* libposh.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C4330B1675F008000EA877 /* libposh.a */; };
+		49C4331A1675F175000EA877 /* libsquish.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C4330D1675F008000EA877 /* libsquish.a */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0105D5157799E000E0B939 /* MongodbClient.cpp */; };
 		5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0105D6157799E000E0B939 /* MongodbClient.h */; };
@@ -560,6 +568,55 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		49C433041675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F5D61670FF2200113FB8;
+			remoteInfo = nvcore;
+		};
+		49C433061675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F5FE1671017200113FB8;
+			remoteInfo = nvimage;
+		};
+		49C433081675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6251671042900113FB8;
+			remoteInfo = nvmath;
+		};
+		49C4330A1675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F64E167104D900113FB8;
+			remoteInfo = posh;
+		};
+		49C4330C1675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6651671E52200113FB8;
+			remoteInfo = squish;
+		};
+		49C4330E1675F008000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6731671E6C800113FB8;
+			remoteInfo = nvtt;
+		};
+		49C4331B1675F17A000EA877 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4965F6721671E6C800113FB8;
+			remoteInfo = nvtt;
+		};
 		FEF4D38512C91A3A004B850E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */;
@@ -611,6 +668,9 @@
 		4780AFCC14C499E600BAA259 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		492A98DB1644149F006AAE2A /* Image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Image.mm; sourceTree = "<group>"; };
+		49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NVTTiPhone.xcodeproj; path = ../../Libs/NVTT/NVTTiPhone.xcodeproj; sourceTree = "<group>"; };
+		49C433111675F027000EA877 /* dxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dxtHelper.cpp; sourceTree = "<group>"; };
+		49C433121675F027000EA877 /* dxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxtHelper.h; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C0105D5157799E000E0B939 /* MongodbClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbClient.cpp; path = Database/MongodbClient.cpp; sourceTree = "<group>"; };
 		5C0105D6157799E000E0B939 /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
@@ -1137,6 +1197,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49C433151675F175000EA877 /* libnvcore.a in Frameworks */,
+				49C433161675F175000EA877 /* libnvimage.a in Frameworks */,
+				49C433171675F175000EA877 /* libnvmath.a in Frameworks */,
+				49C433181675F175000EA877 /* libnvtt.a in Frameworks */,
+				49C433191675F175000EA877 /* libposh.a in Frameworks */,
+				49C4331A1675F175000EA877 /* libsquish.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
 				0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */,
 				0224B7331598AC2800CDEF9E /* libtheora_ios.a in Frameworks */,
@@ -1173,6 +1239,7 @@
 				5C97964514E3E75000FFFA14 /* libxml_ios.a */,
 				5C97964614E3E75000FFFA14 /* libyaml_ios.a */,
 				5C77ABBE14C7703800E92D28 /* libpng_ios.a */,
+				49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */,
 				FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */,
 				FECFB1D912E5904400C71562 /* External */,
 				FECFB32D12E5904400C71562 /* Internal */,
@@ -1198,6 +1265,19 @@
 				AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		49C432F91675F007000EA877 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49C433051675F008000EA877 /* libnvcore.a */,
+				49C433071675F008000EA877 /* libnvimage.a */,
+				49C433091675F008000EA877 /* libnvmath.a */,
+				49C4330B1675F008000EA877 /* libposh.a */,
+				49C4330D1675F008000EA877 /* libsquish.a */,
+				49C4330F1675F008000EA877 /* libnvtt.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		5C0105D4157799C400E0B939 /* Database */ = {
@@ -1616,6 +1696,8 @@
 		FECFB3D112E5904400C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				49C433111675F027000EA877 /* dxtHelper.cpp */,
+				49C433121675F027000EA877 /* dxtHelper.h */,
 				E80842B3163913B7002A6A77 /* ImageLoader.cpp */,
 				E80842B4163913B7002A6A77 /* ImageLoader.h */,
 				5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */,
@@ -2260,6 +2342,7 @@
 				E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */,
 				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
 				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
+				49C433141675F027000EA877 /* dxtHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2277,6 +2360,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				49C4331C1675F17A000EA877 /* PBXTargetDependency */,
 				FEF4D42E12C92D93004B850E /* PBXTargetDependency */,
 			);
 			name = Framework;
@@ -2310,6 +2394,10 @@
 					ProductGroup = FEF4D38212C91A3A004B850E /* Products */;
 					ProjectRef = FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */;
 				},
+				{
+					ProductGroup = 49C432F91675F007000EA877 /* Products */;
+					ProjectRef = 49C432F81675F007000EA877 /* NVTTiPhone.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -2319,6 +2407,48 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		49C433051675F008000EA877 /* libnvcore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvcore.a;
+			remoteRef = 49C433041675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C433071675F008000EA877 /* libnvimage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvimage.a;
+			remoteRef = 49C433061675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C433091675F008000EA877 /* libnvmath.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvmath.a;
+			remoteRef = 49C433081675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C4330B1675F008000EA877 /* libposh.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libposh.a;
+			remoteRef = 49C4330A1675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C4330D1675F008000EA877 /* libsquish.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsquish.a;
+			remoteRef = 49C4330C1675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C4330F1675F008000EA877 /* libnvtt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvtt.a;
+			remoteRef = 49C4330E1675F008000EA877 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2583,12 +2713,18 @@
 				492A98DC1644149F006AAE2A /* Image.mm in Sources */,
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
 				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
+				49C433131675F027000EA877 /* dxtHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		49C4331C1675F17A000EA877 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = nvtt;
+			targetProxy = 49C4331B1675F17A000EA877 /* PBXContainerItemProxy */;
+		};
 		FEF4D42E12C92D93004B850E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Box2D_iPhone;
@@ -2615,6 +2751,13 @@
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include,
+					./../../Libs/NVTT/Sources,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
@@ -2642,6 +2785,13 @@
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include,
+					./../../Libs/NVTT/Sources,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
@@ -2793,6 +2943,13 @@
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include,
+					./../../Libs/NVTT/Sources,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
@@ -2861,6 +3018,13 @@
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/freetype/include,
+					./../../Libs/include,
+					./../../Libs/NVTT/Sources,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
