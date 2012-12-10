@@ -134,7 +134,6 @@ public:
 	
 	// virtual updates
 	//virtual void	Update(float32 timeElapsed);
-	virtual void	UpdateTransformNow();
 	virtual void	Draw();
 	
 	// properties
@@ -152,15 +151,10 @@ public:
     inline const Matrix4 & GetLocalTransform(); 
 
     /**
-     \brief Accamulates local transform from the requested parent to this node.
-     */
-    Matrix4 AccamulateLocalTransform(SceneNode *fromParent);
-
-    /**
      \brief This method means that you always modify geted matrix. 
         If you dont want to modify matrix call GetLocalTransform().
      */
-    inline Matrix4 & ModifyLocalTransform(); 
+	inline const Matrix4 & ModifyLocalTransform(); 
     inline const Matrix4 & GetWorldTransform();
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
@@ -339,7 +333,6 @@ public:
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
-	virtual void UpdateTransform();
 
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 	void SetParent(SceneNode * node);
@@ -363,7 +356,6 @@ protected:
 	Transform * transform;
     
 private:
-    Matrix4 localTransform;
     Matrix4 defaultLocalTransform;
     
 };
@@ -453,10 +445,10 @@ inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
     return defaultLocalTransform;
 }
     
-inline Matrix4 & SceneNode::ModifyLocalTransform()
+inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
     flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    return localTransform;
+    return GetLocalTransform();
 }
 
 inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)

@@ -15,13 +15,15 @@ class Transform;
 class TransformSystem : public Singleton<TransformSystem>
 {
 public:
-	static const int32 POOL_SIZE = 1000;
+	static const int32 POOL_SIZE = 5000;
 
 	TransformSystem();
 	~TransformSystem();
 
     Transform * CreateTransform();
     Transform * GetTransformWithIncrement(Transform * transform);
+	Transform * CloneTransform(Transform * transform);
+
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
 	void UnlinkTransform(int32 childIndex);
@@ -35,6 +37,7 @@ private:
     Matrix4 * localMatrices;
 	Matrix4 * worldMatrices;
     Matrix4 ** parentWorldMatrices;
+	Transform ** transforms;
     uint32 * referenceCounter;
     uint32 matrixCount;
 
