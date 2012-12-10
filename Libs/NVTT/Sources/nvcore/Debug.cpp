@@ -410,7 +410,8 @@ namespace
 #		endif
 
 			// Exit cleanly.
-			throw std::runtime_error("Assertion failed");
+			throw "Assertion failed";
+//			throw std::runtime_error("Assertion failed");
 		}
 	};
 	
