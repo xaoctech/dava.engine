@@ -59,6 +59,13 @@ bool DxtWrapper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSe
 							height /= 2;
 							width /= 2;
 						}
+						height = height > 1 ? height : 0;
+						width = width > 1 ? width : 0;
+						if(height == 0 || width ==0)
+						{
+							retVal	= true;
+							break;
+						}
 						Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
 						uint32 size = width * height * 4;
 						if(dec.process(innerImage->data, size, i))
@@ -99,7 +106,7 @@ bool DxtWrapper::WriteDxtFile(const char* fileName, int32 width, int32 height, u
 	inputOptions.setTextureLayout(TextureType_2D, width, height);
 	if(mipmupNumber > 0)
 	{
-		inputOptions.setMipmapGeneration(mipmupNumber);
+		inputOptions.setMipmapGeneration(true, mipmupNumber);
 	}
 	inputOptions.setMipmapData(data, width, height);
 

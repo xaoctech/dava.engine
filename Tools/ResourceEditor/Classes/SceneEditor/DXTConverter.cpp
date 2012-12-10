@@ -22,21 +22,30 @@ String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::T
 		outputName = GetDXTToolOutput(fileToConvert);
 
 		uint8 mipmupNumber = 0;
+		if(descriptor.generateMipMaps > 0)
+		{
+			uint32 targetSize = image->width > image->height ? image->height : image->width;
+			if(!(descriptor.dxtCompression.compressToWidth == 0 && descriptor.dxtCompression.compressToHeight == 0))
+			{
+				uint32 ctw = descriptor.dxtCompression.compressToWidth;
+				uint32 cth = descriptor.dxtCompression.compressToHeight;
+				targetSize = ctw > cth ? cth : ctw;
+			}
+			uint32 lastSize = targetSize;
+
+			for( ; lastSize >= 2 ; ++mipmupNumber)
+			{
+				lastSize /= 2;
+			}
+			mipmupNumber--;
+
+		}
+
 		if(!(descriptor.dxtCompression.compressToWidth == 0 && descriptor.dxtCompression.compressToHeight == 0))
 		{
-			if(descriptor.generateMipMaps > 0)
-			{
-				uint32 targetSize = descriptor.dxtCompression.compressToWidth;
-				uint32 ratio = image->width / descriptor.dxtCompression.compressToWidth;
-				uint32 i = 0;
-				for ( ; ratio > 1; ++i)
-				{
-					ratio = ratio >> 1;
-				}
-				mipmupNumber = 10 - i;
-			}
 			image->ResizeImage(descriptor.dxtCompression.compressToWidth, descriptor.dxtCompression.compressToHeight);
 		}
+		
 		if(!DxtWrapper::WriteDxtFile(outputName.c_str(), image->width, image->height, image->data, 
 			descriptor.dxtCompression.format, mipmupNumber))
 		{
