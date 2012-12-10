@@ -11,6 +11,13 @@
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
 		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
 		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
+		4965F6D41671E8D600113FB8 /* libnvtt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6CB1671E8BC00113FB8 /* libnvtt.a */; };
+		4965F6D51671E90800113FB8 /* libnvcore.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6C11671E8BC00113FB8 /* libnvcore.a */; };
+		4965F6D61671E90800113FB8 /* libnvimage.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6C31671E8BC00113FB8 /* libnvimage.a */; };
+		4965F6D71671E90800113FB8 /* libnvmath.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6C51671E8BC00113FB8 /* libnvmath.a */; };
+		4965F6D81671E96B00113FB8 /* libposh.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6C71671E8BC00113FB8 /* libposh.a */; };
+		4965F6D91671E96B00113FB8 /* libsquish.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4965F6C91671E8BC00113FB8 /* libsquish.a */; };
+		4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
@@ -352,6 +359,55 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4965F6C01671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F5D61670FF2200113FB8;
+			remoteInfo = nvcore;
+		};
+		4965F6C21671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F5FE1671017200113FB8;
+			remoteInfo = nvimage;
+		};
+		4965F6C41671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6251671042900113FB8;
+			remoteInfo = nvmath;
+		};
+		4965F6C61671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F64E167104D900113FB8;
+			remoteInfo = posh;
+		};
+		4965F6C81671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6651671E52200113FB8;
+			remoteInfo = squish;
+		};
+		4965F6CA1671E8BC00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4965F6731671E6C800113FB8;
+			remoteInfo = nvtt;
+		};
+		4965F6D21671E8CB00113FB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4965F6721671E6C800113FB8;
+			remoteInfo = nvtt;
+		};
 		5C7F465215B449450038AF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */;
@@ -386,6 +442,9 @@
 		4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorCustomColors.h; path = Classes/SceneEditor/LandscapeEditorCustomColors.h; sourceTree = "<group>"; };
 		4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeToolsPanelCustomColors.cpp; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.cpp; sourceTree = "<group>"; };
 		4940AF70164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeToolsPanelCustomColors.h; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.h; sourceTree = "<group>"; };
+		4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NVTT.xcodeproj; path = ../../Libs/NVTT/NVTT.xcodeproj; sourceTree = "<group>"; };
+		4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
+		4965F6DC1671EA6900113FB8 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
@@ -1110,6 +1169,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4965F6D81671E96B00113FB8 /* libposh.a in Frameworks & Libraries */,
+				4965F6D91671E96B00113FB8 /* libsquish.a in Frameworks & Libraries */,
+				4965F6D51671E90800113FB8 /* libnvcore.a in Frameworks & Libraries */,
+				4965F6D61671E90800113FB8 /* libnvimage.a in Frameworks & Libraries */,
+				4965F6D71671E90800113FB8 /* libnvmath.a in Frameworks & Libraries */,
+				4965F6D41671E8D600113FB8 /* libnvtt.a in Frameworks & Libraries */,
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
@@ -1132,6 +1197,7 @@
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
+				4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */,
 				5CCC10B315B45FC200DA83EB /* libbz2.dylib */,
 				5CCC10B115B45FBB00DA83EB /* libz.dylib */,
 				5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */,
@@ -1146,6 +1212,19 @@
 				5C190C9615AEC58B005731F8 /* Products */,
 			);
 			name = ResourceEditorQt;
+			sourceTree = "<group>";
+		};
+		4965F6AE1671E8BB00113FB8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4965F6C11671E8BC00113FB8 /* libnvcore.a */,
+				4965F6C31671E8BC00113FB8 /* libnvimage.a */,
+				4965F6C51671E8BC00113FB8 /* libnvmath.a */,
+				4965F6C71671E8BC00113FB8 /* libposh.a */,
+				4965F6C91671E8BC00113FB8 /* libsquish.a */,
+				4965F6CB1671E8BC00113FB8 /* libnvtt.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		5C190C9615AEC58B005731F8 /* Products */ = {
@@ -1693,6 +1772,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */,
+				4965F6DC1671EA6900113FB8 /* DXTConverter.h */,
 				E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */,
 				E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */,
 				E8C9B3E1166794EB00810605 /* ColorControl.cpp */,
@@ -2221,6 +2302,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4965F6D31671E8CB00113FB8 /* PBXTargetDependency */,
 				5C7F49F515B44ECD0038AF3A /* PBXTargetDependency */,
 			);
 			name = ResourceEditorQt;
@@ -2255,6 +2337,10 @@
 					ProductGroup = 5C7F464F15B449450038AF3A /* Products */;
 					ProjectRef = 5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */;
 				},
+				{
+					ProductGroup = 4965F6AE1671E8BB00113FB8 /* Products */;
+					ProjectRef = 4965F6AD1671E8BB00113FB8 /* NVTT.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -2264,6 +2350,48 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		4965F6C11671E8BC00113FB8 /* libnvcore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvcore.a;
+			remoteRef = 4965F6C01671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4965F6C31671E8BC00113FB8 /* libnvimage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvimage.a;
+			remoteRef = 4965F6C21671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4965F6C51671E8BC00113FB8 /* libnvmath.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvmath.a;
+			remoteRef = 4965F6C41671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4965F6C71671E8BC00113FB8 /* libposh.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libposh.a;
+			remoteRef = 4965F6C61671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4965F6C91671E8BC00113FB8 /* libsquish.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsquish.a;
+			remoteRef = 4965F6C81671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4965F6CB1671E8BC00113FB8 /* libnvtt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnvtt.a;
+			remoteRef = 4965F6CA1671E8BC00113FB8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		5C7F465315B449450038AF3A /* libFrameworkQt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2643,6 +2771,7 @@
 				E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */,
 				E86E3545166D2E7A00291970 /* QSceneGraphTreeView.cpp in Build Sources */,
 				E86E3547166D2F5C00291970 /* QSceneGraphTreeView_moc.cpp in Build Sources */,
+				4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2650,6 +2779,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4965F6D31671E8CB00113FB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = nvtt;
+			targetProxy = 4965F6D21671E8CB00113FB8 /* PBXContainerItemProxy */;
+		};
 		5C7F49F515B44ECD0038AF3A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FrameworkQt;
@@ -2755,6 +2889,41 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+					"../../Libs/nvidia-texture-tools/include",
+				);
 			};
 			name = Release;
 		};
@@ -2765,6 +2934,41 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+					"../../Libs/nvidia-texture-tools/include",
+				);
 			};
 			name = Debug;
 		};
