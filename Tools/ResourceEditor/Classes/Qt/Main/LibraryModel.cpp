@@ -14,23 +14,24 @@ using namespace DAVA;
 
 LibraryModel::LibraryModel(QObject *parent)
     :   QFileSystemModel(parent)
-    ,   attachedTreeView(NULL)
+    //,   attachedTreeView(NULL)
 {
-    fileSelectionModel = new FileSelectionModel(this);
+    //fileSelectionModel = new FileSelectionModel(this);
     
     QStringList nameFilters;
     nameFilters << QString("*.sc2");
     nameFilters << QString("*.dae");
+
     setNameFilters(nameFilters);
     setNameFilterDisables(false);
 }
 
 LibraryModel::~LibraryModel()
 {
-    SafeDelete(fileSelectionModel);
+    //SafeDelete(fileSelectionModel);
 }
 
-
+/*
 void LibraryModel::Deactivate()
 {
     attachedTreeView = NULL;
@@ -51,24 +52,21 @@ void LibraryModel::Activate(QTreeView *view)
         attachedTreeView->setColumnHidden(i, true);
     }
     
-    Reload();
+    SetLibraryPath();
 }
+*/
 
-void LibraryModel::Reload()
+void LibraryModel::SetLibraryPath(const QString &path)
 {
-	QString rootPath = QStylePathname(EditorSettings::Instance()->GetDataSourcePath()); 
-
-	setRootPath(rootPath);
-    if(attachedTreeView)
-    {
-        attachedTreeView->setRootIndex(index(rootPath));
-    }
+	setRootPath(QDir(path).canonicalPath());
 }
 
+/*
 FileSelectionModel * LibraryModel::GetSelectionModel()
 {
     return fileSelectionModel;
 }
+*/
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
@@ -78,8 +76,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
         
         if(info.isFile())
         {
-            String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(info.fileName()));
-            if(0 == CompareCaseInsensitive(".sc2", extension))
+            if(0 == CompareCaseInsensitive(".sc2", info.suffix().toStdString()))
             {
                 return QColor(158, 0, 0);
             }
@@ -90,7 +87,8 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
     return QFileSystemModel::data(index, role);
 }
 
-bool LibraryModel::SelectFile(const DAVA::String &pathname)
+/*
+bool LibraryModel::SelectFile(const QString &path)
 {
 	if(!attachedTreeView)
 		return false;
@@ -102,11 +100,5 @@ bool LibraryModel::SelectFile(const DAVA::String &pathname)
 
 	return true;
 }
-
-QString LibraryModel::QStylePathname(const DAVA::String &pathname)
-{
-	QString pathnameQt(pathname.c_str());
-	QDir pathnameDirObject(pathnameQt);
-	return pathnameDirObject.canonicalPath(); 
-}
+*/
 

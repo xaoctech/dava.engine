@@ -17,30 +17,19 @@ ProjectManager::~ProjectManager()
 
 }
 
-void ProjectManager::ProjectOpenDialog()
+QString ProjectManager::CurProjectPath()
 {
-	ProjectClose();
-	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+	return curProjectPath;
+}
 
-	if(0 < path.size())
-	{
-		DAVA::String projectPath = PathnameToDAVAStyle(path);
-		if('/' != projectPath[projectPath.length() - 1])
-		{
-			projectPath += '/';
-		}
+QString ProjectManager::CurProjectDataSourcePath()
+{
+	return QString(EditorSettings::Instance()->GetDataSourcePath().c_str());
+}
 
-		DAVA::String dataSource3Dpathname = projectPath + DAVA::String("DataSource/3d/");
-
-		EditorSettings::Instance()->SetProjectPath(projectPath);
-		EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
-		EditorSettings::Instance()->Save();
-
-		SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
-		SceneValidator::Instance()->SetPathForChecking(projectPath);
-
-		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
-	}
+QString ProjectManager::ProjectOpenDialog()
+{
+	return QFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
 }
 
 void ProjectManager::ProjectOpen(const QString &path)
@@ -50,6 +39,26 @@ void ProjectManager::ProjectOpen(const QString &path)
 		ProjectClose();
 
 		curProjectPath = path;
+
+		if(!curProjectPath.isEmpty())
+		{
+			DAVA::String projectPath = PathnameToDAVAStyle(path);
+			if('/' != projectPath[projectPath.length() - 1])
+			{
+				projectPath += '/';
+			}
+
+			DAVA::String dataSource3Dpathname = projectPath + DAVA::String("DataSource/3d/");
+
+			EditorSettings::Instance()->SetProjectPath(projectPath);
+			EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
+			EditorSettings::Instance()->Save();
+
+			SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
+			SceneValidator::Instance()->SetPathForChecking(projectPath);
+
+			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+		}
 
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)
