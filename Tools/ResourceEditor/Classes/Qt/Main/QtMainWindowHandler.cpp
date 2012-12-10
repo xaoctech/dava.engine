@@ -106,7 +106,9 @@ void QtMainWindowHandler::OpenProject()
     Execute(new CommandOpenProject());
 	emit ProjectChanged();
 	*/
-	ProjectManager::Instance()->ProjectOpenDialog();
+
+	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+	ProjectManager::Instance()->ProjectOpen(newPath);
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)

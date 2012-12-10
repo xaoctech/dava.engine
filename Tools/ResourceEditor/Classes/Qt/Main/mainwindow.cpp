@@ -28,14 +28,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
 {
-    ui->setupUi(this);
+	new ProjectManager();
+	new SceneDataManager();
+	new QtMainWindowHandler(this);
+
+	ui->setupUi(this);
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
-    
-	new ProjectManager();
-	new SceneDataManager();
-    new QtMainWindowHandler(this);
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
@@ -65,22 +65,23 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupMainMenu();
     SetupToolBar();
     SetupDockWidgets();
-    SetupProjectPath();
-    
+
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+
+	OpenLastProject();
 
 	posSaver.Attach(this, __FUNCTION__);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	GUIState::Instance()->Release();
+	delete ui;
+    
 	QtMainWindowHandler::Instance()->Release();
 	SceneDataManager::Instance()->Release();
-    
-    GUIState::Instance()->Release();
-    
-    delete ui;
+	ProjectManager::Instance()->Release();
 
     //SafeDelete(libraryModel);
 }
@@ -235,21 +236,25 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
 }
 
-void QtMainWindow::SetupProjectPath()
+void QtMainWindow::OpenLastProject()
 {
     if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+
         if(projectPath.empty())
         {
-            QtMainWindowHandler::Instance()->OpenProject();
-            projectPath = EditorSettings::Instance()->GetProjectPath();
-
-            if(projectPath.empty())
-            {
-                QtLayer::Instance()->Quit();
-            }
+			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
         }
+
+		if(projectPath.empty())
+		{
+			QtLayer::Instance()->Quit();
+		}
+		else
+		{
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+		}
     }
 }
 

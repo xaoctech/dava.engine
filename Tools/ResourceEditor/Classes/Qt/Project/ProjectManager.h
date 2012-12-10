@@ -12,8 +12,11 @@ public:
 	ProjectManager();
 	~ProjectManager();
 
+	QString CurProjectPath();
+	QString CurProjectDataSourcePath();
+
 public slots:
-	void ProjectOpenDialog();
+	QString ProjectOpenDialog();
 	void ProjectOpen(const QString &path);
 	void ProjectClose();
 
