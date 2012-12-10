@@ -40,7 +40,7 @@
 #include "HashMapTest.h"
 #include "SoundTest.h"
 #include "SplitTest.h"
-//#include "PVRTest.h"
+#include "PVRTest.h"
 #include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
@@ -69,15 +69,15 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    //new CloneTest();
-    //new PVRTest();
+    new CloneTest();
+    new PVRTest();
 	new DXTTest();
-	//new EntityTest();	
-	//new MemoryAllocatorsTest();
-	//new HashMapTest();
-	//new SoundTest();
-	//new SplitTest();
-    //new KeyedArchiveYamlTest();
+	new EntityTest();	
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
+    new KeyedArchiveYamlTest();
     
     errors.reserve(TestCount());
 

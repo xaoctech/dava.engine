@@ -120,16 +120,17 @@ bool DXTTest::IsCurrentTestAccepted()
         return false;
     }
 
-	if(formats[currentTest] == FORMAT_DXT1		||
-	   formats[currentTest] == FORMAT_DXT1NM	||
-	   formats[currentTest] == FORMAT_DXT1A		||
-	   formats[currentTest] == FORMAT_DXT3		||
-	   formats[currentTest] == FORMAT_DXT5		||
-	   formats[currentTest] == FORMAT_DXT5NM)
-	{
-		if(!deviceCaps.isDXTSupported)
-			return false;
-	}
+	//Checks hardware dxt support. We are able to load dxt programmatically
+//	if(formats[currentTest] == FORMAT_DXT1		||
+//	   formats[currentTest] == FORMAT_DXT1NM	||
+//	   formats[currentTest] == FORMAT_DXT1A		||
+//	   formats[currentTest] == FORMAT_DXT3		||
+//	   formats[currentTest] == FORMAT_DXT5		||
+//	   formats[currentTest] == FORMAT_DXT5NM)
+//	{
+//		if(!deviceCaps.isDXTSupported)
+//			return false;
+//	}
 
     return true;
 }
@@ -142,7 +143,6 @@ void DXTTest::ReloadSprites()
     SafeRelease(decompressedPNGSprite);
 
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/PNG/number_%d.png", currentTest)));
-	//TODO: dxtSprite should be loaded from *.dds file instead of png. Change ext after engine is able to load *.dds files
     dxtSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/DXT/number_%d.dds", currentTest)));
     decompressedPNGSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/DXTTest/DecompressedPNG/number_%d.png", currentTest)));
 }
