@@ -180,7 +180,7 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
+	TextureBrowser *textureBrowser = new TextureBrowser((QWidget *) parent());
 	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
 	
 	textureBrowser->sceneActivated(activeScene);

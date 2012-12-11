@@ -7,10 +7,10 @@
 #include "Classes/Qt/Scene/SceneDataManager.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
-#include "Classes/Qt/TextureDialog/TextureConvertor.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Main/PointerHolder.h"
 #include "Classes/Qt/Project/ProjectManager.h"
-#include "LibraryModel.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QToolBar>
 
@@ -37,27 +37,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
  
     qApp->installEventFilter(this);
 
-	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
-
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
-    //libraryModel = new LibraryModel(this);
-
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
 
-    //SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    //SceneDataManager::Instance()->SetLibraryModel(libraryModel);
-    //libraryModel->Activate(ui->libraryView);
-    
     RegisterBasePointerTypes();
-    
-	/*
-    if(DAVA::Core::Instance())
-    {
-		ProjectChanged();
-    }
-	*/
-    
+   
     new GUIState();
 
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");

@@ -6,7 +6,7 @@
 #include "Scene/SceneDataManager.h"
 #include "Commands/LibraryCommands.h"
 #include "Commands/CommandsManager.h"
-#include "Main/LibraryModel.h"
+#include "DockLibrary/LibraryModel.h"
 
 class ContextMenuAction : public QAction
 {
