@@ -16,6 +16,7 @@ LibraryView::LibraryView(QWidget *parent /* = 0 */)
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed(const QString &)), this, SLOT(ProjectClosed(const QString &)));
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(ShowContextMenu(const QPoint &)));
+	QObject::connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(FileSelectionChanged(const QItemSelection &, const QItemSelection &)));
 
 	// hide columns with size/modif date etc.
 	for(int32 i = 1; i < libModel->columnCount(); ++i)
@@ -75,4 +76,21 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 void LibraryView::ModelRootPathChanged(const QString & newPath)
 {
 	setRootIndex(libModel->index(newPath));
+}
+
+void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+	DAVA::String previewPath;
+	const QModelIndex index = selected.indexes().first();
+
+	if(index.isValid())
+	{
+		QFileInfo fileInfo = libModel->fileInfo(index);
+		if(0 == fileInfo.suffix().compare("sc2", Qt::CaseInsensitive))
+		{
+			previewPath = fileInfo.filePath().toStdString();
+		}
+	}
+
+	SceneDataManager::Instance()->SceneShowPreview(previewPath);
 }
