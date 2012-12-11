@@ -53,6 +53,7 @@ public slots:
 protected slots:
 	void ModelRootPathChanged(const QString & newPath);
 	void ShowContextMenu(const QPoint &point);
+	void FileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
 	LibraryModel *libModel;

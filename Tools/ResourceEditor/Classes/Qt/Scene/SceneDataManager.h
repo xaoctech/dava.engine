@@ -33,6 +33,8 @@ public:
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
 	DAVA::int32			SceneCount();
+	void				SceneShowPreview(const DAVA::String &path);
+	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
 	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
