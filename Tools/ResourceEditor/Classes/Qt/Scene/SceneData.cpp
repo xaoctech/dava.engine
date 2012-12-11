@@ -19,8 +19,7 @@
 #include "Main/QtUtils.h"
 #include "Main/PointerHolder.h"
 
-#include "Main/LibraryModel.h"
-#include "Main/FileSelectionModel.h"
+#include "DockLibrary//LibraryModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>

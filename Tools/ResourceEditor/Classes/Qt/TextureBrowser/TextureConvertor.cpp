@@ -2,7 +2,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
-#include "TextureDialog/TextureConvertor.h"
+#include "TextureBrowser/TextureConvertor.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
 #include "SceneEditor/PVRConverter.h"

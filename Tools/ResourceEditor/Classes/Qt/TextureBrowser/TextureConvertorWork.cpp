@@ -1,4 +1,4 @@
-#include "TextureDialog/TextureConvertorWork.h"
+#include "TextureBrowser/TextureConvertorWork.h"
 
 JobStack::JobStack()
 	: head(NULL)

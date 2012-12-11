@@ -1,7 +1,6 @@
 #include "SceneDataManager.h"
 
 #include "Main/SceneGraphModel.h"
-#include "Main/LibraryModel.h"
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/PVRConverter.h"
@@ -13,8 +12,6 @@ using namespace DAVA;
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
-//    ,   libraryView(NULL)
-//    ,   libraryModel(NULL)
 {
 }
 
@@ -147,18 +144,6 @@ void SceneDataManager::SetSceneGraphView(QTreeView *view)
 {
     sceneGraphView = view;
 }
-
-/*
-void SceneDataManager::SetLibraryView(QTreeView *view)
-{
-    libraryView = view;
-}
-
-void SceneDataManager::SetLibraryModel(LibraryModel *model)
-{
-    libraryModel = model;
-}
-*/
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {

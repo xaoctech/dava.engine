@@ -1,4 +1,4 @@
-#include "TextureDialog/TextureProperties.h"
+#include "TextureBrowser/TextureProperties.h"
 #include "QtPropertyBrowser/qtpropertymanager.h"
 #include "QtPropertyBrowser/qteditorfactory.h"
 

@@ -7,7 +7,7 @@
 #include "DAVAEngine.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/RenderManager.h"
-#include "TextureDialog/TextureConvertorWork.h"
+#include "TextureBrowser/TextureConvertorWork.h"
 
 #define CONVERT_JOB_COUNT 2
 
