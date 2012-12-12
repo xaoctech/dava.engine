@@ -57,11 +57,14 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	OpenLastProject();
 
-	posSaver.Attach(this, __FUNCTION__);
+	posSaver.Attach(this);
+	posSaver.LoadState(this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	posSaver.SaveState(this);
+
 	GUIState::Instance()->Release();
 	delete ui;
     

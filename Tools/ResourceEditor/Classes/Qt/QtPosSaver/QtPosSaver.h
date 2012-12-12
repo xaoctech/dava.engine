@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QDialog>
+#include <QSplitter>
+#include <QMainWindow>
 #include "DAVAEngine.h"
 
 class QtPosSaver
@@ -11,12 +13,25 @@ public:
 	QtPosSaver();
 	virtual ~QtPosSaver();
 
-	void Attach(QWidget *widget, const DAVA::String &classKey);
+	void Attach(QWidget *widget);
+
+	void SaveGeometry(QWidget *widget);
+	void LoadGeometry(QWidget *widget);
+
+	void SaveState(QSplitter *splitter);
+	void LoadState(QSplitter *splitter);
+
+	void SaveState(QMainWindow *mainwindow);
+	void LoadState(QMainWindow *mainwindow);
+
+protected:
+	QWidget *attachedWidget;
+	QString attachedWidgetName;
+
+	void Save(const QString &key, QByteArray &data);
+	QByteArray Load(const QString &key);
 
 private:
-	QWidget *m_widget;
-	DAVA::String m_classKey;
-
 	static bool settingsArchiveIsLoaded;
 	static DAVA::KeyedArchive settingsArchive;
 };
