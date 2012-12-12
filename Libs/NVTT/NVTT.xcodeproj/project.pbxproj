@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		493DD3C61678BE60000B516E /* nvtt_extra.h in Headers */ = {isa = PBXBuildFile; fileRef = 493DD3C51678BE60000B516E /* nvtt_extra.h */; };
 		4965F5DE1670FF9100113FB8 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5031670FE1800113FB8 /* Debug.cpp */; };
 		4965F5E41670FF9100113FB8 /* Library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5091670FE1800113FB8 /* Library.cpp */; };
 		4965F5E61670FF9100113FB8 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F50B1670FE1800113FB8 /* Memory.cpp */; };
@@ -116,6 +117,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		493DD3C51678BE60000B516E /* nvtt_extra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nvtt_extra.h; sourceTree = "<group>"; };
 		4965F4FE1670FE1800113FB8 /* nvconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nvconfig.h; sourceTree = "<group>"; };
 		4965F5001670FE1800113FB8 /* BitArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BitArray.h; sourceTree = "<group>"; };
 		4965F5021670FE1800113FB8 /* Containers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Containers.h; sourceTree = "<group>"; };
@@ -464,6 +466,7 @@
 		4965F5531670FE1800113FB8 /* nvtt */ = {
 			isa = PBXGroup;
 			children = (
+				493DD3C51678BE60000B516E /* nvtt_extra.h */,
 				4965F5551670FE1800113FB8 /* CompressDXT.cpp */,
 				4965F5561670FE1800113FB8 /* CompressDXT.h */,
 				4965F5571670FE1800113FB8 /* CompressionOptions.cpp */,
@@ -680,6 +683,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				493DD3C61678BE60000B516E /* nvtt_extra.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

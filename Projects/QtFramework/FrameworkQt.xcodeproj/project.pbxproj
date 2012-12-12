@@ -2195,7 +2195,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/nvidia-texture-tools/include",
+					../../Libs/NVTT/Sources,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2225,7 +2225,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"../../Libs/nvidia-texture-tools/include",
+					../../Libs/NVTT/Sources,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
