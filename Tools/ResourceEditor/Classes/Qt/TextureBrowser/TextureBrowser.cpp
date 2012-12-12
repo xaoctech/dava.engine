@@ -73,11 +73,14 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 
 	// ui->splitter->setSizes(QList<int>() << 60 << 0 << 40);
 
-	posSaver.Attach(this, __FUNCTION__);
+	posSaver.Attach(this);
+	posSaver.LoadState(ui->splitterMain);
 }
 
 TextureBrowser::~TextureBrowser()
 {
+	posSaver.SaveState(ui->splitterMain);
+
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
