@@ -273,7 +273,7 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 LIBS_PATH := $(call host-path,$(LOCAL_PATH)/../../Libs/libs)
 
-LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2
+LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2 -lEGL
 LOCAL_LDLIBS += $(LIBS_PATH)/libzip_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libxml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
@@ -286,7 +286,7 @@ LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
 # set arm mode
-LOCAL_ARM_MODE := arm
+# LOCAL_ARM_MODE := arm
 
 
 # set included libraries
