@@ -210,12 +210,8 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-    
-	// TODO:
-	// convert
-	// ...
-	bool flag = true;
-	if(NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
+	bool isDXTSupported = false;
+	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
 		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
 		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
@@ -233,11 +229,11 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 			}
 
 			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
-			flag = false;
+			isDXTSupported = true;
 		}
 	}
 
-	if(flag)
+	if (!isDXTSupported)
 	{
 		QRect r(0, 0, 200, 200);
 		convertedImage = QImage(r.size(), QImage::Format_ARGB32);

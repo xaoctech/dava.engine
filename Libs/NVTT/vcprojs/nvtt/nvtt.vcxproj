@@ -91,6 +91,7 @@
     <ClInclude Include="..\..\Sources\nvtt\Decompressor.h" />
     <ClInclude Include="..\..\Sources\nvtt\InputOptions.h" />
     <ClInclude Include="..\..\Sources\nvtt\nvtt.h" />
+    <ClInclude Include="..\..\Sources\nvtt\nvtt_extra.h" />
     <ClInclude Include="..\..\Sources\nvtt\nvtt_wrapper.h" />
     <ClInclude Include="..\..\Sources\nvtt\OptimalCompressDXT.h" />
     <ClInclude Include="..\..\Sources\nvtt\OutputOptions.h" />

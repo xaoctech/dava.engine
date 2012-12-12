@@ -21,30 +21,37 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef NV_TT_QUICKCOMPRESSDXT_H
-#define NV_TT_QUICKCOMPRESSDXT_H
+#ifndef NV_TT_EXTR_H
+#define NV_TT_EXTR_H
 
-#include <nvimage/nvimage.h>
 
-namespace nv
+#include "nvtt.h"
+
+// Public interface.
+namespace nvtt
 {
-	struct ColorBlock;
-	struct BlockDXT1;
-	struct BlockDXT3;
-	struct BlockDXT5;
-	struct AlphaBlockDXT3;
-	struct AlphaBlockDXT5;
-
-	namespace QuickCompress
+		
+	/// Texture decompressor.
+	struct Decompressor
 	{
-		void compressDXT1(const ColorBlock & rgba, BlockDXT1 * dxtBlock);
-		void compressDXT1a(const ColorBlock & rgba, BlockDXT1 * dxtBlock);
-		
-		void compressDXT3(const ColorBlock & rgba, BlockDXT3 * dxtBlock);
-		
-		void compressDXT5A(const ColorBlock & rgba, AlphaBlockDXT5 * dxtBlock, int iterationCount=8);
-		void compressDXT5(const ColorBlock & rgba, BlockDXT5 * dxtBlock, int iterationCount=8);
-	}
-} // nv namespace
+		NVTT_DECLARE_PIMPL(Decompressor);
 
-#endif // NV_TT_QUICKCOMPRESSDXT_H
+		NVTT_API Decompressor();
+		NVTT_API ~Decompressor();
+		
+		NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
+		
+		NVTT_API void erase();
+
+		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
+
+		NVTT_API bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size) const;
+		
+		NVTT_API bool getCompressionFormat(Format & comprFormat) const;
+		
+	};
+	
+
+} // nvtt namespace
+
+#endif // NV_TT_EXTR_H

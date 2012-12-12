@@ -45,7 +45,7 @@ Decompressor::Decompressor() : m(*new Decompressor::Private())
 
 Decompressor::~Decompressor()
 {
-	m.erase();
+	erase();
 	delete &m;
 }
 
@@ -118,33 +118,34 @@ bool Decompressor::Private::decompress(void * data, unsigned int size, unsigned 
 }
 
 //NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
-bool Decompressor::getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * height, unsigned int * size)  const
+bool Decompressor::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size)  const
 {
 	return m.getInfo(mipmapCount, width, height, size);
 }
 
-bool Decompressor::Private::getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * height, unsigned int * size) const
+bool Decompressor::Private::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size) const
 {
-	if(NULL == mipmapCount || NULL == m_dds || NULL == width || NULL == height || NULL == size)
+	if(NULL == m_dds)
 	{
 		return false;
 	}
-	*mipmapCount = m_dds->mipmapCount();
-	*width = m_dds->width();
-	*height = m_dds->height();
-	*size = m_dds->size();
+
+	mipmapCount = m_dds->mipmapCount();
+	width = m_dds->width();
+	height = m_dds->height();
+	size = m_dds->size();
 	return true;
 }
 
-bool Decompressor::getCompressionFormat(Format * comprFormat) const
+bool Decompressor::getCompressionFormat(Format & comprFormat) const
 {
 	return m.getCompressionFormat(comprFormat);
 }
 
-bool Decompressor::Private::getCompressionFormat(Format * comprFormat) const
+bool Decompressor::Private::getCompressionFormat(Format & comprFormat) const
 {
-	if(NULL == comprFormat)
-		return false;
-
-	return m_dds->getFormat(comprFormat);
+	Format tmp;
+	bool retValue = m_dds->getFormat(&tmp);
+	comprFormat = tmp;
+	return retValue;
 }

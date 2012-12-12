@@ -296,26 +296,6 @@ namespace nvtt
 		NVTT_API int estimateSize(const InputOptions & inputOptions, const CompressionOptions & compressionOptions) const;
 	};
 	
-	/// Texture decompressor.
-	struct Decompressor
-	{
-		NVTT_DECLARE_PIMPL(Decompressor);
-
-		NVTT_API Decompressor();
-		NVTT_API ~Decompressor();
-		
-		NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
-		
-		NVTT_API void erase();
-
-		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
-
-		NVTT_API bool getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * heigth, unsigned int * size) const;
-		
-		NVTT_API bool getCompressionFormat(Format * comprFormat) const;
-		
-	};
-	
 	// Return string for the given error code.
 	NVTT_API const char * errorString(Error e);
 
