@@ -5,7 +5,7 @@
 
 #include <nvcore/Ptr.h>
 
-#include "nvtt.h"
+#include "nvtt_extra.h"
 #include <nvimage/DirectDrawSurface.h>
 
 namespace nvtt
@@ -23,9 +23,9 @@ namespace nvtt
 
 		bool decompress(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
-		bool getInfo(unsigned int * mipmapCount, unsigned int * width, unsigned int * heigth, unsigned int * size) const;
+		bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size) const;
 
-		bool getCompressionFormat(Format * comprFormat) const;
+		bool getCompressionFormat(Format & comprFormat) const;
 
 		private:
 

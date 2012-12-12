@@ -873,7 +873,9 @@
     <ClInclude Include="_GeneratedQt\ui_texturedialog.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataQt\mainwindow.ui" />
+    <None Include="DataQt\mainwindow.ui">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\texturedialog.ui" />
     <None Include="MakefileQt" />

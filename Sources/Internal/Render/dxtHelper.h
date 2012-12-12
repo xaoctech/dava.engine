@@ -6,6 +6,7 @@
 #include "Base/BaseObject.h"
 #include "Render/Image.h"
 #include <nvtt/nvtt.h>
+#include <nvtt/nvtt_extra.h>
 
 namespace DAVA 
 {
@@ -17,8 +18,6 @@ class Image;
 class DxtWrapper
 {
 public:
-    
-
 	static bool IsDxtFile(const char *fileName);
 
 	//input data only in RGBA8888
@@ -28,13 +27,11 @@ public:
 
 	static PixelFormat GetPixelFormat(const char* fileName);
 
-	static bool getTextureSize(const char *fileName, uint32 * width,  uint32 * height);
+	static bool GetTextureSize(const char *fileName, uint32 & width, uint32 & height);
 
 	static uint32 GetMipMapLevelsCount(const char *fileName);
 
 	static uint32 GetDataSize(const char *fileName);
-
-	static void Test();
 
 private:
 

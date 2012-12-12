@@ -107,6 +107,9 @@
     <ClInclude Include="..\..\Sources\nvtt\cuda\CudaUtils.h">
       <Filter>cuda</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\nvtt\nvtt_extra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\nvtt\cuda\CompressKernel.cu">

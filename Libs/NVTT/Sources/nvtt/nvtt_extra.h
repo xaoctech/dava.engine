@@ -21,62 +21,37 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef NV_IMAGE_PIXELFORMAT_H
-#define NV_IMAGE_PIXELFORMAT_H
-
-#include <nvimage/nvimage.h>
+#ifndef NV_TT_EXTR_H
+#define NV_TT_EXTR_H
 
 
-namespace nv
+#include "nvtt.h"
+
+// Public interface.
+namespace nvtt
 {
-	namespace PixelFormat
+		
+	/// Texture decompressor.
+	struct Decompressor
 	{
+		NVTT_DECLARE_PIMPL(Decompressor);
 
-		// Convert component @a c having @a inbits to the returned value having @a outbits.
-		inline uint convert(uint c, uint inbits, uint outbits)
-		{
-			if (inbits == 0)
-			{
-				return 0;
-			}
-			else if (inbits >= outbits)
-			{
-				// truncate
-				return c >> (inbits - outbits);
-			}
-			else
-			{
-				// bitexpand
-				return (c << (outbits - inbits)) | convert(c, inbits, outbits - inbits);
-			}
-		}
+		NVTT_API Decompressor();
+		NVTT_API ~Decompressor();
+		
+		NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
+		
+		NVTT_API void erase();
 
-		// Get pixel component shift and size given its mask.
-		inline void maskShiftAndSize(uint mask, uint * shift, uint * size)
-		{
-			if (!mask)
-			{
-				*shift = 0;
-				*size = 0;
-				return;
-			}
+		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
-			*shift = 0;
-			while((mask & 1) == 0) {
-				++(*shift);
-				mask >>= 1;
-			}
-			
-			*size = 0;
-			while((mask & 1) == 1) {
-				++(*size);
-				mask >>= 1;
-			}
-		}
+		NVTT_API bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size) const;
+		
+		NVTT_API bool getCompressionFormat(Format & comprFormat) const;
+		
+	};
+	
 
-	} // PixelFormat namespace
+} // nvtt namespace
 
-} // nv namespace
-
-
-#endif // NV_IMAGE_PIXELFORMAT_H
+#endif // NV_TT_EXTR_H

@@ -509,8 +509,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
             return false;
         }
         
-        
-        
+
         RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
         GenerateID();
@@ -529,7 +528,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         RenderManager::Instance()->LockNonMain();
         for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
         {
-            TexImage(i, imageSet[i]->width, imageSet[i]->height, imageSet[i]->data, imageSet[i]->dataSize);
+			TexImage(i, imageSet[i]->width, imageSet[i]->height, imageSet[i]->data, imageSet[i]->dataSize);
             SafeRelease(imageSet[i]);
         }
         

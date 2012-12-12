@@ -18,7 +18,6 @@ DXTTest::DXTTest()
     String testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + String("/DXTTest/");
     FileSystem::Instance()->CreateDirectory(testFolder, true);
 
-    
     pngSprite = NULL;
     dxtSprite = NULL;
     decompressedPNGSprite = NULL;
@@ -69,7 +68,7 @@ void DXTTest::TestFunction(PerfFuncData * data)
     if(IsCurrentTestAccepted())
     {
         ReloadSprites();
-        
+
         TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, dxtSprite, formats[currentTest]);
         float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
         
@@ -79,10 +78,9 @@ void DXTTest::TestFunction(PerfFuncData * data)
 
         compareResultText->SetText(StringToWString(data->testData.message));
         Logger::Debug(data->testData.message.c_str());
-        
+
         TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
-        
-        
+
         //Save images for visual comparision
         Image *firstComparer = TextureUtils::CreateImageAsRGBA8888(decompressedPNGSprite);
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(dxtSprite);
@@ -91,25 +89,14 @@ void DXTTest::TestFunction(PerfFuncData * data)
         ImageLoader::Save(firstComparer, documentsPath + Format("DXTTest/src_number_%d.png", currentTest));
         ImageLoader::Save(secondComparer, documentsPath + Format("DXTTest/dst_number_%d.png", currentTest));
     }
-    
+
     ++currentTest;
 }
 
 bool DXTTest::IsCurrentTestAccepted()
 {
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    
-#if defined (__DAVAENGINE_ANDROID__)
-    if((formats[currentTest] == FORMAT_PVR2) && !deviceCaps.isPVRTCSupported)
-    {
-        return false;
-    }
-    if((formats[currentTest] == FORMAT_PVR4) && !deviceCaps.isPVRTCSupported)
-    {
-        return false;
-    }
-    
-#endif //#if defined (__DAVAENGINE_ANDROID__)
+
     if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)
     {
         return false;
@@ -159,14 +146,14 @@ void DXTTest::Draw(const DAVA::UIGeometricData &geometricData)
         pngSprite->SetScaleSize(256.f, 256.f);
         pngSprite->Draw();
     }
-    
+
     if(dxtSprite)
     {
         dxtSprite->SetPosition(260.f, 0);
         dxtSprite->SetScaleSize(256.f, 256.f);
         dxtSprite->Draw();
     }
-    
+
     TestTemplate<DXTTest>::Draw(geometricData);
 }
 
