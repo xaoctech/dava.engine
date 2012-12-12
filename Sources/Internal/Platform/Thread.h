@@ -34,6 +34,11 @@
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
 
+#if defined (__DAVAENGINE_ANDROID__)
+	#include <EGL/eglplatform.h>
+	#include <EGL/egl.h>
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+
 namespace DAVA
 {
 /**
@@ -132,11 +137,22 @@ public:
 private:
 	friend void	* PthreadMain(void * param);
 	void		StartAndroid();
-	bool		isMainThread;
+    
+    static pid_t mainThreadId;
+
+	static EGLContext currentContext;
+	static EGLDisplay currentDisplay;
+	static EGLSurface currentDrawSurface;
+	static EGLSurface currentReadSurface;
+
+	EGLContext localContext;
+
 public:
-	void		MainThread();
+
+	static void		InitMainThread();
 	static void		SleepThread(int32 timems);
-#else //PLATFORMS
+
+	#else //PLATFORMS
 	// other platforms
 #endif //PLATFORMS	
 };
