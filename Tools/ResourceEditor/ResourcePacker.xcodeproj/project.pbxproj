@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		493DD3E21678C3AE000B516E /* DXTConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493DD3E01678C3AE000B516E /* DXTConverter.cpp */; };
 		E8C4C820165F66C1009DB9E1 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C81C165F66C1009DB9E1 /* FrameworkMain.cpp */; };
 		E8C4C821165F66C1009DB9E1 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C81E165F66C1009DB9E1 /* GameCore.cpp */; };
 		E8C4C825165F66E0009DB9E1 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C4C823165F66E0009DB9E1 /* PVRConverter.cpp */; };
@@ -52,6 +53,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		493DD3E01678C3AE000B516E /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
+		493DD3E11678C3AE000B516E /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* ResourcePacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ResourcePacker; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859E8B029090EE04C91782 /* ResourceEditorConsole.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ResourceEditorConsole.1; sourceTree = "<group>"; };
 		E8C4C81C165F66C1009DB9E1 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameworkMain.cpp; sourceTree = "<group>"; };
@@ -132,6 +135,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				493DD3DF1678C359000B516E /* DXTConverter */,
 				E8C4C826165F66EC009DB9E1 /* CommandLineTool */,
 				E8C4C822165F66CA009DB9E1 /* PVRConverter */,
 				E8C4C81B165F66C1009DB9E1 /* ResourcePackerSpecific */,
@@ -157,6 +161,15 @@
 				8DD76F6C0486A84900D96B5E /* ResourcePacker */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		493DD3DF1678C359000B516E /* DXTConverter */ = {
+			isa = PBXGroup;
+			children = (
+				493DD3E01678C3AE000B516E /* DXTConverter.cpp */,
+				493DD3E11678C3AE000B516E /* DXTConverter.h */,
+			);
+			name = DXTConverter;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {
@@ -336,6 +349,7 @@
 				E8C4C821165F66C1009DB9E1 /* GameCore.cpp in Sources */,
 				E8C4C825165F66E0009DB9E1 /* PVRConverter.cpp in Sources */,
 				E8C4C829165F66F9009DB9E1 /* CommandLineTool.cpp in Sources */,
+				493DD3E21678C3AE000B516E /* DXTConverter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,6 +373,14 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					./../../Libs/include,
+					../../Libs/NVTT/Sources,
+				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -376,6 +398,14 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					./../../Sources/Internal,
+					./../../Sources/External,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					./../../Libs/include,
+					../../Libs/NVTT/Sources,
+				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
