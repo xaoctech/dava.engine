@@ -1197,6 +1197,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\Lod.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2040,6 +2043,9 @@
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\Transform.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\Lod.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>

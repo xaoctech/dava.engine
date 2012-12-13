@@ -54,6 +54,7 @@ SceneNode::SceneNode()
     , tag(0)
 	, entity(0)
 	, transform(0)
+	, lod(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
 

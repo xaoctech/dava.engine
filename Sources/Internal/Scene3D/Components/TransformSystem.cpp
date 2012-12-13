@@ -1,5 +1,6 @@
 #include "Scene3D/Components/TransformSystem.h"
 #include "Scene3D/Components/Transform.h"
+#include "Scene3D/SceneNode.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
@@ -8,46 +9,20 @@ namespace DAVA
 
 
 TransformSystem::TransformSystem()
-:	localMatrices(0),
-	parentWorldMatrices(0),
-	referenceCounter(0),
-	matrixCount(0)
 {
-	localMatrices = new Matrix4[POOL_SIZE];
-	worldMatrices = new Matrix4[POOL_SIZE];
-	parentWorldMatrices = new Matrix4*[POOL_SIZE];
-	referenceCounter = new uint32[POOL_SIZE];
-	transforms = new Transform*[POOL_SIZE];
 }
 
 TransformSystem::~TransformSystem()
 {
-	SafeDeleteArray(transforms);
-	SafeDeleteArray(referenceCounter);
-	SafeDeleteArray(parentWorldMatrices);
-	SafeDeleteArray(worldMatrices);
-	SafeDeleteArray(localMatrices);
 }
 
 Transform * TransformSystem::CreateTransform()
 {
-	DVASSERT(matrixCount <= POOL_SIZE-1);
     Transform * transform = new Transform();
-
-    transform->localTransform = &localMatrices[matrixCount];
-	*(transform->localTransform) = Matrix4::IDENTITY;
-
-	transform->worldTransform = &worldMatrices[matrixCount];
-	*(transform->worldTransform) = Matrix4::IDENTITY;
-
-    transform->parent = 0;
-	transform->index = matrixCount;
-
-    parentWorldMatrices[matrixCount] = 0;
-    referenceCounter[matrixCount] = 1;
-	transforms[matrixCount] = transform;
-
-    matrixCount++;
+	transform->localMatrix = Matrix4::IDENTITY;
+	transform->worldMatrix = Matrix4::IDENTITY;
+	transform->parentMatrix = 0;
+	transform->parent = 0;
 
 	return transform;
 }
@@ -55,8 +30,8 @@ Transform * TransformSystem::CreateTransform()
 Transform * TransformSystem::CloneTransform(Transform * oldTransform)
 {
 	Transform * newTransform = CreateTransform();
-	*(newTransform->localTransform) = *(oldTransform->localTransform);
-	*(newTransform->worldTransform) = *(oldTransform->worldTransform);
+	newTransform->localMatrix = oldTransform->localMatrix;
+	newTransform->worldMatrix = oldTransform->worldMatrix;
 	newTransform->parent = oldTransform->parent;
 
 	return newTransform;
@@ -64,116 +39,54 @@ Transform * TransformSystem::CloneTransform(Transform * oldTransform)
 
 Transform * TransformSystem::GetTransformWithIncrement(Transform * transform)
 {
-	referenceCounter[transform->GetIndex()]++;
 	return transform;
 }
     
 void TransformSystem::DeleteTransform(Transform * deletingTransform)
 {
-    if(deletingTransform)
-	{
-		int32 index = deletingTransform->GetIndex();
-		referenceCounter[index]--;
-
-		if(referenceCounter[index] == 0)
-		{
-			uint32 copyingCount = matrixCount-index-1;
-
-			Transform ** transformPtr = &(transforms[index+1]);
-			for(uint32 i = 0; i < copyingCount; ++i)
-			{
-				DVASSERT(*transformPtr);
-				Transform * transform = *transformPtr;
-				transform->localTransform--;
-				transform->worldTransform--;
-				transform->index--;
-
-				transformPtr++;
-			}
-			
-			Memmove(&(localMatrices[index]), &(localMatrices[index+1]), copyingCount*sizeof(Matrix4));
-			Memmove(&(worldMatrices[index]), &(worldMatrices[index+1]), copyingCount*sizeof(Matrix4));
-			Memmove(&(parentWorldMatrices[index]), &(parentWorldMatrices[index+1]), copyingCount*sizeof(Matrix4*));
-			Memmove(&(transforms[index]), &(transforms[index+1]), copyingCount*sizeof(Transform*));
-			Memmove(&(referenceCounter[index]), &(referenceCounter[index+1]), copyingCount*sizeof(uint32));
-		}
-	}
+	SafeDelete(deletingTransform);
 }
 
 void TransformSystem::LinkTransform(int32 parentIndex, int32 childIndex)
 {
-    parentWorldMatrices[childIndex] = &(worldMatrices[parentIndex]);
 }
 
 void TransformSystem::UnlinkTransform(int32 childIndex)
 {
-	parentWorldMatrices[childIndex] = 0;
 }
 
 void TransformSystem::Process()
 {
-	Matrix4 ** parentMatrixPtr = parentWorldMatrices;
-	Matrix4 * localMatrix = localMatrices;
-	Matrix4 * worldMatrix = worldMatrices;
-    for(uint32 i = 0; i < matrixCount; ++i)
+	uint32 size = updatableEntities.size();
+	for(uint32 i = 0; i < size; ++i)
 	{
-		if(*parentMatrixPtr)
+		Transform * transform = updatableEntities[i]->GetTransform();
+		if(transform->parentMatrix)
 		{
-			*worldMatrix = (*localMatrix) * (**parentMatrixPtr);
+			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
 		}
-
-		parentMatrixPtr++;
-		localMatrix++;
-		worldMatrix++;
 	}
-}
-    
-int32 TransformSystem::GetMatrixIndex(Matrix4 * matrix)
-{
-    int32 index = (matrix - localMatrices) / sizeof(Matrix4);
-    return index;
+	updatableEntities.clear();
 }
 
 void TransformSystem::SortAndThreadSplit()
 {
-    //// SortMultipleArraysByParrentMatrixPtrAsc()
-    //for (uint32 k = 0; k < matrixCount; ++k)
-    //{
-    //    groupIndex[k] = -1;
-    //}
-    //
-    //int32 nextGroupIndex = 0;
-    //for (uint32 index = 0; index < matrixCount; ++index)
-    //{
-    //    if (parentMatrixArray[index] == 0)
-    //        groupIndex[index] = -1;
-    //    else
-    //    {
-    //        int32 parentIndex = GetMatrixIndex(parentMatrixArray[index]);
-    //        if (groupIndex[parentIndex] == -1)
-    //        {
-    //            groupIndex[parentIndex] = nextGroupIndex;
-    //            groupIndex[index] = nextGroupIndex;
-    //            nextGroupIndex++;
-    //        }
-    //        groupIndex[index] = groupIndex[parentIndex];
-    //    }
-    //}
-    //
-    ////
-    //SortByGroupIndexAndParentPtr();
-    //
-    ///* 
-    // SplitByThreads
-    //int32 groupPerThread = nextGroupIndex / MAX_THREADS;
-    //int32 threadIndex = 0;
-    //for (uint32 index = 0; index < matrixCount; ++index)
-    //{
-    //    if (groupIndex[index] >= 0)
-    //    {
-    //        threads[threadIndex].startIndex = 0;
-    //    }
-    //}*/
+}
+
+void TransformSystem::NeedUpdate(SceneNode * entity)
+{
+	HierahicNeedUpdate(entity);
+	
+}
+
+void TransformSystem::HierahicNeedUpdate(SceneNode * entity)
+{
+	updatableEntities.push_back(entity);
+	uint32 size = entity->GetChildrenCount();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		HierahicNeedUpdate(entity->GetChild(i));
+	}
 }
 
 };

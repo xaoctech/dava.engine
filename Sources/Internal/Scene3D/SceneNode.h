@@ -36,6 +36,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Scene3D/Components/Transform.h"
+#include "Scene3D/Components/Lod.h"
 
 namespace DAVA
 {
@@ -354,6 +355,7 @@ protected:
     KeyedArchive *customProperties;
 
 	Transform * transform;
+	Lod * lod;
     
 private:
     Matrix4 defaultLocalTransform;
@@ -454,6 +456,8 @@ inline const Matrix4 & SceneNode::ModifyLocalTransform()
 inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
 	transform->SetLocalTransform(&newMatrix);
+	TransformSystem::Instance()->NeedUpdate(this);
+
     //localTransform = newMatrix;
     //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
     //if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;

@@ -6,28 +6,25 @@ namespace DAVA
 
 void Transform::SetLocalTransform(const Matrix4 * transform)
 {
-	*localTransform = *transform;
+	localMatrix = *transform;
 	if(!parent)
 	{
-		*worldTransform = *transform;
+		worldMatrix = *transform;
 	}
 }
 
 void Transform::SetParent(SceneNode * node)
 {
 	parent = node;
-	TransformSystem * system = TransformSystem::Instance();
 
 	if(node)
 	{
-		system->LinkTransform(parent->GetTransform()->GetIndex(), GetIndex());
+		parentMatrix = node->GetTransform()->GetWorldTransform();
 	}
 	else
 	{
-		system->UnlinkTransform(GetIndex());
+		parentMatrix = 0;
 	}
 }
-
-
 
 };
