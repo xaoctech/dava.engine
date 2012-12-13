@@ -146,7 +146,7 @@ bool TextureDescriptor::Load(const String &filePathname)
     if(version != CURRENT_VERSION)
     {
         ConvertToCurrentVersion(version, signature, file);
-        Save();
+        SafeRelease(file);
         return true;
     }
     
@@ -172,7 +172,7 @@ bool TextureDescriptor::Load(const String &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT(!pathname.empty() && "Can use this method only after calling Load()");
+    DVASSERT_MSG(!pathname.empty(), "Can use this method only after calling Load()");
     Save(pathname);
 }
     
@@ -266,7 +266,7 @@ void TextureDescriptor::Export(const String &filePathname)
 
 void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
 {
-    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] from version %d", version);
+    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
     
     if(version == 2)
     {

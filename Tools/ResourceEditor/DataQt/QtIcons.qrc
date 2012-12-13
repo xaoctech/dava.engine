@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtImages/tree-doc.png</file>
+    <file>QtImages/tree-folder.png</file>
+    <file>QtImages/tree-folder-opened.png</file>
+    <file>QtImages/tree-closed.png</file>
+    <file>QtImages/tree-end.png</file>
+    <file>QtImages/tree-more.png</file>
+    <file>QtImages/tree-open.png</file>
+    <file>QtImages/tree-vline.png</file>
     <file>QtIconsTextureDialog/filter.png</file>
     <file>QtIconsTextureDialog/alpha.png</file>
     <file>QtIconsTextureDialog/editclear.png</file>

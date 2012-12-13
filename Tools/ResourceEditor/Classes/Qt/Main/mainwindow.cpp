@@ -4,49 +4,46 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Main/GUIState.h"
-#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
-
+#include "Classes/SceneEditor/EditorSettings.h"
+#include "Classes/SceneEditor/CommandLineTool.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Main/PointerHolder.h"
-#include "LibraryModel.h"
+#include "Classes/Qt/Project/ProjectManager.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QToolBar>
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
+#include "../SceneEditor/CommandLineTool.h"
 
 #include <QApplication>
 #include <QPixmap>
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
-    :   QMainWindow(parent)
-    ,   ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+	, convertWaitDialog(NULL)
 {
-    ui->setupUi(this);
+	new ProjectManager();
+	new SceneDataManager();
+	new QtMainWindowHandler(this);
+
+	ui->setupUi(this);
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
-    
-    new QtMainWindowHandler(this);
-	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
 
-    libraryModel = new LibraryModel(this);
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
-    libraryModel->Activate(ui->libraryView);
-    
+
     RegisterBasePointerTypes();
-    
-    if(DAVA::Core::Instance())
-    {
-		ProjectChanged();
-    }
-    
+   
     new GUIState();
 
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -54,23 +51,28 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupMainMenu();
     SetupToolBar();
     SetupDockWidgets();
-    SetupProjectPath();
-    
+
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-	posSaver.Attach(this, __FUNCTION__);
+	OpenLastProject();
+
+	posSaver.Attach(this);
+	posSaver.LoadState(this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
-	QtMainWindowHandler::Instance()->Release();
-    
-    GUIState::Instance()->Release();
-    
-    delete ui;
+	posSaver.SaveState(this);
 
-    SafeDelete(libraryModel);
+	GUIState::Instance()->Release();
+	delete ui;
+    
+	QtMainWindowHandler::Instance()->Release();
+	SceneDataManager::Instance()->Release();
+	ProjectManager::Instance()->Release();
+
+    //SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -223,13 +225,25 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
 }
 
-void QtMainWindow::SetupProjectPath()
+void QtMainWindow::OpenLastProject()
 {
-    DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
-    while(0 == projectPath.length())
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
-        QtMainWindowHandler::Instance()->OpenProject();
-        projectPath = EditorSettings::Instance()->GetProjectPath();
+        DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+
+        if(projectPath.empty())
+        {
+			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
+        }
+
+		if(projectPath.empty())
+		{
+			QtLayer::Instance()->Quit();
+		}
+		else
+		{
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+		}
     }
 }
 
@@ -352,6 +366,8 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 QtLayer::Instance()->OnResume();
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
+
+			TextureCheckConvetAndWait();
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -359,7 +375,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             if(QtLayer::Instance())
             {
                 QtLayer::Instance()->OnSuspend();
-                Core::Instance()->GetApplicationCore()->OnResume();
+                Core::Instance()->GetApplicationCore()->OnSuspend();
             }
         }
     }
@@ -367,14 +383,44 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
-void QtMainWindow::ProjectChanged()
+void QtMainWindow::ProjectOpened(const QString &path)
 {
-	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-	if(options)
+	this->setWindowTitle(QString("Project - ") + path);
+}
+
+void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
+{
+	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && NULL == convertWaitDialog)
 	{
-		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
-		this->setWindowTitle(titleStr);
+		// check if we have textures to convert - 
+		// if we have function will return true and conversion will start in new thread
+		// signal 'readyAll' will be emited when convention finishes
+		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
+		{
+			convertWaitDialog = new QProgressDialog(this);
+			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
+			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
+			QObject::connect(convertWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(ConvertWaitDone(QObject *)));
+			convertWaitDialog->setModal(true);
+			convertWaitDialog->setCancelButton(NULL);
+			convertWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
+			convertWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+			convertWaitDialog->show();
+		}
 	}
 }
 
+void QtMainWindow::ConvertWaitDone(QObject *destroyed)
+{
+	convertWaitDialog = NULL;
+}
 
+void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)
+{
+	if(NULL != convertWaitDialog)
+	{
+		convertWaitDialog->setRange(0, jobCount);
+		convertWaitDialog->setValue(curJob);
+		convertWaitDialog->setLabelText(curPath);
+	}
+}

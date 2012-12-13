@@ -1,9 +1,9 @@
 #include "SceneDataManager.h"
 
 #include "Main/SceneGraphModel.h"
-#include "Main/LibraryModel.h"
 
 #include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
 #include <QTreeView>
@@ -13,8 +13,6 @@ using namespace DAVA;
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
-    ,   libraryView(NULL)
-    ,   libraryModel(NULL)
 {
 }
 
@@ -41,7 +39,7 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView, libraryView, libraryModel);
+    currentScene->Activate(sceneGraphView /*, libraryView, libraryModel*/);
 
 	emit SceneActivated(currentScene);
 }
@@ -91,6 +89,32 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	return node;
 }
 
+void SceneDataManager::SceneShowPreview(const DAVA::String &path)
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+	if(screen)
+	{
+		if(0 == CompareCaseInsensitive(FileSystem::Instance()->GetExtension(path), ".sc2") && FileSystem::Instance()->IsFile(path))
+		{
+			screen->ShowScenePreview(FileSystem::Instance()->GetCanonicalPath(path));
+		}
+		else
+		{
+			SceneHidePreview();
+		}
+	}
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		screen->HideScenePreview();
+	}
+}
+
 EditorScene * SceneDataManager::RegisterNewScene()
 {
     SceneData *data = new SceneData();
@@ -127,12 +151,12 @@ void SceneDataManager::ReleaseScene(EditorScene *scene)
     }
 }
 
-DAVA::int32 SceneDataManager::ScenesCount()
+DAVA::int32 SceneDataManager::SceneCount()
 {
     return (int32)scenes.size();
 }
 
-SceneData *SceneDataManager::GetScene(DAVA::int32 index)
+SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
 {
     DVASSERT((0 <= index) && (index < (int32)scenes.size()));
     
@@ -146,16 +170,6 @@ SceneData *SceneDataManager::GetScene(DAVA::int32 index)
 void SceneDataManager::SetSceneGraphView(QTreeView *view)
 {
     sceneGraphView = view;
-}
-
-void SceneDataManager::SetLibraryView(QTreeView *view)
-{
-    libraryView = view;
-}
-
-void SceneDataManager::SetLibraryModel(LibraryModel *model)
-{
-    libraryModel = model;
 }
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
@@ -315,31 +329,39 @@ void SceneDataManager::TextureReloadAll(DAVA::ImageFileFormat asFile)
 	Map<String, Texture *>::const_iterator endItTextures = textures.end();
 	for(Map<String, Texture *>::const_iterator it = textures.begin(); it != endItTextures; ++it)
 	{
-		Texture *newTexture = TextureReload(it->first, it->second, asFile);
+		TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(it->first);
+		if(descriptor)
+		{
+			Texture *newTexture = TextureReload(descriptor, it->second, asFile);
+			SafeRelease(descriptor);
+		}
 	}
 }
 
-DAVA::Texture * SceneDataManager::TextureReload(const DAVA::String &descriptorPathname, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
+DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile)
 {
-	if(prevTexture == Texture::GetPinkPlaceholder())
+	if(!descriptor)
+		return NULL;
+	
+	Texture *workingTexture = prevTexture;
+	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
-		Texture *newTexture = Texture::CreateFromFile(descriptorPathname);
-		RestoreTexture(descriptorPathname, newTexture);
+		//Create texture from descriptor pathname and real image file
+		workingTexture = Texture::CreateFromFile(descriptor->pathname);
+		RestoreTexture(descriptor->pathname, workingTexture);
 
-		DVASSERT_MSG(1 < newTexture->GetRetainCount(), "Can be more than 1");
-		newTexture->Release();
+		DVASSERT_MSG(1 < workingTexture->GetRetainCount(), "Can be more than 1");
+		workingTexture->Release();
 
-		return newTexture;
+		if(workingTexture == Texture::GetPinkPlaceholder())
+		{
+			return workingTexture;
+		}
 	}
 
-	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
-	if(descriptor)
-	{
-		prevTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
-		SafeRelease(descriptor);
-	}
-
-	return prevTexture;
+	//apply descriptor parameters
+	workingTexture->ReloadAs((ImageFileFormat)asFile, descriptor);
+	return workingTexture;
 }
 
 void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, DAVA::Texture *texture )

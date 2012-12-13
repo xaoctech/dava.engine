@@ -4,6 +4,7 @@
 #include "Command.h"
 #include "../Constants.h"
 
+/*
 class CommandOpenProject: public Command
 {
 public:	
@@ -13,6 +14,7 @@ protected:
     
     virtual void Execute();
 };
+*/
 
 
 class CommandOpenScene: public Command

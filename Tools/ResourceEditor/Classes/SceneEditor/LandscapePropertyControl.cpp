@@ -221,34 +221,40 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 		bool isValid = (newValue.empty()) ? true: SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
 		if(isValid)
 		{
+            String descriptorPathname = String("");
+            if(!newValue.empty())
+            {
+                descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
+            }
+            
 			if("property.landscape.texture.tile0" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile1" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile2" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile3" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, descriptorPathname);
 			}
 			else if("property.landscape.texture.tilemask" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, descriptorPathname);
                 SetChannelsNames();
 			}
 			else if("property.landscape.texture.color" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, descriptorPathname);
 			}
 			else if("property.landscape.texture.tiledtexture" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, newValue);
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, descriptorPathname);
 			}
 		}
 	}

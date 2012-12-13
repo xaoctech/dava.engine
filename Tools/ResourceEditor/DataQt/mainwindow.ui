@@ -134,7 +134,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeView" name="libraryView">
+      <widget class="LibraryView" name="libraryView">
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -857,13 +857,18 @@ Area Size:</string>
   <customwidget>
    <class>DavaGLWidget</class>
    <extends>QWidget</extends>
-   <header>davaglwidget.h</header>
+   <header>Main/davaglwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
    <header>QSceneGraphTreeView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LibraryView</class>
+   <extends>QTreeView</extends>
+   <header>DockLibrary/libraryview.h</header>
   </customwidget>
  </customwidgets>
  <resources>
