@@ -1,4 +1,4 @@
-﻿/*==================================================================================
+/*==================================================================================
     Copyright (c) 2008, DAVA Consulting, LLC
     All rights reserved.
 
@@ -97,28 +97,6 @@ inline String WStringToString(const WideString& s)
 	for (size_t i = 0; i < len; ++i)
 		temp[i] = (char)s[i];
 	return temp; 
-}
-
-//The function used convert values (less than 4 bytes) to pointer
-template< class T >
-void *ParamToPtr( T value )
-{
-    COMPILER_ASSERT( sizeof(T) <= sizeof( void *) && sizeof(T) <= 4 );
-
-    void *ptr = NULL;
-    Memcpy( &ptr, &value, sizeof(value) );
-    return ptr;
-}
-
-//The function used extract values (less than 4 bytes) from pointer
-template< class T >
-T PtrToParam( void *ptr )
-{
-    COMPILER_ASSERT( sizeof(T) <= sizeof( void *) && sizeof(T) <= 4 );
-
-    T value = T();
-    Memcpy( &value, &ptr, sizeof(value) );
-    return value;
 }
 
 };
