@@ -10,8 +10,6 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
-#include "PVRConverter.h"
-
 
 SceneValidator::SceneValidator()
 {
