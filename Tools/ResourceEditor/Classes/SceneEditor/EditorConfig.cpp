@@ -10,7 +10,7 @@ EditorConfig::EditorConfig()
     
 EditorConfig::~EditorConfig()
 {
-
+	ClearConfig();
 }
 
 void EditorConfig::ClearConfig()
@@ -213,6 +213,8 @@ void EditorConfig::ParseConfig(const String &filePath)
 			}
 		} 
 		// else file is empty - ok, no custom properties
+
+		parser->Release();
 	}
 	// else file not found - ok, no custom properties
 }

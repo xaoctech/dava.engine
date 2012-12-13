@@ -71,5 +71,7 @@ LOCAL_CFLAGS := -DHAVE_CONFIG_H -O2
 #set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
                     
+LOCAL_ARM_MODE := arm
+                    
 # build static library
 include $(BUILD_STATIC_LIBRARY)

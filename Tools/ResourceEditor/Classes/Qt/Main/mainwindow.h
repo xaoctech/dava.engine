@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressDialog>
+#include "Base/Singleton.h"
 #include "QtPosSaver/QtPosSaver.h"
 
 namespace Ui {
@@ -9,7 +11,7 @@ class MainWindow;
 }
 
 class LibraryModel;
-class QtMainWindow : public QMainWindow
+class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
     Q_OBJECT
     
@@ -21,35 +23,36 @@ public:
 
     
 private:
-    void SetupMainMenu();
-    
-	void SetupToolBar();
-	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
+	void OpenLastProject();
 
-    void SetupProjectPath();
+    void SetupMainMenu();
+	void SetupToolBar();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
 	void SetupVisibilityToolDock();
     
+	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
-public  slots:
-	
-	void ProjectChanged();
+public slots:
+	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 
 private slots:
-
+	void ProjectOpened(const QString &path);
     void MenuFileWillShow();
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
+	void ConvertWaitDone(QObject *destroyed);
+	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
         
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
-    
-    LibraryModel *libraryModel;
 
+	QProgressDialog *convertWaitDialog;
+    
+    //LibraryModel *libraryModel;
 };
 
 
@@ -80,7 +83,7 @@ private:
 	void SetupToolBar();
 	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
 
-    void SetupProjectPath();
+    void OpenLastProject();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
     

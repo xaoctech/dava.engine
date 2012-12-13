@@ -18,7 +18,7 @@ using namespace DAVA;
 
 LibraryCommand::LibraryCommand(const DAVA::String &pathname, eCommandType _type)
     :   Command(_type)
-    ,   filePathname(pathname)
+    ,   filePathname(FileSystem::Instance()->GetCanonicalPath(pathname))
 {
 }
 

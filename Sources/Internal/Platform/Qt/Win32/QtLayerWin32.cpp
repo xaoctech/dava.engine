@@ -181,17 +181,11 @@ void QtLayerWin32::ProcessFrame()
 
 void QtLayerWin32::LockKeyboardInput(bool locked)
 {
-	//do nothing
-    
-    if(locked)
-    {
-        CoreWin32Platform *core = dynamic_cast<CoreWin32Platform *>(CoreWin32Platform::Instance());
-        if (NULL != core)
-        {
-            core->NeedToSkipMouseUp();
-        }
-
-    }
+	CoreWin32Platform *core = dynamic_cast<CoreWin32Platform *>(CoreWin32Platform::Instance());
+	if (NULL != core)
+	{
+		core->SetFocused(locked);
+	}
 }
 
 

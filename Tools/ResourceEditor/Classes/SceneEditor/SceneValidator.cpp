@@ -552,17 +552,6 @@ void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
     }
     
     SafeRelease(descriptor);
-    
-//	String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
-//	bool fileExists = FileSystem::Instance()->IsFile(descriptorPathname);
-//	if(!fileExists)
-//	{
-//		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
-//	
-//		TextureDescriptor *descriptor = new TextureDescriptor();
-//		descriptor->textureFileFormat = PNG_FILE;
-//		descriptor->Save(descriptorPathname);
-//	}
 }
 
 
@@ -624,8 +613,8 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
 bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFormat fileFormat)
 {
     bool isChanged = false;
-    
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
+
+	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
         isChanged = descriptor->IsSourceValidForFormat(fileFormat);
@@ -646,6 +635,8 @@ bool SceneValidator::IsTextureDescriptorPath(const String &path)
 void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 {
 	FileList * fileList = new FileList(folderPathname);
+    if(!fileList) return;
+    
 	for (int32 fi = 0; fi < fileList->GetCount(); ++fi)
 	{
 		if (fileList->IsDirectory(fi))

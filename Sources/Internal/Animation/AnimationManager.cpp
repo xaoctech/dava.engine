@@ -44,7 +44,7 @@ AnimationManager::AnimationManager()
 	
 AnimationManager::~AnimationManager()
 {
-	
+	for_each(animations.begin(), animations.end(), SafeRelease<Animation>);
 }
 	
 void AnimationManager::SetAnimationLoggerEnabled(bool isEnabled)

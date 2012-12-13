@@ -115,6 +115,7 @@ LOCAL_SRC_FILES :=  \
                     Particles/ParticleLayer3D.cpp \
                     Particles/ParticlePropertyLine.cpp \
                     Particles/ParticleSystem.cpp \
+                    Particles/ParticleLayerLong.cpp \
                     \
                     Platform/TemplateAndroid/CorePlatformAndroid.cpp \
                     \
@@ -195,6 +196,8 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/LodNode.cpp \
                     Scene3D/MeshInstanceNode.cpp \
                     Scene3D/PathManip.cpp \
+                    Scene3D/ParticleEffectNode.cpp \
+                    Scene3D/ParticleEmitterNode.cpp \
                     Scene3D/ProxyNode.cpp \
                     Scene3D/QuadTree.cpp \
                     Scene3D/ReferenceNode.cpp \
@@ -270,7 +273,7 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 LIBS_PATH := $(call host-path,$(LOCAL_PATH)/../../Libs/libs)
 
-LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2
+LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2 -lEGL
 LOCAL_LDLIBS += $(LIBS_PATH)/libzip_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libxml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
@@ -283,7 +286,7 @@ LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
 # set arm mode
-LOCAL_ARM_MODE := arm
+# LOCAL_ARM_MODE := arm
 
 
 # set included libraries

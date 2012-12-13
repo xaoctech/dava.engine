@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TextureDialog</class>
- <widget class="QDialog" name="TextureDialog">
+ <class>TextureBrowser</class>
+ <widget class="QDialog" name="TextureBrowser">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -40,7 +40,7 @@
     <number>3</number>
    </property>
    <item>
-    <widget class="QSplitter" name="splitter">
+    <widget class="QSplitter" name="splitterMain">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -171,6 +171,13 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="convertAll">
+         <property name="text">
+          <string>Force convert all textures</string>
          </property>
         </widget>
        </item>
@@ -519,6 +526,28 @@
        <property name="margin">
         <number>3</number>
        </property>
+       <item>
+        <widget class="QLabel" name="warningLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::AutoText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="TextureProperties" name="textureProperties" native="true">
          <property name="sizePolicy">

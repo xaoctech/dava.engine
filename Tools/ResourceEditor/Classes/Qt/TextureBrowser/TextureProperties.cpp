@@ -1,4 +1,4 @@
-#include "TextureDialog/TextureProperties.h"
+#include "TextureBrowser/TextureProperties.h"
 #include "QtPropertyBrowser/qtpropertymanager.h"
 #include "QtPropertyBrowser/qteditorfactory.h"
 
@@ -9,6 +9,7 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	, curTexture(NULL)
 	, curTextureDescriptor(NULL)
 	, reactOnPropertyChange(true)
+	, texturePropertiesChanged(false)
 {
 	// initialize list with string for different comboboxs
 	{
@@ -191,6 +192,9 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 		setEnabled(false);
 	}
 
+	// mark this new properties not changed
+	texturePropertiesChanged = false;
+
 	reactOnPropertyChange = true;
 }
 
@@ -234,6 +238,9 @@ void TextureProperties::propertyChanged(QtProperty * property)
 	if(reactOnPropertyChange && NULL != curTextureDescriptor && NULL != curTexture)
 	{
 		PropertiesType type = TYPE_COMMON;
+
+		// mark current properties changed
+		texturePropertiesChanged = true;
 
 		if(property == enumPVRFormat)
 		{
@@ -308,7 +315,7 @@ void TextureProperties::propertyChanged(QtProperty * property)
 
 void TextureProperties::Save()
 {
-	if(NULL != curTextureDescriptor)
+	if(NULL != curTextureDescriptor && true == texturePropertiesChanged)
 	{
 		curTextureDescriptor->Save();
 	}

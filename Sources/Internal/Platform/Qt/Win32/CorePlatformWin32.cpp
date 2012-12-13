@@ -71,7 +71,7 @@ int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 	return 0;
 
 }
-	
+
 void CoreWin32Platform::InitArgs()
 {
 	LPWSTR *szArglist;
@@ -232,7 +232,6 @@ int32 MoveTouchsToVector(UINT message, WPARAM wParam, LPARAM lParam, Vector<UIEv
 
 bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 {
-
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL 0x020A
 #endif
@@ -323,17 +322,22 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_MBUTTONDOWN:
+		//		case WM_XBUTTONDOWN:
             
-            if(needToSkipMouseUp)
+            if(!isFocused || needToSkipMouseUp)
             {
                 break;
             }
-		//		case WM_XBUTTONDOWN:
 
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
 	case WM_MBUTTONUP:
 		//		case WM_XBUTTONUP:
+			if(!isFocused)
+			{
+				break;
+			}
+
             if(needToSkipMouseUp)
             {
                 needToSkipMouseUp = false;
@@ -362,10 +366,15 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	return false;
 }
     
-void CoreWin32Platform::NeedToSkipMouseUp()
+void CoreWin32Platform::SetFocused(bool focused)
 {
-    needToSkipMouseUp = true;
+	isFocused = focused;
+	if(isFocused)
+	{
+		needToSkipMouseUp = true;
+	}
 }
+
 	
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)

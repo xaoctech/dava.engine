@@ -96,6 +96,8 @@ LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const Stri
 	yaml_parser_set_encoding(&parser, YAML_UTF8_ENCODING);
 	
 	File * yamlFile = File::Create(pathName, File::OPEN | File::READ);
+    if(!yamlFile) return NULL;
+    
 	dataHolder->fileSize = yamlFile->GetSize();
 	dataHolder->data = new uint8[dataHolder->fileSize];
 	dataHolder->dataOffset = 0;
