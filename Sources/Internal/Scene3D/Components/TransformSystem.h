@@ -15,8 +15,6 @@ class Transform;
 class TransformSystem : public Singleton<TransformSystem>
 {
 public:
-	static const int32 POOL_SIZE = 5000;
-
 	TransformSystem();
 	~TransformSystem();
 
@@ -24,32 +22,20 @@ public:
     Transform * GetTransformWithIncrement(Transform * transform);
 	Transform * CloneTransform(Transform * transform);
 
+	void NeedUpdate(SceneNode * entity);
+
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
 	void UnlinkTransform(int32 childIndex);
-	int32 GetMatrixIndex(Matrix4 * matrix);
     
     void Process();
 
 private:
     void SortAndThreadSplit();
     
-    Matrix4 * localMatrices;
-	Matrix4 * worldMatrices;
-    Matrix4 ** parentWorldMatrices;
-	Transform ** transforms;
-    uint32 * referenceCounter;
-    uint32 matrixCount;
+	Vector<SceneNode*> updatableEntities;
 
-    //static const uint32 MAX_THREADS = 4;
-    //ThreadBatch threads[MAX_THREADS];
-    
-    //struct ThreadBatch
-    //{
-    //    uint32 startIndex;
-    //    uint32 count;
-    //};
-    
+	void HierahicNeedUpdate(SceneNode * entity);
 };
 
 };

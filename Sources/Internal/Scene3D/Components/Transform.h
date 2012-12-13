@@ -20,8 +20,9 @@ public:
 	void SetParent(SceneNode * node);
 
 private:
-	Matrix4 * localTransform;
-	Matrix4 * worldTransform;
+	Matrix4 localMatrix;
+	Matrix4 worldMatrix;
+	Matrix4 * parentMatrix;
 	SceneNode * parent; //SceneNode::parent should be removed
 
 	int32 index;
@@ -31,12 +32,12 @@ private:
 
 Matrix4 * Transform::GetWorldTransform()
 {
-	return worldTransform;
+	return &worldMatrix;
 }
 
 Matrix4 * Transform::GetLocalTransform()
 {
-	return localTransform;
+	return &localMatrix;
 }
 
 int32 Transform::GetIndex()
