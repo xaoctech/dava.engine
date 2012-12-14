@@ -106,6 +106,12 @@
     <Filter Include="QtGenerated\TextureBrowser">
       <UniqueIdentifier>{2577c457-6240-473b-b893-129f4db52ed5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockProperties">
+      <UniqueIdentifier>{2d548fb4-1717-407b-a982-192efa2564c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockProperties">
+      <UniqueIdentifier>{115ccc83-d704-450d-bf74-0a2f0aecea4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1137,6 +1143,12 @@
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
       <Filter>QtGenerated\DockLibrary</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp">
+      <Filter>QtGenerated\DockProperties</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2092,6 +2104,9 @@
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

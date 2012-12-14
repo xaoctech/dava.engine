@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -351,6 +351,7 @@
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\GraphItem.cpp" />
@@ -478,6 +479,7 @@
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphModel_moc.cpp" />
@@ -769,6 +771,7 @@
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\GraphItem.h" />
     <ClInclude Include="Classes\Qt\Main\GraphModel.h" />
