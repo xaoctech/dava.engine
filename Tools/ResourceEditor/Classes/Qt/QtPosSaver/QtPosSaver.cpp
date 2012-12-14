@@ -156,7 +156,7 @@ void QtPosSaver::LoadState(QMainWindow *mainwindow)
 	}
 }
 
-void QtPosSaver::Save(const QString &key, QByteArray &data)
+void QtPosSaver::Save(const QString &key, const QByteArray &data)
 {
 	if(settingsArchiveIsLoaded && !key.isEmpty() && !data.isEmpty())
 	{

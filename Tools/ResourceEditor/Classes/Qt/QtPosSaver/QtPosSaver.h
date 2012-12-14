@@ -28,7 +28,7 @@ protected:
 	QWidget *attachedWidget;
 	QString attachedWidgetName;
 
-	void Save(const QString &key, QByteArray &data);
+	void Save(const QString &key, const QByteArray &data);
 	QByteArray Load(const QString &key);
 
 private:
