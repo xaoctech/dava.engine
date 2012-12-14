@@ -6,7 +6,6 @@
 #include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
-#include "../SceneEditor/PVRConverter.h"
 #include "../Qt/Main/QtUtils.h"
 
 ///*
