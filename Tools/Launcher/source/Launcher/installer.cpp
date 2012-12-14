@@ -50,7 +50,7 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
 
     UpdateAvailableSoftware();
 
-    Update(m_AvailableSoftWare.m_Stable, eAppTypeStable);
+    Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
     Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
     Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies);
 }
@@ -413,21 +413,21 @@ QString Installer::GetRunPath(const QString& appName, eAppType type) {
     return GetInstallPath(type) + config.m_RunPath;
 }
 
-bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type) {
+bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bool force /*= false*/) {
     AvailableSoftWare::SoftWareMap::const_iterator iter;
     for (iter = softMap.begin(); iter != softMap.end(); ++iter) {
         const QString& name = iter.key();
         const SoftWare& soft = iter.value();
         if (!soft.m_CurVersion.isEmpty() &&
             soft.m_CurVersion < soft.m_NewVersion) {
-
-            if (0 == QMessageBox::information(NULL,//this,
+            if (force ||
+                0 == QMessageBox::information(NULL,//this,
                                              tr("Update available"),
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
                 if (!Delete(name, type)) {
-                    Logger::GetInstance()->AddLog(tr("Error update Calculator"));
+                    Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }
                 Install(name, type);
