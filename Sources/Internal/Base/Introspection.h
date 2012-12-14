@@ -95,6 +95,6 @@ namespace DAVA
 	}
 
 #define MEMBER(_name, _desc) \
-	DAVA::IntrospectionMember(#_name, _desc, (int) &((ObjectT *) 0)->_name, DAVA::MetaInfo::Instance(&ObjectT::_name)),
+	DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name)),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__

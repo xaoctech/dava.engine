@@ -13,6 +13,8 @@
 		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D138167B42BE003E701F /* PropertiesView.cpp */; };
+		4F82D13D167B42F3003E701F /* PropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D13C167B42F3003E701F /* PropertiesView_moc.cpp */; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
 		5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD716037725008631C2 /* LandscapeRenderer.cpp */; };
 		5C048FDB1603BF0D008631C2 /* EditorLandscapeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */; };
@@ -393,6 +395,9 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		4F82D138167B42BE003E701F /* PropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView.cpp; sourceTree = "<group>"; };
+		4F82D139167B42BE003E701F /* PropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesView.h; sourceTree = "<group>"; };
+		4F82D13C167B42F3003E701F /* PropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView_moc.cpp; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -1155,6 +1160,25 @@
 			name = ResourceEditorQt;
 			sourceTree = "<group>";
 		};
+		4F82D137167B42BE003E701F /* DockProperties */ = {
+			isa = PBXGroup;
+			children = (
+				4F82D138167B42BE003E701F /* PropertiesView.cpp */,
+				4F82D139167B42BE003E701F /* PropertiesView.h */,
+			);
+			name = DockProperties;
+			path = Classes/Qt/DockProperties;
+			sourceTree = "<group>";
+		};
+		4F82D13B167B42F3003E701F /* DockProperties */ = {
+			isa = PBXGroup;
+			children = (
+				4F82D13C167B42F3003E701F /* PropertiesView_moc.cpp */,
+			);
+			name = DockProperties;
+			path = _GeneratedQt/DockProperties;
+			sourceTree = "<group>";
+		};
 		5C190C9615AEC58B005731F8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1166,6 +1190,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				4F82D137167B42BE003E701F /* DockProperties */,
 				E89EF5A8167735AB00477220 /* Project */,
 				E89EF54F1677350800477220 /* DockLibrary */,
 				E89EF533167734FB00477220 /* TextureBrowser */,
@@ -1914,6 +1939,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				4F82D13B167B42F3003E701F /* DockProperties */,
 				E89EF5561677356000477220 /* DockLibrary */,
 				E89EF5591677356000477220 /* Main */,
 				E89EF5661677356000477220 /* MaterialBrowser */,
@@ -2702,6 +2728,8 @@
 				E89EF5A61677356000477220 /* TextureProperties_moc.cpp in Build Sources */,
 				E89EF5A71677356000477220 /* TextureScrollArea_moc.cpp in Build Sources */,
 				E89EF5AB167735AB00477220 /* ProjectManager.cpp in Build Sources */,
+				4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */,
+				4F82D13D167B42F3003E701F /* PropertiesView_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
