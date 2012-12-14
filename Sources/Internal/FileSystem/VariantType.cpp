@@ -37,6 +37,7 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Utils/Utils.h"
+#include "Base/Meta.h"
 
 namespace DAVA
 {
