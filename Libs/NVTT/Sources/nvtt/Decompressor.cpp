@@ -36,6 +36,8 @@
 #include <nvcore/StrLib.h>
 #include <nvmath/color.h>
 
+#include <vector>
+
 using namespace nv;
 using namespace nvtt;
 
@@ -118,12 +120,12 @@ bool Decompressor::Private::decompress(void * data, unsigned int size, unsigned 
 }
 
 //NVTT_API bool getMipMapCount(unsigned int * mipmapCount) const;
-bool Decompressor::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size)  const
+bool Decompressor::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size, unsigned int & headerSize)  const
 {
-	return m.getInfo(mipmapCount, width, height, size);
+	return m.getInfo(mipmapCount, width, height, size, headerSize);
 }
 
-bool Decompressor::Private::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size) const
+bool Decompressor::Private::getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & height, unsigned int & size, unsigned int & headerSize) const
 {
 	if(NULL == m_dds)
 	{
@@ -134,6 +136,39 @@ bool Decompressor::Private::getInfo(unsigned int & mipmapCount, unsigned int & w
 	width = m_dds->width();
 	height = m_dds->height();
 	size = m_dds->size();
+	headerSize = m_dds->headerSize();
+	
+	return true;
+}
+
+bool Decompressor::getRawData(void* buffer, unsigned int size)  const
+{
+	return m.getRawData(buffer, size);
+}
+
+bool Decompressor::Private::getRawData(void* buffer, unsigned int size) const
+{
+	if(NULL == m_dds)
+	{
+		return false;
+	}
+
+	return m_dds->getRawDate(buffer, size);
+}
+
+bool Decompressor::getMipmapSize(unsigned int number, unsigned int & size)  const
+{
+	return m.getMipmapSize(number, size);
+}
+
+bool Decompressor::Private::getMipmapSize(unsigned int number, unsigned int & size) const
+{
+	if(NULL == m_dds)
+	{
+		return false;
+	}
+
+	size = m_dds->mipmapSize(number);
 	return true;
 }
 

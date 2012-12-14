@@ -33,6 +33,7 @@ public:
 
 	static uint32 GetDataSize(const char *fileName);
 
+	static void Test();
 private:
 
 	struct DDSInfo
@@ -41,13 +42,15 @@ private:
 		uint32 height;
 		uint32 dataSize;
 		uint32 mipMupsNumber;
+		uint32 headerSize;
 
 		DDSInfo()
 		{
-			width		  = 0 ;
-			height		  = 0 ;
-			dataSize	  = 0 ;
-			mipMupsNumber = 0 ;
+			width		  = 0;
+			height		  = 0;
+			dataSize	  = 0;
+			mipMupsNumber = 0;
+			headerSize	  = 0;
 		}
 	};
 	

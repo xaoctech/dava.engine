@@ -2054,6 +2054,48 @@
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">

@@ -24,7 +24,6 @@
 #ifndef NV_TT_EXTR_H
 #define NV_TT_EXTR_H
 
-
 #include "nvtt.h"
 
 // Public interface.
@@ -45,10 +44,13 @@ namespace nvtt
 
 		NVTT_API bool process(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
-		NVTT_API bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size) const;
+		NVTT_API bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size, unsigned int & headerSize) const;
 		
 		NVTT_API bool getCompressionFormat(Format & comprFormat) const;
 		
+		NVTT_API bool getRawData(void* buffer, unsigned int size) const;
+
+		NVTT_API bool getMipmapSize(unsigned int number, unsigned int & size) const;
 	};
 	
 

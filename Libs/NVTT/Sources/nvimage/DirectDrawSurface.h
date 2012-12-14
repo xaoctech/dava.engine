@@ -26,6 +26,7 @@
 
 #include <nvimage/nvimage.h>
 #include <nvtt/nvtt.h>
+#include <vector>
 
 namespace nv
 {
@@ -121,10 +122,14 @@ namespace nv
 		uint height() const;
 		uint depth() const;
 		uint size() const;
+		uint headerSize();
+		void getMipmapsSizes(std::vector<unsigned int>& vec)const;
+		uint mipmapSize(uint m) const;
 		bool isTexture1D() const;
 		bool isTexture2D() const;
 		bool isTexture3D() const;
 		bool isTextureCube() const;
+		bool getRawDate(void* buffer, unsigned int size) ;
 
 		void setNormalFlag(bool b);
 		
@@ -138,7 +143,7 @@ namespace nv
 		
 		uint blockSize() const;
 		uint faceSize() const;
-		uint mipmapSize(uint m) const;
+		
 		
 		uint offset(uint f, uint m);
 		
