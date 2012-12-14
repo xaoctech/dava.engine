@@ -17,6 +17,147 @@
 using namespace DAVA;
 using namespace nvtt;
 
+void DxtWrapper::Test()
+{
+	const char *fileName = "c:\\dds\\1\\nm_mips.dds";
+	nvtt::Decompressor dec;
+	if(!dec.initWithDDSFile(fileName))
+	{
+		return ;
+	}
+
+	uint32 width = 0;
+	uint32 height = 0;
+	uint32 size = 0;
+	uint32 mipmapNumber = 0;
+	uint32 headerSize = 0;
+	if(!dec.getInfo(mipmapNumber, width, height, size,headerSize))
+	{
+		return ;
+	}
+	//
+	uint8* compressedImg = new uint8(size );
+	if(!dec.getRawData(compressedImg, size))
+	{
+		return;
+	}
+	
+	std::vector<uint32> vec;
+
+	for(uint32 i =0; i < mipmapNumber; ++i)
+	{
+		uint32 size= 0;
+		if(dec.getMipmapSize(i, size))
+		{
+			vec.push_back(size);
+		}
+	}
+
+	GLuint texid;  
+
+	return;
+	glGenTextures( 1, &texid );
+	glBindTexture ( GL_TEXTURE_2D, texid );
+	glCompressedTexImage2D ( GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, width, height, 0, size, compressedImg);
+	switch(glGetError())
+	{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+			
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+			
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+			
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+			
+		default:
+			Logger::Instance()->Debug("other value");
+	}
+	//
+
+	
+	int32 uncompressed_width = 0;
+	int32 uncompressed_heigth = 0;
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &uncompressed_width);
+	switch(glGetError())
+	{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+			
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+			
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+			
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+			
+		default:
+			Logger::Instance()->Debug("other value");
+	}
+
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
+	switch(glGetError())
+	{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+			
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+			
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+			
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+			
+		default:
+			Logger::Instance()->Debug("other value");
+	}
+
+	Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
+	switch(glGetError())
+	{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+			
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+			
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+			
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+			
+		default:
+			Logger::Instance()->Debug("other value");
+	}
+
+	ImageLoader::Save(innerImage, "c:\\dds\\1\\nm_13_12_12.png");
+}
+
 bool DxtWrapper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet)
 {
 	for(uint32 i = 0; i < imageSet.size(); ++i)
@@ -36,29 +177,31 @@ bool DxtWrapper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSe
 		return false;
 	}
 	
-	uint32 mipmapNumber = GetMipMapLevelsCount(fileName);
-
-	if(0 == mipmapNumber)
-	{
-		return false;
-	}
+	//uint32 mipmapNumber = GetMipMapLevelsCount(fileName);
+	//
+	//if(0 == mipmapNumber)
+	//{
+	//	return false;
+	//}
 	
 	imageSet.clear();
 
 	uint32 width = 0;
 	uint32 height = 0;
 	uint32 size = 0;
-	uint32 number = 0;
-	if(!dec.getInfo(number, width, height, size))
+	uint32 mipmapNumber = 0;
+	uint32 hSize=0;
+	if(!dec.getInfo(mipmapNumber, width, height, size, hSize))
 	{
 		return false;
 	}
 	
-	if(0 == width || 0 == height)
+	if(0 == width || 0 == height || 0 == mipmapNumber)
 	{
 		return false;
 	}
 	
+
 	for(uint32 i = 0; i < mipmapNumber; ++i)
 	{
 		// change size to support mipmaps sizes
@@ -252,7 +395,7 @@ bool DxtWrapper::GetInfo(const char *fileName, DDSInfo &info)
 	nvtt::Decompressor dec;
 	if(dec.initWithDDSFile(fileName))
 	{
-		if(dec.getInfo(info.mipMupsNumber, info.width, info.height, info.dataSize))
+		if(dec.getInfo(info.mipMupsNumber, info.width, info.height, info.dataSize, info.headerSize))
 		{
 			retVal = true;
 		}

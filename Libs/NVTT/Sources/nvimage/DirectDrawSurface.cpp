@@ -886,6 +886,19 @@ uint DirectDrawSurface::size() const
 		return 0;
 }
 
+bool DirectDrawSurface::getRawDate(void* buffer, unsigned int size) 
+{
+	unsigned int headerS = headerSize();
+	
+	if(size + headerS != (stream->size()) )
+	{
+		return false;
+	}
+	stream->seek(headerS);
+	uint redS = stream->serialize(buffer, size);
+	return true;
+}
+
 bool DirectDrawSurface::isTexture1D() const
 {
 	nvDebugCheck(isValid());
@@ -1210,6 +1223,25 @@ uint DirectDrawSurface::faceSize() const
 	}
 	
 	return size;
+}
+
+uint DirectDrawSurface::headerSize() 
+{
+	uint position = stream->tell();
+	uint size = offset(0,0);
+	stream->seek(position);
+	return size;
+	
+}
+
+void DirectDrawSurface::getMipmapsSizes(std::vector<unsigned int>& vec)const
+{
+	//vec.push_back(mipmapSize(0));
+	//return;
+	for(uint i = 0 ; i < header.mipmapcount; ++i)
+	{
+		vec.push_back(mipmapSize(i));
+	}
 }
 
 uint DirectDrawSurface::offset(const uint face, const uint mipmap)

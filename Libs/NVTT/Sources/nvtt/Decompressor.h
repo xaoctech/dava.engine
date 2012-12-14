@@ -23,9 +23,13 @@ namespace nvtt
 
 		bool decompress(void * data, unsigned int size, unsigned int mipmapNumber) const;
 
-		bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size) const;
+		bool getInfo(unsigned int & mipmapCount, unsigned int & width, unsigned int & heigth, unsigned int & size, unsigned int & headerSize) const;
 
 		bool getCompressionFormat(Format & comprFormat) const;
+
+		bool getRawData(void* buffer, unsigned int size) const;
+
+		bool getMipmapSize(unsigned int number, unsigned int & size) const;
 
 		private:
 
