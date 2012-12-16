@@ -19,7 +19,11 @@ using namespace nvtt;
 
 void DxtWrapper::Test()
 {
-	const char *fileName = "c:\\dds\\1\\nm_mips.dds";
+	const char *fileName = "c:\\1\\images\\1_mips.dds";
+
+	//Vector<DAVA::Image*> imageSet;
+	//bool res = ReadDxtFile(fileName,imageSet);
+	//return;
 	nvtt::Decompressor dec;
 	if(!dec.initWithDDSFile(fileName))
 	{
@@ -36,8 +40,11 @@ void DxtWrapper::Test()
 		return ;
 	}
 	//
-	uint8* compressedImg = new uint8(size );
-	if(!dec.getRawData(compressedImg, size))
+	
+	uint8* compressedImges = new uint8[size];
+	
+	
+	if(!dec.getRawData(compressedImges, size))
 	{
 		return;
 	}
@@ -46,116 +53,137 @@ void DxtWrapper::Test()
 
 	for(uint32 i =0; i < mipmapNumber; ++i)
 	{
-		uint32 size= 0;
-		if(dec.getMipmapSize(i, size))
+		uint32 mipSize= 0;
+		if(dec.getMipmapSize(i, mipSize))
 		{
-			vec.push_back(size);
+			vec.push_back(mipSize);
 		}
 	}
 
-	GLuint texid;  
-
-	return;
-	glGenTextures( 1, &texid );
-	glBindTexture ( GL_TEXTURE_2D, texid );
-	glCompressedTexImage2D ( GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, width, height, 0, size, compressedImg);
-	switch(glGetError())
+	for(uint32 i = 0; i < vec.size(); ++i)
 	{
+		uint32 concreteWidth = width;
+		uint32 concreteHeight = height;
+
+		uint32 offset = 0;
+		for (uint32 j = 0; j < i; ++j)
+		{
+			concreteWidth  /= 2;
+			concreteHeight /= 2;
+
+			offset += vec[j];
+		}
+		if (concreteWidth < 2 || concreteHeight < 2)
+		{
+			break;
+		}
+		GLuint texid;  
+		glGenTextures( 1, &texid );
+		glBindTexture ( GL_TEXTURE_2D, texid );
+		
+		
+		uint8* concreteImageStartPointer = compressedImges + offset;
+		glCompressedTexImage2D ( GL_TEXTURE_2D, i, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, concreteWidth, concreteHeight, 0, vec[i], concreteImageStartPointer);//GL_COMPRESSED_RGBA_S3TC_DXT5_EXT!!!
+		switch(glGetError())
+		{
 		case GL_INVALID_ENUM:
 			Logger::Instance()->Debug("GL_INVALID_ENUM");
 			break;
-			
+
 		case GL_INVALID_VALUE:
 			Logger::Instance()->Debug("GL_INVALID_VALUE");
 			break;
-			
+
 		case GL_INVALID_OPERATION:
 			Logger::Instance()->Debug("GL_INVALID_OPERATION");
 			break;
-			
+
 		case GL_NO_ERROR:
 			Logger::Instance()->Debug("GL_NO_ERROR");
 			break;
-			
+
 		default:
 			Logger::Instance()->Debug("other value");
-	}
-	//
+		}
+		//
 
+
+		int32 uncompressed_width = 0;
+		int32 uncompressed_heigth = 0;
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &uncompressed_width);
+		switch(glGetError())
+		{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+
+		default:
+			Logger::Instance()->Debug("other value");
+		}
+
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
+		switch(glGetError())
+		{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+
+		default:
+			Logger::Instance()->Debug("other value");
+		}
+
+		Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
+		glGetTexImage(GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
+		switch(glGetError())
+		{
+		case GL_INVALID_ENUM:
+			Logger::Instance()->Debug("GL_INVALID_ENUM");
+			break;
+
+		case GL_INVALID_VALUE:
+			Logger::Instance()->Debug("GL_INVALID_VALUE");
+			break;
+
+		case GL_INVALID_OPERATION:
+			Logger::Instance()->Debug("GL_INVALID_OPERATION");
+			break;
+
+		case GL_NO_ERROR:
+			Logger::Instance()->Debug("GL_NO_ERROR");
+			break;
+
+		default:
+			Logger::Instance()->Debug("other value");
+		}
+
+		ImageLoader::Save(innerImage, "c:\\1\\images\\nm_13_12_12.png");
+
+	}
 	
-	int32 uncompressed_width = 0;
-	int32 uncompressed_heigth = 0;
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &uncompressed_width);
-	switch(glGetError())
-	{
-		case GL_INVALID_ENUM:
-			Logger::Instance()->Debug("GL_INVALID_ENUM");
-			break;
-			
-		case GL_INVALID_VALUE:
-			Logger::Instance()->Debug("GL_INVALID_VALUE");
-			break;
-			
-		case GL_INVALID_OPERATION:
-			Logger::Instance()->Debug("GL_INVALID_OPERATION");
-			break;
-			
-		case GL_NO_ERROR:
-			Logger::Instance()->Debug("GL_NO_ERROR");
-			break;
-			
-		default:
-			Logger::Instance()->Debug("other value");
-	}
-
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
-	switch(glGetError())
-	{
-		case GL_INVALID_ENUM:
-			Logger::Instance()->Debug("GL_INVALID_ENUM");
-			break;
-			
-		case GL_INVALID_VALUE:
-			Logger::Instance()->Debug("GL_INVALID_VALUE");
-			break;
-			
-		case GL_INVALID_OPERATION:
-			Logger::Instance()->Debug("GL_INVALID_OPERATION");
-			break;
-			
-		case GL_NO_ERROR:
-			Logger::Instance()->Debug("GL_NO_ERROR");
-			break;
-			
-		default:
-			Logger::Instance()->Debug("other value");
-	}
-
-	Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
-	switch(glGetError())
-	{
-		case GL_INVALID_ENUM:
-			Logger::Instance()->Debug("GL_INVALID_ENUM");
-			break;
-			
-		case GL_INVALID_VALUE:
-			Logger::Instance()->Debug("GL_INVALID_VALUE");
-			break;
-			
-		case GL_INVALID_OPERATION:
-			Logger::Instance()->Debug("GL_INVALID_OPERATION");
-			break;
-			
-		case GL_NO_ERROR:
-			Logger::Instance()->Debug("GL_NO_ERROR");
-			break;
-			
-		default:
-			Logger::Instance()->Debug("other value");
-	}
-
-	ImageLoader::Save(innerImage, "c:\\dds\\1\\nm_13_12_12.png");
 }
 
 bool DxtWrapper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet)
