@@ -493,7 +493,7 @@ void QtMainWindowHandler::ReloadAsDXT()
 void QtMainWindowHandler::ToggleCustomColors()
 {
 	DxtWrapper::Test();
-    //Execute(new CommandToggleCustomColors());
+    Execute(new CommandToggleCustomColors());
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()
