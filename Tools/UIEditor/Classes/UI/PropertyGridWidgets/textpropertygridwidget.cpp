@@ -13,6 +13,8 @@
 #include "PropertyNames.h"
 #include "ResourcesManageHelper.h"
 
+#include "StringUtils.h"
+
 using namespace DAVA;
 using namespace PropertyNames;
 
@@ -72,8 +74,8 @@ void TextPropertyGridWidget::UpdateLocalizationValue()
     
     // Key is known now - determine and set the value.
     QString localizationKey = this->ui->localizationKeyNameLineEdit->text();
-    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(localizationKey.toStdWString());
-    this->ui->localizationKeyTextLineEdit->setText(QString::fromStdWString(localizationValue));
+    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(localizationKey));
+	this->ui->localizationKeyTextLineEdit->setText(WideString2QStrint(localizationValue));
     
     // Also update the "dirty" style for the "Value"
     PROPERTYGRIDWIDGETSITER iter = this->propertyGridWidgetsMap.find(this->ui->localizationKeyNameLineEdit);

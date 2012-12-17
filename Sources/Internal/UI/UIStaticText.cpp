@@ -34,7 +34,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/LocalizationSystem.h"
-#include "FontManager.h"
+#include "Render/2D/FontManager.h"
 
 namespace DAVA 
 {

@@ -35,7 +35,7 @@ void UIButtonMetadata::SetLocalizedTextKey(const QString& value)
     UITextControlMetadata::SetLocalizedTextKey(value);
     
     // Update the control with the value.
-    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(value.toStdWString());
+	WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(value));
     GetActiveUIButton()->SetStateText(this->uiControlState, localizationValue);
 
     UpdatePropertyDirtyFlagForLocalizedText();

@@ -22,5 +22,15 @@ QString TruncateTxtFileExtension(const QString& fileName)
 {
     return QString::fromStdString(TruncateTxtFileExtension(fileName.toStdString()));
 }
-    
+
+WideString QStrint2WideString(const QString& str)
+{
+	return WideString((wchar_t*)str.unicode(), str.length());
+}
+
+QString WideString2QStrint(const WideString& str)
+{
+	return QString((const QChar*)str.c_str(), str.length());
+}
+
 }
