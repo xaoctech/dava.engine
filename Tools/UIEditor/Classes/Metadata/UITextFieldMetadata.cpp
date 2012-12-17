@@ -2,6 +2,8 @@
 #include "UITextFieldMetadata.h"
 #include "EditorFontManager.h"
 
+#include "StringUtils.h"
+
 using namespace DAVA;
 
 UITextFieldMetadata::UITextFieldMetadata(QObject* parent) :
@@ -20,7 +22,7 @@ QString UITextFieldMetadata::GetText() const
     {
         return QString();
     }
-    return QString::fromStdWString(GetActiveUITextField()->GetText());
+    return WideString2QStrint(GetActiveUITextField()->GetText());
 }
 
 
@@ -31,7 +33,7 @@ void UITextFieldMetadata::SetText(const QString& text)
         return;
     }
     
-    GetActiveUITextField()->SetText(text.toStdWString());
+    GetActiveUITextField()->SetText(QStrint2WideString(text));
 }
 
 Font * UITextFieldMetadata::GetFont()

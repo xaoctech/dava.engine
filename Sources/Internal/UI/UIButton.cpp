@@ -35,7 +35,7 @@
 #include "Utils/Utils.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/VariantType.h"
-#include "FontManager.h"
+#include "Render/2D/FontManager.h"
 
 namespace DAVA 
 {

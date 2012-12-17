@@ -9,6 +9,8 @@
 #include "UIStaticTextMetadata.h"
 #include "EditorFontManager.h"
 
+#include "StringUtils.h"
+
 using namespace DAVA;
 
 UIStaticTextMetadata::UIStaticTextMetadata(QObject* parent) :
@@ -48,7 +50,7 @@ void UIStaticTextMetadata::SetLocalizedTextKey(const QString& value)
     UITextControlMetadata::SetLocalizedTextKey(value);
 
     // Update the control with the value.
-    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(value.toStdWString());
+    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(value));
     GetActiveStaticText()->SetText(localizationValue);
 }
 

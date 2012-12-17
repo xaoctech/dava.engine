@@ -1,4 +1,5 @@
 #include "UITextControlMetadata.h"
+#include "StringUtils.h"
 
 using namespace DAVA;
 
@@ -13,7 +14,7 @@ QString UITextControlMetadata::GetLocalizedTextKeyForState(UIControl::eControlSt
     HierarchyTreeNode* node = this->GetActiveTreeNode();
     if (node)
     {
-        return QString::fromStdWString(node->GetExtraData().GetLocalizationKey(controlState));
+        return WideString2QStrint(node->GetExtraData().GetLocalizationKey(controlState));
     }
     
     return QString();
@@ -31,13 +32,13 @@ void UITextControlMetadata::SetLocalizedTextKey(const QString& value)
         return;
     }
     
-    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(value.toStdWString());
+    WideString localizationValue = LocalizationSystem::Instance()->GetLocalizedString(QStrint2WideString(value));
     
     // Update the Tree Node Extradata level with the key.
     HierarchyTreeNode* node = this->GetActiveTreeNode();
     if (node)
     {
-        node->GetExtraData().SetLocalizationKey(value.toStdWString(), GetCurrentStateForLocalizedText());
+        node->GetExtraData().SetLocalizationKey(QStrint2WideString(value), GetCurrentStateForLocalizedText());
     }
     
     // Note - the actual update of the control's text should be performed in the derived classes!
