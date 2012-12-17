@@ -51,41 +51,53 @@ REGISTER_CLASS(MeshInstanceNode);
     
     
     
-PolygonGroupWithMaterial::PolygonGroupWithMaterial(StaticMesh * _mesh, int32 _polygroupIndex, Material * _material)
+PolygonGroupWithMaterial::PolygonGroupWithMaterial()
 {
-    mesh = SafeRetain(_mesh);
-    polygroupIndex = _polygroupIndex;
-    material = SafeRetain(_material);
+    mesh = 0;
+    polygroupIndex = 0;
+    material = 0;
 
     nMaterialInstance = 0;
     nMaterial = 0;
-    
-//    MaterialCompiler * compiler = new MaterialCompiler();
-//    MaterialGraph * graph = new MaterialGraph();
-//    graph->LoadFromFile("~res:/Materials/single_texture_no_lit.material");
-//    
-//    if (MaterialCompiler::COMPILATION_SUCCESS == compiler->Compile(graph, _mesh->GetPolygonGroup(_polygroupIndex), 1, &nMaterial))
-//    {
-//        //NMaterialDescriptor * descriptor = nMaterial->GetDescriptor();
-//        
-//        
-//        nMaterialInstance = new NMaterialInstance();
-//        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 0);
-////        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 1);
-//        Texture * texture = Texture::CreateFromFile("/Users/binaryzebra/Sources/dava.framework/Tools/ResourceEditor/DataSource/3D/materials_new/images/normal.png");
-//        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-//        DVASSERT(texture);
-//        nMaterialInstance->GetRenderState()->SetTexture(texture, 1);
-//    }
-//    
-//    SafeRelease(graph);
-//    SafeRelease(compiler);
+
 }
     
 PolygonGroupWithMaterial::~PolygonGroupWithMaterial()
 {
     SafeRelease(mesh);
     SafeRelease(material);
+}
+
+void PolygonGroupWithMaterial::Setup(StaticMesh * _mesh, int32 _polygroupIndex, Material * _material, Transform * _transform)
+{
+    mesh = SafeRetain(_mesh);
+    polygroupIndex = _polygroupIndex;
+    material = SafeRetain(_material);
+    transform = _transform;
+    
+    nMaterialInstance = 0;
+    nMaterial = 0;
+        
+    //    MaterialCompiler * compiler = new MaterialCompiler();
+    //    MaterialGraph * graph = new MaterialGraph();
+    //    graph->LoadFromFile("~res:/Materials/single_texture_no_lit.material");
+    //
+    //    if (MaterialCompiler::COMPILATION_SUCCESS == compiler->Compile(graph, _mesh->GetPolygonGroup(_polygroupIndex), 1, &nMaterial))
+    //    {
+    //        //NMaterialDescriptor * descriptor = nMaterial->GetDescriptor();
+    //
+    //
+    //        nMaterialInstance = new NMaterialInstance();
+    //        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 0);
+    ////        nMaterialInstance->GetRenderState()->SetTexture(material->GetTexture(Material::TEXTURE_DIFFUSE), 1);
+    //        Texture * texture = Texture::CreateFromFile("/Users/binaryzebra/Sources/dava.framework/Tools/ResourceEditor/DataSource/3D/materials_new/images/normal.png");
+    //        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+    //        DVASSERT(texture);
+    //        nMaterialInstance->GetRenderState()->SetTexture(texture, 1);
+    //    }
+    //    
+    //    SafeRelease(graph);
+    //    SafeRelease(compiler);
 }
 
 StaticMesh * PolygonGroupWithMaterial::GetMesh()
@@ -117,6 +129,35 @@ NMaterialInstance * PolygonGroupWithMaterial::GetNMaterialInstance()
 {
     return nMaterialInstance;
 }
+    
+SceneNode* PolygonGroupWithMaterial::Clone(SceneNode *dstNode)
+{
+    if (!dstNode)
+    {
+        DVASSERT_MSG(IsPointerToExactClass<PolygonGroupWithMaterial>(this), "Can clone only MeshInstanceNode");
+        dstNode = new PolygonGroupWithMaterial();
+    }
+    
+    SceneNode::Clone(dstNode);
+    PolygonGroupWithMaterial *nd = (PolygonGroupWithMaterial *)dstNode;
+    
+    nd->nMaterial = SafeRetain(nMaterial);
+    nd->material = SafeRetain(material);
+    
+    return dstNode;
+}
+    
+uint64 PolygonGroupWithMaterial::GetSortID()
+{
+    return 0;
+}
+    
+void PolygonGroupWithMaterial::Draw()
+{
+    
+}
+
+
 
 MeshInstanceNode::MeshInstanceNode()
 :	SceneNode()
@@ -145,11 +186,14 @@ MeshInstanceNode::~MeshInstanceNode()
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
 {
-    PolygonGroupWithMaterial * polygroup = new PolygonGroupWithMaterial(mesh, polygonGroupIndex, material);
+    PolygonGroupWithMaterial * polygroup = new PolygonGroupWithMaterial();
+    polygroup->Setup(mesh, polygonGroupIndex, material, transform);
 	polygroups.push_back(polygroup);
 	
 	PolygonGroup * group = polygroup->GetPolygonGroup();
 	bbox.AddAABBox(group->GetBoundingBox());
+    
+    AddNode(polygroup);
 }
     
 void MeshInstanceNode::Update(float32 timeElapsed)
@@ -179,6 +223,12 @@ void MeshInstanceNode::Update(float32 timeElapsed)
 
     //Stats::Instance()->EndTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
 }
+    
+uint64 MeshInstanceNode::GetSortID()
+{
+    return 0; 
+}
+
     
 void MeshInstanceNode::Draw()
 {

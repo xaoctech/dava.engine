@@ -22,7 +22,7 @@ public:
 		for (uint32 k = 0; k < meshesSize; ++k)
 		{
 			PolygonGroupWithMaterial * polygroup = meshInstance->polygroups[k];
-			Material * material = polygroup->material;
+			Material * material = polygroup->GetMaterial();
 			
 			if (material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 			{
@@ -41,7 +41,7 @@ public:
 				}
 			}
 
-			polygroup->material->Draw(polygroup->GetPolygonGroup(), meshInstance->materialState);
+			polygroup->GetMaterial()->Draw(polygroup->GetPolygonGroup(), meshInstance->materialState);
 		}
 	}
 
