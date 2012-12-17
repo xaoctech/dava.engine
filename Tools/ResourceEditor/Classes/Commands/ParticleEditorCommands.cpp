@@ -16,7 +16,7 @@
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 #include <QFileDialog>
 #include <QString>
 

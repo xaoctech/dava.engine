@@ -345,6 +345,13 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp" />
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
@@ -354,6 +361,7 @@
     <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
+    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp" />
     <ClCompile Include="Classes\Qt\Main\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\Main\GraphModel.cpp" />
     <ClCompile Include="Classes\Qt\Main\GUIState.cpp" />
@@ -371,6 +379,13 @@
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\EmitterLayerWidget.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\GradientPickerWidget.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\LayerForceWidget.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\ParticleEditorWidget.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\ParticleEmitterPropertiesWidget.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\ParticlesEditorController.cpp" />
+    <ClCompile Include="Classes\Qt\ParticleEditor\TimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp" />
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
@@ -498,6 +513,13 @@
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTree_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\EmitterLayerWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\GradientPickerWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\LayerForceWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\ParticleEditorWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\ParticlesEditorController_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ParticleEditor\TimeLineWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
@@ -765,6 +787,13 @@
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
@@ -773,6 +802,7 @@
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
+    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
     <ClInclude Include="Classes\Qt\Main\GraphItem.h" />
     <ClInclude Include="Classes\Qt\Main\GraphModel.h" />
     <ClInclude Include="Classes\Qt\Main\GUIState.h" />
@@ -790,6 +820,13 @@
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTreeModel.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\EmitterLayerWidget.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\GradientPickerWidget.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\LayerForceWidget.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\ParticleEditorWidget.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\ParticleEmitterPropertiesWidget.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\ParticlesEditorController.h" />
+    <ClInclude Include="Classes\Qt\ParticleEditor\TimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\Project\ProjectManager.h" />
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
@@ -900,6 +937,7 @@
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
   </ItemGroup>
   <ItemGroup>

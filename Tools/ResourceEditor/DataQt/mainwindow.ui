@@ -891,6 +891,11 @@ Area Size:</string>
    <header>DockProperties/PropertiesView.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>ParticleEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>ParticleEditor/particleeditorwidget.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="QtIcons.qrc"/>
