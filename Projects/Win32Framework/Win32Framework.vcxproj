@@ -478,6 +478,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\Lod.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\Transform.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
@@ -789,6 +790,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\Lod.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\Transform.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />

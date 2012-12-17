@@ -62,7 +62,9 @@ class ImposterManager;
 class ImposterNode;
 class EntityManager;
 class BVHierarchy;
-/** 
+class Component;
+    
+/**
     \ingroup scene3d
     \brief This class is a code of our 3D Engine scene graph. 
     To visualize any 3d scene you'll need to create Scene object. 
@@ -74,16 +76,6 @@ class BVHierarchy;
 class Scene : public SceneNode
 {
 public:	
-    
-//    struct LodLayer
-//    {
-//        float32 nearDistance;
-//        float32 farDistance;
-//
-//        float32 nearDistanceSq;
-//        float32 farDistanceSq;
-//    };
-    
 	Scene();
 	virtual ~Scene();
 	
@@ -92,7 +84,7 @@ public:
      */
     virtual void    RegisterNode(SceneNode * node);
     virtual void    UnregisterNode(SceneNode * node);
-    
+
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
