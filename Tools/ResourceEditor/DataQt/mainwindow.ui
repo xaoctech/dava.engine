@@ -488,6 +488,15 @@ size:</string>
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockParticleEditor">
+   <property name="windowTitle">
+    <string>Particle Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="ParticleEditorWidget" name="dockWidgetContents_3"/>
+  </widget>
   <widget class="QDockWidget" name="dockVisibilityTool">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">

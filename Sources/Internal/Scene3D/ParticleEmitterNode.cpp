@@ -49,12 +49,18 @@ void ParticleEmitterNode::Draw()
 	}
 }
 
-void ParticleEmitterNode::LoadFromYaml(String _yamlPath)
+void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 {
 	yamlPath = _yamlPath;
 	SafeRelease(emitter);
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
+}
+
+void ParticleEmitterNode::SaveToYaml(const String& _yamlPath)
+{
+    yamlPath = _yamlPath;
+    emitter->SaveToYaml(yamlPath);
 }
 
 String ParticleEmitterNode::GetYamlPath()

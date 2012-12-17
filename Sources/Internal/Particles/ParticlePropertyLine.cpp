@@ -219,4 +219,42 @@ RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFro
 	return RefPtr< PropertyLine<Color> >();
 }
 
+YamlNode* PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(YamlNode* parentNode, const String& propertyName,
+                                                                   RefPtr<PropertyLine<Color> > propertyLine)
+{
+    // Write the property line.
+    Vector<PropValue<Color> > wrappedPropertyValues = PropLineWrapper<Color>(propertyLine).GetProps();
+    if (wrappedPropertyValues.empty())
+    {
+        return NULL;
+    }
+
+    if (wrappedPropertyValues.size() == 1)
+    {
+        // This has to be single string value. Write Colors as Vectors.
+        parentNode->Set(propertyName, ColorToVector(wrappedPropertyValues.at(0).v));
+        return NULL;
+    }
+
+    // Create the child array node.
+    YamlNode* childNode = new YamlNode(YamlNode::TYPE_ARRAY);
+    for (Vector<PropValue<Color> >::iterator iter = wrappedPropertyValues.begin();
+         iter != wrappedPropertyValues.end(); iter ++)
+    {
+        const PropValue<Color>& curValue = *iter;
+        
+        childNode->AddValueToArray((*iter).t);
+        childNode->AddValueToArray(ColorToVector((*iter).v));
+    }
+
+    parentNode->AddNodeToMap(propertyName, childNode);
+    return childNode;
+}
+
+Vector4 PropertyLineYamlWriter::ColorToVector(const Color& color)
+{
+    return Vector4(int(color.r * 0xFF), int(color.g * 0xFF),
+                   int(color.b * 0xFF), int(color.a * 0xFF));
+}
+
 }
