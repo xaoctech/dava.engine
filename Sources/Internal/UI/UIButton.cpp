@@ -32,11 +32,17 @@
 #include "Base/ObjectFactory.h"
 #include "UI/UIYamlLoader.h"
 #include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/VariantType.h"
+#include "FontManager.h"
 
 namespace DAVA 
 {
 	REGISTER_CLASS(UIButton);
+
+    const int32 stateArray[] = {UIControl::STATE_NORMAL, UIControl::STATE_PRESSED_INSIDE, UIControl::STATE_PRESSED_OUTSIDE, UIControl::STATE_DISABLED, UIControl::STATE_SELECTED, UIControl::STATE_HOVER};
+    const String statePostfix[] = {"Normal", "PressedInside", "PressedOutside", "Disabled", "Selected", "Hover"};
 
 	UIButton::UIButton(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates)
@@ -95,9 +101,10 @@ namespace DAVA
 				SafeRelease(stateTexts[i]);
 			}
 		}
+
 		UIControl::CopyDataFrom(srcControl);
 		UIButton *srcButton = (UIButton *)srcControl;
-		for(int i = 1; i < DRAW_STATE_COUNT; i++)
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
 			if(srcButton->stateBacks[i])
 			{
@@ -185,6 +192,20 @@ namespace DAVA
 			state >>= 1;
 		}
 	}
+
+    void UIButton::CreateBackgroundForState(int32 state)
+	{
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateBackForState((eButtonDrawState)i);
+			}
+
+			state >>= 1;
+		}
+	}
+
 	Sprite* UIButton::GetStateSprite(int32 state)
 	{
 		return GetActualBackground(state)->GetSprite();
@@ -235,6 +256,18 @@ namespace DAVA
 		}
 	}
 	
+    void UIButton::SetStateFontColor(int32 state, const Color& fontColor)
+    {
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateTextForState((eButtonDrawState)i)->SetFontColor(fontColor);
+			}
+			state >>= 1;
+		}
+    }
+
 	void UIButton::SetStateText(int32 state, const WideString &text, const Vector2 &requestedTextRectSize/* = Vector2(0,0)*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
@@ -592,8 +625,8 @@ namespace DAVA
 	{
 		UIControl::LoadFromYamlNode(node, loader);
 		
-		int32 stateArray[] = {STATE_NORMAL, STATE_PRESSED_INSIDE, STATE_PRESSED_OUTSIDE, STATE_DISABLED, STATE_SELECTED, STATE_HOVER};
-		String statePostfix[] = {"Normal", "PressedInside", "PressedOutside", "Disabled", "Selected", "Hover"};
+		//int32 stateArray[] = {STATE_NORMAL, STATE_PRESSED_INSIDE, STATE_PRESSED_OUTSIDE, STATE_DISABLED, STATE_SELECTED, STATE_HOVER};
+		//String statePostfix[] = {"Normal", "PressedInside", "PressedOutside", "Disabled", "Selected", "Hover"};
 	
 		for (int k = 0; k < STATE_COUNT; ++k)
 		{
@@ -670,4 +703,107 @@ namespace DAVA
 			}
 		}
 	}
+
+	YamlNode * UIButton::SaveToYamlNode(UIYamlLoader * loader)
+	{
+		YamlNode *node = UIControl::SaveToYamlNode(loader);
+		//Temp variable
+		VariantType *nodeValue = new VariantType();
+		String stringValue;
+
+		//Control Type
+		node->Set("type", "UIButton");
+        
+		//Remove values of UIControl
+		YamlNode *spriteNode = node->Get("sprite");
+		YamlNode *drawTypeNode = node->Get("drawType");
+		YamlNode *colorInheritNode = node->Get("colorInherit");
+		YamlNode *alignNode = node->Get("align");
+		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
+		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
+        
+		if (spriteNode)
+		{
+			node->RemoveNodeFromMap("sprite");
+		}
+		if (drawTypeNode)
+		{
+			node->RemoveNodeFromMap("drawType");
+		}
+		if (colorInheritNode)
+		{
+			node->RemoveNodeFromMap("colorInherit");
+		}
+		if (alignNode)
+		{
+			node->RemoveNodeFromMap("align");
+		}
+		if (leftRightStretchCapNode)
+		{
+			node->RemoveNodeFromMap("leftRightStretchCap");
+		}
+		if (topBottomStretchCapNode)
+		{
+			node->RemoveNodeFromMap("topBottomStretchCap");
+		}
+        
+		//States cycle for values
+		for (int i = 0; i < STATE_COUNT; ++i)
+		{
+			//Get sprite and frame for state
+			Sprite *stateSprite = this->GetStateSprite(stateArray[i]);
+			int32 stateFrame = this->GetStateFrame(stateArray[i]);
+			if (stateSprite)
+			{
+				//Create array yamlnode and add it to map
+				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+				spriteNode->AddValueToArray(stateFrame);
+				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
+			}
+
+			//StateDrawType
+			UIControlBackground::eDrawType drawType = this->GetStateDrawType(stateArray[i]); 
+			node->Set(Format("stateDrawType%s", statePostfix[i].c_str()), loader->GetDrawTypeNodeValue(drawType));
+			//leftRightStretchCap
+			float32 leftStretchCap = this->GetActualBackground(stateArray[i])->GetLeftRightStretchCap();
+			node->Set(Format("leftRightStretchCap%s", statePostfix[i].c_str()), leftStretchCap);            
+			//topBottomStretchCap
+			float32 topBottomStretchCap = this->GetActualBackground(stateArray[i])->GetTopBottomStretchCap();
+			node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
+			//State align
+			node->Set(Format("stateAlign%s", statePostfix[i].c_str()), this->GetStateAlign(stateArray[i]));
+			//State font
+            
+			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
+			node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
+			//StateText
+			if (this->GetStateTextControl(stateArray[i]))
+			{
+				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
+				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
+			}
+            
+			//colorInherit ???? For different states?
+			// Yuri Coder, 2012/11/16. Temporarily commented out until clarification.
+			//UIControlBackground::eColorInheritType colorInheritType = this->GetStateBackground(stateArray[i])->GetColorInheritType();
+			//node->Set(Format("stateColorInherit%s", statePostfix[i].c_str()), loader->GetColorInheritTypeNodeValue(colorInheritType));
+		}
+        
+		SafeDelete(nodeValue);
+        
+		return node;
+	}
+
+	List<UIControl* >& UIButton::GetRealChildren()
+	{
+		List<UIControl* >& realChildren = UIControl::GetRealChildren();
+		for (uint32 i = 0; i < DRAW_STATE_COUNT; ++i)
+		{
+			realChildren.remove(stateTexts[i]);
+		}
+
+		return realChildren;
+	}
+
 };
