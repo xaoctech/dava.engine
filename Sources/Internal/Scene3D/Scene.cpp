@@ -182,6 +182,13 @@ void Scene::RegisterNode(SceneNode * node)
 	//	entityManager->Flush();
 	//	node->entity->SetData("landscapeNode", landscapeNode);
 	//}
+    
+    Drawable * drawable = dynamic_cast<Drawable*>(node);
+    
+    if (drawable)
+    {
+        drawArray.push_back(drawable);
+    }
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -207,6 +214,24 @@ void Scene::UnregisterNode(SceneNode * node)
 	//{
 	//	entityManager->DestroyEntity(node->entity);
 	//}
+    
+    // Remove drawable remove
+    Drawable * drawable = dynamic_cast<Drawable*>(node);
+    
+    if (drawable)
+    {
+        int32 size = (uint32)drawArray.size();
+        uint32 pos = 0;
+        for (pos = 0; pos < size; ++pos)
+        {
+            if (drawArray[pos] == drawable)
+            {
+                drawArray[pos] = drawArray[size - 1];
+                drawArray.pop_back();
+                break;
+            }
+        }
+    }
 }
 
 Scene * Scene::GetScene()
@@ -507,8 +532,14 @@ void Scene::Draw()
 	//VisibilityAABBoxSystem::Run(this);
 
 	//entityManager->Dump();
-
-    SceneNode::Draw();
+    
+    uint32 size = (uint32)drawArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        drawArray[k]->Draw();
+    }
+    
+    //SceneNode::Draw();
     
     if(imposterManager)
 	{

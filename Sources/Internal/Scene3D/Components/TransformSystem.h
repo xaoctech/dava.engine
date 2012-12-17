@@ -15,7 +15,7 @@ class Transform;
 class TransformSystem : public Singleton<TransformSystem>
 {
 public:
-	static const int32 POOL_SIZE = 1000;
+	static const int32 POOL_SIZE = 5000;
 
 	TransformSystem();
 	~TransformSystem();

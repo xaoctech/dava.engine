@@ -31,6 +31,7 @@
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
 #include "Scene3D/SceneNode.h"
+#include "Scene3D/Drawable.h"
 
 namespace DAVA 
 {
@@ -46,11 +47,16 @@ class InstanceMaterialState;
 class NMaterial;
 class NMaterialInstance;
 
-class PolygonGroupWithMaterial : public BaseObject
+class PolygonGroupWithMaterial : public SceneNode, public Drawable
 {
 public:
-    PolygonGroupWithMaterial(StaticMesh * mesh, int32 polygroupIndex, Material * material);
+    PolygonGroupWithMaterial();
     virtual ~PolygonGroupWithMaterial();
+    
+    void Setup(StaticMesh * mesh, int32 polygroupIndex, Material * material, Transform * transform);
+    virtual void Draw();
+    virtual uint64 GetSortID();
+
     
     StaticMesh * GetMesh();
     int32 GetPolygroupIndex();
@@ -59,9 +65,9 @@ public:
     NMaterial * GetNMaterial();
     NMaterialInstance * GetNMaterialInstance();
     
-	Material * material;
-    
+    SceneNode* Clone(SceneNode *dstNode);
 private:
+	Material * material;
     NMaterial * nMaterial;
     NMaterialInstance * nMaterialInstance;
     
@@ -89,8 +95,9 @@ public:
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
 
     virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
+    virtual void Draw();
+    virtual uint64 GetSortID();
+
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible();
 	

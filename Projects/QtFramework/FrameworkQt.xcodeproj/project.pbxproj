@@ -12,6 +12,8 @@
 		5073EAAC166A400B00101AB5 /* MaterialGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA0166A400B00101AB5 /* MaterialGraph.cpp */; };
 		5073EAAD166A400B00101AB5 /* MaterialGraphNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA2166A400B00101AB5 /* MaterialGraphNode.cpp */; };
 		5073EAAE166A400B00101AB5 /* NMaterial.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA4166A400B00101AB5 /* NMaterial.cpp */; };
+		5081EA5516760C7400ECA24C /* Transform.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5116760C7400ECA24C /* Transform.cpp */; };
+		5081EA5616760C7400ECA24C /* TransformSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5316760C7400ECA24C /* TransformSystem.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -299,6 +301,14 @@
 		5073EAA3166A400B00101AB5 /* MaterialGraphNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGraphNode.h; sourceTree = "<group>"; };
 		5073EAA4166A400B00101AB5 /* NMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterial.cpp; sourceTree = "<group>"; };
 		5073EAA5166A400B00101AB5 /* NMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterial.h; sourceTree = "<group>"; };
+		5081EA3E166F5DAE00ECA24C /* Drawable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Drawable.h; sourceTree = "<group>"; };
+		5081EA5116760C7400ECA24C /* Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transform.cpp; sourceTree = "<group>"; };
+		5081EA5216760C7400ECA24C /* Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transform.h; sourceTree = "<group>"; };
+		5081EA5316760C7400ECA24C /* TransformSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransformSystem.cpp; sourceTree = "<group>"; };
+		5081EA5416760C7400ECA24C /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
+		5081EA57167F5CD900ECA24C /* Component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
+		5081EA58167F5CD900ECA24C /* RenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderComponent.h; sourceTree = "<group>"; };
+		5081EA5A167FB33000ECA24C /* RenderObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderObject.h; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -913,6 +923,27 @@
 			path = Material;
 			sourceTree = "<group>";
 		};
+		5081EA5016760C7400ECA24C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5081EA57167F5CD900ECA24C /* Component.h */,
+				5081EA58167F5CD900ECA24C /* RenderComponent.h */,
+				5081EA5116760C7400ECA24C /* Transform.cpp */,
+				5081EA5216760C7400ECA24C /* Transform.h */,
+				5081EA5316760C7400ECA24C /* TransformSystem.cpp */,
+				5081EA5416760C7400ECA24C /* TransformSystem.h */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		5081EA59167FB33000ECA24C /* Render */ = {
+			isa = PBXGroup;
+			children = (
+				5081EA5A167FB33000ECA24C /* RenderObject.h */,
+			);
+			path = Render;
+			sourceTree = "<group>";
+		};
 		5C5D971E15B022930058B43A /* Internal */ = {
 			isa = PBXGroup;
 			children = (
@@ -1471,6 +1502,8 @@
 		5C5D98DF15B0230D0058B43A /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5081EA59167FB33000ECA24C /* Render */,
+				5081EA5016760C7400ECA24C /* Components */,
 				17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */,
 				17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */,
 				5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */,
@@ -1552,6 +1585,7 @@
 				5C5D992815B0230D0058B43A /* StateNode.h */,
 				5C5D992915B0230D0058B43A /* UserNode.cpp */,
 				5C5D992A15B0230D0058B43A /* UserNode.h */,
+				5081EA3E166F5DAE00ECA24C /* Drawable.h */,
 			);
 			name = Scene3D;
 			path = ../../Sources/Internal/Scene3D;
@@ -2006,6 +2040,8 @@
 				5073EAAC166A400B00101AB5 /* MaterialGraph.cpp in Build Sources */,
 				5073EAAD166A400B00101AB5 /* MaterialGraphNode.cpp in Build Sources */,
 				5073EAAE166A400B00101AB5 /* NMaterial.cpp in Build Sources */,
+				5081EA5516760C7400ECA24C /* Transform.cpp in Build Sources */,
+				5081EA5616760C7400ECA24C /* TransformSystem.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

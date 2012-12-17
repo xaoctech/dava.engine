@@ -221,6 +221,16 @@ public:
     // Do not use variables 
     std::deque<SceneNodeAnimation *> nodeAnimations;
 
+    // Do we need enum, or we can use virtual functions? 
+    enum
+    {
+        EVENT_CREATE_ENTITY = 1,
+        EVENT_DELETE_ENTITY,
+        EVENT_ADD_COMPONENT,
+        EVENT_DELETE_COMPONENT,
+        EVENT_NOTIFY_UPDATE,
+    };
+    
 	enum
 	{
 		DEBUG_DRAW_NONE = 0,
