@@ -193,7 +193,7 @@ public:
 	virtual void SystemWillAppear(); // Internal method used by ControlSystem
 	
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
-
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     virtual float32 VisibleAreaSize(UIScrollBar *forScrollBar);
     virtual float32 TotalAreaSize(UIScrollBar *forScrollBar);

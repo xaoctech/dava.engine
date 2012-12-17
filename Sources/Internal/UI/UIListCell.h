@@ -74,6 +74,7 @@ namespace DAVA
         UIListCell* CloneListCell();
         
         virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+        virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 		
 	protected:
 		virtual ~UIListCell();

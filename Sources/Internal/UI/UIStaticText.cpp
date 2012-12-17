@@ -34,6 +34,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FontManager.h"
 
 namespace DAVA 
 {
@@ -96,6 +97,13 @@ void UIStaticText::SetFont(Font * _font)
 	PrepareSprite();
 }
 
+void UIStaticText::SetFontColor(const Color& fontColor)
+{
+    textBlock->SetRectSize(size);
+	textBlock->SetFontColor(fontColor);
+	PrepareSprite();
+}
+    
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 {
 	textBlock->SetRectSize(size);
@@ -192,6 +200,43 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetText(LocalizedString(textNode->AsWString()));
 	}
     
+}
+
+YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
+{
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+
+    // Sprite node is not needed for UITextField.
+    YamlNode *spriteNode = node->Get("sprite");
+    if (spriteNode)
+    {
+        node->RemoveNodeFromMap("sprite");
+    }
+
+    //Temp variable
+    VariantType *nodeValue = new VariantType();
+    
+    //Control Type
+    node->Set("type", "UIStaticText");
+
+    //Font
+    //Get font name and put it here
+    nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
+    node->Set("font", nodeValue);
+
+    //Text
+    nodeValue->SetWideString(GetText());
+    node->Set("text", nodeValue);    
+    //Multiline
+    node->Set("multiline", this->textBlock->GetMultiline());
+    //multilineBySymbol
+    node->Set("multilineBySymbol", this->textBlock->GetMultilineBySymbol());
+    //fitting - STRING OF INT???  
+    node->Set("fitting", this->textBlock->GetFittingOption());
+    
+    SafeDelete(nodeValue);
+    
+    return node;
 }
 
 };
