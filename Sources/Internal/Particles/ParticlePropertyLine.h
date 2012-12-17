@@ -54,6 +54,21 @@ public:
 	static RefPtr<PropertyLine<Color> >  CreateColorPropertyLineFromYamlNode(YamlNode * parentNode, const String & propertyName, RefPtr<PropertyLine<Color> > defaultPropertyLine = RefPtr< PropertyLine<Color> >());
 };
 
+class PropertyLineYamlWriter
+{
+public:
+    // Write the single value and whole property line to the YAML node.
+    template<class T> static void WritePropertyValueToYamlNode(YamlNode* parentNode, const String& propertyName, T propertyValue);
+    template<class T> static YamlNode* WritePropertyLineToYamlNode(YamlNode* parentNode, const String& propertyName, RefPtr<PropertyLine<T> > propertyLine);
+    
+    // Specific implementation for writing Color values.
+    static YamlNode* WriteColorPropertyLineToYamlNode(YamlNode* parentNode, const String& propertyName, RefPtr<PropertyLine<Color> > propertyLine);
+    
+protected:
+    // Convert Color to Vector4 value.
+    static Vector4 ColorToVector(const Color& color);
+};
+
 /*#define PROPERTY_RETAIN(type, name)\
 private:\
 type property##name;\
@@ -155,11 +170,151 @@ public:
 		clone->keys = keys;
 		return clone;
 	}	
-
-};
 };
 
+template <class T> class PropValue
+{
+public:
+    float32 t;
+    T v;
+    PropValue(float32 t, const T& v)
+    {
+        this->t = t;
+        this->v = v;
+    };
+};
 
+// A wrapper for Property Line, which allows easy access to the values.
+template <class T> class PropLineWrapper
+{
+public:
+    PropLineWrapper(RefPtr< PropertyLine<T> > propertyLine)
+    {
+        Init(propertyLine);
+    }
+    PropLineWrapper()
+    {
+    }
 
+    virtual ~PropLineWrapper()
+    {
+};
+
+    void Init(RefPtr< PropertyLine<T> > propertyLine);
+    
+    Vector< PropValue<T> >* GetPropsPtr();
+	Vector< PropValue<T> > GetProps() const;
+    RefPtr< PropertyLine<T> > GetPropLine() const;
+
+private:
+    Vector< PropValue<T> > values;
+    float32 minT;
+    float32 maxT;
+};
+
+template <class T>
+void PropLineWrapper<T>::Init(RefPtr< PropertyLine<T> > propertyLine)
+{
+    values.clear();
+    minT = std::numeric_limits<float32>::infinity();
+    maxT = -std::numeric_limits<float32>::infinity();
+    
+    PropertyLineValue<T> *pv;
+    PropertyLineKeyframes<T> *pk;
+
+    pk = dynamic_cast< PropertyLineKeyframes<T> *>(propertyLine.Get());
+    pv = dynamic_cast< PropertyLineValue<T> *>(propertyLine.Get());
+
+    if (pk)
+    {
+        for (uint32 i = 0; i < pk->keys.size(); ++i)
+        {
+            float32 t = pk->keys[i].t;
+            minT = Min(minT, t);
+            maxT = Max(maxT, t);
+
+            values.push_back(PropValue<T>(t, pk->keys[i].value));
+        }
+    }
+    else if (pv)
+    {
+        values.push_back(PropValue<T>(0, pv->GetValue(0)));
+    }
+}
+
+template <class T>
+Vector< PropValue<T> >* PropLineWrapper<T>::GetPropsPtr()
+{
+    return &values;
+}
+
+template <class T>
+Vector< PropValue<T> > PropLineWrapper<T>::GetProps() const
+{
+	return values;
+}
+		
+template <class T>
+RefPtr< PropertyLine<T> > PropLineWrapper<T>::GetPropLine() const
+{
+    if (values.size() > 1)
+    {
+        //return PropertyLineKeyframes
+        RefPtr< PropertyLineKeyframes<T> > lineKeyFrames(new PropertyLineKeyframes<T>());
+        for (uint32 i = 0; i < values.size(); ++i)
+        {
+            lineKeyFrames->AddValue(values[i].t, values[i].v);
+        }
+        return lineKeyFrames;
+    }
+    else if (values.size() == 1)
+    {
+        //return PropertyLineValue
+        RefPtr< PropertyLineValue<T> > lineValue(new PropertyLineValue<T>(values[0].v));
+        return lineValue;
+    }
+    return RefPtr< PropertyLine<T> >();
+}
+
+// Writer logic.
+template<class T>
+void PropertyLineYamlWriter::WritePropertyValueToYamlNode(YamlNode* parentNode, const String& propertyName,
+                                                          T propertyValue)
+{
+    parentNode->Set(propertyName, propertyValue);
+}
+
+template<class T>
+YamlNode* PropertyLineYamlWriter::WritePropertyLineToYamlNode(YamlNode* parentNode, const String& propertyName,
+                                                              RefPtr<PropertyLine<T> > propertyLine)
+{
+    // Write the property line.
+    Vector<PropValue<T> > wrappedPropertyValues = PropLineWrapper<T>(propertyLine).GetProps();
+    if (wrappedPropertyValues.empty())
+    {
+        return NULL;
+    }
+
+    if (wrappedPropertyValues.size() == 1)
+    {
+        // This has to be single string value.
+        parentNode->Set(propertyName, wrappedPropertyValues.at(0).v);
+        return NULL;
+    }
+    
+    // Create the child array node.
+    YamlNode* childNode = new YamlNode(YamlNode::TYPE_ARRAY);
+    for (typename Vector<PropValue<T> >::iterator iter = wrappedPropertyValues.begin();
+         iter != wrappedPropertyValues.end(); iter ++)
+    {
+        childNode->AddValueToArray((*iter).t);
+        childNode->AddValueToArray((*iter).v);
+    }
+    
+    parentNode->AddNodeToMap(propertyName, childNode);
+    return childNode;
+}
+
+};
 
 #endif // __DAVAENGINE_PARTICLES_PROPERTY_LINE_H__
