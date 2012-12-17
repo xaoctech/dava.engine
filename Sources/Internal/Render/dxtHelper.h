@@ -5,8 +5,8 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/Image.h"
-#include <nvtt/nvtt.h>
-#include <nvtt/nvtt_extra.h>
+#include <libdxt/nvtt.h>
+#include <libdxt/nvtt_extra.h>
 
 namespace DAVA 
 {
