@@ -7,7 +7,7 @@
 #include "Main/mainwindow.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/dxtHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
 #include "ui_texturebrowser.h"
@@ -338,7 +338,7 @@ void TextureBrowser::updateInfoConverted()
 
 				// TODO: more accurate dxt data size calculation
 				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
-				datasize = DxtWrapper::GetDataSize(compressedTexturePath.c_str());
+				datasize = LibDxtHelper::GetDataSize(compressedTexturePath.c_str());
 			}
 			break;
 		}

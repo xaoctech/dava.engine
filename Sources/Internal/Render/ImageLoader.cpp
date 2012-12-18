@@ -32,7 +32,7 @@
 #include "Render/RenderBase.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/dxtHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "Platform/SystemTimer.h"
 
 namespace DAVA 
@@ -93,7 +93,7 @@ bool ImageLoader::IsPVRFile(DAVA::File *file)
 
 bool ImageLoader::IsDXTFile(DAVA::File *file)
 {
-    bool isDXT = DxtWrapper::IsDxtFile(file->GetFilename());
+    bool isDXT = LibDxtHelper::IsDxtFile(file->GetFilename());
     return isDXT;
 }
     
@@ -121,9 +121,10 @@ Vector<Image *> ImageLoader::CreateFromDXT(DAVA::File *file)
 {
     Vector<Image *> retObj;
 
-	bool res = DxtWrapper::ReadDxtFile(file->GetFilename(), retObj);
+	bool res = LibDxtHelper::ReadDxtFile(file->GetFilename(), retObj);
 	if(false == res)
 	{
+		for_each(retObj.begin(), retObj.end(),SafeRelease<Image>);
 		retObj.clear();
 	}
 	return retObj;
