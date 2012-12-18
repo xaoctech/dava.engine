@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "logger.h"
 #include <QMessageBox>
+#include <QComboBox>
+#include <QSet>
 #include "processhelper.h"
 #include "settings.h"
 
@@ -60,6 +62,10 @@ void MainWindow::AvailableSoftWareUpdated(const AvailableSoftWare& software) {
     FillTable(ui->dependenciesTable, software.m_Dependencies);
 }
 
+void MainWindow::OnComboBoxValueChanged(const QString& value) {
+    m_SelectedAppVersion = value;
+}
+
 void MainWindow::FillTable(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft) {
     AvailableSoftWare::SoftWareMap::const_iterator iter;
     table->setRowCount(0);
@@ -71,9 +77,44 @@ void MainWindow::FillTable(QTableWidget* table, const AvailableSoftWare::SoftWar
         table->insertRow(i);
         table->setItem(i, COLUMN_NAME, new QTableWidgetItem(name));
         table->setItem(i, COLUMN_CUR_VER, new QTableWidgetItem(config.m_CurVersion));
-        table->setItem(i, COLUMN_NEW_VER, new QTableWidgetItem(config.m_NewVersion));
+        if (config.m_AvailableVersion.size() == 1) {
+            table->setItem(i, COLUMN_NEW_VER, new QTableWidgetItem(*(config.m_AvailableVersion.begin())));
+        } else {
+            QComboBox* pComboBox = new QComboBox(table);
+            connect(pComboBox,
+                    SIGNAL(currentIndexChanged(QString)),
+                    this,
+                    SLOT(OnComboBoxValueChanged(QString)));
+
+            for (QSet<QString>::const_iterator iter = config.m_AvailableVersion.begin();
+                 iter != config.m_AvailableVersion.end();
+                 ++iter) {
+                pComboBox->addItem(*iter);
+            }
+            pComboBox->setCurrentIndex(pComboBox->count() - 1);
+            table->setCellWidget(i, COLUMN_NEW_VER, pComboBox);
+        }
     }
     table->resizeRowsToContents();
+}
+
+void MainWindow::UpdateSelectedApp(QTableWidget* table) {
+    QList<QTableWidgetItem *> items = table->selectedItems();
+    if (!items.size())
+        return;
+
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i]->column() == COLUMN_NAME)
+            m_SelectedApp = items[i]->text();
+        else if (items[i]->column() == COLUMN_NEW_VER)
+            m_SelectedAppVersion = items[i]->text();
+    }
+    if (m_SelectedAppVersion.isEmpty()) {
+        QWidget* pWidget = table->cellWidget(items[0]->row(), COLUMN_NEW_VER);
+        QComboBox* pComboBox = dynamic_cast<QComboBox*>(pWidget);
+        if (pComboBox)
+            m_SelectedAppVersion = pComboBox->currentText();
+    }
 }
 
 void MainWindow::UpdateBtn() {
@@ -91,32 +132,24 @@ void MainWindow::UpdateBtn() {
     }
 
     m_SelectedApp.clear();
+    m_SelectedAppVersion.clear();
 
     const AvailableSoftWare::SoftWareMap* pSelectedMap = NULL;
     switch (ui->tabWidget->currentIndex()) {
     case 0: {   //stable tab
         pSelectedMap = &m_SoftWare.m_Stable;
         m_SelectedAppType = eAppTypeStable;
-        QList<QTableWidgetItem *> items = ui->stableTable->selectedItems();
-        for (int i = 0; i < items.size(); i++)
-            if (items[i]->column() == COLUMN_NAME)
-                m_SelectedApp = items[i]->text();
+        UpdateSelectedApp(ui->stableTable);
     }break;
     case 1: {   //dev tab
         pSelectedMap = &m_SoftWare.m_Development;
         m_SelectedAppType = eAppTypeDevelopment;
-        QList<QTableWidgetItem *> items = ui->developmentTable->selectedItems();
-        for (int i = 0; i < items.size(); i++)
-            if (items[i]->column() == COLUMN_NAME)
-                m_SelectedApp = items[i]->text();
+        UpdateSelectedApp(ui->developmentTable);
     }break;
     case 2: {   //dep tab
         pSelectedMap = &m_SoftWare.m_Dependencies;
         m_SelectedAppType = eAppTypeDependencies;
-        QList<QTableWidgetItem *> items = ui->dependenciesTable->selectedItems();
-        for (int i = 0; i < items.size(); i++)
-            if (items[i]->column() == COLUMN_NAME)
-                m_SelectedApp = items[i]->text();
+        UpdateSelectedApp(ui->dependenciesTable);
     }break;
     default:
         return;
@@ -145,7 +178,7 @@ void MainWindow::OnLogAdded(const QString &log) {
 }
 
 void MainWindow::on_btnInstall_clicked() {
-    m_pInstaller->Install(m_SelectedApp, m_SelectedAppType);
+    m_pInstaller->Install(m_SelectedApp, m_SelectedAppVersion, m_SelectedAppType);
 }
 
 void MainWindow::on_btnRefresh_clicked() {
@@ -179,7 +212,7 @@ void MainWindow::on_btnRun_clicked() {
 
 void MainWindow::on_btnReinstall_clicked() {
     if (m_pInstaller->Delete(m_SelectedApp, m_SelectedAppType)) {
-        m_pInstaller->Install(m_SelectedApp, m_SelectedAppType);
+        m_pInstaller->Install(m_SelectedApp, m_SelectedAppVersion, m_SelectedAppType);
     }
 }
 
