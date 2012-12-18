@@ -38,7 +38,8 @@ private slots:
     void OnComboBoxValueChanged(const QString& value);
 
 private:
-    void FillTable(QTableWidget* table, const AvailableSoftWare::SoftWareMap& sotf);
+    void FillTableSoft(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft);
+    void FillTableDependencies(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft);
     void UpdateSelectedApp(QTableWidget* table);
 
 private:

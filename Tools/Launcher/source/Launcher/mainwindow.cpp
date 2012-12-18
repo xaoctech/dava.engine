@@ -57,16 +57,16 @@ MainWindow::~MainWindow() {
 
 void MainWindow::AvailableSoftWareUpdated(const AvailableSoftWare& software) {
     m_SoftWare = software;
-    FillTable(ui->stableTable, software.m_Stable);
-    FillTable(ui->developmentTable, software.m_Development);
-    FillTable(ui->dependenciesTable, software.m_Dependencies);
+    FillTableSoft(ui->stableTable, software.m_Stable);
+    FillTableSoft(ui->developmentTable, software.m_Development);
+    FillTableDependencies(ui->dependenciesTable, software.m_Dependencies);
 }
 
 void MainWindow::OnComboBoxValueChanged(const QString& value) {
     m_SelectedAppVersion = value;
 }
 
-void MainWindow::FillTable(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft) {
+void MainWindow::FillTableSoft(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft) {
     AvailableSoftWare::SoftWareMap::const_iterator iter;
     table->setRowCount(0);
     for (iter = soft.begin(); iter != soft.end(); ++iter) {
@@ -94,6 +94,26 @@ void MainWindow::FillTable(QTableWidget* table, const AvailableSoftWare::SoftWar
             pComboBox->setCurrentIndex(pComboBox->count() - 1);
             table->setCellWidget(i, COLUMN_NEW_VER, pComboBox);
         }
+    }
+    table->resizeRowsToContents();
+}
+
+void MainWindow::FillTableDependencies(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft) {
+    AvailableSoftWare::SoftWareMap::const_iterator iter;
+    table->setRowCount(0);
+    for (iter = soft.begin(); iter != soft.end(); ++iter) {
+        const QString& name = iter.key();
+        const SoftWare& config = iter.value();
+
+        int i = table->rowCount();
+        table->insertRow(i);
+        table->setItem(i, COLUMN_NAME, new QTableWidgetItem(name));
+        if (config.m_CurVersion.isEmpty())
+            table->setItem(i, COLUMN_CUR_VER, new QTableWidgetItem("Not installed"));
+        else if (config.m_CurVersion == config.m_NewVersion)
+            table->setItem(i, COLUMN_CUR_VER, new QTableWidgetItem("Installed latest"));
+        else
+            table->setItem(i, COLUMN_CUR_VER, new QTableWidgetItem("Installed not latest"));
     }
     table->resizeRowsToContents();
 }
