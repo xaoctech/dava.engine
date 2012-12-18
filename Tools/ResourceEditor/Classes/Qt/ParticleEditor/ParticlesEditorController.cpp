@@ -10,6 +10,8 @@
 
 using namespace DAVA;
 
+#define LIFETIME_FOR_NEW_PARTICLE_EMITTER 4.0f
+
 ParticlesEditorController::ParticlesEditorController(QObject* parent) :
     QObject(parent)
 {
@@ -182,6 +184,9 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(ParticleEmitterNod
     {
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectNode, emitterSceneNode,
                                                                                      QString::fromStdString(emitterSceneNode->GetName()));
+
+		emitterSceneNode->GetEmitter()->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
+
         effectNode->AddNode(emitterSceneNode);
         effectEditorNode->AddChildNode(emitterEditorNode);
     }
@@ -198,6 +203,15 @@ void ParticlesEditorController::RemoveParticleEmitterNode(ParticleEmitterNode* e
     if (effectEditorNode && emitterEditorNode)
     {
         effectEditorNode->RemoveChildNode(emitterEditorNode);
+    }
+}
+
+void ParticlesEditorController::CleanupParticleEmitterEditorNode(EmitterParticleEditorNode* emitterNode)
+{
+    // Leave the node itself, but cleanup all the children.
+    while (!emitterNode->GetChildren().empty())
+    {
+        emitterNode->RemoveChildNode(emitterNode->GetChildren().front());
     }
 }
 
@@ -225,7 +239,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
         layer = new ParticleLayer();
     }
 
-    layer->endTime = 100000000.0f;
+    layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
     emitter->AddLayer(layer);
 
     // Create the new node and add it to the tree.
@@ -381,7 +395,7 @@ void ParticlesEditorController::FindEmitterEditorNode(ParticleEmitterNode* emitt
         }
         
         // If the emitter editor found during inner loop - break the outer one too.
-        if (emitterEditorNode)
+        if (*effectEditorNode && *emitterEditorNode)
         {
             break;
         }

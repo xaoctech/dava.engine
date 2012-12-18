@@ -352,12 +352,16 @@ void CommandAddParticleEmitterLayer::Execute()
         return;
     }
 
+	emitterNode->GetRootNode()->Stop();
+	
     // Lets select this node when the tree will be rebuilt.
     LayerParticleEditorNode* layerNode = ParticlesEditorController::Instance()->AddParticleLayerToNode(emitterNode);
     if (layerNode)
     {
         layerNode->SetMarkedToSelection(true);
     }
+
+	emitterNode->GetRootNode()->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -373,7 +377,7 @@ void CommandRemoveParticleEmitterLayer::Execute()
     // Need to know selected Layer Node to remove it.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
     LayerParticleEditorNode* layerNode = dynamic_cast<LayerParticleEditorNode*>(selectedNode);
-    if (!layerNode)
+    if (!layerNode || !layerNode->GetRootNode())
     {
         return;
     }
@@ -381,7 +385,9 @@ void CommandRemoveParticleEmitterLayer::Execute()
     // Mark the "parent" Emitter Node to selection.
     layerNode->GetEmitterEditorNode()->SetMarkedToSelection(true);
 
+	layerNode->GetRootNode()->Stop();
     ParticlesEditorController::Instance()->RemoveParticleLayerNode(layerNode);
+	layerNode->GetRootNode()->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -422,17 +428,19 @@ void CommandAddParticleEmitterForce::Execute()
     // Need to know selected Layer Node to add the Force to.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
     LayerParticleEditorNode* layerNode = dynamic_cast<LayerParticleEditorNode*>(selectedNode);
-    if (!layerNode)
+    if (!layerNode || !layerNode->GetRootNode())
     {
         return;
     }
 
+	layerNode->GetRootNode()->Stop();
     ForceParticleEditorNode* forceNode = ParticlesEditorController::Instance()->AddParticleForceToNode(layerNode);
     if (forceNode)
     {
         forceNode->SetMarkedToSelection(true);
     }
-
+	layerNode->GetRootNode()->Restart();
+	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
@@ -447,7 +455,7 @@ void CommandRemoveParticleEmitterForce::Execute()
     // Need to know selected Layer Node to add the Force to.
     BaseParticleEditorNode* selectedNode = ParticlesEditorController::Instance()->GetSelectedNode();
     ForceParticleEditorNode* forceNode = dynamic_cast<ForceParticleEditorNode*>(selectedNode);
-    if (!forceNode)
+    if (!forceNode || !forceNode->GetRootNode())
     {
         return;
     }
@@ -455,7 +463,9 @@ void CommandRemoveParticleEmitterForce::Execute()
     // Mark the "parent" Layer Node to selection.
     forceNode->GetLayerEditorNode()->SetMarkedToSelection(true);
 
+	forceNode->GetRootNode()->Stop();
     ParticlesEditorController::Instance()->RemoveParticleForceNode(forceNode);
+	forceNode->GetRootNode()->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -483,7 +493,10 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 		return;
     }
 
+    // In case this emitter already has Editor Nodes - remove them before loading.
+    ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
     emitterNode->GetEmitterNode()->LoadFromYaml(filePath.toStdString());
+
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
