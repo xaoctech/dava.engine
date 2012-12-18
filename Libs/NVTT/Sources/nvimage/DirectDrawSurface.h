@@ -112,6 +112,7 @@ namespace nv
 	{
 	public:
 		DirectDrawSurface(const char * file);
+		DirectDrawSurface(FILE * file);
 		~DirectDrawSurface();
 		
 		bool isValid() const;

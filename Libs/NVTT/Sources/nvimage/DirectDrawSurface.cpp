@@ -759,6 +759,14 @@ DirectDrawSurface::DirectDrawSurface(const char * name) : stream(new StdInputStr
 	}
 }
 
+DirectDrawSurface::DirectDrawSurface(FILE * file) : stream(new StdInputStream(file, false))
+{
+	if (!stream->isError())
+	{
+		(*stream) << header;
+	}
+}
+
 DirectDrawSurface::~DirectDrawSurface()
 {
 	delete stream;
