@@ -53,7 +53,7 @@ public:
     PolygonGroupWithMaterial();
     virtual ~PolygonGroupWithMaterial();
     
-    void Setup(StaticMesh * mesh, int32 polygroupIndex, Material * material, Transform * transform);
+    void Setup(StaticMesh * mesh, int32 polygroupIndex, Material * material, TransformComponent * transform);
     virtual void Draw();
     virtual uint64 GetSortID();
 
@@ -70,6 +70,7 @@ private:
 	Material * material;
     NMaterial * nMaterial;
     NMaterialInstance * nMaterialInstance;
+    TransformComponent *  transform;
     
     StaticMesh * mesh;
     int32 polygroupIndex;

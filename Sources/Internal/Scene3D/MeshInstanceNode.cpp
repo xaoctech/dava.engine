@@ -37,8 +37,6 @@
 #include "Utils/StringFormat.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Debug/Stats.h"
-#include "Entity/Components.h"
-#include "Entity/Entity.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
@@ -68,7 +66,7 @@ PolygonGroupWithMaterial::~PolygonGroupWithMaterial()
     SafeRelease(material);
 }
 
-void PolygonGroupWithMaterial::Setup(StaticMesh * _mesh, int32 _polygroupIndex, Material * _material, Transform * _transform)
+void PolygonGroupWithMaterial::Setup(StaticMesh * _mesh, int32 _polygroupIndex, Material * _material, TransformComponent * _transform)
 {
     mesh = SafeRetain(_mesh);
     polygroupIndex = _polygroupIndex;
@@ -187,7 +185,7 @@ MeshInstanceNode::~MeshInstanceNode()
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
 {
     PolygonGroupWithMaterial * polygroup = new PolygonGroupWithMaterial();
-    polygroup->Setup(mesh, polygonGroupIndex, material, transform);
+    polygroup->Setup(mesh, polygonGroupIndex, material, transformComponent);
 	polygroups.push_back(polygroup);
 	
 	PolygonGroup * group = polygroup->GetPolygonGroup();
@@ -252,7 +250,7 @@ void MeshInstanceNode::Draw()
     }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = *(transform->GetWorldTransform()) * prevMatrix;
+	Matrix4 meshFinalMatrix = *(transformComponent->GetWorldTransform()) * prevMatrix;
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
 //    /* float32 proj[16];

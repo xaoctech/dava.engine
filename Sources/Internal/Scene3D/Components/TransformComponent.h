@@ -3,21 +3,26 @@
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/Components/Component.h"
 
 namespace DAVA 
 {
 
 class SceneNode;
 
-class Transform
+class TransformComponent : public Component
 {
 public:
-	inline Matrix4 * GetWorldTransform();
+    TransformComponent();
+    ~TransformComponent();
+	
+    inline Matrix4 * GetWorldTransform();
 	inline Matrix4 * GetLocalTransform();
 	inline int32 GetIndex();
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
+    TransformComponent * Clone();
 
 private:
 	Matrix4 localMatrix;
@@ -30,17 +35,17 @@ private:
 	friend class TransformSystem;
 };
 
-Matrix4 * Transform::GetWorldTransform()
+Matrix4 * TransformComponent::GetWorldTransform()
 {
 	return &worldMatrix;
 }
 
-Matrix4 * Transform::GetLocalTransform()
+Matrix4 * TransformComponent::GetLocalTransform()
 {
 	return &localMatrix;
 }
 
-int32 Transform::GetIndex()
+int32 TransformComponent::GetIndex()
 {
 	return index;
 }

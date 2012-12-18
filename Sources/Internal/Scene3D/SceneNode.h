@@ -35,7 +35,8 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
-#include "Scene3D/Components/Transform.h"
+#include "Scene3D/Components/Component.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -47,7 +48,7 @@ class KeyedArchive;
 class SceneFileV2;
 class DataNode;
 class Entity;
-class Component;
+class RenderComponent;
 
 /**
     \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
@@ -71,12 +72,17 @@ public:
      */
     virtual Scene * GetScene();
     
+    void AddComponent(Component * component);
+    void RemoveComponent(Component * component);
     
-    virtual void    AddComponent(Component * component);
-    virtual void    RemoveComponent(Component * component);
+    Component * components[Component::COMPONENT_COUNT];
+	TransformComponent * transformComponent;
+    RenderComponent * renderComponent;
     
+    inline TransformComponent * GetTransformComponent();
+    inline RenderComponent * GetRenderComponent();
 
-
+    uint32 componentFlags;
     
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
@@ -338,8 +344,6 @@ public:
      */
     virtual void SceneDidLoaded();
 
-	inline Transform * GetTransform();
-
 	//temporary solution
 	Entity * entity;
     
@@ -369,12 +373,11 @@ protected:
 
 	Matrix4 worldTransform;
     KeyedArchive *customProperties;
-
-	Transform * transform;
     
 private:
     Matrix4 defaultLocalTransform;
     
+    friend class Scene;
 };
 
 inline void SceneNode::SetVisible(bool isVisible)
@@ -449,12 +452,12 @@ inline const int32 SceneNode::GetTag()
     
 inline const Matrix4 & SceneNode::GetLocalTransform() 
 { 
-    return *(transform->GetLocalTransform()); 
+    return *(transformComponent->GetLocalTransform());
 }; 
 
 inline const Matrix4 & SceneNode::GetWorldTransform() 
 { 
-    return *(transform->GetWorldTransform()); 
+    return *(transformComponent->GetWorldTransform());
 };
     
 inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
@@ -462,22 +465,6 @@ inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
     return defaultLocalTransform;
 }
     
-inline const Matrix4 & SceneNode::ModifyLocalTransform()
-{
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    return GetLocalTransform();
-}
-
-inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
-{
-	transform->SetLocalTransform(&newMatrix);
-	TransformSystem::Instance()->NeedUpdate(this);
-
-    //localTransform = newMatrix;
-    //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
-    //if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
-    //else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
-}
 //
 //inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
 //{
@@ -541,9 +528,9 @@ void SceneNode::GetChildNodes(Container<T> & container)
     }	
 }
 
-Transform * SceneNode::GetTransform()
+TransformComponent * SceneNode::GetTransformComponent()
 {
-	return transform;
+	return transformComponent;
 }
 
 };

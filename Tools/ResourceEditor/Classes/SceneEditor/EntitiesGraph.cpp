@@ -2,6 +2,9 @@
 #include "ControlsFactory.h"
 #include "EditorSettings.h"
 #include "PropertyControlCreator.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
+#include "Entity/Entity.h"
 
 EntitiesGraph::EntitiesGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
 :   GraphBase(newDelegate, rect),
