@@ -762,6 +762,11 @@ void TimeLineWidget::mouseDoubleClickEvent(QMouseEvent * event)
 
 void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value, bool deleteSamePoints)
 {
+	if (lineId >= lines.size())
+	{
+		return;
+	}
+
 	if (pointId > 0)
 		value.x = Max(lines[lineId].line[pointId - 1].x, value.x);
 	if (pointId < (lines[lineId].line.size() - 1))

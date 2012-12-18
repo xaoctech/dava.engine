@@ -68,7 +68,7 @@ protected:
     // Synchronization of the whole Particle Editor Tree and different types of Nodes.
     void SynchronizeParticleEditorTree(BaseParticleEditorNode* node);
 
-    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node);
+    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, ParticleEffectNode* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
 

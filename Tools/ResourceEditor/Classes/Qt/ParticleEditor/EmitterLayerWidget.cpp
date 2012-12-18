@@ -139,16 +139,22 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	sprite = layer->GetSprite();
 	Sprite* renderSprite = Sprite::CreateAsRenderTarget(SPRITE_SIZE, SPRITE_SIZE, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(renderSprite);
-	sprite->SetScaleSize(SPRITE_SIZE, SPRITE_SIZE);
-	sprite->Draw();
+	if (sprite)
+	{
+		sprite->SetScaleSize(SPRITE_SIZE, SPRITE_SIZE);
+		sprite->Draw();
+	}
+
 	RenderManager::Instance()->RestoreRenderTarget();
 	Texture* texture = renderSprite->GetTexture();
 	Image* image = texture->CreateImageFromMemory();
 	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::fromDavaImage(image)));
 	SafeRelease(image);
 	SafeRelease(renderSprite);
-	spritePathLabel->setText(QString::fromStdString(sprite->GetName()));// GetRelativePathname()));
-	
+
+	QString spriteName = sprite ? QString::fromStdString(sprite->GetName()) : "<none>";
+	spritePathLabel->setText(spriteName);
+
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
 	lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	lifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->life).GetProps(), Qt::blue, "life");

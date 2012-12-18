@@ -782,7 +782,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     }
 
     // Truncate an extension of the sprite file.
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
         this->relativeSpriteName.substr(0, this->relativeSpriteName.size()-4));
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);

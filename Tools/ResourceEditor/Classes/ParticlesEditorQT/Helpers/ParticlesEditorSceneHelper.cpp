@@ -186,10 +186,11 @@ void ParticlesEditorSceneHelper::BuildSceneGraphRecursive(BaseParticleEditorNode
 
 void ParticlesEditorSceneHelper::SynchronizeParticleEditorTree(BaseParticleEditorNode* node)
 {
-    EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
+	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
     if (effectEditorNode)
     {
-        SynchronizeEffectParticleEditorNode(effectEditorNode);
+		ParticleEffectNode* effectRootNode = node->GetRootNode();
+        SynchronizeEffectParticleEditorNode(effectEditorNode, effectRootNode);
     }
 
     EmitterParticleEditorNode* emitterEditorNode = dynamic_cast<EmitterParticleEditorNode*>(node);
@@ -205,21 +206,16 @@ void ParticlesEditorSceneHelper::SynchronizeParticleEditorTree(BaseParticleEdito
     }
 }
 
-void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node)
+void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
+																	 ParticleEffectNode* effectRootNode)
 {
-    if (!node)
-    {
-        return;
-    }
-    
-    ParticleEffectNode* effectNode = node->GetRootNode();
-    if (!effectNode)
+    if (!node || !effectRootNode)
     {
         return;
     }
 
     // All the children of Effect Node are actually Emitters.
-    int emittersCountInEffect = effectNode->GetChildrenCount();
+    int emittersCountInEffect = effectRootNode->GetChildrenCount();
     int emittersCountInEffectNode = node->GetEmittersCount();
 
     if (emittersCountInEffect > 0 && emittersCountInEffectNode == 0)
@@ -228,15 +224,14 @@ void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParti
         for (int32 i = 0; i < emittersCountInEffect; i ++)
         {
             // Create the new Emitter and add it to the tree.
-            ParticleEmitterNode* emitterSceneNode = dynamic_cast<ParticleEmitterNode*>(effectNode->GetChild(i));
+            ParticleEmitterNode* emitterSceneNode = dynamic_cast<ParticleEmitterNode*>(effectRootNode->GetChild(i));
             if (!emitterSceneNode)
             {
                 continue;
             }
  
-            EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectNode, emitterSceneNode,
+            EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, emitterSceneNode,
                                                                                          QString::fromStdString(emitterSceneNode->GetName()));
-            effectNode->AddNode(emitterSceneNode);
             node->AddChildNode(emitterEditorNode);
         }
     }
