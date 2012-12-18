@@ -26,7 +26,7 @@
 #include "SceneEditor/ExporterScreen.h"
 
 #include "TextureBrowser/TextureConvertor.h"
-#include "ParticleEditor/ParticlesEditorController.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 using namespace DAVA;
 

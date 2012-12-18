@@ -9,7 +9,7 @@
 #include "PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-#include "ParticleEditor/ParticlesEditorController.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 #include <QTreeView>
 

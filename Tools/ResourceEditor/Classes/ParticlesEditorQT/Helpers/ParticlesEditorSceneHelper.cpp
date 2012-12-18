@@ -7,7 +7,7 @@
 //
 
 #include "ParticlesEditorSceneHelper.h"
-#include "ParticleEditor/ParticlesEditorController.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 #include "Commands/SceneGraphCommands.h"
 #include "Commands/ParticleEditorCommands.h"
