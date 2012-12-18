@@ -40,6 +40,7 @@
 #include "Debug/Stats.h"
 #include "Entity/Entity.h"
 #include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -53,10 +54,13 @@ SceneNode::SceneNode()
     , inUpdate(false)
     , tag(0)
 	, entity(0)
-	, transform(0)
+	, transformComponent(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
-
+    componentFlags = 0;
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+        components[k] = 0;
+    
 	worldTransform.Identity();
     defaultLocalTransform.Identity();
 	//animation = 0;
@@ -66,7 +70,7 @@ SceneNode::SceneNode()
     
     customProperties = new KeyedArchive();
 
-	transform = TransformSystem::Instance()->CreateTransform();
+	AddComponent(new TransformComponent());
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.SceneNode.Update", "SceneNode update time");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.SceneNode.Draw", "SceneNode draw time");
@@ -88,10 +92,23 @@ SceneNode::~SceneNode()
 	SafeRelease(userData);
     SafeRelease(customProperties);
 
-	TransformSystem::Instance()->DeleteTransform(transform);
 //  Logger::Debug("~SceneNode: %p", this);
 
 	//TODO: delete entity?
+}
+    
+void SceneNode::AddComponent(Component * component)
+{
+    components[component->GetType()] = component;
+    if (scene)
+        scene->AddComponent(this, component);
+}
+
+void SceneNode::RemoveComponent(Component * component)
+{
+    components[component->GetType()] = component;
+    if (scene)
+        scene->RemoveComponent(this, component);
 }
 
 void SceneNode::SetScene(Scene * _scene)
@@ -121,7 +138,7 @@ Scene * SceneNode::GetScene()
 void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
-	transform->SetParent(parent);
+	transformComponent->SetParent(parent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -471,7 +488,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    dstNode->transform = TransformSystem::Instance()->CloneTransform(transform);
+    dstNode->transformComponent = this->transformComponent->Clone();
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
@@ -761,6 +778,24 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
         materials[i]->SetFogDensity(density);
         materials[i]->SetFogColor(color);
     }
+}
+
+inline const Matrix4 & SceneNode::ModifyLocalTransform()
+{
+    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
+    scene->transformSystem->NeedUpdate(this);
+    return GetLocalTransform();
+}
+
+inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
+{
+    transformComponent->SetLocalTransform(&newMatrix);
+    scene->transformSystem->NeedUpdate(this);
+    
+    //localTransform = newMatrix;
+    //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    //if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
+    //else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
 
 

@@ -27,82 +27,42 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/Render/RenderSystem.h"
+#include "Scene3D/SceneNode.h"
+#include "Scene3D/Render/RenderLayer.h"
+#include "Scene3D/Render/RenderList.h"
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+RenderSystem::RenderSystem()
 {
 }
 
-ApplicationCore::~ApplicationCore()
+RenderSystem::~RenderSystem()
 {
-	
 }
-	
-void ApplicationCore::Update(float32 timeElapsed)
+    
+void RenderSystem::AddEntity(SceneNode * entity)
 {
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
+    //entity->GetRenderComponent();
+    //RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    
 }
 
-void ApplicationCore::Draw()
+void RenderSystem::RemoveEntity(SceneNode * entity)
 {
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
+    
 }
 
-void ApplicationCore::BeginFrame()
+void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    
 }
 
-void ApplicationCore::EndFrame()
+void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
+    
 }
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
-
+    
 };

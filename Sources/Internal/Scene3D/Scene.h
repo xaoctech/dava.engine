@@ -63,6 +63,9 @@ class ImposterNode;
 class EntityManager;
 class BVHierarchy;
 class Component;
+class SceneSystem;
+class RenderSystem;
+
     
 /**
     \ingroup scene3d
@@ -84,7 +87,17 @@ public:
      */
     virtual void    RegisterNode(SceneNode * node);
     virtual void    UnregisterNode(SceneNode * node);
+    
+    virtual void    AddComponent(SceneNode * node, Component * component);
+    virtual void    RemoveComponent(SceneNode * node, Component * component);
+    
+    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
 
+    Vector<SceneSystem*> systems;
+    TransformSystem * transformSystem;
+    RenderSystem * renderSystem;
+    
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */

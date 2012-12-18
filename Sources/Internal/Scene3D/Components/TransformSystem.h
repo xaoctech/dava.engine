@@ -5,6 +5,7 @@
 #include "Math/MathConstants.h"
 #include "Math/Matrix4.h"
 #include "Base/Singleton.h"
+#include "Scene3D/Components/SceneSystem.h"
 
 namespace DAVA 
 {
@@ -12,15 +13,13 @@ namespace DAVA
 class SceneNode;
 class Transform;
 
-class TransformSystem : public Singleton<TransformSystem>
+class TransformSystem : public SceneSystem
 {
 public:
 	TransformSystem();
 	~TransformSystem();
 
     Transform * CreateTransform();
-    Transform * GetTransformWithIncrement(Transform * transform);
-	Transform * CloneTransform(Transform * transform);
 
 	void NeedUpdate(SceneNode * entity);
 
@@ -28,7 +27,7 @@ public:
     void LinkTransform(int32 parentIndex, int32 childIndex);
 	void UnlinkTransform(int32 childIndex);
     
-    void Process();
+    virtual void Process();
 
 private:
     void SortAndThreadSplit();

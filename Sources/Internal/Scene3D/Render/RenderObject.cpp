@@ -27,80 +27,24 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/Render/RenderObject.h"
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
-
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+RenderObject::RenderObject()
+    : removeIndex(-1)
 {
+    
 }
-
-ApplicationCore::~ApplicationCore()
+    
+RenderObject::~RenderObject()
 {
-	
+    
 }
-	
-void ApplicationCore::Update(float32 timeElapsed)
+    
+void RenderObject::SetRemoveIndex(uint32 _removeIndex)
 {
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
-
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
-}
-
-void ApplicationCore::BeginFrame()
-{
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-}
-
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
-}
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
+    removeIndex = _removeIndex;
 }
 
 

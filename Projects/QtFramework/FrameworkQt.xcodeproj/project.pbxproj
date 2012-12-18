@@ -12,8 +12,13 @@
 		5073EAAC166A400B00101AB5 /* MaterialGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA0166A400B00101AB5 /* MaterialGraph.cpp */; };
 		5073EAAD166A400B00101AB5 /* MaterialGraphNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA2166A400B00101AB5 /* MaterialGraphNode.cpp */; };
 		5073EAAE166A400B00101AB5 /* NMaterial.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA4166A400B00101AB5 /* NMaterial.cpp */; };
-		5081EA5516760C7400ECA24C /* Transform.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5116760C7400ECA24C /* Transform.cpp */; };
+		5081EA5516760C7400ECA24C /* TransformComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5116760C7400ECA24C /* TransformComponent.cpp */; };
 		5081EA5616760C7400ECA24C /* TransformSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5316760C7400ECA24C /* TransformSystem.cpp */; };
+		5081EA5C167FB9BC00ECA24C /* Component.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5B167FB9BC00ECA24C /* Component.cpp */; };
+		5081EA5E167FBB8300ECA24C /* RenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */; };
+		5081EA63168070D100ECA24C /* SceneSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA62168070D100ECA24C /* SceneSystem.cpp */; };
+		5081EA6616809A3B00ECA24C /* RenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA6516809A3B00ECA24C /* RenderSystem.cpp */; };
+		5081EA681680A03B00ECA24C /* RenderObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA671680A03A00ECA24C /* RenderObject.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -51,17 +56,6 @@
 		5C5D99B115B0230D0058B43A /* MemoryManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D978C15B0230D0058B43A /* MemoryManager.cpp */; };
 		5C5D99B215B0230D0058B43A /* Replay.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D978E15B0230D0058B43A /* Replay.cpp */; };
 		5C5D99B315B0230D0058B43A /* Stats.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D979015B0230D0058B43A /* Stats.cpp */; };
-		5C5D99B815B0230D0058B43A /* Component.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D979D15B0230D0058B43A /* Component.cpp */; };
-		5C5D99B915B0230D0058B43A /* ComponentTypes.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97A115B0230D0058B43A /* ComponentTypes.cpp */; };
-		5C5D99BA15B0230D0058B43A /* Entity.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97A415B0230D0058B43A /* Entity.cpp */; };
-		5C5D99BB15B0230D0058B43A /* EntityFamily.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97A615B0230D0058B43A /* EntityFamily.cpp */; };
-		5C5D99BC15B0230D0058B43A /* EntityManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97A815B0230D0058B43A /* EntityManager.cpp */; };
-		5C5D99BD15B0230D0058B43A /* LandscapeGeometryComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97AD15B0230D0058B43A /* LandscapeGeometryComponent.cpp */; };
-		5C5D99BE15B0230D0058B43A /* MeshInstanceComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97B015B0230D0058B43A /* MeshInstanceComponent.cpp */; };
-		5C5D99BF15B0230D0058B43A /* MeshInstanceDrawSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97B215B0230D0058B43A /* MeshInstanceDrawSystem.cpp */; };
-		5C5D99C015B0230D0058B43A /* PoolSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97B515B0230D0058B43A /* PoolSystem.cpp */; };
-		5C5D99C115B0230D0058B43A /* TransformComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97B715B0230D0058B43A /* TransformComponent.cpp */; };
-		5C5D99C215B0230D0058B43A /* VisibilityAABBoxComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97B915B0230D0058B43A /* VisibilityAABBoxComponent.cpp */; };
 		5C5D99C315B0230D0058B43A /* Bitstream.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97BD15B0230D0058B43A /* Bitstream.cpp */; };
 		5C5D99C415B0230D0058B43A /* DynamicMemoryFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97BF15B0230D0058B43A /* DynamicMemoryFile.cpp */; };
 		5C5D99C515B0230D0058B43A /* File.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97C115B0230D0058B43A /* File.cpp */; };
@@ -302,13 +296,22 @@
 		5073EAA4166A400B00101AB5 /* NMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterial.cpp; sourceTree = "<group>"; };
 		5073EAA5166A400B00101AB5 /* NMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterial.h; sourceTree = "<group>"; };
 		5081EA3E166F5DAE00ECA24C /* Drawable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Drawable.h; sourceTree = "<group>"; };
-		5081EA5116760C7400ECA24C /* Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transform.cpp; sourceTree = "<group>"; };
-		5081EA5216760C7400ECA24C /* Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transform.h; sourceTree = "<group>"; };
+		5081EA5116760C7400ECA24C /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransformComponent.cpp; sourceTree = "<group>"; };
+		5081EA5216760C7400ECA24C /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformComponent.h; sourceTree = "<group>"; };
 		5081EA5316760C7400ECA24C /* TransformSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransformSystem.cpp; sourceTree = "<group>"; };
 		5081EA5416760C7400ECA24C /* TransformSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		5081EA57167F5CD900ECA24C /* Component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
 		5081EA58167F5CD900ECA24C /* RenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderComponent.h; sourceTree = "<group>"; };
 		5081EA5A167FB33000ECA24C /* RenderObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderObject.h; sourceTree = "<group>"; };
+		5081EA5B167FB9BC00ECA24C /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Component.cpp; sourceTree = "<group>"; };
+		5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderComponent.cpp; sourceTree = "<group>"; };
+		5081EA5F167FBCFA00ECA24C /* RenderLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderLayer.h; sourceTree = "<group>"; };
+		5081EA60167FBEB900ECA24C /* RenderList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderList.h; sourceTree = "<group>"; };
+		5081EA6116806C8B00ECA24C /* SceneSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneSystem.h; sourceTree = "<group>"; };
+		5081EA62168070D100ECA24C /* SceneSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSystem.cpp; sourceTree = "<group>"; };
+		5081EA641680983000ECA24C /* RenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderSystem.h; sourceTree = "<group>"; };
+		5081EA6516809A3B00ECA24C /* RenderSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderSystem.cpp; sourceTree = "<group>"; };
+		5081EA671680A03A00ECA24C /* RenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderObject.cpp; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -397,34 +400,6 @@
 		5C5D979015B0230D0058B43A /* Stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stats.cpp; sourceTree = "<group>"; };
 		5C5D979115B0230D0058B43A /* Stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stats.h; sourceTree = "<group>"; };
 		5C5D979B15B0230D0058B43A /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DoxygenDocumenation.h; path = ../../Sources/Internal/DoxygenDocumenation.h; sourceTree = "<group>"; };
-		5C5D979D15B0230D0058B43A /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Component.cpp; sourceTree = "<group>"; };
-		5C5D979E15B0230D0058B43A /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
-		5C5D979F15B0230D0058B43A /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentDataMapper.h; sourceTree = "<group>"; };
-		5C5D97A015B0230D0058B43A /* Components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Components.h; sourceTree = "<group>"; };
-		5C5D97A115B0230D0058B43A /* ComponentTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentTypes.cpp; sourceTree = "<group>"; };
-		5C5D97A215B0230D0058B43A /* ComponentTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentTypes.h; sourceTree = "<group>"; };
-		5C5D97A315B0230D0058B43A /* DumpVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DumpVariable.h; sourceTree = "<group>"; };
-		5C5D97A415B0230D0058B43A /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
-		5C5D97A515B0230D0058B43A /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
-		5C5D97A615B0230D0058B43A /* EntityFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityFamily.cpp; sourceTree = "<group>"; };
-		5C5D97A715B0230D0058B43A /* EntityFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityFamily.h; sourceTree = "<group>"; };
-		5C5D97A815B0230D0058B43A /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityManager.cpp; sourceTree = "<group>"; };
-		5C5D97A915B0230D0058B43A /* EntityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityManager.h; sourceTree = "<group>"; };
-		5C5D97AD15B0230D0058B43A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
-		5C5D97AE15B0230D0058B43A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeGeometryComponent.h; sourceTree = "<group>"; };
-		5C5D97AF15B0230D0058B43A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeGeometrySystem.h; sourceTree = "<group>"; };
-		5C5D97B015B0230D0058B43A /* MeshInstanceComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshInstanceComponent.cpp; sourceTree = "<group>"; };
-		5C5D97B115B0230D0058B43A /* MeshInstanceComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeshInstanceComponent.h; sourceTree = "<group>"; };
-		5C5D97B215B0230D0058B43A /* MeshInstanceDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshInstanceDrawSystem.cpp; sourceTree = "<group>"; };
-		5C5D97B315B0230D0058B43A /* MeshInstanceDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeshInstanceDrawSystem.h; sourceTree = "<group>"; };
-		5C5D97B415B0230D0058B43A /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pool.h; sourceTree = "<group>"; };
-		5C5D97B515B0230D0058B43A /* PoolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PoolSystem.cpp; sourceTree = "<group>"; };
-		5C5D97B615B0230D0058B43A /* PoolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoolSystem.h; sourceTree = "<group>"; };
-		5C5D97B715B0230D0058B43A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransformComponent.cpp; sourceTree = "<group>"; };
-		5C5D97B815B0230D0058B43A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformComponent.h; sourceTree = "<group>"; };
-		5C5D97B915B0230D0058B43A /* VisibilityAABBoxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityAABBoxComponent.cpp; sourceTree = "<group>"; };
-		5C5D97BA15B0230D0058B43A /* VisibilityAABBoxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityAABBoxComponent.h; sourceTree = "<group>"; };
-		5C5D97BB15B0230D0058B43A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
 		5C5D97BD15B0230D0058B43A /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
 		5C5D97BE15B0230D0058B43A /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
 		5C5D97BF15B0230D0058B43A /* DynamicMemoryFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicMemoryFile.cpp; sourceTree = "<group>"; };
@@ -926,12 +901,16 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5081EA6116806C8B00ECA24C /* SceneSystem.h */,
+				5081EA62168070D100ECA24C /* SceneSystem.cpp */,
 				5081EA57167F5CD900ECA24C /* Component.h */,
+				5081EA5B167FB9BC00ECA24C /* Component.cpp */,
 				5081EA58167F5CD900ECA24C /* RenderComponent.h */,
-				5081EA5116760C7400ECA24C /* Transform.cpp */,
-				5081EA5216760C7400ECA24C /* Transform.h */,
-				5081EA5316760C7400ECA24C /* TransformSystem.cpp */,
+				5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */,
+				5081EA5216760C7400ECA24C /* TransformComponent.h */,
+				5081EA5116760C7400ECA24C /* TransformComponent.cpp */,
 				5081EA5416760C7400ECA24C /* TransformSystem.h */,
+				5081EA5316760C7400ECA24C /* TransformSystem.cpp */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -940,6 +919,11 @@
 			isa = PBXGroup;
 			children = (
 				5081EA5A167FB33000ECA24C /* RenderObject.h */,
+				5081EA671680A03A00ECA24C /* RenderObject.cpp */,
+				5081EA60167FBEB900ECA24C /* RenderList.h */,
+				5081EA5F167FBCFA00ECA24C /* RenderLayer.h */,
+				5081EA641680983000ECA24C /* RenderSystem.h */,
+				5081EA6516809A3B00ECA24C /* RenderSystem.cpp */,
 			);
 			path = Render;
 			sourceTree = "<group>";
@@ -958,7 +942,6 @@
 				5C5D978515B0230D0058B43A /* DAVAEngine.h */,
 				5C5D978615B0230D0058B43A /* Debug */,
 				5C5D979B15B0230D0058B43A /* DoxygenDocumenation.h */,
-				5C5D979C15B0230D0058B43A /* Entity */,
 				5C5D97BC15B0230D0058B43A /* FileSystem */,
 				5C5D97E215B0230D0058B43A /* Input */,
 				5C5D97ED15B0230D0058B43A /* Math */,
@@ -1122,42 +1105,6 @@
 			);
 			name = Debug;
 			path = ../../Sources/Internal/Debug;
-			sourceTree = "<group>";
-		};
-		5C5D979C15B0230D0058B43A /* Entity */ = {
-			isa = PBXGroup;
-			children = (
-				5C5D979D15B0230D0058B43A /* Component.cpp */,
-				5C5D979E15B0230D0058B43A /* Component.h */,
-				5C5D979F15B0230D0058B43A /* ComponentDataMapper.h */,
-				5C5D97A015B0230D0058B43A /* Components.h */,
-				5C5D97A115B0230D0058B43A /* ComponentTypes.cpp */,
-				5C5D97A215B0230D0058B43A /* ComponentTypes.h */,
-				5C5D97A315B0230D0058B43A /* DumpVariable.h */,
-				5C5D97A415B0230D0058B43A /* Entity.cpp */,
-				5C5D97A515B0230D0058B43A /* Entity.h */,
-				5C5D97A615B0230D0058B43A /* EntityFamily.cpp */,
-				5C5D97A715B0230D0058B43A /* EntityFamily.h */,
-				5C5D97A815B0230D0058B43A /* EntityManager.cpp */,
-				5C5D97A915B0230D0058B43A /* EntityManager.h */,
-				5C5D97AD15B0230D0058B43A /* LandscapeGeometryComponent.cpp */,
-				5C5D97AE15B0230D0058B43A /* LandscapeGeometryComponent.h */,
-				5C5D97AF15B0230D0058B43A /* LandscapeGeometrySystem.h */,
-				5C5D97B015B0230D0058B43A /* MeshInstanceComponent.cpp */,
-				5C5D97B115B0230D0058B43A /* MeshInstanceComponent.h */,
-				5C5D97B215B0230D0058B43A /* MeshInstanceDrawSystem.cpp */,
-				5C5D97B315B0230D0058B43A /* MeshInstanceDrawSystem.h */,
-				5C5D97B415B0230D0058B43A /* Pool.h */,
-				5C5D97B515B0230D0058B43A /* PoolSystem.cpp */,
-				5C5D97B615B0230D0058B43A /* PoolSystem.h */,
-				5C5D97B715B0230D0058B43A /* TransformComponent.cpp */,
-				5C5D97B815B0230D0058B43A /* TransformComponent.h */,
-				5C5D97B915B0230D0058B43A /* VisibilityAABBoxComponent.cpp */,
-				5C5D97BA15B0230D0058B43A /* VisibilityAABBoxComponent.h */,
-				5C5D97BB15B0230D0058B43A /* VisibilityAABBoxSystem.h */,
-			);
-			name = Entity;
-			path = ../../Sources/Internal/Entity;
 			sourceTree = "<group>";
 		};
 		5C5D97BC15B0230D0058B43A /* FileSystem */ = {
@@ -1828,17 +1775,6 @@
 				5C5D99B115B0230D0058B43A /* MemoryManager.cpp in Build Sources */,
 				5C5D99B215B0230D0058B43A /* Replay.cpp in Build Sources */,
 				5C5D99B315B0230D0058B43A /* Stats.cpp in Build Sources */,
-				5C5D99B815B0230D0058B43A /* Component.cpp in Build Sources */,
-				5C5D99B915B0230D0058B43A /* ComponentTypes.cpp in Build Sources */,
-				5C5D99BA15B0230D0058B43A /* Entity.cpp in Build Sources */,
-				5C5D99BB15B0230D0058B43A /* EntityFamily.cpp in Build Sources */,
-				5C5D99BC15B0230D0058B43A /* EntityManager.cpp in Build Sources */,
-				5C5D99BD15B0230D0058B43A /* LandscapeGeometryComponent.cpp in Build Sources */,
-				5C5D99BE15B0230D0058B43A /* MeshInstanceComponent.cpp in Build Sources */,
-				5C5D99BF15B0230D0058B43A /* MeshInstanceDrawSystem.cpp in Build Sources */,
-				5C5D99C015B0230D0058B43A /* PoolSystem.cpp in Build Sources */,
-				5C5D99C115B0230D0058B43A /* TransformComponent.cpp in Build Sources */,
-				5C5D99C215B0230D0058B43A /* VisibilityAABBoxComponent.cpp in Build Sources */,
 				5C5D99C315B0230D0058B43A /* Bitstream.cpp in Build Sources */,
 				5C5D99C415B0230D0058B43A /* DynamicMemoryFile.cpp in Build Sources */,
 				5C5D99C515B0230D0058B43A /* File.cpp in Build Sources */,
@@ -2040,8 +1976,13 @@
 				5073EAAC166A400B00101AB5 /* MaterialGraph.cpp in Build Sources */,
 				5073EAAD166A400B00101AB5 /* MaterialGraphNode.cpp in Build Sources */,
 				5073EAAE166A400B00101AB5 /* NMaterial.cpp in Build Sources */,
-				5081EA5516760C7400ECA24C /* Transform.cpp in Build Sources */,
+				5081EA5516760C7400ECA24C /* TransformComponent.cpp in Build Sources */,
 				5081EA5616760C7400ECA24C /* TransformSystem.cpp in Build Sources */,
+				5081EA5C167FB9BC00ECA24C /* Component.cpp in Build Sources */,
+				5081EA5E167FBB8300ECA24C /* RenderComponent.cpp in Build Sources */,
+				5081EA63168070D100ECA24C /* SceneSystem.cpp in Build Sources */,
+				5081EA6616809A3B00ECA24C /* RenderSystem.cpp in Build Sources */,
+				5081EA681680A03B00ECA24C /* RenderObject.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

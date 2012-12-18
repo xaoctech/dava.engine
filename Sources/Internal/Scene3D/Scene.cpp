@@ -53,13 +53,16 @@
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/LandscapeNode.h"
 
-#include "Entity/Entity.h"
-#include "Entity/EntityManager.h"
-#include "Entity/Components.h"
+#include "Scene3D/Components/SceneSystem.h"
+#include "Scene3D/Render/RenderSystem.h"
 
-#include "Entity/VisibilityAABBoxSystem.h"
-#include "Entity/MeshInstanceDrawSystem.h"
-#include "Entity/LandscapeGeometrySystem.h"
+//#include "Entity/Entity.h"
+//#include "Entity/EntityManager.h"
+//#include "Entity/Components.h"
+//
+//#include "Entity/VisibilityAABBoxSystem.h"
+//#include "Entity/MeshInstanceDrawSystem.h"
+//#include "Entity/LandscapeGeometrySystem.h"
 
 namespace DAVA 
 {
@@ -79,7 +82,7 @@ Scene::Scene()
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
-	entityManager = new EntityManager();
+//	entityManager = new EntityManager();
 	
 	CreateComponents();
 	CreateSystems();
@@ -91,15 +94,15 @@ Scene::Scene()
 
 void Scene::CreateComponents()
 {
-	VisibilityAABBoxComponent::Create();
-	MeshInstanceComponent::Create();
-	LandscapeGeometryComponent::Create();
-	TransformComponent::Create();
+    
 }
 
 void Scene::CreateSystems()
 {
-
+    transformSystem = new TransformSystem();
+    AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
+    renderSystem = new RenderSystem();
+    AddSystem(renderSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -134,8 +137,12 @@ Scene::~Scene()
 	SafeRelease(shadowRect);
 	SafeRelease(bvHierarchy);
 
-	entityManager->Flush();
-	SafeRelease(entityManager);
+    transformSystem = 0;
+    renderSystem = 0;
+    uint32 size = (uint32)systems.size();
+    for (uint32 k = 0; k < size; ++k)
+        SafeDelete(systems[k]);
+    systems.clear();
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -232,6 +239,50 @@ void Scene::UnregisterNode(SceneNode * node)
             }
         }
     }
+}
+    
+void Scene::AddComponent(SceneNode * entity, Component * component)
+{
+    uint32 oldComponentFlags = entity->componentFlags;
+    entity->componentFlags |= (1 << component->GetType());
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
+        bool needAdd = ((requiredComponents & entity->componentFlags) == requiredComponents);
+        
+        if ((!wasBefore) && (needAdd))
+            systems[k]->AddEntity(entity);
+    }
+}
+    
+void Scene::RemoveComponent(SceneNode * entity, Component * component)
+{
+    uint32 oldComponentFlags = entity->componentFlags;
+    entity->componentFlags &= ~(1 << component->GetType());
+    
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
+        bool shouldBeNow = ((requiredComponents & entity->componentFlags) == requiredComponents);
+        
+        if ((wasBefore) && (!shouldBeNow))
+            systems[k]->RemoveEntity(entity);
+    }
+    
+}
+    
+void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+{
+    systems.push_back(sceneSystem);
+}
+    
+void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+{
+    DVASSERT(0 && "Need to write remove system function");
 }
 
 Scene * Scene::GetScene()
@@ -461,7 +512,10 @@ void Scene::Update(float timeElapsed)
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
-	entityManager->Flush();
+    
+    transformSystem->Process();
+    
+//	entityManager->Flush();
 
     // lights 
     flags &= ~SCENE_LIGHTS_MODIFIED;
