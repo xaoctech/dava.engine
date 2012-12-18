@@ -1167,7 +1167,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\DxtHelper.h">
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1997,7 +1997,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\DxtHelper.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>

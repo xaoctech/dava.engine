@@ -51,6 +51,8 @@ namespace nvtt
 		NVTT_API bool getRawData(void* buffer, unsigned int size) const;
 
 		NVTT_API bool getMipmapSize(unsigned int number, unsigned int & size) const;
+
+		static NVTT_API unsigned int getHeader(void* buffer, unsigned int & bufferSize, const InputOptions & inputOptions, const CompressionOptions & compressionOptions);
 	};
 	
 

@@ -1,6 +1,6 @@
 #include "DXTConverter.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/DXTHelper.h"
+#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
@@ -46,7 +46,7 @@ String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::T
 			image->ResizeImage(descriptor.dxtCompression.compressToWidth, descriptor.dxtCompression.compressToHeight);
 		}
 		
-		if(!DxtWrapper::WriteDxtFile(outputName.c_str(), image->width, image->height, image->data, 
+		if(!LibDxtHelper::WriteDxtFile(outputName.c_str(), image->width, image->height, image->data, 
 			descriptor.dxtCompression.format, 0))// dxt helper supports mipmaps but it's unused
 		{
 			outputName.clear();

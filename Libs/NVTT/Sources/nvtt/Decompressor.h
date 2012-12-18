@@ -31,6 +31,8 @@ namespace nvtt
 
 		bool getMipmapSize(unsigned int number, unsigned int & size) const;
 
+		static unsigned int getHeader(void* buffer, unsigned int & bufferSize, const InputOptions::Private & inputOptions, const CompressionOptions::Private & compressionOptions);
+
 		private:
 
 		nv::DirectDrawSurface * m_dds;

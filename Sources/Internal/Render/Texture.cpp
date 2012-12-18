@@ -1284,6 +1284,12 @@ void Texture::InitializePixelFormatDescriptors()
 #if defined (__DAVAENGINE_IPHONE__)
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
     SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
+	SetPixelDescription(FORMAT_DXT1,     "DXT1",  64, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm",  64, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT1A,   "DXT1a",  64, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT3,     "DXT3", 128, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT5,     "DXT5", 128, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 128, 0, 0, 0);
 #else //#if defined (__DAVAENGINE_IPHONE__)
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, 0, 0, 0);
     SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);

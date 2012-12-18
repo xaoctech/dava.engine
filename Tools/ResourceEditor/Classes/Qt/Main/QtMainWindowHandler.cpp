@@ -35,7 +35,7 @@
 #include <QComboBox>
 #include <QStatusBar>
 
-#include "Render/DxtHelper.h"
+#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
@@ -492,7 +492,7 @@ void QtMainWindowHandler::ReloadAsDXT()
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-	DxtWrapper::Test();
+	LibDxtHelper::Test();
     Execute(new CommandToggleCustomColors());
 }
 
