@@ -51,9 +51,20 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
 
     UpdateAvailableSoftware();
 
+    //install all dependencies
+    for (AvailableSoftWare::SoftWareMap::const_iterator iter = m_AvailableSoftWare.m_Dependencies.begin();
+         iter != m_AvailableSoftWare.m_Dependencies.end();
+         ++iter) {
+        const SoftWare& soft = iter.value();
+        if (soft.m_CurVersion.isEmpty()) {
+            Install(iter.key(), soft.m_NewVersion, eAppTypeDependencies);
+            break; //wait until install finished
+        }
+    }
+
     Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
     Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
-    Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies);
+    Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
 }
 
 void Installer::UpdateAvailableSoftware() {
@@ -352,8 +363,10 @@ void Installer::OnAppDownloaded() {
     QFile().remove(tempFilePath);
 
     UpdateAvailableSoftware();
-    if (bInstalled)
+    if (bInstalled) {
         Logger::GetInstance()->AddLog(tr("%1 installed.").arg(appName));
+        CheckForUpdate();
+    }
 }
 
 bool Installer::Delete(const QString& appName, eAppType type) {
