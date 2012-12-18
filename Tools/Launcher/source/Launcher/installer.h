@@ -15,6 +15,7 @@ public:
     QString m_NewVersion;
     QString m_RunPath;
     bool m_bInstalling;
+    QSet<QString> m_AvailableVersion;
     SoftWare() {
         m_bInstalling = false;
     }
@@ -44,7 +45,7 @@ public:
     void Init();
     
     void CheckForUpdate();
-    bool Install(const QString& appName, eAppType type);
+    bool Install(const QString& appName, const QString& appVersion, eAppType type);
     bool Delete(const QString& appName, eAppType type);
     QString GetRunPath(const QString& appName, eAppType type);
     bool Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bool force = false);

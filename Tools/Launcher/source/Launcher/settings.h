@@ -18,6 +18,8 @@ public:
 
     void Init();
 
+    QString GetInstalledAppVersion(const QString& appName, eAppType type);
+
     int GetUpdateTimerInterval() const {return m_nUpdateTimer;}
     void SetLauncherVersion(const QString& version);
     QString GetLauncherVersion() const;

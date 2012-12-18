@@ -35,8 +35,11 @@ private slots:
 
     void on_btnCancel_clicked();
 
+    void OnComboBoxValueChanged(const QString& value);
+
 private:
     void FillTable(QTableWidget* table, const AvailableSoftWare::SoftWareMap& sotf);
+    void UpdateSelectedApp(QTableWidget* table);
 
 private:
     Ui::MainWindow *ui;
@@ -46,6 +49,7 @@ private:
 
     eAppType m_SelectedAppType;
     QString m_SelectedApp;
+    QString m_SelectedAppVersion;
 
     QTimer* m_pUpdateTimer;
 
