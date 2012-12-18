@@ -6,7 +6,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneGraph.h"
 
-#include "ParticleEditor/ParticlesEditorController.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 #include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/EmitterParticleEditorNode.h"
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
