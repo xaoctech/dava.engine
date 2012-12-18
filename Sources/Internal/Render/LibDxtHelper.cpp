@@ -44,23 +44,35 @@ void LibDxtHelper::Test()
 
 bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet)
 {
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, fileName))
+	{
+		return false;
+	}
+	
+	return ReadDxtFile(dec, imageSet);
+}
+
+bool LibDxtHelper::ReadDxtFile(FILE * file, Vector<DAVA::Image*> &imageSet)
+{
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, file))
+	{
+		return false;
+	}
+	return ReadDxtFile(dec, imageSet);
+}
+
+bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet)
+{
 	for(uint32 i = 0; i < imageSet.size(); ++i)
 	{
 		SafeRelease(imageSet[i]);
 	}
 	imageSet.clear();
-	
-	if(NULL == fileName )
-	{
-		return false;
-	}
-
-	nvtt::Decompressor dec;
-	if(!dec.initWithDDSFile(fileName))
-	{
-		return false;
-	}
-	
+		
 	uint32 width = 0;
 	uint32 height = 0;
 	uint32 size = 0;
@@ -68,11 +80,13 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 	uint32 hSize=0;
 	if(!dec.getInfo(mipmapNumber, width, height, size, hSize))
 	{
+		DAVA::Logger::Error("Error during header reading.");
 		return false;
 	}
 	
 	if(0 == width || 0 == height || 0 == mipmapNumber)
 	{
+		DAVA::Logger::Error("Wrong mipmapNumber/width/height value in dds header.");
 		return false;
 	}
 	
@@ -80,6 +94,7 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 	nvtt::Format format;
 	if(!dec.getCompressionFormat(format))
 	{
+		DAVA::Logger::Error("Getting format information cause error.");
 		return false;
 	}
 
@@ -92,6 +107,7 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 		if(!dec.getRawData(compressedImges, size))
 		{
 			delete[] compressedImges;
+			DAVA::Logger::Error("Reading compressed data cause error in nvtt lib.");
 			return retValue;
 		}
 
@@ -121,6 +137,7 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 			}
 			if (concreteWidth < 4  || concreteHeight < 4)
 			{
+				//don't work with size  lower than dxt block
 				retValue = true;
 				break;
 			}
@@ -130,11 +147,10 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 			
 			uint8* concreteImageStartPointer = compressedImges + offset;
 			
-			
-
 			uint32 internalFormat = GetGlCompressionFormatByDDSInfo(format);
 			if(internalFormat == 0)
 			{
+				DAVA::Logger::Error("Unknown internal format of dds file.");
 				retValue = false;
 				break;
 			}
@@ -190,6 +206,7 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 			}
 			else
 			{
+				DAVA::Logger::Error("nvtt lib compression fail.");
 				SafeRelease(innerImage);
 				return false;
 			}
@@ -203,10 +220,15 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, uint32 mipmupNumber)
 {
 	if (NULL == fileName)
+	{
 		return false;
+	}
 
-	if(!(compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM ) || compressionFormat == FORMAT_RGBA8888)
+	if(!( (compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)|| (compressionFormat == FORMAT_RGBA8888)) )
+	{
+		DAVA::Logger::Error("Wrong copression format.");
 		return false;
+	}
 	
 	uint32 imgDataSize = width * height *4;
 
@@ -251,13 +273,14 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 		innerComprFormat = nvtt::Format_RGBA;
 		break;
 	default:
-		return false;
+		{
+			return false;
+		}
 	}
-
 	compressionOptions.setFormat(innerComprFormat);
 
-
-	if (RenderManager::Instance()->GetCaps().isDXTSupported)//check hardware support
+	//check hardware support, in case of rgb use nvtt to reorder bytes
+	if(RenderManager::Instance()->GetCaps().isDXTSupported && (compressionFormat != FORMAT_RGBA8888) )
 	{
 		bool retValue = false;
 		uint32 dx10HeaderSize = 138;
@@ -265,6 +288,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 		uint32 writeSize = nvtt::Decompressor::getHeader(buffer, dx10HeaderSize, inputOptions, compressionOptions);
 		if(writeSize == 0)
 		{
+			DAVA::Logger::Error("DDS header generation failed.");
 			return retValue;
 		}
 		Image* resizeImg = NULL;
@@ -306,6 +330,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 				CheckGlError();
 				if (compressed != GL_TRUE)
 				{
+					DAVA::Logger::Error("Input data isn't compressed img.");
 					retValue =  false;
 					break;
 				}
@@ -343,7 +368,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 		bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
 		if(!ret)
 		{
-			Logger::Debug("Error during writing DDS file");
+			DAVA::Logger::Error("Error during writing DDS file");
 		}
 		return ret;
 	}
@@ -356,25 +381,48 @@ bool LibDxtHelper::IsDxtFile(const char *filePathname)
 	return dec.initWithDDSFile(filePathname);
 }
 
-PixelFormat LibDxtHelper::GetPixelFormat(const char* filePathname)
+bool LibDxtHelper::IsDxtFile(FILE * file)
+{
+	nvtt::Decompressor dec;
+	return dec.initWithDDSFile(file);
+}
+
+PixelFormat LibDxtHelper::GetPixelFormat(const char* fileName)
+{
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, fileName))
+	{
+		return FORMAT_INVALID;
+	}
+
+	return GetPixelFormat(dec);
+}
+
+PixelFormat LibDxtHelper::GetPixelFormat(FILE * file)
+{
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, file))
+	{
+		return FORMAT_INVALID;
+	}
+
+	return GetPixelFormat(dec);
+}
+
+PixelFormat LibDxtHelper::GetPixelFormat(nvtt::Decompressor & dec)
 {
 	PixelFormat retValue = FORMAT_INVALID;
 
-	nvtt::Decompressor dec;
 	bool res = false;
 	nvtt::Format innerFormat;
-
-	res = dec.initWithDDSFile(filePathname);
-	if(!res)
-	{
-		Logger::Debug("Can't init from file");
-		return FORMAT_INVALID;
-	}
 
 	res = dec.getCompressionFormat(innerFormat);
 
 	if(!res)
 	{
+		DAVA::Logger::Error("Wrong dds file compression format.");
 		return FORMAT_INVALID;
 	}
 
@@ -407,71 +455,114 @@ PixelFormat LibDxtHelper::GetPixelFormat(const char* filePathname)
 
 uint32 LibDxtHelper::GetMipMapLevelsCount(const char *fileName)
 {
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, fileName))
+	{
+		return 0;
+	}
+
+	return GetMipMapLevelsCount(dec);
+}
+
+uint32 LibDxtHelper::GetMipMapLevelsCount(FILE * file)
+{
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, file))
+	{
+		return 0;
+	}
+
+	return GetMipMapLevelsCount(dec);
+}
+
+uint32 LibDxtHelper::GetMipMapLevelsCount(nvtt::Decompressor & dec)
+{
 	DDSInfo info;
-	GetInfo(fileName, info);
+	GetInfo(dec, info);
 	return info.mipMupsNumber;
 }
 
 uint32 LibDxtHelper::GetDataSize(const char *fileName)
 {
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, fileName))
+	{
+		return 0;
+	}
+
+	return GetDataSize(dec);
+}
+
+uint32 LibDxtHelper::GetDataSize(FILE * file)
+{
+		nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, file))
+	{
+		return 0;
+	}
+
+	return GetDataSize(dec);
+}
+
+uint32 LibDxtHelper::GetDataSize(nvtt::Decompressor & dec)
+{
 	DDSInfo info;
-	GetInfo(fileName, info);
+	GetInfo(dec, info);
 	return info.dataSize;
 }
 
 bool LibDxtHelper::GetTextureSize(const char *fileName, uint32 & width, uint32 & height)
 {
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, fileName))
+	{
+		return false;
+	}
+
+	return GetTextureSize(dec, width, height);
+}
+
+bool LibDxtHelper::GetTextureSize(FILE * file, uint32 & width, uint32 & height)
+{
+	nvtt::Decompressor dec ;
+
+	if(!InitDecompressor(dec, file))
+	{
+		return false;
+	}
+
+	return GetTextureSize(dec, width, height);
+}
+
+bool LibDxtHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32 & height)
+{
 	DDSInfo info;
 	
-	bool ret = GetInfo(fileName, info);
+	bool ret = GetInfo(dec, info);
 	width = info.width;
 	height = info.height;
 	return ret;
 }
 
-bool LibDxtHelper::GetInfo(const char *fileName, DDSInfo &info)
+bool LibDxtHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
 {
 	bool retVal = false;
-	if(NULL == fileName )
+	
+	if(dec.getInfo(info.mipMupsNumber, info.width, info.height, info.dataSize, info.headerSize))
 	{
-		return retVal;
-	}
-
-	nvtt::Decompressor dec;
-	if(dec.initWithDDSFile(fileName))
-	{
-		if(dec.getInfo(info.mipMupsNumber, info.width, info.height, info.dataSize, info.headerSize))
-		{
-			retVal = true;
-		}
-		else
-		{
-			Logger::Debug("Error: can't read info from DDS file.");
-		}
+		retVal = true;
 	}
 	else
 	{
-		Logger::Debug("Can't init from file.");
+		DAVA::Logger::Error("Error: can't read info from DDS file.");
 	}
-
+		
 	return retVal;
-}
-
-Image * LibDxtHelper::CreateImageAsRGBA8888(Sprite *sprite)
-{
-    Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
-    RenderManager::Instance()->SetRenderTarget(renderTarget);
-
-    sprite->SetPosition(0, 0);
-    sprite->Draw();
-    
-    RenderManager::Instance()->RestoreRenderTarget();
-
-    Texture *renderTargetTexture = renderTarget->GetTexture();
-    Image *resultImage = renderTargetTexture->CreateImageFromMemory();
-
-    SafeRelease(renderTarget);
-    return resultImage;
 }
 
 void LibDxtHelper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
@@ -491,11 +582,6 @@ void LibDxtHelper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
 
 uint32 LibDxtHelper::GetGlCompressionFormatByDDSInfo(nvtt::Format format)
 {
-	/*
-		GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
-	GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
-	GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
-	*/
 	uint32 retValue = 0;
 
 	switch (format)
@@ -528,14 +614,17 @@ void LibDxtHelper::CheckGlError()
 	switch(glGetError())
 	{
 	case GL_INVALID_ENUM:
+		DAVA::Logger::Error("DXTHelper: GL_INVALID_ENUM");
 		Logger::Instance()->Debug("GL_INVALID_ENUM");
 		break;
 
 	case GL_INVALID_VALUE:
+		DAVA::Logger::Error("DXTHelper: GL_INVALID_VALUE");
 		Logger::Instance()->Debug("GL_INVALID_VALUE");
 		break;
 
 	case GL_INVALID_OPERATION:
+		DAVA::Logger::Error("DXTHelper: GL_INVALID_OPERATION");
 		Logger::Instance()->Debug("GL_INVALID_OPERATION");
 		break;
 
@@ -544,6 +633,39 @@ void LibDxtHelper::CheckGlError()
 		break;
 
 	default:
+		DAVA::Logger::Error("DXTHelper: some GL error");
 		Logger::Instance()->Debug("other value");
 	}
+}
+
+bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileName)
+{
+	if(NULL == fileName )
+	{
+		DAVA::Logger::Error("Wrong fileName.");
+		return false;
+	}
+
+	if(!dec.initWithDDSFile(fileName))
+	{
+		DAVA::Logger::Error("Wrong file.");
+		return false;
+	}
+	return true;
+}
+
+bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, FILE * file)
+{
+	if(NULL == file)
+	{
+		DAVA::Logger::Error("Wrong handler.");
+		return false;
+	}
+
+	if(!dec.initWithDDSFile(file))
+	{
+		DAVA::Logger::Error("Wrong file.");
+		return false;
+	}
+	return true;
 }

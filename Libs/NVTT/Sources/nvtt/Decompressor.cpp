@@ -75,6 +75,29 @@ bool Decompressor::Private::initWithDDSFile(const char * pathToDDSFile)
 	return true;
 }
 
+
+bool Decompressor::initWithDDSFile(FILE * handler)
+{
+	return m.initWithDDSFile(handler);
+}
+
+bool Decompressor::Private::initWithDDSFile(FILE * handler) 
+{
+	if(NULL == handler)
+	{
+		return false;
+	}
+	m_dds = new nv::DirectDrawSurface(handler);
+	
+	if (!m_dds->isValid())
+	{
+		printf("The file '%s' is not a valid DDS file.\n", handler->_tmpfname);
+		return false;
+	}
+	
+	return true;
+}
+
 //NVTT_API void erase();
 void Decompressor::erase()
 {

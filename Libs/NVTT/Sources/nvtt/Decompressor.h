@@ -19,6 +19,8 @@ namespace nvtt
 
 		bool initWithDDSFile(const char * pathToDDSFile);
 		
+		bool initWithDDSFile(FILE *file);
+		
 		void erase();
 
 		bool decompress(void * data, unsigned int size, unsigned int mipmapNumber) const;
