@@ -253,8 +253,7 @@ YamlNode* PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(YamlNode* par
 
 Vector4 PropertyLineYamlWriter::ColorToVector(const Color& color)
 {
-    return Vector4(int(color.r * 0xFF), int(color.g * 0xFF),
-                   int(color.b * 0xFF), int(color.a * 0xFF));
+    return Vector4(color.r * 0xFF, color.g * 0xFF, color.b * 0xFF, color.a * 0xFF);
 }
 
 }
