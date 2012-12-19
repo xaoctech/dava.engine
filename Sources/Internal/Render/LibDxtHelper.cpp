@@ -22,7 +22,8 @@ using namespace nvtt;
 
 void LibDxtHelper::Test()
 {
-	const char *fileName = "c:\\dds\\2\\3rgb.dds";
+	
+	const char *fileName = "c:\\dds\\2\\bochki.dds";
 	const char *fileNameWrite = "c:\\dds\\2\\3_n.dds";
 	Vector<DAVA::Image*> imageSet;
 	ReadDxtFile(fileName, imageSet);
@@ -141,34 +142,38 @@ bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &i
 				retValue = true;
 				break;
 			}
-			GLuint texid;  
-			glGenTextures( 1, &texid );
-			glBindTexture ( GL_TEXTURE_2D, texid );
-			
+			//GLuint texid;  
+			//glGenTextures( 1, &texid );
+			//glBindTexture ( GL_TEXTURE_2D, texid );
+			//
 			uint8* concreteImageStartPointer = compressedImges + offset;
-			
-			uint32 internalFormat = GetGlCompressionFormatByDDSInfo(format);
-			if(internalFormat == 0)
-			{
-				DAVA::Logger::Error("Unknown internal format of dds file.");
-				retValue = false;
-				break;
-			}
+			//
+			//uint32 internalFormat = GetGlCompressionFormatByDDSInfo(format);
+			//if(internalFormat == 0)
+			//{
+			//	DAVA::Logger::Error("Unknown internal format of dds file.");
+			//	retValue = false;
+			//	break;
+			//}
 
-			glCompressedTexImage2D ( GL_TEXTURE_2D, i, internalFormat, concreteWidth, concreteHeight, 0, vecSizes[i], concreteImageStartPointer);
-			CheckGlError();
+			//glCompressedTexImage2D ( GL_TEXTURE_2D, i, internalFormat, concreteWidth, concreteHeight, 0, vecSizes[i], concreteImageStartPointer);
+			//CheckGlError();
+			//
+			//int32 uncompressed_width = 0;
+			//int32 uncompressed_heigth = 0;
+			//glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &uncompressed_width);
+			//CheckGlError();
+			//
+			//glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
+			//CheckGlError();
+			//
+			//Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
+			//glGetTexImage(GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
+			//CheckGlError();
 
-			int32 uncompressed_width = 0;
-			int32 uncompressed_heigth = 0;
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &uncompressed_width);
-			CheckGlError();
-
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
-			CheckGlError();
-
-			Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
-			glGetTexImage(GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
-			CheckGlError();
+			DAVA::PixelFormat pixFormat = GetPixelFormat(dec);
+			Image* innerImage = Image::Create(concreteWidth, concreteHeight, pixFormat);
+			memcpy(innerImage->data, concreteImageStartPointer,vecSizes[i]);
 			imageSet.push_back(innerImage);
 			//ImageLoader::Save(innerImage, "c:\\dds\\1\\nm_13_12_12.png");
 			retValue = true;
@@ -280,7 +285,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 	compressionOptions.setFormat(innerComprFormat);
 
 	//check hardware support, in case of rgb use nvtt to reorder bytes
-	if(RenderManager::Instance()->GetCaps().isDXTSupported && (compressionFormat != FORMAT_RGBA8888) )
+	if(false)//RenderManager::Instance()->GetCaps().isDXTSupported && (compressionFormat != FORMAT_RGBA8888) )
 	{
 		bool retValue = false;
 		uint32 dx10HeaderSize = 138;
@@ -615,17 +620,14 @@ void LibDxtHelper::CheckGlError()
 	{
 	case GL_INVALID_ENUM:
 		DAVA::Logger::Error("DXTHelper: GL_INVALID_ENUM");
-		Logger::Instance()->Debug("GL_INVALID_ENUM");
 		break;
 
 	case GL_INVALID_VALUE:
 		DAVA::Logger::Error("DXTHelper: GL_INVALID_VALUE");
-		Logger::Instance()->Debug("GL_INVALID_VALUE");
 		break;
 
 	case GL_INVALID_OPERATION:
 		DAVA::Logger::Error("DXTHelper: GL_INVALID_OPERATION");
-		Logger::Instance()->Debug("GL_INVALID_OPERATION");
 		break;
 
 	case GL_NO_ERROR:
@@ -634,7 +636,6 @@ void LibDxtHelper::CheckGlError()
 
 	default:
 		DAVA::Logger::Error("DXTHelper: some GL error");
-		Logger::Instance()->Debug("other value");
 	}
 }
 
