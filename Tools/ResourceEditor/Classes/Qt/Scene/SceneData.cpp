@@ -1,5 +1,5 @@
 #include "Scene/SceneData.h"
-#include "Main/SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
