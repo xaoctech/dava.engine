@@ -112,20 +112,17 @@
     <Filter Include="QtGenerated\DockProperties">
       <UniqueIdentifier>{115ccc83-d704-450d-bf74-0a2f0aecea4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ParticlesEditorQT">
-      <UniqueIdentifier>{48b59891-4ef7-48bc-929a-11c59e2eb4c0}</UniqueIdentifier>
+    <Filter Include="Sources\Qt\DockVisibilityTool">
+      <UniqueIdentifier>{4d216e99-0dbe-430d-930c-4e2445d0c11c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ParticlesEditorQT\Helpers">
-      <UniqueIdentifier>{bffa7265-f5dc-4f10-b01f-c67fa57a3acb}</UniqueIdentifier>
+    <Filter Include="Sources\Qt\DockCustomColors">
+      <UniqueIdentifier>{20561eb1-0a4f-4f65-8b34-79f3980e32b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\ParticlesEditorQT\Nodes">
-      <UniqueIdentifier>{6bbf33e5-091a-462b-84e0-eb0a59548e17}</UniqueIdentifier>
+    <Filter Include="QtGenerated\DockCustomColors">
+      <UniqueIdentifier>{2dddfd3c-1941-443c-9383-9170c373e8a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\DockParticleEditor">
-      <UniqueIdentifier>{13cb3591-d406-44f3-8d07-94948cc6f074}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\DockParticleEditor">
-      <UniqueIdentifier>{dc490227-155d-4e8e-acc4-0a3ce5794d44}</UniqueIdentifier>
+    <Filter Include="QtGenerated\DockVisibilityTool">
+      <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1077,9 +1074,6 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1164,71 +1158,20 @@
     <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp">
       <Filter>QtGenerated\DockProperties</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp">
+      <Filter>QtGenerated\DockVisibilityTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
+      <Filter>QtGenerated\DockCustomColors</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.cpp">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\LayerForceWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
-      <Filter>QtGenerated\DockParticleEditor</Filter>
+    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
+      <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2141,9 +2084,6 @@
     <ClInclude Include="Classes\SceneEditor\ColorControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2189,53 +2129,14 @@
     <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h">
-      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.h">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
-      <Filter>QtGenerated\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\LayerForceWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2449,6 +2350,12 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="DataQt\materialbrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\CustomColorsView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\VisibilityToolView.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

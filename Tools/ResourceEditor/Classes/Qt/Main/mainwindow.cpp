@@ -255,85 +255,8 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-    
-    SetupCustomColorsDock();
-	SetupVisibilityToolDock();
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
-}
-
-void QtMainWindow::SetupCustomColorsDock()
-{
-    QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-    connect(ui->buttonCustomColorsEnable, SIGNAL(clicked()), handler, SLOT(ToggleCustomColors()));
-
-	ui->buttonCustomColorsSave->blockSignals(true);
-	ui->sliderCustomColorBrushSize->blockSignals(true);
-	ui->comboboxCustomColors->blockSignals(true);
-
-    connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
-    connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
-    connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
-	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
-
-	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
-		ui->buttonCustomColorsEnable,
-		ui->buttonCustomColorsSave,
-		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors,
-		ui->buttonCustomColorsLoad);
-    
-    QSize iconSize = ui->comboboxCustomColors->iconSize();
-    iconSize = iconSize.expandedTo(QSize(100, 0));
-    ui->comboboxCustomColors->setIconSize(iconSize);
-    
-    Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
-	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
-    for(size_t i = 0; i < customColors.size(); ++i)
-    {
-        QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
-        
-        QImage image(iconSize, QImage::Format_ARGB32);
-        image.fill(color);
-        
-        QPixmap pixmap(iconSize);
-        pixmap.convertFromImage(image, Qt::ColorOnly);
-        
-        QIcon icon(pixmap);
-		String description = isEveryColorHasDescription ? customColorsDescription[i] : "";
-        ui->comboboxCustomColors->addItem(icon, description.c_str());
-    }
-    handler->SetCustomColorsWidgetsState(false);
-}
-
-void QtMainWindow::SetupVisibilityToolDock()
-{
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	
-	connect(ui->buttonVisibilityToolEnable, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityTool()));
-
-	ui->buttonVisibilityToolSave->blockSignals(true);
-	ui->buttonVisibilityToolSetArea->blockSignals(true);
-	ui->buttonVisibilityToolSetPoint->blockSignals(true);
-	ui->sliderVisibilityToolAreaSize->blockSignals(true);
-	
-	connect(ui->buttonVisibilityToolSave,		SIGNAL(clicked()),
-			handler,							SLOT(SaveTextureVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetArea,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityAreaVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetPoint,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityPointVisibilityTool()));
-	connect(ui->sliderVisibilityToolAreaSize,	SIGNAL(valueChanged(int)),
-			handler,							SLOT(ChangleAreaSizeVisibilityTool(int)));
-	
-	handler->RegisterWidgetsVisibilityTool(ui->buttonVisibilityToolEnable,
-										   ui->buttonVisibilityToolSave,
-										   ui->buttonVisibilityToolSetPoint,
-										   ui->buttonVisibilityToolSetArea,
-										   ui->sliderVisibilityToolAreaSize);
-	
-	handler->SetWidgetsStateVisibilityTool(false);
 }
 
 void QtMainWindow::MenuFileWillShow()
