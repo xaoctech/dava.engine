@@ -897,7 +897,7 @@ Area Size:</string>
   <customwidget>
    <class>ParticleEditorWidget</class>
    <extends>QWidget</extends>
-   <header>ParticleEditor/particleeditorwidget.h</header>
+   <header>DockParticleEditor/particleeditorwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>
