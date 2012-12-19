@@ -47,7 +47,7 @@ String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::T
 		}
 		
 		if(!LibDxtHelper::WriteDxtFile(outputName.c_str(), image->width, image->height, image->data, 
-			descriptor.dxtCompression.format, 0))// dxt helper supports mipmaps but it's unused
+			descriptor.dxtCompression.format, mipmupNumber))
 		{
 			outputName.clear();
 		}
