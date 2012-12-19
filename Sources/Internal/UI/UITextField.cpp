@@ -34,6 +34,7 @@
 #include "Input/KeyboardDevice.h"
 #include "UI/UIYamlLoader.h"
 #include "UI/UIControlSystem.h"
+#include "Render/2D/FontManager.h"
 
 extern void CreateTextField(DAVA::UITextField *);
 extern void ReleaseTextField();
@@ -264,6 +265,15 @@ void UITextField::SetSpriteAlign(int32 align)
 #endif
 }
 
+void UITextField::SetSize(const DAVA::Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+#ifdef __DAVAENGINE_IPHONE__
+#else
+    staticText->SetSize(newSize);
+#endif
+}
+    
 void UITextField::SetText(const WideString & _text)
 {
 	text = _text;
@@ -437,9 +447,42 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 #endif
 }
 
+YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
+{
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
 
+    // Sprite node is not needed for UITextField.
+    YamlNode *spriteNode = node->Get("sprite");
+    if (spriteNode)
+    {
+        node->RemoveNodeFromMap("sprite");
+    }
 
+    //Temp variable
+    VariantType *nodeValue = new VariantType();
 
+    //Control Type
+    node->Set("type", "UITextField");
+    //Text
+    nodeValue->SetWideString(this->GetText());
+    node->Set("text", nodeValue);
+
+    //Font
+    //Get font name and put it here
+    nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
+    node->Set("font", nodeValue);
+
+    SafeDelete(nodeValue);
+    
+    return node;
+}
+
+List<UIControl* >& UITextField::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(staticText);
+	return realChildren;
+}
 
 
 }; // namespace

@@ -535,8 +535,11 @@ public:
 	 \returns list of control children.
 	 */
 	const List<UIControl*> &GetChildren();
-
-	
+	/**
+	 \brief Returns list of control children without internal controls.
+	 \returns list of control children without internal controls.
+	 */
+	virtual List<UIControl* >& GetRealChildren();
 
 	/**
 	 \brief Add control as a child.
@@ -936,6 +939,11 @@ public:
 		//TODO: Борода напиши дескрипшн.
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
 	/**
+	 \brief Save the control to YAML node and return it.
+	 */
+	virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
+
+	/**
 	 \brief Called when this control and his children are loaded.
 	 */
 	virtual void LoadFromYamlNodeCompleted() {};
@@ -986,6 +994,8 @@ protected:
 	
 	UIControl *parent;
 	List<UIControl*> childs;
+	List<UIControl*> realChilds;
+    
 	UIControlBackground *background;
 //	Rect absoluteRect;
 	int32 controlState;

@@ -42,6 +42,7 @@ namespace DAVA
  */
 
 class Texture;
+class YamlNode;
 
 /** 
 	\ingroup fonts
@@ -195,6 +196,12 @@ public:
 	//TODO: get rid of this
 	virtual bool IsTextSupportsSoftwareRendering() { return false; };
 	virtual bool IsTextSupportsHardwareRendering() { return false; };
+
+	//This will allow to determine font type
+	virtual eFontType GetFontType();
+
+	/* Put font properties into YamlNode */
+	virtual YamlNode * SaveToYamlNode();
 
 protected:
 	static int32 globalFontDPI;

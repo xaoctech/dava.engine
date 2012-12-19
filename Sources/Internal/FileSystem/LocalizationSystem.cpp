@@ -52,21 +52,13 @@ LocalizationSystem::LocalizationSystem()
 
 LocalizationSystem::~LocalizationSystem()
 {
-	// release all memory allocated by strings
-	for (List<StringFile*>::reverse_iterator it = stringsList.rbegin(); it != stringsList.rend(); ++it)
-	{
-		StringFile * file = *it;
-		SafeDelete(file);
-	}		
-	stringsList.clear();
-
-	SafeDeleteArray(dataHolder->data);
+    Cleanup();
 	SafeDelete(dataHolder);
-
 }
 	
 void LocalizationSystem::InitWithDirectory(const String &directoryPath)
 {
+    this->directoryPath = directoryPath;
 #ifdef __DAVAENGINE_IPHONE__
 	LocalizationIPhone::SelecePreferedLocalizationForPath(directoryPath);
 #endif
@@ -78,6 +70,11 @@ const String &LocalizationSystem::GetCurrentLocale()
 	return langId;
 }
 	
+const String &LocalizationSystem::GetDirectoryPath() const
+{
+    return directoryPath;
+}
+
 void LocalizationSystem::SetCurrentLocale(const String &newLangId)
 {//TODO: add reloading strings data on langId changing
 	langId = newLangId;
@@ -224,5 +221,19 @@ const WideString & LocalizationSystem::GetLocalizedString(const WideString & key
 	return key;
 }
 
+void LocalizationSystem::Cleanup()
+{
+	// release all memory allocated by strings
+	for (List<StringFile*>::reverse_iterator it = stringsList.rbegin(); it != stringsList.rend(); ++it)
+	{
+		StringFile * file = *it;
+		SafeDelete(file);
+	}
+	stringsList.clear();
+    
+    directoryPath.clear();
+    langId.clear();
+	SafeDeleteArray(dataHolder->data);
+}
 
 };
