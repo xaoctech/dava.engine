@@ -1,6 +1,6 @@
 #include "SceneDataManager.h"
 
-#include "Main/SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -39,6 +39,8 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
+	
+	// TODO! SIGNAL HERE!!!
     currentScene->Activate(sceneGraphView /*, libraryView, libraryModel*/);
 
 	emit SceneActivated(currentScene);
