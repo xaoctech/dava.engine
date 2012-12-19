@@ -6,18 +6,29 @@
 
 namespace DAVA
 {
-	struct IntrospectionMember
+	class IntrospectionMember
 	{
+	public:
 		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type)
-			: name(_name), desc(_desc), offset(_offset), type(_type) 
+			: name(_name), desc(_desc), offset(_offset), type(_type)	
 		{ }
 
-		const char *name;
-		const char *desc;
-		const int offset;
-		const MetaInfo* type;
+		const char* Name() const
+		{
+			return name;
+		}
 
-		VariantType GetValue(const void *object) const
+		const char* Desc() const
+		{
+			return desc;
+		}
+
+		const MetaInfo* Type() const
+		{
+			return type;
+		}
+
+		VariantType Value(const void *object) const
 		{
 			return VariantType::LoadData(((char *) object) + offset, type);
 		}
@@ -26,7 +37,46 @@ namespace DAVA
 		{
 			VariantType::SaveData(((char *) object) + offset, type, val);
 		}
+
+	protected:
+		const char *name;
+		const char *desc;
+		const int offset;
+		const MetaInfo* type;
 	};
+
+
+	template<typename T, typename V>
+	class IntrospectionProperty : public IntrospectionMember
+	{
+	public:
+		typedef V	 (T::*GetterPtr)();
+		typedef void (T::*SetterPtr)(const V &);
+
+		IntrospectionProperty(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, GetterPtr _g, SetterPtr _s)
+			: IntrospectionMember(_name, _desc, 0, _type), getter(_g), setter(_s)
+		{ }
+
+		VariantType Value(const void *object) const
+		{
+			return VariantType();
+		}
+
+		void SetValue(const void *object, const VariantType &val) const
+		{
+
+		}
+
+	protected:
+		const GetterPtr getter;
+		const SetterPtr setter;
+	};
+
+	template<typename TT, typename VV>
+	DAVA::IntrospectionProperty<TT, VV> DeclareIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV (TT::*_g)(), void (TT::*_s)(const VV&))
+	{
+		return IntrospectionProperty<TT,VV>(_name, _desc, 0, _type, _g, _s);
+	}
 
 	struct IntrospectionInfo
 	{
@@ -96,5 +146,8 @@ namespace DAVA
 
 #define MEMBER(_name, _desc) \
 	DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name)),
+
+#define PROPERTY(_name, _desc, _getter, _setter) \
+	DAVA::DeclareIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__

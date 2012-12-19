@@ -27,10 +27,22 @@ class test1
 public:
 	int v1;
 	DAVA::Matrix4 m1;
+	int p1;
+
+	int getp1()
+	{
+		return p1;
+	}
+
+	void setp1(const int &_p1)
+	{
+		p1 = _p1;
+	}
 
 	INTROSPECTION(test1,
 		MEMBER(v1, "int test")
 		MEMBER(m1, "matrix4 text")
+		PROPERTY(p1, "prop1", getp1, setp1)
 		);
 };
 
