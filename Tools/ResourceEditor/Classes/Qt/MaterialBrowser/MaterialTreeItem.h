@@ -13,7 +13,7 @@ public:
 	{
 		TYPE_MATERIAL,
 		TYPE_FOLDER
-	};
+	} ItemType;
 
 	MaterialTreeItem(DAVA::Material *material, MaterialTreeItem *parent = NULL);
 	MaterialTreeItem(QString folderName, MaterialTreeItem *parent = NULL);

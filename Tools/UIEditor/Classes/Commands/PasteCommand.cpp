@@ -1,0 +1,253 @@
+//
+//  PasteCommand.cpp
+//  UIEditor
+//
+//  Created by adebt on 11/5/12.
+//
+//
+
+#include "PasteCommand.h"
+
+#define COPY_NAME "Copy"
+#define COPY_DELTA Vector2(5, 5)
+
+PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
+{
+	this->parentNode = parentNode;
+	this->copyType = copyType;
+	this->items = items;
+}
+
+PasteCommand::~PasteCommand()
+{
+	//delete this->items;
+}
+
+
+void PasteCommand::Execute()
+{
+	HierarchyTreeController::Instance()->ResetSelectedControl();
+	
+	int count = 0;
+	HierarchyTreeNode::HIERARCHYTREENODESLIST* newItems = new HierarchyTreeNode::HIERARCHYTREENODESLIST();
+	switch (copyType) {
+		case CopyPasteController::CopyTypeControl:
+		{
+			if (parentNode)
+			{
+                count += PasteControls(newItems, parentNode);
+				for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = newItems->begin();
+					 iter != newItems->end();
+					 ++iter)
+				{
+					HierarchyTreeNode* node = (*iter);
+					HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode* >(node);
+					if (!controlNode)
+						continue;
+					
+					parentNode->AddTreeNode(controlNode);
+                    //Check type of parent control
+                    //For screen control there is another sequence
+                    HierarchyTreeScreenNode* parentScreen = dynamic_cast<HierarchyTreeScreenNode*>(parentNode);
+                    HierarchyTreeControlNode* parentControl = dynamic_cast<HierarchyTreeControlNode *>(parentNode);
+                    if (parentScreen)
+                    {
+                        parentScreen->GetScreen()->AddControl(controlNode->GetUIObject());
+                    }
+                    else if (parentControl)
+                    {
+                        parentControl->GetUIObject()->AddControl(controlNode->GetUIObject()); 
+                    }
+					
+					HierarchyTreeController::Instance()->ChangeItemSelection(controlNode);
+				}
+			}
+		}break;
+		case CopyPasteController::CopyTypeScreen:
+		{
+			HierarchyTreePlatformNode* parentPlatform = dynamic_cast<HierarchyTreePlatformNode*>(parentNode);
+			if (parentPlatform)
+			{
+				count += PasteScreens(newItems, parentPlatform);
+				for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = newItems->begin();
+					 iter != newItems->end();
+					 ++iter)
+				{
+					HierarchyTreeNode* node = (*iter);
+					HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode* >(node);
+					if (!screenNode)
+						continue;
+					
+					parentPlatform->AddTreeNode(screenNode);
+				}
+			}
+		}break;
+		case CopyPasteController::CopyTypePlatform:
+		{
+			HierarchyTreeRootNode* parentRoot = dynamic_cast<HierarchyTreeRootNode*>(parentNode);
+			if (parentRoot)
+			{
+				count += PastePlatforms(newItems, parentRoot);
+				for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = newItems->begin();
+					 iter != newItems->end();
+					 ++iter)
+				{
+					HierarchyTreeNode* node = (*iter);
+					HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode* >(node);
+					if (!platformNode)
+						continue;
+					
+					parentRoot->AddTreeNode(platformNode);
+				}
+			}
+		}break;
+			
+		default:
+			break;
+	}
+	
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newControls, HierarchyTreeNode *parent)
+{
+	int count = 0;
+	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+		 iter != items->end();
+		 ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>(node);
+		if (!control)
+			continue;
+		
+		HierarchyTreeControlNode* copy = new HierarchyTreeControlNode(parent, control);
+		UpdateControlName(parent, copy);
+		//copy->SetName(FormatCopyName(control->GetName(), parent));
+		UIControl* clone = copy->GetUIObject();
+		if (clone)
+			clone->SetPosition(clone->GetPosition() + COPY_DELTA);
+				
+		count++;
+		newControls->push_back(copy);
+	}
+	
+	return count;
+}
+
+void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node) const
+{
+	node->SetName(FormatCopyName(node->GetName(), parent));
+    
+    // Also need to update the name of the UIControl - it is not copied.
+    HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+    if (controlNode && controlNode->GetUIObject())
+    {
+        controlNode->GetUIObject()->SetName(node->GetName().toStdString());
+    }
+
+	HierarchyTreeNode::HIERARCHYTREENODESLIST child = node->GetChildNodes();
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = child.begin();
+		 iter != child.end();
+		 ++iter)
+	{
+		HierarchyTreeNode* child = (*iter);
+		UpdateControlName(parent, child);
+	}
+}
+
+int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreePlatformNode* parent)
+{
+	int count = 0;
+	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+		 iter != items->end();
+		 ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
+		if (!screen)
+			continue;
+		
+		HierarchyTreeScreenNode* copy = new HierarchyTreeScreenNode(parent, screen);
+        UpdateControlName(parent, copy);
+		//copy->SetName(FormatCopyName(screen->GetName(), parent));
+		
+		count++;
+		newScreens->push_back(copy);
+	}
+	
+	return count;
+}
+
+int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreeRootNode* parent)
+{
+	int count = 0;
+	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+		 iter != items->end();
+		 ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		HierarchyTreePlatformNode* platform = dynamic_cast<HierarchyTreePlatformNode*>(node);
+		if (!platform)
+			continue;
+		
+		HierarchyTreePlatformNode* copy = new HierarchyTreePlatformNode(parent, platform);
+        UpdateControlName(parent, copy);
+		//copy->SetName(FormatCopyName(platform->GetName(), parent));
+		
+		count++;
+		newScreens->push_back(copy);
+	}
+	
+	return count;
+}
+
+QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTreeNode* parent) const
+{
+	QString name = baseName;
+	
+	const HierarchyTreeRootNode* parentRoot = dynamic_cast<const HierarchyTreeRootNode*>(parent);
+	const HierarchyTreePlatformNode* parentPlatform = dynamic_cast<const HierarchyTreePlatformNode*>(parent);
+	const HierarchyTreeScreenNode* parentScreen = dynamic_cast<const HierarchyTreeScreenNode*>(parent);
+	if (!parentScreen)
+	{
+		const HierarchyTreeControlNode* parentControl = dynamic_cast<const HierarchyTreeControlNode*>(parent);
+		if (parentControl)
+		{
+			parentScreen = parentControl->GetScreenNode();
+		}
+	}
+	
+	for (int i = 0; i < 100; i++)
+	{
+		bool bFind = false;
+		
+		if (parentPlatform || parentRoot)
+		{
+			//chekc name only for one child level for screen and platform copy
+			const HierarchyTreeNode::HIERARCHYTREENODESLIST& child = parent->GetChildNodes();
+			for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = child.begin();
+				 iter != child.end();
+				 ++iter)
+			{
+				const HierarchyTreeNode* node = (*iter);
+				if (node->GetName().compare(name) == 0)
+					bFind = true;
+			}
+			if (!bFind)
+				return name;
+		}
+		else
+		{
+			// copy control
+			if (parentScreen)
+			{
+				if (!parentScreen->IsNameExist(name, parentScreen))
+					return name;
+			}
+		}
+		
+		name += COPY_NAME;
+	}
+	return baseName;
+}

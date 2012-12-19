@@ -79,6 +79,7 @@ public:
     inline UIControl *GetThumb();
 
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 	
 protected:
 	bool isEventsContinuos;
