@@ -160,6 +160,14 @@ public:
 	 \param[in] font font used for text draw of the states.
 	 */
 	virtual void SetStateFont(int32 state, Font *font);
+    
+    /**
+	 \brief Sets the color of the font for particular state.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] color font used for text draw of the states.
+	 */
+	virtual void SetStateFontColor(int32 state, const Color& fontColor);
+
 	/**
 	 \brief Returns text control used for the requested state.
 	 \param[in] state state to get value for.
@@ -206,6 +214,19 @@ public:
 	virtual void SystemUpdate(float32 timeElapsed);// Internal method used by ControlSystem
 
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+
+	/**
+	 \brief Creates the background for the UIButton for particular state and caches it.
+     Will create the background once only and then cache it.
+	 */
+    virtual void CreateBackgroundForState(int32 state);
+	
+	/**
+	 \brief Returns list of control children without internal controls.
+	 \returns list of control children without internal controls.
+	 */
+	virtual List<UIControl* >& GetRealChildren();
 
 protected:
 	enum eButtonDrawState

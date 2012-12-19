@@ -29,6 +29,9 @@
 =====================================================================================*/
 #include "Render/2D/Font.h"
 #include "Core/Core.h"
+#include "FileSystem/YamlParser.h"
+#include "FontManager.h"
+
 namespace DAVA
 {
 	
@@ -50,11 +53,12 @@ Font::Font()
 ,	color(1.0f, 0.0f, 1.0f, 1.0f)
 ,	verticalSpacing(0)
 {
+	FontManager::Instance()->RegisterFont(this);
 }
 
 Font::~Font()
 {
-	
+	FontManager::Instance()->UnregisterFont(this);
 }
 
 
@@ -334,6 +338,33 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				break;
 		};
 	};
+}
+
+Font::eFontType Font::GetFontType()
+{
+    return  fontType;
+}
+
+YamlNode * Font::SaveToYamlNode()
+{
+    YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
+    
+    VariantType *nodeValue = new VariantType();
+    //Type
+    node->Set("type", "Font");
+    //Font size
+    node->Set("size", this->GetSize());
+    //Vertical Spacing
+    node->Set("verticalSpacing", this->GetVerticalSpacing());
+    Color color = this->GetColor();
+    //Font color
+    Vector4 colorVector4(color.r, color.g, color.b, color.a);
+    nodeValue->SetVector4(colorVector4);
+    node->Set("color", nodeValue);
+    
+    SafeDelete(nodeValue);
+    
+    return node;
 }
 
 };
