@@ -660,6 +660,35 @@ namespace DAVA
 	//static bool mouseShow = false;
 	static bool mouseCursorShown = true;
 
+	void OnMouseEvent(UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		{
+			//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+			Vector<DAVA::UIEvent> touches;
+			Vector<DAVA::UIEvent> emptyTouches;
+
+			int32 touchPhase = MoveTouchsToVector(message, wParam, lParam, &touches);
+
+			UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
+		}
+		// 			if (mouseShow)
+		// 			{
+		// 				ShowCursor(false);
+		// 				mouseShow = false;
+		// 			}
+		if (RenderManager::Instance()->GetCursor() != 0 && mouseCursorShown)
+		{
+			ShowCursor(false);
+			mouseCursorShown = false;
+		}
+		if (RenderManager::Instance()->GetCursor() == 0 && !mouseCursorShown)			
+		{
+			ShowCursor(false);
+			mouseCursorShown = false;
+		}
+	}
+
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 #ifndef WM_MOUSEWHEEL
@@ -750,39 +779,19 @@ namespace DAVA
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
-//		case WM_XBUTTONDOWN:
+			SetCapture(hWnd);
+			OnMouseEvent(message, wParam, lParam);
+			break;
 
 		case WM_LBUTTONUP:
 		case WM_RBUTTONUP:
 		case WM_MBUTTONUP:
-//		case WM_XBUTTONUP:
+			ReleaseCapture();
+			OnMouseEvent(message, wParam, lParam);
+			break;
 
 		case WM_MOUSEMOVE:
-			{
-				//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-
-				Vector<DAVA::UIEvent> touches;
-				Vector<DAVA::UIEvent> emptyTouches;
-
-				int32 touchPhase = MoveTouchsToVector(message, wParam, lParam, &touches);
-
-				UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
-			}
-// 			if (mouseShow)
-// 			{
-// 				ShowCursor(false);
-// 				mouseShow = false;
-// 			}
-			if (RenderManager::Instance()->GetCursor() != 0 && mouseCursorShown)
-			{
-				ShowCursor(false);
-				mouseCursorShown = false;
-			}
-			if (RenderManager::Instance()->GetCursor() == 0 && !mouseCursorShown)			
-			{
-				ShowCursor(false);
-				mouseCursorShown = false;
-			}
+			OnMouseEvent(message, wParam, lParam);
 			break;
 
 		case WM_NCMOUSEMOVE:

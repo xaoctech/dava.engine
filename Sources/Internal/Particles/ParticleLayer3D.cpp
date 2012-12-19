@@ -54,7 +54,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		RenderManager::Instance()->SetTexture(sprite->GetTexture(current->frame));
+		material->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -143,12 +143,9 @@ void ParticleLayer3D::Draw(Camera * camera)
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
+	
 		RenderManager::Instance()->SetRenderData(renderData);
-
-		RenderManager::Instance()->FlushState();
-		RenderManager::Instance()->AttachRenderData();
  		material->PrepareRenderState();
-
 
 		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 	}
