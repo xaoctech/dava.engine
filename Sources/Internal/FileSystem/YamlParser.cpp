@@ -1445,7 +1445,7 @@ String YamlParser::GetArrayNodeRepresentation(const String& nodeName, YamlNode* 
 
     return resultString;
 }
-    
+
 bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite)
 {
     int16 prevFileSize = fileToSave->GetSize();

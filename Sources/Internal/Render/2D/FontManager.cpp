@@ -36,6 +36,8 @@
 #include "Render/2D/FTFont.h"
 #include "FileSystem/Logger.h"
 #include "Render/2D/Sprite.h"
+#include "Core/Core.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -48,6 +50,7 @@ FontManager::FontManager()
 		Logger::Error("FontManager FT_Init_FreeType failed");
 	}
 
+	trackedFontId = 0;
 }
 	
 FontManager::~FontManager()
@@ -58,6 +61,118 @@ FontManager::~FontManager()
 		Logger::Error("FontManager FT_Done_FreeType failed");
 	}
 
+	Clear();
+}
+	
+void FontManager::RegisterFont(Font* font)
+{
+	if (!Core::Instance()->GetOptions()->GetBool("trackFont"))
+		return;
+
+	if (registeredFonts.find(font) != registeredFonts.end())
+		return;
+	
+	registeredFonts[font] = "";
+}
+
+void FontManager::UnregisterFont(Font *font)
+{
+	registeredFonts.erase(font);
+}
+	
+void FontManager::SetFontName(Font* font, const String& name)
+{
+	if (registeredFonts.find(font) == registeredFonts.end())
+		return;
+	
+	registeredFonts[font] = name;
+}
+	
+String FontManager::GetFontName(Font *font)
+{
+	REGISTERED_FONTS::iterator fontIter = registeredFonts.find(font);
+	if (fontIter == registeredFonts.end())
+		return "";
+	
+	for (FONTS_NAME::iterator iter = fontsName.begin();
+		 iter != fontsName.end();
+		 ++iter)
+	{
+		FONT_NAME* fontName = (*iter);
+		
+		TRACKED_FONTS::iterator fontNameIter = fontName->fonts.find(font);
+		if (fontNameIter == fontName->fonts.end())
+			continue;
+		
+		trackedFonts.insert(font);
+		
+		if (!fontName->name.empty())
+			return fontName->name;
+		
+		String name = fontIter->second;
+		if (name.empty())
+			//generate name
+			name = Format("Font_%d", trackedFontId++);
+		
+		fontName->name = name;
+		return name;
+	}
+	return "";
+}
+
+void FontManager::PrepareToSaveFonts()
+{
+	Clear();
+	fontsName.clear();
+	trackedFonts.clear();
+	trackedFontId = 0;
+	
+	for (REGISTERED_FONTS::iterator iter = registeredFonts.begin();
+		 iter != registeredFonts.end();
+		 ++iter)
+	{
+		Font* font = iter->first;
+		
+		bool fontAdded = false;
+		for (FONTS_NAME::iterator iter = fontsName.begin();
+			 iter != fontsName.end();
+			 ++iter)
+		{
+			FONT_NAME* fontName = (*iter);
+			
+			Font* firstFont = (*fontName->fonts.begin());
+			if (firstFont->IsEqual(font))
+			{
+				fontName->fonts.insert(font);
+				fontAdded = true;
+				break;
+			}
+		}
+		
+		if (fontAdded)
+			continue;
+		
+		FONT_NAME* fontName = new FONT_NAME();
+		fontName->fonts.insert(font);
+		fontsName.insert(fontName);
+	}
+}
+	
+void FontManager::Clear()
+{
+	for (FONTS_NAME::iterator iter = fontsName.begin();
+		 iter != fontsName.end();
+		 ++iter)
+	{
+		FONT_NAME* fontName = (*iter);
+		SAFE_DELETE(fontName);
+	}
+	fontsName.clear();
+}
+
+const FontManager::TRACKED_FONTS& FontManager::GetTrackedFont() const
+{
+	return trackedFonts;
 }
 	
 };

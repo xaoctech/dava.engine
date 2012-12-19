@@ -15,7 +15,7 @@ PropertiesView::PropertiesView(QWidget *parent /* = 0 */)
 		for(int i = 0; i < info->MembersCount(); ++i)
 		{
 			const DAVA::IntrospectionMember* member = info->Member(i);
-			printf(" %s, type %s\n", member->name, member->type->GetTypeName());
+			printf(" %s, type %s\n", member->Name(), member->Type()->GetTypeName());
 		}
 
 		info = info->BaseInfo();
@@ -30,7 +30,7 @@ PropertiesView::PropertiesView(QWidget *parent /* = 0 */)
 		for(int i = 0; i < info->MembersCount(); ++i)
 		{
 			const DAVA::IntrospectionMember* member = info->Member(i);
-			printf(" %s, type %s\n", member->name, member->type->GetTypeName());
+			printf(" %s, type %s\n", member->Name(), member->Type()->GetTypeName());
 		}
 
 		info = info->BaseInfo();
