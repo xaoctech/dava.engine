@@ -25,7 +25,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "TextureDialog/TextureConvertor.h"
+#include "TextureBrowser/TextureConvertor.h"
 
 
 using namespace DAVA;

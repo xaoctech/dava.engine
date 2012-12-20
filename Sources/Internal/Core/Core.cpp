@@ -138,9 +138,10 @@ void Core::CreateSingletons()
     new AutotestingSystem();
 #endif
 
-#ifdef __DAVAENGINE_WIN32__
+#if defined(__DAVAENGINE_WIN32__)
 	Thread::InitMainThread();
 #endif
+    
     
     CheckDataTypeSizes();
 }

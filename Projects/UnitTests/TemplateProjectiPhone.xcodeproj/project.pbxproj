@@ -22,7 +22,6 @@
 		CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE1AA0771625B8D40005BE5E /* KeyedArchiveTest.cpp */; };
 		CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEC6DA16162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp */; };
 		E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E80842B81639147A002A6A77 /* TextureUtils.cpp */; };
-		E88A892C1672112C00CC71DD /* ParamToPtrConvertionTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88A892A1672112C00CC71DD /* ParamToPtrConvertionTest.cpp */; };
 		E8C6B12216692E87001EBE09 /* CloneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12016692E87001EBE09 /* CloneTest.cpp */; };
 		E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C46161AE9B900B50BDA /* PVRTest.cpp */; };
 		FE76D9EE1163F2F0009E83B6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */; };
@@ -88,8 +87,6 @@
 		E80842B81639147A002A6A77 /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtils.cpp; sourceTree = "<group>"; };
 		E80842B91639147A002A6A77 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureUtils.h; sourceTree = "<group>"; };
 		E80D2FB0164D518100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
-		E88A892A1672112C00CC71DD /* ParamToPtrConvertionTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParamToPtrConvertionTest.cpp; sourceTree = "<group>"; };
-		E88A892B1672112C00CC71DD /* ParamToPtrConvertionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParamToPtrConvertionTest.h; sourceTree = "<group>"; };
 		E8C6B12016692E87001EBE09 /* CloneTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloneTest.cpp; sourceTree = "<group>"; };
 		E8C6B12116692E87001EBE09 /* CloneTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloneTest.h; sourceTree = "<group>"; };
 		E8F98C46161AE9B900B50BDA /* PVRTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRTest.cpp; sourceTree = "<group>"; };
@@ -221,8 +218,6 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				E88A892A1672112C00CC71DD /* ParamToPtrConvertionTest.cpp */,
-				E88A892B1672112C00CC71DD /* ParamToPtrConvertionTest.h */,
 				E8C6B12016692E87001EBE09 /* CloneTest.cpp */,
 				E8C6B12116692E87001EBE09 /* CloneTest.h */,
 				E8F98C46161AE9B900B50BDA /* PVRTest.cpp */,
@@ -387,7 +382,6 @@
 				CE1AA0781625B8D40005BE5E /* KeyedArchiveTest.cpp in Sources */,
 				CEC6DA17162D95A6009E5F1D /* KeyedArchiveYamlTest.cpp in Sources */,
 				E8C6B12216692E87001EBE09 /* CloneTest.cpp in Sources */,
-				E88A892C1672112C00CC71DD /* ParamToPtrConvertionTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

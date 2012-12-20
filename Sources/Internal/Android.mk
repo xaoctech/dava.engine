@@ -68,10 +68,10 @@ LOCAL_SRC_FILES :=  \
                     Entity/PoolSystem.cpp \
                     Entity/VisibilityAABBoxComponent.cpp \
                     \
+                    FileSystem/APKFile.cpp \
                     FileSystem/Bitstream.cpp \
                     FileSystem/DynamicMemoryFile.cpp \
                     FileSystem/File.cpp \
-                    FileSystem/FileAndroid.cpp \
                     FileSystem/FileList.cpp \
                     FileSystem/FileSystem.cpp \
                     FileSystem/KeyedArchive.cpp \
@@ -117,7 +117,9 @@ LOCAL_SRC_FILES :=  \
                     Particles/ParticleSystem.cpp \
                     Particles/ParticleLayerLong.cpp \
                     \
-                    Platform/TemplateAndroid/CorePlatformAndroid.cpp \
+                    Platform/Android/CorePlatformAndroid.cpp \
+                    Platform/Android/EGLRenderer.cpp \
+                    Platform/Android/ThreadContext.cpp \
                     \
                     Platform/Mutex.cpp \
                     Platform/SystemTimer.cpp \
@@ -273,8 +275,7 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 LIBS_PATH := $(call host-path,$(LOCAL_PATH)/../../Libs/libs)
 
-LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2
-LOCAL_LDLIBS += $(LIBS_PATH)/libzip_android.a
+LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2 -lEGL
 LOCAL_LDLIBS += $(LIBS_PATH)/libxml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
@@ -286,12 +287,12 @@ LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
 # set arm mode
-LOCAL_ARM_MODE := arm
+# LOCAL_ARM_MODE := arm
 
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
-
+LOCAL_STATIC_LIBRARIES += android_native_app_glue
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -302,3 +303,4 @@ $(call import-add-path,$(DAVA_ROOT)/../External/Box2D)
 $(call import-add-path,$(DAVA_ROOT))
 
 $(call import-module,box2d)
+$(call import-module,android/native_app_glue)

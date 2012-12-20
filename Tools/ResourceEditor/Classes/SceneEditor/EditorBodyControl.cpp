@@ -1138,12 +1138,14 @@ void EditorBodyControl::ProcessIsSolidChanging()
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             activeScene->RebuildSceneGraph();
             
+			/* #### dock -->
             KeyedArchive *properties = selectedNode->GetCustomProperties();
             if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
             {
                 String filePathname = properties->GetString(String("editor.referenceToOwner"));
                 activeScene->OpenLibraryForFile(filePathname);
             }
+			<-- */
             
             sceneGraph->SelectNode(selectedNode);
         }

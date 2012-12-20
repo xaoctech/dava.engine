@@ -17,7 +17,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent)
 	SetupModelTree();
 	SetupModelView();
 
-	posSaver.Attach(this, __FUNCTION__);
+	posSaver.Attach(this);
 }
 
 MaterialBrowser::~MaterialBrowser()

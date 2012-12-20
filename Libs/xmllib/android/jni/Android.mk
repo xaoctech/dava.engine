@@ -65,13 +65,10 @@ LOCAL_SRC_FILES :=  \
                   ../../src/xpointer.c \
 
 # set build flags
-#LOCAL_CFLAGS := -DHAVE_CONFIG_H -g -O0
 LOCAL_CFLAGS := -DHAVE_CONFIG_H -O2
 
 #set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
-                    
-LOCAL_ARM_MODE := arm
                     
 # build static library
 include $(BUILD_STATIC_LIBRARY)

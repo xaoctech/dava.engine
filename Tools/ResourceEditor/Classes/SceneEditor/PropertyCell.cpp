@@ -12,7 +12,6 @@
 #include "ControlsFactory.h"
 #include "EditorSettings.h"
 #include "ColorPicker.h"
-#include "PVRConverter.h"
 #include "UISliderWithText.h"
 #include "HintManager.h"
 

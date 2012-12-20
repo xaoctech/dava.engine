@@ -29,8 +29,7 @@ LOCAL_SRC_FILES :=  \
                   ../../src/scanner.c \
                   ../../src/writer.c \
 
-#LOCAL_CFLAGS := -g -O0
-LOCAL_CFLAGS := -O0
+LOCAL_CFLAGS := -O2
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)
