@@ -492,7 +492,6 @@ void QtMainWindowHandler::ReloadAsDXT()
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-	LibDxtHelper::Test();
     Execute(new CommandToggleCustomColors());
 }
 

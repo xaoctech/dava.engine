@@ -767,6 +767,14 @@ DirectDrawSurface::DirectDrawSurface(FILE * file) : stream(new StdInputStream(fi
 	}
 }
 
+DirectDrawSurface::DirectDrawSurface(const uint8 * mem, uint size) : stream(new MemoryInputStream(mem, size))
+{
+	if (!stream->isError())
+	{
+		(*stream) << header;
+	}
+}
+
 DirectDrawSurface::~DirectDrawSurface()
 {
 	delete stream;
@@ -1240,16 +1248,6 @@ uint DirectDrawSurface::headerSize()
 	stream->seek(position);
 	return size;
 	
-}
-
-void DirectDrawSurface::getMipmapsSizes(std::vector<unsigned int>& vec)const
-{
-	//vec.push_back(mipmapSize(0));
-	//return;
-	for(uint i = 0 ; i < header.mipmapcount; ++i)
-	{
-		vec.push_back(mipmapSize(i));
-	}
 }
 
 uint DirectDrawSurface::offset(const uint face, const uint mipmap)

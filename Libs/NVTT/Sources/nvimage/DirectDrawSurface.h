@@ -113,6 +113,7 @@ namespace nv
 	public:
 		DirectDrawSurface(const char * file);
 		DirectDrawSurface(FILE * file);
+		DirectDrawSurface(const uint8 * mem, uint size);
 		~DirectDrawSurface();
 		
 		bool isValid() const;
@@ -124,7 +125,6 @@ namespace nv
 		uint depth() const;
 		uint size() const;
 		uint headerSize();
-		void getMipmapsSizes(std::vector<unsigned int>& vec)const;
 		uint mipmapSize(uint m) const;
 		bool isTexture1D() const;
 		bool isTexture2D() const;

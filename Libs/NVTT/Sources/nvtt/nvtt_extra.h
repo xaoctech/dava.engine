@@ -41,6 +41,8 @@ namespace nvtt
 		NVTT_API bool initWithDDSFile(const char * pathToDDSFile);
 		
 		NVTT_API bool initWithDDSFile(FILE *file);
+
+		NVTT_API bool initWithDDSFile(const unsigned char * mem, unsigned int size);
 		
 		NVTT_API void erase();
 
