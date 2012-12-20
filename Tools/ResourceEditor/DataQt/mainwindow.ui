@@ -259,7 +259,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -684,9 +684,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ParticleEditorWidget</class>
-   <extends>QWidget</extends>
-   <header>DockParticleEditor/particleeditorwidget.h</header>
    <class>CustomColorsView</class>
    <extends>QWidget</extends>
    <header>DockCustomColors/CustomColorsView.h</header>
@@ -697,6 +694,11 @@
    <extends>QWidget</extends>
    <header>DockVisibilityTool/VisibilityToolView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ParticleEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particleeditorwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>
