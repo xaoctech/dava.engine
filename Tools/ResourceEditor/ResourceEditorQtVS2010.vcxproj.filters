@@ -106,6 +106,24 @@
     <Filter Include="QtGenerated\TextureBrowser">
       <UniqueIdentifier>{2577c457-6240-473b-b893-129f4db52ed5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockProperties">
+      <UniqueIdentifier>{2d548fb4-1717-407b-a982-192efa2564c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockProperties">
+      <UniqueIdentifier>{115ccc83-d704-450d-bf74-0a2f0aecea4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockVisibilityTool">
+      <UniqueIdentifier>{4d216e99-0dbe-430d-930c-4e2445d0c11c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockCustomColors">
+      <UniqueIdentifier>{20561eb1-0a4f-4f65-8b34-79f3980e32b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockCustomColors">
+      <UniqueIdentifier>{2dddfd3c-1941-443c-9383-9170c373e8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockVisibilityTool">
+      <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1056,9 +1074,6 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1136,6 +1151,27 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
       <Filter>QtGenerated\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp">
+      <Filter>QtGenerated\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp">
+      <Filter>QtGenerated\DockVisibilityTool</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
+      <Filter>QtGenerated\DockCustomColors</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
+      <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2048,9 +2084,6 @@
     <ClInclude Include="Classes\SceneEditor\ColorControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2092,6 +2125,18 @@
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2305,6 +2350,12 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="DataQt\materialbrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\CustomColorsView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\VisibilityToolView.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

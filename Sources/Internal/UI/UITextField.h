@@ -155,6 +155,7 @@ public:
     virtual void Input(UIEvent *currentInput);
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     Font *GetFont();
 
@@ -174,6 +175,20 @@ public:
         textFont = SafeRetain(font);
 		staticText->SetFont(textFont);
     }
+
+    void SetFontColor(const Color& fontColor)
+    {
+        staticText->SetFontColor(fontColor);
+    }
+
+    virtual void SetSize(const DAVA::Vector2 &newSize);
+	
+	/**
+	 \brief Returns list of control children without internal controls.
+	 \returns list of control children without internal controls.
+	 */
+	virtual List<UIControl* >& GetRealChildren();
+
 protected:
     bool needRedraw;
 	WideString text;
