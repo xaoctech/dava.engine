@@ -43,17 +43,19 @@ public:
         TRANSFORM_COMPONENT = 0,
         RENDER_COMPONENT,
         UPDATE_COMPONENT,
+        CAMERA_COMPONENT,
+        ANIMATION_COMPONENT,
         COLLISION_COMPONENT,    // multiple instances
         PHYSICS_COMPONENT,
-        ANIMATION_COMPONENT,    
         ACTION_COMPONENT,       // actions, something simplier than scripts that can influence logic, can be multiple
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
         COMPONENT_COUNT,
     };
     
-
     virtual ~Component() {};
-    virtual uint32 GetType();
+    virtual uint32 GetType() = 0;
+    virtual Component * Clone() = 0;
+
     
 private:
 };

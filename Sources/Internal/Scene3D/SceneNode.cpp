@@ -40,6 +40,7 @@
 #include "Debug/Stats.h"
 #include "Entity/Entity.h"
 #include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Scene.h"
 
 namespace DAVA
@@ -55,6 +56,7 @@ SceneNode::SceneNode()
     , tag(0)
 	, entity(0)
 	, transformComponent(0)
+    , renderComponent(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
     componentFlags = 0;
@@ -97,11 +99,21 @@ SceneNode::~SceneNode()
 	//TODO: delete entity?
 }
     
+    
+void SceneNode::UpdateComponentsFastPtrs()
+{
+    transformComponent = dynamic_cast<TransformComponent*>(components[Component::TRANSFORM_COMPONENT]);
+    renderComponent = dynamic_cast<RenderComponent*>(components[Component::RENDER_COMPONENT]);
+}
+
+    
 void SceneNode::AddComponent(Component * component)
 {
     components[component->GetType()] = component;
     if (scene)
         scene->AddComponent(this, component);
+    componentFlags |= 1 << component->GetType();
+    UpdateComponentsFastPtrs();
 }
 
 void SceneNode::RemoveComponent(Component * component)
@@ -109,6 +121,8 @@ void SceneNode::RemoveComponent(Component * component)
     components[component->GetType()] = component;
     if (scene)
         scene->RemoveComponent(this, component);
+    componentFlags &= ~(1 << component->GetType());
+    UpdateComponentsFastPtrs();
 }
 
 void SceneNode::SetScene(Scene * _scene)
@@ -488,7 +502,11 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    dstNode->transformComponent = this->transformComponent->Clone();
+    //uint32 size = components.size();
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT;++k)
+        dstNode->components[k] = components[k]->Clone();
+    UpdateComponentsFastPtrs();
+    
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
@@ -783,14 +801,16 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
 inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
     flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    scene->transformSystem->NeedUpdate(this);
+    //scene->transformSystem->NeedUpdate(this);
+    scene->ImmediateUpdate(this, transformComponent);
     return GetLocalTransform();
 }
 
-inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
+void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     transformComponent->SetLocalTransform(&newMatrix);
-    scene->transformSystem->NeedUpdate(this);
+//    scene->transformSystem->NeedUpdate(this);
+    scene->ImmediateUpdate(this, transformComponent);
     
     //localTransform = newMatrix;
     //flags &= ~NODE_WORLD_MATRIX_ACTUAL;

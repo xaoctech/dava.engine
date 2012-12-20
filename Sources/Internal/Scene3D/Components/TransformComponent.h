@@ -15,14 +15,16 @@ class TransformComponent : public Component
 public:
     TransformComponent();
     ~TransformComponent();
-	
+
+    IMPLEMENT_COMPONENT_TYPE(TRANSFORM_COMPONENT);
+
     inline Matrix4 * GetWorldTransform();
 	inline Matrix4 * GetLocalTransform();
 	inline int32 GetIndex();
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
-    TransformComponent * Clone();
+    Component * Clone();
 
 private:
 	Matrix4 localMatrix;

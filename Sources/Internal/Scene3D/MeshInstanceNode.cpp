@@ -40,6 +40,7 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/MaterialCompiler.h"
 #include "Render/Material/MaterialGraph.h"
+#include "Scene3D/Components/RenderComponent.h"
 
 namespace DAVA 
 {
@@ -128,22 +129,22 @@ NMaterialInstance * PolygonGroupWithMaterial::GetNMaterialInstance()
     return nMaterialInstance;
 }
     
-SceneNode* PolygonGroupWithMaterial::Clone(SceneNode *dstNode)
-{
-    if (!dstNode)
-    {
-        DVASSERT_MSG(IsPointerToExactClass<PolygonGroupWithMaterial>(this), "Can clone only MeshInstanceNode");
-        dstNode = new PolygonGroupWithMaterial();
-    }
-    
-    SceneNode::Clone(dstNode);
-    PolygonGroupWithMaterial *nd = (PolygonGroupWithMaterial *)dstNode;
-    
-    nd->nMaterial = SafeRetain(nMaterial);
-    nd->material = SafeRetain(material);
-    
-    return dstNode;
-}
+//SceneNode* PolygonGroupWithMaterial::Clone(SceneNode *dstNode)
+//{
+//    if (!dstNode)
+//    {
+//        DVASSERT_MSG(IsPointerToExactClass<PolygonGroupWithMaterial>(this), "Can clone only MeshInstanceNode");
+//        dstNode = new PolygonGroupWithMaterial();
+//    }
+//    
+//    SceneNode::Clone(dstNode);
+//    PolygonGroupWithMaterial *nd = (PolygonGroupWithMaterial *)dstNode;
+//    
+//    nd->nMaterial = SafeRetain(nMaterial);
+//    nd->material = SafeRetain(material);
+//    
+//    return dstNode;
+//}
     
 uint64 PolygonGroupWithMaterial::GetSortID()
 {
@@ -191,7 +192,11 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
 	PolygonGroup * group = polygroup->GetPolygonGroup();
 	bbox.AddAABBox(group->GetBoundingBox());
     
-    AddNode(polygroup);
+    SceneNode * node = new SceneNode();
+    RenderComponent * renderComponent = new RenderComponent();
+    renderComponent->SetRenderObject(polygroup);
+    node->AddComponent(renderComponent);
+    AddNode(node);
 }
     
 void MeshInstanceNode::Update(float32 timeElapsed)

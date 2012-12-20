@@ -128,6 +128,13 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
         
+//        for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+//        {
+//            propertyList->AddStringProperty(Format("Component:%s", sceneNode->components sa M.  zz))
+//        }
+        
+        
+        
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());

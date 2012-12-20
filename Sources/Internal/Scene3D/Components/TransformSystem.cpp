@@ -42,7 +42,7 @@ void TransformSystem::SortAndThreadSplit()
 {
 }
 
-void TransformSystem::NeedUpdate(SceneNode * entity)
+void TransformSystem::ImmediateUpdate(SceneNode * entity)
 {
 	HierahicNeedUpdate(entity);
 	

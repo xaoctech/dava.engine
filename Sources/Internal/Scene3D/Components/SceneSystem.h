@@ -46,8 +46,11 @@ public:
     void SetRequiredComponents(uint32 requiredComponents);
     uint32 GetRequiredComponents();
     
-    virtual void AddEntity(SceneNode * sceneNode);
-    virtual void RemoveEntity(SceneNode * sceneNode);
+    virtual void AddEntity(SceneNode * entity);
+    virtual void RemoveEntity(SceneNode * entity);
+    virtual void ImmediateUpdate(SceneNode * entity);
+    
+    
     virtual void Process();
 private:
     uint32 requiredComponents;
