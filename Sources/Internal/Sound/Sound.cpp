@@ -45,7 +45,7 @@
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 
 #ifdef __DAVAENGINE_ANDROID__
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Platform/Android/CorePlatformAndroid.h"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #endif //#ifdef __DAVAENGINE_ANDROID__
@@ -209,7 +209,7 @@ bool Sound::InitAssetAudioPlayer()
     SLObjectItf outputMixObject = SoundSystem::Instance()->getOutputMixObject();
     
     // use asset manager to open asset by filename
-    AAssetManager* mgr = ((CoreAndroidPlatform *)Core::Instance())->GetAssetManager();
+    AAssetManager* mgr = ((CorePlatformAndroid *)Core::Instance())->GetAssetManager();
     int32 strLength = (int32)fileName.length();
     String filePath = "Data" + fileName.substr(5, strLength - 5);
     AAsset* asset = AAssetManager_open(mgr, filePath.c_str(), AASSET_MODE_UNKNOWN);

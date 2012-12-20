@@ -97,11 +97,6 @@ namespace DAVA
 		return [filePath UTF8String];
 	}
 	
-    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
-
     const String FileSystem::GetUserDocumentsPath()
     {
         NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

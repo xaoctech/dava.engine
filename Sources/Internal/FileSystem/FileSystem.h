@@ -34,6 +34,9 @@
 #include "Base/Singleton.h"
 #include "FileSystem/File.h"
 
+#if defined (__DAVAENGINE_ANDROID__)
+#include "FileSystem/APKFile.h"
+#endif //__DAVAENGINE_ANDROID__
 /**
 	\defgroup filesystem File System
  */
@@ -316,23 +319,14 @@ private:
 	List<ResourceArchiveItem> resourceArchiveList;
 
 	friend class File;
+#if defined(__DAVAENGINE_ANDROID__)
+	friend class APKFile;
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
     static String virtualBundlePath;
 
     static const char * FilepathRelativeToBundle(const char * relativePathname);
     static const char * FilepathRelativeToBundle(const String & relativePathname);
-
-#if defined(__DAVAENGINE_ANDROID__)
-private:
-    static const int32 MAX_PATH = 256;
-	char8 assetsPath[MAX_PATH];
-	char8 documentsPath[MAX_PATH];
-	zip *APKArchive;
-public:
-	void SetPath(const char8 *docPath, const char8 *assets);
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-	
 };
 	
 };
