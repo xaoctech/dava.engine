@@ -580,21 +580,16 @@ void TextureBrowser::textureBgMaskPressed(bool checked)
 
 void TextureBrowser::texturePropertyChanged(const int propGroup)
 {
-	// pvr specific changes
-	if(propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVR)
+	// settings that need texture to reconvert
+	if( (propGroup == TextureProperties::TYPE_PVR && curTextureView == ViewPVR) ||
+		(propGroup == TextureProperties::TYPE_DXT && curTextureView == ViewDXT) ||
+		(propGroup == TextureProperties::TYPE_COMMON_MIPMAP))
 	{
 		// set current Texture view and force texture convertion
 		// new texture will be applyed to scene after conversion (by signal)
 		setTextureView(curTextureView, true);
 	}
-	// dxt specific chanes
-	else if(propGroup == TextureProperties::TYPE_DXT && curTextureView == ViewDXT)
-	{
-		// set current Texture view and force texture convertion
-		// new texture will be applyed to scene after conversion (by signal)
-		setTextureView(curTextureView, true);
-	}
-	// common settings
+	// common settings than dont need texture to reconvert
 	else if(propGroup == TextureProperties::TYPE_COMMON)
 	{
 		// common settings
