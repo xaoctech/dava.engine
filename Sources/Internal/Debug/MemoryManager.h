@@ -84,7 +84,7 @@ public:
 //void*	operator new[](size_t _size, const char *_file, int _line);
 ////void	operator delete[](void * ptr);
 
-#if defined(__DAVAENGINE_MACOS__) && defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 void * operator new(size_t _size) throw(std::bad_alloc);
 void * operator new(size_t _size, const std::nothrow_t &) throw();
 
