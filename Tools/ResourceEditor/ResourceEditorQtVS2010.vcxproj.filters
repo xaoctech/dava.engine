@@ -124,6 +124,9 @@
     <Filter Include="QtGenerated\DockVisibilityTool">
       <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\ImageSplitter">
+      <UniqueIdentifier>{1154d5d2-81ee-4619-8434-8be16d12c565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1173,6 +1176,12 @@
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitter.cpp">
+      <Filter>Sources\ImageSplitter</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp">
+      <Filter>Sources\ImageSplitter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2137,6 +2146,12 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
       <Filter>Sources\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h">
+      <Filter>Sources\ImageSplitter</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitterScreen.h">
+      <Filter>Sources\ImageSplitter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
