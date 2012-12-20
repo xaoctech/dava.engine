@@ -379,7 +379,6 @@
 					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
 					"./../../Libs/ImageMagick-6.7.4/delegates/include",
 					./../../Libs/include,
-					../../Libs/NVTT/Sources,
 				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
@@ -404,7 +403,6 @@
 					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
 					"./../../Libs/ImageMagick-6.7.4/delegates/include",
 					./../../Libs/include,
-					../../Libs/NVTT/Sources,
 				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (

@@ -2935,7 +2935,6 @@
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/Qt,
 					./_GeneratedQt,
-					../../Libs/NVTT/Sources,
 				);
 			};
 			name = Release;
@@ -2980,7 +2979,6 @@
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/Qt,
 					./_GeneratedQt,
-					../../Libs/NVTT/Sources,
 				);
 			};
 			name = Debug;
