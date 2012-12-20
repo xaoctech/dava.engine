@@ -60,7 +60,6 @@ LOCAL_SRC_FILES :=  \
                   ../../src/truetype/truetype.c \
 
 # set build flags
-#LOCAL_CFLAGS := -DFT2_BUILD_LIBRARY -g -O0
 LOCAL_CFLAGS := -DFT2_BUILD_LIBRARY -O2
 
 #set exported build flags
