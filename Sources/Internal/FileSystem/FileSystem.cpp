@@ -79,36 +79,25 @@ String FileSystem::virtualBundlePath = "";
 			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
 		}
 	}
-	
-    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	
 #if defined(__DAVAENGINE_ANDROID__)
-
     const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
-		return Format("assets/Data%s", relativePathname);
+//		return Format("assets/Data%s", relativePathname);
+		return Format("Data%s", relativePathname);
 	}
-
-    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
-
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
+const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
+{
+    return FilepathRelativeToBundle(relativePathname.c_str());
+}
+
+    
 FileSystem::FileSystem()
 {
-#if defined(__DAVAENGINE_ANDROID__)
-	assetsPath[0] = 0;
-	documentsPath[0] = 0;
-	APKArchive = NULL;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 }
 
 FileSystem::~FileSystem()
@@ -120,14 +109,6 @@ FileSystem::~FileSystem()
 		SafeRelease(item.archive);
 	}
 	resourceArchiveList.clear();
-
-#if defined(__DAVAENGINE_ANDROID__)
-	if(APKArchive)
-	{
-		zip_close(APKArchive);
-		APKArchive = NULL;
-	}
-#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
 FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & filePath, bool isRecursive)
@@ -379,7 +360,7 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 	if(String::npos != find)
 	{
-		return File::CreateFromSystemPath(APKArchive, SystemPathForFrameworkPath(frameworkPath));
+		return APKFile::CreateFromAssets(SystemPathForFrameworkPath(frameworkPath), attributes);
 	}
 	else
 	{
@@ -525,18 +506,19 @@ const String FileSystem::GetPublicDocumentsPath()
 }
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
+    
 #if defined(__DAVAENGINE_ANDROID__)
 const String FileSystem::GetUserDocumentsPath()
 {
-    return documentsPath;
+    return String("");
 }
 
 const String FileSystem::GetPublicDocumentsPath()
 {
-    //TODO: need to return real path;
-    return documentsPath;
+    return String("");
 }
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+    
     
 String FileSystem::RealPath(const String & _path)
 {
@@ -813,30 +795,8 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     return (retPath + fileName);
 }
 
-#if defined(__DAVAENGINE_ANDROID__)
-
-void FileSystem::SetPath(const char8 *docPath, const char8 *assets)
-{
-	strcpy(documentsPath, docPath);
-	strcpy(assetsPath, assets);
-
-	if(APKArchive)
-	{
-		zip_close(APKArchive);
-		APKArchive = NULL;
-	}
-
-	APKArchive = zip_open(assetsPath, 0, NULL);
-	if (!APKArchive)
-	{
-		Logger::Error("[FileSystem::SetPath] can't open APK from path: %s", assetsPath);
-	}
-}
 
 
-
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
     
 }
 
