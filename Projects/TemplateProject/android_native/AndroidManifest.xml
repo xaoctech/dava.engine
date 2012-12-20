@@ -2,13 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="1"
 	android:versionName="1.0" 
-	package="com.dava.template"
+	package="com.dava.templateproject"
 	>
-    <uses-sdk android:minSdkVersion="13" />
+    
+    <uses-sdk
+    android:minSdkVersion="14"
+    android:targetSdkVersion="17"
+    />
+    
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.READ_FRAME_BUFFER" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
@@ -20,12 +24,15 @@
     <application 
     	android:icon="@drawable/icon" 
     	android:label="@string/app_name" 
-    	android:hasCode="true" 
-    	android:name="com.dava.template.JNIApplication">
-        <activity android:name="com.dava.template.JNIActivity"
+    	android:hasCode="false"
+    	android:debuggable="true"
+    	android:allowBackup="false"
+        >
+        <activity android:name="android.app.NativeActivity"
 			android:screenOrientation="portrait"
 			android:configChanges="keyboardHidden|orientation" 
             android:label="@string/app_name">
+            <meta-data android:name="android.app.lib_name" android:value="TemplateProjectNative" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
