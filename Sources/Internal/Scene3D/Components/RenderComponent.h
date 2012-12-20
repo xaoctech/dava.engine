@@ -15,7 +15,9 @@ public:
     ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
-    
+    Component * Clone();
+
+    void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
 private:
     RenderObject * renderObject;

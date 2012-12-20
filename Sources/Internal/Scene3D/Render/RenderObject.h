@@ -31,21 +31,31 @@
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
 
-class RenderObject
+class RenderObject : public BaseObject
 {
 public:
     RenderObject();
     virtual ~RenderObject();
+    
     void SetRemoveIndex(uint32 removeIndex);
+    inline uint32 GetRemoveIndex();
+    
+    virtual void Draw() = 0;
     
 private:
     uint32 flags;
     uint32 removeIndex;
 };
+
+inline uint32 RenderObject::GetRemoveIndex()
+{
+    return removeIndex;
+}
     
 } // ns
 

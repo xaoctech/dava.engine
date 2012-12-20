@@ -17,7 +17,7 @@ TransformComponent::~TransformComponent()
     
 }
 
-TransformComponent * TransformComponent::Clone()
+Component * TransformComponent::Clone()
 {
     TransformComponent * newTransform = new TransformComponent();
     newTransform->localMatrix = this->localMatrix;

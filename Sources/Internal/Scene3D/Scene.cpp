@@ -152,7 +152,6 @@ void Scene::RegisterNode(SceneNode * node)
     if (light)
     {
         lights.insert(light);
-
     }
 
 	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
@@ -196,10 +195,30 @@ void Scene::RegisterNode(SceneNode * node)
     {
         drawArray.push_back(drawable);
     }
+    
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool needAdd = ((requiredComponents & node->componentFlags) == requiredComponents);
+        
+        if (needAdd)
+            systems[k]->AddEntity(node);
+    }
 }
 
 void Scene::UnregisterNode(SceneNode * node)
 {
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool needRemove = ((requiredComponents & node->componentFlags) == requiredComponents);
+        
+        if (needRemove)
+            systems[k]->RemoveEntity(node);
+    }
+    
     //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
 
     LightNode * light = dynamic_cast<LightNode*>(node);
@@ -272,11 +291,25 @@ void Scene::RemoveComponent(SceneNode * entity, Component * component)
         if ((wasBefore) && (!shouldBeNow))
             systems[k]->RemoveEntity(entity);
     }
+}
     
+void Scene::ImmediateUpdate(SceneNode * entity, Component * updatedComponent)
+{
+    uint32 systemsCount = systems.size();
+    uint32 updatedComponentFlag = 1 << updatedComponent->GetType();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponentFlags = systems[k]->GetRequiredComponents();
+        if ((requiredComponentFlags & updatedComponentFlag) != 0)
+        {
+            systems[k]->ImmediateUpdate(entity);
+        }
+    }
 }
     
 void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
 {
+    sceneSystem->SetRequiredComponents(componentFlags);
     systems.push_back(sceneSystem);
 }
     
@@ -587,11 +620,14 @@ void Scene::Draw()
 
 	//entityManager->Dump();
     
-    uint32 size = (uint32)drawArray.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        drawArray[k]->Draw();
-    }
+//    uint32 size = (uint32)drawArray.size();
+//    for (uint32 k = 0; k < size; ++k)
+//    {
+//        drawArray[k]->Draw();
+//    }
+    
+    renderSystem->Process();
+    
     
     //SceneNode::Draw();
     

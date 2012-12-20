@@ -85,14 +85,16 @@ public:
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
      */
-    virtual void    RegisterNode(SceneNode * node);
-    virtual void    UnregisterNode(SceneNode * node);
+    virtual void    RegisterNode(SceneNode * entity);
+    virtual void    UnregisterNode(SceneNode * entity);
     
-    virtual void    AddComponent(SceneNode * node, Component * component);
-    virtual void    RemoveComponent(SceneNode * node, Component * component);
+    virtual void    AddComponent(SceneNode * entity, Component * component);
+    virtual void    RemoveComponent(SceneNode * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    
+    virtual void    ImmediateUpdate(SceneNode * entity, Component * updatedComponent);
 
     Vector<SceneSystem*> systems;
     TransformSystem * transformSystem;

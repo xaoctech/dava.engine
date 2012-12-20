@@ -30,6 +30,8 @@
 #ifndef __DAVAENGINE_SCENE3D_RENDERSYSTEM_H__
 #define	__DAVAENGINE_SCENE3D_RENDERSYSTEM_H__
 
+#include "Base/BaseTypes.h"
+#include "Base/HashMap.h"
 #include "Scene3D/Components/SceneSystem.h"
 
 namespace DAVA
@@ -46,6 +48,8 @@ public:
     
     virtual void AddEntity(SceneNode * entity);
     virtual void RemoveEntity(SceneNode * entity);
+    virtual void Process();
+    
 private:
     void AddRenderObject(RenderObject * renderObject);
     void RemoveRenderObject(RenderObject * renderObject);
@@ -53,6 +57,7 @@ private:
     
     Vector<RenderLayer*> renderLayers;
     Vector<RenderObject*> renderObjectArray;
+    HashMap<SceneNode*, RenderObject *> entityObjectMap;
 };
     
 } // ns

@@ -32,7 +32,8 @@
 namespace DAVA
 {
 RenderObject::RenderObject()
-    : removeIndex(-1)
+    :   flags(0)
+    ,   removeIndex(-1)
 {
     
 }

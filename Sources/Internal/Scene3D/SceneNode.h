@@ -75,14 +75,17 @@ public:
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
     
+    void UpdateComponentsFastPtrs();
     Component * components[Component::COMPONENT_COUNT];
 	TransformComponent * transformComponent;
     RenderComponent * renderComponent;
     
     inline TransformComponent * GetTransformComponent();
     inline RenderComponent * GetRenderComponent();
+    
 
     uint32 componentFlags;
+    uint32 componentUpdateMarks;
     
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
@@ -171,7 +174,7 @@ public:
     inline const Matrix4 & GetWorldTransform();
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
-    inline void SetLocalTransform(const Matrix4 & newMatrix);
+    void SetLocalTransform(const Matrix4 & newMatrix);
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
@@ -531,6 +534,11 @@ void SceneNode::GetChildNodes(Container<T> & container)
 TransformComponent * SceneNode::GetTransformComponent()
 {
 	return transformComponent;
+}
+    
+RenderComponent * SceneNode::GetRenderComponent()
+{
+    return renderComponent;
 }
 
 };

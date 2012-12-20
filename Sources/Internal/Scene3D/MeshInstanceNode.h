@@ -31,7 +31,7 @@
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/Drawable.h"
+#include "Scene3D/Render/RenderObject.h"
 
 namespace DAVA 
 {
@@ -47,7 +47,7 @@ class InstanceMaterialState;
 class NMaterial;
 class NMaterialInstance;
 
-class PolygonGroupWithMaterial : public SceneNode, public Drawable
+class PolygonGroupWithMaterial : public RenderObject
 {
 public:
     PolygonGroupWithMaterial();
@@ -65,7 +65,7 @@ public:
     NMaterial * GetNMaterial();
     NMaterialInstance * GetNMaterialInstance();
     
-    SceneNode* Clone(SceneNode *dstNode);
+    Component * Clone();
 private:
 	Material * material;
     NMaterial * nMaterial;

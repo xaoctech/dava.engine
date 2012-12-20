@@ -27,58 +27,30 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/Render/RenderSystem.h"
+#ifndef __DAVAENGINE_DRAWABLE_H__
+#define __DAVAENGINE_DRAWABLE_H__
+
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/Render/RenderLayer.h"
-#include "Scene3D/Render/RenderList.h"
-#include "Scene3D/Components/RenderComponent.h"
 
 namespace DAVA
 {
 
-RenderSystem::RenderSystem()
-    : entityObjectMap(2048 /* size of hash table */, 0 /* defaut value */)
+class Drawable
 {
-}
-
-RenderSystem::~RenderSystem()
-{
-}
-    
-void RenderSystem::AddEntity(SceneNode * entity)
-{
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
-    entityObjectMap.Insert(entity, renderObject);
-    renderObjectArray.push_back(renderObject);
-    renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
-}
-
-void RenderSystem::RemoveEntity(SceneNode * entity)
-{
-    RenderObject * renderObject = entityObjectMap.Value(entity);
-    renderObjectArray[renderObject->GetRemoveIndex()] = renderObjectArray[renderObjectArray.size() - 1];
-    entityObjectMap.Remove(entity);
-}
-
-void RenderSystem::AddRenderObject(RenderObject * renderObject)
-{
-    
-}
-
-void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
-{
-    
-}
-    
-void RenderSystem::Process()
-{
-    //
-    uint32 size = (uint32)renderObjectArray.size();
-    for (uint32 k = 0; k < renderObjectArray.size(); ++k)
-    {
-        renderObjectArray[k]->Draw();
-    }
-}
-
-    
+public:	
+	virtual void    Draw() = 0;
+    virtual uint64  GetSortID() = 0;
 };
+
+};
+
+#endif // __DAVAENGINE_SCENENODE_H__
+
+
+
+
+
