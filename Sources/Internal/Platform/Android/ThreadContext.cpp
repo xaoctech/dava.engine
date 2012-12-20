@@ -97,6 +97,8 @@ bool ThreadContext::CreateEGLContext(EGLContext sharedContext)
         Logger::Error("[ThreadContext::CreateEGLContext] Can't create context");
 		return false;
 	}
+
+    return true;
 }
 
 
