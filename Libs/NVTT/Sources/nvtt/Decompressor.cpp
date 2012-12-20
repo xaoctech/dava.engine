@@ -91,7 +91,6 @@ bool Decompressor::Private::initWithDDSFile(FILE * handler)
 	
 	if (!m_dds->isValid())
 	{
-		printf("The file '%s' is not a valid DDS file.\n", handler->_tmpfname);
 		return false;
 	}
 	

@@ -34,8 +34,8 @@
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
-		49C4320B1675E3FD000EA877 /* dxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432091675E3FD000EA877 /* dxtHelper.cpp */; };
-		49C4320C1675E3FD000EA877 /* dxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C4320A1675E3FD000EA877 /* dxtHelper.h */; };
+		49E7A1D216835E3500F63EFE /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */; };
+		49E7A1D316835E3500F63EFE /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E7A1D116835E3500F63EFE /* LibDxtHelper.h */; };
 		5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49015A42D920064E889 /* KeyedArchiver.cpp */; };
 		5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C19F49115A42D920064E889 /* KeyedArchiver.h */; };
 		5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */; };
@@ -634,8 +634,8 @@
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
-		49C432091675E3FD000EA877 /* dxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dxtHelper.cpp; sourceTree = "<group>"; };
-		49C4320A1675E3FD000EA877 /* dxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxtHelper.h; sourceTree = "<group>"; };
+		49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
+		49E7A1D116835E3500F63EFE /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		5C19F49015A42D920064E889 /* KeyedArchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiver.cpp; sourceTree = "<group>"; };
 		5C19F49115A42D920064E889 /* KeyedArchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiver.h; sourceTree = "<group>"; };
 		5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedUnarchiver.cpp; sourceTree = "<group>"; };
@@ -1724,8 +1724,8 @@
 		FECFC15B12E87E3000C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				49C432091675E3FD000EA877 /* dxtHelper.cpp */,
-				49C4320A1675E3FD000EA877 /* dxtHelper.h */,
+				49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */,
+				49E7A1D116835E3500F63EFE /* LibDxtHelper.h */,
 				5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */,
 				5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */,
 				5CF6FF291563A8390070C3DB /* ImageConvert.h */,
@@ -2387,7 +2387,7 @@
 				E89ECC851663A9A100D17C41 /* Introspection.h in Headers */,
 				E89ECC861663A9A100D17C41 /* Meta.h in Headers */,
 				17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */,
-				49C4320C1675E3FD000EA877 /* dxtHelper.h in Headers */,
+				49E7A1D316835E3500F63EFE /* LibDxtHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2720,7 +2720,7 @@
 				E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */,
 				E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */,
 				17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */,
-				49C4320B1675E3FD000EA877 /* dxtHelper.cpp in Sources */,
+				49E7A1D216835E3500F63EFE /* LibDxtHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

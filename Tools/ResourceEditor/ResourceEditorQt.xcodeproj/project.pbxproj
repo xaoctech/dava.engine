@@ -11,9 +11,9 @@
 		4940AF6C164C1684003E95A7 /* CustomColorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6A164C1684003E95A7 /* CustomColorCommands.cpp */; };
 		4940AF71164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6D164C16DA003E95A7 /* LandscapeEditorCustomColors.cpp */; };
 		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
-		4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */; };
 		49448B2416806E4400713D35 /* CustomColorsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B2216806E4400713D35 /* CustomColorsView.cpp */; };
 		49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B261680990000713D35 /* VisibilityToolView.cpp */; };
+		4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
 		4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D138167B42BE003E701F /* PropertiesView.cpp */; };
@@ -396,12 +396,12 @@
 		4940AF6E164C16DA003E95A7 /* LandscapeEditorCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorCustomColors.h; path = Classes/SceneEditor/LandscapeEditorCustomColors.h; sourceTree = "<group>"; };
 		4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeToolsPanelCustomColors.cpp; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.cpp; sourceTree = "<group>"; };
 		4940AF70164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeToolsPanelCustomColors.h; path = Classes/SceneEditor/LandscapeToolsPanelCustomColors.h; sourceTree = "<group>"; };
-		4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
-		4965F6DC1671EA6900113FB8 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		49448B2216806E4400713D35 /* CustomColorsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsView.cpp; sourceTree = "<group>"; };
 		49448B2316806E4400713D35 /* CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsView.h; sourceTree = "<group>"; };
 		49448B261680990000713D35 /* VisibilityToolView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolView.cpp; sourceTree = "<group>"; };
 		49448B271680990000713D35 /* VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityToolView.h; sourceTree = "<group>"; };
+		4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
+		4965F6DC1671EA6900113FB8 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };

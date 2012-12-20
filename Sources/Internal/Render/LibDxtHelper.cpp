@@ -42,27 +42,104 @@ void LibDxtHelper::Test()
 	}
 }*/
 
+class NvttHelper
+{
+public:
+	struct DDSInfo
+	{
+		uint32 width;
+		uint32 height;
+		uint32 dataSize;
+		uint32 mipMupsNumber;
+		uint32 headerSize;
+		
+		DDSInfo()
+		{
+			width		  = 0;
+			height		  = 0;
+			dataSize	  = 0;
+			mipMupsNumber = 0;
+			headerSize	  = 0;
+		}
+	};
+	
+	static bool InitDecompressor(nvtt::Decompressor & dec, const char *fileName);
+	
+	static bool InitDecompressor(nvtt::Decompressor & dec, FILE * file);
+	
+	static bool InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size);
+	
+	static bool ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation);
+	
+	static PixelFormat GetPixelFormat(nvtt::Decompressor & dec);
+	
+	static bool GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32 & height);
+	
+	static uint32 GetMipMapLevelsCount(nvtt::Decompressor & dec);
+	
+	static uint32 GetDataSize(nvtt::Decompressor & dec);
+	
+	static bool GetInfo(nvtt::Decompressor & dec, DDSInfo &info);
+	
+	static void ConvertFromBGRAtoRGBA(uint8* data, uint32 size);
+};
+
+uint32 GetGlCompressionFormatByDDSInfo(nvtt::Format format)
+{
+	uint32 retValue = 0;
+	
+#ifndef __DAVAENGINE_IPHONE__
+	switch (format)
+	{
+		case Format_RGB:
+			break;
+		case Format_DXT1:
+			retValue = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+			break;
+		case Format_DXT1a:
+			retValue = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			break;
+		case Format_DXT3:
+			retValue = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			break;
+		case Format_DXT5:
+			retValue = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			break;
+		case Format_DXT5n:
+			retValue = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			break;
+		case Format_BC4:
+		case Format_BC5:
+		default:
+			break;
+	}
+#endif
+	
+	return retValue;
+}
+
+
 bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet, bool forseSoftWareConvertation)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, fileName))
+	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return false;
 	}
 	
-	return ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
 }
 
 bool LibDxtHelper::ReadDxtFile(FILE * file, Vector<DAVA::Image*> &imageSet, bool forseSoftWareConvertation)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, file))
+	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return false;
 	}
-	return ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
+	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
 }
 
 bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation)
@@ -129,18 +206,18 @@ bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA:
 	memcpy(compressedImageBuffer+realHeaderSize, image.data, image.dataSize);
 	delete[] imageHeaderBuffer;
 	
-	bool retValue = InitDecompressor(dec, compressedImageBuffer, realHeaderSize + image.dataSize);
+	bool retValue = NvttHelper::InitDecompressor(dec, compressedImageBuffer, realHeaderSize + image.dataSize);
 
 	if(retValue)
 	{
-		retValue = ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
+		retValue = NvttHelper::ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
 	}
 
 	delete[] compressedImageBuffer;
 	return retValue;
 }
 
-bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation)
+bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation)
 {
 	for(uint32 i = 0; i < imageSet.size(); ++i)
 	{
@@ -332,7 +409,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 	}
 	compressionOptions.setFormat(innerComprFormat);
 	
-	ConvertFromBGRAtoRGBA(data, imgDataSize);
+	NvttHelper::ConvertFromBGRAtoRGBA(data, imgDataSize);
 	
 	OutputOptions outputOptions;
 	outputOptions.setFileName(fileName);
@@ -364,27 +441,27 @@ PixelFormat LibDxtHelper::GetPixelFormat(const char* fileName)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, fileName))
+	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return FORMAT_INVALID;
 	}
 
-	return GetPixelFormat(dec);
+	return NvttHelper::GetPixelFormat(dec);
 }
 
 PixelFormat LibDxtHelper::GetPixelFormat(FILE * file)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, file))
+	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return FORMAT_INVALID;
 	}
 
-	return GetPixelFormat(dec);
+	return NvttHelper::GetPixelFormat(dec);
 }
 
-PixelFormat LibDxtHelper::GetPixelFormat(nvtt::Decompressor & dec)
+PixelFormat NvttHelper::GetPixelFormat(nvtt::Decompressor & dec)
 {
 	PixelFormat retValue = FORMAT_INVALID;
 
@@ -430,27 +507,27 @@ uint32 LibDxtHelper::GetMipMapLevelsCount(const char *fileName)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, fileName))
+	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return 0;
 	}
 
-	return GetMipMapLevelsCount(dec);
+	return NvttHelper::GetMipMapLevelsCount(dec);
 }
 
 uint32 LibDxtHelper::GetMipMapLevelsCount(FILE * file)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, file))
+	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return 0;
 	}
 
-	return GetMipMapLevelsCount(dec);
+	return NvttHelper::GetMipMapLevelsCount(dec);
 }
 
-uint32 LibDxtHelper::GetMipMapLevelsCount(nvtt::Decompressor & dec)
+uint32 NvttHelper::GetMipMapLevelsCount(nvtt::Decompressor & dec)
 {
 	DDSInfo info;
 	GetInfo(dec, info);
@@ -461,27 +538,27 @@ uint32 LibDxtHelper::GetDataSize(const char *fileName)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, fileName))
+	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return 0;
 	}
 
-	return GetDataSize(dec);
+	return NvttHelper::GetDataSize(dec);
 }
 
 uint32 LibDxtHelper::GetDataSize(FILE * file)
 {
 		nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, file))
+	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return 0;
 	}
 
-	return GetDataSize(dec);
+	return NvttHelper::GetDataSize(dec);
 }
 
-uint32 LibDxtHelper::GetDataSize(nvtt::Decompressor & dec)
+uint32 NvttHelper::GetDataSize(nvtt::Decompressor & dec)
 {
 	DDSInfo info;
 	GetInfo(dec, info);
@@ -492,27 +569,27 @@ bool LibDxtHelper::GetTextureSize(const char *fileName, uint32 & width, uint32 &
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, fileName))
+	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return false;
 	}
 
-	return GetTextureSize(dec, width, height);
+	return NvttHelper::GetTextureSize(dec, width, height);
 }
 
 bool LibDxtHelper::GetTextureSize(FILE * file, uint32 & width, uint32 & height)
 {
 	nvtt::Decompressor dec ;
 
-	if(!InitDecompressor(dec, file))
+	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return false;
 	}
 
-	return GetTextureSize(dec, width, height);
+	return NvttHelper::GetTextureSize(dec, width, height);
 }
 
-bool LibDxtHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32 & height)
+bool NvttHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32 & height)
 {
 	DDSInfo info;
 	
@@ -522,7 +599,7 @@ bool LibDxtHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint
 	return ret;
 }
 
-bool LibDxtHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
+bool NvttHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
 {
 	bool retVal = false;
 	
@@ -538,7 +615,7 @@ bool LibDxtHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
 	return retVal;
 }
 
-void LibDxtHelper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
+void NvttHelper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
 {
 	for(uint32 i = 0; i < size; i+=4)
 	{
@@ -553,39 +630,7 @@ void LibDxtHelper::ConvertFromBGRAtoRGBA(uint8* data, uint32 size)
 	}
 }
 
-uint32 LibDxtHelper::GetGlCompressionFormatByDDSInfo(nvtt::Format format)
-{
-	uint32 retValue = 0;
-
-	switch (format)
-	{
-	case Format_RGB:
-		break;
-	case Format_DXT1:
-		retValue = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-		break;
-	case FORMAT_DXT1A:
-		retValue = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-		break;
-	case Format_DXT3:
-		retValue = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-		break;
-	case Format_DXT5:
-		retValue = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-		break;
-	case Format_DXT5n:
-		retValue = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-		break;
-	case Format_BC4:
-	case Format_BC5:
-	default:
-		break;
-	}
-
-	return retValue;
-}
-
-bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileName)
+bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileName)
 {
 	if(NULL == fileName )
 	{
@@ -601,7 +646,7 @@ bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileNa
 	return true;
 }
 
-bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, FILE * file)
+bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, FILE * file)
 {
 	if(NULL == file)
 	{
@@ -617,7 +662,7 @@ bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, FILE * file)
 	return true;
 }
 
-bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size)
+bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size)
 {
 	if(NULL == mem || size == 0 )
 	{
