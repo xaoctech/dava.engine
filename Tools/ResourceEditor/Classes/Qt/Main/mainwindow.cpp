@@ -4,13 +4,13 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Main/GUIState.h"
-#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
+#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
-#include "Classes/Qt/TextureDialog/TextureConvertor.h"
-
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Main/PointerHolder.h"
-#include "LibraryModel.h"
+#include "Classes/Qt/Project/ProjectManager.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QToolBar>
 
@@ -28,31 +28,22 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
 {
-    ui->setupUi(this);
+	new ProjectManager();
+	new SceneDataManager();
+	new QtMainWindowHandler(this);
+
+	ui->setupUi(this);
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
-    
-	new SceneDataManager();
-    new QtMainWindowHandler(this);
 
-	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
-    libraryModel = new LibraryModel(this);
-
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
-    libraryModel->Activate(ui->libraryView);
-    
+
     RegisterBasePointerTypes();
-    
-    if(DAVA::Core::Instance())
-    {
-		ProjectChanged();
-    }
-    
+   
     new GUIState();
 
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -60,24 +51,28 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupMainMenu();
     SetupToolBar();
     SetupDockWidgets();
-    SetupProjectPath();
-    
+
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-	posSaver.Attach(this, __FUNCTION__);
+	OpenLastProject();
+
+	posSaver.Attach(this);
+	posSaver.LoadState(this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	posSaver.SaveState(this);
+
+	GUIState::Instance()->Release();
+	delete ui;
+    
 	QtMainWindowHandler::Instance()->Release();
 	SceneDataManager::Instance()->Release();
-    
-    GUIState::Instance()->Release();
-    
-    delete ui;
+	ProjectManager::Instance()->Release();
 
-    SafeDelete(libraryModel);
+    //SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -230,21 +225,25 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
 }
 
-void QtMainWindow::SetupProjectPath()
+void QtMainWindow::OpenLastProject()
 {
     if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+
         if(projectPath.empty())
         {
-            QtMainWindowHandler::Instance()->OpenProject();
-            projectPath = EditorSettings::Instance()->GetProjectPath();
-
-            if(projectPath.empty())
-            {
-                QtLayer::Instance()->Quit();
-            }
+			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
         }
+
+		if(projectPath.empty())
+		{
+			QtLayer::Instance()->Quit();
+		}
+		else
+		{
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+		}
     }
 }
 
@@ -254,85 +253,8 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-    
-    SetupCustomColorsDock();
-	SetupVisibilityToolDock();
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
-}
-
-void QtMainWindow::SetupCustomColorsDock()
-{
-    QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-    connect(ui->buttonCustomColorsEnable, SIGNAL(clicked()), handler, SLOT(ToggleCustomColors()));
-
-	ui->buttonCustomColorsSave->blockSignals(true);
-	ui->sliderCustomColorBrushSize->blockSignals(true);
-	ui->comboboxCustomColors->blockSignals(true);
-
-    connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
-    connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
-    connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
-	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
-
-	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
-		ui->buttonCustomColorsEnable,
-		ui->buttonCustomColorsSave,
-		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors,
-		ui->buttonCustomColorsLoad);
-    
-    QSize iconSize = ui->comboboxCustomColors->iconSize();
-    iconSize = iconSize.expandedTo(QSize(100, 0));
-    ui->comboboxCustomColors->setIconSize(iconSize);
-    
-    Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
-	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
-    for(size_t i = 0; i < customColors.size(); ++i)
-    {
-        QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
-        
-        QImage image(iconSize, QImage::Format_ARGB32);
-        image.fill(color);
-        
-        QPixmap pixmap(iconSize);
-        pixmap.convertFromImage(image, Qt::ColorOnly);
-        
-        QIcon icon(pixmap);
-		String description = isEveryColorHasDescription ? customColorsDescription[i] : "";
-        ui->comboboxCustomColors->addItem(icon, description.c_str());
-    }
-    handler->SetCustomColorsWidgetsState(false);
-}
-
-void QtMainWindow::SetupVisibilityToolDock()
-{
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	
-	connect(ui->buttonVisibilityToolEnable, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityTool()));
-
-	ui->buttonVisibilityToolSave->blockSignals(true);
-	ui->buttonVisibilityToolSetArea->blockSignals(true);
-	ui->buttonVisibilityToolSetPoint->blockSignals(true);
-	ui->sliderVisibilityToolAreaSize->blockSignals(true);
-	
-	connect(ui->buttonVisibilityToolSave,		SIGNAL(clicked()),
-			handler,							SLOT(SaveTextureVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetArea,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityAreaVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetPoint,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityPointVisibilityTool()));
-	connect(ui->sliderVisibilityToolAreaSize,	SIGNAL(valueChanged(int)),
-			handler,							SLOT(ChangleAreaSizeVisibilityTool(int)));
-	
-	handler->RegisterWidgetsVisibilityTool(ui->buttonVisibilityToolEnable,
-										   ui->buttonVisibilityToolSave,
-										   ui->buttonVisibilityToolSetPoint,
-										   ui->buttonVisibilityToolSetArea,
-										   ui->sliderVisibilityToolAreaSize);
-	
-	handler->SetWidgetsStateVisibilityTool(false);
 }
 
 void QtMainWindow::MenuFileWillShow()
@@ -384,14 +306,9 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
-void QtMainWindow::ProjectChanged()
+void QtMainWindow::ProjectOpened(const QString &path)
 {
-	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-	if(options)
-	{
-		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
-		this->setWindowTitle(titleStr);
-	}
+	this->setWindowTitle(QString("Project - ") + path);
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)

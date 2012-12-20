@@ -367,4 +367,22 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetValue(valueNode->AsFloat());
 }
 	
+YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
+{
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    //Temp variable
+    VariantType *nodeValue = new VariantType();
+    
+    //Control Type
+    node->Set("type", "UISlider");
+    //ThumbSprite
+    //minSprite
+    //maxSprite
+    //value
+    
+    SafeDelete(nodeValue);
+    
+    return node;
+}
+
 } // ns

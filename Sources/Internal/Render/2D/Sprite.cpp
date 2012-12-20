@@ -999,15 +999,36 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
         Texture * t = GetTexture(frame);
 		float32 adjWidth = 1.f / t->width / resourceToVirtualFactor;
 		float32 adjHeight = 1.f / t->height / resourceToVirtualFactor;
-        
-		for(int32 i = 0; i < clipPolygon->pointCount; ++i)
-		{
-            const Vector2 & pos = clipPolygon->points[i];
-			clippedVertices.push_back(pos);
-			clippedTexCoords.push_back(Vector2(texCoords[frame][0] + (pos.x - x) * adjWidth,
-                                               texCoords[frame][1] + (pos.y - y) * adjHeight));
-		}
-        
+
+        if( flags & EST_SCALE )
+        {
+            for(int32 i = 0; i < clipPolygon->GetPointCount(); ++i)
+            {
+                const Vector2 &point = clipPolygon->GetPoints()[i];
+                clippedVertices.push_back( Vector2( point.x*scale.x + x, point.y*scale.y + y ) );
+            }
+        }
+        else
+        {
+            Vector2 pos(x, y);
+            for(int32 i = 0; i < clipPolygon->GetPointCount(); ++i)
+            {
+                const Vector2 &point = clipPolygon->GetPoints()[i];
+                clippedVertices.push_back( point + pos );
+            }
+        }
+
+        for( int32 i = 0; i < clipPolygon->GetPointCount(); ++i )
+        {
+            const Vector2 &point = clipPolygon->GetPoints()[i];
+
+            Vector2 texCoord( ( point.x - frameVertices[frame][0] ) * adjWidth
+                            , ( point.y - frameVertices[frame][1] ) * adjHeight );
+
+            clippedTexCoords.push_back( Vector2( texCoords[frame][0] + texCoord.x
+                                               , texCoords[frame][1] + texCoord.y ) );
+        }
+
         vertexStream->Set(TYPE_FLOAT, 2, 0, &clippedVertices.front());
         texCoordStream->Set(TYPE_FLOAT, 2, 0, &clippedTexCoords.front());      
         primitiveToDraw = PRIMITIVETYPE_TRIANGLEFAN;
@@ -1026,13 +1047,42 @@ void Sprite::Draw()
 	}
 
     PrepareSpriteRenderData(0);
-    
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPush();
+        Rect clipRect;
+        if( flags & EST_SCALE )
+        {
+            float32 x = drawCoord.x - pivotPoint.x * scale.x;
+            float32 y = drawCoord.y - pivotPoint.y * scale.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) * scale.x + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) * scale.y + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH  ) * scale.x
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) * scale.y );
+        }
+        else
+        {
+            float32 x = drawCoord.x - pivotPoint.x;
+            float32 y = drawCoord.y - pivotPoint.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH )
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) );
+        }
+
+        RenderManager::Instance()->ClipRect( clipRect );
+    }
+
+    RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
     RenderManager::Instance()->SetRenderData(spriteRenderObject);
-    
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-        
     RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPop();
+    }
 
 	Reset();
 }
@@ -1048,11 +1098,42 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->PushMappingMatrix();
 
 	PrepareSpriteRenderData(state);
-	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
 
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPush();
+        Rect clipRect;
+        if( flags & EST_SCALE )
+        {
+            float32 x = state->position.x - state->pivotPoint.x * state->scale.x;
+            float32 y = state->position.y - state->pivotPoint.y * state->scale.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) * scale.x + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) * scale.y + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH  ) * scale.x
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) * scale.y );
+        }
+        else
+        {
+            float32 x = state->position.x - state->pivotPoint.x;
+            float32 y = state->position.y - state->pivotPoint.y;
+            clipRect = Rect( GetRectOffsetValueForFrame( frame, X_OFFSET_TO_ACTIVE ) + x
+                           , GetRectOffsetValueForFrame( frame, Y_OFFSET_TO_ACTIVE ) + y
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_WIDTH )
+                           , GetRectOffsetValueForFrame( frame, ACTIVE_HEIGHT ) );
+        }
+
+        RenderManager::Instance()->ClipRect( clipRect );
+    }
+
+	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+
+    if( clipPolygon )
+    {
+        RenderManager::Instance()->ClipPop();
+    }
 
 	if (state->usePerPixelAccuracy) 
 		RenderManager::Instance()->PopMappingMatrix();

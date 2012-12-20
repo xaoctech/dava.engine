@@ -2,7 +2,7 @@
 
 #if defined(__DAVAENGINE_ANDROID__) 
 
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include "Platform/Android/CorePlatformAndroid.h"
 
 namespace DAVA 
 {
@@ -23,10 +23,10 @@ namespace DAVA
 
 	bool DownloadFileFromURLToDocuments(const String & url, const String & documentsPathname)
 	{
-		CoreAndroidPlatform *core = (CoreAndroidPlatform *)Core::Instance();
+		CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 		if(core)
 		{
-			return core->DownloadHttpFile(url, documentsPathname);
+//			return core->DownloadHttpFile(url, documentsPathname);
 		}
 
 		return false;

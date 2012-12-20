@@ -51,12 +51,17 @@ public:
 	
 	const WideString & GetLocalizedString(const WideString & key);
 
+    const String& GetDirectoryPath() const;
+
+    void Cleanup();
+
 private:
 
 	void LoadStringFile(const String & fileName);
 	void UnloadStringFile(const String & fileName); 
 
 	String langId;
+    String directoryPath;
 	
 	struct StringFile
 	{

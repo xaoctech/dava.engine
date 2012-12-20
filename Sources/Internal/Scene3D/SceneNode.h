@@ -33,6 +33,7 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+//#include "Base/Introspection.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Scene3D/Components/Component.h"
@@ -376,8 +377,16 @@ protected:
     
 private:
     Matrix4 defaultLocalTransform;
-    
-    friend class Scene;
+   	friend class Scene;
+
+/*
+public:
+	INTROSPECTION(SceneNode,
+		MEMBER(name, "Name")
+		MEMBER(worldTransform, "World transform")
+		MEMBER(localTransform, "Local transform")
+		);
+*/
 };
 
 inline void SceneNode::SetVisible(bool isVisible)
