@@ -42,8 +42,8 @@
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		492A98DC1644149F006AAE2A /* Image.mm in Sources */ = {isa = PBXBuildFile; fileRef = 492A98DB1644149F006AAE2A /* Image.mm */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
-		49C433131675F027000EA877 /* dxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C433111675F027000EA877 /* dxtHelper.cpp */; };
-		49C433141675F027000EA877 /* dxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C433121675F027000EA877 /* dxtHelper.h */; };
+		49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1E516835EC400F63EFE /* LibDxtHelper.cpp */; };
+		49E7A1E816835EC400F63EFE /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E7A1E616835EC400F63EFE /* LibDxtHelper.h */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0105D5157799E000E0B939 /* MongodbClient.cpp */; };
 		5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0105D6157799E000E0B939 /* MongodbClient.h */; };
@@ -615,8 +615,8 @@
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		492A98DB1644149F006AAE2A /* Image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Image.mm; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
-		49C433111675F027000EA877 /* dxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dxtHelper.cpp; sourceTree = "<group>"; };
-		49C433121675F027000EA877 /* dxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxtHelper.h; sourceTree = "<group>"; };
+		49E7A1E516835EC400F63EFE /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
+		49E7A1E616835EC400F63EFE /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C0105D5157799E000E0B939 /* MongodbClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbClient.cpp; path = Database/MongodbClient.cpp; sourceTree = "<group>"; };
 		5C0105D6157799E000E0B939 /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
@@ -1624,8 +1624,8 @@
 		FECFB3D112E5904400C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				49C433111675F027000EA877 /* dxtHelper.cpp */,
-				49C433121675F027000EA877 /* dxtHelper.h */,
+				49E7A1E516835EC400F63EFE /* LibDxtHelper.cpp */,
+				49E7A1E616835EC400F63EFE /* LibDxtHelper.h */,
 				E80842B3163913B7002A6A77 /* ImageLoader.cpp */,
 				E80842B4163913B7002A6A77 /* ImageLoader.h */,
 				5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */,
@@ -2270,7 +2270,7 @@
 				E89ECC9A1663AA2700D17C41 /* Introspection.h in Headers */,
 				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
 				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
-				49C433141675F027000EA877 /* dxtHelper.h in Headers */,
+				49E7A1E816835EC400F63EFE /* LibDxtHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2594,7 +2594,7 @@
 				492A98DC1644149F006AAE2A /* Image.mm in Sources */,
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
 				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
-				49C433131675F027000EA877 /* dxtHelper.cpp in Sources */,
+				49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
