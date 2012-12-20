@@ -507,6 +507,7 @@
     <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Main\ExtraUserData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp" />
@@ -950,6 +951,7 @@
     <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\mainwindow.ui" />
     <None Include="DataQt\materialbrowser.ui" />
+    <None Include="DataQt\ParticleProperty.ui" />
     <None Include="DataQt\texturedialog.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />

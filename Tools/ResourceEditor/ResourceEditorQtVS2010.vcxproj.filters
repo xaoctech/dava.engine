@@ -124,6 +124,21 @@
     <Filter Include="QtGenerated\DockVisibilityTool">
       <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\ParticlesEditorQT">
+      <UniqueIdentifier>{b82196cb-74f3-409b-b4b5-ab952345f92b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ParticlesEditorQT\Helpers">
+      <UniqueIdentifier>{88ec8ec7-ff55-4ccd-860f-165ca426f6ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ParticlesEditorQT\Nodes">
+      <UniqueIdentifier>{697efec6-720b-409a-b055-42065ec4dc5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockParticleEditor">
+      <UniqueIdentifier>{fb8e541a-57aa-4294-9a07-7fba1040c8d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockParticleEditor">
+      <UniqueIdentifier>{2c5e6bd2-b669-4392-a95b-cf4efc24cf88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1173,6 +1188,75 @@
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.cpp">
+      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\LayerForceWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\ExtraUserData_moc.cpp">
+      <Filter>QtGenerated\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2138,6 +2222,54 @@
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.h">
+      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h">
+      <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\LayerForceWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2356,6 +2488,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\VisibilityToolView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\ParticleProperty.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
