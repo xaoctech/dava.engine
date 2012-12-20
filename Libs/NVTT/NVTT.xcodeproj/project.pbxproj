@@ -6,12 +6,26 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		4910CBF7167B762C00CF948A /* libdxt_macos */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 4910CBF8167B762C00CF948A /* Build configuration list for PBXAggregateTarget "libdxt_macos" */;
+			buildPhases = (
+				4910CBFB167B764E00CF948A /* ShellScript */,
+			);
+			dependencies = (
+				4910CBFD167B765C00CF948A /* PBXTargetDependency */,
+			);
+			name = libdxt_macos;
+			productName = ldxt;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		493DD3C61678BE60000B516E /* nvtt_extra.h in Headers */ = {isa = PBXBuildFile; fileRef = 493DD3C51678BE60000B516E /* nvtt_extra.h */; };
 		4965F5DE1670FF9100113FB8 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5031670FE1800113FB8 /* Debug.cpp */; };
 		4965F5E41670FF9100113FB8 /* Library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5091670FE1800113FB8 /* Library.cpp */; };
 		4965F5E61670FF9100113FB8 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F50B1670FE1800113FB8 /* Memory.cpp */; };
-		4965F5EA1670FF9100113FB8 /* posh.c in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5101670FE1800113FB8 /* posh.c */; };
 		4965F5EE1670FF9100113FB8 /* Radix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5141670FE1800113FB8 /* Radix.cpp */; };
 		4965F5F21670FF9100113FB8 /* StrLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F5181670FE1800113FB8 /* StrLib.cpp */; };
 		4965F5F41670FF9100113FB8 /* TextReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4965F51A1670FE1800113FB8 /* TextReader.cpp */; };
@@ -58,6 +72,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4910CBFC167B765C00CF948A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4965F4F51670FDC100113FB8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4965F6721671E6C800113FB8;
+			remoteInfo = nvtt;
+		};
 		4965F61F1671041400113FB8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4965F4F51670FDC100113FB8 /* Project object */;
@@ -826,9 +847,26 @@
 				4965F64D167104D900113FB8 /* posh */,
 				4965F6641671E52200113FB8 /* squish */,
 				4965F6721671E6C800113FB8 /* nvtt */,
+				4910CBF7167B762C00CF948A /* libdxt_macos */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4910CBFB167B764E00CF948A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "libtool $BUILT_PRODUCTS_DIR/libnvtt.a $BUILT_PRODUCTS_DIR/libnvcore.a $BUILT_PRODUCTS_DIR/libnvmath.a $BUILT_PRODUCTS_DIR/libnvimage.a $BUILT_PRODUCTS_DIR/libposh.a $BUILT_PRODUCTS_DIR/libsquish.a -o $BUILT_PRODUCTS_DIR/libdxt_macos.a\ncp $BUILT_PRODUCTS_DIR/libdxt_macos.a $INSTALL_DIR/\nrm -f $BUILT_PRODUCTS_DIR/libnvtt.a $BUILT_PRODUCTS_DIR/libnvcore.a $BUILT_PRODUCTS_DIR/libnvmath.a $BUILT_PRODUCTS_DIR/libnvimage.a $BUILT_PRODUCTS_DIR/libposh.a $BUILT_PRODUCTS_DIR/libsquish.a\nrm -f $INSTALL_DIR/libnvtt.a $INSTALL_DIR/libnvcore.a $INSTALL_DIR/libnvmath.a $INSTALL_DIR/libnvimage.a $INSTALL_DIR/libposh.a $INSTALL_DIR/libsquish.a";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4965F5D21670FF2200113FB8 /* Sources */ = {
@@ -838,7 +876,6 @@
 				4965F5DE1670FF9100113FB8 /* Debug.cpp in Sources */,
 				4965F5E41670FF9100113FB8 /* Library.cpp in Sources */,
 				4965F5E61670FF9100113FB8 /* Memory.cpp in Sources */,
-				4965F5EA1670FF9100113FB8 /* posh.c in Sources */,
 				4965F5EE1670FF9100113FB8 /* Radix.cpp in Sources */,
 				4965F5F21670FF9100113FB8 /* StrLib.cpp in Sources */,
 				4965F5F41670FF9100113FB8 /* TextReader.cpp in Sources */,
@@ -923,6 +960,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4910CBFD167B765C00CF948A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4965F6721671E6C800113FB8 /* nvtt */;
+			targetProxy = 4910CBFC167B765C00CF948A /* PBXContainerItemProxy */;
+		};
 		4965F6201671041400113FB8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4965F5D51670FF2200113FB8 /* nvcore */;
@@ -966,6 +1008,24 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		4910CBF9167B762C00CF948A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				INSTALL_PATH = /;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		4910CBFA167B762C00CF948A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				INSTALL_PATH = /;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		4965F4FA1670FDC100113FB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -984,7 +1044,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1004,10 +1064,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = "";
-				ONLY_ACTIVE_ARCH = YES;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -1015,7 +1073,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1029,9 +1087,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = "";
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "";
 			};
 			name = Release;
 		};
@@ -1063,10 +1120,8 @@
 					"./**",
 					../../Libs/libpng/include/libpng,
 				);
-				MACOSX_DEPLOYMENT_TARGET = "";
-				ONLY_ACTIVE_ARCH = NO;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -1092,10 +1147,8 @@
 					"./**",
 					../../Libs/libpng/include/libpng,
 				);
-				MACOSX_DEPLOYMENT_TARGET = "";
-				ONLY_ACTIVE_ARCH = NO;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "";
 			};
 			name = Release;
 		};
@@ -1103,7 +1156,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1123,10 +1176,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -1134,7 +1185,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1148,9 +1199,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1158,7 +1208,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1178,10 +1228,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -1189,7 +1237,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1203,9 +1251,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1213,7 +1260,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1233,10 +1280,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -1244,7 +1289,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1258,9 +1303,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1268,7 +1312,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1288,10 +1332,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -1299,7 +1341,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1313,15 +1355,23 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				INSTALL_PATH = /;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4910CBF8167B762C00CF948A /* Build configuration list for PBXAggregateTarget "libdxt_macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4910CBF9167B762C00CF948A /* Debug */,
+				4910CBFA167B762C00CF948A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4965F4F81670FDC100113FB8 /* Build configuration list for PBXProject "NVTT" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

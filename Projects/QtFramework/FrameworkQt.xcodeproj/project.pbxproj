@@ -8,13 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */; };
+		4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4910CC2A167B7E6600CF948A /* libdxt_macos.a */; };
 		4965F4E01670F34500113FB8 /* dxtHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4965F4DE1670F34500113FB8 /* dxtHelper.cpp */; };
-		49C432E11675ECB4000EA877 /* libnvtt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432DD1675EC80000EA877 /* libnvtt.a */; };
-		49C432E21675ED27000EA877 /* libnvcore.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432D31675EC80000EA877 /* libnvcore.a */; };
-		49C432E31675ED27000EA877 /* libnvimage.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432D51675EC80000EA877 /* libnvimage.a */; };
-		49C432E41675ED27000EA877 /* libnvmath.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432D71675EC80000EA877 /* libnvmath.a */; };
-		49C432E51675ED48000EA877 /* libposh.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432D91675EC80000EA877 /* libposh.a */; };
-		49C432E61675ED48000EA877 /* libsquish.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 49C432DB1675EC80000EA877 /* libsquish.a */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -275,55 +270,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		49C432D21675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F5D61670FF2200113FB8;
-			remoteInfo = nvcore;
-		};
-		49C432D41675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F5FE1671017200113FB8;
-			remoteInfo = nvimage;
-		};
-		49C432D61675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F6251671042900113FB8;
-			remoteInfo = nvmath;
-		};
-		49C432D81675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F64E167104D900113FB8;
-			remoteInfo = posh;
-		};
-		49C432DA1675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F6651671E52200113FB8;
-			remoteInfo = squish;
-		};
-		49C432DC1675EC80000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4965F6731671E6C800113FB8;
-			remoteInfo = nvtt;
-		};
-		49C432DF1675ECA8000EA877 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4965F6721671E6C800113FB8;
-			remoteInfo = nvtt;
-		};
 		5C5D9A9F15B0271D0058B43A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */;
@@ -343,9 +289,9 @@
 /* Begin PBXFileReference section */
 		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
+		4910CC2A167B7E6600CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		4965F4DE1670F34500113FB8 /* dxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dxtHelper.cpp; sourceTree = "<group>"; };
 		4965F4DF1670F34500113FB8 /* dxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dxtHelper.h; sourceTree = "<group>"; };
-		49C432C91675EC80000EA877 /* NVTT.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NVTT.xcodeproj; path = /Users/andrew/source/dava.framework/Tools/ResourceEditor/../../Libs/NVTT/NVTT.xcodeproj; sourceTree = "<absolute>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -897,12 +843,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C432E51675ED48000EA877 /* libposh.a in Frameworks & Libraries */,
-				49C432E61675ED48000EA877 /* libsquish.a in Frameworks & Libraries */,
-				49C432E21675ED27000EA877 /* libnvcore.a in Frameworks & Libraries */,
-				49C432E31675ED27000EA877 /* libnvimage.a in Frameworks & Libraries */,
-				49C432E41675ED27000EA877 /* libnvmath.a in Frameworks & Libraries */,
-				49C432E11675ECB4000EA877 /* libnvtt.a in Frameworks & Libraries */,
+				4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */,
 				E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */,
 				5C5D9AA115B0272B0058B43A /* libBox2D_MacOS.a in Frameworks & Libraries */,
 				5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */,
@@ -928,8 +869,8 @@
 		05596AB53D8D521C69802C27 /* FrameworkQt */ = {
 			isa = PBXGroup;
 			children = (
+				4910CC2A167B7E6600CF948A /* libdxt_macos.a */,
 				5C5D971E15B022930058B43A /* Internal */,
-				49C432C91675EC80000EA877 /* NVTT.xcodeproj */,
 				5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */,
 				5CFB116D15AE0696008F64BB /* libtheora_macos.a */,
 				E879FCE5161DD6F00038D271 /* libPVRTexLib.a */,
@@ -950,19 +891,6 @@
 				5CFB113D15AE0100008F64BB /* Products */,
 			);
 			name = FrameworkQt;
-			sourceTree = "<group>";
-		};
-		49C432CA1675EC80000EA877 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				49C432D31675EC80000EA877 /* libnvcore.a */,
-				49C432D51675EC80000EA877 /* libnvimage.a */,
-				49C432D71675EC80000EA877 /* libnvmath.a */,
-				49C432D91675EC80000EA877 /* libposh.a */,
-				49C432DB1675EC80000EA877 /* libsquish.a */,
-				49C432DD1675EC80000EA877 /* libnvtt.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		5C5D971E15B022930058B43A /* Internal */ = {
@@ -1759,7 +1687,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				49C432E01675ECA8000EA877 /* PBXTargetDependency */,
 				5C5D9AA015B0271D0058B43A /* PBXTargetDependency */,
 			);
 			name = FrameworkQt;
@@ -1790,10 +1717,6 @@
 					ProductGroup = 5CFB117015AE0749008F64BB /* Products */;
 					ProjectRef = 5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */;
 				},
-				{
-					ProductGroup = 49C432CA1675EC80000EA877 /* Products */;
-					ProjectRef = 49C432C91675EC80000EA877 /* NVTT.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1803,48 +1726,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		49C432D31675EC80000EA877 /* libnvcore.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnvcore.a;
-			remoteRef = 49C432D21675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		49C432D51675EC80000EA877 /* libnvimage.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnvimage.a;
-			remoteRef = 49C432D41675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		49C432D71675EC80000EA877 /* libnvmath.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnvmath.a;
-			remoteRef = 49C432D61675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		49C432D91675EC80000EA877 /* libposh.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libposh.a;
-			remoteRef = 49C432D81675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		49C432DB1675EC80000EA877 /* libsquish.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libsquish.a;
-			remoteRef = 49C432DA1675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		49C432DD1675EC80000EA877 /* libnvtt.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnvtt.a;
-			remoteRef = 49C432DC1675EC80000EA877 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5CFB117415AE0749008F64BB /* libBox2D_MacOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2110,11 +1991,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		49C432E01675ECA8000EA877 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = nvtt;
-			targetProxy = 49C432DF1675ECA8000EA877 /* PBXContainerItemProxy */;
-		};
 		5C5D9AA015B0271D0058B43A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Box2D_MacOS;
@@ -2195,7 +2071,6 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					../../Libs/NVTT/Sources,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2225,7 +2100,6 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					../../Libs/NVTT/Sources,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
