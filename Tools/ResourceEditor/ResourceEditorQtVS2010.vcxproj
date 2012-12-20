@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -349,8 +349,11 @@
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
+    <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp" />
+    <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\GraphItem.cpp" />
@@ -476,8 +479,11 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
+    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphModel_moc.cpp" />
@@ -767,8 +773,11 @@
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
+    <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h" />
+    <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\GraphItem.h" />
     <ClInclude Include="Classes\Qt\Main\GraphModel.h" />
@@ -900,9 +909,11 @@
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\mainwindow.ui" />
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\texturedialog.ui" />
+    <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
