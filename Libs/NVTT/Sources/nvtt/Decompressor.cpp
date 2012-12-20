@@ -98,6 +98,28 @@ bool Decompressor::Private::initWithDDSFile(FILE * handler)
 	return true;
 }
 
+bool Decompressor::initWithDDSFile(const uint8 * mem, uint size)
+{
+	return m.initWithDDSFile(mem, size);
+}
+
+bool Decompressor::Private::initWithDDSFile(const uint8 * mem, uint size) 
+{
+	if(NULL == mem || size == 0)
+	{
+		return false;
+	}
+	m_dds = new nv::DirectDrawSurface( mem, size);
+	
+	if (!m_dds->isValid())
+	{
+		return false;
+	}
+	
+	return true;
+}
+
+
 //NVTT_API void erase();
 void Decompressor::erase()
 {

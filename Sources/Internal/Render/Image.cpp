@@ -56,9 +56,16 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	image->format = format;
     
     int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
-    if(formatSize)
+    if(formatSize || (format >= FORMAT_DXT1 && format <= FORMAT_DXT1A))
     {
-        image->dataSize = width * height * formatSize;
+		//workaround, because formatSize is not designed for formats with 4 bits per pixel
+		image->dataSize = width * height * formatSize;
+		
+		if(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM)
+		{
+			image->dataSize = formatSize == 0 ? (width * height) / 2 : width * height ;
+		}
+        
         image->data = new uint8[image->dataSize];
     }
     else 

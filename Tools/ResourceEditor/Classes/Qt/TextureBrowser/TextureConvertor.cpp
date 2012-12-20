@@ -8,6 +8,7 @@
 #include "SceneEditor/PVRConverter.h"
 #include "SceneEditor/DXTConverter.h"
 #include "SceneEditor/SceneValidator.h"
+#include "Render/LibDxtHelper.h"
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -456,6 +457,25 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 
 		switch(image->format)
 		{
+		case DAVA::FORMAT_DXT1:
+		case DAVA::FORMAT_DXT1A:
+		case DAVA::FORMAT_DXT1NM:
+		case DAVA::FORMAT_DXT3:
+		case DAVA::FORMAT_DXT5:
+		case DAVA::FORMAT_DXT5NM:
+		{
+			Vector<Image* > vec;
+			LibDxtHelper::DecompressImageToRGBA(*image, vec, true);
+			if(vec.size() == 1)
+			{
+				qtImage = TextureConvertor::fromDavaImage(vec.front());
+			}
+			else
+			{
+				DAVA::Logger::Error("Error during conversion from DDS to QImage.");
+			}
+			break;
+		}
 		case DAVA::FORMAT_PVR4:
 		case DAVA::FORMAT_PVR2:
 		case DAVA::FORMAT_RGBA8888:

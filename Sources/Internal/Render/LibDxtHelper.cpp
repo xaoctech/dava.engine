@@ -14,12 +14,14 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/LibPngHelpers.h"
 
-#include <nvtt/nvtt.h>
-#include <nvtt/nvtt_extra.h>
+#include <libdxt/nvtt.h>
+#include <libdxt/nvtt_extra.h>
 
 using namespace DAVA;
 using namespace nvtt;
 
+#define DX10HEADER_SIZE 138
+/*
 void LibDxtHelper::Test()
 {
 	
@@ -38,12 +40,9 @@ void LibDxtHelper::Test()
 	{
 		ImageLoader::Save(imageSetN[i], "c:\\dds\\2\\3__n_p.png");
 	}
-	
-	
-	
-}
+}*/
 
-bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &imageSet, bool forseSoftWareConvertation)
 {
 	nvtt::Decompressor dec ;
 
@@ -52,10 +51,10 @@ bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<DAVA::Image*> &image
 		return false;
 	}
 	
-	return ReadDxtFile(dec, imageSet);
+	return ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
 }
 
-bool LibDxtHelper::ReadDxtFile(FILE * file, Vector<DAVA::Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(FILE * file, Vector<DAVA::Image*> &imageSet, bool forseSoftWareConvertation)
 {
 	nvtt::Decompressor dec ;
 
@@ -63,10 +62,85 @@ bool LibDxtHelper::ReadDxtFile(FILE * file, Vector<DAVA::Image*> &imageSet)
 	{
 		return false;
 	}
-	return ReadDxtFile(dec, imageSet);
+	return ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
 }
 
-bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet)
+bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation)
+{
+	if(!(image.format >= FORMAT_DXT1 && image.format <= FORMAT_DXT5NM) )
+	{
+		DAVA::Logger::Error("Wrong copression format.");
+		return false;
+	}
+	
+		
+	InputOptions inputOptions;
+	inputOptions.setTextureLayout(TextureType_2D, image.width, image.height);
+	
+	inputOptions.setMipmapGeneration(false);
+
+	inputOptions.setMipmapData(image.data, image.width,  image.height);
+	
+	CompressionOptions compressionOptions;
+
+	nvtt::Format innerComprFormat;
+	switch (image.format)
+	{
+	case FORMAT_DXT1:
+		innerComprFormat = nvtt::Format_DXT1;
+		break;
+	case FORMAT_DXT1NM:
+		innerComprFormat = nvtt::Format_DXT1;
+		compressionOptions.setColorWeights(1, 1, 0);
+		break;
+	case FORMAT_DXT1A:
+		innerComprFormat = nvtt::Format_DXT1a;
+		break;
+	case FORMAT_DXT3:
+		innerComprFormat = nvtt::Format_DXT3;
+		break;
+	case FORMAT_DXT5:
+		innerComprFormat = nvtt::Format_DXT5;
+		break;
+	case FORMAT_DXT5NM:
+		innerComprFormat = nvtt::Format_DXT5n;
+		inputOptions.setNormalMap(true);
+		break;
+	case FORMAT_RGBA8888:
+		innerComprFormat = nvtt::Format_RGBA;
+		break;
+	default:
+		{
+			//delete[] imageBuffer;
+			return false;
+		}
+	}
+	compressionOptions.setFormat(innerComprFormat);
+
+	uint32 headerSize = DX10HEADER_SIZE;
+	uint8* imageHeaderBuffer = new uint8[headerSize];
+
+	uint32 realHeaderSize = nvtt::Decompressor::getHeader(imageHeaderBuffer, headerSize, inputOptions, compressionOptions);
+
+	nvtt::Decompressor dec ;
+
+	uint8* compressedImageBuffer = new uint8[realHeaderSize + image.dataSize];
+	memcpy(compressedImageBuffer, imageHeaderBuffer, realHeaderSize);
+	memcpy(compressedImageBuffer+realHeaderSize, image.data, image.dataSize);
+	delete[] imageHeaderBuffer;
+	
+	bool retValue = InitDecompressor(dec, compressedImageBuffer, realHeaderSize + image.dataSize);
+
+	if(retValue)
+	{
+		retValue = ReadDxtFile(dec, imageSet, forseSoftwareConvertation);
+	}
+
+	delete[] compressedImageBuffer;
+	return retValue;
+}
+
+bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &imageSet, bool forseSoftwareConvertation)
 {
 	for(uint32 i = 0; i < imageSet.size(); ++i)
 	{
@@ -100,7 +174,9 @@ bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &i
 	}
 
 	//check hardware support, in case of rgb use nvtt to reorder bytes
-	if(RenderManager::Instance()->GetCaps().isDXTSupported && (format != Format_RGB) )
+	if( (!forseSoftwareConvertation) &&
+		RenderManager::Instance()->GetCaps().isDXTSupported && 
+		format != Format_RGB )
 	{
 		bool retValue = false;
 		uint8* compressedImges = new uint8[size];
@@ -142,42 +218,14 @@ bool LibDxtHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &i
 				retValue = true;
 				break;
 			}
-			//GLuint texid;  
-			//glGenTextures( 1, &texid );
-			//glBindTexture ( GL_TEXTURE_2D, texid );
-			//
-			uint8* concreteImageStartPointer = compressedImges + offset;
-			//
-			//uint32 internalFormat = GetGlCompressionFormatByDDSInfo(format);
-			//if(internalFormat == 0)
-			//{
-			//	DAVA::Logger::Error("Unknown internal format of dds file.");
-			//	retValue = false;
-			//	break;
-			//}
 
-			//glCompressedTexImage2D ( GL_TEXTURE_2D, i, internalFormat, concreteWidth, concreteHeight, 0, vecSizes[i], concreteImageStartPointer);
-			//CheckGlError();
-			//
-			//int32 uncompressed_width = 0;
-			//int32 uncompressed_heigth = 0;
-			//glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &uncompressed_width);
-			//CheckGlError();
-			//
-			//glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &uncompressed_heigth);
-			//CheckGlError();
-			//
-			//Image* innerImage = Image::Create(uncompressed_width, uncompressed_heigth, FORMAT_RGBA8888);
-			//glGetTexImage(GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, innerImage->GetData());
-			//CheckGlError();
+			uint8* concreteImageStartPointer = compressedImges + offset;
 
 			DAVA::PixelFormat pixFormat = GetPixelFormat(dec);
 			Image* innerImage = Image::Create(concreteWidth, concreteHeight, pixFormat);
 			memcpy(innerImage->data, concreteImageStartPointer,vecSizes[i]);
 			imageSet.push_back(innerImage);
-			//ImageLoader::Save(innerImage, "c:\\dds\\1\\nm_13_12_12.png");
 			retValue = true;
-
 		}
 
 		delete[] compressedImges;
@@ -283,100 +331,20 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 		}
 	}
 	compressionOptions.setFormat(innerComprFormat);
-
-	//check hardware support, in case of rgb use nvtt to reorder bytes
-	if(false)//RenderManager::Instance()->GetCaps().isDXTSupported && (compressionFormat != FORMAT_RGBA8888) )
+	
+	ConvertFromBGRAtoRGBA(data, imgDataSize);
+	
+	OutputOptions outputOptions;
+	outputOptions.setFileName(fileName);
+	
+	Compressor compressor;
+	bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
+	if(!ret)
 	{
-		bool retValue = false;
-		uint32 dx10HeaderSize = 138;
-		uint8* buffer = new uint8[dx10HeaderSize];
-		uint32 writeSize = nvtt::Decompressor::getHeader(buffer, dx10HeaderSize, inputOptions, compressionOptions);
-		if(writeSize == 0)
-		{
-			DAVA::Logger::Error("DDS header generation failed.");
-			return retValue;
-		}
-		Image* resizeImg = NULL;
-		if(mipmupNumber > 0)
-		{
-			resizeImg = Image::Create(width, height, FORMAT_RGBA8888);
-			memcpy(resizeImg->data, data, resizeImg->dataSize);
-		}
-
-		File* file = File::Create(fileName, File::CREATE | File::WRITE);
-		if(file)
-		{
-			file->Write(buffer, writeSize);
-
-			uint32 nW = width;
-			uint32 nH = height;
-			for(uint32 i = 0; i < mipmupNumber+1 ; ++i)
-			{
-				
-				if(i != 0)
-				{
-					nW /=2;
-					nH /=2;
-					nW = nW < 4 ? 4 : nW;
-					nH = nH < 4 ? 4 : nH;
-					if(nW != resizeImg->width)
-					{
-						resizeImg->ResizeImage(nW, nH);
-					}
-					data = resizeImg->data;
-				}
-				GLuint texId;
-				glGenTextures(1, &texId);
-				glBindTexture(GL_TEXTURE_2D, texId);
-				glTexImage2D(GL_TEXTURE_2D, i, GetGlCompressionFormatByDDSInfo(innerComprFormat), nW, nH, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-				CheckGlError();
-				int compressed;
-				glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED, &compressed);
-				CheckGlError();
-				if (compressed != GL_TRUE)
-				{
-					DAVA::Logger::Error("Input data isn't compressed img.");
-					retValue =  false;
-					break;
-				}
-				
-				int32 compressed_size;
-				glGetTexLevelParameteriv(GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &compressed_size);
-				uint8* compressed_texture = new uint8[compressed_size];
-				glGetCompressedTexImage(GL_TEXTURE_2D, i, compressed_texture);
-				CheckGlError();
-
-				file->Write(compressed_texture, compressed_size);
-				delete[] compressed_texture;
-				retValue = true;
-			}
-		}
-		if(NULL != resizeImg)
-		{
-			SafeRelease(resizeImg);
-		}
-
-		delete file;
-		delete[] buffer;
-		
-		return retValue;
+		DAVA::Logger::Error("Error during writing DDS file");
 	}
-	else
-	{
-		ConvertFromBGRAtoRGBA(data, imgDataSize);
-		
-		
-		OutputOptions outputOptions;
-		outputOptions.setFileName(fileName);
-		
-		Compressor compressor;
-		bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
-		if(!ret)
-		{
-			DAVA::Logger::Error("Error during writing DDS file");
-		}
-		return ret;
-	}
+	return ret;
+	
 	
 }
 
@@ -594,6 +562,9 @@ uint32 LibDxtHelper::GetGlCompressionFormatByDDSInfo(nvtt::Format format)
 	case Format_RGB:
 		break;
 	case Format_DXT1:
+		retValue = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		break;
+	case FORMAT_DXT1A:
 		retValue = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 		break;
 	case Format_DXT3:
@@ -612,31 +583,6 @@ uint32 LibDxtHelper::GetGlCompressionFormatByDDSInfo(nvtt::Format format)
 	}
 
 	return retValue;
-}
-
-void LibDxtHelper::CheckGlError()
-{
-	switch(glGetError())
-	{
-	case GL_INVALID_ENUM:
-		DAVA::Logger::Error("DXTHelper: GL_INVALID_ENUM");
-		break;
-
-	case GL_INVALID_VALUE:
-		DAVA::Logger::Error("DXTHelper: GL_INVALID_VALUE");
-		break;
-
-	case GL_INVALID_OPERATION:
-		DAVA::Logger::Error("DXTHelper: GL_INVALID_OPERATION");
-		break;
-
-	case GL_NO_ERROR:
-		//Logger::Instance()->Debug("GL_NO_ERROR");
-		break;
-
-	default:
-		DAVA::Logger::Error("DXTHelper: some GL error");
-	}
 }
 
 bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileName)
@@ -666,6 +612,22 @@ bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, FILE * file)
 	if(!dec.initWithDDSFile(file))
 	{
 		DAVA::Logger::Error("Wrong file.");
+		return false;
+	}
+	return true;
+}
+
+bool LibDxtHelper::InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size)
+{
+	if(NULL == mem || size == 0 )
+	{
+		DAVA::Logger::Error("Wrong buffer.");
+		return false;
+	}
+
+	if(!dec.initWithDDSFile(mem, size))
+	{
+		DAVA::Logger::Error("Wrong buffer.");
 		return false;
 	}
 	return true;

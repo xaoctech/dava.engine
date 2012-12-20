@@ -20,6 +20,8 @@ namespace nvtt
 		bool initWithDDSFile(const char * pathToDDSFile);
 		
 		bool initWithDDSFile(FILE *file);
+
+		bool initWithDDSFile(const uint8 * mem, uint size);
 		
 		void erase();
 
