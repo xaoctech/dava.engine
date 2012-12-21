@@ -25,12 +25,20 @@ QString TruncateTxtFileExtension(const QString& fileName)
 
 WideString QStrint2WideString(const QString& str)
 {
+#ifdef __DAVAENGINE_MACOS__
+	return str.toStdWString();
+#else
 	return WideString((wchar_t*)str.unicode(), str.length());
+#endif
 }
 
 QString WideString2QStrint(const WideString& str)
 {
+#ifdef __DAVAENGINE_MACOS__
+	return QString::fromStdWString(str);
+#else
 	return QString((const QChar*)str.c_str(), str.length());
+#endif
 }
 
 }
