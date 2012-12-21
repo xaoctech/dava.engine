@@ -532,7 +532,7 @@ void YamlNode::Set(const String& name, bool value)
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         String strValue = (value == true) ? "true" : "false";
         stringNode->Set(name, strValue);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*>(name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -550,7 +550,7 @@ void YamlNode::Set(const String& name, int32 value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*>(name,stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -568,7 +568,7 @@ void YamlNode::Set(const String& name, float32 value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -591,7 +591,7 @@ void YamlNode::Set(const String& name, const String& value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -605,7 +605,7 @@ void YamlNode::Set(const String& name, const String& value)
 void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
 {
     DVASSERT(this->type == TYPE_MAP);
-    objectMap[name] = node;
+    objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
 
 void  YamlNode::AddNodeToArray(YamlNode* node)
@@ -679,7 +679,7 @@ void YamlNode::Set(const String& name, VariantType* varType)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, varType);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -1215,7 +1215,7 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
         {
             // Take only the children of root node.
             DVASSERT(rootNode->GetType() == YamlNode::TYPE_MAP);
-            Map<String, YamlNode*> & childrenList = rootNode->AsMap();
+            MultiMap<String, YamlNode*> & childrenList = rootNode->AsMap();
             
             const Vector<YamlNodeKeyValuePair>& orderedRootLevelItems = OrderMapYamlNode(childrenList);
             for (Vector<YamlNodeKeyValuePair>::const_iterator iter = orderedRootLevelItems.begin();
@@ -1252,7 +1252,7 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
     return saveSucceeded;
 }
 
-Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const Map<String, YamlNode*>& mapNodes)
+Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes)
 {
     // Order the map nodes by the "Relative Depth".
     Vector<YamlNodeKeyValuePair> sortedChildren;
@@ -1400,10 +1400,10 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
 
             // Firstly build the list of the non-map nodes to save them, then recursively go through
             // map nodes.
-            Map<String, YamlNode*> nonMapNodes;
-            Map<String, YamlNode*> mapNodes;
+            MultiMap<String, YamlNode*> nonMapNodes;
+            MultiMap<String, YamlNode*> mapNodes;
             
-            for (Map<String, YamlNode*>::iterator t = currentNode->AsMap().begin(); t != currentNode->AsMap().end(); ++t)
+            for (MultiMap<String, YamlNode*>::iterator t = currentNode->AsMap().begin(); t != currentNode->AsMap().end(); ++t)
             {
                 YamlNode* childNode = t->second;
                 if (childNode->GetType() == YamlNode::TYPE_MAP)
@@ -1418,7 +1418,7 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
             
             // Process local values...
             depth ++;
-            for (Map<String, YamlNode*>::iterator t = nonMapNodes.begin(); t != nonMapNodes.end(); ++t)
+            for (MultiMap<String, YamlNode*>::iterator t = nonMapNodes.begin(); t != nonMapNodes.end(); ++t)
             {
                 SaveNodeRecursive(fileToSave, t->first, t->second, depth);
             }
