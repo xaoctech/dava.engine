@@ -176,7 +176,7 @@ private:
 	bool                SaveNodeRecursive(File* fileToSave, const String& nodeName, YamlNode* currentNode, int16 depth);
 
     // Order the YAML node with type "Map" according to the depth.
-    Vector<YamlNodeKeyValuePair> OrderMapYamlNode(const Map<String, YamlNode*>& mapNodes);
+    Vector<YamlNodeKeyValuePair> OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes);
 
     // Write different Yaml node types to the file.
     bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth);
