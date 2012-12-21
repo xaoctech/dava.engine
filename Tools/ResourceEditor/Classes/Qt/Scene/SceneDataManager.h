@@ -25,8 +25,6 @@ public:
     void ReleaseScene(EditorScene *scene);
 
     void SetSceneGraphView(QTreeView *view);
-    void SetLibraryView(QTreeView *view);
-    void SetLibraryModel(LibraryModel *model);
 	// <--
 
 public:
@@ -35,6 +33,8 @@ public:
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
 	DAVA::int32			SceneCount();
+	void				SceneShowPreview(const DAVA::String &path);
+	void				SceneHidePreview();
     
 	void				TextureCompressAllNotCompressed();
 	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
@@ -70,8 +70,6 @@ protected:
     DAVA::List<SceneData *>scenes;
     
     QTreeView *sceneGraphView;
-    QTreeView *libraryView;
-    LibraryModel *libraryModel;
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

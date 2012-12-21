@@ -723,6 +723,14 @@ void UIControlBackground::SetTopBottomStretchCap(float32 _topStretchCap)
 	topStretchCap = _topStretchCap;
 }
 	
+float32 UIControlBackground::GetLeftRightStretchCap()
+{
+    return leftStretchCap;
+}
 	
+float32 UIControlBackground::GetTopBottomStretchCap()
+{
+    return topStretchCap;
+}	
 
 };

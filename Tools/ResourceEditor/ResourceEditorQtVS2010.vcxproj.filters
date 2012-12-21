@@ -61,14 +61,8 @@
     <Filter Include="Sources\Qt\QtPropertyBrowser">
       <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\TextureDialog">
-      <UniqueIdentifier>{c71502ec-ed83-4f61-8a62-e1ed6c4c0a69}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\SceneEditor\Properties\Light">
       <UniqueIdentifier>{d4f37c8c-9002-42d9-ae59-46d5152c9aa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="QtGenerated\TextureDialog">
-      <UniqueIdentifier>{9ff04bd1-6e6b-4185-acde-ce2274eabc0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Qt\QtPosSaver">
       <UniqueIdentifier>{5139cbe9-d6b3-4aef-9d36-62293b1aad8a}</UniqueIdentifier>
@@ -93,6 +87,42 @@
     </Filter>
     <Filter Include="QtGenerated\Scene">
       <UniqueIdentifier>{112a8070-e234-41b7-8958-114f01fccf0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockLibrary">
+      <UniqueIdentifier>{a32457da-16af-47bc-9e52-3a95a269bd7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockLibrary">
+      <UniqueIdentifier>{63adca46-3cec-4809-a2f9-792636411682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Project">
+      <UniqueIdentifier>{61289f99-0e95-43c6-9e52-611246cccd92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\Project">
+      <UniqueIdentifier>{0c4ce2d3-d15f-4fbf-b897-244bc25bfa2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\TextureBrowser">
+      <UniqueIdentifier>{02cd2c72-5fb4-4179-961d-7ee0d6a29f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\TextureBrowser">
+      <UniqueIdentifier>{2577c457-6240-473b-b893-129f4db52ed5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockProperties">
+      <UniqueIdentifier>{2d548fb4-1717-407b-a982-192efa2564c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockProperties">
+      <UniqueIdentifier>{115ccc83-d704-450d-bf74-0a2f0aecea4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockVisibilityTool">
+      <UniqueIdentifier>{4d216e99-0dbe-430d-930c-4e2445d0c11c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockCustomColors">
+      <UniqueIdentifier>{20561eb1-0a4f-4f65-8b34-79f3980e32b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockCustomColors">
+      <UniqueIdentifier>{2dddfd3c-1941-443c-9383-9170c373e8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockVisibilityTool">
+      <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -897,35 +927,8 @@
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
       <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureListModel.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureScrollArea.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\main.cpp">
       <Filter>Sources\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureProperties.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertor.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureConvertorWork.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureDialog\TextureCache.cpp">
-      <Filter>Sources\Qt\TextureDialog</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
@@ -941,33 +944,6 @@
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelCustomColors.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureCache_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertor_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureConvertorWork_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureDialog_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureList_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureListModel_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureProperties_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp">
-      <Filter>QtGenerated\TextureDialog</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp">
       <Filter>QtGenerated\QtPosSaver</Filter>
@@ -1017,9 +993,6 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\FileSelectionModel.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\GraphItem.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1027,9 +1000,6 @@
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\LibraryModel.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp">
@@ -1056,9 +1026,6 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\FileSelectionModel_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
@@ -1066,9 +1033,6 @@
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\LibraryModel_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
@@ -1110,14 +1074,104 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp">
+      <Filter>QtGenerated\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp">
+      <Filter>Sources\Qt\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp">
+      <Filter>QtGenerated\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureConvertor.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureConvertorWork.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureList.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureListDelegate.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureListModel.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureProperties.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\TextureScrollArea.cpp">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertorWork_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertor_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListDelegate_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureListModel_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureList_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureProperties_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\TextureScrollArea_moc.cpp">
+      <Filter>QtGenerated\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
+      <Filter>QtGenerated\DockLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp">
+      <Filter>QtGenerated\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp">
+      <Filter>QtGenerated\DockVisibilityTool</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
+      <Filter>QtGenerated\DockCustomColors</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
+      <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1943,33 +1997,6 @@
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h">
       <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureListModel.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureScrollArea.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertor.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureConvertorWork.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureDialog\TextureCache.h">
-      <Filter>Sources\Qt\TextureDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -1989,9 +2016,6 @@
       <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="_GeneratedQt\ui_texturedialog.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h">
@@ -2021,9 +2045,6 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\FileSelectionModel.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\GraphItem.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2031,9 +2052,6 @@
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\GUIState.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\LibraryModel.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\mainwindow.h">
@@ -2066,11 +2084,59 @@
     <ClInclude Include="Classes\SceneEditor\ColorControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
       <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Project\ProjectManager.h">
+      <Filter>Sources\Qt\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h">
+      <Filter>Sources\Qt\DockLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertor.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertorWork.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureList.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureListDelegate.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureProperties.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureScrollArea.h">
+      <Filter>Sources\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
+      <Filter>Sources\Qt\DockVisibilityTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
+      <Filter>Sources\Qt\DockCustomColors</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2284,6 +2350,12 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="DataQt\materialbrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\CustomColorsView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\VisibilityToolView.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
