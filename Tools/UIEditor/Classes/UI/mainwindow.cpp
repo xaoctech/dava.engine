@@ -103,6 +103,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
+    {
+        SafeDelete(recentPojectActions[i]);
+    }
+	
     delete ui;
 }
 
@@ -236,6 +241,16 @@ void MainWindow::InitMenu()
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
 	
+	connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
+    connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(FileMenuTriggered(QAction *)));
+	
+	//Create empty actions for recent projects files
+	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
+    {
+        recentPojectActions[i] = new QAction(this);
+        recentPojectActions[i]->setObjectName(QString::fromUtf8(Format("recentPojectActions[%d]", i)));
+    }
+	
 	UpdateMenu();
 }
 
@@ -256,7 +271,7 @@ void MainWindow::OnNewProject()
 	
 	QString filename = QFileDialog::getSaveFileName(this,
 													tr("New project"),
-													QDir::currentPath(),
+													GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
@@ -302,10 +317,68 @@ void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = Hiera
 	}
 }
 
+void MainWindow::MenuFileWillShow()
+{
+	//Delete old list of recent project actions
+	for(DAVA::int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
+    {
+        if(recentPojectActions[i]->parentWidget())
+        {
+            ui->menuFile->removeAction(recentPojectActions[i]);
+        }
+    }
+    //Get up to date count of recent project actions
+    int32 projectCount = EditorSettings::Instance()->GetLastOpenedCount();
+    if(projectCount > 0)
+    {
+        QList<QAction *> recentActions;
+        for(int32 i = 0; i < projectCount; ++i)
+        {
+            recentPojectActions[i]->setText(QString(EditorSettings::Instance()->GetLastOpenedFile(i).c_str()));
+            recentActions.push_back(recentPojectActions[i]);
+        }
+        //Insert recent project actions into file menu
+        ui->menuFile->insertActions(ui->actionExit, recentActions);
+        ui->menuFile->insertSeparator(ui->actionExit);
+    }
+}
+
+void MainWindow::FileMenuTriggered(QAction *resentScene)
+{
+    for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
+    {
+		//Check if user clicked on one of the recent project link
+        if(resentScene == recentPojectActions[i])
+        {
+			//Close and save current project if any
+			if (!CloseProject())
+				return;
+		
+			QString filename = QString::fromStdString(EditorSettings::Instance()->GetLastOpenedFile(i));
+			if (filename.isNull())
+				return;
+
+			if (!HierarchyTreeController::Instance()->Load(filename))
+			{
+				QMessageBox msgBox;
+				msgBox.setText(tr("Error while loading project"));
+				msgBox.exec();
+			}
+			return;
+        }
+    }
+}
+
 void MainWindow::OnSaveProject()
 {
 	QString path = HierarchyTreeController::Instance()->GetTree().GetActiveProjectPath();
-	if (!HierarchyTreeController::Instance()->Save(path))
+	if (HierarchyTreeController::Instance()->Save(path))
+	{
+		//If project was successfully saved - we should save new project path
+		//and add this project to recent files list
+		UpdateProjectSettings(path);
+	}
+	else
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Error while saving project"));
@@ -317,12 +390,18 @@ void MainWindow::OnSaveAsProject()
 {
 	QString filename = QFileDialog::getSaveFileName(this,
 													tr("Save project as"),
-													QDir::currentPath(),
+													GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
 
-	if (!HierarchyTreeController::Instance()->Save(filename))
+	if (HierarchyTreeController::Instance()->Save(filename))
+	{
+		//If project was successfully saved with new name - we should save new project path
+		//and add this project to recent files list
+		UpdateProjectSettings(filename);
+	}
+	else
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Error while saving project"));
@@ -337,12 +416,18 @@ void MainWindow::OnLoadProject()
 	
 	QString filename = QFileDialog::getOpenFileName(this,
 													tr("Load project"),
-													QDir::currentPath(),
+													GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
 
-	if (!HierarchyTreeController::Instance()->Load(filename))
+	if (HierarchyTreeController::Instance()->Load(filename))
+	{
+		//If project was successfully loaded - we should save project path
+		//and add this project to recent files list
+		UpdateProjectSettings(filename);
+	}
+	else
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Error while loading project"));
@@ -374,3 +459,22 @@ bool MainWindow::CloseProject()
 	return true;
 }
 
+void MainWindow::UpdateProjectSettings(const QString& filename)
+{
+	//Add file to recent project files list
+	EditorSettings::Instance()->AddLastOpenedFile(filename.toStdString());
+	//Save current project directory path
+	QDir projectDir = QFileInfo(filename).absoluteDir();
+	EditorSettings::Instance()->SetProjectPath(projectDir.absolutePath().toStdString());
+}
+
+QString MainWindow::GetDefaultDirectory()
+{
+	QString defaultDir = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
+	//If default directory path is not available in project settings - use current working path
+	if ( defaultDir.isNull() || defaultDir.isEmpty() )
+	{
+  		defaultDir = QDir::currentPath();
+	}
+	return defaultDir;
+}

@@ -38,6 +38,7 @@
 #include "MetadataFactory.h"
 #include "EditorFontManager.h"
 #include "ScreenManager.h"
+#include "EditorSettings.h"
 #include "ResourcesManageHelper.h"
 
 #include <UI/UIButton.h>
@@ -56,6 +57,7 @@ GameCore::GameCore()
     new MetadataFactory();
 	new EditorFontManager();
 	new ScreenManager();
+	new EditorSettings();
 	
 	//Initialize internal resources of application
 	ResourcesManageHelper::InitInternalResources();
