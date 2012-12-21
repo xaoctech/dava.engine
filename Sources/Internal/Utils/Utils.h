@@ -1,4 +1,4 @@
-﻿/*==================================================================================
+/*==================================================================================
     Copyright (c) 2008, DAVA Consulting, LLC
     All rights reserved.
 
@@ -99,26 +99,29 @@ inline String WStringToString(const WideString& s)
 	return temp; 
 }
 
-//The function used convert values (less than 4 bytes) to pointer
-template< class T >
-void *ParamToPtr( T value )
+// Truncate the file extension.
+inline String TruncateFileExtension(const String& fileName, const String& extension)
 {
-    COMPILER_ASSERT( sizeof(T) <= sizeof( void *) && sizeof(T) <= 4 );
-
-    void *ptr = NULL;
-    Memcpy( &ptr, &value, sizeof(value) );
-    return ptr;
+    String truncatedName = fileName;
+    
+    int truncatedStringLen = truncatedName.length() - extension.length();
+    bool endsWithExtension = false;
+    if (fileName.length() >= extension.length())
+    {
+        endsWithExtension = (truncatedName.compare(truncatedStringLen, extension.length(), extension) == 0);
+    }
+    
+    if (endsWithExtension)
+    {
+        truncatedName.resize(truncatedStringLen);
+    }
+    
+    return truncatedName;
 }
 
-//The function used extract values (less than 4 bytes) from pointer
-template< class T >
-T PtrToParam( void *ptr )
+inline String TruncateTxtFileExtension(const String& fileName)
 {
-    COMPILER_ASSERT( sizeof(T) <= sizeof( void *) && sizeof(T) <= 4 );
-
-    T value = T();
-    Memcpy( &value, &ptr, sizeof(value) );
-    return value;
+    return TruncateFileExtension(fileName, ".txt");
 }
 
 };

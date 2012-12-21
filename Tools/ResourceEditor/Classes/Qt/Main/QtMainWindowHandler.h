@@ -10,7 +10,7 @@
 #include "../Constants.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
-#include "TextureDialog/TextureDialog.h"
+#include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
 
 class Command;

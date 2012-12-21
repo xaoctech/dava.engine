@@ -120,15 +120,24 @@
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
 		E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E86F952616381BAD0014B4C0 /* ImageLoader.cpp */; };
 		E86F952916381BAD0014B4C0 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E86F952716381BAD0014B4C0 /* ImageLoader.h */; };
+		E89CD7341681F16D000E7F24 /* ThreadContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CD7321681F16D000E7F24 /* ThreadContext.cpp */; };
+		E89CD7351681F16D000E7F24 /* ThreadContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CD7331681F16D000E7F24 /* ThreadContext.h */; };
 		E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89ECC7B1663A9A100D17C41 /* FastName.cpp */; };
 		E89ECC821663A9A100D17C41 /* FastName.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7C1663A9A100D17C41 /* FastName.h */; };
 		E89ECC831663A9A100D17C41 /* FastNameMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7D1663A9A100D17C41 /* FastNameMap.h */; };
 		E89ECC841663A9A100D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7E1663A9A100D17C41 /* Hash.h */; };
 		E89ECC851663A9A100D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7F1663A9A100D17C41 /* Introspection.h */; };
 		E89ECC861663A9A100D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC801663A9A100D17C41 /* Meta.h */; };
+		E8D8662E167B44E10094C124 /* AndroidSpecifics.h in Headers */ = {isa = PBXBuildFile; fileRef = E8D8662B167B44E10094C124 /* AndroidSpecifics.h */; };
+		E8D8662F167B44E10094C124 /* CorePlatformAndroid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8D8662C167B44E10094C124 /* CorePlatformAndroid.cpp */; };
+		E8D86630167B44E10094C124 /* CorePlatformAndroid.h in Headers */ = {isa = PBXBuildFile; fileRef = E8D8662D167B44E10094C124 /* CorePlatformAndroid.h */; };
+		E8D86645167B4BCB0094C124 /* EGLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8D86643167B4BCB0094C124 /* EGLRenderer.cpp */; };
+		E8D86646167B4BCB0094C124 /* EGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8D86644167B4BCB0094C124 /* EGLRenderer.h */; };
 		E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */; };
 		E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C96161B418100B50BDA /* LibPVRHelper.h */; };
 		E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C97161B418100B50BDA /* PVRDefines.h */; };
+		E8FCE78C16805AB000497559 /* APKFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8FCE78A16805AB000497559 /* APKFile.cpp */; };
+		E8FCE78D16805AB000497559 /* APKFile.h in Headers */ = {isa = PBXBuildFile; fileRef = E8FCE78B16805AB000497559 /* APKFile.h */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
 		ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DD158A4B0D009E0EC7 /* Component.h */; };
@@ -715,21 +724,31 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E8322A03167A197100A16E67 /* ThreadAndroid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadAndroid.cpp; sourceTree = "<group>"; };
 		E856CF0F162420420065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
 		E856CF10162420420065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
 		E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E86F952616381BAD0014B4C0 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
 		E86F952716381BAD0014B4C0 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
+		E89CD7321681F16D000E7F24 /* ThreadContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadContext.cpp; sourceTree = "<group>"; };
+		E89CD7331681F16D000E7F24 /* ThreadContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadContext.h; sourceTree = "<group>"; };
 		E89ECC7B1663A9A100D17C41 /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
 		E89ECC7C1663A9A100D17C41 /* FastName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastName.h; sourceTree = "<group>"; };
 		E89ECC7D1663A9A100D17C41 /* FastNameMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastNameMap.h; sourceTree = "<group>"; };
 		E89ECC7E1663A9A100D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		E89ECC7F1663A9A100D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
 		E89ECC801663A9A100D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		E8D8662B167B44E10094C124 /* AndroidSpecifics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AndroidSpecifics.h; sourceTree = "<group>"; };
+		E8D8662C167B44E10094C124 /* CorePlatformAndroid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorePlatformAndroid.cpp; sourceTree = "<group>"; };
+		E8D8662D167B44E10094C124 /* CorePlatformAndroid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorePlatformAndroid.h; sourceTree = "<group>"; };
+		E8D86643167B4BCB0094C124 /* EGLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EGLRenderer.cpp; sourceTree = "<group>"; };
+		E8D86644167B4BCB0094C124 /* EGLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGLRenderer.h; sourceTree = "<group>"; };
 		E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E8F98C96161B418100B50BDA /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E8F98C97161B418100B50BDA /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
+		E8FCE78A16805AB000497559 /* APKFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APKFile.cpp; sourceTree = "<group>"; };
+		E8FCE78B16805AB000497559 /* APKFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APKFile.h; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		ED2F52DC158A4B0D009E0EC7 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
 		ED2F52DD158A4B0D009E0EC7 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
@@ -1315,6 +1334,20 @@
 			path = Autotesting;
 			sourceTree = "<group>";
 		};
+		E8D8662A167B44E10094C124 /* Android */ = {
+			isa = PBXGroup;
+			children = (
+				E8D8662B167B44E10094C124 /* AndroidSpecifics.h */,
+				E8D8662C167B44E10094C124 /* CorePlatformAndroid.cpp */,
+				E8D8662D167B44E10094C124 /* CorePlatformAndroid.h */,
+				E8D86643167B4BCB0094C124 /* EGLRenderer.cpp */,
+				E8D86644167B4BCB0094C124 /* EGLRenderer.h */,
+				E89CD7321681F16D000E7F24 /* ThreadContext.cpp */,
+				E89CD7331681F16D000E7F24 /* ThreadContext.h */,
+			);
+			path = Android;
+			sourceTree = "<group>";
+		};
 		ED2F52DA158A4AD1009E0EC7 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
@@ -1565,7 +1598,8 @@
 		FECFC0E512E87E3000C71562 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
-				5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */,
+				E8FCE78A16805AB000497559 /* APKFile.cpp */,
+				E8FCE78B16805AB000497559 /* APKFile.h */,
 				5C19F49015A42D920064E889 /* KeyedArchiver.cpp */,
 				5C19F49115A42D920064E889 /* KeyedArchiver.h */,
 				5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */,
@@ -1580,6 +1614,7 @@
 				FECFC0E912E87E3000C71562 /* File.h */,
 				FE9420911332605600515418 /* FileList.cpp */,
 				FE9420921332605600515418 /* FileList.h */,
+				5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */,
 				FECFC0EA12E87E3000C71562 /* FileSystem.cpp */,
 				FECFC0EB12E87E3000C71562 /* FileSystem.h */,
 				FECFC0F912E87E3000C71562 /* VariantType.cpp */,
@@ -1670,10 +1705,12 @@
 		FECFC14112E87E3000C71562 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				E8322A03167A197100A16E67 /* ThreadAndroid.cpp */,
 				FECFC14212E87E3000C71562 /* Mutex.cpp */,
 				FECFC14312E87E3000C71562 /* Mutex.h */,
 				FECFC14412E87E3000C71562 /* SystemTimer.cpp */,
 				FECFC14512E87E3000C71562 /* SystemTimer.h */,
+				E8D8662A167B44E10094C124 /* Android */,
 				FE941D2B1331543700515418 /* TemplateMacOS */,
 				FECFC14612E87E3000C71562 /* TemplateiOS */,
 				FECFC15312E87E3000C71562 /* TemplateWin32 */,
@@ -2377,6 +2414,11 @@
 				E89ECC851663A9A100D17C41 /* Introspection.h in Headers */,
 				E89ECC861663A9A100D17C41 /* Meta.h in Headers */,
 				17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */,
+				E8D8662E167B44E10094C124 /* AndroidSpecifics.h in Headers */,
+				E8D86630167B44E10094C124 /* CorePlatformAndroid.h in Headers */,
+				E8D86646167B4BCB0094C124 /* EGLRenderer.h in Headers */,
+				E8FCE78D16805AB000497559 /* APKFile.h in Headers */,
+				E89CD7351681F16D000E7F24 /* ThreadContext.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2709,6 +2751,10 @@
 				E86F952816381BAD0014B4C0 /* ImageLoader.cpp in Sources */,
 				E89ECC811663A9A100D17C41 /* FastName.cpp in Sources */,
 				17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */,
+				E8D8662F167B44E10094C124 /* CorePlatformAndroid.cpp in Sources */,
+				E8D86645167B4BCB0094C124 /* EGLRenderer.cpp in Sources */,
+				E8FCE78C16805AB000497559 /* APKFile.cpp in Sources */,
+				E89CD7341681F16D000E7F24 /* ThreadContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

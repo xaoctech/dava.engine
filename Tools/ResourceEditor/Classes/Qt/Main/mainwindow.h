@@ -23,24 +23,22 @@ public:
 
     
 private:
-    void SetupMainMenu();
-    
-	void SetupToolBar();
-	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
+	void OpenLastProject();
 
-    void SetupProjectPath();
+    void SetupMainMenu();
+	void SetupToolBar();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
 	void SetupVisibilityToolDock();
     
+	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
     void SetCustomColorsDockControlsEnabled(bool enabled);
       
 public slots:
-	void ProjectChanged();
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 
 private slots:
-
+	void ProjectOpened(const QString &path);
     void MenuFileWillShow();
 	
 	//reference
@@ -54,7 +52,7 @@ private:
 
 	QProgressDialog *convertWaitDialog;
     
-    LibraryModel *libraryModel;
+    //LibraryModel *libraryModel;
 };
 
 
@@ -85,11 +83,8 @@ private:
 	void SetupToolBar();
 	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
 
-    void SetupProjectPath();
+    void OpenLastProject();
     void SetupDockWidgets();
-    void SetupCustomColorsDock();
-    
-    void SetCustomColorsDockControlsEnabled(bool enabled);
         
 private slots:
 
