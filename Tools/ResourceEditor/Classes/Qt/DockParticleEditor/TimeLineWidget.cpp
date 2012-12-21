@@ -28,8 +28,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	selectedLine = -1;
 	drawLine = -1;
 	
-	minimized = false;
-	updateMinimize = true;
+	sizeState = SizeStateNormal;
+	updateSizeState = true;
 	aliasLinePoint = false;
 	allowDeleteLine = true;
 	
@@ -91,7 +91,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.translate(minimizeRect.center() + QPoint(1, 1));
 		QPolygon polygon;
 		
-		if (!minimized)
+		if (sizeState == SizeStateMinimized)
 			painter.rotate(180);
 		
 		polygon.append(QPoint(0, -minimizeRect.height() * 0.25 - 1));
@@ -104,8 +104,17 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.restore();
 	}
 	
+	//draw maximize box
+	{
+		painter.setPen(Qt::white);
+		QRect maximizeRect = GetMaximizeRect();
+		painter.drawRect(maximizeRect);
+		maximizeRect.adjust(2, 2, -2, -2);
+		painter.drawRect(maximizeRect);
+	}
+	
 	//draw limits
-	if (!minimized)
+	if (sizeState != SizeStateMinimized)
 	{
 		//draw graph border
 		painter.setPen(Qt::white);
@@ -179,8 +188,12 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		if (!isLineEnable)
 		{
 			painter.setPen(Qt::red);
-			painter.drawLine(graphRect.topLeft(), graphRect.bottomRight());
-			painter.drawLine(graphRect.bottomLeft(), graphRect.topRight());
+			/*painter.drawLine(graphRect.topLeft(), graphRect.bottomRight());
+			painter.drawLine(graphRect.bottomLeft(), graphRect.topRight());*/
+			
+			//int textWidth += painter.fontMetrics().width(legend);
+			//painter.drawText(<#const QPointF &p#>, <#const QString &s#>)
+			painter.drawText(graphRect, Qt::AlignVCenter | Qt::AlignHCenter, "Property is not enabled");
 		}
 	}
 
@@ -265,14 +278,14 @@ bool TimeLineWidget::SortPoints(const Vector2& i, const Vector2& j)
 	return (i.x < j.x);
 }
 
-void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateMinimize, bool aliasLinePoint, bool allowDeleteLine)
+void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine)
 {
 	lines.clear();
 
 	this->minTime = minT;
 	this->maxTime = maxT;
 	
-	this->updateMinimize = updateMinimize;
+	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
 }
@@ -345,14 +358,14 @@ void TimeLineWidget::AddLines(const Vector< PropValue<Vector3> >& lines, const V
 
 void TimeLineWidget::PostAddLine()
 {
-	if (updateMinimize)
+	if (updateSizeState)
 	{
-		minimized = true;
+		sizeState = SizeStateMinimized;
 		for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
 			if (iter->second.line.size())
 			{
-				minimized = false;
+				sizeState = SizeStateNormal;
 				break;
 			}
 		}
@@ -360,7 +373,6 @@ void TimeLineWidget::PostAddLine()
 	
 	UpdateLimits();
 	UpdateSizePolicy();
-	update();
 }
 
 void TimeLineWidget::UpdateLimits()
@@ -548,7 +560,7 @@ QRect TimeLineWidget::GetGraphRect() const
 	else
 		graphRect.setY(graphRect.y() + 2 + LEGEND_WIDTH);
     graphRect.setWidth(graphRect.width() - 5);
-	if (minimized)
+	if (sizeState == SizeStateMinimized)
 		graphRect.setHeight(0);
 	else
 		graphRect.setHeight(graphRect.height() - 20);
@@ -565,19 +577,29 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 	//check click on draw color rect
 	if (event->button()==Qt::LeftButton)
 	{
-		if (GetLineDrawRect().contains(event->pos()))
+		if (GetMinimizeRect().contains(event->pos()))
+		{
+			if (sizeState == SizeStateMinimized)
+				sizeState = SizeStateNormal;
+			else
+				sizeState = SizeStateMinimized;
+			UpdateSizePolicy();
+			return;
+		}
+		else if (GetMaximizeRect().contains(event->pos()))
+		{
+			if (sizeState == SizeStateNormal)
+				sizeState = SizeStateDouble;
+			else
+				sizeState = SizeStateNormal;
+			UpdateSizePolicy();
+			return;
+		}
+		else if (GetLineDrawRect().contains(event->pos()))
 		{
 			drawLine++;
 			if (drawLine >= (int32)lines.size())
 				drawLine = -1;
-		}
-		else if (GetMinimizeRect().contains(event->pos()))
-		{
-			minimized = !minimized;
-			UpdateSizePolicy();
-			
-			update();
-			return;
 		}
 		else
 		{
@@ -609,7 +631,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 	}
 
-	if (!minimized)
+	if (sizeState != SizeStateMinimized)
 		GraphRectClick(event);
 
 	update();
@@ -661,7 +683,7 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	QWidget::mouseMoveEvent(event);
 	
-	if (minimized)
+	if (sizeState == SizeStateMinimized)
 		return;
 		
 	Vector2 point = GetLogicPoint(event->pos());
@@ -856,6 +878,13 @@ QRect TimeLineWidget::GetLineDrawRect() const
 
 QRect TimeLineWidget::GetMinimizeRect() const
 {
+	QRect rect = GetMaximizeRect();
+	rect.translate(-rect.width() * 1.5, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetMaximizeRect() const
+{
 	return QRect(this->width() - LEGEND_WIDTH - 2, 2, LEGEND_WIDTH - 2, LEGEND_WIDTH -2);
 }
 
@@ -871,16 +900,28 @@ bool TimeLineWidget::IsLegendEmpty() const
 
 void TimeLineWidget::UpdateSizePolicy()
 {
-	if (minimized)
+	switch (sizeState)
 	{
-		setMinimumHeight(18);
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+		case SizeStateMinimized:
+		{
+			setMinimumHeight(18);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+		} break;
+		case SizeStateNormal:
+		{
+			setMinimumHeight(150);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		} break;
+		case SizeStateDouble:
+		{
+			int height = Max(150, QWidget::height());
+			height *= 2;
+			setMinimumHeight(height);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		} break;
 	}
-	else
-	{
-		setMinimumHeight(150);
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	}
+	
+	update();
 }
 
 void TimeLineWidget::GetClickedPoint(const QPoint& point, int32& pointId, int32& lineId) const
