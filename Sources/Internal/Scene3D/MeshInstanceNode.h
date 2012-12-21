@@ -31,7 +31,8 @@
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/Render/RenderObject.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA 
 {
@@ -47,7 +48,7 @@ class InstanceMaterialState;
 class NMaterial;
 class NMaterialInstance;
 
-class PolygonGroupWithMaterial : public RenderObject
+class PolygonGroupWithMaterial : public RenderBatch
 {
 public:
     PolygonGroupWithMaterial();
@@ -98,6 +99,10 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual void Draw();
     virtual uint64 GetSortID();
+    
+    uint32 GetRenderBatchCount();
+    RenderBatch * GetRenderBatch(uint32 batchIndex);
+
 
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible();

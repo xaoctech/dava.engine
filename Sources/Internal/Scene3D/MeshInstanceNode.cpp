@@ -164,6 +164,10 @@ MeshInstanceNode::MeshInstanceNode()
     //Logger::Debug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
     
+    RenderComponent * renderComponent = new RenderComponent();
+    //renderComponent->SetRenderObject(this);
+    this->AddComponent(renderComponent);
+
 //    Stats::Instance()->RegisterEvent("Scene.Update.MeshInstanceNode.Update", "Update time of MeshInstanceNode");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.MeshInstanceNode.Draw", "Draw time of MeshInstanceNode");
 }
@@ -192,11 +196,23 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
 	PolygonGroup * group = polygroup->GetPolygonGroup();
 	bbox.AddAABBox(group->GetBoundingBox());
     
-    SceneNode * node = new SceneNode();
-    RenderComponent * renderComponent = new RenderComponent();
-    renderComponent->SetRenderObject(polygroup);
-    node->AddComponent(renderComponent);
-    AddNode(node);
+    
+//    scene->ImmediateUpdate(this, renderComponent);
+//    SceneNode * node = new SceneNode();
+//    RenderComponent * renderComponent = new RenderComponent();
+//    renderComponent->SetRenderObject(polygroup);
+//    node->AddComponent(renderComponent);
+//    AddNode(node);
+}
+    
+uint32 MeshInstanceNode::GetRenderBatchCount()
+{
+    return (uint32)polygroups.size();
+}
+
+RenderBatch * MeshInstanceNode::GetRenderBatch(uint32 batchIndex)
+{
+    return polygroups[batchIndex];
 }
     
 void MeshInstanceNode::Update(float32 timeElapsed)

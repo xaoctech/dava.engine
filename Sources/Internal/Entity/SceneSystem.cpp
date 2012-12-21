@@ -27,7 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/Components/SceneSystem.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA 
 {

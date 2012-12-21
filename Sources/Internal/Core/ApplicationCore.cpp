@@ -33,7 +33,7 @@
 #include "Render/RenderManager.h"
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/TransformSystem.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"

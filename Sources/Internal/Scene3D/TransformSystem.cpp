@@ -1,4 +1,4 @@
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/TransformSystem.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SceneNode.h"
 #include "Debug/DVAssert.h"

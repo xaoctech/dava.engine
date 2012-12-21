@@ -9,7 +9,6 @@
 #include "MaterialPropertyControl.h"
 #include "LodNodePropertyControl.h"
 #include "EntityPropertyControl.h"
-#include "Entity/Entity.h"
 #include "ParticleEmitterPropertyControl.h"
 #include "SwitchNodePropertyControl.h"
 #include "ParticleEffectPropertyControl.h"

@@ -43,7 +43,7 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/TransformSystem.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
