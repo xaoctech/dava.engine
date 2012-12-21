@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "ScreenWrapper.h"
+#include "EditorSettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,6 +42,9 @@ private slots:
 	
 	void OnUpdateScaleRequest(float scaleDelta);
 	void OnUpdateScreenPositionRequest(const QPoint& posDelta);
+	
+	void FileMenuTriggered(QAction *resentScene);
+	void MenuFileWillShow();
 
 private:
 	bool CloseProject();
@@ -50,9 +54,12 @@ private:
 	
 	void InitMenu();
 	void UpdateMenu();
+	void UpdateProjectSettings(const QString& filename);
+	QString GetDefaultDirectory();
 
 private:
     Ui::MainWindow *ui;
+	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
 	
 	bool screenChangeUpdate;
 };

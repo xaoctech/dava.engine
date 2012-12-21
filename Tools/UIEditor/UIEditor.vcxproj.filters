@@ -487,6 +487,9 @@
     <ClCompile Include="GeneratedFiles\ReleaseQt\moc_ScreenManager.cpp">
       <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\EditorSettings.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -632,6 +635,9 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\PropertyGridWidgetsFactory.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\EditorSettings.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
