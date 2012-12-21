@@ -218,6 +218,7 @@ public:
 
     TextureDescriptor * CreateDescriptor() const;
 
+    void Reload();
     void ReloadAs(ImageFileFormat fileFormat);
 	void ReloadAs(ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 
@@ -314,6 +315,7 @@ private:
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     static ImageFileFormat defaultFileFormat;
+    ImageFileFormat loadedAsFile;
 };
     
 // Implementation of inline functions
