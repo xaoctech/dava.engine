@@ -38,8 +38,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
-#include "Entity/Entity.h"
-#include "Scene3D/Components/TransformSystem.h"
+#include "Scene3D/TransformSystem.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Scene.h"
 

@@ -35,7 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
-#include "Scene3D/Components/Component.h"
+#include "Entity/Component.h"
 #include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA

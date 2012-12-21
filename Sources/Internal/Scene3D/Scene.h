@@ -36,7 +36,6 @@
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Camera.h"
 #include "Scene3D/LightNode.h"
-#include "Scene3D/Drawable.h"
 
 namespace DAVA
 {
@@ -266,8 +265,6 @@ protected:
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
     
-    Vector<Drawable*> drawArray;
-
     friend class SceneNode;
 };
 

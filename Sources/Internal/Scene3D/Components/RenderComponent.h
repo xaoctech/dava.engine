@@ -2,8 +2,8 @@
 #define __DAVAENGINE_SCENE3D_RENDER_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/Components/Component.h"
-#include "Scene3D/Render/RenderObject.h"
+#include "Entity/Component.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA 
 {

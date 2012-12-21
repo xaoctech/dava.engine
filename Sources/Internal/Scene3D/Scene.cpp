@@ -53,8 +53,8 @@
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/LandscapeNode.h"
 
-#include "Scene3D/Components/SceneSystem.h"
-#include "Scene3D/Render/RenderSystem.h"
+#include "Entity/SceneSystem.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -189,12 +189,12 @@ void Scene::RegisterNode(SceneNode * node)
 	//	node->entity->SetData("landscapeNode", landscapeNode);
 	//}
     
-    Drawable * drawable = dynamic_cast<Drawable*>(node);
-    
-    if (drawable)
-    {
-        drawArray.push_back(drawable);
-    }
+//    Drawable * drawable = dynamic_cast<Drawable*>(node);
+//    
+//    if (drawable)
+//    {
+//        drawArray.push_back(drawable);
+//    }
     
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -241,23 +241,23 @@ void Scene::UnregisterNode(SceneNode * node)
 	//	entityManager->DestroyEntity(node->entity);
 	//}
     
-    // Remove drawable remove
-    Drawable * drawable = dynamic_cast<Drawable*>(node);
-    
-    if (drawable)
-    {
-        int32 size = (uint32)drawArray.size();
-        uint32 pos = 0;
-        for (pos = 0; pos < size; ++pos)
-        {
-            if (drawArray[pos] == drawable)
-            {
-                drawArray[pos] = drawArray[size - 1];
-                drawArray.pop_back();
-                break;
-            }
-        }
-    }
+//    // Remove drawable remove
+//    Drawable * drawable = dynamic_cast<Drawable*>(node);
+//    
+//    if (drawable)
+//    {
+//        int32 size = (uint32)drawArray.size();
+//        uint32 pos = 0;
+//        for (pos = 0; pos < size; ++pos)
+//        {
+//            if (drawArray[pos] == drawable)
+//            {
+//                drawArray[pos] = drawArray[size - 1];
+//                drawArray.pop_back();
+//                break;
+//            }
+//        }
+//    }
 }
     
 void Scene::AddComponent(SceneNode * entity, Component * component)

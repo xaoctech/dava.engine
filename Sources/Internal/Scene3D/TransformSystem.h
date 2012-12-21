@@ -5,7 +5,7 @@
 #include "Math/MathConstants.h"
 #include "Math/Matrix4.h"
 #include "Base/Singleton.h"
-#include "Scene3D/Components/SceneSystem.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA 
 {
