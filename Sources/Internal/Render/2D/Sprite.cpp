@@ -96,7 +96,8 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
         return sprForScaledPath;
     }
 	
-    File * fp = LoadLocalizedFile(scaledPath);
+    String texturePath;
+    File * fp = LoadLocalizedFile(scaledPath, texturePath);
     int32 sizeIndex = 0;
 	if (!fp)
 	{
@@ -106,7 +107,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
             return sprForPathName;
         }
 
-        fp = LoadLocalizedFile(pathName);
+        fp = LoadLocalizedFile(pathName, texturePath);
         if(!fp)
         {
             Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
@@ -126,7 +127,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
         spr = new Sprite();
     }
     spr->resourceSizeIndex = sizeIndex;
-    spr->InitFromFile(fp, pathName);
+    spr->InitFromFile(fp, pathName, texturePath);
     
     SafeRelease(fp);
     
@@ -166,30 +167,39 @@ String Sprite::GetScaledName(const String &spriteName)
     return spriteName;
 }
 
-File * Sprite::LoadLocalizedFile(const String &spritePathname)
+File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePath)
 {
     String fileName, folderName;
     FileSystem::Instance()->SplitPath(spritePathname, folderName, fileName);
     
     String localizedScaledPath = folderName + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-    Logger::Info("[Sprite::LoadLocalizedFile] (%s). Call GetCanonical if //", localizedScaledPath.c_str());
+//    Logger::Info("[Sprite::LoadLocalizedFile] (%s).", localizedScaledPath.c_str());
     
+    texturePath = "";
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
-    if(!fp)
+    if(fp)
+    {
+        texturePath = localizedScaledPath;
+    }
+    else
     {
     	fp = File::Create(spritePathname, File::READ|File::OPEN);
+        if(fp)
+        {
+            texturePath = spritePathname;
+        }
     }
 
     return fp;
 }
     
-void Sprite::InitFromFile(File *file, const String &pathName)
+void Sprite::InitFromFile(File *file, const String &pathName, const String &texturePathname)
 {
 	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
 
 //	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
 
-    String texturePath = FileSystem::Instance()->ReplaceExtension(file->GetFilename(), "");
+    String texturePath = texturePathname;
 	size_t tpos = texturePath.rfind("/");
 	if(tpos != String::npos)
 	{
@@ -201,6 +211,8 @@ void Sprite::InitFromFile(File *file, const String &pathName)
 
     type = SPRITE_FROM_FILE;
 	relativePathname = pathName;
+    relativeTexturePathname = texturePathname;
+    
 	file->ReadLine(tempBuf, 1024);
 	sscanf(tempBuf, "%d", &textureCount);
 	textures = new Texture*[textureCount];
@@ -1513,7 +1525,7 @@ void Sprite::Reload()
         File *fp = File::Create(relativePathname, File::READ | File::OPEN);
         if(fp)
         {
-            InitFromFile(fp, relativePathname);
+            InitFromFile(fp, relativePathname, relativeTexturePathname);
             SafeRelease(fp);
         }
     }

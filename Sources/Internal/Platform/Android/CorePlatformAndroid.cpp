@@ -45,6 +45,10 @@ int Core::Run(int argc, char * argv[], AppHandle handle)
 {
 //    sleep(15); //TODO: for debugger start
     
+//    //TODO: log current configuration - DEBUG Feature
+//    print_cur_config(handle);
+    
+    
     CorePlatformAndroid * core = new CorePlatformAndroid();
     if(core)
     {
