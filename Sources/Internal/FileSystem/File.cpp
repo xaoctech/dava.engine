@@ -89,6 +89,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 			uint8 * buffer = new uint8[size];
 			item.archive->LoadResource(relfilename, buffer);
 			DynamicMemoryFile * file =  DynamicMemoryFile::Create(buffer, size, attributes);
+            SafeDeleteArray(buffer);
 			return file;
 		}
 	}
