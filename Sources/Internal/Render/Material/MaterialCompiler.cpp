@@ -133,7 +133,7 @@ void MaterialCompiler::FixNodesWithoutProperInputs()
     
 }
 
-    
+
 MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGraphNode * node, String & vertexShader, String & pixelShader)
 {
     Logger::Debug("Generate Code: %s %d", node->GetName().c_str(), node->GetType());

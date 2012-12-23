@@ -126,6 +126,10 @@ public:
     void SetError(eError error);
     eError GetError();
     
+    void OptimizeScene(SceneNode * rootNode);
+    bool RemoveEmptySceneNodes(SceneNode * rootNode);
+    bool RemoveEmptyHierarchy(SceneNode * currentNode);
+    int32 removedNodeCount;
 private:
     void AddToNodeMap(DataNode * node);
 

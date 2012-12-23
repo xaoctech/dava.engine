@@ -37,7 +37,23 @@ namespace DAVA
 
 /**
 	\ingroup render
-	\brief Base class for render system resources. All render system resources must be derived from this class. 
+	\brief 
+            Base class for render system resources. All render system resources must be derived from this class.
+ 
+    Thoughts about RenderResource
+    RenderResource - can be the one that require invalidation and ones that not require. For example:
+
+    Low-level resources
+    - Texture - require invalidation. From DISK.
+    - Shader - require invalidation. From DISK, or Memory.
+    - VBO, IBO - require invalidation. From somewhere.
+    
+    High-level resources
+    - Sprite - sometimes can require reload, looks like the same as invalidation.
+    - All types of meshes - do not require any type of reload. Sometimes should provide data to underlying VBOs, IBOs.
+    - Material - do not require invalidation. 
+    
+ 
  */
 class RenderResource : public BaseObject
 {

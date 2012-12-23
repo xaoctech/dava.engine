@@ -275,7 +275,9 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-
+    
+    OptimizeScene(rootNode);
+    
 	rootNode->SceneDidLoaded();
     
     if (GetError() == ERROR_NO_ERROR)
@@ -529,5 +531,94 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     
     SafeRelease(archive);
 }
+    
+bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
+{
+    for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+    {
+        SceneNode * childNode = currentNode->GetChild(c);
+        bool dec = RemoveEmptySceneNodes(childNode);
+        if(dec)c--;
+    }
+    if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(SceneNode)))
+    {
+        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+        bool res = customProperties && customProperties->IsKeyExists("editor.donotremove");
+        
+        if (!res)
+        {
+            SceneNode * parent  = currentNode->GetParent();
+            if (parent)
+            {
+                parent->RemoveNode(currentNode);
+                removedNodeCount++;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+    
+bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
+{
+    for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+    {
+        SceneNode * childNode = currentNode->GetChild(c);
+        bool dec = RemoveEmptyHierarchy(childNode);
+        if(dec)c--;
+    }
+    
+//    if (currentNode->GetName() == "back_plain02.sc2")
+//    {
+//        int32 k = 0;
+//        k++;
+//        Logger::Debug("found node: %s %p", currentNode->GetName().c_str(), currentNode);
+//    }
+
+    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
+    {
+        if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+        {
+            SceneNode * parent  = currentNode->GetParent();
+            if (parent)
+            {
+                SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
+                String currentName = currentNode->GetName();
+                
+                Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                parent->RemoveNode(currentNode);
+                parent->AddNode(childNode);
+                
+                childNode->SetName(currentName);
+                removedNodeCount++;
+                SafeRelease(childNode);
+                return true;
+            }
+            //RemoveEmptyHierarchy(childNode);
+        }
+    }
+    return false;
+}
+
+    
+void SceneFileV2::OptimizeScene(SceneNode * rootNode)
+{
+    int32 beforeCount = rootNode->GetChildrenCountRecursive();
+    removedNodeCount = 0;
+    rootNode->BakeTransforms();
+    
+    RemoveEmptySceneNodes(rootNode);
+    RemoveEmptyHierarchy(rootNode);
+    
+//    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
+//    {
+//        SceneNode * node = rootNode->GetChild(k);
+//        if (node->GetName() == "instance_0")
+//            node->SetName(rootNodeName);
+//    }
+    int32 nowCount = rootNode->GetChildrenCountRecursive();
+    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+}
+
     
 };
