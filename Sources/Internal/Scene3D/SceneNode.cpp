@@ -822,7 +822,8 @@ void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     transformComponent->SetLocalTransform(&newMatrix);
 //    scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateUpdate(this, transformComponent);
+    if (scene)
+        scene->ImmediateUpdate(this, transformComponent);
     
     //localTransform = newMatrix;
     //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
