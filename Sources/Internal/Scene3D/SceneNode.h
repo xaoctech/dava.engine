@@ -84,6 +84,7 @@ public:
     inline TransformComponent * GetTransformComponent();
     inline RenderComponent * GetRenderComponent();
     
+    inline uint32 GetAvailableComponentFlags();
 
     uint32 componentFlags;
     uint32 componentUpdateMarks;
@@ -549,6 +550,11 @@ TransformComponent * SceneNode::GetTransformComponent()
 RenderComponent * SceneNode::GetRenderComponent()
 {
     return renderComponent;
+}
+
+uint32 SceneNode::GetAvailableComponentFlags()
+{
+    return componentFlags;
 }
 
 };

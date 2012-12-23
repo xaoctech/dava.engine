@@ -300,7 +300,9 @@ void Scene::ImmediateUpdate(SceneNode * entity, Component * updatedComponent)
     for (uint32 k = 0; k < systemsCount; ++k)
     {
         uint32 requiredComponentFlags = systems[k]->GetRequiredComponents();
-        if ((requiredComponentFlags & updatedComponentFlag) != 0)
+        uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+        
+        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
         {
             systems[k]->ImmediateUpdate(entity);
         }
