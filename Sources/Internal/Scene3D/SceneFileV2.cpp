@@ -603,21 +603,23 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
     
 void SceneFileV2::OptimizeScene(SceneNode * rootNode)
 {
-//    int32 beforeCount = rootNode->GetChildrenCountRecursive();
-//    removedNodeCount = 0;
-//    rootNode->BakeTransforms();
-//    
-//    RemoveEmptySceneNodes(rootNode);
-//    RemoveEmptyHierarchy(rootNode);
-//    
-////    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
-////    {
-////        SceneNode * node = rootNode->GetChild(k);
-////        if (node->GetName() == "instance_0")
-////            node->SetName(rootNodeName);
-////    }
-//    int32 nowCount = rootNode->GetChildrenCountRecursive();
-//    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+#if 0
+    int32 beforeCount = rootNode->GetChildrenCountRecursive();
+    removedNodeCount = 0;
+    rootNode->BakeTransforms();
+    
+    RemoveEmptySceneNodes(rootNode);
+    RemoveEmptyHierarchy(rootNode);
+    
+//    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
+//    {
+//        SceneNode * node = rootNode->GetChild(k);
+//        if (node->GetName() == "instance_0")
+//            node->SetName(rootNodeName);
+//    }
+    int32 nowCount = rootNode->GetChildrenCountRecursive();
+    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+#endif
 }
 
     
