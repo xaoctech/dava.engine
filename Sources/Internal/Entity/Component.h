@@ -44,6 +44,7 @@ public:
         RENDER_COMPONENT,
         UPDATE_COMPONENT,
         CAMERA_COMPONENT,
+        LIGHT_COMPONENT,
         ANIMATION_COMPONENT,
         COLLISION_COMPONENT,    // multiple instances
         PHYSICS_COMPONENT,

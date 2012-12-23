@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 #include "Entity/SceneSystem.h"
 
 namespace DAVA
@@ -39,6 +40,7 @@ namespace DAVA
 class RenderPass;
 class RenderLayer;
 class RenderObject;
+class RenderBatch;
 class SceneNode;
     
 class RenderSystem : public SceneSystem
@@ -49,15 +51,27 @@ public:
     
     virtual void AddEntity(SceneNode * entity);
     virtual void RemoveEntity(SceneNode * entity);
+    virtual void ImmediateUpdate(SceneNode * entity);
+
     virtual void Process();
     
 private:
     void AddRenderObject(RenderObject * renderObject);
     void RemoveRenderObject(RenderObject * renderObject);
+    void AddRenderBatch(RenderBatch * renderBatch);
+    void RemoveRenderBatch(RenderBatch * renderBatch);
+    void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
     
-    Vector<RenderPass*> renderPasses;
-    Vector<RenderLayer*> renderLayers;
+    Vector<RenderPass*> renderPassOrder;
+    //Vector<RenderLayer*> renderLayers;
+    
+    FastNameMap<RenderPass*> renderPassesMap;
+    FastNameMap<RenderLayer*> renderLayersMap;
+    
     Vector<RenderObject*> renderObjectArray;
+    //Vector<AABBox> transformedBBox;
+    //Vector<BSphere> transformedBSphere;
+    
     HashMap<SceneNode*, RenderObject *> entityObjectMap;
     
     //Vector<RenderObject*> forRemove;

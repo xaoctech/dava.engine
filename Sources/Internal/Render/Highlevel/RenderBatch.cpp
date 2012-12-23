@@ -33,7 +33,8 @@ namespace DAVA
 {
     
 RenderBatch::RenderBatch()
-    : removeIndex(-1)
+    :   ownerLayer(0)
+    ,   removeIndex(-1)
 {
 }
     
@@ -46,5 +47,13 @@ void RenderBatch::Draw()
 {
     
 }
+    
+    
+const FastName & RenderBatch::GetOwnerLayerName()
+{
+    static FastName fn("OpaqueRenderLayer");
+    return fn;
+}
+
 
 };

@@ -44,13 +44,32 @@ RenderLayer::~RenderLayer()
     
 }
     
+
+void RenderLayer::AddRenderBatch(RenderBatch * batch)
+{
+    renderBatchArray.push_back(batch);
+    batch->SetRemoveIndex(this, renderBatchArray.size() - 1);
+}
+
+void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
+{
+    renderBatchArray[batch->GetRemoveIndex()] = renderBatchArray[renderBatchArray.size() - 1];
+    renderBatchArray.pop_back();
+    batch->SetRemoveIndex(0, -1);
+}
+    
+void RenderLayer::Update()
+{
+
+}
+    
 void RenderLayer::Draw()
 {
-    renderBatchArray->Update();
-    uint32 size = renderBatchArray->GetCount();
+    Update();
+    uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderBatchArray->GetBatch(k)->Draw();
+        renderBatchArray[k]->Draw();
     }
 }
 

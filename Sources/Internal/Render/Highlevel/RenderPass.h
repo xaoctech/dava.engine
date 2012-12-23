@@ -44,6 +44,9 @@ public:
     
     const FastName & GetName();
     
+    void AddRenderLayer(RenderLayer * layer);
+    void RemoveRenderLayer(RenderLayer * layer);
+    
     void Draw();
     
 private:

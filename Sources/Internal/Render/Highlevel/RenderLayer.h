@@ -43,10 +43,16 @@ public:
     RenderLayer(const char * name);
     virtual ~RenderLayer();
     
+    void AddRenderBatch(RenderBatch * batch);
+    void RemoveRenderBatch(RenderBatch * batch);
+    
+    void Update();
     void Draw();
 private:
     FastName name;
-    RenderBatchArray * renderBatchArray;
+    Vector<RenderBatch*> renderBatchArray;
+    uint32 index;
+    //RenderBatchArray * renderBatchArray;
 };
     
 } // ns

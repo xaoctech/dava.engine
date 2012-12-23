@@ -36,33 +36,62 @@
 
 namespace DAVA
 {
+    static FastName PASS_ZPRE_PASS("ZPrePass");
+    static FastName PASS_FORWARD_PASS("ForwardPass");
+    static FastName PASS_DEFERRED_PASS("DeferredPass");
 
 RenderSystem::RenderSystem()
     : entityObjectMap(2048 /* size of hash table */, 0 /* defaut value */)
 {
     // Build forward renderer.
-    renderPasses.push_back(new RenderPass("ZPrePass"));
-    renderPasses.push_back(new RenderPass("ForwardRenderPass"));
+    renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
+    renderPassesMap.Insert("ForwardPass", new RenderPass("ForwardPass"));
+    
+    // renderPasses.push_back(new RenderPass("GBufferPass"));
+    // renderPasses.push_back(new LightPrePass("LightPrePass"));
+    // renderPasses.push_back(new ShadowMapPass("ShadowMapPass")):
 
-    renderLayers.push_back(new RenderLayer("OpaqueRenderLayer"));
-    renderLayers.push_back(new RenderLayer("TransclucentRenderLayer"));
+    renderLayersMap.Insert("OpaqueRenderLayer", new RenderLayer("OpaqueRenderLayer"));
+    renderLayersMap.Insert("TransclucentRenderLayer", new RenderLayer("TransclucentRenderLayer"));
+    
+    renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
+    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
+    
 }
 
 RenderSystem::~RenderSystem()
 {
-    uint32 layersSize = (uint32)renderLayers.size();
-    for (uint32 k = 0; k < layersSize; ++k)
+    //for (FastNameMap<RenderPass*>::Iterator )
+    Logger::Error("Write functions to release data from HashMaps. Need Iterations for HashMap.");
+    
+    renderLayersMap.Clear();
+    renderPassesMap.Clear();
+//    uint32 layersSize = (uint32)renderLayers.size();
+//    for (uint32 k = 0; k < layersSize; ++k)
+//    {
+//        SafeDelete(renderLayers[k]);
+//    }
+//    renderPasses.clear();
+//
+//    uint32 size = (uint32)renderPasses.size();
+//    for (uint32 k = 0; k < size; ++k)
+//    {
+//        SafeDelete(renderPasses[k]);
+//    }
+//    renderPasses.clear();
+}
+    
+void RenderSystem::ImmediateUpdate(SceneNode * entity)
+{
+    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    if (!renderObject)return;
+    
+    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
     {
-        SafeDelete(renderLayers[k]);
+        Logger::Error("Object in entity was replaced suddenly. ");
     }
-    renderPasses.clear();
-
-    uint32 size = (uint32)renderPasses.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        SafeDelete(renderPasses[k]);
-    }
-    renderPasses.clear();
+    
+    // Do we need updates??? 
 }
     
 void RenderSystem::AddEntity(SceneNode * entity)
@@ -75,6 +104,15 @@ void RenderSystem::AddEntity(SceneNode * entity)
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
     
     AddRenderObject(renderObject);
+    
+    uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+    for (uint32 k = 0; k < renderBatchCount; ++k)
+    {
+        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        //if (batch->GetMaterial()->GetRenderLayerName() == ;
+        AddRenderBatch(batch);
+    }
+    
 }
 
 void RenderSystem::RemoveEntity(SceneNode * entity)
@@ -83,18 +121,15 @@ void RenderSystem::RemoveEntity(SceneNode * entity)
     if (!renderObject)return;
 
     renderObjectArray[renderObject->GetRemoveIndex()] = renderObjectArray[renderObjectArray.size() - 1];
+    renderObjectArray.pop_back();
+    renderObject->SetRemoveIndex(-1);
+    
     entityObjectMap.Remove(entity);
     RemoveRenderObject(renderObject);
 }
 
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
-//    uint32 
-//    
-//    for (uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
-//    {
-//    
-//    }
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
@@ -102,7 +137,34 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     
 }
     
+void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
+{
+    // Get Layer Name
+    FastName name = renderBatch->GetOwnerLayerName();
+
+    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
+    if (oldLayer != 0)
+    {
+        oldLayer->RemoveRenderBatch(renderBatch);
+    }
+    RenderLayer * layer = renderLayersMap[name];
+    layer->AddRenderBatch(renderBatch);
+}
     
+void RenderSystem::RemoveRenderBatch(RenderBatch * renderBatch)
+{
+    RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
+    if (oldLayer != 0)
+    {
+        oldLayer->RemoveRenderBatch(renderBatch);
+    }
+}
+
+void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
+{
+    AddRenderBatch(renderBatch);
+}
+
 
     
 void RenderSystem::Process()
@@ -114,10 +176,10 @@ void RenderSystem::Process()
 //        renderObjectArray[k]->Draw();
 //    }
     
-    uint32 size = (uint32)renderPasses.size();
+    uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderPasses[k]->Draw();
+        renderPassOrder[k]->Draw();
     }
 }
 

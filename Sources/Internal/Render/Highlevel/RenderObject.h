@@ -48,6 +48,16 @@ public:
     uint32 primitiveType;
 };
 */
+    
+/*
+    Types of possible render objects
+ 
+    
+    - Mesh(Static)
+    - Mesh(Dynamic)
+    - 
+ 
+ */
 
 class RenderBatch;
     
@@ -63,8 +73,8 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
     
-    virtual uint32 GetRenderBatchCount() = 0;
-    virtual RenderBatch * GetRenderBatch(uint32 batchIndex) = 0;
+    uint32 GetRenderBatchCount();
+    RenderBatch * GetRenderBatch(uint32 batchIndex);
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
@@ -72,6 +82,7 @@ public:
 private:
     uint32 flags;
     uint32 removeIndex;
+    Vector<RenderBatch*> renderBatchArray;    
 };
 
 inline uint32 RenderObject::GetRemoveIndex()

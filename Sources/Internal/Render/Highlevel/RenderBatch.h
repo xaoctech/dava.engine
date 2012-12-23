@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -42,6 +43,7 @@ class RenderCallInstance
 public:
     VBO *
     IBO *
+    NMaterialInstance *
     NMaterial *
     uint32 start;
     uint32 count;
@@ -49,28 +51,41 @@ public:
 };
 */
     
+class RenderLayer;
+    
 class RenderBatch : public BaseObject
 {
 public:
     RenderBatch();
     virtual ~RenderBatch();
     
-    inline void SetRemoveIndex(uint32 removeIndex);
+    // TEMPORARY
+    virtual const FastName & GetOwnerLayerName();
+    
+    
+    inline void SetRemoveIndex(RenderLayer * _onwerLayer, uint32 removeIndex);
     inline uint32 GetRemoveIndex();
+    inline RenderLayer * GetOwnerLayer();
 
     virtual void Draw() = 0;
 private:
+    RenderLayer * ownerLayer;
     uint32 removeIndex;
-
 };
 
 inline uint32 RenderBatch::GetRemoveIndex()
 {
     return removeIndex;
 }
-
-inline void RenderBatch::SetRemoveIndex(uint32 _removeIndex)
+    
+inline RenderLayer * RenderBatch::GetOwnerLayer()
 {
+    return ownerLayer;
+}
+
+inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _removeIndex)
+{
+    ownerLayer = _ownerLayer;
     removeIndex = _removeIndex;
 }
     
