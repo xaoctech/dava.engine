@@ -43,16 +43,6 @@ RenderBatchArray::~RenderBatchArray()
     
 }
 
-    
-void RenderBatchArray::AddRenderBatch(RenderBatch * batch)
-{
-    finalArray.push_back(batch);
-}
-    
-void RenderBatchArray::RemoveRenderBatch(RenderBatch * batch)
-{
-    //finalArray.
-}
 
 void RenderBatchArray::Update()
 {
