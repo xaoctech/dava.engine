@@ -230,7 +230,19 @@ int32 SceneNode::GetChildrenCount()
 {
     return (int32)children.size();
 }
+int32 SceneNode::GetChildrenCountRecursive()
+{
+    int32 result = 0;
+    result += (int32)children.size();
+    for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
+	{
+        SceneNode *node = *t;
+        result += node->GetChildrenCountRecursive();
+    }
+    return result;
+}
 
+    
 void SceneNode::RemoveAllChildren()
 {
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
@@ -322,6 +334,7 @@ void SceneNode::BakeTransforms()
         AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
         
         //worldTransform = Matrix4
+        //UpdateTransform();
         for (uint32 c = 0; c < size; ++c)
         {
             children[c]->BakeTransforms();
