@@ -652,8 +652,8 @@ void  YamlNode::AddValueToArray(const String& value)
     
 void YamlNode::RemoveNodeFromMap(const String & name)
 {
-    Map<String, YamlNode*>::iterator t;
-    if ((t = objectMap.find(name)) != objectMap.end())
+    MultiMap<String, YamlNode*>::iterator t = objectMap.find(name);
+    if (t != objectMap.end())
     {
         objectMap.erase(t);
     }
@@ -1256,7 +1256,7 @@ Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String,
 {
     // Order the map nodes by the "Relative Depth".
     Vector<YamlNodeKeyValuePair> sortedChildren;
-    for (Map<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+    for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
     {
         // Only the nodes of type Map are expected here.
         if (t->second->GetType() != YamlNode::TYPE_MAP)
