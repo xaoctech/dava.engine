@@ -204,7 +204,7 @@ void CommandUpdateParticleLayer::Init(Sprite* sprite,
 	this->sizeOverLife = sizeOverLife;
 	this->velocity = velocity;
 	this->velocityVariation = velocityVariation;
-	this->velocityVariation = velocityVariation;
+	this->velocityOverLife = velocityOverLife;
 	this->spin = spin;
 	this->spinVariation = spinVariation;
 	this->spinOverLife = spinOverLife;
