@@ -381,9 +381,6 @@
     <ClInclude Include="Classes\SceneEditor\SceneGraph.h">
       <Filter>Sources\SceneEditor\Graphs</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h">
-      <Filter>Sources\SceneEditor\Graphs</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
@@ -2225,9 +2222,6 @@
       <Filter>Sources\SceneEditor\Graphs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp">
-      <Filter>Sources\SceneEditor\Graphs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp">
       <Filter>Sources\SceneEditor\Graphs</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp">
