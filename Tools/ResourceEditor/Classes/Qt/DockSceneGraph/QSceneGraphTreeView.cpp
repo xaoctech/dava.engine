@@ -1,4 +1,4 @@
-#include "QSceneGraphTreeView.h"
+	#include "QSceneGraphTreeView.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../Scene/SceneData.h"
