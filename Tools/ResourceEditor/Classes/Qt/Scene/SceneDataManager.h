@@ -5,9 +5,6 @@
 #include "EditorScene.h"
 #include "Scene/SceneData.h"
 
-#include <QItemSelection>
-class QTreeView;
-
 class SceneDataManager: public QObject, public DAVA::Singleton<SceneDataManager>
 {
 	Q_OBJECT
