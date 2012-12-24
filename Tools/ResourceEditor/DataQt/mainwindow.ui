@@ -869,7 +869,7 @@ Area Size:</string>
   <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
-   <header>QSceneGraphTreeView.h</header>
+   <header>DockSceneGraph/QSceneGraphTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>LibraryView</class>
