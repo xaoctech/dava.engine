@@ -156,7 +156,6 @@ bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA:
 	
 	inputOptions.setMipmapGeneration(false);
 
-	inputOptions.setMipmapData(image.data, image.width,  image.height);
 	
 	CompressionOptions compressionOptions;
 
@@ -203,7 +202,7 @@ bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA:
 
 	uint8* compressedImageBuffer = new uint8[realHeaderSize + image.dataSize];
 	memcpy(compressedImageBuffer, imageHeaderBuffer, realHeaderSize);
-	memcpy(compressedImageBuffer+realHeaderSize, image.data, image.dataSize);
+	memcpy(compressedImageBuffer + realHeaderSize, image.data, image.dataSize);
 	delete[] imageHeaderBuffer;
 	
 	bool retValue = NvttHelper::InitDecompressor(dec, compressedImageBuffer, realHeaderSize + image.dataSize);
@@ -372,6 +371,8 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 	{
 		inputOptions.setMipmapGeneration(false);
 	}
+
+	NvttHelper::ConvertFromBGRAtoRGBA(data, imgDataSize);
 	inputOptions.setMipmapData(data, width, height);
 	
 	CompressionOptions compressionOptions;
@@ -409,7 +410,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 	}
 	compressionOptions.setFormat(innerComprFormat);
 	
-	NvttHelper::ConvertFromBGRAtoRGBA(data, imgDataSize);
+	
 	
 	OutputOptions outputOptions;
 	outputOptions.setFileName(fileName);
