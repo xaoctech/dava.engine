@@ -257,6 +257,12 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+}
+
+void QtMainWindow::ChangeParticleDockVisible(bool visible)
+{
+	ui->dockParticleEditor->setVisible(visible);
 }
 
 void QtMainWindow::MenuFileWillShow()

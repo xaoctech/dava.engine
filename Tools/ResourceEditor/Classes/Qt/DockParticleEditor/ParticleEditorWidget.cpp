@@ -10,6 +10,7 @@
 #include "EmitterLayerWidget.h"
 #include "LayerForceWidget.h"
 #include "ParticlesEditorController.h"
+#include "ui_mainwindow.h"
 
 ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	QScrollArea(parent)
@@ -51,8 +52,12 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode)
 	DeleteOldWidget();
 	
 	if (!emitterNode)
+	{
+		emit ChangeVisible(false);
 		return;
+	}
 	
+	emit ChangeVisible(true);
 	ParticleEmitter* emitter = emitterNode->GetEmitter();
 	if (!emitter)
 		return;
@@ -67,8 +72,12 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 	DeleteOldWidget();
 	
 	if (!emitterNode || !layer)
+	{
+		emit ChangeVisible(false);
 		return;
+	}
 
+	emit ChangeVisible(true);
 	ParticleEmitter* emitter = emitterNode->GetEmitter();
 	if (!emitter)
 		return;
@@ -83,12 +92,15 @@ void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, Par
 	DeleteOldWidget();
 	
 	if (!emitterNode || !layer)
+	{
+		emit ChangeVisible(false);
 		return;
+	}
 	
+	emit ChangeVisible(true);
 	ParticleEmitter* emitter = emitterNode->GetEmitter();
 	if (!emitter)
 		return;
-	
 	
 	layerForceWidget = new LayerForceWidget(this);
 	layerForceWidget->Init(emitter, layer, forceIndex, true);

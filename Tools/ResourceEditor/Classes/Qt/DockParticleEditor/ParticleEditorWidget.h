@@ -32,6 +32,9 @@ protected slots:
     void OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer);
     void OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex);
 	
+signals:
+	void ChangeVisible(bool bVisible);
+	
 private:
 	void DeleteOldWidget();
 	

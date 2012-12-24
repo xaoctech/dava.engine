@@ -21,7 +21,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	minTime = 0.0;
 	maxTime = 1;
 	
-	backgroundBrush.setColor(Qt::darkGray);
+	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
 
 	selectedPoint = -1;
@@ -84,7 +84,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	
 	//draw minimizebox
 	{
-		painter.setPen(Qt::white);
+		painter.setPen(Qt::black);
 		QRect minimizeRect = GetMinimizeRect();
 		painter.drawRect(minimizeRect);
 		painter.save();
@@ -100,13 +100,13 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		
 		QPainterPath painterPath;
 		painterPath.addPolygon(polygon);
-		painter.fillPath(painterPath, Qt::white);
+		painter.fillPath(painterPath, Qt::black);
 		painter.restore();
 	}
 	
 	//draw maximize box
 	{
-		painter.setPen(Qt::white);
+		painter.setPen(Qt::black);
 		QRect maximizeRect = GetMaximizeRect();
 		painter.drawRect(maximizeRect);
 		maximizeRect.adjust(2, 2, -2, -2);
@@ -117,7 +117,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	if (sizeState != SizeStateMinimized)
 	{
 		//draw graph border
-		painter.setPen(Qt::white);
+		painter.setPen(Qt::black);
 		painter.drawRect(graphRect);
 		
 		{
@@ -187,12 +187,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		
 		if (!isLineEnable)
 		{
-			painter.setPen(Qt::red);
-			/*painter.drawLine(graphRect.topLeft(), graphRect.bottomRight());
-			painter.drawLine(graphRect.bottomLeft(), graphRect.topRight());*/
-			
-			//int textWidth += painter.fontMetrics().width(legend);
-			//painter.drawText(<#const QPointF &p#>, <#const QString &s#>)
+			painter.setPen(Qt::black);
 			painter.drawText(graphRect, Qt::AlignVCenter | Qt::AlignHCenter, "Property is not enabled");
 		}
 	}
