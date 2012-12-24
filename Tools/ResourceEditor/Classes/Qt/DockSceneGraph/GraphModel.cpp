@@ -5,9 +5,8 @@
 #include <QMimeData>
 #include <QApplication>
 
-#include "QtUtils.h"
-
-#include "PointerHolder.h"
+#include "Main/QtUtils.h"
+#include "Main/PointerHolder.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;
