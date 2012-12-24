@@ -20,7 +20,7 @@
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
-#include "EntitiesGraph.h"
+//#include "EntitiesGraph.h"
 
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"

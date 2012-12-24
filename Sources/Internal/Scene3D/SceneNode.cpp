@@ -40,7 +40,9 @@
 #include "Debug/Stats.h"
 #include "Scene3D/TransformSystem.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/DeleteSystem.h"
 
 namespace DAVA
 {
@@ -667,12 +669,14 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         
     name = archive->GetString("name", "");
     tag = archive->GetInt32("tag", 0);
+
+	flags = archive->GetUInt32("flags", NODE_VISIBLE);
+	flags |= NODE_UPDATABLE;
+
     const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
 	SetLocalTransform(localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
-    flags = archive->GetUInt32("flags", NODE_VISIBLE);
-    flags |= NODE_UPDATABLE;
     InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
@@ -831,5 +835,34 @@ void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
     //else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
 
+const Matrix4 & SceneNode::GetLocalTransform()
+{
+	return *(transformComponent->GetLocalTransform());
+}
+
+const Matrix4 & SceneNode::GetWorldTransform()
+{
+	return *(transformComponent->GetWorldTransform());
+}
+
+TransformComponent * SceneNode::GetTransformComponent()
+{
+	return transformComponent;
+}
+
+int32 SceneNode::Release()
+{
+	if(1 == referenceCount)
+	{
+		AddFlag(SceneNode::NODE_DELETED);
+
+		DeleteSystem::Instance()->MarkNodeAsDeleted(this);
+		return referenceCount;
+	}
+	else
+	{
+		return BaseObject::Release();
+	}
+}
 
 };
