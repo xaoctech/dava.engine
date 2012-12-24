@@ -385,10 +385,13 @@ void CommandRemoveParticleEmitterLayer::Execute()
     // Mark the "parent" Emitter Node to selection.
     layerNode->GetEmitterEditorNode()->SetMarkedToSelection(true);
 
-	layerNode->GetRootNode()->Stop();
+	ParticleEffectNode* rootNode = layerNode->GetRootNode();
+	if (rootNode)
+		rootNode->Stop();
     ParticlesEditorController::Instance()->RemoveParticleLayerNode(layerNode);
-	layerNode->GetRootNode()->Restart();
-
+	if (rootNode)
+		rootNode->Restart();
+	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
@@ -463,9 +466,12 @@ void CommandRemoveParticleEmitterForce::Execute()
     // Mark the "parent" Layer Node to selection.
     forceNode->GetLayerEditorNode()->SetMarkedToSelection(true);
 
-	forceNode->GetRootNode()->Stop();
+	ParticleEffectNode* rootNode = forceNode->GetRootNode();
+	if (rootNode)
+		rootNode->Stop();
     ParticlesEditorController::Instance()->RemoveParticleForceNode(forceNode);
-	forceNode->GetRootNode()->Restart();
+	if (rootNode)
+		rootNode->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
