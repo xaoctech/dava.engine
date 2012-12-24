@@ -17,6 +17,8 @@ public:
     virtual ~SceneGraphModel();
 
     void SetScene(EditorScene * newScene);
+	EditorScene* GetScene() const {return scene;};
+
     virtual void Rebuild();
 
     void SelectNode(DAVA::SceneNode *node);
