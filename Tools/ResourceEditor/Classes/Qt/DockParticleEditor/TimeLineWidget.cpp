@@ -112,42 +112,82 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		maximizeRect.adjust(2, 2, -2, -2);
 		painter.drawRect(maximizeRect);
 	}
-	
-	//draw limits
+		
 	if (sizeState != SizeStateMinimized)
 	{
+		//draw grid
+		{
+			//painter.setPen(Qt::lightGray);
+			painter.setPen(Qt::gray);
+			
+			float step = 18;
+			float steps = (graphRect.height() / 2.f) / step;
+			float valueCenter = (maxValue - minValue) / 2.f + minValue;
+			float valueStep = ((maxValue - minValue) / 2.f) / steps;
+			for (int i = 0; i < steps; i++)
+			{
+				int y = graphRect.center().y() - i * step;
+				{
+					float value = valueCenter + i * valueStep;
+					QString strValue;
+					if (value < 10)
+						strValue = "%.2f";
+					else if (value < 100)
+						strValue = "%.1f";
+					else
+						strValue = "%.0f";
+					strValue.sprintf(strValue.toAscii(), value);
+					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
+					QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
+					painter.drawText(textRect, Qt::AlignRight, strValue);
+				}
+				
+				y = graphRect.center().y() + i * step;
+				{
+					float value = valueCenter - i * valueStep;
+					QString strValue;
+					if (value < 10)
+						strValue = "%.2f";
+					else if (value < 100)
+						strValue = "%.1f";
+					else
+						strValue = "%.0f";
+					strValue.sprintf(strValue.toAscii(), value);
+					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
+					QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
+					painter.drawText(textRect, Qt::AlignRight, strValue);
+				}
+			}
+			
+			steps = (graphRect.width()) / step;
+			valueStep = (maxTime - minTime) / steps;
+			bool drawText = false;
+			for (int i = 0; i <= steps; i++)
+			{
+				int x = graphRect.left() + i * step;
+				painter.drawLine(x, graphRect.top(), x, graphRect.bottom());
+				drawText = !drawText;
+				if (!drawText)
+					continue;
+				
+				float value = minTime + i * valueStep;
+				QString strValue;
+				if (value < 10)
+					strValue = "%.2f";
+				else if (value < 100)
+					strValue = "%.1f";
+				else
+					strValue = "%.0f";
+				strValue.sprintf(strValue.toAscii(), value);
+				int textWidth = painter.fontMetrics().width(strValue);
+				QRect textRect(x - textWidth / 2, graphRect.bottom(), textWidth, LEGEND_WIDTH + 3);
+				painter.drawText(textRect, Qt::AlignCenter, strValue);
+			}
+		}
+		
 		//draw graph border
 		painter.setPen(Qt::black);
 		painter.drawRect(graphRect);
-		
-		{
-			QString strValue;
-			strValue.sprintf("%.1f", minValue);
-			painter.save();
-			painter.translate(graphRect.x() - 1, graphRect.bottom());
-			painter.rotate(-90);
-			painter.drawText(0, 0, strValue);
-			painter.restore();
-		}
-		{
-			QString strValue;
-			strValue.sprintf("%.1f", maxValue);
-			painter.save();
-			painter.translate(graphRect.x() - 1, graphRect.top());
-			painter.rotate(-90);
-			painter.drawText(-painter.fontMetrics().width(strValue), 0, strValue);
-			painter.restore();
-		}
-		{
-			QString strValue;
-			strValue.sprintf("%.1f", minTime);
-			painter.drawText(graphRect.left() + 1, graphRect.bottom(), strValue);
-		}
-		{
-			QString strValue;
-			strValue.sprintf("%.1f", maxTime);
-			painter.drawText(graphRect.right() - painter.fontMetrics().width(strValue), graphRect.bottom(), strValue);
-		}
 		
 		//draw lines
 		bool isLineEnable = false;
@@ -549,7 +589,7 @@ float32 TimeLineWidget::GetYFromX(uint32 lineId, float32 x)
 QRect TimeLineWidget::GetGraphRect() const
 {
 	QRect graphRect = this->rect();
-	graphRect.setX(graphRect.x() + 1 + LEGEND_WIDTH);
+	graphRect.setX(graphRect.x() + 40);
 	if (IsLegendEmpty())
 		graphRect.setY(graphRect.y() + 5);
 	else
@@ -558,7 +598,7 @@ QRect TimeLineWidget::GetGraphRect() const
 	if (sizeState == SizeStateMinimized)
 		graphRect.setHeight(0);
 	else
-		graphRect.setHeight(graphRect.height() - 20);
+		graphRect.setHeight(graphRect.height() - 30);
 
 	return graphRect;
 }
@@ -859,7 +899,7 @@ QRect TimeLineWidget::GetLineEnableRect(uint32 lineId) const
 	QRect graphRect = GetGraphRect();
 	int rectSize = 10;
 	QRect lineEnableRect(0, 0, rectSize, rectSize);
-	lineEnableRect.translate(graphRect.left() + 50 + rectSize * 2 * lineCount, graphRect.bottom() + 5);
+	lineEnableRect.translate(graphRect.left() + 50 + rectSize * 2 * lineCount, this->rect().bottom() - 15);
 	return lineEnableRect;
 }
 
@@ -867,7 +907,7 @@ QRect TimeLineWidget::GetLineDrawRect() const
 {
 	QRect graphRect = GetGraphRect();
 	QRect lineDrawRect(0, 0, 40, 10);
-	lineDrawRect.translate(graphRect.left() + 5, graphRect.bottom() + 5);
+	lineDrawRect.translate(graphRect.left() + 5, this->rect().bottom() - 15);
 	return lineDrawRect;
 }
 
