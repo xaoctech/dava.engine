@@ -95,7 +95,8 @@ void QSceneGraphTreeView::OnSceneReleased(SceneData* scene)
 
 void QSceneGraphTreeView::OnSceneActivated(SceneData* scene)
 {
-    sceneGraphModel->Activate(this);
+	this->sceneGraphModel->SetScene(scene->GetScene());
+    this->sceneGraphModel->Activate(this);
     
     connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(OnSceneGraphContextMenuRequested(const QPoint &)));
 }

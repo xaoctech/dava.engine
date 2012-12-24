@@ -6,8 +6,6 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
-#include <QTreeView>
-
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
