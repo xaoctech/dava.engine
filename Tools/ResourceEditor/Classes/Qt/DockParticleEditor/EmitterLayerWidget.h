@@ -19,6 +19,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QCheckBox>
 
 using namespace DAVA;
 
@@ -44,6 +45,7 @@ private:
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	
+	QCheckBox* enableCheckBox;
 	Sprite* sprite;
 	QLabel* spriteLabel;
 	//QLabel* spritePathLabel;
