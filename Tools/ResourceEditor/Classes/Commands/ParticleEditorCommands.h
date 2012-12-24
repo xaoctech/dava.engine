@@ -160,7 +160,8 @@ class CommandUpdateParticleLayer: public Command
 {
 public:
 	CommandUpdateParticleLayer(ParticleLayer* layer);
-	void Init(Sprite* sprite,
+	void Init(bool isDisabled,
+			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
 			  RefPtr< PropertyLine<float32> > lifeVariation,
 			  RefPtr< PropertyLine<float32> > number,
@@ -194,6 +195,7 @@ protected:
 private:
 	ParticleLayer* layer;
 	
+	bool isDisabled;
 	Sprite* sprite;
 	RefPtr< PropertyLine<float32> > life;
 	RefPtr< PropertyLine<float32> > lifeVariation;
