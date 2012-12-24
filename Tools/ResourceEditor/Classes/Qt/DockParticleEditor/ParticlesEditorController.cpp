@@ -239,7 +239,10 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
         layer = new ParticleLayer();
     }
 
+	layer->startTime = 0;
     layer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
+	layer->life = new PropertyLineValue<float32>(emitter->GetLifeTime());
+
     emitter->AddLayer(layer);
 
     // Create the new node and add it to the tree.
