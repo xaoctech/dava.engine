@@ -487,21 +487,6 @@ bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
     SafeRelease(archive);
     return true;
 }
-    
-void SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
-{
-    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
-    if (oldMeshInstanceNode)
-    {
-        SceneNode * newMeshInstanceNode = new SceneNode();
-        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
-        
-        
-        (*node)->SetScene(0);
-        SafeRelease(*node);
-        *node = newMeshInstanceNode;
-    }
-}
 
 void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, int32 level)
 {
@@ -534,7 +519,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 			node->SetScene(scene);
 			node->Load(archive, this);
             
-            ReplaceNodeAfterLoad(&node);
+            //ReplaceNodeAfterLoad(&node);
             
 			parent->AddNode(node);
 		}
@@ -619,6 +604,21 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
     return false;
 }
 
+    
+void SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
+{
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    if (oldMeshInstanceNode)
+    {
+        SceneNode * newMeshInstanceNode = new SceneNode();
+        //newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
+        
+        
+        (*node)->SetScene(0);
+        SafeRelease(*node);
+        *node = newMeshInstanceNode;
+    }
+}
     
 void SceneFileV2::OptimizeScene(SceneNode * rootNode)
 {
