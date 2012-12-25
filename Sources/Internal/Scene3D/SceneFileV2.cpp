@@ -487,6 +487,21 @@ bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
     SafeRelease(archive);
     return true;
 }
+    
+void SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
+{
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    if (oldMeshInstanceNode)
+    {
+        SceneNode * newMeshInstanceNode = new SceneNode();
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
+        
+        
+        (*node)->SetScene(0);
+        SafeRelease(*node);
+        *node = newMeshInstanceNode;
+    }
+}
 
 void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, int32 level)
 {
@@ -495,7 +510,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     //SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
     
     String name = archive->GetString("##name");
-    SceneNode * node = dynamic_cast<SceneNode*>(ObjectFactory::Instance()->New(name));
+    BaseObject * baseObject = ObjectFactory::Instance()->New(name);
+    SceneNode * node = dynamic_cast<SceneNode*>(baseObject);
 
 	//TODO: refactor this elegant fix
 	bool skipNode = false;
@@ -517,6 +533,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			node->SetScene(scene);
 			node->Load(archive, this);
+            
+            ReplaceNodeAfterLoad(&node);
+            
 			parent->AddNode(node);
 		}
         

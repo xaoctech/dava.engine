@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
@@ -79,9 +80,15 @@ public:
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
     
+    inline void SetAABBox(const AABBox3 & bbox);
+    inline void SetBSphere(const Sphere & sphere);
+    
 private:
     uint32 flags;
     uint32 removeIndex;
+//    AABBox3 bbox;
+//    Sphere bsphere;
+    
     Vector<RenderBatch*> renderBatchArray;    
 };
 

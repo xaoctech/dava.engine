@@ -144,7 +144,7 @@ Material::Material()
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
-        uberShader->CompileShaderCombination("MATERIAL_DECAL");
+        //uberShader->CompileShaderCombination("MATERIAL_DECAL");
         //uberShader->CompileShaderCombination("MATERIAL_DETAIL");
         //
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");

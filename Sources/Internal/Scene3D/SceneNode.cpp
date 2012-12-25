@@ -108,6 +108,7 @@ void SceneNode::UpdateComponentsFastPtrs()
     
 void SceneNode::AddComponent(Component * component)
 {
+    SafeDelete(components[component->GetType()]);
     components[component->GetType()] = component;
     if (scene)
         scene->AddComponent(this, component);
