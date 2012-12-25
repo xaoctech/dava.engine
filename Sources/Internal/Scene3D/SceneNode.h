@@ -37,7 +37,6 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
-#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -50,6 +49,7 @@ class SceneFileV2;
 class DataNode;
 class Entity;
 class RenderComponent;
+class TransformComponent;
 
 /**
     \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
@@ -81,7 +81,7 @@ public:
 	TransformComponent * transformComponent;
     RenderComponent * renderComponent;
     
-    inline TransformComponent * GetTransformComponent();
+    TransformComponent * GetTransformComponent();
     inline RenderComponent * GetRenderComponent();
     
     inline uint32 GetAvailableComponentFlags();
@@ -211,6 +211,10 @@ public:
         NODE_CLIPPED_PREV_FRAME = 1 << 8, // 
         NODE_CLIPPED_THIS_FRAME = 1 << 9, // 
         NODE_INVALID = 1 << 10,  // THIS NODE not passed some of verification stages and marked as invalid. Such nodes shouldn't be drawn.
+
+		TRANSFORM_NEED_UPDATE = 1 << 11,
+		TRANSFORM_DIRTY = 1 << 12,
+		NODE_DELETED = 1 << 13,
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
         SCENE_LIGHTS_MODIFIED = 1 << 31,
@@ -230,6 +234,8 @@ public:
 
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+
+	virtual int32 Release();
 	
     // Do not use variables 
     std::deque<SceneNodeAnimation *> nodeAnimations;
@@ -462,17 +468,7 @@ inline const String & SceneNode::GetName()
 inline const int32 SceneNode::GetTag() 
 { 
     return tag; 
-}
-    
-inline const Matrix4 & SceneNode::GetLocalTransform() 
-{ 
-    return *(transformComponent->GetLocalTransform());
-}; 
-
-inline const Matrix4 & SceneNode::GetWorldTransform() 
-{ 
-    return *(transformComponent->GetWorldTransform());
-};
+};;
     
 inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
 {
@@ -540,11 +536,6 @@ void SceneNode::GetChildNodes(Container<T> & container)
         
         obj->GetChildNodes(container);
     }	
-}
-
-TransformComponent * SceneNode::GetTransformComponent()
-{
-	return transformComponent;
 }
     
 RenderComponent * SceneNode::GetRenderComponent()

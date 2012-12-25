@@ -405,6 +405,12 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
@@ -467,6 +473,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\DeleteSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
@@ -500,6 +507,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\TransformSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
@@ -712,6 +720,12 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
@@ -770,6 +784,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\DeleteSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
@@ -802,6 +817,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\TransformSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />

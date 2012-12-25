@@ -64,6 +64,7 @@ class BVHierarchy;
 class Component;
 class SceneSystem;
 class RenderSystem;
+class TransformSystem;
 
     
 /**
