@@ -21,7 +21,7 @@ public:
 
     Transform * CreateTransform();
 
-	void ImmediateUpdate(SceneNode * entity);
+	virtual void ImmediateUpdate(SceneNode * entity);
 
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
@@ -35,6 +35,12 @@ private:
 	Vector<SceneNode*> updatableEntities;
 
 	void HierahicNeedUpdate(SceneNode * entity);
+	void HierahicAddToUpdate(SceneNode * entity);
+
+	void HierahicFindUpdatableTranform(SceneNode * entity);
+
+	int32 passedNodes;
+	int32 multipliedNodes;
 };
 
 };

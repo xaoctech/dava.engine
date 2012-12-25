@@ -55,6 +55,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/RenderSystem.h"
+#include "Scene3D/TransformSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -632,7 +633,7 @@ void Scene::Draw()
     renderSystem->Process();
     
     
-    //SceneNode::Draw();
+    SceneNode::Draw();
     
     if(imposterManager)
 	{
@@ -893,9 +894,6 @@ bool Scene::IsReferenceNodeSuffixChanged()
 {
 	return referenceNodeSuffixChanged;
 }
-
-
-
 
 /*void Scene::Save(KeyedArchive * archive)
 {
