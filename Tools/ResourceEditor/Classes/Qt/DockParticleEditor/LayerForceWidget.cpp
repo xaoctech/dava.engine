@@ -64,19 +64,19 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
 
 	Vector<QColor> colors;
-	colors.push_back(Qt::blue); colors.push_back(Qt::green); colors.push_back(Qt::red);
+	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen); colors.push_back(Qt::red);
 	Vector<QString> legends;
-	legends.push_back("Force X"); legends.push_back("Y"); legends.push_back("Z");
+	legends.push_back("force x"); legends.push_back("force y"); legends.push_back("force z");
 	forceTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
 	forceTimeLine->AddLines(PropLineWrapper<Vector3>(layer->forces[forceIndex]).GetProps(), colors, legends);
 
 	legends.clear();
-	legends.push_back("Force variable X"); legends.push_back("Y"); legends.push_back("Z");
+	legends.push_back("force variable x"); legends.push_back("force variable y"); legends.push_back("force variable z");
 	forceVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
 	forceVariationTimeLine->AddLines(PropLineWrapper<Vector3>(layer->forcesVariation[forceIndex]).GetProps(), colors, legends);
 
 	forceOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
-	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->forcesOverLife[forceIndex]).GetProps(), Qt::blue, "Forces over life");
+	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->forcesOverLife[forceIndex]).GetProps(), Qt::blue, "forces over life");
 
 	blockSignals = false;
 }
