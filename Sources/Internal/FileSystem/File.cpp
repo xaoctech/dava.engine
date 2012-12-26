@@ -57,12 +57,7 @@ File::~File()
 	
 File * File::Create(const String &filePath, uint32 attributes)
 {
-#if defined (__DAVAENGINE_ANDROID__)
-	String pathname = FileSystem::Instance()->GetCanonicalPath(filePath);
-	return FileSystem::Instance()->CreateFileForFrameworkPath(pathname, attributes);
-#else //#if defined (__DAVAENGINE_ANDROID__)
 	return FileSystem::Instance()->CreateFileForFrameworkPath(filePath, attributes);
-#endif //#if defined (__DAVAENGINE_ANDROID__)
 }
 
 
