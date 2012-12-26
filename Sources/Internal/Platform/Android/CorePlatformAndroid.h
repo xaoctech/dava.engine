@@ -98,6 +98,11 @@ public:
     void ReleaseThreadContext(ThreadContext *context);
 
     
+    
+    const char8 * GetInternalStoragePathname();
+    const char8 * GetExternalStoragePathname();
+    
+    
 private:
     
     static int32 HandleInput(AppHandle handle, AInputEvent* event);
