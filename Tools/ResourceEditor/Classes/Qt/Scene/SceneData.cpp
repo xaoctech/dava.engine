@@ -61,7 +61,7 @@ EditorScene * SceneData::GetScene()
 void SceneData::AddSceneNode(DAVA::SceneNode *node)
 {
     // Firstly ask Particle Editor to add this node.
-    if (sceneGraphModel->GetParticlesEditorSceneHelper().AddSceneNode(node) == false)
+    if (particlesEditorSceneDataHelper.AddSceneNode(node) == false)
     {
         scene->AddNode(node);
     }
@@ -86,8 +86,7 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
             landscapesController->SaveLandscape(NULL);
         }
 
-        // TODO! NEED MERGE!
-        sceneGraphModel->GetParticlesEditorSceneHelper().RemoveSceneNode(node);
+		particlesEditorSceneDataHelper.RemoveSceneNode(node);
         scene->ReleaseUserData(node);
 		SelectNode(NULL);
         scene->SetSelection(NULL);
@@ -506,117 +505,6 @@ void SceneData::BakeScene()
         
         RebuildSceneGraph();
     }
-}
-
-/*
-void SceneData::LibraryContextMenuRequested(const QPoint &point)
-{
-    QModelIndex itemIndex = libraryView->indexAt(point);
-    ShowLibraryMenu(itemIndex, QCursor::pos());
-}
-*/
-
-void SceneData::ProcessContextMenuAction(QAction *action)
-{
-    Command *command = PointerHolder<Command *>::ToPointer(action->data());
-    Execute(command);
-}
-/*
-void SceneData::LibraryMenuTriggered(QAction *action)
-{
-    ProcessContextMenuAction(action);
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HideScenePreview();
-    }
-}
-
-void SceneData::FileSelected(const QString &filePathname, bool isFile)
-{
-    //TODO: need best way to display scene preview
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen && !skipLibraryPreview)
-    {
-        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
-        if(0 == CompareCaseInsensitive(extension, String(".sc2")) && isFile)
-        {
-            screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
-        }
-        else
-        {
-            screen->HideScenePreview();
-        }
-    }
-    
-    skipLibraryPreview = false;
-}
-*/
-
-void SceneData::Execute(Command *command)
-{
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
-}
-
-
-void SceneData::SceneGraphMenuTriggered(QAction *action)
-{
-    ProcessContextMenuAction(action);
-}
-
-void SceneData::SceneGraphContextMenuRequested(const QPoint &point)
-{
-    QModelIndex itemIndex = sceneGraphView->indexAt(point);
-    ShowSceneGraphMenu(itemIndex, QCursor::pos());
-}
-
-void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point)
-{
-    if(!index.isValid())
-    {
-        return;
-    }
-    
-    QMenu menu;
-    
-    // For "custom" Particles Editor nodes the "generic" ones aren't needed".
-    if (sceneGraphModel->GetParticlesEditorSceneHelper().NeedDisplaySceneEditorPopupMenuItems(index))
-    {
-        AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
-        AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
-        AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
-
-        AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
-        AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
-        AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
-    
-        SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
-        if(node)
-        {
-            KeyedArchive *properties = node->GetCustomProperties();
-            if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
-            {
-            
-                String filePathname = properties->GetString(String("editor.referenceToOwner"));
-                AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
-                AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
-            }
-        }
-    }
-
-    // We might need more menu items/actions for Particles Editor.
-    sceneGraphModel->GetParticlesEditorSceneHelper().AddPopupMenuItems(this, menu, index);
-    
-    connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
-    menu.exec(point);
-}
-
-void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command)
-{
-    QAction *action = menu->addAction(actionTitle);
-    action->setData(PointerHolder<Command *>::ToQVariant(command));
 }
 
 void SceneData::ToggleNotPassableLandscape()
