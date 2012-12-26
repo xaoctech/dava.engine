@@ -152,7 +152,8 @@ private:
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
-    void ReplaceNodeAfterLoad(SceneNode ** node);
+    bool ReplaceNodeAfterLoad(SceneNode ** node);
+	void ReplaceOldNodes(SceneNode * currentNode);
     
     
     bool isDebugLogEnabled;
