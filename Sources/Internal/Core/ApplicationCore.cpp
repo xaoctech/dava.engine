@@ -58,7 +58,10 @@ void ApplicationCore::Update(float32 timeElapsed)
 	SoundSystem::Instance()->Update();
 	AnimationManager::Instance()->Update(timeElapsed);    
 	UIControlSystem::Instance()->Update();
-	DeleteSystem::Instance()->Update();
+	if(DeleteSystem::Instance())
+	{
+		DeleteSystem::Instance()->Update();
+	}
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Update(timeElapsed);
 #endif

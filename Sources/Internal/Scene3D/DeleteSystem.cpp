@@ -29,4 +29,9 @@ void DeleteSystem::MarkNodeAsDeleted(SceneNode * node)
 	deletedNodesToAdd->push_back(node);
 }
 
+DeleteSystem::~DeleteSystem()
+{
+	Update();
+}
+
 }
