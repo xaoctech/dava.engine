@@ -1,5 +1,5 @@
 #include "Scene/SceneData.h"
-#include "Main/SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -33,40 +33,24 @@ using namespace DAVA;
 SceneData::SceneData()
     :   QObject(NULL)
     ,   scene(NULL)
-    ,   sceneGraphModel(NULL)
+	,	selectedNode(NULL)
 {
-    //libraryModel = NULL;
-    //libraryView = NULL;
-    sceneGraphView = NULL;
-    
     landscapesController = new LandscapesController();
-    
     sceneFilePathname = String("");
-    sceneGraphModel = new SceneGraphModel();
-    sceneGraphModel->SetScene(NULL);
-    
-
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
-    
-    //skipLibraryPreview = false;
-    
-    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelectedInGraph(DAVA::SceneNode *)));
 }
 
 SceneData::~SceneData()
 {
     SafeRelease(scene);
-    
     SafeRelease(landscapesController);
-    
-    SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
 }
 
 
 void SceneData::RebuildSceneGraph()
 {
-    sceneGraphModel->Rebuild();
+	emit SceneGraphModelNeedsRebuild();
 }
 
 EditorScene * SceneData::GetScene()
@@ -101,11 +85,11 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
         {
             landscapesController->SaveLandscape(NULL);
         }
-        
+
+        // TODO! NEED MERGE!
         sceneGraphModel->GetParticlesEditorSceneHelper().RemoveSceneNode(node);
         scene->ReleaseUserData(node);
-        
-        sceneGraphModel->SelectNode(NULL);
+		SelectNode(NULL);
         scene->SetSelection(NULL);
         
         parent->RemoveNode(node);
@@ -118,7 +102,8 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
 
 void SceneData::SelectNode(DAVA::SceneNode *node)
 {
-    sceneGraphModel->SelectNode(node);
+	this->selectedNode = node;
+	emit SceneGraphModelNeedsSelectNode(node);
 }
 
 void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
@@ -149,14 +134,13 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
         }
     }
 
+	this->selectedNode = node;
 	emit SceneNodeSelected(node);
 }
 
-
-
 DAVA::SceneNode * SceneData::GetSelectedNode()
 {
-    return sceneGraphModel->GetSelectedNode();
+    return this->selectedNode;
 }
 
 void SceneData::LockAtSelectedNode()
@@ -177,7 +161,7 @@ void SceneData::SetScene(EditorScene *newScene)
     ReleaseScene();
     
     scene = SafeRetain(newScene);
-    sceneGraphModel->SetScene(scene);
+	emit SceneGraphModelNeedSetScene(scene);
     cameraController->SetScene(scene);
     landscapesController->SetScene(scene);
 }
@@ -185,7 +169,7 @@ void SceneData::SetScene(EditorScene *newScene)
 void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
-    sceneGraphModel->SetScene(NULL);
+	emit SceneGraphModelNeedSetScene(NULL);
     landscapesController->SetScene(NULL);
     
     SafeRelease(scene);
@@ -314,7 +298,6 @@ void SceneData::EditScene(const String &scenePathname)
         }
     }
 
-    
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
@@ -396,71 +379,6 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::Activate(QTreeView *graphview/*, QTreeView *_libraryView, LibraryModel *libModel*/)
-{
-    sceneGraphView = graphview;
-	//libraryView = _libraryView;
-		
-    sceneGraphModel->Activate(sceneGraphView);
-    
-    //connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
-    connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
-    
-    //libraryModel = libModel;
-    //connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
-
-    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
-}
-
-void SceneData::Deactivate()
-{
-	/*
-    if(libraryModel)
-    {
-        disconnect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
-        libraryModel = NULL;
-    }
-    
-    disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
-	*/
-    disconnect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
-    
-    sceneGraphModel->Deactivate();
-}
-
-/*
-void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
-{
-    if(!index.isValid())
-    {
-        return;
-    }
-    
-    QFileInfo fileInfo = libraryModel->fileInfo(index);
-    if(fileInfo.isFile())
-    {
-        String filePathname = PathnameToDAVAStyle(fileInfo.filePath());
-        QMenu menu;
-
-        String extension = FileSystem::Instance()->GetExtension(filePathname);
-        if(0 == CompareCaseInsensitive(String(".sc2"), extension))
-        {
-            AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
-            AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
-            AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
-            AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
-        }
-        else if(0 == CompareCaseInsensitive(String(".dae"), extension))
-        {
-            AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
-        }
-
-        connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
-        menu.exec(point);
-    }
-}
-*/
-
 void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
 {
 	SelectNode(NULL);
@@ -516,13 +434,6 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
         ReloadNode(child, nodePathname);
     }
 }
-
-/*
-void SceneData::ReloadLibrary()
-{
-    libraryModel->Reload();
-}
-*/
 
 void SceneData::BakeNode(DAVA::SceneNode *node)
 {
@@ -596,6 +507,7 @@ void SceneData::BakeScene()
         RebuildSceneGraph();
     }
 }
+
 /*
 void SceneData::LibraryContextMenuRequested(const QPoint &point)
 {
@@ -707,8 +619,6 @@ void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command
     action->setData(PointerHolder<Command *>::ToQVariant(command));
 }
 
-
-
 void SceneData::ToggleNotPassableLandscape()
 {
     UIScreen *screen = UIScreenManager::Instance()->GetScreen();
@@ -748,18 +658,6 @@ LandscapesController * SceneData::GetLandscapesController()
 {
     return landscapesController;
 }
-
-/*
-void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
-{
-    skipLibraryPreview = true;
-	bool fileWillBeSelected = libraryModel->SelectFile(filePathname);
-	if(!fileWillBeSelected)
-	{
-		skipLibraryPreview = false;
-	}
-}
-*/
 
 void SceneData::ResetLandsacpeSelection()
 {

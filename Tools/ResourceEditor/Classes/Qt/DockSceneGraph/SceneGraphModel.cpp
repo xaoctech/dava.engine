@@ -6,7 +6,7 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
-#include "PointerHolder.h"
+#include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
 #include "DockParticleEditor/ParticlesEditorController.h"

@@ -5,10 +5,6 @@
 #include "EditorScene.h"
 #include "Scene/SceneData.h"
 
-#include <QItemSelection>
-class QTreeView;
-
-class LibraryModel;
 class SceneDataManager: public QObject, public DAVA::Singleton<SceneDataManager>
 {
 	Q_OBJECT
@@ -24,7 +20,7 @@ public:
 	EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
 
-    void SetSceneGraphView(QTreeView *view);
+    // void SetSceneGraphView(QTreeView *view);
 	// <--
 
 public:
@@ -43,15 +39,29 @@ public:
 	static void EnumerateTextures(DAVA::SceneNode *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
 	static void EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials);
 
+	// These methods are called by Scene Graph Tree View.
+	void SceneNodeSelectedInSceneGraph(SceneNode* node);
+
 signals:
+	void SceneCreated(SceneData *scene);
 	void SceneActivated(SceneData *scene);
+	void SceneDeactivated(SceneData *scene);
 	void SceneChanged(SceneData *scene);
 	void SceneReleased(SceneData *scene);
 	void SceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
+	
+	// Signals needed for Scene Graph Tree View.
+	void SceneGraphNeedRebuild();
+	void SceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
+	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
 
 protected slots:
 	void InSceneData_SceneChanged(EditorScene *scene);
 	void InSceneData_SceneNodeSelected(DAVA::SceneNode *node);
+	
+	void InSceneData_SceneGraphModelNeedsRebuild();
+	void InSceneData_SceneGraphModelNeedSetScene(EditorScene* scene);
+	void InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 
 protected:
 
@@ -68,8 +78,6 @@ protected:
 protected:
     SceneData *currentScene;
     DAVA::List<SceneData *>scenes;
-    
-    QTreeView *sceneGraphView;
 };
 
 #endif // __SCENE_DATA_MANAGER_H__
