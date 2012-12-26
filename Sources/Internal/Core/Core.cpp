@@ -100,7 +100,7 @@ void Core::CreateSingletons()
     
 	new FileSystem();
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
-        FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+    FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 
 	
 	new Logger();
