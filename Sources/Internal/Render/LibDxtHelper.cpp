@@ -48,9 +48,10 @@ public:
 
 	struct PairNvttPixelGLFormat
     {
+		static const int32  WRONG_GL_VALUE = -1;
         nvtt::Format nvttFormat;
 		PixelFormat  davaFormat;
-        uint32		 glFormat;
+        int32		 glFormat;
         
         PairNvttPixelGLFormat(nvtt::Format _nvttFormat, PixelFormat _davaFormat, uint32 _glFormat)
         {
@@ -85,14 +86,7 @@ public:
 	static PixelFormat GetPixelFormatByNVTTFormat(nvtt::Format nvttFormat);
 
 	static nvtt::Format GetNVTTFormatByPixelFormat(PixelFormat pixelFormat);
-
-	static uint32 GetGlFormatByNVTTFormat(nvtt::Format nvttFormat);
 };
-
-uint32 GetGlCompressionFormatByDDSInfo(nvtt::Format format)
-{
-	return  NvttHelper::GetGlFormatByNVTTFormat(format);
-}
 
 const NvttHelper::PairNvttPixelGLFormat NvttHelper::formatNamesMap[] =
 {
@@ -105,51 +99,41 @@ const NvttHelper::PairNvttPixelGLFormat NvttHelper::formatNamesMap[] =
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
 	#else	
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 0),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 0),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1a,	FORMAT_DXT1A,	 0),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT3,	FORMAT_DXT3,	 0),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 0),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 0),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1a,	FORMAT_DXT1A,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT3,	FORMAT_DXT3,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
 	#endif
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_RGBA,	FORMAT_RGBA8888, 0),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_RGBA,	FORMAT_RGBA8888, PairNvttPixelGLFormat::WRONG_GL_VALUE),
 };
 
- PixelFormat NvttHelper::GetPixelFormatByNVTTFormat(nvtt::Format nvttFormat)
- {
-	 PixelFormat retValue = FORMAT_INVALID;
-	 for(uint32 i = 0; i < FORMAT_NAMES_MAP_COUNT; ++i)
-	 {
-		 if(formatNamesMap[i].nvttFormat == nvttFormat)
-		 {
-			 retValue = formatNamesMap[i].davaFormat;
-		 }
-	 }
-	 return retValue;
- }
-
- nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
- {
- 	nvtt::Format retValue = Format_BC5;
+PixelFormat NvttHelper::GetPixelFormatByNVTTFormat(nvtt::Format nvttFormat)
+{
+	PixelFormat retValue = FORMAT_INVALID;
 	for(uint32 i = 0; i < FORMAT_NAMES_MAP_COUNT; ++i)
 	{
-		 if(formatNamesMap[i].davaFormat == pixelFormat)
-		 {
-			 retValue = formatNamesMap[i].nvttFormat;
-		 }
+		if(formatNamesMap[i].nvttFormat == nvttFormat)
+		{
+			 retValue = formatNamesMap[i].davaFormat;
+			 break;
+		}
 	}
 	return retValue;
- }
+}
 
-uint32 NvttHelper::GetGlFormatByNVTTFormat(nvtt::Format nvttFormat)
+nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 {
-	uint32 retValue = 0;
+	//bc5 is unsupported, used to determinate fail in search
+	nvtt::Format retValue = Format_BC5;
 	for(uint32 i = 0; i < FORMAT_NAMES_MAP_COUNT; ++i)
 	{
-		 if(formatNamesMap[i].nvttFormat == nvttFormat)
-		 {
-			 retValue = formatNamesMap[i].glFormat;
-		 }
+		if(formatNamesMap[i].davaFormat == pixelFormat)
+		{
+			retValue = formatNamesMap[i].nvttFormat;
+			break;
+		}
 	}
 	return retValue;
 }
@@ -193,7 +177,7 @@ bool LibDxtHelper::DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA:
 
 	
 	CompressionOptions compressionOptions;
-
+	//bc5 is unsupported, used to determinate fail in search
 	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(image.format);
 	if(nvtt::Format_BC5 == innerComprFormat)
 	{
@@ -346,8 +330,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &ima
 			width /= 2;
 		}
 	}
-	
-	
+
 	return true;
 }
 
@@ -383,6 +366,7 @@ bool LibDxtHelper::WriteDxtFile(const char* fileName, int32 width, int32 height,
 	CompressionOptions compressionOptions;
 
 	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
+	//bc5 is unsupported, used to determinate fail in search
 	if(nvtt::Format_BC5 == innerComprFormat)
 	{
 		return false;
