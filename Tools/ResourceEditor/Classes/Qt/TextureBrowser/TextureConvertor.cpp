@@ -224,7 +224,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				item->descriptorCopy.Save();
 			}
 
-			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
 			{
@@ -271,7 +271,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
 			item->descriptorCopy.Save();
 			
-			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
 			{

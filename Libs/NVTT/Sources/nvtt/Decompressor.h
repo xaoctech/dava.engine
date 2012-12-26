@@ -15,6 +15,7 @@ namespace nvtt
 		Private() 
 		{
 			m_dds = NULL;
+			m_memmoryBufferPointer = NULL;
 		}
 
 		bool initWithDDSFile(const char * pathToDDSFile);
@@ -40,6 +41,8 @@ namespace nvtt
 		private:
 
 		nv::DirectDrawSurface * m_dds;
+
+		uint8				  * m_memmoryBufferPointer;
 
 	};
 
