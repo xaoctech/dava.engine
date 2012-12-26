@@ -43,7 +43,7 @@ namespace DAVA
 
 int Core::Run(int argc, char * argv[], AppHandle handle)
 {
-//    sleep(15); //TODO: for debugger start
+    sleep(15); //TODO: for debugger start
     
 //    //TODO: log current configuration - DEBUG Feature
 //    print_cur_config(handle);
@@ -653,7 +653,27 @@ void CorePlatformAndroid::ReleaseThreadContext(ThreadContext *context)
     return renderer->ReleaseThreadContext(context);
 }
 
+const char8 * CorePlatformAndroid::GetInternalStoragePathname()
+{
+    if(appHandle)
+    {
+        return appHandle->activity->internalDataPath;
+    }
     
+    return String("").c_str();
+}
+    
+const char8 * CorePlatformAndroid::GetExternalStoragePathname()
+{
+    if(appHandle)
+    {
+        return appHandle->activity->externalDataPath;
+    }
+    
+    return String("").c_str();
+}
+    
+
     
 //    Core::eDeviceFamily Core::GetDeviceFamily()
 //    {
