@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "GraphModel.h"
-#include "ParticlesEditorQT/Helpers/ParticlesEditorSceneHelper.h"
+#include "ParticlesEditorQT/Helpers/ParticlesEditorSceneModelHelper.h"
 
 #include <QObject>
 
@@ -25,8 +25,8 @@ public:
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
-    const DAVA::ParticlesEditorSceneHelper& GetParticlesEditorSceneHelper() const { return particlesEditorSceneHelper; };
-    
+   const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
     virtual Qt::DropActions supportedDropActions() const;
@@ -62,7 +62,7 @@ protected:
     EditorScene *scene;
     DAVA::SceneNode *selectedNode;
     
-    DAVA::ParticlesEditorSceneHelper particlesEditorSceneHelper;
+    DAVA::ParticlesEditorSceneModelHelper particlesEditorSceneModelHelper;
     
     // Selectted Scene Graph item for Particle Editor.
     SceneGraphItem* selectedGraphItemForParticleEditor;

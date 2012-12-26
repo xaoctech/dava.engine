@@ -1,12 +1,12 @@
 //
-//  ParticlesEditorSceneHelper.cpp
+//  ParticlesEditorSceneModelHelper.cpp
 //  ResourceEditorQt
 //
 //  Created by Yuri Coder on 11/26/12.
 //
 //
 
-#include "ParticlesEditorSceneHelper.h"
+#include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 
 #include "Commands/SceneGraphCommands.h"
@@ -16,7 +16,7 @@ using namespace DAVA;
 
 // Custom processing the Selection Changed in the Scene Graph model. Returns
 // TRUE if no further processing needed.
-bool ParticlesEditorSceneHelper::ProcessSelectionChanged(const QItemSelection &selected,
+bool ParticlesEditorSceneModelHelper::ProcessSelectionChanged(const QItemSelection &selected,
                                                          const QItemSelection &deselected)
 {
     int32 deselectedSize = deselected.size();
@@ -46,7 +46,7 @@ bool ParticlesEditorSceneHelper::ProcessSelectionChanged(const QItemSelection &s
 }
 
 // Custom node selection.
-SceneGraphItem* ParticlesEditorSceneHelper::GetGraphItemToBeSelected(GraphItem* rootItem, SceneNode* node)
+SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelected(GraphItem* rootItem, SceneNode* node)
 {
     // Do we have something marked for selection on the Particles Editor? If yes,
     // do select it.
@@ -55,7 +55,7 @@ SceneGraphItem* ParticlesEditorSceneHelper::GetGraphItemToBeSelected(GraphItem* 
     return false;
 }
 
-SceneGraphItem* ParticlesEditorSceneHelper::GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, SceneNode* node)
+SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, SceneNode* node)
 {
     SceneGraphItem* graphRootItem = dynamic_cast<SceneGraphItem*>(rootItem);
     if (!graphRootItem || graphRootItem->GetExtraUserData() == NULL)
@@ -90,7 +90,7 @@ SceneGraphItem* ParticlesEditorSceneHelper::GetGraphItemToBeSelectedRecursive(Gr
     return NULL;
 }
 
-SceneNode* ParticlesEditorSceneHelper::PreprocessSceneNode(SceneNode* rawNode)
+SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNode)
 {
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
@@ -128,7 +128,7 @@ SceneNode* ParticlesEditorSceneHelper::PreprocessSceneNode(SceneNode* rawNode)
     return rawNode;
 }
 
-bool ParticlesEditorSceneHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node)
+bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node)
 {
     ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
     if (effectNode == NULL)
@@ -155,7 +155,7 @@ bool ParticlesEditorSceneHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, 
     return true;
 }
 
-void ParticlesEditorSceneHelper::BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem)
+void ParticlesEditorSceneModelHelper::BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem)
 {
     // Prior to buildind the tree - need to check whether the children are in sync and synchronize them,
     // if not. This is actually needed for Load() process.
@@ -184,7 +184,7 @@ void ParticlesEditorSceneHelper::BuildSceneGraphRecursive(BaseParticleEditorNode
     }
 }
 
-void ParticlesEditorSceneHelper::SynchronizeParticleEditorTree(BaseParticleEditorNode* node)
+void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticleEditorNode* node)
 {
 	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
     if (effectEditorNode)
@@ -206,7 +206,7 @@ void ParticlesEditorSceneHelper::SynchronizeParticleEditorTree(BaseParticleEdito
     }
 }
 
-void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
+void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
 																	 ParticleEffectNode* effectRootNode)
 {
     if (!node || !effectRootNode)
@@ -237,7 +237,7 @@ void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParti
     }
 }
 
-void ParticlesEditorSceneHelper::SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node)
+void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node)
 {
     if (!node)
     {
@@ -273,7 +273,7 @@ void ParticlesEditorSceneHelper::SynchronizeEmitterParticleEditorNode(EmitterPar
      }
 }
 
-void ParticlesEditorSceneHelper::SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node)
+void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node)
 {
     if (!node)
     {
@@ -315,7 +315,7 @@ void ParticlesEditorSceneHelper::SynchronizeLayerParticleEditorNode(LayerParticl
     }
 }
 
-bool ParticlesEditorSceneHelper::NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const
+bool ParticlesEditorSceneModelHelper::NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const
 {
     ExtraUserData* extraUserData = GetExtraUserDataByModelIndex(index);
     if (!extraUserData)
@@ -342,7 +342,7 @@ bool ParticlesEditorSceneHelper::NeedDisplaySceneEditorPopupMenuItems(const QMod
     return true;
 }
 
-ExtraUserData* ParticlesEditorSceneHelper::GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const
+ExtraUserData* ParticlesEditorSceneModelHelper::GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const
 {
     if (!modelIndex.isValid())
     {
@@ -358,7 +358,7 @@ ExtraUserData* ParticlesEditorSceneHelper::GetExtraUserDataByModelIndex(const QM
     return item->GetExtraUserData();
 }
 
-void ParticlesEditorSceneHelper::AddPopupMenuItems(SceneData* sceneData, QMenu& menu, const QModelIndex &index) const
+void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QModelIndex &index) const
 {
     ExtraUserData* extraUserData = GetExtraUserDataByModelIndex(index);
     if (!extraUserData)
@@ -370,70 +370,38 @@ void ParticlesEditorSceneHelper::AddPopupMenuItems(SceneData* sceneData, QMenu& 
     if (dynamic_cast<EffectParticleEditorNode*>(extraUserData))
     {
         // Effect Node. Allow to add Particle Emitters and start/stop the animation.
-        sceneData->AddActionToMenu(&menu, QString("Add Particle Emitter"), new CommandAddParticleEmitter());
-        sceneData->AddActionToMenu(&menu, QString("Start Particle Effect"), new CommandStartStopParticleEffect(true));
-        sceneData->AddActionToMenu(&menu, QString("Stop Particle Effect"), new CommandStartStopParticleEffect(false));
-        sceneData->AddActionToMenu(&menu, QString("Restart Particle Effect"), new CommandRestartParticleEffect());
+        AddActionToMenu(&menu, QString("Add Particle Emitter"), new CommandAddParticleEmitter());
+        AddActionToMenu(&menu, QString("Start Particle Effect"), new CommandStartStopParticleEffect(true));
+        AddActionToMenu(&menu, QString("Stop Particle Effect"), new CommandStartStopParticleEffect(false));
+        AddActionToMenu(&menu, QString("Restart Particle Effect"), new CommandRestartParticleEffect());
     }
     else if (dynamic_cast<EmitterParticleEditorNode*>(extraUserData))
     {
         // For Particle Emitter we also allow to load/save it.
-        sceneData->AddActionToMenu(&menu, QString("Load Emitter from Yaml"), new CommandLoadParticleEmitterFromYaml());
-        sceneData->AddActionToMenu(&menu, QString("Save Emitter to Yaml"), new CommandSaveParticleEmitterToYaml(false));
-        sceneData->AddActionToMenu(&menu, QString("Save Emitter to Yaml As"), new CommandSaveParticleEmitterToYaml(true));
+        AddActionToMenu(&menu, QString("Load Emitter from Yaml"), new CommandLoadParticleEmitterFromYaml());
+        AddActionToMenu(&menu, QString("Save Emitter to Yaml"), new CommandSaveParticleEmitterToYaml(false));
+        AddActionToMenu(&menu, QString("Save Emitter to Yaml As"), new CommandSaveParticleEmitterToYaml(true));
         
         // Emitter node. Allow to remove it and also add Layers.
-        sceneData->AddActionToMenu(&menu, QString("Remove Particle Emitter"), new CommandRemoveSceneNode());
-        sceneData->AddActionToMenu(&menu, QString("Add Layer"), new CommandAddParticleEmitterLayer());
+        AddActionToMenu(&menu, QString("Remove Particle Emitter"), new CommandRemoveSceneNode());
+        AddActionToMenu(&menu, QString("Add Layer"), new CommandAddParticleEmitterLayer());
     }
     else if (dynamic_cast<LayerParticleEditorNode*>(extraUserData))
     {
         // Layer Node. Allow to remove it and add new Force.
-        sceneData->AddActionToMenu(&menu, QString("Remove Layer"), new CommandRemoveParticleEmitterLayer());
-        sceneData->AddActionToMenu(&menu, QString("Clone Layer"), new CommandCloneParticleEmitterLayer());
-        sceneData->AddActionToMenu(&menu, QString("Add Force"), new CommandAddParticleEmitterForce());
+        AddActionToMenu(&menu, QString("Remove Layer"), new CommandRemoveParticleEmitterLayer());
+        AddActionToMenu(&menu, QString("Clone Layer"), new CommandCloneParticleEmitterLayer());
+        AddActionToMenu(&menu, QString("Add Force"), new CommandAddParticleEmitterForce());
     }
     else if (dynamic_cast<ForceParticleEditorNode*>(extraUserData))
     {
         // Force Node. Allow to remove it.
-        sceneData->AddActionToMenu(&menu, QString("Remove Force"), new CommandRemoveParticleEmitterForce());
+        AddActionToMenu(&menu, QString("Remove Force"), new CommandRemoveParticleEmitterForce());
     }
 }
 
-bool ParticlesEditorSceneHelper::AddSceneNode(SceneNode* node) const
+void ParticlesEditorSceneModelHelper::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const
 {
-    ParticleEmitterNode* emitterSceneNode = dynamic_cast<ParticleEmitterNode*>(node);
-    if (emitterSceneNode)
-    {
-        ParticlesEditorController::Instance()->AddParticleEmitterNodeToScene(emitterSceneNode);
-        return true;
-    }
-    
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode == NULL)
-    {
-        // Not relevant.
-        return false;
-    }
-
-    // Register in Particles Editor.
-    ParticlesEditorController::Instance()->RegisterParticleEffectNode(effectNode);
-    return false;
-}
-
-void ParticlesEditorSceneHelper::RemoveSceneNode(SceneNode *node) const
-{
-    // If the Particle Effect node is removed - unregister it.
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode)
-    {
-        ParticlesEditorController::Instance()->UnregiserParticleEffectNode(effectNode);
-    }
-    
-    // If the Particle Emitter node is removed - remove it from the tree.
-    ParticleEmitterNode* emitterNode = dynamic_cast<ParticleEmitterNode*>(node);
-    if (emitterNode)
-    {
-        ParticlesEditorController::Instance()->RemoveParticleEmitterNode(emitterNode);
-    }
+    QAction *action = menu->addAction(actionTitle);
+    action->setData(PointerHolder<Command *>::ToQVariant(command));
 }

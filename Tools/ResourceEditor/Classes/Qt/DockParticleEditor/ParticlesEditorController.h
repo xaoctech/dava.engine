@@ -12,7 +12,7 @@
 #include "DAVAEngine.h"
 #include "Base/Singleton.h"
 
-#include "Main/SceneGraphItem.h"
+#include "DockSceneGraph/SceneGraphItem.h"
 #include "Scene3D/ParticleEffectNode.h"
 
 #include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"

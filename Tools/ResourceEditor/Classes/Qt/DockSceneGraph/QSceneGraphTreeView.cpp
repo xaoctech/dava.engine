@@ -138,27 +138,34 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
     
     QMenu menu;
     
-    AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
-    AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
-    AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
+	// For "custom" Particles Editor nodes the "generic" ones aren't needed".
+    if (sceneGraphModel->GetParticlesEditorSceneModelHelper().NeedDisplaySceneEditorPopupMenuItems(index))
+    {
+		AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
+		AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
+		AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 	
-    AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
-    AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
-    AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
+		AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
+		AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
+		AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
     
-	SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
-	if(node)
-	{
-		KeyedArchive *properties = node->GetCustomProperties();
-		if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+		SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
+		if (node)
 		{
-            
-			String filePathname = properties->GetString(String("editor.referenceToOwner"));
-            AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
-            AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
+			KeyedArchive *properties = node->GetCustomProperties();
+			if (properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+			{
+				String filePathname = properties->GetString(String("editor.referenceToOwner"));
+				AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
+				AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
+			}
 		}
 	}
-    
+	
+	// For "custom" Particles Editor nodes the "generic" ones aren't needed".
+    // We might need more menu items/actions for Particles Editor.
+    sceneGraphModel->GetParticlesEditorSceneModelHelper().AddPopupMenuItems(menu, index);
+
     connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
     menu.exec(point);
 }

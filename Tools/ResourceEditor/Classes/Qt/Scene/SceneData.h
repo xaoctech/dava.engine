@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "../SceneEditor/CameraController.h"
-
+#include "../../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 #include <QObject>
 
 class EditorScene;
@@ -60,8 +60,6 @@ public:
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 
-    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
-	
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
@@ -104,6 +102,9 @@ protected:
         DAVA::SceneNode *parent;
     };
     DAVA::Vector<AddedNode> nodesToAdd;
+
+	// Particles Editor Scene Data Helper.
+	DAVA::ParticlesEditorSceneDataHelper particlesEditorSceneDataHelper;
 };
 
 #endif // __SCENE_DATA_H__
