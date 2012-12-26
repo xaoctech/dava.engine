@@ -124,29 +124,29 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterType->setCurrentIndex(emitter->type);
 
 	emitterEmissionAngle->Init(0.f, emitterLifeTime, updateMinimize);
-	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "Emission angle");
+	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "emission angle");
 
 	emitterEmissionRange->Init(0.f, emitterLifeTime, updateMinimize);
-	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "Emission range");
+	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
 
 	emitterEmissionVector->Init(0.f, emitterLifeTime, updateMinimize, true);
 	Vector<QColor> vectorColors;
-	vectorColors.push_back(Qt::blue); vectorColors.push_back(Qt::green); vectorColors.push_back(Qt::red);
+	vectorColors.push_back(Qt::blue); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::red);
 	Vector<QString> vectorLegends;
-	vectorLegends.push_back("Emission vector: x"); vectorLegends.push_back("y"); vectorLegends.push_back("z");
+	vectorLegends.push_back("emission vector: x"); vectorLegends.push_back("emission vector: y"); vectorLegends.push_back("emission vector: z");
 	emitterEmissionVector->AddLines(PropLineWrapper<Vector3>(emitter->emissionVector).GetProps(), vectorColors, vectorLegends);
 
 	emitterRadius->Init(0.f, emitterLifeTime, updateMinimize);
-	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "Radius");
+	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
 
 	emitterSize->Init(0.f, emitterLifeTime, updateMinimize, true);
 	Vector<QColor> sizeColors;
-	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::green); sizeColors.push_back(Qt::red);
+	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
 	Vector<QString> sizeLegends;
-	sizeLegends.push_back("Size: x"); sizeLegends.push_back("y"); sizeLegends.push_back("z");
+	sizeLegends.push_back("size: x"); sizeLegends.push_back("size: y"); sizeLegends.push_back("size: z");
 	emitterSize->AddLines(PropLineWrapper<Vector3>(emitter->size).GetProps(), sizeColors, sizeLegends);
 	
 	emitterLife->setValue(emitterLifeTime);
