@@ -433,9 +433,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-    levelScene->EditScene(pathToFile);
-    levelScene->SetScenePathname(pathToFile);
+    SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)

@@ -37,16 +37,9 @@ public:
     DAVA::CameraController *GetCameraController();
     
     void CreateScene(bool createEditorCameras);
-    
-    void AddScene(const DAVA::String &scenePathname);
-    void EditScene(const DAVA::String &scenePathname);
-	void AddReferenceScene(const DAVA::String &scenePathname);
-    
+
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
-
-
-    void ReloadRootNode(const DAVA::String &scenePathname);
 
     void BakeScene();
     
@@ -55,10 +48,14 @@ public:
     bool CanSaveScene();
     
     LandscapesController *GetLandscapesController();
+	void SetLandscapesControllerScene(EditorScene* scene);
     
 	void ResetLandsacpeSelection();
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
+
+	// Emit the SceneChanged singal.
+	void EmitSceneChanged();
 
 signals:
 	void SceneChanged(EditorScene *scene);
@@ -94,15 +91,6 @@ protected:
 	
     DAVA::String sceneFilePathname;
     
-    //reload root nodes
-    struct AddedNode
-    {
-        DAVA::SceneNode *nodeToAdd;
-        DAVA::SceneNode *nodeToRemove;
-        DAVA::SceneNode *parent;
-    };
-    DAVA::Vector<AddedNode> nodesToAdd;
-
 	// Particles Editor Scene Data Helper.
 	DAVA::ParticlesEditorSceneDataHelper particlesEditorSceneDataHelper;
 };

@@ -217,151 +217,6 @@ void SceneData::CreateScene(bool createEditorCameras)
     SafeRelease(createdScene);
 }
 
-void SceneData::AddScene(const String &scenePathname)
-{
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
-    
-    SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
-    
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname);
-    
-    rootNode->SetSolid(true);
-    scene->AddNode(rootNode);
-    
-    Camera *currCamera = scene->GetCurrentCamera();
-    if(currCamera)
-    {
-        Vector3 pos = currCamera->GetPosition();
-        Vector3 direction  = currCamera->GetDirection();
-        
-        Vector3 nodePos = pos + 10 * direction;
-        nodePos.z = 0;
-        
-        LandscapeNode * ls = scene->GetLandScape(scene);
-        if(ls)
-        {
-            Vector3 result;
-            bool res = ls->PlacePoint(nodePos, result);
-            if(res)
-            {
-                nodePos = result;
-            }
-        }
-        
-        Matrix4 mod;
-        mod.CreateTranslation(nodePos);
-        rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
-    }
-
-	List<LandscapeNode *> landscapes;
-	rootNode->GetChildNodes(landscapes);
-
-	bool needUpdateLandscapeController = !landscapes.empty();
-
-    SafeRelease(rootNode);
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
-
-	if(needUpdateLandscapeController)
-	{
-		landscapesController->SetScene(scene);
-	}
-    
-    RebuildSceneGraph();
-}
-
-void SceneData::EditScene(const String &scenePathname)
-{
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
-
-    SceneNode * rootNode = scene->GetRootNode(scenePathname);
-    if(rootNode)
-    {
-        SetScenePathname(scenePathname);
-		Vector<SceneNode*> tempV;
-		tempV.reserve(rootNode->GetChildrenCount());
-
-		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-		{
-			tempV.push_back(rootNode->GetChild(ci));
-		}
-        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
-        {
-            //рут нода это сама сцена в данном случае
-            scene->AddNode(tempV[ci]);
-        }
-    }
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
-   
-    landscapesController->SetScene(scene);
-
-	scene->Update(0);
-	emit SceneChanged(scene);
-
-    RebuildSceneGraph();
-}
-
-void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
-{
-	String extension = FileSystem::Instance()->GetExtension(scenePathname);
-	DVASSERT((".sc2" == extension) && "Wrong file extension.");
-
-	SceneNode * rootNode = scene->GetRootNode(scenePathname);
-
-	DVASSERT(rootNode->GetChildrenCount() == 1);
-	ReferenceNode * refNode = new ReferenceNode();
-	SceneNode * clone = rootNode->GetChild(0)->Clone();
-	refNode->AddNode(clone);
-	refNode->SetName(rootNode->GetName());
-	SafeRelease(clone);
-
-	KeyedArchive * customProperties = refNode->GetCustomProperties();
-	customProperties->SetString("reference.path", scenePathname);
-
-	refNode->SetSolid(true);
-	scene->AddNode(refNode);
-
-	Camera *currCamera = scene->GetCurrentCamera();
-	if(currCamera)
-	{
-		Vector3 pos = currCamera->GetPosition();
-		Vector3 direction  = currCamera->GetDirection();
-
-		Vector3 nodePos = pos + 10 * direction;
-		nodePos.z = 0;
-
-		LandscapeNode * ls = scene->GetLandScape(scene);
-		if(ls)
-		{
-			Vector3 result;
-			bool res = ls->PlacePoint(nodePos, result);
-			if(res)
-			{
-				nodePos = result;
-			}
-		}
-
-		Matrix4 mod;
-		mod.CreateTranslation(nodePos);
-		refNode->SetLocalTransform(refNode->GetLocalTransform() * mod);
-	}
-	SafeRelease(refNode);
-
-	RebuildSceneGraph();
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-	SceneValidator::Instance()->EnumerateSceneTextures();
-}
-
 void SceneData::SetScenePathname(const String &newPathname)
 {
     sceneFilePathname = newPathname;
@@ -376,62 +231,6 @@ void SceneData::SetScenePathname(const String &newPathname)
 String SceneData::GetScenePathname() const
 {
     return sceneFilePathname;
-}
-
-void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
-{
-	SelectNode(NULL);
-
-    scene->ReleaseRootNode(scenePathname);
-    
-    ReloadNode(scene, scenePathname);
-    
-    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
-    {
-        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
-        SafeRelease(nodesToAdd[i].nodeToAdd);
-    }
-    nodesToAdd.clear();
-    
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->OnReloadRootNodesQt();
-    }
-    
-    RebuildSceneGraph();
-	landscapesController->SetScene(scene);
-}
-
-void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
-{//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
-    {
-        SceneNode *newNode = scene->GetRootNode(nodePathname)->Clone();
-        newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
-        newNode->SetSolid(true);
-        
-        SceneNode *parent = node->GetParent();
-        AddedNode addN;
-        addN.nodeToAdd = newNode;
-        addN.nodeToRemove = node;
-        addN.parent = parent;
-        
-        nodesToAdd.push_back(addN);
-        return;
-    }
-    
-    int32 csz = node->GetChildrenCount();
-    for (int ci = 0; ci < csz; ++ci)
-    {
-        SceneNode * child = node->GetChild(ci);
-        ReloadNode(child, nodePathname);
-    }
 }
 
 void SceneData::BakeNode(DAVA::SceneNode *node)
@@ -547,6 +346,14 @@ LandscapesController * SceneData::GetLandscapesController()
     return landscapesController;
 }
 
+void SceneData::SetLandscapesControllerScene(EditorScene* scene)
+{
+	if (this->landscapesController)
+	{
+		this->landscapesController->SetScene(scene);
+	}
+}
+
 void SceneData::ResetLandsacpeSelection()
 {
 	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
@@ -604,3 +411,7 @@ void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Tex
 	}
 }
 
+void SceneData::EmitSceneChanged()
+{
+	emit SceneChanged(this->scene);
+}
