@@ -63,7 +63,13 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 		
 		if(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM)
 		{
-			image->dataSize = formatSize == 0 ? (width * height) / 2 : width * height ;
+			uint32 dSize = formatSize == 0 ? (width * height) / 2 : width * height ;
+			if(width < 4 || height < 4)// size lower than  block's size
+			{
+				uint32 minValue = width < height ? width : height;
+				dSize = Texture::GetPixelFormatSizeInBits(format) * minValue;
+			}
+			image->dataSize = dSize;
 		}
         
         image->data = new uint8[image->dataSize];

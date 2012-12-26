@@ -93,7 +93,8 @@ bool ImageLoader::IsPVRFile(DAVA::File *file)
 
 bool ImageLoader::IsDXTFile(DAVA::File *file)
 {
-    bool isDXT = LibDxtHelper::IsDxtFile(file->GetFilename());
+    bool isDXT = LibDxtHelper::IsDxtFile(file);
+    file->Seek(0, File::SEEK_FROM_START);
     return isDXT;
 }
     
