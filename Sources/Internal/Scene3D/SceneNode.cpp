@@ -95,6 +95,14 @@ SceneNode::~SceneNode()
 	SafeRelease(userData);
     SafeRelease(customProperties);
 
+	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+	{
+		if(components[i])
+		{
+			RemoveComponent(components[i]);
+		}
+	}
+
 //  Logger::Debug("~SceneNode: %p", this);
 
 	//TODO: delete entity?
@@ -120,10 +128,11 @@ void SceneNode::AddComponent(Component * component)
 
 void SceneNode::RemoveComponent(Component * component)
 {
-    components[component->GetType()] = component;
+    components[component->GetType()] = 0;
     if (scene)
         scene->RemoveComponent(this, component);
     componentFlags &= ~(1 << component->GetType());
+	delete(component);
     UpdateComponentsFastPtrs();
 }
 
