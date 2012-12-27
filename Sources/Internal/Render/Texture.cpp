@@ -530,7 +530,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         format = imageSet[0]->format;
         
         bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && (1 == imageSet.size());
-        
+
         RenderManager::Instance()->LockNonMain();
         for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
         {
