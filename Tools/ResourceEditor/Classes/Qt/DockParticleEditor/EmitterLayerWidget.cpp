@@ -167,23 +167,23 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
 	lifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	lifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->life).GetProps(), Qt::blue, "life");
-	lifeTimeLine->AddLine(1, PropLineWrapper<float32>(layer->lifeVariation).GetProps(), Qt::green, "VA");
+	lifeTimeLine->AddLine(1, PropLineWrapper<float32>(layer->lifeVariation).GetProps(), Qt::darkGreen, "life variation");
 
 	//LAYER_NUMBER, LAYER_NUMBER_VARIATION,
 	numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	numberTimeLine->AddLine(0, PropLineWrapper<float32>(layer->number).GetProps(), Qt::blue, "number");
-	numberTimeLine->AddLine(1, PropLineWrapper<float32>(layer->numberVariation).GetProps(), Qt::green, "VA");
+	numberTimeLine->AddLine(1, PropLineWrapper<float32>(layer->numberVariation).GetProps(), Qt::darkGreen, "number variation");
 
 	//LAYER_SIZE, LAYER_SIZE_VARIATION, LAYER_SIZE_OVER_LIFE,
 	Vector<QColor> colors;
-	colors.push_back(Qt::blue); colors.push_back(Qt::green);
+	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen);
 	Vector<QString> legends;
-	legends.push_back("size X"); legends.push_back("Y");
+	legends.push_back("size X"); legends.push_back("size Y");
 	sizeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
 	sizeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->size).GetProps(), colors, legends);
 	
 	legends.clear();
-	legends.push_back("size Variation X"); legends.push_back("Y");
+	legends.push_back("size variation X"); legends.push_back("size variation Y");
 	sizeVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	
@@ -194,34 +194,34 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	//LAYER_VELOCITY, LAYER_VELOCITY_VARIATION, LAYER_VELOCITY_OVER_LIFE,
 	velocityTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	velocityTimeLine->AddLine(0, PropLineWrapper<float32>(layer->velocity).GetProps(), Qt::blue, "velocity");
-	velocityTimeLine->AddLine(1, PropLineWrapper<float32>(layer->velocityVariation).GetProps(), Qt::green, "VA");
-	velocityTimeLine->AddLine(2, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::red, "OL");
+	velocityTimeLine->AddLine(1, PropLineWrapper<float32>(layer->velocityVariation).GetProps(), Qt::darkGreen, "velocity variation");
+	velocityTimeLine->AddLine(2, PropLineWrapper<float32>(layer->velocityOverLife).GetProps(), Qt::red, "velocity over life");
 
 	//LAYER_FORCES, LAYER_FORCES_VARIATION, LAYER_FORCES_OVER_LIFE,
 
 	//LAYER_SPIN, LAYER_SPIN_VARIATION, LAYER_SPIN_OVER_LIFE,
 	spinTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	spinTimeLine->AddLine(0, PropLineWrapper<float32>(layer->spin).GetProps(), Qt::blue, "spin");
-	spinTimeLine->AddLine(1, PropLineWrapper<float32>(layer->spinVariation).GetProps(), Qt::green, "VA");
-	spinTimeLine->AddLine(2, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::red, "OL");
+	spinTimeLine->AddLine(1, PropLineWrapper<float32>(layer->spinVariation).GetProps(), Qt::darkGreen, "spin variation");
+	spinTimeLine->AddLine(2, PropLineWrapper<float32>(layer->spinOverLife).GetProps(), Qt::red, "spin over life");
 	
 	//LAYER_MOTION_RANDOM, LAYER_MOTION_RANDOM_VARIATION, LAYER_MOTION_RANDOM_OVER_LIFE,
 	motionTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-	motionTimeLine->AddLine(0, PropLineWrapper<float32>(layer->motionRandom).GetProps(), Qt::blue, "motionRandom");
-	motionTimeLine->AddLine(1, PropLineWrapper<float32>(layer->motionRandomVariation).GetProps(), Qt::green, "VA");
-	motionTimeLine->AddLine(2, PropLineWrapper<float32>(layer->motionRandomOverLife).GetProps(), Qt::red, "OL");
+	motionTimeLine->AddLine(0, PropLineWrapper<float32>(layer->motionRandom).GetProps(), Qt::blue, "motion Random");
+	motionTimeLine->AddLine(1, PropLineWrapper<float32>(layer->motionRandomVariation).GetProps(), Qt::darkGreen, "motion random variation");
+	motionTimeLine->AddLine(2, PropLineWrapper<float32>(layer->motionRandomOverLife).GetProps(), Qt::red, "motion random over life");
 
 	//LAYER_BOUNCE, LAYER_BOUNCE_VARIATION,	LAYER_BOUNCE_OVER_LIFE,
 	bounceTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	bounceTimeLine->AddLine(0, PropLineWrapper<float32>(layer->bounce).GetProps(), Qt::blue, "bounce");
-	bounceTimeLine->AddLine(1, PropLineWrapper<float32>(layer->bounceVariation).GetProps(), Qt::green, "VA");
-	bounceTimeLine->AddLine(2, PropLineWrapper<float32>(layer->bounceOverLife).GetProps(), Qt::red, "OL");
+	bounceTimeLine->AddLine(1, PropLineWrapper<float32>(layer->bounceVariation).GetProps(), Qt::darkGreen, "bounce Variation");
+	bounceTimeLine->AddLine(2, PropLineWrapper<float32>(layer->bounceOverLife).GetProps(), Qt::red, "bounce over life");
 	
 	//LAYER_COLOR_RANDOM, LAYER_ALPHA_OVER_LIFE, LAYER_COLOR_OVER_LIFE,
-	colorRandomGradient->Init(0, 1, "Random color");
+	colorRandomGradient->Init(0, 1, "random color");
 	colorRandomGradient->SetValues(PropLineWrapper<Color>(layer->colorRandom).GetProps());
 	
-	colorOverLifeGradient->Init(0, 1, "Color over life");
+	colorOverLifeGradient->Init(0, 1, "color over life");
 	colorOverLifeGradient->SetValues(PropLineWrapper<Color>(layer->colorOverLife).GetProps());
 
 	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);

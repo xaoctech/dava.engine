@@ -52,6 +52,7 @@ private:
 	QRect GetPointRect(const QPoint& point) const;
 	
 	QRect GetLineEnableRect(uint32 lineId) const;
+	int GetLegendHeight() const;
 	QRect GetLineDrawRect() const;
 	QRect GetMinimizeRect() const;
 	QRect GetMaximizeRect() const;
@@ -65,7 +66,6 @@ private:
 	
 	void GraphRectClick(QMouseEvent *event);
 	
-	bool IsLegendEmpty() const;
 	void UpdateLimits();
 	
 	void GetClickedPoint(const QPoint& point, int32& pointId, int32& lineId) const;

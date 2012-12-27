@@ -56,9 +56,9 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	QRect graphRect = GetGraphRect();
 		
 	//draw legend
-	if (!IsLegendEmpty())
+	if (lines.size())
 	{
-		QString legend;
+		/*QString legend;
 		for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
 			if (iter->second.legend.isEmpty())
@@ -79,6 +79,33 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			painter.setPen(iter->second.color);
 			painter.drawText(QPoint(textPos, LEGEND_WIDTH), legend);
 			textPos += painter.fontMetrics().width(legend);
+		}*/
+		
+		if (sizeState == SizeStateMinimized)
+		{
+			LINES_MAP::iterator iter = lines.begin();
+			QString legend = iter->second.legend;
+				
+			painter.setPen(iter->second.color);
+			painter.drawText(rect(), Qt::AlignCenter, legend);
+		}
+		else
+		{
+			for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
+			{
+				QRect lineEnableRect = GetLineEnableRect(iter->first);
+				painter.setPen(iter->second.color);
+
+				painter.drawRect(lineEnableRect);
+				if (iter->second.line.size() == 0)
+				{
+					painter.drawLine(lineEnableRect.topLeft(), lineEnableRect.bottomRight());
+					painter.drawLine(lineEnableRect.bottomLeft(), lineEnableRect.topRight());
+				}
+				
+				QString legend = iter->second.legend;
+				painter.drawText(QPoint(lineEnableRect.right() + 4, lineEnableRect.bottom()), legend);
+			}
 		}
 	}
 	
@@ -203,7 +230,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			painter.setPen(pen);
 
 			//draw line enable
-			QRect lineEnableRect = GetLineEnableRect(lineId);
+			/*QRect lineEnableRect = GetLineEnableRect(lineId);
 			painter.drawRect(lineEnableRect);
 			if (iter->second.line.size())
 			{
@@ -213,6 +240,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			{
 				painter.drawLine(lineEnableRect.topLeft(), lineEnableRect.bottomRight());
 				painter.drawLine(lineEnableRect.bottomLeft(), lineEnableRect.topRight());
+			}*/
+			if (iter->second.line.size())
+			{
+				isLineEnable = true;
 			}
 			
 			//draw drawed colors
@@ -227,6 +258,8 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		
 		if (!isLineEnable)
 		{
+			QFont font("Courier", 14, QFont::Bold);
+			painter.setFont(font);
 			painter.setPen(Qt::black);
 			painter.drawText(graphRect, Qt::AlignVCenter | Qt::AlignHCenter, "Property is not enabled");
 		}
@@ -590,7 +623,7 @@ QRect TimeLineWidget::GetGraphRect() const
 {
 	QRect graphRect = this->rect();
 	graphRect.setX(graphRect.x() + 40);
-	if (IsLegendEmpty())
+	/*if (IsLegendEmpty())
 		graphRect.setY(graphRect.y() + 5);
 	else
 		graphRect.setY(graphRect.y() + 2 + LEGEND_WIDTH);
@@ -598,7 +631,21 @@ QRect TimeLineWidget::GetGraphRect() const
 	if (sizeState == SizeStateMinimized)
 		graphRect.setHeight(0);
 	else
-		graphRect.setHeight(graphRect.height() - 30);
+		graphRect.setHeight(graphRect.height() - 30);*/
+
+	graphRect.setWidth(graphRect.width() - 5);
+	graphRect.setY(GetLegendHeight());
+	if (sizeState == SizeStateMinimized)
+	{
+		graphRect.setHeight(0);
+	}
+	else
+	{
+		graphRect.setHeight(this->height() - graphRect.y() - LEGEND_WIDTH - 1);
+	}
+//	else
+//	{
+		//graphRect.set
 
 	return graphRect;
 }
@@ -889,7 +936,7 @@ void TimeLineWidget::leaveEvent(QEvent *)
 
 QRect TimeLineWidget::GetLineEnableRect(uint32 lineId) const
 {
-	uint32 lineCount = 0;
+	/*uint32 lineCount = 0;
 	for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++lineCount)
 	{
 		if (iter->first == lineId)
@@ -900,14 +947,32 @@ QRect TimeLineWidget::GetLineEnableRect(uint32 lineId) const
 	int rectSize = 10;
 	QRect lineEnableRect(0, 0, rectSize, rectSize);
 	lineEnableRect.translate(graphRect.left() + 50 + rectSize * 2 * lineCount, this->rect().bottom() - 15);
+	return lineEnableRect;*/
+	
+	uint32 lineCount = 0;
+	for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter, ++lineCount)
+	{
+		if (iter->first == lineId)
+			break;
+	}
+	int rectSize = 10;
+	QRect lineEnableRect(0, 0, rectSize, rectSize);
+	lineEnableRect.translate(50, 2 + (rectSize + 3) * lineCount);
 	return lineEnableRect;
+}
+
+int TimeLineWidget::GetLegendHeight() const
+{
+	return GetLineEnableRect(-1).top();
 }
 
 QRect TimeLineWidget::GetLineDrawRect() const
 {
-	QRect graphRect = GetGraphRect();
+/*	QRect graphRect = GetGraphRect();
 	QRect lineDrawRect(0, 0, 40, 10);
-	lineDrawRect.translate(graphRect.left() + 5, this->rect().bottom() - 15);
+	lineDrawRect.translate(graphRect.left() + 5, this->rect().bottom() - 15);*/
+	
+	QRect lineDrawRect(5, 2, 40, LEGEND_WIDTH);
 	return lineDrawRect;
 }
 
@@ -923,33 +988,23 @@ QRect TimeLineWidget::GetMaximizeRect() const
 	return QRect(this->width() - LEGEND_WIDTH - 2, 2, LEGEND_WIDTH - 2, LEGEND_WIDTH -2);
 }
 
-bool TimeLineWidget::IsLegendEmpty() const
-{
-	for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
-	{
-		if (!iter->second.legend.isEmpty())
-			return false;
-	}
-	return true;
-}
-
 void TimeLineWidget::UpdateSizePolicy()
 {
 	switch (sizeState)
 	{
 		case SizeStateMinimized:
 		{
-			setMinimumHeight(18);
+			setMinimumHeight(16);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		} break;
 		case SizeStateNormal:
 		{
-			setMinimumHeight(150);
+			setMinimumHeight(GetLegendHeight() + 150);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		} break;
 		case SizeStateDouble:
 		{
-			int height = Max(150, QWidget::height());
+			int height = Max(GetLegendHeight() + 150, QWidget::height());
 			height *= 2;
 			setMinimumHeight(height);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
