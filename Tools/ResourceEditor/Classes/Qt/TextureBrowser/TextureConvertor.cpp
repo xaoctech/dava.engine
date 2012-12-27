@@ -265,7 +265,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
 		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		DAVA::String outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
 		if(outputPath.length() > 0)
 		{
 			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);

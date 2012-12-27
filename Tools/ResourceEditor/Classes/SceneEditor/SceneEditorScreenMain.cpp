@@ -620,22 +620,22 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
 	CheckNodes(iBody->bodyControl->GetScene());
 }
 
-void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
+void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
 {
     String formatStr;
     switch (format) 
     {
-        case ResourceEditor::FORMAT_PNG:
+        case DAVA::PNG_FILE:
             formatStr = String("png");
             break;
             
-        case ResourceEditor::FORMAT_PVR:
+        case DAVA::PVR_FILE:
             formatStr = String("pvr");
             break;
             
-        case ResourceEditor::FORMAT_DXT:
-            DVASSERT(0);
-            return;
+        case DAVA::DXT_FILE:
+            formatStr = String("dds");
+            break;
             
         default:
 			DVASSERT(0);

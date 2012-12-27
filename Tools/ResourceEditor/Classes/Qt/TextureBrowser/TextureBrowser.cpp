@@ -363,7 +363,7 @@ void TextureBrowser::setupStatusBar()
 	statusBar->addWidget(statusBarLabel);
 	ui->mainLayout->addWidget(statusBar);
 
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
+//	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
 }
 
 void TextureBrowser::setupTextureConverAllButton()
