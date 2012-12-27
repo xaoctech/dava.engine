@@ -22,6 +22,7 @@
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
+#include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
 
 #include <QPoint>
@@ -33,6 +34,8 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
+
+#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
