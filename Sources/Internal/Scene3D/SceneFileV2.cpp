@@ -39,6 +39,8 @@
 #include "Scene3D/Camera.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
+#include "Scene3D/LodNode.h"
+#include "Scene3D/TransformSystem.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
@@ -271,6 +273,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         
     SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
+	rootNode->SetScene(_scene);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
@@ -605,19 +608,56 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 }
 
     
-void SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
+bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 {
-    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
-    if (oldMeshInstanceNode)
-    {
-        SceneNode * newMeshInstanceNode = new SceneNode();
-        //newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
-        
-        
-        (*node)->SetScene(0);
-        SafeRelease(*node);
-        *node = newMeshInstanceNode;
-    }
+    //MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    //if (oldMeshInstanceNode)
+    //{
+    //    SceneNode * newMeshInstanceNode = new SceneNode();
+    //    //newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
+    //    
+    //    
+    //    (*node)->SetScene(0);
+    //    SafeRelease(*node);
+    //    *node = newMeshInstanceNode;
+    //}
+
+	LodNode * lod = dynamic_cast<LodNode*>(*node);
+	if(lod)
+	{
+		SceneNode * newNode = new SceneNode();
+		lod->SceneNode::Clone(newNode);
+		SceneNode * parent = lod->GetParent();
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(lod);
+		}
+		else
+		{
+			lod->SetScene(0);
+			lod->Release();
+		}
+
+		newNode->GetScene()->transformSystem->ImmediateUpdate(newNode);
+		return true;
+	}
+
+	return false;
+}
+
+void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
+{
+	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+	{
+		SceneNode * childNode = currentNode->GetChild(c);
+		bool wasReplace = ReplaceNodeAfterLoad(&childNode);
+		ReplaceOldNodes(childNode);
+		if(wasReplace)
+		{
+			c--;
+		}
+	}
 }
     
 void SceneFileV2::OptimizeScene(SceneNode * rootNode)
@@ -628,6 +668,7 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     
     RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
+	ReplaceOldNodes(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {
@@ -638,6 +679,8 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
+
+
 
     
 };
