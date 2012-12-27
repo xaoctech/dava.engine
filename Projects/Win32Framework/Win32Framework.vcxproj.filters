@@ -1176,6 +1176,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DeleteSystem.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2020,6 +2023,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DeleteSystem.cpp">
       <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

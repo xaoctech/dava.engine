@@ -156,7 +156,6 @@ void Core::CreateRenderManager()
         
 void Core::ReleaseSingletons()
 {
-	DeleteSystem::Instance()->Release();
 	Texture::ReleasePinkPlaceholder();
 	UIScreenManager::Instance()->Release();
 	UIControlSystem::Instance()->Release();
@@ -173,7 +172,7 @@ void Core::ReleaseSingletons()
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
-
+	DeleteSystem::Instance()->Release();
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Release();
 #endif

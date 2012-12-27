@@ -326,7 +326,7 @@ void SceneNode::RestoreOriginalTransforms()
 void SceneNode::BakeTransforms()
 {
     uint32 size = (uint32)children.size();
-    if (size > 0) // propagate matrices
+    if(size == 1) // propagate matrices
     {
         for (uint32 c = 0; c < size; ++c)
         {
@@ -335,14 +335,12 @@ void SceneNode::BakeTransforms()
         }
         SetLocalTransform(Matrix4::IDENTITY);
         AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
-        
-        //worldTransform = Matrix4
-        //UpdateTransform();
-        for (uint32 c = 0; c < size; ++c)
-        {
-            children[c]->BakeTransforms();
-        }
     }
+
+	for(uint32 c = 0; c < size; ++c)
+	{
+		children[c]->BakeTransforms();
+	}
 }
 
 void SceneNode::PropagateBoolProperty(String name, bool value)
@@ -519,14 +517,23 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     
     //uint32 size = components.size();
     for (uint32 k = 0; k < Component::COMPONENT_COUNT;++k)
-        dstNode->components[k] = components[k]->Clone();
-    UpdateComponentsFastPtrs();
+	{
+		if(components[k])
+		{
+			SafeDelete(dstNode->components[k]);
+			dstNode->components[k] = components[k]->Clone();
+		}
+	}
+    dstNode->UpdateComponentsFastPtrs();
     
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
+
+	dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
+	dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
@@ -856,7 +863,7 @@ int32 SceneNode::Release()
 	if(1 == referenceCount)
 	{
 		AddFlag(SceneNode::NODE_DELETED);
-
+		SetScene(0);
 		DeleteSystem::Instance()->MarkNodeAsDeleted(this);
 		return referenceCount;
 	}

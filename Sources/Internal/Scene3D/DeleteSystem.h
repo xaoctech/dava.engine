@@ -13,6 +13,7 @@ class DeleteSystem : public Singleton<DeleteSystem>
 {
 public:
 	DeleteSystem();
+	virtual ~DeleteSystem();
 
 	void Update();
 

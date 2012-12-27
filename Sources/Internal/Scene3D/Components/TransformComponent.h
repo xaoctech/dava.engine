@@ -1,5 +1,5 @@
-#ifndef __DAVAENGINE_TRANSFORM_H__
-#define __DAVAENGINE_TRANSFORM_H__
+#ifndef __DAVAENGINE_TRANSFORM_COMPONENT_H__
+#define __DAVAENGINE_TRANSFORM_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
 #include "Scene3D/TransformSystem.h"
@@ -24,7 +24,7 @@ public:
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
-    Component * Clone();
+    virtual Component * Clone();
 
 private:
 	Matrix4 localMatrix;
@@ -54,4 +54,4 @@ int32 TransformComponent::GetIndex()
 
 };
 
-#endif //__DAVAENGINE_TRANSFORM_H__
+#endif //__DAVAENGINE_TRANSFORM_COMPONENT_H__
