@@ -58,6 +58,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
+	
+	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
 }
 
 QtMainWindow::~QtMainWindow()
