@@ -6,7 +6,9 @@
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
 #include "SceneEditor/PVRConverter.h"
+#include "SceneEditor/DXTConverter.h"
 #include "SceneEditor/SceneValidator.h"
+#include "Render/LibDxtHelper.h"
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -222,7 +224,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				item->descriptorCopy.Save();
 			}
 
-			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
 			{
@@ -259,27 +261,44 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-    
-	// TODO:
-	// convert
-	// ...
+	bool isDXTSupported = false;
+	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
+	{
+		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		DAVA::String outputPath = DXTConverter::Instance()->ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		if(outputPath.length() > 0)
+		{
+			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+			item->descriptorCopy.Save();
+			
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
-	// debug -->
+			if(davaImages.size() > 0)
+			{
+				DAVA::Image *davaImage = davaImages[0];
+				convertedImage = fromDavaImage(davaImage);
+			}
 
-	QRect r(0, 0, 200, 200);
-	convertedImage = QImage(r.size(), QImage::Format_ARGB32);
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+			isDXTSupported = true;
+		}
+	}
 
-	QFont font;
-	font.setPointSize(18);
+	if (!isDXTSupported)
+	{
+		QRect r(0, 0, 200, 200);
+		convertedImage = QImage(r.size(), QImage::Format_ARGB32);
 
-	QPainter p(&convertedImage);
-	p.setBrush(QColor(0,255,0));
-	p.setPen(QColor(155, 0, 0));
-	p.setFont(font);
+		QFont font;
+		font.setPointSize(18);
 
-	p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+		QPainter p(&convertedImage);
+		p.setBrush(QColor(0,255,0));
+		p.setPen(QColor(155, 0, 0));
+		p.setFont(font);
 
-	// <--
+		p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return convertedImage;
@@ -438,6 +457,25 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 
 		switch(image->format)
 		{
+		case DAVA::FORMAT_DXT1:
+		case DAVA::FORMAT_DXT1A:
+		case DAVA::FORMAT_DXT1NM:
+		case DAVA::FORMAT_DXT3:
+		case DAVA::FORMAT_DXT5:
+		case DAVA::FORMAT_DXT5NM:
+		{
+			Vector<Image* > vec;
+			LibDxtHelper::DecompressImageToRGBA(*image, vec, true);
+			if(vec.size() == 1)
+			{
+				qtImage = TextureConvertor::fromDavaImage(vec.front());
+			}
+			else
+			{
+				DAVA::Logger::Error("Error during conversion from DDS to QImage.");
+			}
+			break;
+		}
 		case DAVA::FORMAT_PVR4:
 		case DAVA::FORMAT_PVR2:
 		case DAVA::FORMAT_RGBA8888:

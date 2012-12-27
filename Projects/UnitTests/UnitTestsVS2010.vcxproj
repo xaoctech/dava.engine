@@ -14,6 +14,7 @@
     <ClInclude Include="Classes\BaseScreen.h" />
     <ClInclude Include="Classes\CloneTest.h" />
     <ClInclude Include="Classes\Config.h" />
+    <ClInclude Include="Classes\DXTTest.h" />
     <ClInclude Include="Classes\EntityTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
@@ -31,6 +32,7 @@
   <ItemGroup>
     <ClCompile Include="Classes\BaseScreen.cpp" />
     <ClCompile Include="Classes\CloneTest.cpp" />
+    <ClCompile Include="Classes\DXTTest.cpp" />
     <ClCompile Include="Classes\EntityTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
@@ -105,6 +107,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcprtd;msvcprt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,8 +130,7 @@
       <EnableCOMDATFolding>
       </EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcprtd;msvcprt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

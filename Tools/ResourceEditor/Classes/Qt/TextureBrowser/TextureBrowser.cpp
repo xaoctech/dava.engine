@@ -7,6 +7,7 @@
 #include "Main/mainwindow.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
 #include "ui_texturebrowser.h"
@@ -330,13 +331,14 @@ void TextureBrowser::updateInfoConverted()
 		case ViewDXT:
 			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
 				filesize = QFileInfo(compressedTexturePath.c_str()).size();
 
 				// TODO: more accurate dxt data size calculation
-				datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				datasize = LibDxtHelper::GetDataSize(compressedTexturePath.c_str());
 			}
 			break;
 		}
