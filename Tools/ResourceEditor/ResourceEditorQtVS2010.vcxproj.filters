@@ -124,6 +124,15 @@
     <Filter Include="QtGenerated\DockVisibilityTool">
       <UniqueIdentifier>{42dce97f-85fe-404a-8d60-dfd27c49a1ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\QtPropertyBrowser\Dava">
+      <UniqueIdentifier>{ca344db2-f6c0-4a5c-9159-1b80dd5300b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyBrowser">
+      <UniqueIdentifier>{d564fb81-9021-49ca-bad7-e07e527088b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyBrowser\Dava">
+      <UniqueIdentifier>{313a91af-ec02-4c1c-b5e4-57c4c78af25e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1170,6 +1179,12 @@
     <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser\Dava</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp">
+      <Filter>QtGenerated\QtPropertyBrowser\Dava</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2134,6 +2149,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
       <Filter>Sources\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h">
+      <Filter>Sources\Qt\QtPropertyBrowser\Dava</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
