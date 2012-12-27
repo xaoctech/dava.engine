@@ -265,43 +265,69 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<DAVA::Image*> &ima
 			return retValue;
 		}
 
-		Vector<uint32> vecSizes;
+//		Vector<uint32> vecSizes;
+//
+//		for(uint32 i =0; i < mipmapNumber; ++i)
+//		{
+//			uint32 mipSize= 0;
+//			if(dec.getMipmapSize(i, mipSize))
+//			{
+//				vecSizes.push_back(mipSize);
+//			}
+//		}
+//
+//		for(uint32 i = 0; i < mipmapNumber; ++i)
+//		{
+//			uint32 concreteWidth = width;
+//			uint32 concreteHeight = height;
+//
+//			uint32 offset = 0;
+//			for (uint32 j = 0; j < i; ++j)
+//			{
+//				concreteWidth  /= 2;
+//				concreteHeight /= 2;
+//
+//				offset += vecSizes[j];
+//			}
+//			if (concreteWidth < 2  || concreteHeight < 2)
+//			{
+//				retValue = true;
+//				break;
+//			}
+//
+//			uint8* concreteImageStartPointer = compressedImges + offset;
+//
+//			DAVA::PixelFormat pixFormat = GetPixelFormat(dec);
+//			Image* innerImage = Image::Create(concreteWidth, concreteHeight, pixFormat);
+//			memcpy(innerImage->data, concreteImageStartPointer,vecSizes[i]);
+//			imageSet.push_back(innerImage);
+//			retValue = true;
+//		}
 
-		for(uint32 i =0; i < mipmapNumber; ++i)
-		{
-			uint32 mipSize= 0;
-			if(dec.getMipmapSize(i, mipSize))
-			{
-				vecSizes.push_back(mipSize);
-			}
-		}
-
+        retValue = true;
+        uint32 concreteWidth = width;
+        uint32 concreteHeight = height;
+        
+        uint32 offset = 0;
 		for(uint32 i = 0; i < mipmapNumber; ++i)
 		{
-			uint32 concreteWidth = width;
-			uint32 concreteHeight = height;
-
-			uint32 offset = 0;
-			for (uint32 j = 0; j < i; ++j)
-			{
-				concreteWidth  /= 2;
-				concreteHeight /= 2;
-
-				offset += vecSizes[j];
-			}
-			if (concreteWidth < 2  || concreteHeight < 2)
-			{
-				retValue = true;
-				break;
-			}
-
+			uint32 mipSize = 0;
+            if(!dec.getMipmapSize(i, mipSize))
+            {
+                retValue = false;
+                break;
+            }
+            
 			uint8* concreteImageStartPointer = compressedImges + offset;
-
+            
 			DAVA::PixelFormat pixFormat = GetPixelFormat(dec);
 			Image* innerImage = Image::Create(concreteWidth, concreteHeight, pixFormat);
-			memcpy(innerImage->data, concreteImageStartPointer,vecSizes[i]);
+			memcpy(innerImage->data, concreteImageStartPointer, mipSize);
 			imageSet.push_back(innerImage);
-			retValue = true;
+
+            concreteWidth  /= 2;
+            concreteHeight /= 2;
+            offset += mipSize;
 		}
 
 		delete[] compressedImges;
