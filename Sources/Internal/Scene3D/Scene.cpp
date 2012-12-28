@@ -630,8 +630,11 @@ void Scene::Draw()
 //        drawArray[k]->Draw();
 //    }
     
+    Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    renderSystem->SetCamera(currentCamera);
     renderSystem->Process();
-    
+
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
     SceneNode::Draw();
     

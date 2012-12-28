@@ -85,6 +85,7 @@ public:
     
 private:
     uint32 flags;
+    uint32 debugFlags;
     uint32 removeIndex;
 //    AABBox3 bbox;
 //    Sphere bsphere;

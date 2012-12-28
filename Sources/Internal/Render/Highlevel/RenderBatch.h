@@ -33,6 +33,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
@@ -50,9 +52,12 @@ public:
     uint32 primitiveType;
 };
 */
-    
+class Material;
+class PolygonGroup;
 class RenderLayer;
-    
+class RenderDataObject;
+class Camera;
+
 class RenderBatch : public BaseObject
 {
 public:
@@ -62,17 +67,65 @@ public:
     // TEMPORARY
     virtual const FastName & GetOwnerLayerName();
     
+    void SetPolygonGroup(PolygonGroup * _polygonGroup);
+    inline PolygonGroup * GetPolygonGroup();
     
-    inline void SetRemoveIndex(RenderLayer * _onwerLayer, uint32 removeIndex);
+    void SetRenderDataObject(RenderDataObject * _renderDataObject);
+    inline RenderDataObject * GetRenderDataObject();
+    
+    void SetMaterial(Material * _material);
+    inline Material * GetMaterial();
+    
+    inline void SetStartIndex(uint32 _startIndex);
+    inline void SetIndexCount(uint32 _indexCount);
+    inline void SetModelMatrix(Matrix4 * modelMatrix);
+    
+    inline void SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _removeIndex);
     inline uint32 GetRemoveIndex();
     inline RenderLayer * GetOwnerLayer();
 
-    virtual void Draw() = 0;
+    virtual void Draw(Camera * camera);
 private:
+    PolygonGroup * dataSource;
+    RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
+    Material * material;                    // Should be replaced to NMaterial
+    Matrix4 * modelMatrix;                    // temporary - this should me moved directly to matrix uniforms
+    
+    uint32 startIndex;
+    uint32 indexCount;
+    ePrimitiveType type;
+    
     RenderLayer * ownerLayer;
     uint32 removeIndex;
 };
 
+inline PolygonGroup * RenderBatch::GetPolygonGroup()
+{
+    return dataSource;
+}
+    
+inline RenderDataObject * RenderBatch::GetRenderDataObject()
+{
+    return renderDataObject;
+}
+
+inline Material * RenderBatch::GetMaterial()
+{
+    return material;
+}
+
+inline void RenderBatch::SetStartIndex(uint32 _startIndex)
+{
+    startIndex = _startIndex;
+}
+    
+inline void RenderBatch::SetIndexCount(uint32 _indexCount)
+{
+    indexCount = _indexCount;
+}
+    
+    
+    
 inline uint32 RenderBatch::GetRemoveIndex()
 {
     return removeIndex;
@@ -88,6 +141,12 @@ inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _remov
     ownerLayer = _ownerLayer;
     removeIndex = _removeIndex;
 }
+    
+inline void RenderBatch::SetModelMatrix(Matrix4 * _modelMatrix)
+{
+    modelMatrix = _modelMatrix;
+}
+
     
 } // ns
 

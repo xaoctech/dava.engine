@@ -30,6 +30,7 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/RenderBatchArray.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -63,13 +64,13 @@ void RenderLayer::Update()
 
 }
     
-void RenderLayer::Draw()
+void RenderLayer::Draw(Camera * camera)
 {
     Update();
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderBatchArray[k]->Draw();
+        renderBatchArray[k]->Draw(camera);
     }
 }
 
