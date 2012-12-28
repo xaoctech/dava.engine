@@ -1,31 +1,68 @@
 #include "QtPropertyBrowser/Dava/qtDavaVectorEditorFactory.h"
 
-// QtColorEditorFactoryPrivate
-void QtColorEditorFactoryPrivate::slotPropertyChanged(QtProperty *property,
-	const QColor &value)
+QDoubleSpinBox* QtVector4EditorFactoryPrivate::createEditor(QtProperty *property, QWidget *parent)
 {
-	const PropertyToEditorListMap::iterator it = m_createdEditors.find(property);
-	if (it == m_createdEditors.end())
-		return;
-	QListIterator<QtColorEditWidget *> itEditor(it.value());
-
-	while (itEditor.hasNext())
-		itEditor.next()->setValue(value);
+	QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
+	initializeEditor(property, editor);
+	return editor;
 }
 
-void QtColorEditorFactoryPrivate::slotSetValue(const QColor &value)
+void QtVector4EditorFactoryPrivate::initializeEditor(QtProperty *property, QDoubleSpinBox *editor)
+{
+	Q_TYPENAME PropertyToEditorListMap::iterator it = m_createdEditors.find(property);
+	if (it == m_createdEditors.end())
+		it = m_createdEditors.insert(property, EditorList());
+	it.value().append(editor);
+	m_editorToProperty.insert(editor, property);
+}
+
+void QtVector4EditorFactoryPrivate::slotEditorDestroyed(QObject *object)
+{
+	const Q_TYPENAME EditorToPropertyMap::iterator ecend = m_editorToProperty.end();
+	for (Q_TYPENAME EditorToPropertyMap::iterator itEditor = m_editorToProperty.begin(); itEditor !=  ecend; ++itEditor) {
+		if (itEditor.key() == object) {
+			QDoubleSpinBox *editor = itEditor.key();
+			QtProperty *property = itEditor.value();
+			const Q_TYPENAME PropertyToEditorListMap::iterator pit = m_createdEditors.find(property);
+			if (pit != m_createdEditors.end()) {
+				pit.value().removeAll(editor);
+				if (pit.value().empty())
+					m_createdEditors.erase(pit);
+			}
+			m_editorToProperty.erase(itEditor);
+			return;
+		}
+	}
+}
+
+void QtVector4EditorFactoryPrivate::slotPropertyChanged(QtProperty *property, double value)
+{
+	QList<QDoubleSpinBox *> editors = m_createdEditors[property];
+	QListIterator<QDoubleSpinBox *> itEditor(m_createdEditors[property]);
+	while (itEditor.hasNext()) {
+		QDoubleSpinBox *editor = itEditor.next();
+		if (editor->value() != value) {
+			editor->blockSignals(true);
+			editor->setValue(value);
+			editor->blockSignals(false);
+		}
+	}
+}
+
+void QtVector4EditorFactoryPrivate::slotSetValue(double value)
 {
 	QObject *object = q_ptr->sender();
-	const EditorToPropertyMap::ConstIterator ecend = m_editorToProperty.constEnd();
-	for (EditorToPropertyMap::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor)
+	const QMap<QDoubleSpinBox *, QtProperty *>::ConstIterator itcend = m_editorToProperty.constEnd();
+	for (QMap<QDoubleSpinBox *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != itcend; ++itEditor) {
 		if (itEditor.key() == object) {
 			QtProperty *property = itEditor.value();
-			QtColorPropertyManager *manager = q_ptr->propertyManager(property);
+			QtVector4EditorFactoryPrivate *manager = q_ptr->propertyManager(property);
 			if (!manager)
 				return;
 			manager->setValue(property, value);
 			return;
 		}
+	}
 }
 
 /*!

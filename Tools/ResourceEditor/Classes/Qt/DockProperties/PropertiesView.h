@@ -14,7 +14,7 @@
 #include <QVector>
 #include <QSize>
 
-class PropertiesView : public QtTreePropertyBrowser //QtGroupBoxPropertyBrowser
+class PropertiesView : public QtTreePropertyBrowser // QtGroupBoxPropertyBrowser
 {
 	Q_OBJECT
 
@@ -30,6 +30,15 @@ public slots:
 	void sceneReleased(SceneData *scene);
 	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
+protected slots:
+	void PropertyChangedInt(QtProperty *property);
+	void PropertyChangedBool(QtProperty *property);
+	void PropertyChangedEnum(QtProperty *property);
+	void PropertyChangedString(QtProperty *property);
+	void PropertyChangedDouble(QtProperty *property);
+	void PropertyChangedVector4(QtProperty *property);
+	void PropertyChangedVector3(QtProperty *property);
+
 protected:
 	DAVA::SceneNode* curNode;
 	QWidget *oneForAllParent;
@@ -40,6 +49,7 @@ protected:
 	QtEnumPropertyManager *managerEnum;
 	QtStringPropertyManager *managerString;
 	QtDoublePropertyManager *managerDouble;
+	QtVector2PropertyManager *managerVector2;
 	QtVector3PropertyManager *managerVector3;
 	QtVector4PropertyManager *managerVector4;
 
@@ -53,6 +63,9 @@ protected:
 
 	void ClearAllProperties();
 	QtProperty *CreateProperty(const DAVA::IntrospectionMember *member);
+
+	template <typename T>
+	void PropertyChange(QtProperty *property, T value);
 };
 
 #endif // __DOCK_PROPERTIES_VIEW_H__
