@@ -33,6 +33,7 @@
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
@@ -57,6 +58,9 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
     
+    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD_PASS];
+    forwardPass->AddRenderLayer(renderLayersMap["OpaqueRenderLayer"]);
+    forwardPass->AddRenderLayer(renderLayersMap["TransclucentRenderLayer"]);
 }
 
 RenderSystem::~RenderSystem()
@@ -109,10 +113,9 @@ void RenderSystem::AddEntity(SceneNode * entity)
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
-        //if (batch->GetMaterial()->GetRenderLayerName() == ;
+        batch->SetModelMatrix(entity->GetTransformComponent()->GetWorldTransform());
         AddRenderBatch(batch);
     }
-    
 }
 
 void RenderSystem::RemoveEntity(SceneNode * entity)
@@ -136,7 +139,7 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
     
 }
-    
+
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
@@ -164,8 +167,11 @@ void RenderSystem::ImmediateUpdateRenderBatch(RenderBatch * renderBatch)
 {
     AddRenderBatch(renderBatch);
 }
-
-
+    
+void RenderSystem::SetCamera(Camera * _camera)
+{
+    camera = _camera;
+}
     
 void RenderSystem::Process()
 {
@@ -179,7 +185,7 @@ void RenderSystem::Process()
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderPassOrder[k]->Draw();
+        renderPassOrder[k]->Draw(camera);
     }
 }
 

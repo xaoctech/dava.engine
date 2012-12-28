@@ -164,6 +164,8 @@ void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
 	transformComponent->SetParent(parent);
+    if (scene)
+        scene->ImmediateUpdate(this, transformComponent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -176,8 +178,8 @@ void SceneNode::AddNode(SceneNode * node)
         {
             node->parent->RemoveNode(node);
         }
-        node->SetParent(this);
         node->SetScene(GetScene());
+        node->SetParent(this);
     }
 }
     

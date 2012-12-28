@@ -28,6 +28,10 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderBatch.h"
+#include "Render/Material.h"
+#include "Render/RenderDataObject.h"
+#include "Render/3D/PolygonGroup.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -36,16 +40,39 @@ RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
 {
+    dataSource = 0;
+    renderDataObject = 0;
+    material = 0;
+    startIndex = 0;
+    indexCount = 0;
+    type = PRIMITIVETYPE_TRIANGLELIST;
+    modelMatrix = 0;
 }
     
 RenderBatch::~RenderBatch()
 {
 }
     
-    
-void RenderBatch::Draw()
+void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
-    
+    dataSource = SafeRetain(_polygonGroup);
+}
+
+void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
+{
+    renderDataObject = SafeRetain(_renderDataObject);
+}
+
+void RenderBatch::SetMaterial(Material * _material)
+{
+    material = SafeRetain(_material);
+}
+
+void RenderBatch::Draw(Camera * camera)
+{
+    Matrix4 finalMatrix = (*modelMatrix) * camera->GetMatrix();
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+    material->Draw(dataSource, 0);
 }
     
     

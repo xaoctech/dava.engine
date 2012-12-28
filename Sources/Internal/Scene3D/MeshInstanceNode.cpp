@@ -185,9 +185,9 @@ MeshInstanceNode::MeshInstanceNode()
     //Logger::Debug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
     
-    RenderComponent * renderComponent = new RenderComponent();
+    //RenderComponent * renderComponent = new RenderComponent();
     //renderComponent->SetRenderObject(this);
-    this->AddComponent(renderComponent);
+    //this->AddComponent(renderComponent);
 
 //    Stats::Instance()->RegisterEvent("Scene.Update.MeshInstanceNode.Update", "Update time of MeshInstanceNode");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.MeshInstanceNode.Draw", "Draw time of MeshInstanceNode");

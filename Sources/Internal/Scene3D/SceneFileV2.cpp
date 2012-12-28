@@ -42,6 +42,9 @@
 #include "Scene3D/LodNode.h"
 #include "Scene3D/TransformSystem.h"
 #include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
@@ -612,17 +615,45 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
     
 bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 {
-    //MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
-    //if (oldMeshInstanceNode)
-    //{
-    //    SceneNode * newMeshInstanceNode = new SceneNode();
-    //    //newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
-    //    
-    //    
-    //    (*node)->SetScene(0);
-    //    SafeRelease(*node);
-    //    *node = newMeshInstanceNode;
-    //}
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    if (oldMeshInstanceNode)
+    {
+        SceneNode * newMeshInstanceNode = new SceneNode();
+        oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
+        
+        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+        
+        RenderObject * renderObject = new RenderObject;
+        
+        for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
+        {
+            PolygonGroupWithMaterial * group = polygroups[k];
+            RenderBatch * batch = new RenderBatch;
+            batch->SetPolygonGroup(group->GetPolygonGroup());
+            batch->SetMaterial(group->GetMaterial());
+            batch->SetRenderDataObject(group->GetPolygonGroup()->renderDataObject);
+            batch->SetStartIndex(0);
+            batch->SetIndexCount(group->GetPolygonGroup()->GetIndexCount());
+            renderObject->AddRenderBatch(batch);
+        }
+        
+        RenderComponent * renderComponent = new RenderComponent;
+        renderComponent->SetRenderObject(renderObject);
+        newMeshInstanceNode->AddComponent(renderComponent);
+        
+        SceneNode * parent = oldMeshInstanceNode->GetParent();
+		if(parent)
+		{
+			parent->AddNode(newMeshInstanceNode);
+			parent->RemoveNode(oldMeshInstanceNode);
+		}
+		else
+		{
+			DVASSERT(0 && "How we appeared here");
+		}
+        return true;
+    }
 
 	LodNode * lod = dynamic_cast<LodNode*>(*node);
 	if(lod)

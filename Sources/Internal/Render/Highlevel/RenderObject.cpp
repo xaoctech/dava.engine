@@ -34,6 +34,7 @@ namespace DAVA
 RenderObject::RenderObject()
     :   flags(0)
     ,   removeIndex(-1)
+    ,   debugFlags(0)
 {
     
 }
@@ -54,6 +55,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
+    
 }
     
 uint32 RenderObject::GetRenderBatchCount()
