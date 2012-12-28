@@ -126,17 +126,17 @@ void QtMainWindowHandler::SaveScene()
 
 void QtMainWindowHandler::ExportAsPNG()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
+    Execute(new CommandExport(PNG_FILE));
 }
 
 void QtMainWindowHandler::ExportAsPVR()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
+    Execute(new CommandExport(PVR_FILE));
 }
 
 void QtMainWindowHandler::ExportAsDXT()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+    Execute(new CommandExport(DXT_FILE));
 }
 
 void QtMainWindowHandler::SaveToFolderWithChilds()

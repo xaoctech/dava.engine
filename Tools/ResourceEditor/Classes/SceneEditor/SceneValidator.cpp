@@ -10,6 +10,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
+#include "../LandscapeEditor/EditorLandscapeNode.h"
+
 
 SceneValidator::SceneValidator()
 {
@@ -239,6 +241,13 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
+ 
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    if(editorLandscape)
+    {
+        return;
+    }
+    
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {

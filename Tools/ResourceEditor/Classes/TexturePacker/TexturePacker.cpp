@@ -687,7 +687,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
 		}
 		else if(FORMAT_INVALID != descriptor->dxtCompression.format)
 		{
-			DXTConverter::Instance()->ConvertPngToDxt(exportedPathname, *descriptor);
+			DXTConverter::ConvertPngToDxt(exportedPathname, *descriptor);
 			FileSystem::Instance()->DeleteFile(exportedPathname);
 		}
         

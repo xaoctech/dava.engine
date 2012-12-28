@@ -89,10 +89,6 @@ public:
 	 \returns file instance
 	 */
 	static File * CreateFromSystemPath(const String &filePath, uint32 attributes);
-#if defined(__DAVAENGINE_ANDROID__)
-	static File * CreateFromSystemPath(zip *APKArchive, const String &filename);
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 
 	/**
 		\brief Get this file name

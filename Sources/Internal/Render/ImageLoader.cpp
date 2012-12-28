@@ -71,8 +71,6 @@ Vector<Image *> ImageLoader::CreateFromFile(File *file)
         return CreateFromPVR(file);
     }
     
-	
-
 	return Vector<Image *>();
 }
 
@@ -122,7 +120,7 @@ Vector<Image *> ImageLoader::CreateFromDXT(DAVA::File *file)
 {
     Vector<Image *> retObj;
 
-	bool res = LibDxtHelper::ReadDxtFile(file->GetFilename(), retObj);
+	bool res = LibDxtHelper::ReadDxtFile(file, retObj);
 	if(false == res)
 	{
 		for_each(retObj.begin(), retObj.end(),SafeRelease<Image>);

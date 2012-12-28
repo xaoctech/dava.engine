@@ -34,6 +34,7 @@
 #include "Utils/StringFormat.h"
 #include "Platform/SystemTimer.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 #include "Core/Core.h"
 #include "Render/Shader.h"
 #include "Render/RenderManagerGL20.h"
@@ -84,184 +85,208 @@ Sprite::Sprite()
 Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 {
 //	Logger::Debug("pure create: %s", spriteName.c_str());
-	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
 //	Logger::Info("Sprite pure creation");
 	String pathName = spriteName + ".txt";
 	
-	Sprite * spr = forPointer;
-	String scaledName;
-	String scaledPath;
-	
-	int pos = (int)spriteName.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
-	if(pos < 0)
-	{
-		scaledName = spriteName;
-	}
-	else
-	{
-		scaledName = spriteName.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
-	}
-	scaledPath = scaledName + ".txt";
-	
-	Map<String, Sprite*>::iterator it;
-	it = spriteMap.find(scaledPath);
-	if (it != spriteMap.end())
-	{
-		spr = it->second;
-		spr->Retain();
-		//		Logger::Instance()->Debug("Sprite::Create(%s) from map\n", pathName.c_str());
-		return spr;
-	}
-
-    File * fp = 0;
-    String texturePath;
-    
-	size_t slashPos = scaledPath.rfind("/");
-    String fileName = scaledPath.substr(slashPos + 1);
-    String localizedScaledPath = scaledPath.substr(0, slashPos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-
-    fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
-    texturePath = localizedScaledPath.substr(0, localizedScaledPath.length() - 4);
-    
-    if(!fp)
+	String scaledName = GetScaledName(spriteName);
+	String scaledPath = scaledName + ".txt";
+    Sprite *sprForScaledPath = GetSpriteFromMap(scaledPath);
+    if(sprForScaledPath)
     {
-    	fp = File::Create(scaledPath, File::READ|File::OPEN);
-        texturePath = scaledName;
+        return sprForScaledPath;
     }
 	
-	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
-
-
+    String texturePath;
+    File * fp = LoadLocalizedFile(scaledPath, texturePath);
+    int32 sizeIndex = 0;
 	if (!fp)
 	{
-		Map<String, Sprite*>::iterator it;
-		it = spriteMap.find(pathName);
-		if (it != spriteMap.end())
-		{
-			spr = it->second;
-			spr->Retain();
-			//		Logger::Instance()->Debug("Sprite::Create(%s) from map\n", pathName.c_str());
-			return spr;
-		}
-	
-        size_t pos = pathName.rfind("/");
-        String fileName = pathName.substr(pos + 1);
-        String localizedPathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-		texturePath = localizedPathName.substr(0, pathName.length() - 4);
-	
-		fp = File::Create(localizedPathName, File::READ|File::OPEN);
-	
-		if (!fp)
-		{
-            fp = File::Create(pathName, File::READ|File::OPEN);
-            texturePath = pathName.substr(0, pathName.length() - 4);
-            if (!fp)
-            {    
-                Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
-                return 0;
-            }
-		}	
-		if (!spr) 
-		{
-			spr = new Sprite();
-		}
-		spr->resourceSizeIndex = Core::Instance()->GetBaseResourceIndex();
+        Sprite *sprForPathName = GetSpriteFromMap(pathName);
+        if(sprForPathName)
+        {
+            return sprForPathName;
+        }
+
+        fp = LoadLocalizedFile(pathName, texturePath);
+        if(!fp)
+        {
+            Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
+            return NULL;
+        }
+        
+		sizeIndex = Core::Instance()->GetBaseResourceIndex();
 	}
 	else 
 	{
-		if (!spr) 
-		{
-			spr = new Sprite();
-		}
-		spr->resourceSizeIndex = Core::Instance()->GetDesirableResourceIndex();
-//		texturePath = scaledName;
+		sizeIndex = Core::Instance()->GetDesirableResourceIndex();
 	}
 
-	
-	
+	Sprite * spr = forPointer;
+    if (!spr)
+    {
+        spr = new Sprite();
+    }
+    spr->resourceSizeIndex = sizeIndex;
+    spr->InitFromFile(fp, pathName, texturePath);
+    
+    SafeRelease(fp);
+    
+//	Logger::Debug("Adding to map for key: %s", spr->relativePathname.c_str());
+	spriteMap[spr->relativePathname] = spr;
+//	Logger::Debug("Resetting sprite");
+	spr->Reset();
+//	Logger::Debug("Returning pointer");
+	return spr;
+}
+    
+    
+Sprite* Sprite::GetSpriteFromMap(const String &pathname)
+{
+    Map<String, Sprite*>::iterator it;
+	it = spriteMap.find(pathname);
+	if (it != spriteMap.end())
+	{
+		Sprite *spr = it->second;
+		spr->Retain();
+		return spr;
+	}
+    
+    return NULL;
+}
+    
+String Sprite::GetScaledName(const String &spriteName)
+{
+    String::size_type pos = spriteName.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+    if(String::npos != pos)
+	{
+        return spriteName.substr(0, pos)
+                        + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex())
+                        + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+	}
+    
+    return spriteName;
+}
+
+File * Sprite::LoadLocalizedFile(const String &spritePathname, String &texturePath)
+{
+    String fileName, folderName;
+    FileSystem::Instance()->SplitPath(spritePathname, folderName, fileName);
+    
+    String localizedScaledPath = folderName + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+//    Logger::Info("[Sprite::LoadLocalizedFile] (%s).", localizedScaledPath.c_str());
+    
+    texturePath = "";
+    File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
+    if(fp)
+    {
+        texturePath = localizedScaledPath;
+    }
+    else
+    {
+    	fp = File::Create(spritePathname, File::READ|File::OPEN);
+        if(fp)
+        {
+            texturePath = spritePathname;
+        }
+    }
+
+    return fp;
+}
+    
+void Sprite::InitFromFile(File *file, const String &pathName, const String &texturePathname)
+{
+	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
+
+//	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
+
+    String texturePath = texturePathname;
 	size_t tpos = texturePath.rfind("/");
 	if(tpos != String::npos)
 	{
 		texturePath.erase(tpos + 1);
 	}
-	
+
 	char tempBuf[1024];
 
-	
-	spr->type = SPRITE_FROM_FILE;
-	spr->relativePathname = pathName;
-	fp->ReadLine(tempBuf, 1024);
-	sscanf(tempBuf, "%d", &spr->textureCount);
-	spr->textures = new Texture*[spr->textureCount];
-	timeSpriteRead = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead;
-	
+
+    type = SPRITE_FROM_FILE;
+	relativePathname = pathName;
+    relativeTexturePathname = texturePathname;
+    
+	file->ReadLine(tempBuf, 1024);
+	sscanf(tempBuf, "%d", &textureCount);
+	textures = new Texture*[textureCount];
+//	timeSpriteRead = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead;
+
 	char textureCharName[128];
-	for (int k = 0; k < spr->textureCount; ++k)
+	for (int32 k = 0; k < textureCount; ++k)
 	{
-		fp->ReadLine(tempBuf, 1024);
+		file->ReadLine(tempBuf, 1024);
 		sscanf(tempBuf, "%s", textureCharName);
 		String tp = texturePath + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
-		Texture *texture = Texture::CreateFromFile(tp);
-		
-		spr->textures[k] = texture;
-		DVASSERT_MSG(texture, "ERROR: Texture loading failed"/* + pathName*/);
-	}	
+		textures[k] = Texture::CreateFromFile(tp);
 
-	uint64 timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS();
+		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
+	}
+
+    resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(resourceSizeIndex);
+	resourceToPhysicalFactor = Core::Instance()->GetResourceToPhysicalFactor(resourceSizeIndex);
+
+//	uint64 timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS();
 
 	int32 width, height;
-	fp->ReadLine(tempBuf, 1024);
-	sscanf(tempBuf, "%d %d", &width, &height); 
-	spr->size.dx = (float32)width;
-	spr->size.dy = (float32)height;
-//	spr->originalSize = spr->size;
-	spr->size.dx *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-	spr->size.dy *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-	fp->ReadLine(tempBuf, 1024);
-	sscanf(tempBuf, "%d", &spr->frameCount);
-	
-	spr->texCoords = new GLfloat*[spr->frameCount];
-	spr->frameVertices = new GLfloat*[spr->frameCount];
-//	spr->originalVertices = new float32*[spr->frameCount];
-	spr->rectsAndOffsets = new float32*[spr->frameCount];
-	spr->frameTextureIndex = new int32[spr->frameCount];
-	
-	
-	for (int i = 0;	i < spr->frameCount; i++) 
+	file->ReadLine(tempBuf, 1024);
+	sscanf(tempBuf, "%d %d", &width, &height);
+	size.dx = (float32)width;
+	size.dy = (float32)height;
+//	originalSize = size;
+	size.dx *= resourceToVirtualFactor;
+	size.dy *= resourceToVirtualFactor;
+	file->ReadLine(tempBuf, 1024);
+	sscanf(tempBuf, "%d", &frameCount);
+
+	texCoords = new GLfloat*[frameCount];
+	frameVertices = new GLfloat*[frameCount];
+//	originalVertices = new float32*[frameCount];
+	rectsAndOffsets = new float32*[frameCount];
+	frameTextureIndex = new int32[frameCount];
+
+
+	for (int32 i = 0; i < frameCount; i++)
 	{
-		spr->frameVertices[i] = new GLfloat[8];
-//		spr->originalVertices[i] = new float32[4];
-		spr->texCoords[i] = new GLfloat[8];
-		spr->rectsAndOffsets[i] = new GLfloat[6];
-		
+		frameVertices[i] = new GLfloat[8];
+//		originalVertices[i] = new float32[4];
+		texCoords[i] = new GLfloat[8];
+		rectsAndOffsets[i] = new GLfloat[6];
+
 		int32 x, y, dx,dy, xOff, yOff;
-		
-		fp->ReadLine(tempBuf, 1024);
-		sscanf(tempBuf, "%d %d %d %d %d %d %d", &x, &y, &dx, &dy, &xOff, &yOff, &spr->frameTextureIndex[i]);
-		
-		spr->rectsAndOffsets[i][0] = (float32)x;
-		spr->rectsAndOffsets[i][1] = (float32)y;
-//		spr->rectsAndOffsets[i][2] = (float32)dx;
-//		spr->rectsAndOffsets[i][3] = (float32)dy;
-//		spr->rectsAndOffsets[i][4] = (float32)xOff;
-//		spr->rectsAndOffsets[i][5] = (float32)yOff;
-//		spr->originalVertices[i][0] = (float32)dx;
-//		spr->originalVertices[i][1] = (float32)dy;
-//		spr->originalVertices[i][2] = (float32)xOff;
-//		spr->originalVertices[i][3] = (float32)yOff;
-		
-		spr->frameVertices[i][0] = (float32)xOff;
-		spr->frameVertices[i][1] = (float32)yOff;
-		spr->frameVertices[i][2] = (float32)(xOff + dx);
-		spr->frameVertices[i][3] = (float32)yOff;
-		spr->frameVertices[i][4] = (float32)xOff;
-		spr->frameVertices[i][5] = (float32)(yOff + dy);
-		spr->frameVertices[i][6] = (float32)(xOff + dx);
-		spr->frameVertices[i][7] = (float32)(yOff + dy);
-		
-		float xof = 0;
-		float yof = 0;
+
+		file->ReadLine(tempBuf, 1024);
+		sscanf(tempBuf, "%d %d %d %d %d %d %d", &x, &y, &dx, &dy, &xOff, &yOff, &frameTextureIndex[i]);
+
+		rectsAndOffsets[i][0] = (float32)x;
+		rectsAndOffsets[i][1] = (float32)y;
+//		rectsAndOffsets[i][2] = (float32)dx;
+//		rectsAndOffsets[i][3] = (float32)dy;
+//		rectsAndOffsets[i][4] = (float32)xOff;
+//		rectsAndOffsets[i][5] = (float32)yOff;
+//		originalVertices[i][0] = (float32)dx;
+//		originalVertices[i][1] = (float32)dy;
+//		originalVertices[i][2] = (float32)xOff;
+//		originalVertices[i][3] = (float32)yOff;
+
+		frameVertices[i][0] = (float32)xOff;
+		frameVertices[i][1] = (float32)yOff;
+		frameVertices[i][2] = (float32)(xOff + dx);
+		frameVertices[i][3] = (float32)yOff;
+		frameVertices[i][4] = (float32)xOff;
+		frameVertices[i][5] = (float32)(yOff + dy);
+		frameVertices[i][6] = (float32)(xOff + dx);
+		frameVertices[i][7] = (float32)(yOff + dy);
+
+		float32 xof = 0;
+		float32 yof = 0;
 		if (usedForScale)
 		{
 			xof = 0.15f + (0.45f - 0.15f) * (dx * 0.01f);
@@ -275,63 +300,50 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 				yof = 0.45f;
 			}
 		}
-		
 
-		spr->rectsAndOffsets[i][2] = dx * Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->rectsAndOffsets[i][3] = dy * Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->rectsAndOffsets[i][4] = xOff * Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->rectsAndOffsets[i][5] = yOff * Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
+
+        rectsAndOffsets[i][2] = dx * resourceToVirtualFactor;
+		rectsAndOffsets[i][3] = dy * resourceToVirtualFactor;
+		rectsAndOffsets[i][4] = xOff * resourceToVirtualFactor;
+		rectsAndOffsets[i][5] = yOff * resourceToVirtualFactor;
 
 		dx += x;
 		dy += y;
-		
-		spr->texCoords[i][0] = ((GLfloat)x + xof) / spr->textures[spr->frameTextureIndex[i]]->width;
-		spr->texCoords[i][1] = ((GLfloat)y + yof) / spr->textures[spr->frameTextureIndex[i]]->height;
-		spr->texCoords[i][2] = ((GLfloat)dx - xof) / spr->textures[spr->frameTextureIndex[i]]->width;
-		spr->texCoords[i][3] = ((GLfloat)y + yof) / spr->textures[spr->frameTextureIndex[i]]->height;
-		spr->texCoords[i][4] = ((GLfloat)x + xof) / spr->textures[spr->frameTextureIndex[i]]->width;
-		spr->texCoords[i][5] = ((GLfloat)dy - yof) / spr->textures[spr->frameTextureIndex[i]]->height;
-		spr->texCoords[i][6] = ((GLfloat)dx - xof) / spr->textures[spr->frameTextureIndex[i]]->width;
-		spr->texCoords[i][7] = ((GLfloat)dy - yof) / spr->textures[spr->frameTextureIndex[i]]->height;
-		
-		spr->frameVertices[i][0] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][1] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][2] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][3] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][4] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][5] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][6] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		spr->frameVertices[i][7] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-		
-		
+
+		texCoords[i][0] = ((GLfloat)x + xof) / textures[frameTextureIndex[i]]->width;
+		texCoords[i][1] = ((GLfloat)y + yof) / textures[frameTextureIndex[i]]->height;
+		texCoords[i][2] = ((GLfloat)dx - xof) / textures[frameTextureIndex[i]]->width;
+		texCoords[i][3] = ((GLfloat)y + yof) / textures[frameTextureIndex[i]]->height;
+		texCoords[i][4] = ((GLfloat)x + xof) / textures[frameTextureIndex[i]]->width;
+		texCoords[i][5] = ((GLfloat)dy - yof) / textures[frameTextureIndex[i]]->height;
+		texCoords[i][6] = ((GLfloat)dx - xof) / textures[frameTextureIndex[i]]->width;
+		texCoords[i][7] = ((GLfloat)dy - yof) / textures[frameTextureIndex[i]]->height;
+
+		frameVertices[i][0] *= resourceToVirtualFactor;
+		frameVertices[i][1] *= resourceToVirtualFactor;
+		frameVertices[i][2] *= resourceToVirtualFactor;
+		frameVertices[i][3] *= resourceToVirtualFactor;
+		frameVertices[i][4] *= resourceToVirtualFactor;
+		frameVertices[i][5] *= resourceToVirtualFactor;
+		frameVertices[i][6] *= resourceToVirtualFactor;
+		frameVertices[i][7] *= resourceToVirtualFactor;
 	}
+    
 //	Logger::Debug("Frames created: %d", spr->frameCount);
 	//	center.x = width / 2;
 	//	center.y = height / 2;
 	
-	spr->defaultPivotPoint.x = 0;
-	spr->defaultPivotPoint.y = 0;
+	defaultPivotPoint.x = 0;
+	defaultPivotPoint.y = 0;
 	
-	spr->resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
-	spr->resourceToPhysicalFactor = Core::Instance()->GetResourceToPhysicalFactor(spr->resourceSizeIndex);
+//	timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead2;
+//  Logger::Debug("Sprite: %s time:%lld", relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
 
-
-	SafeRelease(fp);
-	timeSpriteRead2 = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead2;
-	
-	//Logger::Debug("Sprite: %s time:%lld", spr->relativePathname.c_str(), timeSpriteRead2 + timeSpriteRead);
-	
-//	Logger::Debug("Adding to map for key: %s", spr->relativePathname.c_str());
-	spriteMap[spr->relativePathname] = spr;
-//	Logger::Debug("Resetting sprite");
-	spr->Reset();
-//	Logger::Debug("Returning pointer");
-	return spr;
 }
+
 	
 Sprite* Sprite::Create(const String &spriteName)
 {
-	
 	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
@@ -542,7 +554,7 @@ int32 Sprite::Release()
 	
 void Sprite::Clear()
 {
-	for (int k = 0; k < textureCount; ++k)
+	for (int32 k = 0; k < textureCount; ++k)
 	{
 		SafeRelease(textures[k]);
 	}
@@ -1494,4 +1506,29 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &pa
 	
 	frame = localState.frame;
 }
+    
+    
+void Sprite::Reload()
+{
+    if(type == SPRITE_FROM_FILE)
+    {
+        for(int32 i = 0; i < textureCount; ++i)
+        {
+            if(textures[i])
+            {
+                textures[i]->Reload();
+            }
+        }
+        
+        Clear();
+
+        File *fp = File::Create(relativePathname, File::READ | File::OPEN);
+        if(fp)
+        {
+            InitFromFile(fp, relativePathname, relativeTexturePathname);
+            SafeRelease(fp);
+        }
+    }
+}
+    
 };

@@ -86,15 +86,6 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	return image;
 }
 
-
-  
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-
-#else //other platforms
-
-#endif //PLATFORMS	
-
-
 void Image::ResizeImage(int32 newWidth, int32 newHeight)
 {
 	if(newWidth>0 && newHeight>0)

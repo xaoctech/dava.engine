@@ -273,10 +273,7 @@ bool LandscapeNode::BuildHeightmap()
                 retValue = true;
             }
             
-            for(int32 i = 0; i < (int32)imageSet.size(); ++i)
-            {
-                SafeRelease(imageSet[i]);
-            }
+            for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
         }
     }
     else if(Heightmap::FileExtension() == extension)

@@ -1,64 +1,33 @@
 #include "DXTConverter.h"
-#include "Render/TextureDescriptor.h"
-#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
-DXTConverter::DXTConverter()
-{
-}
-
-DXTConverter::~DXTConverter()
-{
-}
-
 String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String outputName;
 	Vector<Image*> inputImages = ImageLoader::CreateFromFile(fileToConvert);
 	if(inputImages.size() == 1)
 	{
 		Image* image = inputImages[0];
-		outputName = GetDXTToolOutput(fileToConvert);
+		String outputName = FileSystem::ReplaceExtension(fileToConvert, ".dds");
 
-		uint8 mipmupNumber = 0;
-
-		if(descriptor.generateMipMaps > 0)
+		if((descriptor.dxtCompression.compressToWidth != 0) && (descriptor.dxtCompression.compressToHeight != 0))
 		{
-			uint32 targetSize = image->width > image->height ? image->height : image->width;
-			if(!(descriptor.dxtCompression.compressToWidth == 0 && descriptor.dxtCompression.compressToHeight == 0))//if compressToHeight compressToWidth == 0 use size from png
-			{
-				uint32 ctw = descriptor.dxtCompression.compressToWidth;
-				uint32 cth = descriptor.dxtCompression.compressToHeight;
-				targetSize = ctw > cth ? cth : ctw;
-			}
-			uint32 lastSize = targetSize;
-
-			for( ; lastSize >= 2 ; ++mipmupNumber)//count mipmaps number wich cause minimum side size to 2
-			{
-				lastSize /= 2;
-			}
-			mipmupNumber--; // nvtt begin counting from 0
-		}
-
-		if(!(descriptor.dxtCompression.compressToWidth == 0 && descriptor.dxtCompression.compressToHeight == 0))
-		{
+            Logger::Warning("[DXTConverter::ConvertPngToDxt] convert to compression size");
 			image->ResizeImage(descriptor.dxtCompression.compressToWidth, descriptor.dxtCompression.compressToHeight);
 		}
 		
-		if(!LibDxtHelper::WriteDxtFile(outputName.c_str(), image->width, image->height, image->data, 
-			descriptor.dxtCompression.format, mipmupNumber))
+		if(LibDxtHelper::WriteDxtFile(outputName,
+                                      image->width, image->height, image->data,
+                                      descriptor.dxtCompression.format,
+                                      (descriptor.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
 		{
-			outputName.clear();
+            for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+            return outputName;
 		}
 	}
+    
+    Logger::Error("[DXTConverter::ConvertPngToDxt] can't convert %s to DXT", fileToConvert.c_str());
 
-
-	return outputName;
+    for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+    return String("");
 }
-
-String DXTConverter::GetDXTToolOutput(const DAVA::String &inputDxt)
-{
-	return FileSystem::ReplaceExtension(inputDxt, ".dds");
-}
-
