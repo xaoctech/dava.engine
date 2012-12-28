@@ -32,6 +32,10 @@ protected slots:
 	// Called by Scene Data manager when Scene Graph needs to be updated in a some way.
 	void OnSceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
 	void OnSceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
+	
+	// Called by Scene Data Manager when the Scene Graph needs to be rebuilt
+	// for the particular node or for the whole graph.
+	void OnSceneGraphNeedRebuildNode(DAVA::SceneNode* node);
 	void OnSceneGraphNeedRebuild();
 
 	// Called by us when the Context Menu is requested.

@@ -21,6 +21,10 @@ public:
     SceneData();
     virtual ~SceneData();
 
+	// Rebuild the scene graph for particular node.
+	void RebuildSceneGraphNode(DAVA::SceneNode* node);
+	
+	// Rebuild the whole scene graph.
     void RebuildSceneGraph();
 
     void SetScene(EditorScene *newScene);
@@ -62,7 +66,9 @@ signals:
 	void SceneNodeSelected(DAVA::SceneNode *node);
 	
 	// Signals are specific for Scene Graph Model.
+	void SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
 	void SceneGraphModelNeedsRebuild();
+	
 	void SceneGraphModelNeedSetScene(EditorScene* scene);
 	void SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 

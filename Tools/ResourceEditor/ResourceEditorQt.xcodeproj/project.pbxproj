@@ -408,6 +408,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1715AA1C168DE24C00951942 /* SceneNodePropertyNames.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneNodePropertyNames.h; path = Classes/SceneEditor/SceneNodePropertyNames.h; sourceTree = "<group>"; };
 		1757B6B71689F4980044850A /* GraphItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphItem.cpp; path = Classes/Qt/DockSceneGraph/GraphItem.cpp; sourceTree = "<group>"; };
 		1757B6B81689F4980044850A /* GraphItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphItem.h; path = Classes/Qt/DockSceneGraph/GraphItem.h; sourceTree = "<group>"; };
 		1757B6B91689F4980044850A /* GraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphModel.cpp; path = Classes/Qt/DockSceneGraph/GraphModel.cpp; sourceTree = "<group>"; };
@@ -2016,6 +2017,7 @@
 				5C7F496515B44B7A0038AF3A /* UIZoomControl.h */,
 				5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */,
 				5C7F496715B44B7A0038AF3A /* UNDOManager.h */,
+				1715AA1C168DE24C00951942 /* SceneNodePropertyNames.h */,
 			);
 			name = SceneEditor;
 			sourceTree = "<group>";
