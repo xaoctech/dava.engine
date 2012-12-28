@@ -186,7 +186,7 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
-	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
+	caps.isDXTSupported = false;//IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
 #endif
 
 //	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");

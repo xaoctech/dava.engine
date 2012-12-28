@@ -133,27 +133,27 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 	return retValue;
 }
 
-bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet, bool forseSoftWareConvertation)
+bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
 		return false;
 	}
 	
-	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
+	return NvttHelper::ReadDxtFile(dec, imageSet, false);
 }
 
-bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet, bool forseSoftWareConvertation)
+bool LibDxtHelper::ReadDxtFile(File * file, Vector<Image*> &imageSet)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, file))
 	{
 		return false;
 	}
-	return NvttHelper::ReadDxtFile(dec, imageSet, forseSoftWareConvertation);
+	return NvttHelper::ReadDxtFile(dec, imageSet, false);
 }
 
 bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &imageSet, bool forseSoftwareConvertation)
@@ -219,17 +219,17 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	uint32 width = 0;
 	uint32 height = 0;
 	uint32 size = 0;
-	uint32 mipmapNumber = 0;
+	uint32 mipmapsCount = 0;
 	uint32 hSize=0;
-	if(!dec.getInfo(mipmapNumber, width, height, size, hSize))
+	if(!dec.getInfo(mipmapsCount, width, height, size, hSize))
 	{
 		Logger::Error("Error during header reading.");
 		return false;
 	}
 
-	if(0 == width || 0 == height || 0 == mipmapNumber)
+	if(0 == width || 0 == height || 0 == mipmapsCount)
 	{
-		Logger::Error("Wrong mipmapNumber/width/height value in dds header.");
+		Logger::Error("Wrong mipmapsCount/width/height value in dds header.");
 		return false;
 	}
 	
@@ -260,7 +260,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
         retValue = true;
         
         uint32 offset = 0;
-		for(uint32 i = 0; i < mipmapNumber; ++i)
+		for(uint32 i = 0; i < mipmapsCount; ++i)
 		{
 			uint32 mipSize = 0;
             if(!dec.getMipmapSize(i, mipSize))
@@ -286,17 +286,18 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	}
 	else
 	{
-		for(uint32 i = 0; i < mipmapNumber; ++i)
+		for(uint32 i = 0; i < mipmapsCount; ++i)
 		{
 			Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
-			uint32 size = width * height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+			Memset(innerImage->data, 0, innerImage->dataSize);
             
-			if(dec.process(innerImage->data, size, i))
+			if(dec.process(innerImage->data, innerImage->dataSize, i))
 			{
-				SwapBRChannels(innerImage->data, size);
+				SwapBRChannels(innerImage->data, innerImage->dataSize);
 				imageSet.push_back(innerImage);
                 
                 ImageLoader::Save(innerImage, Format("/Users/victorkleschenko/Downloads/test/layer_%d.png", i));
+//				ImageLoader::Save(innerImage, Format("/Levels/layer_%d.png", i));
 			}
 			else
 			{
@@ -305,7 +306,6 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 				return false;
 			}
 			
-			// change size to support mipmaps sizes
             height = Max((uint32)1, height / 2);
             width = Max((uint32)1, width / 2);
 		}
