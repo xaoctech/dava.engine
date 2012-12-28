@@ -1,5 +1,6 @@
 #include "DockProperties/PropertiesView.h"
 #include "Scene/SceneDataManager.h"
+#include <QTimer>
 
 PropertiesView::PropertiesView(QWidget *parent /* = 0 */)
 	: QtTreePropertyBrowser(parent)
@@ -50,6 +51,9 @@ PropertiesView::PropertiesView(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+
+	// update timer
+	QTimer::singleShot(200, this, SLOT(PropertiesUpdate()));
 }
 
 PropertiesView::~PropertiesView()
@@ -64,7 +68,7 @@ void PropertiesView::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	ClearAllProperties();
+	PropertiesAllClear();
 
 	if(NULL != node)
 	{
@@ -76,7 +80,7 @@ void PropertiesView::SetNode(DAVA::SceneNode *node)
 
 			for(int i = 0; i < typeInfo->MembersCount(); ++i)
 			{
-				QtProperty *pr = CreateProperty(typeInfo->Member(i));
+				QtProperty *pr = PropertyCreate(typeInfo->Member(i));
 				if(NULL != pr)
 				{
 					gr->addSubProperty(pr);
@@ -113,7 +117,7 @@ void PropertiesView::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *no
 	SetNode(node);
 }
 
-void PropertiesView::ClearAllProperties()
+void PropertiesView::PropertiesAllClear()
 {
 	clear();
 
@@ -124,7 +128,18 @@ void PropertiesView::ClearAllProperties()
 	managerString->clear();
 }
 
-QtProperty* PropertiesView::CreateProperty(const DAVA::IntrospectionMember *member)
+void PropertiesView::PropertiesAllUpdate()
+{
+	QMapIterator<QtProperty *, const DAVA::IntrospectionMember *> i(allProperties);
+
+	while(i.hasNext())
+	{
+		i.next();
+		PropertySet(i.key(), i.value()->Value(curNode));
+	}
+}
+
+QtProperty* PropertiesView::PropertyCreate(const DAVA::IntrospectionMember *member)
 {
 	QtProperty *pr = NULL;
 
@@ -133,22 +148,18 @@ QtProperty* PropertiesView::CreateProperty(const DAVA::IntrospectionMember *memb
 		if(member->Type() == DAVA::MetaInfo::Instance<int>())
 		{
 			pr = managerInt->addProperty(member->Name());
-			managerInt->setValue(pr, member->Value(curNode).AsInt32());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<bool>())
 		{
 			pr = managerBool->addProperty(member->Name());
-			managerBool->setValue(pr, member->Value(curNode).AsBool());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::String>())
 		{
 			pr = managerString->addProperty(member->Name());
-			managerString->setValue(pr, member->Value(curNode).AsString().c_str());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<float32>())
 		{
 			pr = managerDouble->addProperty(member->Name());
-			managerDouble->setValue(pr, member->Value(curNode).AsFloat());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Matrix2>())
 		{
@@ -165,17 +176,14 @@ QtProperty* PropertiesView::CreateProperty(const DAVA::IntrospectionMember *memb
 		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector2>())
 		{
 			pr = managerVector2->addProperty(member->Name());
-			managerVector2->setValue(pr, member->Value(curNode).AsVector2());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector3>())
 		{
 			pr = managerVector3->addProperty(member->Name());
-			managerVector3->setValue(pr, member->Value(curNode).AsVector3());
 		}
 		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector4>())
 		{
 			pr = managerVector4->addProperty(member->Name());
-			managerVector4->setValue(pr, member->Value(curNode).AsVector4());
 		}
 		else
 		{
@@ -186,48 +194,117 @@ QtProperty* PropertiesView::CreateProperty(const DAVA::IntrospectionMember *memb
 	if(NULL != pr)
 	{
 		allProperties[pr] = member;
+		PropertySet(pr, member->Value(curNode));
 	}
 
 	return pr;
 }
 
+void PropertiesView::PropertySet(QtProperty *pr, const DAVA::VariantType &value)
+{
+	const DAVA::IntrospectionMember *member = NULL;
+
+	if(allProperties.contains(pr))
+	{
+		member = allProperties[pr];
+	}
+
+	if(NULL != member)
+	{
+		if(member->Type() == DAVA::MetaInfo::Instance<int>())
+		{
+			managerInt->setValue(pr, member->Value(curNode).AsInt32());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<bool>())
+		{
+			managerBool->setValue(pr, member->Value(curNode).AsBool());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::String>())
+		{
+			managerString->setValue(pr, member->Value(curNode).AsString().c_str());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<float32>())
+		{
+			managerDouble->setValue(pr, member->Value(curNode).AsFloat());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Matrix2>())
+		{
+			DVASSERT("Templory unsupported type");
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Matrix3>())
+		{
+			DVASSERT("Templory unsupported type");
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Matrix4>())
+		{
+			DVASSERT("Templory unsupported type");
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector2>())
+		{
+			managerVector2->setValue(pr, member->Value(curNode).AsVector2());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector3>())
+		{
+			managerVector3->setValue(pr, member->Value(curNode).AsVector3());
+		}
+		else if(member->Type() == DAVA::MetaInfo::Instance<DAVA::Vector4>())
+		{
+			managerVector4->setValue(pr, member->Value(curNode).AsVector4());
+		}
+		else
+		{
+			DVASSERT("Unsupported type");
+		}
+	}
+}
+
+void PropertiesView::PropertiesUpdate()
+{
+	if(NULL != curNode)
+	{
+		PropertiesAllUpdate();
+	}
+
+	QTimer::singleShot(200, this, SLOT(PropertiesUpdate()));
+}
+
 void PropertiesView::PropertyChangedInt(QtProperty *property)
 {
-	PropertyChange(property, managerInt->value(property));
+	PropertySetToNode(property, managerInt->value(property));
 }
 
 void PropertiesView::PropertyChangedBool(QtProperty *property)
 {
-	PropertyChange(property, managerBool->value(property));
+	PropertySetToNode(property, managerBool->value(property));
 }
 
 void PropertiesView::PropertyChangedEnum(QtProperty *property)
 {
-	PropertyChange(property, managerEnum->value(property));
+	PropertySetToNode(property, managerEnum->value(property));
 }
 
 void PropertiesView::PropertyChangedString(QtProperty *property)
 {
-	PropertyChange(property, managerString->value(property).toStdString());
+	PropertySetToNode(property, managerString->value(property).toStdString());
 }
 
 void PropertiesView::PropertyChangedDouble(QtProperty *property)
 {
-	PropertyChange(property, (DAVA::float32) managerDouble->value(property));
+	PropertySetToNode(property, (DAVA::float32) managerDouble->value(property));
 }
 
 void PropertiesView::PropertyChangedVector4(QtProperty *property)
 {
-	PropertyChange(property, managerVector4->value(property));
+	PropertySetToNode(property, managerVector4->value(property));
 }
 
 void PropertiesView::PropertyChangedVector3(QtProperty *property)
 {
-	PropertyChange(property, managerVector3->value(property));
+	PropertySetToNode(property, managerVector3->value(property));
 }
 
 template <typename T>
-void PropertiesView::PropertyChange(QtProperty *property, T value)
+void PropertiesView::PropertySetToNode(QtProperty *property, const T &value)
 {
 	if(allProperties.contains(property) && NULL != curNode)
 	{

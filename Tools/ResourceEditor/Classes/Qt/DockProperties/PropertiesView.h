@@ -4,6 +4,7 @@
 #include "DAVAEngine.h"
 #include "Base/Introspection.h"
 #include "Scene/SceneData.h"
+#include "FileSystem/VariantType.h"
 #include "QtPropertyBrowser/qttreepropertybrowser.h"
 #include "QtPropertyBrowser/qtgroupboxpropertybrowser.h"
 #include "QtPropertyBrowser/qtpropertymanager.h"
@@ -38,6 +39,7 @@ protected slots:
 	void PropertyChangedDouble(QtProperty *property);
 	void PropertyChangedVector4(QtProperty *property);
 	void PropertyChangedVector3(QtProperty *property);
+	void PropertiesUpdate();
 
 protected:
 	DAVA::SceneNode* curNode;
@@ -61,11 +63,14 @@ protected:
 
 	QMap<QtProperty *, const DAVA::IntrospectionMember *> allProperties;
 
-	void ClearAllProperties();
-	QtProperty *CreateProperty(const DAVA::IntrospectionMember *member);
+	void PropertiesAllClear();
+	void PropertiesAllUpdate();
+
+	QtProperty* PropertyCreate(const DAVA::IntrospectionMember *member);
+	void		PropertySet(QtProperty *pr, const DAVA::VariantType &value);
 
 	template <typename T>
-	void PropertyChange(QtProperty *property, T value);
+	void PropertySetToNode(QtProperty *pr, const T &value);
 };
 
 #endif // __DOCK_PROPERTIES_VIEW_H__
