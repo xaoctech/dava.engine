@@ -110,8 +110,8 @@ bool Decompressor::Private::initWithDDSFile(const uint8 * mem, uint size)
 	}
 
 	m_memmoryBufferPointer = new uint8[size];
-
-	m_dds = new nv::DirectDrawSurface( mem, size);
+	memcpy(m_memmoryBufferPointer, mem, size);
+	m_dds = new nv::DirectDrawSurface(m_memmoryBufferPointer, size);
 	
 	if (!m_dds->isValid())
 	{
@@ -138,6 +138,7 @@ void Decompressor::Private::erase()
 	if(NULL != m_memmoryBufferPointer)
 	{
 		delete[] m_memmoryBufferPointer;
+		m_memmoryBufferPointer = NULL;
 	}
 }
 
