@@ -394,7 +394,9 @@ EditorScene * SceneDataManager::RegisterNewScene()
 	connect(data, SIGNAL(SceneChanged(EditorScene *)), this, SLOT(InSceneData_SceneChanged(EditorScene *)));
 	connect(data, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::SceneNode *)));
 
+	connect(data, SIGNAL(SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)));
 	connect(data, SIGNAL(SceneGraphModelNeedsRebuild()), this, SLOT(InSceneData_SceneGraphModelNeedsRebuild()));
+	
 	connect(data, SIGNAL(SceneGraphModelNeedSetScene(EditorScene *)), this, SLOT(InSceneData_SceneGraphModelNeedSetScene(EditorScene *)));
 	connect(data, SIGNAL(SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)), this, SLOT(InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)));
 
@@ -451,7 +453,13 @@ void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneNodeSelected(sceneData, node);
 }
-						 
+
+void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node)
+{
+	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.
+	emit SceneGraphNeedRebuildNode(node);
+}
+
 void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuild()
 {
 	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.

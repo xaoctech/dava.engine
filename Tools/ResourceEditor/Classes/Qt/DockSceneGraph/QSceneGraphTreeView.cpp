@@ -32,7 +32,11 @@ void QSceneGraphTreeView::ConnectToSignals()
 {
 	connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(OnSceneNodeSelectedInGraph(DAVA::SceneNode *)));
 	
+
+	// Signals to rebuild the particular node and the whole graph.
+	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
+	
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
 			this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSelectNode(SceneData*, DAVA::SceneNode*)),
@@ -49,7 +53,9 @@ void QSceneGraphTreeView::DisconnectFromSignals()
 {
 	disconnect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(OnSceneNodeSelectedInGraph(DAVA::SceneNode *)));
 	
+	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
+	
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
 			   this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSelectNode(SceneData*, DAVA::SceneNode*)),
@@ -106,6 +112,11 @@ void QSceneGraphTreeView::OnSceneDeactivated(SceneData* scene)
     sceneGraphModel->Deactivate();
     
 	disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(OnSceneGraphContextMenuRequested(const QPoint &)));
+}
+
+void QSceneGraphTreeView::OnSceneGraphNeedRebuildNode(DAVA::SceneNode* node)
+{
+	sceneGraphModel->RebuildNode(node);
 }
 
 void QSceneGraphTreeView::OnSceneGraphNeedRebuild()

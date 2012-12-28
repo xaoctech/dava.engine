@@ -66,15 +66,20 @@ signals:
 	void SceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 	
 	// Signals needed for Scene Graph Tree View.
+	void SceneGraphNeedRebuildNode(DAVA::SceneNode* node);
 	void SceneGraphNeedRebuild();
+
 	void SceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
 	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
 
 protected slots:
 	void InSceneData_SceneChanged(EditorScene *scene);
 	void InSceneData_SceneNodeSelected(DAVA::SceneNode *node);
-	
+
+	// Rebuild the Scene Graph for particular node and for the whole graph.
+	void InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
 	void InSceneData_SceneGraphModelNeedsRebuild();
+	
 	void InSceneData_SceneGraphModelNeedSetScene(EditorScene* scene);
 	void InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 

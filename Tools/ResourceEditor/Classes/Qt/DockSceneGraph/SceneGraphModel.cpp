@@ -68,6 +68,79 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
     }
 }
 
+void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
+{
+	if(!rootNode)
+	{
+		return;
+	}
+
+	// Lookup for SceneItem for this particular node.
+	GraphItem* graphItem = ItemForData(rootNode);
+	if (!graphItem)
+	{
+		return;
+	}
+
+	// Do the rebuild itself. Remove the previous children and add new ones.
+	// The separate vector is needed to don't corrupt GraphItem iterator while removing items.
+	Vector<GraphItem*> childrenToRemove;
+	int32 childrenToRemoveCount = graphItem->ChildrenCount();
+	for (int32 i = 0; i < childrenToRemoveCount; i ++)
+	{
+		childrenToRemove.push_back(graphItem->Child(i));
+	}
+	
+	for (int32 i = 0; i < childrenToRemoveCount; i ++)
+	{
+		GraphItem* childItem = childrenToRemove[i];
+		QModelIndex parentIndex = createIndex(graphItem->Row(), 0, graphItem);
+		int32 rowToRemove = childItem->Row();
+
+		// Remove the previous children and add new ones.
+		beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
+		graphItem->RemoveChild(childItem);
+		endRemoveRows();
+	}
+
+	// Add the child nodes only if the root node is not solid.
+	if (!rootNode->GetSolid())
+	{
+		int32 childrenToAddCount = rootNode->GetChildrenCount();
+		for (int32 i = 0; i < childrenToAddCount; i ++)
+		{
+			AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+		}
+	}
+}
+
+void SceneGraphModel::AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode)
+{
+	if (!rootItem || !rootNode)
+	{
+		return;
+	}
+
+	QModelIndex parentIndex = createIndex(rootItem->Row(), 0, rootItem);
+	int32 rowToAdd = rootItem->Row();
+
+	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+
+	// Add the child nodes on this level.
+	SceneGraphItem *graphItem = new SceneGraphItem();
+	graphItem->SetUserData(rootNode);
+	rootItem->AppendChild(graphItem);
+
+	endInsertRows();
+	
+	// Repeat for the children.
+	int32 childrenCount = rootNode->GetChildrenCount();
+	for (uint i = 0; i < childrenCount; i ++)
+	{
+		AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+	}
+}
+
 void SceneGraphModel::Rebuild()
 {
     SafeRelease(rootItem);
