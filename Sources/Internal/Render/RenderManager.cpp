@@ -181,7 +181,7 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
     
 	Logger::Debug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
 }
-#endif //    #ifdef __DAVASOUND_ANDROID__    
+#endif //    #ifdef __DAVAENGINE_ANDROID__    
 
 
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)

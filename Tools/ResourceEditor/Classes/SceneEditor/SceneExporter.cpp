@@ -464,7 +464,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				}
 				else if(exportFormat == DXT_FILE)
 				{
-					DXTConverter::Instance()->ConvertPngToDxt(sourceTexturePathname, *descriptor);
+					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
 					descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
 					descriptor->Save();
 				}

@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcprtd;msvcprt</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
@@ -327,6 +327,8 @@
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitter.cpp" />
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
@@ -751,6 +753,8 @@
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h" />
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitterScreen.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />

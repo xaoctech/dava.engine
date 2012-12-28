@@ -134,7 +134,7 @@ void Settings::ParseAppConfig(const YAML::Node* pNode, const char* appType, Apps
                 }
             }
 
-            appMap[config.m_Name] = config;
+            appMap[config.m_Name][config.m_Version] = config;
         }
     }
 }
@@ -174,7 +174,11 @@ void Settings::EmitAppConfig(YAML::Emitter& emitter, const char* appType, const 
         emitter << YAML::Key << appType;
         emitter << YAML::Value;
         emitter << YAML::BeginMap;
-        for (AppsConfig::AppMap::const_iterator iter = appsMap.begin(); iter!= appsMap.end(); ++iter) {
+        for (AppsConfig::AppMap::const_iterator appIter = appsMap.begin(); appIter != appsMap.end(); ++appIter) {
+            AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+            if (iter == appIter.value().end())
+                continue;
+
             const AppConfig& config = iter.value();
             emitter << YAML::Key << config.m_Name.toStdString();
             emitter << YAML::Value;
@@ -205,7 +209,6 @@ void Settings::EmitAppConfig(YAML::Emitter& emitter, const char* appType, const 
         }
         emitter << YAML::EndMap;
     }
-
 }
 
 
@@ -246,4 +249,17 @@ const AppsConfig& Settings::GetCurrentConfig() const {
 void Settings::UpdateConfig(const AppsConfig& config) {
     m_Config = config;
     UpdateInitConfig();
+}
+
+QString Settings::GetInstalledAppVersion(const QString& appName, eAppType type) {
+    AppsConfig::AppMap* appMap = m_Config.GetAppMap(type);
+    AppsConfig::AppMap::const_iterator appIter = appMap->find(appName);
+    if (appIter == appMap->end())
+        return "";
+
+    AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+    if (iter == appIter.value().end())
+        return "";
+
+    return iter.value().m_Version;
 }

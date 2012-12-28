@@ -134,6 +134,7 @@ Texture::Texture()
 ,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
+,   loadedAsFile(NOT_FILE)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -529,7 +530,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         format = imageSet[0]->format;
         
         bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && (1 == imageSet.size());
-        
+
         RenderManager::Instance()->LockNonMain();
         for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
         {
@@ -670,6 +671,25 @@ Texture * Texture::PureCreate(const String & pathName)
     else
     {
         texture = CreateFromImage(pathName, descriptor);
+        if(texture)
+        {
+            if(0 == CompareCaseInsensitive(extension, ".png"))
+            {
+                texture->loadedAsFile = PNG_FILE;
+            }
+            else if(0 == CompareCaseInsensitive(extension, ".pvr"))
+            {
+                texture->loadedAsFile = PVR_FILE;
+            }
+            else if(0 == CompareCaseInsensitive(extension, ".dds"))
+            {
+                texture->loadedAsFile = DXT_FILE;
+            }
+            else
+            {
+                texture->loadedAsFile = NOT_FILE;
+            }
+        }
     }
 
     if(texture)
@@ -690,12 +710,20 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     if (texture)return texture;
     
     texture = CreateFromImage(descriptor->textureFile, descriptor);
+    if(texture)
+    {
+        texture->loadedAsFile = descriptor->textureFileFormat;
+    }
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
     texture = CreateFromImage(imagePathname, descriptor);
+    if(texture)
+    {
+        texture->loadedAsFile = formatForLoading;
+    }
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
@@ -710,6 +738,11 @@ TextureDescriptor * Texture::CreateDescriptor() const
     }
 
     return NULL;
+}
+    
+void Texture::Reload()
+{
+    ReloadAs(loadedAsFile);
 }
     
 void Texture::ReloadAs(ImageFileFormat fileFormat)
@@ -770,6 +803,10 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
         
         TexImage(0, width, height, data, dataSize);
         GeneratePixelesation();
+    }
+    else
+    {
+        loadedAsFile = fileFormat;
     }
     
     SafeRelease(file);
