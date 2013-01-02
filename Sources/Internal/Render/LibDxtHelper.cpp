@@ -10,6 +10,8 @@
 #include "Render/ImageLoader.h"
 #include "Utils/StringFormat.h"
 
+#include "FileSystem/File.h"
+
 
 
 using namespace nvtt;
@@ -131,6 +133,22 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 		}
 	}
 	return retValue;
+}
+
+void LibDxtHelper::test()
+{
+
+	DAVA::File * file = File::Create("c:\\dev\\b.dds", File::OPEN | File::READ);
+
+	bool isDXT = false; //IsDxtFile(file);
+
+	Vector<Image *> vec;
+	isDXT = ReadDxtFile(file, vec);
+	//isDXT = ReadDxtFile("c:\\dev\\b.dds",vec);
+	//for (uint32 i = 0; i < vec.size(); ++i)
+	//{
+	//	ImageLoader::Save(vec[i], Format("c:\\dev\\t%d.png",i));
+	//}
 }
 
 bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet)
@@ -296,7 +314,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 				SwapBRChannels(innerImage->data, innerImage->dataSize);
 				imageSet.push_back(innerImage);
                 
-                ImageLoader::Save(innerImage, Format("/Users/victorkleschenko/Downloads/test/layer_%d.png", i));
+//               ImageLoader::Save(innerImage, Format("C://dev//layer_%d.png", i));
 //				ImageLoader::Save(innerImage, Format("/Levels/layer_%d.png", i));
 			}
 			else
@@ -582,12 +600,13 @@ bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, File * file)
 		Logger::Error("Wrong handler.");
 		return false;
 	}
-
+	file->Seek(0, File::SEEK_FROM_START);
 	uint32 fileSize = file->GetSize();
 	uint8* fileBuffer= new uint8[fileSize];
 	file->Read(fileBuffer, fileSize);
     bool initied = dec.initWithDDSFile(fileBuffer, fileSize);
-    SafeDeleteArray(fileBuffer);
+	file->Seek(0, File::SEEK_FROM_START);
+	SafeDeleteArray(fileBuffer);
     return initied;
 }
 
