@@ -59,6 +59,10 @@
       <LinkLibraryDependencies>
       </LinkLibraryDependencies>
     </ProjectReference>
+    <PostBuildEvent>
+      <Command>xcopy $(ProjectDir)..\..\Debug\libdxtd.lib $(ProjectDir)..\..\libs\ /Y /L
+xcopy $(ProjectDir)..\..\Release\libdxt.lib $(ProjectDir)..\..\libs\ /Y /L</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -76,6 +80,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(ProjectDir)..\..\Debug\libdxtd.lib $(ProjectDir)..\..\..\Libs\ /Y
+xcopy $(ProjectDir)..\..\Release\libdxt.lib $(ProjectDir)..\..\..\Libs\ /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\nvtt\CompressDXT.cpp" />
