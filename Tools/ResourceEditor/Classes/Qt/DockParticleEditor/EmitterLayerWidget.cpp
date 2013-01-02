@@ -76,6 +76,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	alphaOverLifeTimeLine = new TimeLineWidget(this);
 	InitWidget(alphaOverLifeTimeLine);
 	
+	frameOverLifeTimeLine = new TimeLineWidget(this);
+	InitWidget(frameOverLifeTimeLine);
+	
 	QHBoxLayout* alignToMotionLayout = new QHBoxLayout;
 	mainBox->addLayout(alignToMotionLayout);
 	alignToMotionLayout->addWidget(new QLabel("alignToMotion", this));
@@ -227,6 +230,9 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
 	
+	frameOverLifeTimeLine->Init(0, 1, updateMinimized);
+	frameOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->frameOverLife).GetProps(), Qt::blue, "frame over life");
+	
 	//LAYER_ALIGN_TO_MOTION,
 	alignToMotionSpin->setValue(layer->alignToMotion);
 	
@@ -318,6 +324,9 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propAlphaOverLife;
 	alphaOverLifeTimeLine->GetValue(0, propAlphaOverLife.GetPropsPtr());
 	
+	PropLineWrapper<float32> propFrameOverLife;
+	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
+	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
 	updateLayerCmd->Init(!enableCheckBox->isChecked(),
 						 sprite,
@@ -343,6 +352,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 propColorRandom.GetPropLine(),
 						 propAlphaOverLife.GetPropLine(),
 						 propColorOverLife.GetPropLine(),
+						 propFrameOverLife.GetPropLine(),
 						 (float32)alignToMotionSpin->value(),
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value());
