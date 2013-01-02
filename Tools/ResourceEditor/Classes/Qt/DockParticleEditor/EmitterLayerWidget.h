@@ -59,9 +59,10 @@ private:
 	TimeLineWidget* spinTimeLine;
 	TimeLineWidget* motionTimeLine;
 	TimeLineWidget* bounceTimeLine;
+	TimeLineWidget* alphaOverLifeTimeLine;
+	TimeLineWidget* frameOverLifeTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
-	TimeLineWidget* alphaOverLifeTimeLine;
 	QDoubleSpinBox* alignToMotionSpin;
 	QDoubleSpinBox* startTimeSpin;
 	QDoubleSpinBox* endTimeSpin;

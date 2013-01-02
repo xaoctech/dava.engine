@@ -191,6 +191,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
+									  RefPtr< PropertyLine<float32> > frameOverLife,
 									  float32 alignToMotion,
 									  float32 startTime,
 									  float32 endTime)
@@ -220,6 +221,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 	this->alphaOverLife = alphaOverLife;
 	this->colorOverLife = colorOverLife;
 	this->alignToMotion = alignToMotion;
+	this->frameOverLife = frameOverLife;
 	this->startTime = startTime;
 	this->endTime = endTime;
 }
@@ -254,6 +256,7 @@ void CommandUpdateParticleLayer::Execute()
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
+	layer->frameOverLife = frameOverLife;
 	layer->alignToMotion = alignToMotion;
 	layer->startTime = startTime;
 	layer->endTime = endTime;
