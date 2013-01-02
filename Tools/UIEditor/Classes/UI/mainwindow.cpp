@@ -271,7 +271,7 @@ void MainWindow::OnNewProject()
 	
 	QString filename = QFileDialog::getSaveFileName(this,
 													tr("New project"),
-													GetDefaultDirectory(),
+													ResourcesManageHelper::GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
@@ -390,7 +390,7 @@ void MainWindow::OnSaveAsProject()
 {
 	QString filename = QFileDialog::getSaveFileName(this,
 													tr("Save project as"),
-													GetDefaultDirectory(),
+													ResourcesManageHelper::GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
@@ -416,7 +416,7 @@ void MainWindow::OnLoadProject()
 	
 	QString filename = QFileDialog::getOpenFileName(this,
 													tr("Load project"),
-													GetDefaultDirectory(),
+													ResourcesManageHelper::GetDefaultDirectory(),
 													tr("Documents (*.uiEditor)") );
     if (filename.isNull())
 		return;
@@ -466,15 +466,4 @@ void MainWindow::UpdateProjectSettings(const QString& filename)
 	//Save current project directory path
 	QDir projectDir = QFileInfo(filename).absoluteDir();
 	EditorSettings::Instance()->SetProjectPath(projectDir.absolutePath().toStdString());
-}
-
-QString MainWindow::GetDefaultDirectory()
-{
-	QString defaultDir = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
-	//If default directory path is not available in project settings - use current working path
-	if ( defaultDir.isNull() || defaultDir.isEmpty() )
-	{
-  		defaultDir = QDir::currentPath();
-	}
-	return defaultDir;
 }

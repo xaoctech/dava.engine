@@ -55,7 +55,6 @@ private:
 	void InitMenu();
 	void UpdateMenu();
 	void UpdateProjectSettings(const QString& filename);
-	QString GetDefaultDirectory();
 
 private:
     Ui::MainWindow *ui;

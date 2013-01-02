@@ -59,7 +59,8 @@ SOURCES += \
     Classes/UI/StateComboBoxItemDelegate.cpp \
     Classes/Metadata/UITextFieldMetadata.cpp \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
-    Classes/UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp
+    Classes/UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
+    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.cpp
 
 HEADERS  += \
         Classes/AppScreens.h \
@@ -104,7 +105,8 @@ HEADERS  += \
     Classes/UI/QColorButton.h \
     Classes/UI/StateComboBoxItemDelegate.h \
     Classes/Metadata/UITextFieldMetadata.h \
-    UI/PropertyGridWidgets/uitextfieldpropertygridwidget.h
+    UI/PropertyGridWidgets/uitextfieldpropertygridwidget.h \
+    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.h
 
 FORMS    += \
         UI/mainwindow.ui \
@@ -139,7 +141,8 @@ FORMS    += \
     UI/PropertyGridWidgets/basepropertygridwidget.ui \
     UI/PropertyGridWidgets/backgroundpropertygridwidget.ui \
     UI/Dialogs/localizationeditordialog.ui \
-    UI/PropertyGridWidgets/uitextfieldpropertygridwidget.ui
+    UI/PropertyGridWidgets/uitextfieldpropertygridwidget.ui \
+    UI/PropertyGridWidgets/sliderpropertygridwidget.ui
 
 
 #debug dependent

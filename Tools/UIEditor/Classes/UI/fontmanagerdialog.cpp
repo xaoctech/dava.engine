@@ -79,7 +79,9 @@ void FontManagerDialog::OkButtonClicked()
         //If font type is graphic user should select a sprite for font
         if (fontType == FONT_TYPE_GRAPHIC)
         {
-            QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ), "/", tr( "Sprites (*.txt)" ));
+            QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ),
+																		ResourcesManageHelper::GetDefaultDirectory(),
+																		tr( "Sprites (*.txt)" ));
              
             if (!fontSpritePath.isEmpty())
             {

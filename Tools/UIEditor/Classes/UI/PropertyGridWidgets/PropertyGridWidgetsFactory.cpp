@@ -15,6 +15,7 @@
 #include "UIButtonMetadata.h"
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
+#include "UISliderMetadata.h"
 
 using namespace DAVA;
 
@@ -43,6 +44,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 
     backgroundWidget = new BackGroundPropertyGridWidget();
     registeredWidgets.push_back(backgroundWidget);
+
+	sliderWidget = new SliderPropertyGridWidget();
+	registeredWidgets.push_back(sliderWidget);
     
     flagsWidget = new FlagsPropertyGridWidget();
     registeredWidgets.push_back(flagsWidget);
@@ -117,7 +121,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         
         return resultList;
     }
-
+	
+	// Slider
+	const UISliderMetadata* uiSliderMetadata = dynamic_cast<const UISliderMetadata*>(metaData);
+	if (uiSliderMetadata)
+	{
+	    resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);		
+      	resultList.push_back(stateWidget);
+		resultList.push_back(sliderWidget);
+	 	resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+				
+		return resultList;
+	}
     
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for
