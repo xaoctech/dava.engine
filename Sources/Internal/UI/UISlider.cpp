@@ -81,7 +81,8 @@ UISlider::UISlider() : bgMin(0),	bgMax(0)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
-	
+	// Init thumb button with null value to avoid crash
+	thumbButton = NULL;	
 	
 	leftInactivePart = 0;
 	rightInactivePart = 0;

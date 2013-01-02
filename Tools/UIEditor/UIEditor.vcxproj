@@ -38,6 +38,7 @@
     <ClCompile Include="Classes\Metadata\ScreenMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIButtonMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIControlMetadata.cpp" />
+    <ClCompile Include="Classes\Metadata\UISliderMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIStaticTextMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UITextControlMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UITextFieldMetadata.cpp" />
@@ -72,6 +73,7 @@
     <ClCompile Include="Classes\UI\PropertyGridWidgets\PropertyGridWidgetsFactory.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\rectpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\screenpropertygridwidget.cpp" />
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\statepropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\textpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.cpp" />
@@ -188,6 +190,8 @@
     <ClCompile Include="GeneratedFiles\DebugQt\moc_uitextfieldpropertygridwidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_sliderpropertygridwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_UISliderMetadata.cpp" />
     <ClCompile Include="GeneratedFiles\ReleaseQt\moc_backgroundpropertygridwidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -440,6 +444,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </CustomBuild>
+    <ClInclude Include="Classes\Metadata\UISliderMetadata.h" />
     <ClInclude Include="Classes\Models\HierarchyTree.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeControlNode.h" />
     <ClInclude Include="Classes\Models\HierarchyTreeNode.h" />
@@ -701,6 +706,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </CustomBuild>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_backgroundpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_basepropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_controlpropertygridwidget.h" />
@@ -717,6 +723,7 @@
     <ClInclude Include="GeneratedFiles\ui_propertygridcontainerwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_rectpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_screenpropertygridwidget.h" />
+    <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h" />
@@ -967,6 +974,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\PropertyGridWidgets\sliderpropertygridwidget.ui" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}</ProjectGuid>
