@@ -131,7 +131,10 @@ UISlider::~UISlider()
 void UISlider::SetThumbSprite(Sprite * sprite, int32 frame)
 {
 	thumbButton->GetBackground()->SetSprite(sprite, frame);
-	leftInactivePart = rightInactivePart = (int32)((sprite->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	if (sprite)
+	{
+		leftInactivePart = rightInactivePart = (int32)((sprite->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	}
 }
 
 void UISlider::SetThumbSprite(const String & spriteName, int32 frame)
@@ -315,6 +318,12 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 		UIControl::Draw(geometricData);
 }
 
+List<UIControl* >& UISlider::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(thumbButton);
+	return realChildren;
+}
 	
 void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
@@ -361,26 +370,111 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		//SetMaxSprite("/XGfx/Options/slider_bg", 0);
 	}
 	
+	// Values
 	YamlNode * valueNode = node->Get("value");
 	
 	if (valueNode)
 		SetValue(valueNode->AsFloat());
+		
+	YamlNode * minValueNode= node->Get("minValue");
+	
+	if (minValueNode)
+		SetMinValue(minValueNode->AsFloat());
+		
+	YamlNode * maxValueNode= node->Get("maxValue");
+	
+	if (maxValueNode)
+		SetMaxValue(maxValueNode->AsFloat());
+	
+	// Min/Max draw type
+	YamlNode * minDrawTypeNode = node->Get("minDrawType");
+
+	if(minDrawTypeNode)
+	{
+		UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
+		SetMinDrawType(type);
+	}
+	
+	YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
+
+	if(maxDrawTypeNode)
+	{
+		UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
+		SetMaxDrawType(type);
+	}		
 }
 	
 YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-    //Temp variable
-    VariantType *nodeValue = new VariantType();
     
-    //Control Type
+    // Control Type
     node->Set("type", "UISlider");
-    //ThumbSprite
-    //minSprite
-    //maxSprite
-    //value
-    
-    SafeDelete(nodeValue);
+	
+	// Sprite value
+	float32 value = this->GetValue();
+	node->Set("value", value);
+	
+	// Sprite min value
+	value = this->GetMinValue();
+	node->Set("minValue", value);
+	
+	// Sprite max value
+	value = this->GetMaxValue();
+	node->Set("maxValue", value);
+		
+	// Get thumb sprite and frame
+	if (this->thumbButton != NULL)
+	{
+		Sprite *sprite = this->GetThumb()->GetSprite();
+		int32 spriteFrame = this->GetThumb()->GetFrame();
+		if (sprite)
+		{
+			//Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetName()));
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("thumbSprite", spriteNode);
+		}
+	}
+	
+	if (this->bgMin != NULL)
+	{
+		// Get min sprite and frame
+		Sprite *sprite = this->GetBgMin()->GetSprite();
+		int32 spriteFrame = this->GetBgMin()->GetFrame();
+		if (sprite)
+		{
+			// Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetName()));
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("minSprite", spriteNode);
+		}
+		
+		// Min draw type
+		UIControlBackground::eDrawType drawType =  this->GetBgMin()->GetDrawType();
+		node->Set("minDrawType", loader->GetDrawTypeNodeValue(drawType));
+	}
+
+	if (this->bgMax != NULL)
+	{
+		// Get max sprite and frame
+		Sprite* sprite = this->GetBgMax()->GetSprite();
+		int32 spriteFrame = this->GetBgMax()->GetFrame();
+		if (sprite)
+		{
+			// Create array yamlnode and add it to map
+			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetName()));
+			spriteNode->AddValueToArray(spriteFrame);
+			node->AddNodeToMap("maxSprite", spriteNode);
+		}
+		
+		// Max draw type
+		UIControlBackground::eDrawType drawType =  this->GetBgMax()->GetDrawType();
+		node->Set("maxDrawType", loader->GetDrawTypeNodeValue(drawType));
+	}
     
     return node;
 }

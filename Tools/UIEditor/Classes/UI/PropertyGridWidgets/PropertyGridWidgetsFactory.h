@@ -24,6 +24,7 @@
 #include "textpropertygridwidget.h"
 #include "uitextfieldpropertygridwidget.h"
 #include "backgroundpropertygridwidget.h"
+#include "sliderpropertygridwidget.h"
 
 namespace DAVA {
     
@@ -58,6 +59,8 @@ private:
     UITextFieldPropertyGridWidget* uiTextFieldWidget;
 
     BackGroundPropertyGridWidget* backgroundWidget;
+	
+	SliderPropertyGridWidget* sliderWidget;
     
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;

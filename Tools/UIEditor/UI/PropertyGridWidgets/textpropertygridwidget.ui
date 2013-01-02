@@ -28,6 +28,12 @@
      <height>179</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>299</width>
+     <height>179</height>
+    </size>
+   </property>
    <property name="title">
     <string/>
    </property>

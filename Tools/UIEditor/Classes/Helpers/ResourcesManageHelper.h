@@ -24,11 +24,13 @@ public:
     static QString GetFontAbsolutePath(const QString& resourceFileName);
     static QString GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension = false);
     static QStringList GetFontsList();
-	//Functions to work with help contents and button background image
+	// Functions to work with help contents and button background image
 	static QString GetButtonBackgroundImagePath();
 	static QString GetHelpContentsPath();
-	//Initialize project internal resources
-	//Do not use this function elsewhere than during application init!!!
+	// Working directory
+	static QString GetDefaultDirectory();
+	// Initialize project internal resources
+	// Do not use this function elsewhere than during application init!!!
 	static void InitInternalResources();
 private:
 	static QString buttonBackgroundImagePath;

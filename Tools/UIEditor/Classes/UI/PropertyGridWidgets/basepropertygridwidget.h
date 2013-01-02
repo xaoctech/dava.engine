@@ -6,6 +6,7 @@
 
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
@@ -71,6 +72,9 @@ protected:
     void RegisterSpinBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
                                            QSpinBox* spinBoxWidget,
                                           bool needUpdateTree = false, bool stateAware = false);
+    void RegisterDoubleSpinBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
+                                           QDoubleSpinBox* doubleSpinBoxWidget,
+                                          bool needUpdateTree = false, bool stateAware = false);
     void RegisterCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
                                            QCheckBox* checkBoxWidget,
                                            bool needUpdateTree = false, bool stateAware = false);
@@ -87,6 +91,7 @@ protected:
     // Unregister the widgets.
     void UnregisterLineEditWidget(QLineEdit* lineEdit);
     void UnregisterSpinBoxWidget(QSpinBox* spinBoxWidget);
+	void UnregisterDoubleSpinBoxWidget(QDoubleSpinBox* spinBoxWidget);
     void UnregisterCheckBoxWidget(QCheckBox* checkBoxWidget);
     void UnregisterComboBoxWidget(QComboBox* comboBoxWidget);
     void UnregisterColorButtonWidget(QColorButton* colorButtonWidget);
@@ -106,6 +111,9 @@ protected:
 
     // Override this method to get a notification about properties changed from external source.
     virtual void OnPropertiesChangedFromExternalSource() {};
+	
+	//Double spinbox are used in slider widget - so we should track them separately
+	virtual void UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
 
     // Comboboxes are processed separately - depending on their content. That's why these methods are
     // virtual.
@@ -117,6 +125,9 @@ protected:
     // Process the Combobox Value Changed.
     virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
                                              const QString& value);
+	// Handle Double SpinBox value changes
+	virtual void ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+												const double value);
 
     // Set the combobox selected item by the item text.
     void SetComboboxSelectedItem(QComboBox* comboBoxWidget, const QString& selectedItemText);
@@ -160,6 +171,7 @@ protected slots:
     
     // Slots for different widget types.
     void OnSpinBoxValueChanged(int value);
+	void OnDoubleSpinBoxValueChanged(double value);
     void OnLineEditEditingFinished();
     void OnCheckBoxStateChanged(bool value);
     void OnComboBoxValueChanged(QString value);

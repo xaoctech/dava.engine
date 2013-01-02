@@ -9,6 +9,7 @@
 #include "ResourcesManageHelper.h"
 #include "HierarchyTreeController.h"
 #include "HierarchyTreePlatformNode.h"
+#include "EditorSettings.h"
 
 #include <QApplication>
 #include <QString>
@@ -117,4 +118,15 @@ QString ResourcesManageHelper::GetButtonBackgroundImagePath()
 QString ResourcesManageHelper::GetHelpContentsPath()
 {
 	return helpContentsPath;
+}
+
+QString ResourcesManageHelper::GetDefaultDirectory()
+{
+	QString defaultDir = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
+	//If default directory path is not available in project settings - use current working path
+	if ( defaultDir.isNull() || defaultDir.isEmpty() )
+	{
+  		defaultDir = QDir::currentPath();
+	}
+	return defaultDir;
 }

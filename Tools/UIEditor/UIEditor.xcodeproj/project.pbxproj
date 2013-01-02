@@ -92,6 +92,11 @@
 		740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 740F353316832022003B35E7 /* EditorSettings.cpp */; };
 		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
 		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
+		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
+		7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */; };
+		7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */; };
+		7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */; };
+		7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */; };
 		7484342B1648024700920BBD /* StateComboBoxItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */; };
 		7484342D1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */; };
 		74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */; };
@@ -302,6 +307,14 @@
 		747FA17E1636A8A3000CEEDA /* ui_backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_backgroundpropertygridwidget.h; sourceTree = "<group>"; };
 		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
 		747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextControlMetadata.h; path = Metadata/UITextControlMetadata.h; sourceTree = "<group>"; };
+		7482C8C51688AA9100435155 /* UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISliderMetadata.cpp; path = Metadata/UISliderMetadata.cpp; sourceTree = "<group>"; };
+		7482C8C61688AA9100435155 /* UISliderMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderMetadata.h; path = Metadata/UISliderMetadata.h; sourceTree = "<group>"; };
+		7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sliderpropertygridwidget.cpp; path = PropertyGridWidgets/sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
+		7482C8C91688AA9F00435155 /* sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sliderpropertygridwidget.h; path = PropertyGridWidgets/sliderpropertygridwidget.h; sourceTree = "<group>"; };
+		7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = sliderpropertygridwidget.ui; path = PropertyGridWidgets/sliderpropertygridwidget.ui; sourceTree = "<group>"; };
+		7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
+		7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UISliderMetadata.cpp; sourceTree = "<group>"; };
+		7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_sliderpropertygridwidget.h; sourceTree = "<group>"; };
 		748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateComboBoxItemDelegate.cpp; sourceTree = "<group>"; };
 		7484342A1648024700920BBD /* StateComboBoxItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateComboBoxItemDelegate.h; sourceTree = "<group>"; };
 		7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_statecomboboxitemdelegate.cpp; sourceTree = "<group>"; };
@@ -439,6 +452,8 @@
 		1700E40B162EAD760069650D /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */,
+				7482C8C91688AA9F00435155 /* sliderpropertygridwidget.h */,
 				176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */,
 				176834AA16510910004800D7 /* uitextfieldpropertygridwidget.h */,
 				17CED79A163E829600F9B02D /* statepropertygridwidget.cpp */,
@@ -528,6 +543,8 @@
 		176D3958162C3C8C0099AACF /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				7482C8C51688AA9100435155 /* UISliderMetadata.cpp */,
+				7482C8C61688AA9100435155 /* UISliderMetadata.h */,
 				748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */,
 				748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */,
 				C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */,
@@ -583,6 +600,7 @@
 		17FF15E316400207001B130F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
 				176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */,
 				17FF15E41640021E001B130F /* backgroundpropertygridwidget.ui */,
 				17FF15E51640021E001B130F /* basepropertygridwidget.ui */,
@@ -647,6 +665,9 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
+				7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */,
+				7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */,
+				7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */,
 				17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */,
 				176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */,
 				176834A516510759004800D7 /* ui_uitextfieldpropertygridwidget.h */,
@@ -898,6 +919,7 @@
 				17FF15F71640021E001B130F /* textpropertygridwidget.ui in Bundle Resources */,
 				17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */,
 				176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */,
+				7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1042,6 +1064,10 @@
 				74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */,
 				17FD40371663D57B00BE42A2 /* moc_EditorFontManager.cpp in Build Sources */,
 				740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */,
+				7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */,
+				7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */,
+				7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */,
+				7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
