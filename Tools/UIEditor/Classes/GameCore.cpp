@@ -33,6 +33,7 @@
 #include "PropertiesGridController.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "UndoRedoController.h"
 
 #include "ScreenWrapper.h"
 #include "MetadataFactory.h"
@@ -58,6 +59,7 @@ GameCore::GameCore()
 	new EditorFontManager();
 	new ScreenManager();
 	new EditorSettings();
+	new UndoRedoController();
 	
 	//Initialize internal resources of application
 	ResourcesManageHelper::InitInternalResources();

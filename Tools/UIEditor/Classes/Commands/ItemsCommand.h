@@ -22,7 +22,8 @@ public:
 	CreatePlatformCommand(const QString& name, const Vector2& size);
     
 	virtual void Execute();
-	
+	virtual bool IsUndoRedoSupported() {return false;};
+
 private:
 	QString name;
 	Vector2 size;
@@ -34,7 +35,8 @@ public:
 	CreateScreenCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
 	
 	virtual void Execute();
-	
+	virtual bool IsUndoRedoSupported() {return false;};
+
 private:
 	QString name;
 	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
@@ -46,6 +48,7 @@ public:
 	CreateControlCommand(const QString& type, const QPoint& pos);
 	
 	virtual void Execute();
+	virtual bool IsUndoRedoSupported() {return false;};
 	
 private:
 	QString type;
@@ -58,6 +61,7 @@ public:
 	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	
 	virtual void Execute();
+	virtual bool IsUndoRedoSupported() {return false;};
 	
 private:
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
@@ -69,6 +73,7 @@ public:
 	ChangeNodeHeirarchy(HierarchyTreeNode* targetNode, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
 
 	virtual void Execute();
+	virtual bool IsUndoRedoSupported() {return false;};
 	
 private:
 	HierarchyTreeNode* targetNode;

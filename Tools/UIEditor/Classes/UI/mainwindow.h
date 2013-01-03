@@ -46,6 +46,11 @@ private slots:
 	void FileMenuTriggered(QAction *resentScene);
 	void MenuFileWillShow();
 
+	void OnUndoRequested();
+	void OnRedoRequested();
+	
+	void OnUndoRedoAvailabilityChanged();
+
 private:
 	bool CloseProject();
 	

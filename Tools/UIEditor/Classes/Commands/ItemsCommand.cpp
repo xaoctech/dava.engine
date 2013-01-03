@@ -43,6 +43,11 @@ void CreateControlCommand::Execute()
 {
 	HierarchyTreeController::Instance()->CreateNewControl(type, pos);
 }
+/*
+void CreateControlCommand::Rollback()
+{
+}
+*/
 
 DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
 {
