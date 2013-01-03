@@ -884,4 +884,46 @@ int32 SceneNode::Release()
 	}
 }
 
+void SceneNode::SetVisible(bool isVisible)
+{
+	if(isVisible) 
+	{
+		AddFlag(NODE_VISIBLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_VISIBLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
+	}
+
+
+}
+
+void SceneNode::SetUpdatable(bool isUpdatable)
+{
+	if(isUpdatable) 
+	{
+		AddFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
+	}
+}
+
 };

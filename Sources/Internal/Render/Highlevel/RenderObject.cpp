@@ -28,11 +28,12 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
 RenderObject::RenderObject()
-    :   flags(0)
+    :   flags(VISIBLE)
     ,   removeIndex(-1)
     ,   debugFlags(0)
 {
@@ -46,6 +47,7 @@ RenderObject::~RenderObject()
     
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
+	batch->SetRenderObject(this);
     renderBatchArray.push_back(batch);
     if (removeIndex != -1)
     {
@@ -55,7 +57,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
-    
+    batch->SetRenderObject(0);
 }
     
 uint32 RenderObject::GetRenderBatchCount()

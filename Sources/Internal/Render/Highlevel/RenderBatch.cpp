@@ -32,6 +32,7 @@
 #include "Render/RenderDataObject.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Scene3D/Camera.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
@@ -47,6 +48,7 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
     modelMatrix = 0;
+	renderObject = 0;
 }
     
 RenderBatch::~RenderBatch()
@@ -70,6 +72,11 @@ void RenderBatch::SetMaterial(Material * _material)
 
 void RenderBatch::Draw(Camera * camera)
 {
+	if(renderObject && !(renderObject->GetFlags() & RenderObject::VISIBLE))
+	{
+		return;
+	}
+
     Matrix4 finalMatrix = (*modelMatrix) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
     material->Draw(dataSource, 0);
@@ -81,6 +88,13 @@ const FastName & RenderBatch::GetOwnerLayerName()
     static FastName fn("OpaqueRenderLayer");
     return fn;
 }
+
+void RenderBatch::SetRenderObject(RenderObject * _renderObject)
+{
+	renderObject = _renderObject;
+}
+
+
 
 
 };

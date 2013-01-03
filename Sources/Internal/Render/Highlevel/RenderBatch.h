@@ -57,6 +57,7 @@ class PolygonGroup;
 class RenderLayer;
 class RenderDataObject;
 class Camera;
+class RenderObject;
 
 class RenderBatch : public BaseObject
 {
@@ -75,6 +76,9 @@ public:
     
     void SetMaterial(Material * _material);
     inline Material * GetMaterial();
+
+	void SetRenderObject(RenderObject * renderObject);
+	inline RenderObject * GetRenderObject();
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
@@ -90,6 +94,7 @@ private:
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     Material * material;                    // Should be replaced to NMaterial
     Matrix4 * modelMatrix;                    // temporary - this should me moved directly to matrix uniforms
+	RenderObject * renderObject;
     
     uint32 startIndex;
     uint32 indexCount;
@@ -112,6 +117,11 @@ inline RenderDataObject * RenderBatch::GetRenderDataObject()
 inline Material * RenderBatch::GetMaterial()
 {
     return material;
+}
+
+inline RenderObject * RenderBatch::GetRenderObject()
+{
+	return renderObject;
 }
 
 inline void RenderBatch::SetStartIndex(uint32 _startIndex)
