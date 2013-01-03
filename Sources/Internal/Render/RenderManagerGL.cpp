@@ -654,7 +654,7 @@ void RenderManager::SetColorPointer(int size, eVertexDataType _typeIndex, int st
 
 void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 {
-	const int32 types[PRIMITIVETYPE_COUNT] = 
+	static const int32 types[PRIMITIVETYPE_COUNT] = 
 	{
 		GL_POINTS,			// 		PRIMITIVETYPE_POINTLIST = 0,
 		GL_LINES,			// 		PRIMITIVETYPE_LINELIST,
@@ -698,7 +698,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
     
 void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-	const int32 types[PRIMITIVETYPE_COUNT] = 
+	static const int32 types[PRIMITIVETYPE_COUNT] = 
 	{
 		GL_POINTS,			// 		PRIMITIVETYPE_POINTLIST = 0,
 		GL_LINES,			// 		PRIMITIVETYPE_LINELIST,
@@ -720,7 +720,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 #endif //not defined(GL_UNSIGNED_INT)
 #endif // __DAVAENGINE_IPHONE__
 
-	const int32 indexTypes[2] = 
+	static const int32 indexTypes[2] = 
 	{
 		GL_UNSIGNED_SHORT, 
 		GL_UNSIGNED_INT,
