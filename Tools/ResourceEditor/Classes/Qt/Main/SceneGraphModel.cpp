@@ -9,6 +9,8 @@
 #include "PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
+#include "DockParticleEditor/ParticlesEditorController.h"
+
 #include <QTreeView>
 
 using namespace DAVA;
@@ -17,6 +19,7 @@ SceneGraphModel::SceneGraphModel(QObject *parent)
     :   GraphModel(parent)
     ,   scene(NULL)
     ,   selectedNode(NULL)
+    ,   selectedGraphItemForParticleEditor(NULL)
 {
 }
 
@@ -35,10 +38,26 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
 
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 {
+    // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
+    node = particlesEditorSceneHelper.PreprocessSceneNode(node);
+
     SceneGraphItem *graphItem = new SceneGraphItem();
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
+    // Particles Editor nodes are processed separately.
+    if (particlesEditorSceneHelper.AddNodeToSceneGraph(graphItem, node))
+    {
+        // Also try to determine selected item from Particle Editor.
+        SceneGraphItem *selectedItem = particlesEditorSceneHelper.GetGraphItemToBeSelected(graphItem, node);
+        if (selectedItem)
+        {
+            this->selectedGraphItemForParticleEditor = selectedItem;
+        }
+
+        return;
+    }
+
     if(!node->GetSolid())
     {
         int32 count = node->GetChildrenCount();
@@ -55,6 +74,8 @@ void SceneGraphModel::Rebuild()
 	rootItem = new SceneGraphItem();
 	rootItem->SetUserData(scene);
     
+    this->selectedGraphItemForParticleEditor = NULL;
+    
     if(scene && !scene->GetSolid())
     {
         int32 count = scene->GetChildrenCount();
@@ -67,6 +88,11 @@ void SceneGraphModel::Rebuild()
 //    emit dataChanged(QModelIndex(), QModelIndex());
     this->reset();
 
+    if (HandleParticleEditorSelection())
+    {
+        // Custom node is selected and needs to be processed separately.
+        return;
+    }
     
     if(selectedNode)
     {
@@ -82,6 +108,16 @@ void SceneGraphModel::Rebuild()
     }
 }
 
+bool SceneGraphModel::HandleParticleEditorSelection()
+{
+    if (this->selectedGraphItemForParticleEditor == NULL)
+    {
+        return false;
+    }
+
+    SelectItem(this->selectedGraphItemForParticleEditor, true);
+    return true;
+}
 
 void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
@@ -93,6 +129,12 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     
     DVASSERT((selectedSize <= 1) && "Wrong count of selected items");
     DVASSERT((deselectedSize <= 1) && "Wrong count of deselected items");
+
+    // Particles Editor Nodes are handled separately.
+    if (particlesEditorSceneHelper.ProcessSelectionChanged(selected, deselected))
+    {
+        return;
+    }
 
     if(0 < selectedSize)
     {
@@ -152,7 +194,7 @@ void SceneGraphModel::SelectNode(DAVA::SceneNode *node, bool selectAtGraph)
     }
 }
 
-void SceneGraphModel::SelectItem(GraphItem *item)
+void SceneGraphModel::SelectItem(GraphItem *item, bool needExpand)
 {
     QModelIndex idx = createIndex(item->Row(), 0, item);
     itemSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect);
@@ -160,9 +202,12 @@ void SceneGraphModel::SelectItem(GraphItem *item)
     if(attachedTreeView)
     {
         attachedTreeView->scrollTo(idx);
+        if (needExpand)
+        {
+            attachedTreeView->expand(idx);
+        }
     }
 }
-
 
 DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
 {
