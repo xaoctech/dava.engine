@@ -65,6 +65,11 @@ class RenderBatch;
 class RenderObject : public BaseObject
 {
 public:
+	enum eFlags
+	{
+		VISIBLE = 1 << 0,
+	};
+
     RenderObject();
     virtual ~RenderObject();
     
