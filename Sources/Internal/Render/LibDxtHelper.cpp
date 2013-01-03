@@ -10,6 +10,9 @@
 #include "Render/ImageLoader.h"
 #include "Utils/StringFormat.h"
 
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
+
 
 
 using namespace nvtt;
@@ -131,6 +134,22 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 		}
 	}
 	return retValue;
+}
+
+void LibDxtHelper::test()
+{
+
+	DAVA::File * file = File::Create("c:\\dev\\b.dds", File::OPEN | File::READ);
+
+	bool isDXT = IsDxtFile(file);
+
+	Vector<Image *> vec;
+	isDXT = ReadDxtFile(file, vec);
+	isDXT = ReadDxtFile("c:\\dev\\b.dds",vec);
+	for (uint32 i = 0; i < vec.size(); ++i)
+	{
+		ImageLoader::Save(vec[i], Format("c:\\dev\\t%d.png",i));
+	}
 }
 
 bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet)
@@ -296,7 +315,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 				SwapBRChannels(innerImage->data, innerImage->dataSize);
 				imageSet.push_back(innerImage);
                 
-                ImageLoader::Save(innerImage, Format("/Users/victorkleschenko/Downloads/test/layer_%d.png", i));
+//               ImageLoader::Save(innerImage, Format("C://dev//layer_%d.png", i));
 //				ImageLoader::Save(innerImage, Format("/Levels/layer_%d.png", i));
 			}
 			else
@@ -322,8 +341,21 @@ struct ErrorHandlerDXT: ErrorHandler
     }
 };
     
-bool LibDxtHelper::WriteDxtFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
+	String fileName = fileNameOriginal;
+	
+	size_t index = 0;
+	index = fileName.find(".dds", index);
+	index--;
+    if (index == String::npos) 
+	{
+		Logger::Error("Wrong input file name.");
+		return false;
+	}
+    // Make the replacement. 
+    fileName.replace(index, 5, "_.dds");
+
 	if (fileName.empty())
 	{
 		return false;
@@ -369,11 +401,22 @@ bool LibDxtHelper::WriteDxtFile(const String & fileName, int32 width, int32 heig
 	
 	Compressor compressor;
 	bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
-
+ 
 	if(!ret)
 	{
 		Logger::Error("Error during writing DDS file");
 	}
+
+	if(FileSystem::Instance()->IsFile(fileNameOriginal))
+	{
+		FileSystem::Instance()->DeleteFile(fileNameOriginal);
+	}
+	
+	if(!FileSystem::Instance()->MoveFile(fileName, fileNameOriginal))
+	{
+		Logger::Error("Temporary dds file renamig failed.");
+	}
+
 	return ret;
 }
 
@@ -582,12 +625,13 @@ bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, File * file)
 		Logger::Error("Wrong handler.");
 		return false;
 	}
-
+	file->Seek(0, File::SEEK_FROM_START);
 	uint32 fileSize = file->GetSize();
 	uint8* fileBuffer= new uint8[fileSize];
 	file->Read(fileBuffer, fileSize);
     bool initied = dec.initWithDDSFile(fileBuffer, fileSize);
-    SafeDeleteArray(fileBuffer);
+	file->Seek(0, File::SEEK_FROM_START);
+	SafeDeleteArray(fileBuffer);
     return initied;
 }
 

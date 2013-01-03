@@ -235,11 +235,12 @@ void TextureBrowser::updatePropertiesWarning()
 	{
 		QString warningText = "";
 
-		// for PVR4 and PVR2 only square textures are allowed.
-		if((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2) && 
-			curTexture->width != curTexture->height)
+		if(
+		   ((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2)   ||
+		   (curDescriptor->dxtCompression.format >= DAVA::FORMAT_DXT1 && curDescriptor->dxtCompression.format <= DAVA::FORMAT_DXT5NM)) &&
+		   (curTexture->width != curTexture->height))
 		{
-			warningText += "WARNING: Not square PVR2/PVR4 texture.\n";
+			warningText += "WARNING: Not square texture.\n";
 		}
 
 		ui->warningLabel->setText(warningText);
