@@ -44,8 +44,6 @@ public:
 	static uint32 GetDataSize(const char *fileName);
 	
 	static uint32 GetDataSize(File * file);
-
-	static void test();
 };
 
 };
