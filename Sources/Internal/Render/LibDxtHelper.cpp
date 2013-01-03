@@ -136,22 +136,6 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 	return retValue;
 }
 
-void LibDxtHelper::test()
-{
-
-	DAVA::File * file = File::Create("c:\\dev\\b.dds", File::OPEN | File::READ);
-
-	bool isDXT = IsDxtFile(file);
-
-	Vector<Image *> vec;
-	isDXT = ReadDxtFile(file, vec);
-	isDXT = ReadDxtFile("c:\\dev\\b.dds",vec);
-	for (uint32 i = 0; i < vec.size(); ++i)
-	{
-		ImageLoader::Save(vec[i], Format("c:\\dev\\t%d.png",i));
-	}
-}
-
 bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet)
 {
 	nvtt::Decompressor dec;
@@ -343,18 +327,20 @@ struct ErrorHandlerDXT: ErrorHandler
     
 bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
+	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
 	String fileName = fileNameOriginal;
-	
+	FileSystem * fs =FileSystem::Instance();
+	String extension = fs->GetExtension(fileNameOriginal);
 	size_t index = 0;
-	index = fileName.find(".dds", index);
-	index--;
-    if (index == String::npos) 
+	index = fileName.find(extension, index);
+	index --; // set pointer to last char befor .
+    if (index == String::npos || extension != ".dds") 
 	{
 		Logger::Error("Wrong input file name.");
 		return false;
 	}
     // Make the replacement. 
-    fileName.replace(index, 5, "_.dds");
+    fileName.replace(index, 1, "_");
 
 	if (fileName.empty())
 	{
@@ -407,12 +393,12 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
 		Logger::Error("Error during writing DDS file");
 	}
 
-	if(FileSystem::Instance()->IsFile(fileNameOriginal))
+	if(fs->IsFile(fileNameOriginal))
 	{
-		FileSystem::Instance()->DeleteFile(fileNameOriginal);
+		fs->DeleteFile(fileNameOriginal);
 	}
 	
-	if(!FileSystem::Instance()->MoveFile(fileName, fileNameOriginal))
+	if(!fs->MoveFile(fileName, fileNameOriginal))
 	{
 		Logger::Error("Temporary dds file renamig failed.");
 	}

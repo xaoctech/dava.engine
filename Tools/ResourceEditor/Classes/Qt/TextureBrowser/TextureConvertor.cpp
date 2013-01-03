@@ -261,16 +261,20 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-	bool isDXTSupported = false;
 	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
 		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::String outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
-		if(outputPath.length() > 0)
+		DAVA::String outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		if(!outputPath.empty())
 		{
-			item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
-			item->descriptorCopy.Save();
-			
+			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
+			{
+				item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+				item->descriptorCopy.Save();
+
+				outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+			}
+
 			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
@@ -280,11 +284,9 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 			}
 
 			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
-			isDXTSupported = true;
 		}
 	}
-
-	if (!isDXTSupported)
+	else
 	{
 		QRect r(0, 0, 200, 200);
 		convertedImage = QImage(r.size(), QImage::Format_ARGB32);
