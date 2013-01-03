@@ -1336,26 +1336,47 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_A8, String("A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
     SetPixelDescription(FORMAT_A16, String("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
     
-#if defined (__DAVAENGINE_IPHONE__)
+#if defined (GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
-    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
-	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, 0, 0, 0);
-	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, 0, 0, 0);
-	SetPixelDescription(FORMAT_DXT1A,   "DXT1a", 4, 0, 0, 0);
-	SetPixelDescription(FORMAT_DXT3,     "DXT3", 8, 0, 0, 0);
-	SetPixelDescription(FORMAT_DXT5,     "DXT5", 8, 0, 0, 0);
-	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 8, 0, 0, 0);
-#else //#if defined (__DAVAENGINE_IPHONE__)
+#else
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, 0, 0, 0);
+#endif
+
+    
+#if defined (GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
+    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
+#else
     SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
 	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
 	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
 	SetPixelDescription(FORMAT_DXT1A,   "DXT1a", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT1A,   "DXT1a", 4, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
 	SetPixelDescription(FORMAT_DXT3,     "DXT3", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT3,     "DXT3", 8, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
 	SetPixelDescription(FORMAT_DXT5,     "DXT5", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT);
 	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-    
+#else
+	SetPixelDescription(FORMAT_DXT5,     "DXT5", 8, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 8, 0, 0, 0);
+#endif
+
     SetPixelDescription(FORMAT_RGBA16161616, String("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
     SetPixelDescription(FORMAT_RGBA32323232, String("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
 }
