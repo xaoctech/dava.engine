@@ -180,7 +180,7 @@ public:
     void SetLocalTransform(const Matrix4 & newMatrix);
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
-    inline void InvalidateLocalTransform();
+    //inline void InvalidateLocalTransform();
     
     /*
         \brief Go down by hierarchy and bake all transforms.
