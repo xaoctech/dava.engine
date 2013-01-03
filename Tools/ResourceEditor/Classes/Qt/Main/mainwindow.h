@@ -36,6 +36,7 @@ private:
       
 public slots:
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
+	void ChangeParticleDockVisible(bool visible);
 
 private slots:
 	void ProjectOpened(const QString &path);

@@ -422,6 +422,11 @@ void QtMainWindowHandler::OpenParticleEditorSprite()
 	Execute(new CommandOpenParticleEditorSprite());
 }
 
+void QtMainWindowHandler::CreateParticleEmitterNode()
+{
+    CreateNode(ResourceEditor::NODE_PARTICLE_EMITTER);
+}
+
 void QtMainWindowHandler::ToggleNotPassableTerrain()
 {
 	Execute(new CommandNotPassableTerrain());

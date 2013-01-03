@@ -13,6 +13,9 @@ public:
 	ParticleLayerLong();
 
 	virtual void Draw(Camera * camera);
+    
+    // Whether this layer is Long Layer?
+    virtual bool IsLong() {return true;};
 };
 
 };
