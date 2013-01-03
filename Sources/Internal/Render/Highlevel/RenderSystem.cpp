@@ -123,8 +123,10 @@ void RenderSystem::RemoveEntity(SceneNode * entity)
     RenderObject * renderObject = entityObjectMap.Value(entity);
     if (!renderObject)return;
 
-    renderObjectArray[renderObject->GetRemoveIndex()] = renderObjectArray[renderObjectArray.size() - 1];
+	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
+    renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
+	lastRenderObject->SetRemoveIndex(renderObject->GetRemoveIndex());
     renderObject->SetRemoveIndex(-1);
     
     entityObjectMap.Remove(entity);
