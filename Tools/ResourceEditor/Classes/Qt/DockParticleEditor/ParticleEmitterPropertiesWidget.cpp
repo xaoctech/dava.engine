@@ -110,6 +110,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	SafeRelease(commandUpdateEmitter);
 	
 	Init(emitter, false);
+	emit ValueChanged();
 }
 
 void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool updateMinimize)
@@ -152,4 +153,9 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterLife->setValue(emitterLifeTime);
 
 	blockSignals = false;
+}
+
+void ParticleEmitterPropertiesWidget::Update()
+{
+	Init(emitter, false);
 }

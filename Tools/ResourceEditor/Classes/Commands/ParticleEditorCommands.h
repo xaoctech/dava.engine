@@ -226,6 +226,21 @@ private:
 	float32 endTime;
 };
 
+class CommandUpdateParticleLayerTime: public Command
+{
+public:
+	CommandUpdateParticleLayerTime(ParticleLayer* layer);
+	void Init(float32 startTime, float32 endTime);
+
+protected:
+    virtual void Execute();
+	
+private:
+	ParticleLayer* layer;
+	float32 startTime;
+	float32 endTime;
+};
+
 class CommandUpdateParticleLayerForce: public Command
 {
 public:

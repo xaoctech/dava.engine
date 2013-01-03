@@ -18,10 +18,10 @@ public:
 	~ParticleEmitterPropertiesWidget();
 
 	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
+	void Update();
 
-protected:
-	
 signals:
+	void ValueChanged();
 	
 public slots:
 	void OnValueChanged();
