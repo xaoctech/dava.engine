@@ -31,3 +31,8 @@ String DXTConverter::ConvertPngToDxt(const String & fileToConvert, const DAVA::T
     for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
     return String("");
 }
+
+String DXTConverter::GetDXTOutput(const DAVA::String &inputDXT)
+{
+	return FileSystem::ReplaceExtension(inputDXT, ".dds");
+}
