@@ -13,6 +13,7 @@
 		17112B45163920BC0017E713 /* CommandsController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B43163920BC0017E713 /* CommandsController.cpp */; };
 		17112B481639214D0017E713 /* BaseCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B461639214D0017E713 /* BaseCommand.cpp */; };
 		17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */; };
+		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
 		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
 		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
 		173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */; };
@@ -178,6 +179,8 @@
 		17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WidgetSignalsBlocker.cpp; path = Helpers/WidgetSignalsBlocker.cpp; sourceTree = "<group>"; };
 		17112B5816392EA80017E713 /* WidgetSignalsBlocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WidgetSignalsBlocker.h; path = Helpers/WidgetSignalsBlocker.h; sourceTree = "<group>"; };
 		17112B5B16392EC60017E713 /* PropertiesHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesHelper.h; path = Helpers/PropertiesHelper.h; sourceTree = "<group>"; };
+		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
+		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
 		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
 		173AC330162FFFC300A773F5 /* PropertiesGridController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesGridController.h; path = Controllers/PropertiesGridController.h; sourceTree = "<group>"; };
 		173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = controlpropertygridwidget.cpp; path = PropertyGridWidgets/controlpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -536,6 +539,8 @@
 				176D3953162C396A0099AACF /* HierarchyTreeController.h */,
 				17112B43163920BC0017E713 /* CommandsController.cpp */,
 				17112B44163920BC0017E713 /* CommandsController.h */,
+				173339E51694472600E98820 /* UndoRedoController.cpp */,
+				173339E61694472600E98820 /* UndoRedoController.h */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -1068,6 +1073,7 @@
 				7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */,
 				7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */,
 				7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */,
+				173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

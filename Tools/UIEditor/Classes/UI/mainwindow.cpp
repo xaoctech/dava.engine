@@ -57,9 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionFontManager, SIGNAL(triggered()), this, SLOT(OnOpenFontManager()));
     connect(ui->actionLocalizationManager, SIGNAL(triggered()), this, SLOT(OnOpenLocalizationManager()));
-    //Help contents dialog
-    connect(ui->actionHelpContents, SIGNAL(triggered()), this, SLOT(OnShowHelpContents()));
-   
+
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectCreated()),
 			this,
@@ -94,6 +92,13 @@ MainWindow::MainWindow(QWidget *parent) :
 			SIGNAL(UpdateScreenPositionRequest(const QPoint&)),
 			this,
 			SLOT(OnUpdateScreenPositionRequest(const QPoint&)));
+	
+	this->ui->actionUndo->setEnabled(false);
+	this->ui->actionRedo->setEnabled(false);
+	connect(CommandsController::Instance(),
+			SIGNAL(UndoRedoAvailabilityChanged()),
+			this,
+			SLOT(OnUndoRedoAvailabilityChanged()));
 
 	//HierarchyTreeController::Instance()->Load("/Users/adebt/Downloads/Project1/project1.uieditor");
 	//HierarchyTreeController::Instance()->GetTree().Save(":asd");
@@ -251,6 +256,13 @@ void MainWindow::InitMenu()
         recentPojectActions[i]->setObjectName(QString::fromUtf8(Format("recentPojectActions[%d]", i)));
     }
 	
+	//Help contents dialog
+    connect(ui->actionHelpContents, SIGNAL(triggered()), this, SLOT(OnShowHelpContents()));
+	
+	// Undo/Redo.
+	connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndoRequested()));
+	connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedoRequested()));
+
 	UpdateMenu();
 }
 
@@ -276,6 +288,7 @@ void MainWindow::OnNewProject()
     if (filename.isNull())
 		return;
 	
+	CommandsController::Instance()->CleanupUndoRedoStack();
 	if (!HierarchyTreeController::Instance()->NewProject(filename))
 	{
 		QMessageBox msgBox;
@@ -421,6 +434,7 @@ void MainWindow::OnLoadProject()
     if (filename.isNull())
 		return;
 
+	CommandsController::Instance()->CleanupUndoRedoStack();
 	if (HierarchyTreeController::Instance()->Load(filename))
 	{
 		//If project was successfully loaded - we should save project path
@@ -466,4 +480,20 @@ void MainWindow::UpdateProjectSettings(const QString& filename)
 	//Save current project directory path
 	QDir projectDir = QFileInfo(filename).absoluteDir();
 	EditorSettings::Instance()->SetProjectPath(projectDir.absolutePath().toStdString());
+}
+
+void MainWindow::OnUndoRequested()
+{
+	CommandsController::Instance()->Undo();
+}
+
+void MainWindow::OnRedoRequested()
+{
+	CommandsController::Instance()->Redo();
+}
+
+void MainWindow::OnUndoRedoAvailabilityChanged()
+{
+	this->ui->actionUndo->setEnabled(CommandsController::Instance()->IsUndoAvailable());
+	this->ui->actionRedo->setEnabled(CommandsController::Instance()->IsRedoAvailable());
 }

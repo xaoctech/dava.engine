@@ -46,6 +46,11 @@ public:
         return treeNodePropertyValue;
     }
 
+	virtual bool IsUndoRedoSupported()
+	{
+		return true;
+	}
+
 private:
     HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID;
     T treeNodePropertyValue;
@@ -60,8 +65,15 @@ public:
                           const PropertyGridWidgetData& propertyGridWidgetData,
                           Type value, bool allStates = false);
     virtual void Execute();
+	virtual void Rollback();
+
+	virtual bool IsUndoRedoSupported() {return true;};
 
 protected:
+	// Command data.
+    typedef Vector<ChangePropertyCommandData<Type> > COMMANDDATAVECT;
+    typedef typename COMMANDDATAVECT::iterator COMMANDDATAVECTITER;
+
     // Build the Command Data based on the type.
     Vector<ChangePropertyCommandData<Type> > BuildCommandData(BaseMetadata* baseMetadata);
 
@@ -70,7 +82,10 @@ protected:
 
     // Get the property name.
     QString GetPropertyName();
-    
+
+	// Actually apply the property value.
+	bool ApplyPropertyValue(const COMMANDDATAVECTITER& iter, Type newValue);
+
     // Property Grid Widget data.
     PropertyGridWidgetData propertyGridWidgetData;
     
@@ -81,11 +96,8 @@ protected:
     
     // Current state.
     UIControl::eControlState curState;
-    
-    // Command data.
-    typedef Vector<ChangePropertyCommandData<Type> > COMMANDDATAVECT;
-    typedef typename COMMANDDATAVECT::iterator COMMANDDATAVECTITER;
-    
+
+	// The vector of Command Data with the initial values.
     COMMANDDATAVECT commandData;
 };
 
@@ -120,6 +132,7 @@ template<typename Type>
     
     return commandData;
 }
+
 
 template<typename Type>
     BaseMetadata* ChangePropertyCommand<Type>::GetMetadataForTreeNode(HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID)
@@ -159,36 +172,10 @@ template<typename Type>
 template<typename Type>
     void ChangePropertyCommand<Type>::Execute()
 {
+	QString propertyName = GetPropertyName();
     for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != commandData.end(); iter ++)
     {
-        QString propertyName = GetPropertyName();
-        BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
-        
-        if (setTextForAllStates)
-        {
-            //Set property text for all states
-            int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-            for (int stateID = 0; stateID < statesCount; stateID ++)
-            {
-                UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-                //Change control state and set text property value
-                baseMetadata->SetUIControlState(state);
-                PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, curValue);
-            }
-        }
-        else
-        {
-            PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, curValue);
-        }
-                
-        // Verify whether the properties were indeed changed.
-        bool isPropertyValueDiffers = false;
-        Type realValue = PropertiesHelper::GetAllPropertyValues<Type>(baseMetadata, propertyName,
-                                                                   isPropertyValueDiffers);
-        
-        bool propertySetOK = (realValue == curValue);
-        SAFE_DELETE(baseMetadata);
-        
+		bool propertySetOK = ApplyPropertyValue(iter, curValue);
         if (propertySetOK)
         {
             CommandsController::Instance()->EmitChangePropertySucceeded(propertyName);
@@ -198,6 +185,61 @@ template<typename Type>
             CommandsController::Instance()->EmitChangePropertyFailed(propertyName);
         }
     }
+}
+
+template<typename Type>
+	void ChangePropertyCommand<Type>::Rollback()
+{
+	// The previous values are stored in Command Data.
+	QString propertyName = GetPropertyName();
+    for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != commandData.end(); iter ++)
+    {
+		Type previousValue = (*iter).GetTreeNodePropertyValue();
+		bool propertySetOK = ApplyPropertyValue(iter, previousValue);
+
+        if (propertySetOK)
+        {
+            CommandsController::Instance()->EmitChangePropertySucceeded(propertyName);
+        }
+        else
+        {
+            CommandsController::Instance()->EmitChangePropertyFailed(propertyName);
+        }
+    }
+}
+
+template<typename Type>
+	bool ChangePropertyCommand<Type>::ApplyPropertyValue(const COMMANDDATAVECTITER& iter, Type newValue)
+{
+	QString propertyName = GetPropertyName();
+	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
+
+	if (setTextForAllStates)
+	{
+		//Set property text for all states
+		int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+		for (int stateID = 0; stateID < statesCount; stateID ++)
+		{
+			UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
+			//Change control state and set text property value
+			baseMetadata->SetUIControlState(state);
+			PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
+		}
+	}
+	else
+	{
+		PropertiesHelper::SetAllPropertyValues<Type>(baseMetadata, propertyName, newValue);
+	}
+	
+	// Verify whether the properties were indeed changed.
+	bool isPropertyValueDiffers = false;
+	Type realValue = PropertiesHelper::GetAllPropertyValues<Type>(baseMetadata, propertyName,
+																  isPropertyValueDiffers);
+	
+	bool propertySetOK = (realValue == curValue);
+	SAFE_DELETE(baseMetadata);
+
+	return propertySetOK;
 }
 
 template<typename Type>
