@@ -326,6 +326,13 @@ void EmitterLayerWidget::OnValueChanged()
 	
 	PropLineWrapper<float32> propFrameOverLife;
 	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
+	if (layer->GetSprite())
+	{
+		float32 maxFrame = Max(0, layer->GetSprite()->GetFrameCount() - 1);
+		Vector< PropValue<float32> >* frameValues = propFrameOverLife.GetPropsPtr();
+		for (uint i = 0; i < frameValues->size(); ++i)
+			(*frameValues)[i].v = Min(maxFrame, (*frameValues)[i].v);
+	}
 	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
 	updateLayerCmd->Init(!enableCheckBox->isChecked(),
@@ -360,5 +367,11 @@ void EmitterLayerWidget::OnValueChanged()
 	CommandsManager::Instance()->Execute(updateLayerCmd);
 	SafeRelease(updateLayerCmd);
 	
+	Init(this->emitter, this->layer, false);
+	emit ValueChanged();
+}
+
+void EmitterLayerWidget::Update()
+{
 	Init(this->emitter, this->layer, false);
 }

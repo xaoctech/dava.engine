@@ -61,6 +61,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.LoadState(this);
 	
 	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
+	ui->dockParticleEditorTimeLine->hide();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -260,11 +261,19 @@ void QtMainWindow::SetupDockWidgets()
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
 }
 
 void QtMainWindow::ChangeParticleDockVisible(bool visible)
 {
 	ui->dockParticleEditor->setVisible(visible);
+}
+
+void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
+{
+	ui->dockParticleEditorTimeLine->setVisible(visible);
 }
 
 void QtMainWindow::MenuFileWillShow()

@@ -423,6 +423,15 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockParticleEditorTimeLine">
+   <property name="windowTitle">
+    <string>Particle time line</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="ParticleTimeLineWidget" name="dockWidgetContents_2"/>
+  </widget>
   <action name="actionNewScene">
    <property name="icon">
     <iconset>
@@ -705,6 +714,12 @@
    <class>ParticleEditorWidget</class>
    <extends>QWidget</extends>
    <header>DockParticleEditor/particleeditorwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ParticleTimeLineWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particletimelinewidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

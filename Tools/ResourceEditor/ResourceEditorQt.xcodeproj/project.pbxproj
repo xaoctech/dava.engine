@@ -293,6 +293,8 @@
 		C18521CB16831FA3003D4A6F /* ParticlesEditorController_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C18521C016831FA3003D4A6F /* ParticlesEditorController_moc.cpp */; };
 		C18521CC16831FA3003D4A6F /* TimeLineWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C18521C116831FA3003D4A6F /* TimeLineWidget_moc.cpp */; };
 		C18521CF16831FBE003D4A6F /* ExtraUserData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C18521CD16831FBE003D4A6F /* ExtraUserData.cpp */; };
+		C1E62B96169466E200A9B77C /* ParticleTimeLineWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1E62B94169466E200A9B77C /* ParticleTimeLineWidget.cpp */; };
+		C1E62B981694753900A9B77C /* ParticleTimeLineWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1E62B971694753900A9B77C /* ParticleTimeLineWidget_moc.cpp */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
@@ -1046,6 +1048,9 @@
 		C18521C516831FA3003D4A6F /* ui_VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_VisibilityToolView.h; path = _GeneratedQt/ui_VisibilityToolView.h; sourceTree = "<group>"; };
 		C18521CD16831FBE003D4A6F /* ExtraUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraUserData.cpp; sourceTree = "<group>"; };
 		C18521CE16831FBE003D4A6F /* ExtraUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtraUserData.h; sourceTree = "<group>"; };
+		C1E62B94169466E200A9B77C /* ParticleTimeLineWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleTimeLineWidget.cpp; sourceTree = "<group>"; };
+		C1E62B95169466E200A9B77C /* ParticleTimeLineWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleTimeLineWidget.h; sourceTree = "<group>"; };
+		C1E62B971694753900A9B77C /* ParticleTimeLineWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleTimeLineWidget_moc.cpp; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		C78621881602175100C96AA8 /* EditorConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorConfig.cpp; path = Classes/SceneEditor/EditorConfig.cpp; sourceTree = "<group>"; };
 		C78621891602175100C96AA8 /* EditorConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorConfig.h; path = Classes/SceneEditor/EditorConfig.h; sourceTree = "<group>"; };
@@ -2066,6 +2071,8 @@
 				C185219816831F77003D4A6F /* ParticlesEditorController.h */,
 				C185219916831F77003D4A6F /* TimeLineWidget.cpp */,
 				C185219A16831F77003D4A6F /* TimeLineWidget.h */,
+				C1E62B94169466E200A9B77C /* ParticleTimeLineWidget.cpp */,
+				C1E62B95169466E200A9B77C /* ParticleTimeLineWidget.h */,
 			);
 			name = DockParticleEditor;
 			path = Classes/Qt/DockParticleEditor;
@@ -2112,6 +2119,7 @@
 		C18521BA16831FA3003D4A6F /* DockParticleEditor */ = {
 			isa = PBXGroup;
 			children = (
+				C1E62B971694753900A9B77C /* ParticleTimeLineWidget_moc.cpp */,
 				C18521BB16831FA3003D4A6F /* EmitterLayerWidget_moc.cpp */,
 				C18521BC16831FA3003D4A6F /* GradientPickerWidget_moc.cpp */,
 				C18521BD16831FA3003D4A6F /* LayerForceWidget_moc.cpp */,
@@ -2127,26 +2135,26 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
-				C18521BA16831FA3003D4A6F /* DockParticleEditor */,
+				E89EF5711677356000477220 /* QtIcons_qrc.cpp */,
 				C18521C216831FA3003D4A6F /* ui_CustomColorsView.h */,
+				E89EF5811677356000477220 /* ui_davaglwidget.h */,
 				C18521C316831FA3003D4A6F /* ui_mainwindow.h */,
+				E89EF5831677356000477220 /* ui_materialbrowser.h */,
 				C18521C416831FA3003D4A6F /* ui_ParticleProperty.h */,
+				E89EF5841677356000477220 /* ui_texturebrowser.h */,
 				C18521C516831FA3003D4A6F /* ui_VisibilityToolView.h */,
-				49448B29168099A200713D35 /* DockVisibilityTool */,
 				49448B1E16806E3300713D35 /* DockCustomColors */,
-				4F82D13B167B42F3003E701F /* DockProperties */,
 				E89EF5561677356000477220 /* DockLibrary */,
+				C18521BA16831FA3003D4A6F /* DockParticleEditor */,
+				4F82D13B167B42F3003E701F /* DockProperties */,
+				49448B29168099A200713D35 /* DockVisibilityTool */,
 				E89EF5591677356000477220 /* Main */,
 				E89EF5661677356000477220 /* MaterialBrowser */,
 				E89EF56D1677356000477220 /* MaterialEditor */,
 				E89EF56F1677356000477220 /* Project */,
-				E89EF5711677356000477220 /* QtIcons_qrc.cpp */,
 				E89EF5721677356000477220 /* QtPosSaver */,
 				E89EF5741677356000477220 /* Scene */,
 				E89EF5771677356000477220 /* TextureBrowser */,
-				E89EF5811677356000477220 /* ui_davaglwidget.h */,
-				E89EF5831677356000477220 /* ui_materialbrowser.h */,
-				E89EF5841677356000477220 /* ui_texturebrowser.h */,
 			);
 			name = GeneratedQt;
 			sourceTree = "<group>";
@@ -2953,6 +2961,8 @@
 				C18521CB16831FA3003D4A6F /* ParticlesEditorController_moc.cpp in Build Sources */,
 				C18521CC16831FA3003D4A6F /* TimeLineWidget_moc.cpp in Build Sources */,
 				C18521CF16831FBE003D4A6F /* ExtraUserData.cpp in Build Sources */,
+				C1E62B96169466E200A9B77C /* ParticleTimeLineWidget.cpp in Build Sources */,
+				C1E62B981694753900A9B77C /* ParticleTimeLineWidget_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
