@@ -696,7 +696,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	SetLocalTransform(localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
-    InvalidateLocalTransform();
+    /// InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
     SafeRelease(customProperties);
