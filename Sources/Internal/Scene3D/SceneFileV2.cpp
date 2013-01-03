@@ -684,6 +684,20 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			lc->lodLayersArray[iLayer].farDistanceSq = lod->GetLodLayerFarSquare(iLayer);
 		}
 
+		List<LodNode::LodData*> oldLodData;
+		lod->GetLodData(oldLodData);
+		for(List<LodNode::LodData*>::iterator it = oldLodData.begin(); it != oldLodData.end(); ++it)
+		{
+			LodNode::LodData * oldDataItem = *it;
+			LodComponent::LodData newLodDataItem;
+			newLodDataItem.indexes = oldDataItem->indexes;
+			newLodDataItem.isDummy = oldDataItem->isDummy;
+			newLodDataItem.layer = oldDataItem->layer;
+			newLodDataItem.nodes = oldDataItem->nodes;
+
+			lc->lodLayers.push_back(newLodDataItem);
+		}
+
 		newNode->GetScene()->transformSystem->ImmediateUpdate(newNode);
 		return true;
 	}

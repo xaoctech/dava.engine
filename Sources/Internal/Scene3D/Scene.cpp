@@ -56,6 +56,7 @@
 #include "Entity/SceneSystem.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/LodSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -104,6 +105,8 @@ void Scene::CreateSystems()
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
     renderSystem = new RenderSystem();
     AddSystem(renderSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
+	lodSystem = new LodSystem();
+	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
 }
 
 Scene::~Scene()
@@ -140,6 +143,7 @@ Scene::~Scene()
 
     transformSystem = 0;
     renderSystem = 0;
+	lodSystem = 0;
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
         SafeDelete(systems[k]);
@@ -551,6 +555,9 @@ void Scene::Update(float timeElapsed)
 
     
     transformSystem->Process();
+
+	lodSystem->SetCamera(currentCamera);
+	lodSystem->Process();
     
 //	entityManager->Flush();
 
