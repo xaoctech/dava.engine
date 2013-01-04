@@ -47,11 +47,14 @@ public:
     const QString& GetName() const {return name;};
 	
 	HIERARCHYTREENODEID GetId() const {return id;};
-	
+	void UpdateId(HIERARCHYTREENODEID newID) { this->id = newID; };
+
     // Access to the node extra data.
     HierarchyTreeNodeExtraData& GetExtraData() {return extraData;};
 	
 	virtual void SetParent(HierarchyTreeNode* /*node*/){};
+	virtual HierarchyTreeNode* GetParent() {return NULL;};
+
 	bool IsHasChild(const HierarchyTreeNode* node) const;
 
 protected:

@@ -133,7 +133,7 @@ void HierarchyTreeController::Clear()
 	ResetSelectedControl();
 }
 
-void HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
 {
 	if (!activeScreen)
 		return;
@@ -145,9 +145,9 @@ void HierarchyTreeController::CreateNewControl(const QString& strType, const QPo
 	if (!control)
 	{
 		SafeRelease(object);
-		return;
+		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	}
-	
+
 	HierarchyTreeNode* parentNode = activeScreen;
 	Vector2 parentDelta(0, 0);
 	if (activeControlNodes.size() == 1)
@@ -188,6 +188,8 @@ void HierarchyTreeController::CreateNewControl(const QString& strType, const QPo
 	emit HierarchyTreeUpdated();
 	ResetSelectedControl();
 	SelectControl(controlNode);
+	
+	return controlNode->GetId();
 }
 
 HierarchyTreePlatformNode* HierarchyTreeController::GetActivePlatform() const
@@ -243,6 +245,20 @@ void HierarchyTreeController::CloseProject()
 	UpdateSelection(NULL, NULL);
 	EmitHierarchyTreeUpdated();
 	emit ProjectClosed();
+}
+
+void HierarchyTreeController::DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID)
+{
+	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
+	
+	HierarchyTreeNode* nodeToDelete = GetTree().GetNode(nodeID);
+	if (!nodeToDelete)
+	{
+		return;
+	}
+
+	nodes.push_back(nodeToDelete);
+	DeleteNodes(nodes);
 }
 
 void HierarchyTreeController::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)

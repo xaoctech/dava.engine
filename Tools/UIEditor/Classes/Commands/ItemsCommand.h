@@ -48,11 +48,13 @@ public:
 	CreateControlCommand(const QString& type, const QPoint& pos);
 	
 	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
-	
+	void Rollback();
+	virtual bool IsUndoRedoSupported() {return true;};
+
 private:
 	QString type;
 	QPoint pos;
+	HierarchyTreeNode::HIERARCHYTREENODEID createdControlID;
 };
 
 class DeleteSelectedNodeCommand: public BaseCommand
@@ -70,14 +72,25 @@ private:
 class ChangeNodeHeirarchy: public BaseCommand
 {
 public:
-	ChangeNodeHeirarchy(HierarchyTreeNode* targetNode, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
+	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
 
 	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+	virtual void Rollback();
+	virtual bool IsUndoRedoSupported() {return true;};
 	
+protected:
+	// Store the previous parents to apply Rollback.
+	void StorePreviousParents();
+
 private:
-	HierarchyTreeNode* targetNode;
+	HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID;
 	HierarchyTreeNode::HIERARCHYTREENODESIDLIST items;
+
+	// Previous parents for the "items" list.
+	typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID, HierarchyTreeNode::HIERARCHYTREENODEID> PARENTNODESMAP;
+	typedef PARENTNODESMAP::iterator PARENTNODESMAPITER;
+
+	PARENTNODESMAP previousParents;
 };
 
 #endif /* defined(__UIEditor__ItemsCommand__) */

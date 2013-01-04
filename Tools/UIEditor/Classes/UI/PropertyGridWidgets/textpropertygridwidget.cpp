@@ -109,7 +109,14 @@ void TextPropertyGridWidget::HandleLineEditEditingFinished(QLineEdit *senderWidg
             Logger::Error("OnLineEditValueChanged - unable to find attached property in the propertyGridWidgetsMap!");
             return;
         }
-        
+
+		// Don't update the property if the text wasn't actually changed.
+		QString curValue = PropertiesHelper::GetAllPropertyValues<QString>(this->activeMetadata, iter->second.getProperty().name());
+		if (curValue == senderWidget->text())
+		{
+			return;
+		}
+
         BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata,
                                                                   iter->second,
                                                                   senderWidget->text(),
@@ -176,10 +183,18 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
         Logger::Error("OnPushButtonClicked - unable to find attached property in the propertyGridWidgetsMap!");
         return;
     }
-    
+
+	// Don't update the property if the font wasn't actually changed.
+    Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue->IsEqual(resultFont))
+	{
+		SafeRelease(resultFont);
+		return;
+	}
+
     BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
     CommandsController::Instance()->ExecuteCommand(command);
-    SAFE_DELETE(command);
+    SafeRelease(command);
 }
 
 void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)

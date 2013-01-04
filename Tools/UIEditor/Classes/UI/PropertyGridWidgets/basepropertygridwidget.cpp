@@ -312,6 +312,15 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
         return;
     }
     
+	
+	// Don't update the property if the text wasn't actually changed.
+    QString curValue = PropertiesHelper::GetAllPropertyValues<QString>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == senderWidget->text())
+	{
+		return;
+	}
+
+	// The property was indeed changed, call the command.
     BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
@@ -338,6 +347,13 @@ void BasePropertyGridWidget::OnSpinBoxValueChanged(int value)
         Logger::Error("OnSpinBoxValueChanged - unable to find attached property in the propertyGridWidgetsMap!");
         return;
     }
+
+	// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
 
     BaseCommand* command = new ChangePropertyCommand<float>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
@@ -394,6 +410,13 @@ void BasePropertyGridWidget::OnCheckBoxStateChanged(bool value)
         return;
     }
 
+	// Don't update the property if the text wasn't actually changed.
+    bool curValue = PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+	
     BaseCommand* command = new ChangePropertyCommand<bool>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
@@ -454,7 +477,7 @@ void BasePropertyGridWidget::OnColorButtonClicked()
         
     BaseCommand* command = new ChangePropertyCommand<QColor>(activeMetadata, iter->second, color);
     CommandsController::Instance()->ExecuteCommand(command);
-    SAFE_DELETE(command);
+    SafeRelease(command);
 }
 
 void BasePropertyGridWidget::OnPushButtonClicked()

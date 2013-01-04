@@ -108,11 +108,18 @@ void SliderPropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *
         Logger::Error("SliderPropertyGridWidget::ProcessDoubleSpinBoxValueChanged: senderWidget is NULL!");
         return;
     }
-    
+
     // Try to process this control-specific widgets.	
 	if ((doubleSpinBoxWidget == ui->valueSpin) ||
 		(doubleSpinBoxWidget == ui->maxValueSpin) || (doubleSpinBoxWidget == ui->minValueSpin))
 	{
+		// Don't update the property if the text wasn't actually changed.
+		double curValue = PropertiesHelper::GetAllPropertyValues<double>(this->activeMetadata, iter->second.getProperty().name());
+		if (curValue == value)
+		{
+			return;
+		}
+
 		BaseCommand* command = new ChangePropertyCommand<double>(activeMetadata, iter->second, value);
   	  	CommandsController::Instance()->ExecuteCommand(command);
    		SafeRelease(command);
@@ -187,6 +194,13 @@ void SliderPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidg
 
 void SliderPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
 {
+	// Don't update the property if the value wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
     BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
