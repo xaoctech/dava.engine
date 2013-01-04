@@ -515,7 +515,7 @@ void CorePlatformAndroid::HandleCommand(AppHandle handle, int32 cmd)
             
         case APP_CMD_STOP: //::onStop
             Logger::Debug("[HandleCommand] STOP");
-            Core::Instance()->GoBackground();
+            Core::Instance()->GoBackground(false);
 
             break;
             
