@@ -689,6 +689,7 @@ void CorePlatformAndroid::ShowKeyboard()
 {
     if(appHandle)
     {
+        AConfiguration_setKeyboard(appHandle->config, ACONFIGURATION_KEYBOARD_QWERTY);
         ANativeActivity_showSoftInput(appHandle->activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED);
     }
 
