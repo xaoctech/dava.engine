@@ -43,6 +43,10 @@ namespace DAVA
 
 int Core::Run(int argc, char * argv[], AppHandle handle)
 {
+    // Make sure glue isn't stripped.
+    app_dummy();
+    
+    
     sleep(15); //TODO: for debugger start
     
 //    //TODO: log current configuration - DEBUG Feature
@@ -76,15 +80,12 @@ Core::eDeviceFamily Core::GetDeviceFamily()
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
     if(core)
     {
-        //TODO add checking;
-        
-        return DEVICE_HANDSET;
+        return core->GetDeviceFamily();
     }
     
     return DEVICE_UNKNOWN;
 }
 
-    
     
 SavedState::SavedState()
     : dummy(0)
@@ -514,7 +515,7 @@ void CorePlatformAndroid::HandleCommand(AppHandle handle, int32 cmd)
             
         case APP_CMD_STOP: //::onStop
             Logger::Debug("[HandleCommand] STOP");
-            Core::Instance()->GoBackground();
+            Core::Instance()->GoBackground(false);
 
             break;
             
@@ -671,6 +672,51 @@ const char8 * CorePlatformAndroid::GetExternalStoragePathname()
     }
     
     return String("").c_str();
+}
+    
+Core::eDeviceFamily CorePlatformAndroid::GetDeviceFamily()
+{
+    if(appHandle)
+    {
+        int32 screenSize = AConfiguration_getScreenSize(appHandle->config);
+        return (screenSize >= ACONFIGURATION_SCREENSIZE_LARGE) ? DEVICE_PAD : DEVICE_HANDSET;
+    }
+    
+    return DEVICE_UNKNOWN;
+}
+
+void CorePlatformAndroid::ShowKeyboard()
+{
+    if(appHandle)
+    {
+        AConfiguration_setKeyboard(appHandle->config, ACONFIGURATION_KEYBOARD_QWERTY);
+        ANativeActivity_showSoftInput(appHandle->activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED);
+    }
+
+//    /**
+//     * Flags for ANativeActivity_showSoftInput; see the Java InputMethodManager
+//     * API for documentation.
+//     */
+//    enum {
+//        ANATIVEACTIVITY_SHOW_SOFT_INPUT_IMPLICIT = 0x0001,
+//        ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED = 0x0002,
+//    };
+//    
+//    /**
+//     * Show the IME while in the given activity.  Calls InputMethodManager.showSoftInput()
+//     * for the given activity.  Note that this method can be called from
+//     * *any* thread; it will send a message to the main thread of the process
+//     * where the Java finish call will take place.
+//     */
+//    void ANativeActivity_showSoftInput(ANativeActivity* activity, uint32_t flags);
+}
+
+void CorePlatformAndroid::HideKeyboard()
+{
+    if(appHandle)
+    {
+        ANativeActivity_hideSoftInput(appHandle->activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED);
+    }
 }
     
 
