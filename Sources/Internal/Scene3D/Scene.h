@@ -65,6 +65,7 @@ class Component;
 class SceneSystem;
 class RenderSystem;
 class TransformSystem;
+class LodSystem;
 
     
 /**
@@ -99,6 +100,7 @@ public:
     Vector<SceneSystem*> systems;
     TransformSystem * transformSystem;
     RenderSystem * renderSystem;
+	LodSystem * lodSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

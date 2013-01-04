@@ -37,6 +37,8 @@ namespace DAVA
 {
 class RenderBatch;
 class RenderBatchArray;
+class Camera;
+    
 class RenderLayer
 {
 public:
@@ -47,7 +49,7 @@ public:
     void RemoveRenderBatch(RenderBatch * batch);
     
     void Update();
-    void Draw();
+    void Draw(Camera * camera);
 private:
     FastName name;
     Vector<RenderBatch*> renderBatchArray;

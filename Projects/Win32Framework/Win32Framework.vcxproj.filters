@@ -127,6 +127,9 @@
     <Filter Include="Internal\Render\Highlevel">
       <UniqueIdentifier>{1df931b9-f1ab-44cb-9e15-9d48af21bbe3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Scene3D\Systems">
+      <UniqueIdentifier>{182b255d-1f50-474b-b265-7dcc2a0f0a55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1179,6 +1182,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2026,6 +2032,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

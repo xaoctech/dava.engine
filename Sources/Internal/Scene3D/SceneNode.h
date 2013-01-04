@@ -156,10 +156,10 @@ public:
 	virtual void	Draw();
 	
 	// properties
-	inline void SetVisible(bool isVisible);
-	inline bool GetVisible(void);
+	void SetVisible(bool isVisible);
+	inline bool GetVisible();
 	inline SceneNode * GetParent();
-	inline void SetUpdatable(bool isUpdatable);
+	void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);
 	inline bool IsLodPart(void);
     virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
@@ -397,34 +397,10 @@ public:
 		MEMBER(customProperties, "Custom properties")
 		);
 };
-
-inline void SceneNode::SetVisible(bool isVisible)
-{
-    if (isVisible) 
-    {
-        AddFlag(NODE_VISIBLE);
-    }
-    else 
-    {
-        RemoveFlag(NODE_VISIBLE);
-    }
-}
 	
 inline bool SceneNode::GetVisible(void)
 {
 	return (flags & NODE_VISIBLE) != 0;
-}
-	
-inline void SceneNode::SetUpdatable(bool isUpdatable)
-{
-    if (isUpdatable) 
-    {
-        AddFlag(NODE_UPDATABLE);
-    }
-    else 
-    {
-        RemoveFlag(NODE_UPDATABLE);
-    }
 }
     
 inline bool SceneNode::GetUpdatable(void)

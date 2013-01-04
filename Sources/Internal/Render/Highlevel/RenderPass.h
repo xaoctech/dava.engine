@@ -36,6 +36,7 @@
 namespace DAVA
 {
 class RenderLayer;
+class Camera;
 class RenderPass
 {
 public:
@@ -47,7 +48,7 @@ public:
     void AddRenderLayer(RenderLayer * layer);
     void RemoveRenderLayer(RenderLayer * layer);
     
-    void Draw();
+    void Draw(Camera * camera);
     
 private:
     Vector<RenderLayer*> renderLayers;

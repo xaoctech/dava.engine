@@ -65,6 +65,11 @@ class RenderBatch;
 class RenderObject : public BaseObject
 {
 public:
+	enum eFlags
+	{
+		VISIBLE = 1 << 0,
+	};
+
     RenderObject();
     virtual ~RenderObject();
     
@@ -85,6 +90,7 @@ public:
     
 private:
     uint32 flags;
+    uint32 debugFlags;
     uint32 removeIndex;
 //    AABBox3 bbox;
 //    Sphere bsphere;

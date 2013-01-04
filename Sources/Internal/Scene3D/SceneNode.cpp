@@ -164,6 +164,8 @@ void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
 	transformComponent->SetParent(parent);
+    if (scene)
+        scene->ImmediateUpdate(this, transformComponent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -176,8 +178,8 @@ void SceneNode::AddNode(SceneNode * node)
         {
             node->parent->RemoveNode(node);
         }
-        node->SetParent(this);
         node->SetScene(GetScene());
+        node->SetParent(this);
     }
 }
     
@@ -879,6 +881,48 @@ int32 SceneNode::Release()
 	else
 	{
 		return BaseObject::Release();
+	}
+}
+
+void SceneNode::SetVisible(bool isVisible)
+{
+	if(isVisible) 
+	{
+		AddFlag(NODE_VISIBLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_VISIBLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
+	}
+
+
+}
+
+void SceneNode::SetUpdatable(bool isUpdatable)
+{
+	if(isUpdatable) 
+	{
+		AddFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
 	}
 }
 
