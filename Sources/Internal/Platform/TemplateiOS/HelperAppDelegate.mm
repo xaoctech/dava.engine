@@ -133,7 +133,18 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-	DAVA::Core::Instance()->GoBackground();
+    bool isLock = false;
+    UIApplicationState state = [application applicationState];
+    if (state == UIApplicationStateInactive)
+    {
+//        NSLog(@"Sent to background by locking screen");
+        isLock = true;
+    }
+//    else if (state == UIApplicationStateBackground)
+//    {
+//        NSLog(@"Sent to background by home button/switching to other app");
+//    }
+	DAVA::Core::Instance()->GoBackground(isLock);
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
