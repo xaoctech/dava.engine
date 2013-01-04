@@ -43,6 +43,10 @@ namespace DAVA
 
 int Core::Run(int argc, char * argv[], AppHandle handle)
 {
+    // Make sure glue isn't stripped.
+    app_dummy();
+    
+    
     sleep(15); //TODO: for debugger start
     
 //    //TODO: log current configuration - DEBUG Feature
@@ -76,15 +80,12 @@ Core::eDeviceFamily Core::GetDeviceFamily()
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
     if(core)
     {
-        //TODO add checking;
-        
-        return DEVICE_HANDSET;
+        return core->GetDeviceFamily();
     }
     
     return DEVICE_UNKNOWN;
 }
 
-    
     
 SavedState::SavedState()
     : dummy(0)
@@ -672,6 +673,19 @@ const char8 * CorePlatformAndroid::GetExternalStoragePathname()
     
     return String("").c_str();
 }
+    
+Core::eDeviceFamily CorePlatformAndroid::GetDeviceFamily()
+{
+    if(appHandle)
+    {
+        int32 screenSize = AConfiguration_getScreenSize(appHandle->config);
+        return (screenSize >= ACONFIGURATION_SCREENSIZE_LARGE) ? DEVICE_PAD : DEVICE_HANDSET;
+    }
+    
+    return DEVICE_UNKNOWN;
+}
+
+
     
 
     

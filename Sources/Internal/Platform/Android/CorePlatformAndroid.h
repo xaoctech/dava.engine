@@ -102,7 +102,8 @@ public:
     const char8 * GetInternalStoragePathname();
     const char8 * GetExternalStoragePathname();
     
-    
+    Core::eDeviceFamily GetDeviceFamily();
+
 private:
     
     static int32 HandleInput(AppHandle handle, AInputEvent* event);
