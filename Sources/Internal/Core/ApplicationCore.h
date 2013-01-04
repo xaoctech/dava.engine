@@ -220,7 +220,7 @@ protected:
     /**
      \brief Called when application goes to background due to device lock on iOS platforms
 	 */
-	virtual void OnDeviceLocked() = 0;
+	virtual void OnDeviceLocked() {};
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	
 	/**	
