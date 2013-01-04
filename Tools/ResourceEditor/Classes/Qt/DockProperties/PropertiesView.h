@@ -3,64 +3,19 @@
 
 #include "DAVAEngine.h"
 #include "Base/Introspection.h"
+#include "Scene/SceneData.h"
+#include "FileSystem/VariantType.h"
 #include "QtPropertyBrowser/qttreepropertybrowser.h"
 #include "QtPropertyBrowser/qtgroupboxpropertybrowser.h"
+#include "QtPropertyBrowser/qtpropertymanager.h"
+#include "QtPropertyBrowser/qteditorfactory.h"
+#include "QtPropertyBrowser/Dava/qtDavaVectorPropertyManager.h"
 
 #include <QMap>
+#include <QVector>
 #include <QSize>
 
-//class QtGroupPropertyManager;
-//class QtIntPropertyManager;
-//class QtBoolPropertyManager;
-//class QtEnumPropertyManager;
-//class QtStringPropertyManager;
-
-//class QtSpinBoxFactory;
-//class QtCheckBoxFactory;
-//class QtLineEditFactory;
-//class QtEnumEditorFactory;
-
-//REGISTER_META_TYPE(Matrix4);
-
-class test1
-{
-public:
-	int v1;
-	DAVA::Matrix4 m1;
-	int p1;
-	int pp1;
-
-	int getp1()
-	{
-		return p1;
-	}
-
-	void setp1(const int &_p1)
-	{
-		p1 = _p1;
-		pp1 = _p1 / 2;
-	}
-
-	INTROSPECTION(test1,
-		MEMBER(v1, "int test")
-		MEMBER(m1, "matrix4 text")
-		PROPERTY(p1, "prop1", getp1, setp1)
-		);
-
-};
-
-//REGISTER_META_TYPE(Matrix3);
-class test2 : public test1
-{
-public:
-	DAVA::Matrix3 m1;
-
-	INTROSPECTION_EXTEND(test2, test1,
-		MEMBER(m1, "matrix3 test")
-		);
-};
-
-class PropertiesView : public QtGroupBoxPropertyBrowser//QtTreePropertyBrowser
+class PropertiesView : public QtTreePropertyBrowser // QtGroupBoxPropertyBrowser
 {
 	Q_OBJECT
 
@@ -70,8 +25,52 @@ public:
 
 	void SetNode(DAVA::SceneNode *node);
 
+public slots:
+	void sceneActivated(SceneData *scene);
+	void sceneChanged(SceneData *scene);
+	void sceneReleased(SceneData *scene);
+	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
+
+protected slots:
+	void PropertyChangedInt(QtProperty *property);
+	void PropertyChangedBool(QtProperty *property);
+	void PropertyChangedEnum(QtProperty *property);
+	void PropertyChangedString(QtProperty *property);
+	void PropertyChangedDouble(QtProperty *property);
+	void PropertyChangedVector4(QtProperty *property);
+	void PropertyChangedVector3(QtProperty *property);
+	void PropertiesUpdate();
+
 protected:
 	DAVA::SceneNode* curNode;
+	QWidget *oneForAllParent;
+
+	QtGroupPropertyManager *managerGroup;
+	QtIntPropertyManager *managerInt;
+	QtBoolPropertyManager *managerBool;
+	QtEnumPropertyManager *managerEnum;
+	QtStringPropertyManager *managerString;
+	QtDoublePropertyManager *managerDouble;
+	QtVector2PropertyManager *managerVector2;
+	QtVector3PropertyManager *managerVector3;
+	QtVector4PropertyManager *managerVector4;
+
+	QtSpinBoxFactory *editorInt;
+	QtCheckBoxFactory *editorBool;
+	QtLineEditFactory *editorString;
+	QtEnumEditorFactory *editorEnum;
+	QtDoubleSpinBoxFactory *editorDouble;
+
+	QMap<QtProperty *, const DAVA::IntrospectionMember *> allProperties;
+
+	void PropertiesAllClear();
+	void PropertiesAllUpdate();
+
+	QtProperty* PropertyCreate(const DAVA::IntrospectionMember *member);
+	void		PropertySet(QtProperty *pr, const DAVA::VariantType &value);
+
+	template <typename T>
+	void PropertySetToNode(QtProperty *pr, const T &value);
 };
 
 #endif // __DOCK_PROPERTIES_VIEW_H__

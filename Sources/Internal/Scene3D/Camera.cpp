@@ -70,7 +70,7 @@ void Camera::RestoreOriginalSceneTransform()
 	ExtractCameraToValues();
 }
 
-void Camera::SetFOV(float32 fovyInDegrees)
+void Camera::SetFOV(const float32 &fovyInDegrees)
 {
     Setup(fovyInDegrees, aspect, znear, zfar, ortho);
 }

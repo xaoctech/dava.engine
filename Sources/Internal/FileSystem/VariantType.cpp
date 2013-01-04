@@ -66,7 +66,7 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN,		NULL),
     VariantType::PairTypeName(VariantType::TYPE_BOOLEAN,       TYPENAME_BOOLEAN,		MetaInfo::Instance<bool>()),
     VariantType::PairTypeName(VariantType::TYPE_INT32,         TYPENAME_INT32,			MetaInfo::Instance<int32>()),
-    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT,			MetaInfo::Instance<float>()),
+    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT,			MetaInfo::Instance<float32>()),
     VariantType::PairTypeName(VariantType::TYPE_STRING,        TYPENAME_STRING,			MetaInfo::Instance<String>()),
     VariantType::PairTypeName(VariantType::TYPE_WIDE_STRING,   TYPENAME_WIDESTRING,		MetaInfo::Instance<WideString>()),
     VariantType::PairTypeName(VariantType::TYPE_BYTE_ARRAY,    TYPENAME_BYTE_ARRAY,		MetaInfo::Instance<Vector<uint8> >()),
@@ -895,6 +895,8 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	VariantType v;
 	uint8 type = TYPE_NONE;
 
+	DVASSERT(NULL != meta);
+
 	for(int i = 0; i < TYPES_COUNT; ++i)
 	{
 		if(variantNamesMap[i].variantMeta == meta)
@@ -965,6 +967,8 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 {
 	MetaInfo *valMeta = NULL;
 
+	DVASSERT(NULL != meta);
+
 	for(int i = 0; i < TYPES_COUNT; ++i)
 	{
 		if(variantNamesMap[i].variantType == val.type)
@@ -974,7 +978,8 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 		}
 	}
 
-	DVASSERT(meta == valMeta);
+	DVASSERT(NULL != valMeta)
+	DVASSERT(meta == valMeta && "Destination type differ from source type");
 
 	switch(val.type)
 	{

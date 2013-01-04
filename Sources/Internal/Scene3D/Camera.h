@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
+#include "Base/Introspection.h"
 #include "Scene3D/Frustum.h"
 #include "Scene3D/SceneNode.h"
 
@@ -79,7 +80,7 @@ public:
         \param[in] fovInDegrees new for in degrees for the camera
      */ 
     
-	void SetFOV(float32 fovyInDegrees);
+	void SetFOV(const float32 &fovyInDegrees);
     /**
         \brief Set camera aspect ratio 
         \param[in] aspectYdivX Aspect ratio is viewport height / viewport width
@@ -311,7 +312,14 @@ public:
     void CalculateZoomFactor();
     
     float32 zoomFactor;
-    
+
+public:
+    INTROSPECTION_EXTEND(Camera, SceneNode,
+		PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV)
+		PROPERTY(position, "Position", GetPosition, SetPosition)
+		PROPERTY(up, "Up", GetUp, SetUp)
+		PROPERTY(left, "Left", GetLeft, SetLeft)
+		);
 };
 
 } // ns
