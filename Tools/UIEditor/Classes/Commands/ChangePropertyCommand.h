@@ -46,11 +46,6 @@ public:
         return treeNodePropertyValue;
     }
 
-	virtual bool IsUndoRedoSupported()
-	{
-		return true;
-	}
-
 private:
     HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID;
     T treeNodePropertyValue;
@@ -64,6 +59,8 @@ public:
     ChangePropertyCommand(BaseMetadata* baseMetadata,
                           const PropertyGridWidgetData& propertyGridWidgetData,
                           Type value, bool allStates = false);
+	virtual ~ChangePropertyCommand();
+
     virtual void Execute();
 	virtual void Rollback();
 
@@ -101,6 +98,24 @@ protected:
     COMMANDDATAVECT commandData;
 };
 
+// Change Property Command Helper class is needed to retain/release the pointers to the data stored when needed.
+template <typename Type>
+	class ChangePropertyCommandHelper
+{
+public:
+	static void RetainBeforeStore(Type /*value*/) {};
+	static void ReleaseBeforeDelete(Type /*value*/) {};
+};
+
+// Partial specialization for Font class - it has to be retained/released.
+template <>
+	class ChangePropertyCommandHelper<Font*>
+{
+public:
+	static void RetainBeforeStore(Font* value) { SafeRetain(value);};
+	static void ReleaseBeforeDelete(Font* value) { SafeRelease(value);};
+};
+
 template<typename Type>
     ChangePropertyCommand<Type>::ChangePropertyCommand(BaseMetadata* baseMetadata,
                                                        const PropertyGridWidgetData& propertyGridWidgetData,
@@ -111,6 +126,16 @@ template<typename Type>
     this->setTextForAllStates = allStates;
     this->curState = baseMetadata->GetUIControlState();
     this->commandData = BuildCommandData(baseMetadata);
+}
+
+template<typename Type>
+	ChangePropertyCommand<Type>::~ChangePropertyCommand()
+{
+	// Cleanup the Command Data items previously retained, if any.
+	for (COMMANDDATAVECTITER iter = this->commandData.begin(); iter != this->commandData.end(); iter ++)
+	{
+		ChangePropertyCommandHelper<Type>::ReleaseBeforeDelete((*iter).GetTreeNodePropertyValue());
+	}
 }
 
 template<typename Type>
@@ -125,14 +150,15 @@ template<typename Type>
     {
         const BaseMetadataParams& params = paramsVect[i] ;
         HierarchyTreeNode::HIERARCHYTREENODEID nodeID = params.GetTreeNodeID();
+
         Type nodeValue = PropertiesHelper::GetPropertyValue<Type>(baseMetadata, GetPropertyName(), i);
-        
+        ChangePropertyCommandHelper<Type>::RetainBeforeStore(nodeValue);
+
         commandData.push_back(ChangePropertyCommandData<Type>(nodeID, nodeValue));
     }
     
     return commandData;
 }
-
 
 template<typename Type>
     BaseMetadata* ChangePropertyCommand<Type>::GetMetadataForTreeNode(HierarchyTreeNode::HIERARCHYTREENODEID treeNodeID)

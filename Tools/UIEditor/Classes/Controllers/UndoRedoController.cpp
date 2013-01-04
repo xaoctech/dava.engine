@@ -9,7 +9,7 @@
 #include "UndoRedoController.h"
 using namespace DAVA;
 
-const uint32 UndoRedoController::MAX_UNDO_REDO_STACK_SIZE = 10;
+const uint32 UndoRedoController::MAX_UNDO_REDO_STACK_SIZE = 20;
 
 UndoRedoController::UndoRedoController()
 {

@@ -41,7 +41,10 @@ public:
 	void CloseProject();
 	void AddPlatform(const QString& name, const Vector2& size);
 	void AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);	
-	void CreateNewControl(const QString& type, const QPoint& position);
+	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
+	
+	// Delete one node and several nodes.
+	void DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID);
 	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
     
     const HierarchyTree& GetTree() const {return hierarchyTree;};

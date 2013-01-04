@@ -165,6 +165,14 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
 void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
 {
     BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
+
+	// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }

@@ -28,7 +28,7 @@ public:
 	UIControl* GetUIObject() const {return uiObject;};
 	
 	virtual void SetParent(HierarchyTreeNode* node);
-	HierarchyTreeNode* GetParent() {return parent;};
+	virtual HierarchyTreeNode* GetParent() {return parent;};
 	
 	Vector2 GetParentDelta(bool skipControl = false) const;
 	
