@@ -102,6 +102,10 @@ public:
     const char8 * GetInternalStoragePathname();
     const char8 * GetExternalStoragePathname();
     
+    Core::eDeviceFamily GetDeviceFamily();
+
+    void ShowKeyboard();
+    void HideKeyboard();
     
 private:
     
