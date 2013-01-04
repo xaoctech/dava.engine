@@ -55,14 +55,14 @@ class CommandExport: public Command
 {
     
 public:	
-	CommandExport(ResourceEditor::eExportFormat fmt);
+	CommandExport(DAVA::ImageFileFormat fmt);
     
 protected:	
     
     virtual void Execute();
     
 protected:
-    ResourceEditor::eExportFormat format;
+    DAVA::ImageFileFormat format;
     
 };
 

@@ -22,6 +22,7 @@
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
+#include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
 
 #include <QPoint>
@@ -33,6 +34,8 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
+
+#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
@@ -123,17 +126,17 @@ void QtMainWindowHandler::SaveScene()
 
 void QtMainWindowHandler::ExportAsPNG()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
+    Execute(new CommandExport(PNG_FILE));
 }
 
 void QtMainWindowHandler::ExportAsPVR()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
+    Execute(new CommandExport(PVR_FILE));
 }
 
 void QtMainWindowHandler::ExportAsDXT()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+    Execute(new CommandExport(DXT_FILE));
 }
 
 void QtMainWindowHandler::SaveToFolderWithChilds()
