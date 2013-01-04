@@ -47,6 +47,11 @@ Sprite * TextureUtils::CreateSpriteFromTexture(const String &texturePathname)
 
 TextureUtils::CompareResult TextureUtils::CompareSprites(Sprite *first, Sprite *second, PixelFormat format)
 {
+	/*
+	DVASSERT(false);
+	DebugBreak();
+	__debugbreak();
+	*/
     DVASSERT(first->GetHeight() == second->GetHeight());
     DVASSERT(first->GetWidth() == second->GetWidth());
     

@@ -160,7 +160,7 @@ void CommandSaveScene::Execute()
 }
 
 //Export
-CommandExport::CommandExport(ResourceEditor::eExportFormat fmt)
+CommandExport::CommandExport(ImageFileFormat fmt)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
     ,   format(fmt)
 {

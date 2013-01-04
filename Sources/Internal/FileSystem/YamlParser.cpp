@@ -1330,8 +1330,8 @@ bool YamlParser::WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeNa
 
 bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite)
 {
-    int16 prevFileSize = fileToSave->GetSize();
-    int16 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
+    uint32 prevFileSize = fileToSave->GetSize();
+    uint32 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
     
     return (fileToSave->GetSize() == prevFileSize + bytesWritten);
 }
