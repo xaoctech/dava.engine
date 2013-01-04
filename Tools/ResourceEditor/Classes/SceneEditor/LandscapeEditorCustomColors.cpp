@@ -42,7 +42,7 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	texSurf = NULL;
 	circleTexture = NULL;
 
-	
+	isFogEnabled = false;
 	isCursorTransparent = false;
 
 	radius = 64;
@@ -328,11 +328,8 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorCustomColors::HideAction()
 {
-	//SaveTextureAction(GetCurrentSaveFileName());
-
-	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
-	
+	workingLandscape->SetFog(isFogEnabled);
     workingLandscape->SetHeightmap(savedHeightmap);
     SafeRelease(editedHeightmap);
     SafeRelease(savedHeightmap);
@@ -348,8 +345,9 @@ void LandscapeEditorCustomColors::ShowAction()
     landscapeSize = settings->maskSize;
 
 	workingLandscape->CursorEnable();
+	//save fog status and disable it for more convenience
+	isFogEnabled = workingLandscape->IsFogEnabled();
 	workingLandscape->SetFog(false);
-
 	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 
 	String loadFileName = GetCurrentSaveFileName();
@@ -387,11 +385,8 @@ void LandscapeEditorCustomColors::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
-        //Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoColorize();
-        
-        //Image::EnableAlphaPremultiplication(true);
+
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
 		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
@@ -446,19 +441,17 @@ void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 
     if(colorSprite)
     {
-		if(pathToFile.empty())
+		if(!pathToFile.empty())
 		{
-
+			Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
+			if(img)
+			{
+				StoreSaveFileName(pathToFile);
+				ImageLoader::Save(img, pathToFile);
+				SafeRelease(img);
+			}
 		}
-
-        Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
-        if(img)
-        {
-			StoreSaveFileName(pathToFile);
-			ImageLoader::Save(img, pathToFile);
-            SafeRelease(img);
-        }
-    }
+	}
 }
 
 void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
@@ -600,9 +593,11 @@ String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &r
 
 void LandscapeEditorCustomColors::SaveTexture()
 {
-	Command * saveCommand = new CommandSaveTextureCustomColors;
-	CommandsManager::Instance()->Execute(saveCommand);
-	SafeRelease(saveCommand);
-
+	if(UNDOAction::ACTION_COLORIZE == UNDOManager::Instance()->GetLastUNDOAction())
+    {
+		Command * saveCommand = new CommandSaveTextureCustomColors;
+		CommandsManager::Instance()->Execute(saveCommand);
+		SafeRelease(saveCommand);
+	}
 	Close();
 }
