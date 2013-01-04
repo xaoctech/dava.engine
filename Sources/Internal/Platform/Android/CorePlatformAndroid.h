@@ -104,6 +104,9 @@ public:
     
     Core::eDeviceFamily GetDeviceFamily();
 
+    void ShowKeyboard();
+    void HideKeyboard();
+    
 private:
     
     static int32 HandleInput(AppHandle handle, AInputEvent* event);

@@ -685,7 +685,38 @@ Core::eDeviceFamily CorePlatformAndroid::GetDeviceFamily()
     return DEVICE_UNKNOWN;
 }
 
+void CorePlatformAndroid::ShowKeyboard()
+{
+    if(appHandle)
+    {
+        ANativeActivity_showSoftInput(appHandle->activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED);
+    }
 
+//    /**
+//     * Flags for ANativeActivity_showSoftInput; see the Java InputMethodManager
+//     * API for documentation.
+//     */
+//    enum {
+//        ANATIVEACTIVITY_SHOW_SOFT_INPUT_IMPLICIT = 0x0001,
+//        ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED = 0x0002,
+//    };
+//    
+//    /**
+//     * Show the IME while in the given activity.  Calls InputMethodManager.showSoftInput()
+//     * for the given activity.  Note that this method can be called from
+//     * *any* thread; it will send a message to the main thread of the process
+//     * where the Java finish call will take place.
+//     */
+//    void ANativeActivity_showSoftInput(ANativeActivity* activity, uint32_t flags);
+}
+
+void CorePlatformAndroid::HideKeyboard()
+{
+    if(appHandle)
+    {
+        ANativeActivity_hideSoftInput(appHandle->activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_FORCED);
+    }
+}
     
 
     
