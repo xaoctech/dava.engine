@@ -131,8 +131,8 @@ void FrameworkDidLaunched()
     new EditorSettings();
 	new EditorConfig();
     new SceneValidator();
+
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
-    
     
     String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
     String sourceFolder = String("DataSource/3d");
@@ -206,12 +206,16 @@ void FrameworkDidLaunched()
 	DAVA::Core::SetApplicationCore(core);
 	DAVA::Core::Instance()->SetOptions(appOptions);
     DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
+
+	SafeRelease(appOptions);
 }
 
 
 void FrameworkWillTerminate()
 {
-    CommandLineTool::Instance()->Release();
+	SceneValidator::Instance()->Release();
+	EditorConfig::Instance()->Release();
+	EditorSettings::Instance()->Release();
     SceneExporter::Instance()->Release();
-    EditorSettings::Instance()->Release();
+	CommandLineTool::Instance()->Release();
 }

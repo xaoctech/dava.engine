@@ -217,22 +217,56 @@ void TextureListModel::applyFilterAndSort()
 	switch(curSortMode)
 	{
 	case SortByName:
-		std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), TextureListModel::sortFnByName);
+		{
+			SortFnByName fn;
+			std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), fn);
+		}
 		break;
-	case SortBySize:
-		std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), TextureListModel::sortFnBySize);
+	case SortByFileSize:
+		{
+			SortFnByFileSize fn;
+			std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), fn);
+		}
+		break;
+	case  SortByImageSize:
+		{
+			SortFnByImageSize fn(this);
+			std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), fn);
+		}
+		break;
+	case  SortByDataSize:
+		{
+			SortFnByDataSize fn(this);
+			std::sort(textureDescriptorsFiltredSorted.begin(), textureDescriptorsFiltredSorted.end(), fn);
+		}
 		break;
 	default:
 		break;
 	}
 }
 
-bool TextureListModel::sortFnByName(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
+bool SortFnByName::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
 	return QFileInfo(t1->pathname.c_str()).completeBaseName() < QFileInfo(t2->pathname.c_str()).completeBaseName();
 }
 
-bool TextureListModel::sortFnBySize(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
+bool SortFnByFileSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
 	return QFileInfo(t1->GetSourceTexturePathname().c_str()).size() < QFileInfo(t2->GetSourceTexturePathname().c_str()).size();
+}
+
+bool SortFnByImageSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
+{
+	DAVA::Texture *tx1 = model->getTexture(t1);
+	DAVA::Texture *tx2 = model->getTexture(t2);
+
+	return (tx1->width * tx1->height) < (tx2->width * tx2->height);
+}
+
+bool SortFnByDataSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
+{
+	DAVA::Texture *tx1 = model->getTexture(t1);
+	DAVA::Texture *tx2 = model->getTexture(t2);
+
+	return (tx1->width * tx1->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx1->format)) < (tx2->width * tx2->height * DAVA::Texture::GetPixelFormatSizeInBytes(tx2->format));
 }

@@ -461,7 +461,6 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && modificationPanel->IsModificationMode())
 				{
-                    
                     LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
                     if(!landscape)
                     {
@@ -469,7 +468,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
                         selection->SetLocalTransform(currTransform);
                         if(currentGraph)
                         {
-                            currentGraph->UpdatePropertiesForCurrentNode();
+                            currentGraph->UpdateMatricesForCurrentNode();
                         }
                     }
 				}
@@ -1139,12 +1138,14 @@ void EditorBodyControl::ProcessIsSolidChanging()
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             activeScene->RebuildSceneGraph();
             
+			/* #### dock -->
             KeyedArchive *properties = selectedNode->GetCustomProperties();
             if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
             {
                 String filePathname = properties->GetString(String("editor.referenceToOwner"));
                 activeScene->OpenLibraryForFile(filePathname);
             }
+			<-- */
             
             sceneGraph->SelectNode(selectedNode);
         }

@@ -4,13 +4,13 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
 #include "Classes/Qt/Main/GUIState.h"
-#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
+#include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
-#include "Classes/Qt/TextureDialog/TextureConvertor.h"
-
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Main/PointerHolder.h"
-#include "LibraryModel.h"
+#include "Classes/Qt/Project/ProjectManager.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QToolBar>
 
@@ -28,31 +28,22 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
 {
-    ui->setupUi(this);
+	new ProjectManager();
+	new SceneDataManager();
+	new QtMainWindowHandler(this);
+
+	ui->setupUi(this);
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
-    
-	new SceneDataManager();
-    new QtMainWindowHandler(this);
 
-	connect(QtMainWindowHandler::Instance(), SIGNAL(ProjectChanged()), this, SLOT(ProjectChanged()));
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
-    libraryModel = new LibraryModel(this);
-
+	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    SceneDataManager::Instance()->SetLibraryModel(libraryModel);
-    libraryModel->Activate(ui->libraryView);
-    
+
     RegisterBasePointerTypes();
-    
-    if(DAVA::Core::Instance())
-    {
-		ProjectChanged();
-    }
-    
+   
     new GUIState();
 
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
@@ -60,24 +51,28 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupMainMenu();
     SetupToolBar();
     SetupDockWidgets();
-    SetupProjectPath();
-    
+
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
-	posSaver.Attach(this, __FUNCTION__);
+	OpenLastProject();
+
+	posSaver.Attach(this);
+	posSaver.LoadState(this);
 }
 
 QtMainWindow::~QtMainWindow()
 {
+	posSaver.SaveState(this);
+
+	GUIState::Instance()->Release();
+	delete ui;
+    
 	QtMainWindowHandler::Instance()->Release();
 	SceneDataManager::Instance()->Release();
-    
-    GUIState::Instance()->Release();
-    
-    delete ui;
+	ProjectManager::Instance()->Release();
 
-    SafeDelete(libraryModel);
+    //SafeDelete(libraryModel);
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -230,21 +225,25 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
 }
 
-void QtMainWindow::SetupProjectPath()
+void QtMainWindow::OpenLastProject()
 {
     if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+
         if(projectPath.empty())
         {
-            QtMainWindowHandler::Instance()->OpenProject();
-            projectPath = EditorSettings::Instance()->GetProjectPath();
-
-            if(projectPath.empty())
-            {
-                QtLayer::Instance()->Quit();
-            }
+			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
         }
+
+		if(projectPath.empty())
+		{
+			QtLayer::Instance()->Quit();
+		}
+		else
+		{
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+		}
     }
 }
 
@@ -384,14 +383,9 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     return QMainWindow::eventFilter(obj, event);
 }
 
-void QtMainWindow::ProjectChanged()
+void QtMainWindow::ProjectOpened(const QString &path)
 {
-	DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-	if(options)
-	{
-		QString titleStr(Format("%s. Project - %s", options->GetString("title", "Project Title").c_str(), EditorSettings::Instance()->GetProjectPath().c_str()));
-		this->setWindowTitle(titleStr);
-	}
+	this->setWindowTitle(QString("Project - ") + path);
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)

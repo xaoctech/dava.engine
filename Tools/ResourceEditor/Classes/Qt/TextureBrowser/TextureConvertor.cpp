@@ -2,7 +2,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QTextOption>
-#include "TextureDialog/TextureConvertor.h"
+#include "TextureBrowser/TextureConvertor.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
 #include "SceneEditor/PVRConverter.h"
@@ -160,6 +160,9 @@ void TextureConvertor::jobRunNextOriginal()
 		curJobOriginal = jobStackOriginal.pop();
 		if(NULL != curJobOriginal)
 		{
+			// copy descriptor
+			curJobOriginal->descriptorCopy = *curJobOriginal->descriptor;
+
 			QFuture<QImage> f = QtConcurrent::run(this, &TextureConvertor::loadOriginalThread, curJobOriginal);
 			loadOriginalWatcher.setFuture(f);
 		}
@@ -293,48 +296,47 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 		for(i = allTextures->begin(); i != allTextures->end(); ++i)
 		{
-			if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
+			TextureDescriptor *descriptor = i->second->CreateDescriptor();
+
+			if(NULL != descriptor)
 			{
-				TextureDescriptor *descriptor = i->second->CreateDescriptor();
-
-				emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
-
-				if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+				if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
 				{
-					QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
+					emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
 
-					command += "/";
-					command += PVRConverter::Instance()->GetCommandLinePVR(descriptor->GetSourceTexturePathname(), *descriptor).c_str();
+					if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
+					{
+						QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
 
-					QProcess p;
-					p.start(command);
-					p.waitForFinished(-1);
+						command += "/";
+						command += PVRConverter::Instance()->GetCommandLinePVR(descriptor->GetSourceTexturePathname(), *descriptor).c_str();
 
-					descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
-					descriptor->Save();
+						QProcess p;
+						p.start(command);
+						p.waitForFinished(-1);
+
+						descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+						descriptor->Save();
+					}
 				}
 
-				SafeRelease(descriptor);
-			}
-
-			if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
-			{
-				TextureDescriptor *descriptor = i->second->CreateDescriptor();
-
-				emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
-
-				if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+				if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
 				{
-					// TODO:
-					// DXT convert
-					// ...
+					emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
 
-					descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
-					descriptor->Save();
+					if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
+					{
+						// TODO:
+						// DXT convert
+						// ...
+
+						descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+						descriptor->Save();
+					}
 				}
-
-				SafeRelease(descriptor);
 			}
+
+			SafeRelease(descriptor);
 		}
 
 		delete allTextures;
@@ -347,7 +349,7 @@ void TextureConvertor::threadOriginalFinished()
 	{
 		emit readyOriginal(curJobOriginal->descriptor, loadOriginalWatcher.result());
 
-		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptor->pathname.c_str());
+		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.c_str());
 
 		delete curJobOriginal;
 		curJobOriginal = NULL;

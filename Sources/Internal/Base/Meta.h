@@ -41,6 +41,11 @@ namespace DAVA
 			return type_size;
 		}
 
+		inline const char* GetTypeName() const
+		{
+			return type_name;
+		}
+
 	private:
 		const int type_size;
 		const char *type_name;

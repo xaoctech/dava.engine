@@ -68,7 +68,7 @@ public:
 
 	AAssetManager * GetAssetManager();
 	void SetAssetManager(AAssetManager * mngr);
-
+	
 private:
 
 	void QuitAction();

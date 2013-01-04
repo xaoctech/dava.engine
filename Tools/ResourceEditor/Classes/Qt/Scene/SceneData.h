@@ -12,7 +12,7 @@ class QFileSystemModel;
 class QTreeView;
 class EditorScene;
 class SceneGraphModel;
-class LibraryModel;
+//class LibraryModel;
 class Command;
 class QAction;
 class QMenu;
@@ -53,12 +53,12 @@ public:
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *graphview, QTreeView *libraryView, LibraryModel *libModel);
+    void Activate(QTreeView *graphview/*, QTreeView *libraryView, LibraryModel *libModel */);
     void Deactivate();
 
     void ReloadRootNode(const DAVA::String &scenePathname);
 
-	void ReloadLibrary();
+	//void ReloadLibrary();
     
     void BakeScene();
     
@@ -68,7 +68,7 @@ public:
     
     LandscapesController *GetLandscapesController();
     
-    void OpenLibraryForFile(const DAVA::String &filePathname);
+    //void OpenLibraryForFile(const DAVA::String &filePathname);
     
 	void ResetLandsacpeSelection();
 
@@ -89,7 +89,7 @@ protected:
     void ReleaseScene();
     void Execute(Command *command);
     
-    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
+    //void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
     void ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point);
 
     void ProcessContextMenuAction(QAction *action);
@@ -99,9 +99,9 @@ protected slots:
     void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
     
     //library
-    void LibraryContextMenuRequested(const QPoint &point);
-    void LibraryMenuTriggered(QAction *action);
-    void FileSelected(const QString &filePathname, bool isFile);
+    //void LibraryContextMenuRequested(const QPoint &point);
+    //void LibraryMenuTriggered(QAction *action);
+    //void FileSelected(const QString &filePathname, bool isFile);
 
     //Scene Graph
     void SceneGraphContextMenuRequested(const QPoint &point);
@@ -125,7 +125,7 @@ protected:
     //DATA
     //ENTITY
     //PROPERTY
-    LibraryModel *libraryModel;
+    //LibraryModel *libraryModel;
     
     //reload root nodes
     struct AddedNode
@@ -137,11 +137,11 @@ protected:
     DAVA::Vector<AddedNode> nodesToAdd;
 
 	QTreeView *sceneGraphView;
-	QTreeView *libraryView;
+	//QTreeView *libraryView;
     
     LandscapesController *landscapesController;
     
-    bool skipLibraryPreview;
+    //bool skipLibraryPreview;
 
 };
 

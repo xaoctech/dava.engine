@@ -32,7 +32,7 @@ public:
 		TYPE_COMMON,
 		TYPE_PVR,
 		TYPE_DXT
-	};
+	} PropertiesType;
 
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setOriginalImageSize(const QSize &size);
@@ -117,6 +117,7 @@ private:
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	QSize origImageSize;
 
+	bool texturePropertiesChanged;
 	bool reactOnPropertyChange;
 
 	QtGroupPropertyManager *propertiesGroup;

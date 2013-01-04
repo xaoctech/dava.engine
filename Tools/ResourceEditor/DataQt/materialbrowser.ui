@@ -237,6 +237,9 @@
         <number>3</number>
        </property>
        <item>
+        <widget class="QToolBar" name="materialsViewToolBar"/>
+       </item>
+       <item>
         <widget class="MaterialView" name="materialView">
          <property name="gridSize">
           <size>

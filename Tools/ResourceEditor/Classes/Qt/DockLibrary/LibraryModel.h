@@ -15,23 +15,19 @@ public:
     LibraryModel(QObject *parent = 0);
     virtual ~LibraryModel();
 
-    void Activate(QTreeView *view);
-    void Deactivate();
+    //void Activate(QTreeView *view);
+    //void Deactivate();
     
-    void Reload();
-    
-    FileSelectionModel *GetSelectionModel();
+    void SetLibraryPath(const QString &path);
+	// bool SelectFile(const QString &path);
     
     virtual QVariant data(const QModelIndex &index, int role) const;
     
-	bool SelectFile(const DAVA::String &pathname);
+	//FileSelectionModel *GetSelectionModel();
 
 protected:
-
-	QString QStylePathname(const DAVA::String &pathname);
-
-    FileSelectionModel *fileSelectionModel;
-    QTreeView *attachedTreeView;
+    //FileSelectionModel *fileSelectionModel;
+    //QTreeView *attachedTreeView;
 };
 
 #endif // __GRAPH_MODEL_H__

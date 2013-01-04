@@ -25,7 +25,7 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "TextureDialog/TextureConvertor.h"
+#include "TextureBrowser/TextureConvertor.h"
 
 
 using namespace DAVA;
@@ -97,7 +97,9 @@ void GameCore::OnAppFinished()
 {
 	PVRConverter::Instance()->Release();
     SceneValidator::Instance()->Release();
-    
+
+	BeastProxy::Instance()->Release();
+
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
     SafeRelease(exporterScreen);

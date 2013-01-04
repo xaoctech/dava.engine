@@ -1,5 +1,5 @@
-#ifndef __TEXTURE_DIALOG_H__
-#define __TEXTURE_DIALOG_H__
+#ifndef __TEXTURE_BROWSER_H__
+#define __TEXTURE_BROWSER_H__
 
 #include <QDialog>
 #include <QMap>
@@ -18,10 +18,10 @@ class QSlider;
 struct JobItem;
 
 namespace Ui {
-class TextureDialog;
+class TextureBrowser;
 }
 
-class TextureDialog : public QDialog
+class TextureBrowser : public QDialog
 {
     Q_OBJECT
 
@@ -33,8 +33,8 @@ public:
 	};
 
 public:
-    explicit TextureDialog(QWidget *parent = 0);
-    ~TextureDialog();
+    explicit TextureBrowser(QWidget *parent = 0);
+    ~TextureBrowser();
 
 protected:
 	void closeEvent(QCloseEvent * e);
@@ -46,7 +46,7 @@ public slots:
 	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
 private:
-    Ui::TextureDialog *ui;
+    Ui::TextureBrowser *ui;
 	QtPosSaver posSaver;
 
 	TextureListModel *textureListModel;
@@ -118,4 +118,4 @@ private slots:
 	void convertStatus(const JobItem *jobCur, int jobLeft);
 };
 
-#endif // __TEXTURE_DIALOG_H__
+#endif // __TEXTURE_BROWSER_H__

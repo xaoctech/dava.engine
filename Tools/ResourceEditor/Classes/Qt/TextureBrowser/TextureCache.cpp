@@ -1,4 +1,4 @@
-#include "TextureDialog/TextureCache.h"
+#include "TextureBrowser/TextureCache.h"
 
 
 QImage TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)

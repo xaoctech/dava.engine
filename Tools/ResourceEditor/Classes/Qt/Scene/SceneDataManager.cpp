@@ -1,9 +1,9 @@
 #include "SceneDataManager.h"
 
 #include "Main/SceneGraphModel.h"
-#include "Main/LibraryModel.h"
 
 #include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
 #include <QTreeView>
@@ -13,8 +13,6 @@ using namespace DAVA;
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
-    ,   libraryView(NULL)
-    ,   libraryModel(NULL)
 {
 }
 
@@ -41,7 +39,7 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView, libraryView, libraryModel);
+    currentScene->Activate(sceneGraphView /*, libraryView, libraryModel*/);
 
 	emit SceneActivated(currentScene);
 }
@@ -89,6 +87,32 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	}
 
 	return node;
+}
+
+void SceneDataManager::SceneShowPreview(const DAVA::String &path)
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+
+	if(screen)
+	{
+		if(0 == CompareCaseInsensitive(FileSystem::Instance()->GetExtension(path), ".sc2") && FileSystem::Instance()->IsFile(path))
+		{
+			screen->ShowScenePreview(FileSystem::Instance()->GetCanonicalPath(path));
+		}
+		else
+		{
+			SceneHidePreview();
+		}
+	}
+}
+
+void SceneDataManager::SceneHidePreview()
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(NULL != screen)
+	{
+		screen->HideScenePreview();
+	}
 }
 
 EditorScene * SceneDataManager::RegisterNewScene()
@@ -146,16 +170,6 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
 void SceneDataManager::SetSceneGraphView(QTreeView *view)
 {
     sceneGraphView = view;
-}
-
-void SceneDataManager::SetLibraryView(QTreeView *view)
-{
-    libraryView = view;
-}
-
-void SceneDataManager::SetLibraryModel(LibraryModel *model)
-{
-    libraryModel = model;
 }
 
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
