@@ -67,6 +67,7 @@ public:
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
 signals:
+	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode);
     void LayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer);
     void ForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex);

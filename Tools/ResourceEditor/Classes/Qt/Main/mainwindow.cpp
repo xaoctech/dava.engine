@@ -61,6 +61,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.LoadState(this);
 	
 	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
+	ui->dockParticleEditorTimeLine->hide();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -106,6 +107,7 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
+	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -116,6 +118,8 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
 	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
+	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
+    
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
@@ -260,11 +264,19 @@ void QtMainWindow::SetupDockWidgets()
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
 }
 
 void QtMainWindow::ChangeParticleDockVisible(bool visible)
 {
 	ui->dockParticleEditor->setVisible(visible);
+}
+
+void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
+{
+	ui->dockParticleEditorTimeLine->setVisible(visible);
 }
 
 void QtMainWindow::MenuFileWillShow()

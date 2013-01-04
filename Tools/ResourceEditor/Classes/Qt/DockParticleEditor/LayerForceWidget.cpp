@@ -102,4 +102,10 @@ void LayerForceWidget::OnValueChanged()
 	SafeRelease(updateForceCmd);
 	
 	Init(emitter, layer, forceIndex, false);
+	emit ValueChanged();
+}
+
+void LayerForceWidget::Update()
+{
+	Init(emitter, layer, forceIndex, false);
 }

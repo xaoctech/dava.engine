@@ -65,6 +65,10 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode)
 	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(this);
 	emitterPropertiesWidget->Init(emitter, true);
 	setWidget(emitterPropertiesWidget);
+	connect(emitterPropertiesWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
 }
 
 void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer)
@@ -85,6 +89,10 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 	emitterLayerWidget = new EmitterLayerWidget(this);
 	emitterLayerWidget->Init(emitter, layer, true);
 	setWidget(emitterLayerWidget);
+	connect(emitterLayerWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
 }
 
 void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex)
@@ -105,4 +113,23 @@ void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, Par
 	layerForceWidget = new LayerForceWidget(this);
 	layerForceWidget->Init(emitter, layer, forceIndex, true);
 	setWidget(layerForceWidget);
+	connect(layerForceWidget,
+			SIGNAL(ValueChanged()),
+			this,
+			SLOT(OnValueChanged()));
+}
+
+void ParticleEditorWidget::OnUpdate()
+{
+	if (emitterLayerWidget)
+		emitterLayerWidget->Update();
+	if (layerForceWidget)
+		layerForceWidget->Update();
+	if (emitterPropertiesWidget)
+		emitterPropertiesWidget->Update();
+}
+
+void ParticleEditorWidget::OnValueChanged()
+{
+	emit ValueChanged();
 }
