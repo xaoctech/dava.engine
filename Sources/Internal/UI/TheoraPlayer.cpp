@@ -29,6 +29,9 @@
  =====================================================================================*/
 
 #include "UI/TheoraPlayer.h"
+
+#if !defined(__DAVAENGINE_ANDROID__)
+
 #include <theora/theoradec.h>
 
 namespace DAVA
@@ -424,3 +427,5 @@ void TheoraPlayer::Draw(const UIGeometricData &geometricData)
 }
     
 }
+
+#endif //#if !defined(__DAVAENGINE_ANDROID__)
