@@ -85,7 +85,6 @@ protected:
 	int32		radius;
 
 	bool		isCursorTransparent;
-	bool		isFogEnabled;
 };
 
 
