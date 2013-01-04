@@ -38,7 +38,7 @@ LOCAL_LDLIBS += -fuse-ld=gold
 # LOCAL_ARM_MODE := arm
 
 # set included libraries
-LOCAL_STATIC_LIBRARIES += libInternal
+LOCAL_STATIC_LIBRARIES := libInternal
 
 # build shared library
 include $(BUILD_SHARED_LIBRARY)
