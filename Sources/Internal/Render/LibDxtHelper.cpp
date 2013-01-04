@@ -7,12 +7,10 @@
 #include <libdxt/nvtt.h>
 #include <libdxt/nvtt_extra.h>
 
-#include "Render/ImageLoader.h"
-#include "Utils/StringFormat.h"
-
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 
+#include "Utils/Utils.h"
 
 
 using namespace nvtt;
@@ -31,7 +29,7 @@ public:
 		uint32 width;
 		uint32 height;
 		uint32 dataSize;
-		uint32 mipMupsNumber;
+		uint32 mipmapsCount;
 		uint32 headerSize;
 		
 		DDSInfo()
@@ -39,7 +37,7 @@ public:
 			width		  = 0;
 			height		  = 0;
 			dataSize	  = 0;
-			mipMupsNumber = 0;
+			mipmapsCount = 0;
 			headerSize	  = 0;
 		}
 	};
@@ -55,16 +53,14 @@ public:
         {
             nvttFormat = _nvttFormat;
             davaFormat = _davaFormat;
-			glFormat   = _glFormat  ;
+			glFormat   = _glFormat;
         }
     };
 	
 	const static PairNvttPixelGLFormat formatNamesMap[];
 
-	static bool InitDecompressor(nvtt::Decompressor & dec, const char *fileName);
-	
+	static bool InitDecompressor(nvtt::Decompressor & dec, const String & fileName);
 	static bool InitDecompressor(nvtt::Decompressor & dec, File * file);
-	
 	static bool InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size);
 	
 	static bool ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet, bool forseSoftwareConvertation);
@@ -89,21 +85,35 @@ public:
 const NvttHelper::PairNvttPixelGLFormat NvttHelper::formatNamesMap[] =
 {
 	//FORMAT_NAMES_MAP_COUNT should be inceased in case of addition to set
-	#ifndef __DAVAENGINE_IPHONE__
+#if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1a,	FORMAT_DXT1A,	 GL_COMPRESSED_RGBA_S3TC_DXT1_EXT),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT3,	FORMAT_DXT3,	 GL_COMPRESSED_RGBA_S3TC_DXT3_EXT),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
-	#else	
+#else
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+#endif //GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+    
+
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1a,	FORMAT_DXT1A,	 GL_COMPRESSED_RGBA_S3TC_DXT1_EXT),
+#else
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1a,	FORMAT_DXT1A,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+#endif //GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT3,	FORMAT_DXT3,	 GL_COMPRESSED_RGBA_S3TC_DXT3_EXT),
+#else
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT3,	FORMAT_DXT3,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
+#endif //GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+
+#if defined(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
+	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
+#else
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5,	FORMAT_DXT5,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT5n,	FORMAT_DXT5NM,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
-	#endif
+#endif //GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_RGBA,	FORMAT_RGBA8888, PairNvttPixelGLFormat::WRONG_GL_VALUE),
 };
 
@@ -136,7 +146,7 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 	return retValue;
 }
 
-bool LibDxtHelper::ReadDxtFile(const char *fileName, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(const String &fileName, Vector<Image*> &imageSet)
 {
 	nvtt::Decompressor dec;
 
@@ -163,24 +173,23 @@ bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &im
 {
 	if(!(image.format >= FORMAT_DXT1 && image.format <= FORMAT_DXT5NM) )
 	{
-		Logger::Error("Wrong copression format.");
+		Logger::Error("[LibDxtHelper::DecompressImageToRGBA] Wrong copression format (%d).", image.format);
+		return false;
+	}
+	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(image.format);
+	if(nvtt::Format_BC5 == innerComprFormat)
+	{ 	//bc5 is unsupported, used to determinate fail in search
+		Logger::Error("[LibDxtHelper::DecompressImageToRGBA] Can't work with nvtt::Format_BC5.");
 		return false;
 	}
 	
 		
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(TextureType_2D, image.width, image.height);
-	
 	inputOptions.setMipmapGeneration(false);
 
-	
 	CompressionOptions compressionOptions;
-	//bc5 is unsupported, used to determinate fail in search
-	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(image.format);
-	if(nvtt::Format_BC5 == innerComprFormat)
-	{
-		return false;
-	}
+	compressionOptions.setFormat(innerComprFormat);
 	if(FORMAT_DXT1NM == image.format)
 	{
 		compressionOptions.setColorWeights(1, 1, 0);
@@ -190,8 +199,6 @@ bool LibDxtHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &im
 		inputOptions.setNormalMap(true);
 	}
 	
-	compressionOptions.setFormat(innerComprFormat);
-
 	uint32 headerSize = DX10HEADER_SIZE;
 	uint8* imageHeaderBuffer = new uint8[headerSize];
 
@@ -219,20 +226,16 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
     for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	imageSet.clear();
 		
-	uint32 width = 0;
-	uint32 height = 0;
-	uint32 size = 0;
-	uint32 mipmapsCount = 0;
-	uint32 hSize=0;
-	if(!dec.getInfo(mipmapsCount, width, height, size, hSize))
-	{
-		Logger::Error("Error during header reading.");
+    DDSInfo info;
+    if(!GetInfo(dec, info))
+    {
+		Logger::Error("[NvttHelper::ReadDxtFile] Error during header reading.");
 		return false;
-	}
+    }
 
-	if(0 == width || 0 == height || 0 == mipmapsCount)
+	if(0 == info.width || 0 == info.height || 0 == info.mipmapsCount)
 	{
-		Logger::Error("Wrong mipmapsCount/width/height value in dds header.");
+		Logger::Error("[NvttHelper::ReadDxtFile] Wrong mipmapsCount/width/height value in dds header.");
 		return false;
 	}
 	
@@ -240,30 +243,31 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	nvtt::Format format;
 	if(!dec.getCompressionFormat(format))
 	{
-		Logger::Error("Getting format information cause error.");
+		Logger::Error("[NvttHelper::ReadDxtFile] Getting format information cause error.");
 		return false;
 	}
 
 	//check hardware support, in case of rgb use nvtt to reorder bytes
-	if( (!forseSoftwareConvertation) &&
+	if( !forseSoftwareConvertation &&
 		RenderManager::Instance()->GetCaps().isDXTSupported &&
 		format != Format_RGB )
 	{
-		bool retValue = false;
-		uint8* compressedImges = new uint8[size];
+		uint8* compressedImges = new uint8[info.dataSize];
 	
-		if(!dec.getRawData(compressedImges, size))
+		if(!dec.getRawData(compressedImges, info.dataSize))
 		{
-			Logger::Error("Reading compressed data cause error in nvtt lib.");
+			Logger::Error("[NvttHelper::ReadDxtFile] Reading compressed data cause error in nvtt lib.");
 
             SafeDeleteArray(compressedImges);
-			return retValue;
+			return false;
 		}
 
-        retValue = true;
+        PixelFormat pixFormat = GetPixelFormat(dec);
+
+		bool retValue = true;
         
         uint32 offset = 0;
-		for(uint32 i = 0; i < mipmapsCount; ++i)
+		for(uint32 i = 0; i < info.mipmapsCount; ++i)
 		{
 			uint32 mipSize = 0;
             if(!dec.getMipmapSize(i, mipSize))
@@ -272,15 +276,13 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
                 break;
             }
             
-			uint8* concreteImageStartPointer = compressedImges + offset;
-            
-			PixelFormat pixFormat = GetPixelFormat(dec);
-			Image* innerImage = Image::Create(width, height, pixFormat);
-			memcpy(innerImage->data, concreteImageStartPointer, mipSize);
+			Image* innerImage = Image::Create(info.width, info.height, pixFormat);
+			memcpy(innerImage->data, compressedImges + offset, mipSize);
 			imageSet.push_back(innerImage);
 
-            height = Max((uint32)1, height / 2);
-            width = Max((uint32)1, width / 2);
+            info.height = Max((uint32)1, info.height / 2);
+            info.width = Max((uint32)1, info.width / 2);
+
             offset += mipSize;
 		}
 
@@ -289,18 +291,13 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	}
 	else
 	{
-		for(uint32 i = 0; i < mipmapsCount; ++i)
+		for(uint32 i = 0; i < info.mipmapsCount; ++i)
 		{
-			Image* innerImage = Image::Create(width, height, FORMAT_RGBA8888);
-			Memset(innerImage->data, 0, innerImage->dataSize);
-            
+			Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
 			if(dec.process(innerImage->data, innerImage->dataSize, i))
 			{
 				SwapBRChannels(innerImage->data, innerImage->dataSize);
 				imageSet.push_back(innerImage);
-                
-//               ImageLoader::Save(innerImage, Format("C://dev//layer_%d.png", i));
-//				ImageLoader::Save(innerImage, Format("/Levels/layer_%d.png", i));
 			}
 			else
 			{
@@ -309,50 +306,39 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 				return false;
 			}
 			
-            height = Max((uint32)1, height / 2);
-            width = Max((uint32)1, width / 2);
+            info.height = Max((uint32)1, info.height / 2);
+            info.width = Max((uint32)1, info.width / 2);
 		}
 	}
 
 	return true;
 }
 
-struct ErrorHandlerDXT: ErrorHandler
-{
-    virtual void error(Error e)
-    {
-        Logger::Error("[AA] %s", nvtt::errorString(e));
-    }
-};
-    
+
 bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
-	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
-	String fileName = fileNameOriginal;
-	FileSystem * fs =FileSystem::Instance();
-	String extension = fs->GetExtension(fileNameOriginal);
-	size_t index = 0;
-	index = fileName.find(extension, index);
-	index --; // set pointer to last char befor .
-    if (index == String::npos || extension != ".dds") 
-	{
-		Logger::Error("Wrong input file name.");
-		return false;
-	}
-    // Make the replacement. 
-    fileName.replace(index, 1, "_");
-
-	if (fileName.empty())
-	{
-		return false;
-	}
-
 	if(!( (compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)|| (compressionFormat == FORMAT_RGBA8888)) )
 	{
-		Logger::Error("Wrong copression format.");
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Wrong copression format (%d).", compressionFormat);
 		return false;
 	}
-	
+
+	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
+	String extension = FileSystem::Instance()->GetExtension(fileNameOriginal);
+    if(0 != CompareCaseInsensitive(extension, ".dds"))
+    {
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Wrong input file name (%s).", fileNameOriginal.c_str());
+        return false;
+    }
+    
+
+    nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
+    if(nvtt::Format_BC5 == innerComprFormat)
+	{ 	//bc5 is unsupported, used to determinate fail in search
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Can't work with nvtt::Format_BC5.");
+		return false;
+	}
+    
 	uint32 imgDataSize = width * height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	NvttHelper::SwapBRChannels(data, imgDataSize);
 
@@ -361,14 +347,9 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
     inputOptions.setMipmapGeneration(generateMipmaps);
     inputOptions.setMipmapData(data, width, height);
 
-	CompressionOptions compressionOptions;
 
-	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
-	//bc5 is unsupported, used to determinate fail in search
-	if(nvtt::Format_BC5 == innerComprFormat)
-	{
-		return false;
-	}
+	CompressionOptions compressionOptions;
+	compressionOptions.setFormat(innerComprFormat);
 	if(FORMAT_DXT1NM == compressionFormat)
 	{
 		compressionOptions.setColorWeights(1, 1, 0);
@@ -378,38 +359,34 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
 		inputOptions.setNormalMap(true);
 	}
 	
-	compressionOptions.setFormat(innerComprFormat);
     
 	OutputOptions outputOptions;
+	String fileName = FileSystem::Instance()->ReplaceExtension(fileNameOriginal, "_dds");
 	outputOptions.setFileName(fileName.c_str());
-    ErrorHandlerDXT errorHandler;
-    outputOptions.setErrorHandler(&errorHandler);
 	
 	Compressor compressor;
 	bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
- 
-	if(!ret)
-	{
-		Logger::Error("Error during writing DDS file");
-	}
-
-	if(fs->IsFile(fileNameOriginal))
-	{
-		fs->DeleteFile(fileNameOriginal);
-	}
-	
-	if(!fs->MoveFile(fileName, fileNameOriginal))
-	{
-		Logger::Error("Temporary dds file renamig failed.");
-	}
-
+    if(ret)
+    {
+        FileSystem::Instance()->DeleteFile(fileNameOriginal);
+        if(!FileSystem::Instance()->MoveFile(fileName, fileNameOriginal))
+        {
+            Logger::Error("[LibDxtHelper::WriteDxtFile] Temporary dds file renamig failed.");
+            ret = false;
+        }
+    }
+    else
+    {
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Error during writing DDS file (%s).", fileName.c_str());
+    }
+    
 	return ret;
 }
 
-bool LibDxtHelper::IsDxtFile(const char *filePathname)
+bool LibDxtHelper::IsDxtFile(const String & filePathname)
 {
 	nvtt::Decompressor dec;
-	return dec.initWithDDSFile(filePathname);
+	return dec.initWithDDSFile(filePathname.c_str());
 }
 
 bool LibDxtHelper::IsDxtFile(File * file)
@@ -418,9 +395,9 @@ bool LibDxtHelper::IsDxtFile(File * file)
 	return NvttHelper::InitDecompressor(dec,file);
 }
 
-PixelFormat LibDxtHelper::GetPixelFormat(const char* fileName)
+PixelFormat LibDxtHelper::GetPixelFormat(const String & fileName)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
@@ -432,7 +409,7 @@ PixelFormat LibDxtHelper::GetPixelFormat(const char* fileName)
 
 PixelFormat LibDxtHelper::GetPixelFormat(File * file)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, file))
 	{
@@ -442,28 +419,9 @@ PixelFormat LibDxtHelper::GetPixelFormat(File * file)
 	return NvttHelper::GetPixelFormat(dec);
 }
 
-PixelFormat NvttHelper::GetPixelFormat(nvtt::Decompressor & dec)
+uint32 LibDxtHelper::GetMipMapLevelsCount(const String & fileName)
 {
-	bool res = false;
-	nvtt::Format innerFormat;
-
-	res = dec.getCompressionFormat(innerFormat);
-
-	if(!res)
-	{
-		Logger::Error("Wrong dds file compression format.");
-		return FORMAT_INVALID;
-	}
-
-	PixelFormat retValue = NvttHelper::GetPixelFormatByNVTTFormat(innerFormat);
-	
-
-	return retValue;
-}
-
-uint32 LibDxtHelper::GetMipMapLevelsCount(const char *fileName)
-{
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
@@ -475,7 +433,7 @@ uint32 LibDxtHelper::GetMipMapLevelsCount(const char *fileName)
 
 uint32 LibDxtHelper::GetMipMapLevelsCount(File * file)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, file))
 	{
@@ -485,16 +443,9 @@ uint32 LibDxtHelper::GetMipMapLevelsCount(File * file)
 	return NvttHelper::GetMipMapLevelsCount(dec);
 }
 
-uint32 NvttHelper::GetMipMapLevelsCount(nvtt::Decompressor & dec)
+uint32 LibDxtHelper::GetDataSize(const String & fileName)
 {
-	DDSInfo info;
-	GetInfo(dec, info);
-	return info.mipMupsNumber;
-}
-
-uint32 LibDxtHelper::GetDataSize(const char *fileName)
-{
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
@@ -506,7 +457,7 @@ uint32 LibDxtHelper::GetDataSize(const char *fileName)
 
 uint32 LibDxtHelper::GetDataSize(File * file)
 {
-		nvtt::Decompressor dec ;
+    nvtt::Decompressor dec ;
 
 	if(!NvttHelper::InitDecompressor(dec, file))
 	{
@@ -516,16 +467,10 @@ uint32 LibDxtHelper::GetDataSize(File * file)
 	return NvttHelper::GetDataSize(dec);
 }
 
-uint32 NvttHelper::GetDataSize(nvtt::Decompressor & dec)
-{
-	DDSInfo info;
-	GetInfo(dec, info);
-	return info.dataSize;
-}
 
-bool LibDxtHelper::GetTextureSize(const char *fileName, uint32 & width, uint32 & height)
+bool LibDxtHelper::GetTextureSize(const String & fileName, uint32 & width, uint32 & height)
 {
-	nvtt::Decompressor dec ;
+	nvtt::Decompressor dec;
 
 	if(!NvttHelper::InitDecompressor(dec, fileName))
 	{
@@ -546,6 +491,34 @@ bool LibDxtHelper::GetTextureSize(File * file, uint32 & width, uint32 & height)
 
 	return NvttHelper::GetTextureSize(dec, width, height);
 }
+    
+PixelFormat NvttHelper::GetPixelFormat(nvtt::Decompressor & dec)
+{
+    nvtt::Format innerFormat;
+    
+    if(!dec.getCompressionFormat(innerFormat))
+    {
+        Logger::Error("[NvttHelper::GetPixelFormat] Wrong dds file compression format.");
+        return FORMAT_INVALID;
+    }
+    
+    return NvttHelper::GetPixelFormatByNVTTFormat(innerFormat);
+}
+
+uint32 NvttHelper::GetMipMapLevelsCount(nvtt::Decompressor & dec)
+{
+    DDSInfo info;
+    GetInfo(dec, info);
+    return info.mipmapsCount;
+}
+    
+uint32 NvttHelper::GetDataSize(nvtt::Decompressor & dec)
+{
+    DDSInfo info;
+    GetInfo(dec, info);
+    return info.dataSize;
+}
+
 
 bool NvttHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32 & height)
 {
@@ -559,15 +532,10 @@ bool NvttHelper::GetTextureSize(nvtt::Decompressor & dec, uint32 & width, uint32
 
 bool NvttHelper::GetInfo(nvtt::Decompressor & dec, DDSInfo &info)
 {
-	bool retVal = false;
-	
-	if(dec.getInfo(info.mipMupsNumber, info.width, info.height, info.dataSize, info.headerSize))
+	bool retVal = dec.getInfo(info.mipmapsCount, info.width, info.height, info.dataSize, info.headerSize);
+	if(!retVal)
 	{
-		retVal = true;
-	}
-	else
-	{
-		Logger::Error("Error: can't read info from DDS file.");
+		Logger::Error("[NvttHelper::GetInfo] Error: can't read info from DDS file.");
 	}
 		
 	return retVal;
@@ -588,19 +556,20 @@ void NvttHelper::SwapBRChannels(uint8* data, uint32 size)
 	}
 }
 
-bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const char *fileName)
+bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const String & fileName)
 {
-	if(NULL == fileName )
+	if(fileName.empty())
 	{
-		Logger::Error("Wrong fileName.");
+		Logger::Error("[NvttHelper::InitDecompressor] try init with empty name");
 		return false;
 	}
 
-	if(!dec.initWithDDSFile(fileName))
+	if(!dec.initWithDDSFile(fileName.c_str()))
 	{
-		Logger::Error("Wrong file.");
+		Logger::Error("[NvttHelper::InitDecompressor] Wrong dds file (%s).", fileName.c_str());
 		return false;
 	}
+    
 	return true;
 }
 
@@ -608,9 +577,10 @@ bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, File * file)
 {
 	if(NULL == file)
 	{
-		Logger::Error("Wrong handler.");
+		Logger::Error("[NvttHelper::InitDecompressor] Wrong handler.");
 		return false;
 	}
+    
 	file->Seek(0, File::SEEK_FROM_START);
 	uint32 fileSize = file->GetSize();
 	uint8* fileBuffer= new uint8[fileSize];
@@ -625,13 +595,13 @@ bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, u
 {
 	if(NULL == mem || size == 0 )
 	{
-		Logger::Error("Wrong buffer.");
+		Logger::Error("[NvttHelper::InitDecompressor] Wrong buffer params.");
 		return false;
 	}
 
 	if(!dec.initWithDDSFile(mem, size))
 	{
-		Logger::Error("Wrong buffer.");
+		Logger::Error("[NvttHelper::InitDecompressor] Wrong buffer.");
 		return false;
 	}
 	return true;

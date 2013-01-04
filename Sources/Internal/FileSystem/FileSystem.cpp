@@ -386,7 +386,7 @@ const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPa
 		}
 	}
     
-    tempRetPath = GetCanonicalPath(tempRetPath);
+    tempRetPath = NormalizePath(tempRetPath);
 	return tempRetPath;
 }
 	

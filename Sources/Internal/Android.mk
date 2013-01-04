@@ -147,6 +147,7 @@ LOCAL_SRC_FILES :=  \
                     Render/DynamicVertexBuffer.cpp \
                     Render/Image.cpp \
                     Render/ImageLoader.cpp \
+                    Render/LibDxtHelper.cpp \
                     Render/LibPngHelpers.cpp \
                     Render/LibPVRHelper.cpp \
                     Render/Material.cpp \
