@@ -380,7 +380,11 @@ namespace
 			return ((info.kp_proc.p_flag & P_TRACED) == P_TRACED);
 #		else
 			// if ppid != sid, some process spawned our app, probably a debugger. 
+#ifdef ANDROID
+			return true;
+#else
 			return getsid(getpid()) != getppid();
+#endif
 #		endif
 		}
 		
