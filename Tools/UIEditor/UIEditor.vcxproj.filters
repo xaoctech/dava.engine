@@ -496,11 +496,14 @@
     <ClCompile Include="Classes\Metadata\UISliderMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\moc_UISliderMetadata.cpp">
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_sliderpropertygridwidget.cpp">
       <Filter>Generated Files\DebugQt</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\moc_sliderpropertygridwidget.cpp">
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_UISliderMetadata.cpp">
       <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Controllers\UndoRedoController.cpp">
+      <Filter>Sources\Controllers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -651,14 +654,11 @@
     <ClInclude Include="Classes\EditorSettings.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Metadata\UISliderMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\UndoRedoController.h">
+      <Filter>Sources\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -830,10 +830,14 @@
     <CustomBuild Include="Classes\ScreenManager.h">
       <Filter>Sources</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="UI\PropertyGridWidgets\sliderpropertygridwidget.ui">
+    <CustomBuild Include="UI\PropertyGridWidgets\sliderpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
-    </None>
+    </CustomBuild>
+    <CustomBuild Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\Metadata\UISliderMetadata.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
