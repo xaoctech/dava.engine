@@ -35,11 +35,6 @@
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="margin">
-     <number>0</number>
-    </property>
-   </layout>
   </widget>
   <widget class="QDockWidget" name="dockSceneGraph">
    <property name="floating">
@@ -162,7 +157,47 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="PropertiesView" name="propertiesView" native="true"/>
+      <widget class="QFrame" name="frameProperties">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="PropertiesView" name="propertiesView" native="true"/>
+        </item>
+        <item>
+         <widget class="PropertyEditor" name="propertyEditor">
+          <property name="editTriggers">
+           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="indentation">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -685,6 +720,11 @@
    <extends>QWidget</extends>
    <header>DockVisibilityTool/VisibilityToolView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PropertyEditor</class>
+   <extends>QTreeView</extends>
+   <header>DockProperties/PropertyEditor.h</header>
   </customwidget>
  </customwidgets>
  <resources>

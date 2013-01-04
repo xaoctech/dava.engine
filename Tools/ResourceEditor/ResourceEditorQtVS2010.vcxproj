@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -353,6 +353,7 @@
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -384,6 +385,12 @@
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
@@ -483,6 +490,7 @@
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp" />
@@ -506,6 +514,10 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
@@ -778,6 +790,7 @@
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\GraphItem.h" />
@@ -808,6 +821,13 @@
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyData.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
