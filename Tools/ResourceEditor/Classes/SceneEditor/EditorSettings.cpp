@@ -43,7 +43,6 @@ void EditorSettings::SetDataSourcePath(const String &datasourcePath)
     settings->SetString("3dDataSourcePath", datasourcePath);
 }
 
-
 String EditorSettings::GetDataSourcePath()
 {
     return settings->GetString("3dDataSourcePath", "/");

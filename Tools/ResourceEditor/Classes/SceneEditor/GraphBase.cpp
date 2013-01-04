@@ -71,11 +71,11 @@ bool GraphBase::PropertiesOnScreen()
     return (propertyPanel->GetParent() != NULL);
 }
 
-void GraphBase::UpdatePropertiesForCurrentNode()
+void GraphBase::UpdateMatricesForCurrentNode()
 {
     if(propertyControl)
     {
-        propertyControl->UpdateFieldsForCurrentNode();
+        propertyControl->UpdateMatricesForCurrentNode();
     }
 }
 

@@ -152,6 +152,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 RenderManager::~RenderManager()
 {
     SafeRelease(currentRenderData);
+	SafeRelease(currentRenderEffect);
     SafeRelease(FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
@@ -240,7 +241,7 @@ void RenderManager::Reset()
 	ResetColor();
 
 	currentRenderTarget = NULL;
-	currentRenderEffect = NULL;
+	SafeRelease(currentRenderEffect);
 	currentClip.x = 0;
 	currentClip.y = 0;
 	currentClip.dx = -1;

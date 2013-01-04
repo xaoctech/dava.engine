@@ -22,6 +22,7 @@
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
+#include "Project/ProjectManager.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -101,8 +102,13 @@ void QtMainWindowHandler::OpenScene()
 
 void QtMainWindowHandler::OpenProject()
 {
+	/*
     Execute(new CommandOpenProject());
 	emit ProjectChanged();
+	*/
+
+	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+	ProjectManager::Instance()->ProjectOpen(newPath);
 }
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
@@ -174,7 +180,7 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-	TextureDialog *textureBrowser = new TextureDialog((QWidget *) parent());
+	TextureBrowser *textureBrowser = new TextureBrowser((QWidget *) parent());
 	SceneData *activeScene =  SceneDataManager::Instance()->SceneGetActive();
 	
 	textureBrowser->sceneActivated(activeScene);

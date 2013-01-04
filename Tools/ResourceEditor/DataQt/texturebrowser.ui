@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TextureDialog</class>
- <widget class="QDialog" name="TextureDialog">
+ <class>TextureBrowser</class>
+ <widget class="QDialog" name="TextureBrowser">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -40,7 +40,7 @@
     <number>3</number>
    </property>
    <item>
-    <widget class="QSplitter" name="splitter">
+    <widget class="QSplitter" name="splitterMain">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>

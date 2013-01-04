@@ -114,6 +114,7 @@ void NodesPropertyControl::WillDisappear()
 
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
+	SafeRelease(currentSceneNode);
     currentSceneNode = SafeRetain(sceneNode);
     currentDataNode = NULL;
     ReleaseChildLodData();
@@ -821,9 +822,22 @@ void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
     if(currentSceneNode)
     {
+		SafeRetain(currentSceneNode);
         ReadFrom(currentSceneNode);
+		SafeRelease(currentSceneNode);
     }
 }
+
+void NodesPropertyControl::UpdateMatricesForCurrentNode()
+{
+	if(!createNodeProperties && currentSceneNode)
+	{
+		propertyList->SetBoolPropertyValue("property.scenenode.isVisible", currentSceneNode->GetVisible());
+		propertyList->SetMatrix4PropertyValue("property.scenenode.localmatrix", currentSceneNode->GetLocalTransform());
+		propertyList->SetMatrix4PropertyValue("property.scenenode.worldmatrix", currentSceneNode->GetWorldTransform());
+	}
+}
+
 
 bool NodesPropertyControl::GetHeaderState(const String & headerName, bool defaultValue)
 {

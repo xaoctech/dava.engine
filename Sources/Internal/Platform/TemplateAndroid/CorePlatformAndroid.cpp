@@ -145,6 +145,8 @@ namespace DAVA
         
         renderIsActive = true;
         
+        Thread::InitMainThread();
+        
         if(wasCreated)
 		{
             RenderResource::InvalidateAllResources();   
