@@ -136,7 +136,9 @@ void HierarchyTreeController::Clear()
 HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
 {
 	if (!activeScreen)
-		return;
+	{
+		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	}
 		
     // Create the control itself.
 	String type = strType.toStdString();
