@@ -27,6 +27,10 @@ public:
     ~LayerForceWidget();
 	
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized);
+	void Update();
+	
+signals:
+	void ValueChanged();
 	
 protected slots:
 	void OnValueChanged();

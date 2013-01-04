@@ -32,6 +32,10 @@ public:
     ~EmitterLayerWidget();
 
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
+	void Update();
+	
+signals:
+	void ValueChanged();
 	
 protected slots:
 	void OnValueChanged();

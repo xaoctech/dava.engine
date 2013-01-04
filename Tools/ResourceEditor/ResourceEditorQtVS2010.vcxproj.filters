@@ -1266,6 +1266,12 @@
     <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2284,6 +2290,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
       <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

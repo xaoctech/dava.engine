@@ -262,6 +262,24 @@ void CommandUpdateParticleLayer::Execute()
 	layer->endTime = endTime;
 }
 
+CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->layer = layer;
+}
+
+void CommandUpdateParticleLayerTime::Init(float32 startTime, float32 endTime)
+{
+	this->startTime = startTime;
+	this->endTime = endTime;
+}
+
+void CommandUpdateParticleLayerTime::Execute()
+{
+	layer->startTime = startTime;
+	layer->endTime = endTime;
+}
+
 CommandUpdateParticleLayerForce::CommandUpdateParticleLayerForce(ParticleLayer* layer, uint32 forceId) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -545,3 +563,4 @@ void CommandSaveParticleEmitterToYaml::Execute()
 
     emitterNode->GetEmitterNode()->SaveToYaml(yamlPath);
 }
+

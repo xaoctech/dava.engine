@@ -142,6 +142,14 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     }
 
     // Determine the exact node type and emit the event needed.
+	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(this->selectedNode);
+    if (effectEditorNode)
+    {
+		emit EmitterSelected(NULL);
+		emit EffectSelected(effectEditorNode->GetRootNode());
+        return;
+    }
+	
     EmitterParticleEditorNode* emitterEditorNode = dynamic_cast<EmitterParticleEditorNode*>(this->selectedNode);
     if (emitterEditorNode)
     {
