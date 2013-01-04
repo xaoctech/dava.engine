@@ -107,6 +107,7 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
+	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -117,6 +118,8 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
 	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
+	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
+    
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);

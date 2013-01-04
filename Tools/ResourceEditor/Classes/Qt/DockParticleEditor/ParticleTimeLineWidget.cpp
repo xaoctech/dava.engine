@@ -11,8 +11,8 @@
 #include <QMouseEvent>
 #include <QVBoxLayout>
 #include <QPushButton>
-#include "ParticleEditorCommands.h"
-#include "CommandsManager.h"
+#include "Commands/ParticleEditorCommands.h"
+#include "Commands/CommandsManager.h"
 
 #include "ParticlesEditorController.h"
 
