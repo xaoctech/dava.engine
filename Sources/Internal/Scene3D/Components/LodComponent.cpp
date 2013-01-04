@@ -1,4 +1,5 @@
 #include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {
@@ -36,7 +37,12 @@ Component * LodComponent::Clone()
 }
 
 LodComponent::LodComponent()
+:	forceLodLayer(INVALID_LOD_LAYER),
+	forceDistance(INVALID_DISTANCE),
+	forceDistanceSq(INVALID_DISTANCE)
 {
+	flags = NEED_UPDATE_AFTER_LOAD;
+
 	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
 	{
 		lodLayersArray[iLayer].SetDistance(GetDefaultDistance(iLayer));
@@ -50,6 +56,27 @@ float32 LodComponent::GetDefaultDistance(int32 layer)
 {
 	float32 distance = MIN_LOD_DISTANCE + ((float32)(MAX_LOD_DISTANCE - MIN_LOD_DISTANCE) / (MAX_LOD_LAYERS-1)) * layer;
 	return distance;
+}
+
+void LodComponent::SetCurrentLod(LodData *newLod)
+{
+	if (newLod != currentLod) 
+	{
+		if (currentLod) 
+		{
+			int32 size = currentLod->nodes.size();
+			for (int i = 0; i < size; i++) 
+			{
+				currentLod->nodes[i]->SetUpdatable(false);
+			}
+		}
+		currentLod = newLod;
+		int32 size = currentLod->nodes.size();
+		for (int i = 0; i < size; i++) 
+		{
+			currentLod->nodes[i]->SetUpdatable(true);
+		}
+	}
 }
 
 };

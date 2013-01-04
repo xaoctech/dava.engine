@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -47,8 +48,19 @@ const FastName & RenderPass::GetName()
 {
     return name;
 }
+    
+void RenderPass::AddRenderLayer(RenderLayer * layer)
+{
+    renderLayers.push_back(layer);
+}
+    
+void RenderPass::RemoveRenderLayer(RenderLayer * layer)
+{
+    
+}
 
-void RenderPass::Draw()
+
+void RenderPass::Draw(Camera * camera)
 {
     // Set Render Target
     
@@ -56,7 +68,7 @@ void RenderPass::Draw()
     uint32 size = (uint32)renderLayers.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        renderLayers[k]->Draw();
+        renderLayers[k]->Draw(camera);
     }
 }
 

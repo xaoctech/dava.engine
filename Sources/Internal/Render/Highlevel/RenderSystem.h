@@ -42,6 +42,7 @@ class RenderLayer;
 class RenderObject;
 class RenderBatch;
 class SceneNode;
+class Camera;
     
 class RenderSystem : public SceneSystem
 {
@@ -54,6 +55,8 @@ public:
     virtual void ImmediateUpdate(SceneNode * entity);
 
     virtual void Process();
+    
+    virtual void SetCamera(Camera * camera);
     
 private:
     void AddRenderObject(RenderObject * renderObject);
@@ -73,7 +76,7 @@ private:
     //Vector<BSphere> transformedBSphere;
     
     HashMap<SceneNode*, RenderObject *> entityObjectMap;
-    
+    Camera * camera;
     //Vector<RenderObject*> forRemove;
 };
     
