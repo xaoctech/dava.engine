@@ -308,7 +308,7 @@ public:
     inline bool IsActive();
 	void SetIsActive(bool isActive);
 	
-	virtual void GoBackground();	
+	virtual void GoBackground(bool isLock);
 	
 	
 	/**
