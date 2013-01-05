@@ -73,6 +73,7 @@ public:
 	inline void Construct(const Vector3 & euler);
 	inline void Construct(const Vector3 & vector, float32 Angle);
 	inline void Construct(const Matrix4 & matrix);
+	inline void Construct(const Vector3 & source, const Vector3 & dest, const Vector3 & fallbackAxis = Vector3(0,0,0));
 
 
 	// Convert To 
@@ -93,7 +94,61 @@ public:
 	//! Comparison operators
 	inline bool operator == (const Quaternion & _v) const;
 	inline bool operator != (const Quaternion & _v) const;
+	
+
 };
+	
+inline void Quaternion::Construct(const Vector3 & source, const Vector3 & dest, const Vector3 & fallbackAxis)
+{
+	// Based on Stan Melax's article in Game Programming Gems
+	// Copy, since cannot modify local
+	Vector3 v0 = source;
+	Vector3 v1 = dest;
+	v0.Normalize();
+	v1.Normalize();
+	
+	float32 d = v0.DotProduct(v1);
+	// If dot == 1, vectors are the same
+	if (d >= 1.0f)
+	{
+		Set(); //Quaternion::IDENTITY;
+	}
+	if (d < (1e-6f - 1.0f))
+	{
+		if (fallbackAxis != Vector3(0,0,0))
+		{
+			// rotate 180 degrees about the fallback axis
+			Construct(fallbackAxis, PI);
+		}
+		else
+		{
+			// Generate an axis
+			Vector3 axisX(1, 0, 0);
+			Vector3 axis = axisX.CrossProduct(source);
+			if (axis.IsZero()) // pick another if colinear
+			{
+				Vector3 axisY(0, 1, 0);
+				axis = axisY.CrossProduct(source);
+			}
+			axis.Normalize();
+			Construct(axis, PI);
+		}
+	}
+	else
+	{
+		float32 s = sqrt( (1+d)*2 );
+		float32 invs = 1 / s;
+		
+		Vector3 c = v0.CrossProduct(v1);
+		
+		x = c.x * invs;
+		y = c.y * invs;
+		z = c.z * invs;
+		w = s * 0.5f;
+		Normalize();
+	}
+}
+
 
 
 // implementation of Quaternion
