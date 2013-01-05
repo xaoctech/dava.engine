@@ -8,10 +8,11 @@ class QtPropertyData;
 class QtPropertyItem : public QStandardItem
 {
 public:
-	QtPropertyItem(QtPropertyData* data = NULL);
+	QtPropertyItem();
+	QtPropertyItem(QtPropertyData* data, QtPropertyItem *name);
+	QtPropertyItem(const QVariant &value);
 	~QtPropertyItem();
 
-	void SetPropertyData(QtPropertyData* data);
 	QtPropertyData* GetPropertyData() const;
 
 	int	type() const;
@@ -20,6 +21,7 @@ public:
 
 protected:
 	QtPropertyData* itemData;
+	bool itemDataDeleteByParent;
 };
 
 #endif // __QT_PROPERTY_ITEM_H__

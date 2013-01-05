@@ -10,12 +10,19 @@ public:
 	QtPropertyDataIntrospection(void *object, const DAVA::IntrospectionMember *member);
 	virtual ~QtPropertyDataIntrospection();
 
-	virtual QVariant GetValue();
-	virtual void SetValue(const QVariant &value);
-
-public:
+protected:
 	void *object;
 	const DAVA::IntrospectionMember *member;
+
+	virtual QVariant GetValueInternal();
+	virtual void SetValueInternal(const QVariant &value);
+	virtual void ChildChanged(const QString &key, QtPropertyData *data);
+	virtual void ChildUpdate();
+
+private:
+	void SubPropertiesCreate();
+	void SubPropertiesUpdate();
+
 };
 
 #endif // __QT_PROPERTY_DATA_INTROSPECTION_H__

@@ -1227,8 +1227,8 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.cpp">
-      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyData.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2217,9 +2217,6 @@
       <Filter>Sources\Qt\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h">
-      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,5 @@
 #include "QtPropertyEditor/QtPropertyModel.h"
 #include "QtPropertyEditor/QtPropertyItem.h"
-#include "QtPropertyEditor/QtProperyData/QtPropertyDataCommon.h"
 
 QtPropertyModel::QtPropertyModel(QObject* parent /* = 0 */)
 	: QStandardItemModel(parent)
@@ -21,13 +20,14 @@ QtPropertyItem* QtPropertyModel::AppendPropertyHeader(const QString &name, QtPro
 {
 	QList<QStandardItem *> items;
 	QStandardItem* root = (QStandardItem *) parent;
-
-	QtPropertyItem *newPropertyName = new QtPropertyItem(new QtPropertyDataCommon(name));
-	QtPropertyItem *newPropertyValue = new QtPropertyItem(NULL);
+	
+	QtPropertyItem *newPropertyName = new QtPropertyItem(name);
+	QtPropertyItem *newPropertyValue = new QtPropertyItem();
 
 	QFont headerFont = newPropertyName->font();
 	headerFont.setBold(true);
 
+	newPropertyName->setText(name);
 	newPropertyName->setFont(headerFont);
 	newPropertyName->setEditable(false);
 	newPropertyName->setSelectable(false);
@@ -55,8 +55,8 @@ QtPropertyItem* QtPropertyModel::AppendProperty(const QString &name, QtPropertyD
 	QList<QStandardItem *> items;
 	QStandardItem* root = (QStandardItem *) parent;
 
-	QtPropertyItem *newPropertyName = new QtPropertyItem(new QtPropertyDataCommon(name));
-	QtPropertyItem *newPropertyValue = new QtPropertyItem(data);
+	QtPropertyItem *newPropertyName = new QtPropertyItem(name);
+	QtPropertyItem *newPropertyValue = new QtPropertyItem(data, newPropertyName);
 
 	newPropertyName->setEditable(false);
 
@@ -69,7 +69,7 @@ QtPropertyItem* QtPropertyModel::AppendProperty(const QString &name, QtPropertyD
 	}
 
 	root->appendRow(items);
-	
+
 	return newPropertyName;
 }
 
