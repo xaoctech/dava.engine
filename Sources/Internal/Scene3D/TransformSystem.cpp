@@ -32,7 +32,7 @@ void TransformSystem::Process()
 	uint32 size = updatableEntities.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		HierahicFindUpdatableTranform(updatableEntities[i]);
+		HierahicFindUpdatableTransform(updatableEntities[i]);
 	}
 	updatableEntities.clear();
 
@@ -42,7 +42,7 @@ void TransformSystem::Process()
 	}
 }
 
-void TransformSystem::HierahicFindUpdatableTranform(SceneNode * entity)
+void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 {
 	passedNodes++;
 
@@ -62,7 +62,7 @@ void TransformSystem::HierahicFindUpdatableTranform(SceneNode * entity)
 	uint32 size = entity->GetChildrenCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		HierahicFindUpdatableTranform(entity->GetChild(i));
+		HierahicFindUpdatableTransform(entity->GetChild(i));
 	}
 }
 
