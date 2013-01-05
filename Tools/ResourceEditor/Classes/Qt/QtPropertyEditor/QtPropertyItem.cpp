@@ -1,29 +1,55 @@
 #include "QtPropertyEditor/QtPropertyItem.h"
 #include "QtPropertyEditor/QtPropertyData.h"
 
-QtPropertyItem::QtPropertyItem(QtPropertyData* data /*= NULL*/)
+QtPropertyItem::QtPropertyItem()
 	: QStandardItem()
-	, itemData(data)
+	, itemData(NULL)
+	, itemDataDeleteByParent(false)
 { }
 
-QtPropertyItem::~QtPropertyItem()
+QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
+	: QStandardItem()
+	, itemData(data)
+	, itemDataDeleteByParent(false)
 {
-	if(NULL != itemData)
+	if(NULL != data && NULL != name)
 	{
-		delete itemData;
-		itemData = NULL;
+		QMapIterator<QString, QtPropertyData*> i = data->ChildIterator();
+		while(i.hasNext())
+		{
+			i.next();
+
+			QList<QStandardItem *> subItems;
+
+			QtPropertyItem *subName = new QtPropertyItem(i.key());
+			QtPropertyItem *subValue = new QtPropertyItem(i.value(), this);
+
+			subValue->itemDataDeleteByParent = true;
+			subName->setEditable(false);
+
+			subItems.append(subName);
+			subItems.append(subValue);
+
+			name->appendRow(subItems);
+		}
 	}
 }
 
-void QtPropertyItem::SetPropertyData(QtPropertyData* data)
+QtPropertyItem::QtPropertyItem(const QVariant &value)
+	: QStandardItem()
+	, itemData(NULL)
+	, itemDataDeleteByParent(false)
 {
-	if(NULL != itemData)
+	itemData = new QtPropertyData(value);
+}
+
+QtPropertyItem::~QtPropertyItem()
+{
+	if(NULL != itemData && !itemDataDeleteByParent)
 	{
 		delete itemData;
 		itemData = NULL;
 	}
-
-	data = itemData;
 }
 
 QtPropertyData* QtPropertyItem::GetPropertyData() const
@@ -49,6 +75,10 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 			v = itemData->GetValue();
 		}
 		break;
+
+	default:
+		v = QStandardItem::data(role);
+		break;
 	}
 
 	return v;
@@ -63,6 +93,9 @@ void QtPropertyItem::setData(const QVariant & value, int role /* = Qt::UserRole 
 		{
 			itemData->SetValue(value);
 		}
+		break;
+	default:
+		QStandardItem::setData(value, role);
 		break;
 	}
 }

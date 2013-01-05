@@ -385,11 +385,11 @@
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyData.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.cpp" />
-    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
@@ -826,7 +826,6 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.h" />
-    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
