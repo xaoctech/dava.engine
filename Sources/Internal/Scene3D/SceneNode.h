@@ -180,7 +180,7 @@ public:
     void SetLocalTransform(const Matrix4 & newMatrix);
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
-    inline void InvalidateLocalTransform();
+    //inline void InvalidateLocalTransform();
     
     /*
         \brief Go down by hierarchy and bake all transforms.
@@ -456,10 +456,10 @@ inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
 //}
 //
     
-inline void SceneNode::InvalidateLocalTransform()
-{
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-}
+//inline void SceneNode::InvalidateLocalTransform()
+//{
+//    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
+//}
 
     
 inline void SceneNode::SetDefaultLocalTransform(const Matrix4 & newMatrix)
