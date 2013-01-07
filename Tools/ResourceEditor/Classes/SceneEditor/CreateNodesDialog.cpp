@@ -128,18 +128,6 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
             break;
         }
 
-        case ResourceEditor::NODE_BOX:
-            SetHeader(LocalizedString(L"createnode.box"));
-            sceneNode = new CubeNode();
-            sceneNode->SetName("Cube");
-            break;
-
-        case ResourceEditor::NODE_SPHERE:
-            SetHeader(LocalizedString(L"createnode.sphere"));
-            sceneNode = new SphereNode();
-            sceneNode->SetName("Sphere");
-            break;
-
         case ResourceEditor::NODE_CAMERA:
             SetHeader(LocalizedString(L"createnode.camera"));
             sceneNode = new Camera();

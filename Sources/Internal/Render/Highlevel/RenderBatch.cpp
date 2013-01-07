@@ -69,7 +69,7 @@ void RenderBatch::SetMaterial(Material * _material)
 {
     material = SafeRetain(_material);
 }
-
+    
 void RenderBatch::Draw(Camera * camera)
 {
 	if(renderObject && !(renderObject->GetFlags() & RenderObject::VISIBLE))
@@ -94,7 +94,10 @@ void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 	renderObject = _renderObject;
 }
 
-
+const AABBox3 & RenderBatch::GetBoundingBox() const
+{
+    return dataSource->GetBoundingBox();
+}
 
 
 };

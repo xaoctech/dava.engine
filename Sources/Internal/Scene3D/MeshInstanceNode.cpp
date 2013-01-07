@@ -354,7 +354,7 @@ void MeshInstanceNode::Draw()
             polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
         }
     }
-	
+#if 0
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
@@ -443,6 +443,7 @@ void MeshInstanceNode::Draw()
         RenderManager::Instance()->SetState(oldState);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+#endif
 	//glPopMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 

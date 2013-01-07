@@ -57,6 +57,7 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/TransformSystem.h"
 #include "Scene3D/Systems/LodSystem.h"
+#include "Scene3D/Systems/DebugRenderSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -107,6 +108,8 @@ void Scene::CreateSystems()
     AddSystem(renderSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
 	lodSystem = new LodSystem();
 	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
+    debugRenderSystem = new DebugRenderSystem();
+    AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -640,6 +643,8 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderSystem->Process();
+    debugRenderSystem->SetCamera(currentCamera);
+    debugRenderSystem->Process();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     

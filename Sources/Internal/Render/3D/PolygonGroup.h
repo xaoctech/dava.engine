@@ -95,7 +95,7 @@ public:
 	inline int32 GetVertexCount();
 	inline int32 GetIndexCount();
 	
-	inline AABBox3 & GetBoundingBox();
+	inline const AABBox3 & GetBoundingBox() const;
     
     
     inline void SetPrimitiveType(ePrimitiveType type);
@@ -310,7 +310,7 @@ inline int32 PolygonGroup::GetIndexCount()
 	return indexCount;
 }
 
-inline AABBox3 & PolygonGroup::GetBoundingBox()
+inline const AABBox3 & PolygonGroup::GetBoundingBox() const
 {
 	return aabbox;
 }

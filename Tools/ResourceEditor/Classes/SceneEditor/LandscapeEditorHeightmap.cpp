@@ -19,6 +19,8 @@
 #include "../Qt/Main/QtUtils.h"
 
 #include "EditorSettings.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -386,7 +388,7 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(tilemaskImage);
     SafeRelease(toolImageTile);
 
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
 

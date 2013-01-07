@@ -40,6 +40,7 @@
 #include "Debug/Stats.h"
 #include "Scene3D/TransformSystem.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/DeleteSystem.h"
@@ -67,7 +68,7 @@ SceneNode::SceneNode()
 	worldTransform.Identity();
     defaultLocalTransform.Identity();
 	//animation = 0;
-    debugFlags = DEBUG_DRAW_NONE;
+    //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
 	userData = 0;
     
@@ -135,6 +136,19 @@ void SceneNode::RemoveComponent(Component * component)
 	delete(component);
     UpdateComponentsFastPtrs();
 }
+    
+void SceneNode::RemoveComponent(uint32 componentType)
+{
+    if (components[componentType])
+        RemoveComponent(components[componentType]);
+}
+
+    
+Component * SceneNode::GetComponent(uint32 componentType)
+{
+    return components[componentType];
+}
+
 
 void SceneNode::SetScene(Scene * _scene)
 {
@@ -471,7 +485,7 @@ void SceneNode::Draw()
     if (scene)
         scene->nodeCounter++;
 
-	
+#if 0
 	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
 	{
 //		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
@@ -504,6 +518,7 @@ void SceneNode::Draw()
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+#endif
 
 	
 	//Stats::Instance()->EndTimeMeasure("Scene.Draw.SceneNode.Draw", this);
@@ -571,7 +586,19 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 
 void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
 {
-    debugFlags = _debugFlags;
+    if (_debugFlags != 0)
+    {
+        if (GetComponent(Component::DEBUG_RENDER_COMPONENT) == 0)
+        {
+            AddComponent(new DebugRenderComponent());
+        }
+        DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+        debugComponent->SetDebugFlags(_debugFlags);
+    }else
+    {
+        RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+    }
+    
     if (isRecursive)
     {
         std::vector<SceneNode*>::iterator it = children.begin();
@@ -633,6 +660,16 @@ bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &o
 AABBox3 SceneNode::GetWTMaximumBoundingBoxSlow()
 {
     AABBox3 retBBox;
+    
+    RenderComponent * renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
+    TransformComponent * transformComponent = static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT));
+    if (renderComponent && transformComponent)
+    {
+        AABBox3 wtBox;
+        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(*transformComponent->GetWorldTransform(), wtBox);
+        retBBox.AddAABBox(wtBox);
+    }
+    
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {

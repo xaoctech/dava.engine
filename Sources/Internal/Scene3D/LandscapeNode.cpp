@@ -1116,25 +1116,25 @@ void LandscapeNode::Draw()
 	}
     
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
-    if (debugFlags & DEBUG_DRAW_GRID)
-    {
-        RenderManager::Instance()->SetColor(1.0f, 0.f, 0.f, 1.f);
-        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetShader(0);
-        RenderManager::Instance()->FlushState();
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
+//    if (debugFlags & DEBUG_DRAW_GRID)
+//    {
+//        RenderManager::Instance()->SetColor(1.0f, 0.f, 0.f, 1.f);
+//        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+//        RenderManager::Instance()->SetShader(0);
+//        RenderManager::Instance()->FlushState();
+//
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     SceneNode::Draw();
 
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
-    if (!(debugFlags & DEBUG_DRAW_GRID))
-    {
-        RenderManager::Instance()->ResetColor();
-    }
-#else 
+//    if (!(debugFlags & DEBUG_DRAW_GRID))
+//    {
+//        RenderManager::Instance()->ResetColor();
+//    }
+#else
     RenderManager::Instance()->ResetColor();
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
@@ -1198,11 +1198,11 @@ void LandscapeNode::Draw()
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
-    if (debugFlags & DEBUG_DRAW_ALL)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }   
-#endif 
+//    if (debugFlags & DEBUG_DRAW_ALL)
+//    {
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//    }   
+#endif
 
 	if(cursor)
 	{

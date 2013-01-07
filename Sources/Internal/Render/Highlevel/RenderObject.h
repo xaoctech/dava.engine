@@ -88,11 +88,12 @@ public:
     inline void SetAABBox(const AABBox3 & bbox);
     inline void SetBSphere(const Sphere & sphere);
     
+    inline const AABBox3 & GetBoundingBox();
 private:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
-//    AABBox3 bbox;
+    AABBox3 bbox;
 //    Sphere bsphere;
     
     Vector<RenderBatch*> renderBatchArray;    
@@ -108,6 +109,10 @@ inline void RenderObject::SetRemoveIndex(uint32 _removeIndex)
     removeIndex = _removeIndex;
 }
 
+inline const AABBox3 & RenderObject::GetBoundingBox()
+{
+    return bbox;
+}
     
 } // ns
 

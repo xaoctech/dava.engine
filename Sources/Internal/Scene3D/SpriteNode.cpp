@@ -302,11 +302,11 @@ void SpriteNode::Draw()
     
 	RenderManager::Instance()->SetBlendMode(sblend, dblend);
 
-    if (debugFlags & DEBUG_DRAW_ALL)
-    {
-        AABBox3 box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
-        RenderHelper::Instance()->DrawBox(box);
-    }
+//    if (debugFlags & DEBUG_DRAW_ALL)
+//    {
+//        AABBox3 box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
+//        RenderHelper::Instance()->DrawBox(box);
+//    }
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 }

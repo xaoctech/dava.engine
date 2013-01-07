@@ -56,10 +56,10 @@ void QtVector4EditorFactoryPrivate::slotSetValue(double value)
 	for (QMap<QDoubleSpinBox *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != itcend; ++itEditor) {
 		if (itEditor.key() == object) {
 			QtProperty *property = itEditor.value();
-			QtVector4EditorFactoryPrivate *manager = q_ptr->propertyManager(property);
+			QtVector4EditorFactoryPrivate *manager = 0; //q_ptr->propertyManager(property);
 			if (!manager)
 				return;
-			manager->setValue(property, value);
+			//manager->setValue(property, value);
 			return;
 		}
 	}

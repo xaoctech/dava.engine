@@ -107,18 +107,18 @@ void EditorLandscapeNode::Draw()
 
     
 #if defined(__DAVAENGINE_OPENGL__)
-    if (debugFlags & DEBUG_DRAW_GRID)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
-        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetShader(0);
-        RenderManager::Instance()->FlushState();
-
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
+//    if (debugFlags & DEBUG_DRAW_GRID)
+//    {
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
+//        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+//        RenderManager::Instance()->SetShader(0);
+//        RenderManager::Instance()->FlushState();
+//
+//        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
+//
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//    }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
     
