@@ -485,32 +485,7 @@ float32 Camera::GetZoomFactor() const
     
 void Camera::Draw()
 {
-    if (debugFlags & DEBUG_DRAW_ALL)
-    {
-        Camera * prevCamera = scene->GetCurrentCamera();
 
-        // Build this camera matrixes & it's frustum
-        this->Set();
-        
-        // Restore original camera
-        // Do that only if exists because potentially it can be scene without camera set
-        if (prevCamera)
-            prevCamera->Set();
-        
-        RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
-        
-        // If this is clip camera - show it as red camera
-        if (this == scene->GetClipCamera())
-            RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-        // Draw frustum of this camera
-        if (currentFrustum)
-        {
-            currentFrustum->DebugDraw();
-        }
-        // reset color
-        RenderManager::Instance()->ResetColor();
-    }
 }
 
 Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)

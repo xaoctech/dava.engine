@@ -6,6 +6,8 @@
 #include "EditorBodyControl.h"
 
 #include "../Qt/Main/QtUtils.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
@@ -131,7 +133,7 @@ void LandscapeEditorBase::Close()
 {
     HideAction();
     
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
@@ -292,11 +294,11 @@ void LandscapeEditorBase::OnShowGrid(bool show)
     {
         if(show)
         {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
         }
         else 
         {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
         }
     }
     else 

@@ -75,6 +75,8 @@ public:
     
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
+    void RemoveComponent(uint32 componentType);
+    Component * GetComponent(uint32 componentType);
     
     void UpdateComponentsFastPtrs();
     Component * components[Component::COMPONENT_COUNT];
@@ -167,15 +169,15 @@ public:
 	// extract data from current node to use it in animations
 	void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & resultKey);
 	
-    inline const Matrix4 & GetLocalTransform(); 
+    const Matrix4 & GetLocalTransform(); 
 
     /**
-     \brief This method means that you always modify geted matrix. 
+     \brief This method means that you always modify matrix you get. 
         If you dont want to modify matrix call GetLocalTransform().
      */
-	inline const Matrix4 & ModifyLocalTransform(); 
-    inline const Matrix4 & GetWorldTransform();
-    inline const Matrix4 & GetDefaultLocalTransform(); 
+	const Matrix4 & ModifyLocalTransform(); 
+    const Matrix4 & GetWorldTransform();
+    const Matrix4 & GetDefaultLocalTransform(); 
     
     void SetLocalTransform(const Matrix4 & newMatrix);
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
@@ -250,19 +252,7 @@ public:
         EVENT_NOTIFY_UPDATE,
     };
     
-	enum
-	{
-		DEBUG_DRAW_NONE = 0,
-		DEBUG_DRAW_AABBOX = 1,              
-		DEBUG_DRAW_LOCAL_AXIS = 2,
-		DEBUG_DRAW_AABOX_CORNERS = 4,
-		DEBUG_DRAW_LIGHT_NODE = 8,
-        DEBUG_DRAW_NORMALS = 16,
-        DEBUG_DRAW_GRID = 32,
-		DEBUG_DRAW_USERNODE = 64,
-		DEBUG_DRAW_RED_AABBOX = 128,
-        DEBUG_DRAW_ALL = 0xFFFFFFFF,
-	};
+    
 	/**
         \brief function to enable or disable debug drawing for particular node.
         By default it's not recursive. Some objects may support flags only partially.
@@ -394,7 +384,7 @@ public:
 	INTROSPECTION(SceneNode,
 		MEMBER(name, "Name")
 		MEMBER(worldTransform, "World transform")
-		MEMBER(customProperties, "Custom properties")
+//		MEMBER(customProperties, "Custom properties")
 		);
 };
 	

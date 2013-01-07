@@ -26,6 +26,8 @@
 		5095760F168A44EB0023E6D5 /* DeleteSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095760D168A44EB0023E6D5 /* DeleteSystem.cpp */; };
 		50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957611168DD33D0023E6D5 /* LodComponent.cpp */; };
 		50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957616169617AC0023E6D5 /* LodSystem.cpp */; };
+		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
+		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -173,7 +175,6 @@
 		5C5D9A4715B0230D0058B43A /* BVHierarchy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E415B0230D0058B43A /* BVHierarchy.cpp */; };
 		5C5D9A4815B0230D0058B43A /* BVNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E615B0230D0058B43A /* BVNode.cpp */; };
 		5C5D9A4915B0230D0058B43A /* Camera.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E815B0230D0058B43A /* Camera.cpp */; };
-		5C5D9A4A15B0230D0058B43A /* CubeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98EA15B0230D0058B43A /* CubeNode.cpp */; };
 		5C5D9A4B15B0230D0058B43A /* DataNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98EC15B0230D0058B43A /* DataNode.cpp */; };
 		5C5D9A4C15B0230D0058B43A /* Frustum.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98EE15B0230D0058B43A /* Frustum.cpp */; };
 		5C5D9A4D15B0230D0058B43A /* Heightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98F015B0230D0058B43A /* Heightmap.cpp */; };
@@ -202,7 +203,6 @@
 		5C5D9A6415B0230D0058B43A /* ShadowRect.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D991E15B0230D0058B43A /* ShadowRect.cpp */; };
 		5C5D9A6515B0230D0058B43A /* ShadowVolumeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992015B0230D0058B43A /* ShadowVolumeNode.cpp */; };
 		5C5D9A6615B0230D0058B43A /* SkeletonNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992215B0230D0058B43A /* SkeletonNode.cpp */; };
-		5C5D9A6715B0230D0058B43A /* SphereNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992415B0230D0058B43A /* SphereNode.cpp */; };
 		5C5D9A6815B0230D0058B43A /* SpriteNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992615B0230D0058B43A /* SpriteNode.cpp */; };
 		5C5D9A6915B0230D0058B43A /* UserNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992915B0230D0058B43A /* UserNode.cpp */; };
 		5C5D9A6B15B0230D0058B43A /* Sound.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992F15B0230D0058B43A /* Sound.cpp */; };
@@ -332,6 +332,10 @@
 		50957617169617AC0023E6D5 /* LodSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LodSystem.h; path = Systems/LodSystem.h; sourceTree = "<group>"; };
 		509E082416848B5100BFD229 /* TransformSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TransformSystem.cpp; sourceTree = "<group>"; };
 		509E082516848B5200BFD229 /* TransformSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
+		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; };
+		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
+		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
+		50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugRenderComponent.h; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -652,8 +656,6 @@
 		5C5D98E715B0230D0058B43A /* BVNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVNode.h; sourceTree = "<group>"; };
 		5C5D98E815B0230D0058B43A /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		5C5D98E915B0230D0058B43A /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
-		5C5D98EA15B0230D0058B43A /* CubeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeNode.cpp; sourceTree = "<group>"; };
-		5C5D98EB15B0230D0058B43A /* CubeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeNode.h; sourceTree = "<group>"; };
 		5C5D98EC15B0230D0058B43A /* DataNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataNode.cpp; sourceTree = "<group>"; };
 		5C5D98ED15B0230D0058B43A /* DataNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataNode.h; sourceTree = "<group>"; };
 		5C5D98EE15B0230D0058B43A /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
@@ -710,8 +712,6 @@
 		5C5D992115B0230D0058B43A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C5D992215B0230D0058B43A /* SkeletonNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkeletonNode.cpp; sourceTree = "<group>"; };
 		5C5D992315B0230D0058B43A /* SkeletonNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkeletonNode.h; sourceTree = "<group>"; };
-		5C5D992415B0230D0058B43A /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
-		5C5D992515B0230D0058B43A /* SphereNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereNode.h; sourceTree = "<group>"; };
 		5C5D992615B0230D0058B43A /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		5C5D992715B0230D0058B43A /* SpriteNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteNode.h; sourceTree = "<group>"; };
 		5C5D992815B0230D0058B43A /* StateNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateNode.h; sourceTree = "<group>"; };
@@ -921,6 +921,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */,
+				50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */,
 				50957611168DD33D0023E6D5 /* LodComponent.cpp */,
 				50957612168DD33D0023E6D5 /* LodComponent.h */,
 				5081EA58167F5CD900ECA24C /* RenderComponent.h */,
@@ -966,6 +968,8 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */,
+				50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */,
 				50957616169617AC0023E6D5 /* LodSystem.cpp */,
 				50957617169617AC0023E6D5 /* LodSystem.h */,
 				5095760D168A44EB0023E6D5 /* DeleteSystem.cpp */,
@@ -1521,8 +1525,6 @@
 				5C5D98E715B0230D0058B43A /* BVNode.h */,
 				5C5D98E815B0230D0058B43A /* Camera.cpp */,
 				5C5D98E915B0230D0058B43A /* Camera.h */,
-				5C5D98EA15B0230D0058B43A /* CubeNode.cpp */,
-				5C5D98EB15B0230D0058B43A /* CubeNode.h */,
 				5C5D98EC15B0230D0058B43A /* DataNode.cpp */,
 				5C5D98ED15B0230D0058B43A /* DataNode.h */,
 				5C5D98EE15B0230D0058B43A /* Frustum.cpp */,
@@ -1575,8 +1577,6 @@
 				5C5D992115B0230D0058B43A /* ShadowVolumeNode.h */,
 				5C5D992215B0230D0058B43A /* SkeletonNode.cpp */,
 				5C5D992315B0230D0058B43A /* SkeletonNode.h */,
-				5C5D992415B0230D0058B43A /* SphereNode.cpp */,
-				5C5D992515B0230D0058B43A /* SphereNode.h */,
 				5C5D992615B0230D0058B43A /* SpriteNode.cpp */,
 				5C5D992715B0230D0058B43A /* SpriteNode.h */,
 				5C5D992815B0230D0058B43A /* StateNode.h */,
@@ -1935,7 +1935,6 @@
 				5C5D9A4715B0230D0058B43A /* BVHierarchy.cpp in Build Sources */,
 				5C5D9A4815B0230D0058B43A /* BVNode.cpp in Build Sources */,
 				5C5D9A4915B0230D0058B43A /* Camera.cpp in Build Sources */,
-				5C5D9A4A15B0230D0058B43A /* CubeNode.cpp in Build Sources */,
 				5C5D9A4B15B0230D0058B43A /* DataNode.cpp in Build Sources */,
 				5C5D9A4C15B0230D0058B43A /* Frustum.cpp in Build Sources */,
 				5C5D9A4D15B0230D0058B43A /* Heightmap.cpp in Build Sources */,
@@ -1964,7 +1963,6 @@
 				5C5D9A6415B0230D0058B43A /* ShadowRect.cpp in Build Sources */,
 				5C5D9A6515B0230D0058B43A /* ShadowVolumeNode.cpp in Build Sources */,
 				5C5D9A6615B0230D0058B43A /* SkeletonNode.cpp in Build Sources */,
-				5C5D9A6715B0230D0058B43A /* SphereNode.cpp in Build Sources */,
 				5C5D9A6815B0230D0058B43A /* SpriteNode.cpp in Build Sources */,
 				5C5D9A6915B0230D0058B43A /* UserNode.cpp in Build Sources */,
 				5C5D9A6B15B0230D0058B43A /* Sound.cpp in Build Sources */,
@@ -2040,6 +2038,8 @@
 				5095760F168A44EB0023E6D5 /* DeleteSystem.cpp in Build Sources */,
 				50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */,
 				50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */,
+				50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */,
+				50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

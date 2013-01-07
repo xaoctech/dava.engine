@@ -192,19 +192,19 @@ public:
 	    return false;
     }
     
-//    template<class C, class O>
-//    C CastExactClass(const O* pObject)
-//    {
-//		if (pObject)
-//        {
-//			COMPILER_ASSERT(TypeTraits<C>::isPointer);//You should not use pointers for this method
-//			if (&typeid(*pObject) == &typeid(C));
-//            {
-//                return (C)pObject;
-//            }
-//		}
-//	    return 0;
-//    }
+    template<class C, class O>
+    C cast_if_equal(O* pObject)
+    {
+		if (pObject)
+        {
+			COMPILER_ASSERT(TypeTraits<C>::isPointer);
+			if (typeid(*pObject) == typeid(C));
+            {
+                return static_cast<C>(pObject);
+            }
+		}
+	    return 0;
+    }
     
     /* TEST, need to transfer to unit tests.
      Logger::Debug("%d", Conversion<double, int>::exists);

@@ -44,6 +44,7 @@ RenderObject::~RenderObject()
 {
     
 }
+
     
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
@@ -53,6 +54,8 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
     {
         
     }
+    
+    bbox.AddAABBox(batch->GetBoundingBox());
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)

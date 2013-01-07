@@ -241,7 +241,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
             {
                 Camera * cam = new Camera();
                 cam->SetName("preview-camera");
-                cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+                //cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
                 cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
                 cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
                 cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
@@ -300,7 +300,6 @@ void ScenePreviewControl::SetupCamera()
             radius = 5.f;
         }
         
-        camera->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         editorScene->SetCurrentCamera(camera);
         editorScene->SetClipCamera(camera);
         

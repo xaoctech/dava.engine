@@ -89,6 +89,8 @@ public:
     inline RenderLayer * GetOwnerLayer();
 
     virtual void Draw(Camera * camera);
+    
+    const AABBox3 & GetBoundingBox() const;
 private:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure

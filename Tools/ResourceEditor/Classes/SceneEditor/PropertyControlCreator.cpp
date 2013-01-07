@@ -1,8 +1,6 @@
 #include "PropertyControlCreator.h"
 #include "NodesPropertyControl.h"
 #include "LightPropertyControl.h"
-#include "BoxPropertyControl.h"
-#include "SpherePropertyControl.h"
 #include "CameraPropertyControl.h"
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
@@ -12,6 +10,7 @@
 #include "ParticleEmitterPropertyControl.h"
 #include "SwitchNodePropertyControl.h"
 #include "ParticleEffectPropertyControl.h"
+#include "MeshInstancePropertyControl.h"
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -38,18 +37,6 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
         return CreateControlForNode(EPCID_LIGHT, rect, createNodeProperties);
 	}
     
-    CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
-    if(cube)
-    {
-        return CreateControlForNode(EPCID_CUBE, rect, createNodeProperties);
-    }
-
-    SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
-    if(sphere)
-    {
-        return CreateControlForNode(EPCID_SPHERE, rect, createNodeProperties);
-    }
-
     Camera *camera = dynamic_cast<Camera *> (sceneNode);
     if(camera)
     {
@@ -122,12 +109,6 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
         {
             case EPCID_LIGHT:
                 controls[controlID] = new LightPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_CUBE:
-                controls[controlID] = new BoxPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_SPHERE:
-                controls[controlID] = new SpherePropertyControl(rect, createNodeProperties);
                 break;
             case EPCID_CAMERA:
                 controls[controlID] = new CameraPropertyControl(rect, createNodeProperties);

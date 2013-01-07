@@ -4,6 +4,8 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 using namespace DAVA;
 
@@ -157,13 +159,13 @@ void CommandDebugFlags::Execute()
     SceneNode *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & SceneNode::DEBUG_DRAW_ALL)
+        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
         }
         else
         {
-            node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL, true);
+            node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
         }
     }
     else

@@ -6,6 +6,7 @@
 
 #include "../Qt/Main/QtUtils.h"
 #include "SceneValidator.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -76,7 +77,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     
     propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
-    bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
+    bool showGrid =  (0 != (landscape->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_GRID));
     propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
 
@@ -303,11 +304,11 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
         
         if(newValue)
         {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
+            landscape->SetDebugFlags(landscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
         }
         else 
         {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
         }
     }
     else if (String("property.material.fogenabled") == forKey)

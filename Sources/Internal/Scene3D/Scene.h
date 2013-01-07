@@ -66,7 +66,7 @@ class SceneSystem;
 class RenderSystem;
 class TransformSystem;
 class LodSystem;
-
+class DebugRenderSystem;
     
 /**
     \ingroup scene3d
@@ -101,6 +101,7 @@ public:
     TransformSystem * transformSystem;
     RenderSystem * renderSystem;
 	LodSystem * lodSystem;
+    DebugRenderSystem * debugRenderSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

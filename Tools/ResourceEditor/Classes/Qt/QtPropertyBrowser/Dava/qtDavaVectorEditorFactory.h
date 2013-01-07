@@ -7,7 +7,7 @@
 
 class QtVector4EditorFactory;
 
-class QtVector4EditorFactoryPrivate
+class QtVector4EditorFactoryPrivate : public QtVector4PropertyManager
 {
 public:
 	Q_DECLARE_PUBLIC(QtVector4EditorFactory)

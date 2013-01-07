@@ -13,6 +13,8 @@
 #include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/HeightmapNode.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -155,7 +157,7 @@ SceneNode * GetLodParent(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -233,7 +235,7 @@ void EditorScene::SeparateCollWorldFromLandscapeCollWorld()
 bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
 {
 	if (selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(target.x, target.y, target.z);
@@ -362,7 +364,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     if (selection)
     {
         uint32 flags = selection->GetDebugFlags();
-        uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        uint32 newFlags = flags & ~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
         
         SetNodeDebugFlags(selection, newFlags);
     }
@@ -392,7 +394,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if(selection)
     {
         uint32 flags = selection->GetDebugFlags();
-        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        uint32 newFlags = flags | DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
         
         SetNodeDebugFlags(selection, newFlags);
     }

@@ -210,8 +210,6 @@
 #include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/LandscapeNode.h"
-#include "Scene3D/CubeNode.h"
-#include "Scene3D/SphereNode.h"
 #include "Scene3D/LightNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"

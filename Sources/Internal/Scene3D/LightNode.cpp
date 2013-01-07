@@ -204,20 +204,6 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 void LightNode::Draw()
 {
     SceneNode::Draw();
-    
-    if (debugFlags != DEBUG_DRAW_NONE)
-    {
-        if (!(flags & SceneNode::NODE_VISIBLE))return;
-
-        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
-        
-        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f); 
-        RenderHelper::Instance()->DrawLine(position, position + direction * 20);        
-        
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-    }
 }
 
 bool LightNode::IsDynamic()
