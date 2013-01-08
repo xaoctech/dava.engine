@@ -198,7 +198,7 @@ public:
 		if (pObject)
         {
 			COMPILER_ASSERT(TypeTraits<C>::isPointer);
-			if (typeid(*pObject) == typeid(C));
+			if (typeid(*pObject) == typeid(typename PointerTraits<C>::PointeeType))
             {
                 return static_cast<C>(pObject);
             }
