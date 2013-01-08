@@ -85,7 +85,7 @@ RenderSystem::~RenderSystem()
 //    renderPasses.clear();
 }
     
-void RenderSystem::ImmediateUpdate(SceneNode * entity)
+void RenderSystem::ImmediateEvent(SceneNode * entity)
 {
     RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
     if (!renderObject)return;

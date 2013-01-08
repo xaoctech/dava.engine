@@ -44,6 +44,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/DeleteSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
@@ -179,7 +180,7 @@ void SceneNode::SetParent(SceneNode * node)
 	parent = node;
 	transformComponent->SetParent(parent);
     if (scene)
-        scene->ImmediateUpdate(this, transformComponent);
+        scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -874,7 +875,7 @@ inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
     flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
     //scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateUpdate(this, transformComponent);
+    scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
     return GetLocalTransform();
 }
 
@@ -883,7 +884,7 @@ void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
     transformComponent->SetLocalTransform(&newMatrix);
 //    scene->transformSystem->NeedUpdate(this);
     if (scene)
-        scene->ImmediateUpdate(this, transformComponent);
+        scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
     
     //localTransform = newMatrix;
     //flags &= ~NODE_WORLD_MATRIX_ACTUAL;

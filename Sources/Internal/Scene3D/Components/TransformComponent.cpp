@@ -1,5 +1,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SceneNode.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
@@ -34,6 +36,8 @@ void TransformComponent::SetLocalTransform(const Matrix4 * transform)
 	{
 		worldMatrix = *transform;
 	}
+
+	//Scene::GetActiveScene()->ImmediateEvent()
 }
 
 void TransformComponent::SetParent(SceneNode * node)
