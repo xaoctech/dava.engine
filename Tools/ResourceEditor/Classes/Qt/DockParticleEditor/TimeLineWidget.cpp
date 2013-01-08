@@ -13,6 +13,9 @@
 
 #define LEGEND_WIDTH 12
 
+#define LOCK_TEXT "Lock "
+#define LOCK_WIDTH 45
+
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
 {
@@ -33,6 +36,11 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	aliasLinePoint = false;
 	allowDeleteLine = true;
 	
+	isLockEnable = false;
+	isLocked = false;
+	
+	gridStyle = GridStyleLimits;
+	
 	setMouseTracking(true);
 	UpdateSizePolicy();
 }
@@ -40,6 +48,19 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 TimeLineWidget::~TimeLineWidget()
 {
 
+}
+
+QString float2QString(float32 value)
+{
+	QString strValue;
+	if (value < 10)
+		strValue = "%.2f";
+	else if (value < 100)
+		strValue = "%.1f";
+	else
+		strValue = "%.0f";
+	strValue.sprintf(strValue.toAscii(), value);
+	return strValue;
 }
 
 void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
@@ -54,33 +75,10 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	painter.drawRect(QRect(0, 0, width() - 1, height() - 1));
 
 	QRect graphRect = GetGraphRect();
-		
+			
 	//draw legend
 	if (lines.size())
 	{
-		/*QString legend;
-		for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
-		{
-			if (iter->second.legend.isEmpty())
-				continue;
-			
-			legend += iter->second.legend;
-			legend += " ";
-		}
-		int legenWidth = painter.fontMetrics().width(legend);
-		int textPos = (width() - legenWidth) / 2;
-		for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
-		{
-			QString legend = iter->second.legend;
-			if (legend.isEmpty())
-				continue;
-
-			legend += " ";
-			painter.setPen(iter->second.color);
-			painter.drawText(QPoint(textPos, LEGEND_WIDTH), legend);
-			textPos += painter.fontMetrics().width(legend);
-		}*/
-		
 		if (sizeState == SizeStateMinimized)
 		{
 			LINES_MAP::iterator iter = lines.begin();
@@ -142,9 +140,24 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		
 	if (sizeState != SizeStateMinimized)
 	{
+		//draw lock
+		if (isLockEnable)
+		{
+			QRect lockRect(GetLockRect());
+			painter.drawRect(lockRect);
+			if (isLocked)
+			{
+				painter.drawLine(lockRect.topLeft(), lockRect.bottomRight());
+				painter.drawLine(lockRect.topRight(), lockRect.bottomLeft());
+			}
+			
+			lockRect.translate(lockRect.width() + 1, 0);
+			lockRect.setWidth(LOCK_WIDTH);
+			painter.drawText(lockRect, LOCK_TEXT);
+		}
+		
 		//draw grid
 		{
-			//painter.setPen(Qt::lightGray);
 			painter.setPen(Qt::gray);
 			
 			float step = 18;
@@ -156,33 +169,25 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				int y = graphRect.center().y() - i * step;
 				{
 					float value = valueCenter + i * valueStep;
-					QString strValue;
-					if (value < 10)
-						strValue = "%.2f";
-					else if (value < 100)
-						strValue = "%.1f";
-					else
-						strValue = "%.0f";
-					strValue.sprintf(strValue.toAscii(), value);
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
-					painter.drawText(textRect, Qt::AlignRight, strValue);
+					if (gridStyle == GridStyleAllPosition)
+					{
+						QString strValue = float2QString(value);
+						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
+						painter.drawText(textRect, Qt::AlignRight, strValue);
+					}
 				}
 				
 				y = graphRect.center().y() + i * step;
 				{
 					float value = valueCenter - i * valueStep;
-					QString strValue;
-					if (value < 10)
-						strValue = "%.2f";
-					else if (value < 100)
-						strValue = "%.1f";
-					else
-						strValue = "%.0f";
-					strValue.sprintf(strValue.toAscii(), value);
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
-					painter.drawText(textRect, Qt::AlignRight, strValue);
+					if (gridStyle == GridStyleAllPosition)
+					{
+						QString strValue = float2QString(value);
+						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
+						painter.drawText(textRect, Qt::AlignRight, strValue);
+					}
 				}
 			}
 			
@@ -193,22 +198,28 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			{
 				int x = graphRect.left() + i * step;
 				painter.drawLine(x, graphRect.top(), x, graphRect.bottom());
+
 				drawText = !drawText;
-				if (!drawText)
-					continue;
-				
-				float value = minTime + i * valueStep;
-				QString strValue;
-				if (value < 10)
-					strValue = "%.2f";
-				else if (value < 100)
-					strValue = "%.1f";
-				else
-					strValue = "%.0f";
-				strValue.sprintf(strValue.toAscii(), value);
-				int textWidth = painter.fontMetrics().width(strValue);
-				QRect textRect(x - textWidth / 2, graphRect.bottom(), textWidth, LEGEND_WIDTH + 3);
-				painter.drawText(textRect, Qt::AlignCenter, strValue);
+				if (drawText && gridStyle == GridStyleAllPosition)
+				{
+					float value = minTime + i * valueStep;
+					QString strValue = float2QString(value);
+					int textWidth = painter.fontMetrics().width(strValue);
+					QRect textRect(x - textWidth / 2, graphRect.bottom(), textWidth, LEGEND_WIDTH + 3);
+					painter.drawText(textRect, Qt::AlignCenter, strValue);
+				}
+			}
+			
+			if (gridStyle == GridStyleLimits)
+			{
+				QRect textRect;
+				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
+				painter.drawText(textRect, Qt::AlignTop | Qt::AlignHCenter, float2QString(maxValue));
+				painter.drawText(textRect, Qt::AlignBottom | Qt::AlignHCenter, float2QString(minValue));
+
+				textRect = QRect(graphRect.left(), graphRect.bottom() + 1, graphRect.width(), LEGEND_WIDTH);
+				painter.drawText(textRect, Qt::AlignLeft | Qt::AlignTop, float2QString(minTime));
+				painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, float2QString(maxTime));
 			}
 		}
 		
@@ -229,18 +240,6 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			pen.setColor(iter->second.color);
 			painter.setPen(pen);
 
-			//draw line enable
-			/*QRect lineEnableRect = GetLineEnableRect(lineId);
-			painter.drawRect(lineEnableRect);
-			if (iter->second.line.size())
-			{
-				isLineEnable = true;
-			}
-			else
-			{
-				painter.drawLine(lineEnableRect.topLeft(), lineEnableRect.bottomRight());
-				painter.drawLine(lineEnableRect.bottomLeft(), lineEnableRect.topRight());
-			}*/
 			if (iter->second.line.size())
 			{
 				isLineEnable = true;
@@ -537,7 +536,7 @@ void TimeLineWidget::AddPoint(uint32 lineId, const Vector2& point)
 	{
 		for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
-			if (iter->first == lineId)
+			if ((isLockEnable && isLocked) || iter->first == lineId)
 				iter->second.line.push_back(Vector2(point.x, point.y));
 			else
 			{
@@ -659,7 +658,11 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 	//check click on draw color rect
 	if (event->button()==Qt::LeftButton)
 	{
-		if (GetMinimizeRect().contains(event->pos()))
+		if (isLockEnable && GetLockRect().contains(event->pos()))
+		{
+			isLocked = !isLocked;
+		}
+		else if (GetMinimizeRect().contains(event->pos()))
 		{
 			if (sizeState == SizeStateMinimized)
 				sizeState = SizeStateNormal;
@@ -882,7 +885,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 	{
 		for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
-			if (iter->first == lineId)
+			if ((isLockEnable && isLocked) || iter->first == lineId)
 				iter->second.line[pointId] = value;
 			else
 				iter->second.line[pointId].x = value.x;
@@ -988,6 +991,14 @@ QRect TimeLineWidget::GetMaximizeRect() const
 	return QRect(this->width() - LEGEND_WIDTH - 2, 2, LEGEND_WIDTH - 2, LEGEND_WIDTH -2);
 }
 
+
+QRect TimeLineWidget::GetLockRect() const
+{
+	QRect rect(GetMinimizeRect());
+	rect.translate(-LOCK_WIDTH, 0);
+	return rect;
+}
+
 void TimeLineWidget::UpdateSizePolicy()
 {
 	switch (sizeState)
@@ -1004,12 +1015,16 @@ void TimeLineWidget::UpdateSizePolicy()
 		} break;
 		case SizeStateDouble:
 		{
-			int height = Max(GetLegendHeight() + 150, QWidget::height());
-			height *= 2;
-			setMinimumHeight(height);
-			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			if (oldState != sizeState)
+			{
+				int height = Max(GetLegendHeight() + 150, QWidget::height());
+				height *= 2;
+				setMinimumHeight(height);
+				setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+			}
 		} break;
 	}
+	oldState = sizeState;
 	
 	update();
 }
@@ -1057,6 +1072,11 @@ void TimeLineWidget::ChangePointValueDialog(uint32 pointId, int32 lineId)
 		emit ValueChanged();
 		update();
 	}
+}
+
+void TimeLineWidget::EnableLock(bool enable)
+{
+	isLockEnable = enable;
 }
 
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, QWidget *parent):

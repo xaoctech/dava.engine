@@ -19,6 +19,7 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true);
+	void EnableLock(bool enable);
 	
 	void AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend = "");
 	void AddLines(const Vector< PropValue<Vector2> >& lines, const Vector<QColor>& colors, const Vector<QString>& legends);
@@ -56,6 +57,7 @@ private:
 	QRect GetLineDrawRect() const;
 	QRect GetMinimizeRect() const;
 	QRect GetMaximizeRect() const;
+	QRect GetLockRect() const;
 	
 	void SetPointValue(uint32 lineId, uint32 pointId, Vector2 value, bool deleteSamePoints);
 	
@@ -87,6 +89,16 @@ private:
 	int32 selectedLine;
 	int32 drawLine;
 	
+	bool isLockEnable;
+	bool isLocked;
+	
+	enum GridStyle
+	{
+		GridStyleAllPosition,
+		GridStyleLimits
+	};
+	GridStyle gridStyle;
+	
 	enum SizeState
 	{
 		SizeStateNormal,
@@ -94,6 +106,7 @@ private:
 		SizeStateDouble
 	};
 	SizeState sizeState;
+	SizeState oldState;
 	bool updateSizeState;
 	bool aliasLinePoint;
 	bool allowDeleteLine;
