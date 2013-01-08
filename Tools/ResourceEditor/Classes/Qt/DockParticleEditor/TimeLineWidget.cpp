@@ -50,7 +50,7 @@ TimeLineWidget::~TimeLineWidget()
 
 }
 
-QString float2QString(float32 value)
+QString TimeLineWidget::float2QString(float32 value) const
 {
 	QString strValue;
 	if (value < 10)

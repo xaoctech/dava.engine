@@ -77,6 +77,8 @@ private:
 	
 	void PostAddLine();
 	
+	QString float2QString(float32 value) const;
+	
 private:
 	QPoint mouseStartPos;
 	
