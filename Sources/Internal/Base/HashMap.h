@@ -42,10 +42,9 @@ namespace DAVA
 template <typename TKey, typename TValue>
 class HashMap
 {
-private:
+protected:
 	struct HashMapItemBase
-	{
-	};
+	{ };
 
 	template <typename K, typename V>
 	struct HashMapItem : public HashMapItemBase
@@ -64,11 +63,10 @@ private:
 
 	size_t sz;
 	size_t szTable;
+
 	HashMapItem<TKey, TValue>* *table;
-	
-    //typedef typename Select<TypeTraits<TKey>::isPointer, void*, TKey>::Result TKeyHashType;
-    Hash<TKey> hashFn;
-    
+	Hash<TKey> hashFn;
+
 	TValue defaultValue;
 
 	inline size_t GetIndex(const TKey &key)
@@ -119,6 +117,97 @@ private:
 	}
 
 public:
+	template <typename K, typename V>
+	struct HashMapIterator
+	{
+		size_t szTable;
+		HashMapItem<TKey, TValue>* *table;
+
+		size_t current_index;
+		HashMapItem<K, V> *current_item;
+
+		HashMapIterator()
+			: szTable(0)
+			, table(NULL)
+			, current_index(-1)
+			, current_item(NULL)
+		{ }
+
+		HashMapIterator(const HashMapIterator<K, V> &i)
+			: szTable(i.szTable)
+			, table(i.table)
+			, current_index(i.current_index)
+			, current_item(NULL)
+		{ }
+
+		HashMapIterator(const HashMap *map)
+			: szTable(map->szTable)
+			, table(map->table)
+			, current_index(-1)
+			, current_item(NULL)
+		{
+			this->operator++();
+		}
+
+		bool operator==(const HashMapIterator<K, V> &i)
+		{
+			return (szTable == i.szTable &&
+				table == i.table &&
+				current_index == i.current_index &&
+				current_item == i.current_item);
+		}
+
+		bool operator!=(const HashMapIterator<K, V> &i)
+		{
+			return (szTable == i.szTable &&
+				table == i.table &&
+				current_index == i.current_index &&
+				current_item == i.current_item);
+		}
+
+		HashMapIterator<K, V>& operator++()
+		{
+			if(NULL != current_item->next)
+			{
+				current_item = current_item->next;
+			}
+			else
+			{
+				while(NULL == current_item && (-1 == current_index || current_index < szTable))
+				{
+					current_item = table[++current_index];
+				}
+			}
+
+			return *this;
+		}
+
+		HashMapIterator<K, V> operator++(int count)
+		{
+			HashMapIterator<K, V> tmp = *this;
+
+			while(0 < count--)
+			{
+				++tmp;
+			}
+
+			return tmp;
+		}
+
+		K Key()
+		{
+			return current_item->key;
+		}
+
+		V Value()
+		{
+			return current_item->value;
+		}
+	};
+
+public:
+	typedef HashMapIterator<TKey, TValue> Iterator;
+
 	HashMap(size_t hashSize = 128, TValue defaultValue = TValue())
 		: sz(0)
 		, szTable(hashSize)
@@ -258,6 +347,21 @@ public:
 				item = next;
 			}
 		}
+	}
+
+	Iterator Begin()
+	{
+		return Iterator(this);
+	}
+
+	Iterator End()
+	{
+		Iterator i(this);
+
+		i.current_item = NULL;
+		i.current_index = szTable;
+
+		return i;
 	}
 };
 
