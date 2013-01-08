@@ -192,11 +192,13 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	legends.push_back("size X"); legends.push_back("size Y");
 	sizeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
 	sizeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->size).GetProps(), colors, legends);
+	sizeTimeLine->EnableLock(true);
 	
 	legends.clear();
 	legends.push_back("size variation X"); legends.push_back("size variation Y");
 	sizeVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
+	sizeVariationTimeLine->EnableLock(true);
 	
 	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
