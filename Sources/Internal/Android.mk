@@ -282,6 +282,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
 LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 
 # set exported used libs
