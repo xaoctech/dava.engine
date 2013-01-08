@@ -82,7 +82,6 @@ public:
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
-    inline void SetModelMatrix(Matrix4 * modelMatrix);
     
     inline void SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _removeIndex);
     inline uint32 GetRemoveIndex();
@@ -95,7 +94,6 @@ private:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     Material * material;                    // Should be replaced to NMaterial
-    Matrix4 * modelMatrix;                    // temporary - this should me moved directly to matrix uniforms
 	RenderObject * renderObject;
     
     uint32 startIndex;
@@ -153,12 +151,6 @@ inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _remov
     ownerLayer = _ownerLayer;
     removeIndex = _removeIndex;
 }
-    
-inline void RenderBatch::SetModelMatrix(Matrix4 * _modelMatrix)
-{
-    modelMatrix = _modelMatrix;
-}
-
     
 } // ns
 

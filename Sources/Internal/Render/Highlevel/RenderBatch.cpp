@@ -47,7 +47,6 @@ RenderBatch::RenderBatch()
     startIndex = 0;
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
-    modelMatrix = 0;
 	renderObject = 0;
 }
     
@@ -69,15 +68,20 @@ void RenderBatch::SetMaterial(Material * _material)
 {
     material = SafeRetain(_material);
 }
+
+static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
     
 void RenderBatch::Draw(Camera * camera)
 {
-	if(renderObject && !(renderObject->GetFlags() & RenderObject::VISIBLE))
-	{
-		return;
-	}
-
-    Matrix4 finalMatrix = (*modelMatrix) * camera->GetMatrix();
+	if(!renderObject)return;
+    Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
+    if (!worldTransformPtr)return;
+    
+    uint32 flags = renderObject->GetFlags();
+    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+        return;
+	
+    Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
     material->Draw(dataSource, 0);
 }

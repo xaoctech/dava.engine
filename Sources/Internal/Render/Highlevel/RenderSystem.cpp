@@ -34,6 +34,8 @@
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Frustum.h"
+#include "Scene3D/Camera.h"
 
 namespace DAVA
 {
@@ -42,7 +44,6 @@ namespace DAVA
     static FastName PASS_DEFERRED_PASS("DeferredPass");
 
 RenderSystem::RenderSystem()
-    : entityObjectMap(2048 /* size of hash table */, 0 /* defaut value */)
 {
     // Build forward renderer.
     renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
@@ -85,25 +86,10 @@ RenderSystem::~RenderSystem()
 //    renderPasses.clear();
 }
     
-void RenderSystem::ImmediateEvent(SceneNode * entity)
+    
+void RenderSystem::RenderPermanent(RenderObject * renderObject)
 {
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
-    if (!renderObject)return;
-    
-    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
-    {
-        Logger::Error("Object in entity was replaced suddenly. ");
-    }
-    
-    // Do we need updates??? 
-}
-    
-void RenderSystem::AddEntity(SceneNode * entity)
-{
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
-    if (!renderObject)return;
-
-    entityObjectMap.Insert(entity, renderObject);
+    //entityObjectMap.Insert(entity, renderObject);
     renderObjectArray.push_back(renderObject);
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
     
@@ -113,23 +99,18 @@ void RenderSystem::AddEntity(SceneNode * entity)
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
-        batch->SetModelMatrix(entity->GetTransformComponent()->GetWorldTransform());
         AddRenderBatch(batch);
     }
 }
 
-void RenderSystem::RemoveEntity(SceneNode * entity)
+void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 {
-    RenderObject * renderObject = entityObjectMap.Value(entity);
-    if (!renderObject)return;
-
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
 	lastRenderObject->SetRemoveIndex(renderObject->GetRemoveIndex());
     renderObject->SetRemoveIndex(-1);
     
-    entityObjectMap.Remove(entity);
     RemoveRenderObject(renderObject);
 }
 
@@ -175,7 +156,47 @@ void RenderSystem::SetCamera(Camera * _camera)
     camera = _camera;
 }
     
+void RenderSystem::ProcessClipping()
+{
+    int32 objectBoxesUpdated = 0;
+    List<RenderObject*>::iterator end = markedObjects.end();
+    for (List<RenderObject*>::iterator it = markedObjects.begin(); it != end; ++it)
+    {
+        RenderObject * obj = *it;
+        obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
+        objectBoxesUpdated++;
+    }
+    markedObjects.clear();
+    
+    int32 objectsCulled = 0;
+    
+    Frustum * frustum = camera->GetFrustum();
+
+    uint32 size = renderObjectArray.size();
+    for (uint32 pos = 0; pos < size; ++pos)
+    {
+        RenderObject * node = renderObjectArray[pos];
+        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
+        if (!frustum->IsInside(node->GetWorldBoundingBox()))
+        {
+            node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+            objectsCulled++;
+        }
+    }
+}
+
+void RenderSystem::MarkForUpdate(RenderObject * renderObject)
+{
+    markedObjects.push_back(renderObject);
+}
+    
 void RenderSystem::Process()
+{
+    ProcessClipping();
+}
+    
+void RenderSystem::Render()
 {
 //    //
 //    uint32 size = (uint32)renderObjectArray.size();

@@ -63,7 +63,7 @@ class EntityManager;
 class BVHierarchy;
 class Component;
 class SceneSystem;
-class RenderSystem;
+class RenderUpdateSystem;
 class TransformSystem;
 class LodSystem;
 class DebugRenderSystem;
@@ -100,7 +100,7 @@ public:
 
     Vector<SceneSystem*> systems;
     TransformSystem * transformSystem;
-    RenderSystem * renderSystem;
+    RenderUpdateSystem * renderUpdateSystem;
 	LodSystem * lodSystem;
     DebugRenderSystem * debugRenderSystem;
 	EventSystem * eventSystem;
