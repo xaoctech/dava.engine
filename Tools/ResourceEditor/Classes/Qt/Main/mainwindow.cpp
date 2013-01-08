@@ -308,7 +308,15 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void QtMainWindow::ProjectOpened(const QString &path)
 {
-	this->setWindowTitle(QString("Project - ") + path);
+	DAVA::String frameworkTitle = DAVA::Core::Instance()->GetOptions()->GetString("title");
+	QString strVer = QString(frameworkTitle.c_str());
+
+	if(!strVer.isEmpty())
+	{
+		strVer += " | ";
+	}
+
+	this->setWindowTitle(strVer + path);
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
