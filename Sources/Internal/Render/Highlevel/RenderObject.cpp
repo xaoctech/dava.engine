@@ -36,6 +36,7 @@ RenderObject::RenderObject()
     :   flags(VISIBLE)
     ,   removeIndex(-1)
     ,   debugFlags(0)
+    ,   worldTransform(0)
 {
     
 }

@@ -33,7 +33,7 @@
 #include "Render/RenderManager.h"
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
-#include "Scene3D/DeleteSystem.h"
+#include "Scene3D/Systems/DeleteSystem.h"
 
 
 #ifdef __DAVAENGINE_AUTOTESTING__

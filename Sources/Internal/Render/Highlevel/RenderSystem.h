@@ -27,8 +27,8 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_RENDERSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_RENDERSYSTEM_H__
+#ifndef __DAVAENGINE_RENDER_RENDERSYSTEM_H__
+#define	__DAVAENGINE_RENDER_RENDERSYSTEM_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/HashMap.h"
@@ -44,27 +44,53 @@ class RenderBatch;
 class SceneNode;
 class Camera;
     
-class RenderSystem : public SceneSystem
+class RenderSystem : public StaticSingleton<RenderSystem>
 {
 public:
     RenderSystem();
     virtual ~RenderSystem();
     
-    virtual void AddEntity(SceneNode * entity);
-    virtual void RemoveEntity(SceneNode * entity);
-    virtual void ImmediateEvent(SceneNode * entity);
+    /**
+        \brief Register render objects for permanent rendering
+     */
+    void RenderPermanent(RenderObject * renderObject);
 
-    virtual void Process();
+    /**
+        \brief Unregister render objects for permanent rendering
+     */
+    void RemoveFromRender(RenderObject * renderObject);
     
-    virtual void SetCamera(Camera * camera);
+    /**
+        \brief Render this object only on this frame
+     */
+    void RenderOnce(RenderObject * renderObject);
     
+    /**
+        \brief Render this batch only on this frame.
+     */
+    void RenderOnce(RenderBatch * renderBatch);
+
+    /**
+        \brief Set main camera
+     */
+    void SetCamera(Camera * camera);
+    
+    
+    void Process();
+    void Render();
+    
+    void MarkForUpdate(RenderObject * renderObject);
+
 private:
+    void ProcessClipping();
     void AddRenderObject(RenderObject * renderObject);
     void RemoveRenderObject(RenderObject * renderObject);
     void AddRenderBatch(RenderBatch * renderBatch);
     void RemoveRenderBatch(RenderBatch * renderBatch);
     void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
+        
     
+    List<RenderObject*> markedObjects;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;
     
@@ -75,12 +101,12 @@ private:
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     
-    HashMap<SceneNode*, RenderObject *> entityObjectMap;
+    //HashMap<SceneNode*, RenderObject *> entityObjectMap;
     Camera * camera;
     //Vector<RenderObject*> forRemove;
 };
     
 } // ns
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
+#endif	/* __DAVAENGINE_RENDER_RENDERSYSTEM_H__ */
 

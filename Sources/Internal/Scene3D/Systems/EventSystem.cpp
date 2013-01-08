@@ -3,7 +3,7 @@
 
 namespace DAVA
 {
-
+    
 void EventSystem::RegisterSystemForEvent(SceneSystem * system, uint32 event)
 {
 	registeredSystems[event].push_back(system);
