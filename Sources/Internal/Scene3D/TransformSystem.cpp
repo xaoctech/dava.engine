@@ -2,14 +2,16 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SceneNode.h"
 #include "Debug/DVAssert.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
 
-
-
 TransformSystem::TransformSystem()
 {
+	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
 TransformSystem::~TransformSystem()
@@ -70,10 +72,13 @@ void TransformSystem::SortAndThreadSplit()
 {
 }
 
-void TransformSystem::ImmediateUpdate(SceneNode * entity)
+void TransformSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 {
-	HierahicNeedUpdate(entity);
-	HierahicAddToUpdate(entity);
+	if(EventSystem::LOCAL_TRANSFORM_CHANGED == event)
+	{
+		HierahicNeedUpdate(entity);
+		HierahicAddToUpdate(entity);
+	}
 }
 
 void TransformSystem::HierahicNeedUpdate(SceneNode * entity)

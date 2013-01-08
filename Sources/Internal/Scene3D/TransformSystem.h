@@ -21,7 +21,7 @@ public:
 
     Transform * CreateTransform();
 
-	virtual void ImmediateUpdate(SceneNode * entity);
+	virtual void ImmediateEvent(SceneNode * entity, uint32 event);
 
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);

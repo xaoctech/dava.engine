@@ -62,7 +62,7 @@ void SceneSystem::RemoveEntity(SceneNode * entity)
     
 }
     
-void SceneSystem::ImmediateUpdate(SceneNode * entity)
+void SceneSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 {
     
 }
