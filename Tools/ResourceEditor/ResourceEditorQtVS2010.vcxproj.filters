@@ -462,9 +462,6 @@
     <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
@@ -872,9 +869,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands\ViewCommands.cpp">
       <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -1985,9 +1979,6 @@
     <ClInclude Include="Classes\Commands\ViewCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
@@ -2369,9 +2360,6 @@
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp">
