@@ -50,6 +50,7 @@ private:
 	QVBoxLayout* mainBox;
 	
 	QCheckBox* enableCheckBox;
+	QCheckBox* additiveCheckBox;
 	Sprite* sprite;
 	QLabel* spriteLabel;
 	//QLabel* spritePathLabel;
