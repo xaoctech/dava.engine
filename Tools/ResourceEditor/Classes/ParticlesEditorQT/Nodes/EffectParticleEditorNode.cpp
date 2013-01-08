@@ -22,7 +22,7 @@ EffectParticleEditorNode::~EffectParticleEditorNode()
 int32 EffectParticleEditorNode::GetEmittersCount() const
 {
     int32 emittersCount = 0;
-    for (PARTICLEEDITORNODESLISTCONSTITER iter = GetChildren().begin(); iter != GetChildren().end();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
          iter ++)
     {
         EmitterParticleEditorNode* childNode = dynamic_cast<EmitterParticleEditorNode*>(*iter);
