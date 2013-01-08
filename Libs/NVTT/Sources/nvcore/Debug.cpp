@@ -3,6 +3,10 @@
 #include <nvcore/Debug.h>
 #include <nvcore/StrLib.h>
 
+#ifdef ANDROID
+	#include <sys/syscall.h>
+#endif
+
 // Extern
 #if NV_OS_WIN32 //&& NV_CC_MSVC
 #	define WIN32_LEAN_AND_MEAN
@@ -360,6 +364,15 @@ namespace
 	};
 	
 #else
+
+#ifdef ANDROID
+	
+	pid_t getsid(pid_t pid) 
+	{
+		return syscall(__NR_getsid, pid);
+	}
+
+#endif
 	
 	/** Unix asset handler. */
 	struct UnixAssertHandler : public AssertHandler
@@ -379,12 +392,8 @@ namespace
 			sysctl(mib,4,&info,&size,NULL,0);
 			return ((info.kp_proc.p_flag & P_TRACED) == P_TRACED);
 #		else
-			// if ppid != sid, some process spawned our app, probably a debugger. 
-#ifdef ANDROID
-			return true;
-#else
+			// if ppid != sid, some process spawned our app, probably a debugger. 		
 			return getsid(getpid()) != getppid();
-#endif
 #		endif
 		}
 		
