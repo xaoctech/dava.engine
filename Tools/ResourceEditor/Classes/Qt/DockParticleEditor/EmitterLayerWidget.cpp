@@ -32,6 +32,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 	
+	additiveCheckBox = new QCheckBox("Additive");
+	mainBox->addWidget(additiveCheckBox);
+	connect(additiveCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+	
 	QHBoxLayout* spriteHBox = new QHBoxLayout;
 	spriteLabel = new QLabel(this);
 	spriteLabel->setMinimumSize(SPRITE_SIZE, SPRITE_SIZE);
@@ -146,6 +153,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
 
 	enableCheckBox->setChecked(!layer->isDisabled);
+	additiveCheckBox->setChecked(layer->additive);
 	
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
@@ -336,6 +344,7 @@ void EmitterLayerWidget::OnValueChanged()
 	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
 	updateLayerCmd->Init(!enableCheckBox->isChecked(),
+						 additiveCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
 						 propLifeVariation.GetPropLine(),
