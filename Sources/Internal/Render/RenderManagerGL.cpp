@@ -115,40 +115,22 @@ void RenderManager::Release()
 
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
-    
-    
-bool IsGLExtensionSupported(const char * const extension)
+
+bool IsGLExtensionSupported(const String &extension)
 {
-    // The recommended technique for querying OpenGL extensions;
-    // from http://opengl.org/resources/features/OGLextensions/
-    const GLubyte *extensions = NULL;
-    const GLubyte *start;
-    GLubyte *where, *terminator;
-    
-    /* Extension names should not have spaces. */
-    where = (GLubyte *) strchr(extension, ' ');
-    if (where || *extension == '\0')
-        return 0;
-    
-    extensions = glGetString(GL_EXTENSIONS);
-    //    Logger::Warning("[EXT] %s", extensions);
-    
-    /* It takes a bit of care to be fool-proof about parsing the
-     OpenGL extensions string. Don't be fooled by sub-strings, etc. */
-    start = extensions;
-    for (;;) {
-        where = (GLubyte *) strstr((const char *) start, extension);
-        if (!where)
-            break;
-        terminator = where + strlen(extension);
-        if (where == start || *(where - 1) == ' ')
-            if (*terminator == ' ' || *terminator == '\0')
-                return true;
-        start = terminator;
+    String::size_type spacePosition = extension.find(" ");
+    if(String::npos != spacePosition || extension.empty())
+    {
+        /* Extension names should not have spaces. */
+        Logger::Info("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
+        return false;
     }
     
-    return false;
+    String extensions((const char8 *)glGetString(GL_EXTENSIONS));
+    String::size_type extPosition = extensions.find(extension);
+    return (String::npos != extPosition);
 }
+
     
 void RenderManager::DetectRenderingCapabilities()
 {
@@ -167,12 +149,12 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
 #elif defined(__DAVAENGINE_ANDROID__)
     //TODO: added correct
-    caps.isPVRTCSupported = false;
+    caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
     caps.isETCSupported = false;
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
     caps.isBGRA8888Supported = false;
-    caps.isFloat16Supported = false;
-    caps.isFloat32Supported = false;
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
 #elif defined(__DAVAENGINE_MACOS__)
     caps.isPVRTCSupported = false;
 	caps.isDXTSupported = false;
