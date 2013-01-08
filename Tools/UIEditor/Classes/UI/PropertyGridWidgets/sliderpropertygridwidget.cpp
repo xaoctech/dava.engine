@@ -237,15 +237,22 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
         return;
 
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetDefaultDirectory(),
+															ResourcesManageHelper::GetResourceDirectory(),
 															tr( "Sprites (*.* *.txt)" ) );
     // Exit if sprite name is empty
     if( spriteName.isNull() || spriteName.isEmpty())
         return;
-
-	// Sprite name should be pre-processed to use relative path.
-    QString processedSpriteName = ResourcesManageHelper::GetResourceRelativePath(spriteName);
-	SetSprite(senderWidget, processedSpriteName);
+		
+	if (ResourcesManageHelper::ValidateResourcePath(spriteName))
+	{
+		// Sprite name should be pre-processed to use relative path.
+		QString processedSpriteName = ResourcesManageHelper::GetResourceRelativePath(spriteName);
+		SetSprite(senderWidget, processedSpriteName);
+	}
+	else
+	{
+		ResourcesManageHelper::ShowErrorMessage(spriteName);
+	}
 }
 
 void SliderPropertyGridWidget::OnRemoveSprite()

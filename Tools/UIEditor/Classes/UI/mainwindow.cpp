@@ -12,15 +12,14 @@
 #include "Dialogs/localizationeditordialog.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
+#include "FileSystem/FileSystem.h"
+#include "ResourcesManageHelper.h"
 
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
-#include "FileSystem/FileSystem.h"
-
-#include "ResourcesManageHelper.h"
 
 #define SPIN_SCALE 10.f
 
@@ -34,16 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
 	ui->davaGlWidget->setFocus();
     
-    if(DAVA::Core::Instance())
-    {
-        DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
-        if(options)
-        {
-            QString titleStr(options->GetString("title", "UIEditor").c_str());
-            
-            this->setWindowTitle(titleStr);
-        }
-    }
+	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
 
 	ui->scaleSlider->setMinimum((int)(ui->scaleSpin->minimum() * SPIN_SCALE));
 	ui->scaleSlider->setMaximum((int)(ui->scaleSpin->maximum() * SPIN_SCALE));
@@ -239,8 +229,7 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_project, SIGNAL(triggered()), this, SLOT(OnNewProject()));
 	connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(OnSaveProject()));
-	connect(ui->actionSave_As_project, SIGNAL(triggered()), this, SLOT(OnSaveAsProject()));
-	connect(ui->actionLoad_project, SIGNAL(triggered()), this, SLOT(OnLoadProject()));
+    connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(OnOpenProject()));
 	connect(ui->actionClose_project, SIGNAL(triggered()), this, SLOT(OnCloseProject()));
 
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
@@ -281,15 +270,19 @@ void MainWindow::OnNewProject()
 	if (!CloseProject())
 		return;
 	
-	QString filename = QFileDialog::getSaveFileName(this,
+	QString projectPath = QFileDialog::getSaveFileName(this ,
 													tr("New project"),
 													ResourcesManageHelper::GetDefaultDirectory(),
-													tr("Documents (*.uiEditor)") );
-    if (filename.isNull())
+													"");
+
+    if (projectPath.isNull() || projectPath.isEmpty())
 		return;
 	
+	// Attempt to create project directory
+	if (!QDir().mkpath(projectPath))
+		return;
 	CommandsController::Instance()->CleanupUndoRedoStack();
-	if (!HierarchyTreeController::Instance()->NewProject(filename))
+	if (!HierarchyTreeController::Instance()->NewProject(projectPath))
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Error while creating project"));
@@ -300,7 +293,6 @@ void MainWindow::OnNewProject()
 void MainWindow::OnProjectCreated()
 {
 	UpdateMenu();
-
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
@@ -332,7 +324,7 @@ void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = Hiera
 
 void MainWindow::MenuFileWillShow()
 {
-	//Delete old list of recent project actions
+	// Delete old list of recent project actions
 	for(DAVA::int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
         if(recentPojectActions[i]->parentWidget())
@@ -340,7 +332,7 @@ void MainWindow::MenuFileWillShow()
             ui->menuFile->removeAction(recentPojectActions[i]);
         }
     }
-    //Get up to date count of recent project actions
+    // Get up to date count of recent project actions
     int32 projectCount = EditorSettings::Instance()->GetLastOpenedCount();
     if(projectCount > 0)
     {
@@ -350,7 +342,7 @@ void MainWindow::MenuFileWillShow()
             recentPojectActions[i]->setText(QString(EditorSettings::Instance()->GetLastOpenedFile(i).c_str()));
             recentActions.push_back(recentPojectActions[i]);
         }
-        //Insert recent project actions into file menu
+        // Insert recent project actions into file menu
         ui->menuFile->insertActions(ui->actionExit, recentActions);
         ui->menuFile->insertSeparator(ui->actionExit);
     }
@@ -360,23 +352,29 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 {
     for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
-		//Check if user clicked on one of the recent project link
+		// Check if user clicked on one of the recent project link
         if(resentScene == recentPojectActions[i])
         {
-			//Close and save current project if any
+			// Close and save current project if any
 			if (!CloseProject())
 				return;
 		
-			QString filename = QString::fromStdString(EditorSettings::Instance()->GetLastOpenedFile(i));
-			if (filename.isNull())
+			QString projectPath = QString::fromStdString(EditorSettings::Instance()->GetLastOpenedFile(i));
+			if (projectPath.isNull())
 				return;
 
-			if (!HierarchyTreeController::Instance()->Load(filename))
+			if (HierarchyTreeController::Instance()->Load(projectPath))
+			{
+				// Update project title if project was successfully loaded
+				this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
+			}
+			else
 			{
 				QMessageBox msgBox;
 				msgBox.setText(tr("Error while loading project"));
 				msgBox.exec();
 			}
+			// We don't need to continue circle when selected menu item action ended
 			return;
         }
     }
@@ -384,12 +382,16 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 
 void MainWindow::OnSaveProject()
 {
-	QString path = HierarchyTreeController::Instance()->GetTree().GetActiveProjectPath();
-	if (HierarchyTreeController::Instance()->Save(path))
+	QString projectPath = HierarchyTreeController::Instance()->GetTree().GetActiveProjectPath();
+
+	if (projectPath.isNull() || projectPath.isEmpty())
+		return;
+		
+	if (HierarchyTreeController::Instance()->Save(projectPath))
 	{
-		//If project was successfully saved - we should save new project path
-		//and add this project to recent files list
-		UpdateProjectSettings(path);
+		// If project was successfully saved - we should save new project path
+		// and add this project to recent files list
+		UpdateProjectSettings(projectPath);
 	}
 	else
 	{
@@ -399,47 +401,20 @@ void MainWindow::OnSaveProject()
 	}
 }
 
-void MainWindow::OnSaveAsProject()
+void MainWindow::OnOpenProject()
 {
-	QString filename = QFileDialog::getSaveFileName(this,
-													tr("Save project as"),
-													ResourcesManageHelper::GetDefaultDirectory(),
-													tr("Documents (*.uiEditor)") );
-    if (filename.isNull())
-		return;
-
-	if (HierarchyTreeController::Instance()->Save(filename))
-	{
-		//If project was successfully saved with new name - we should save new project path
-		//and add this project to recent files list
-		UpdateProjectSettings(filename);
-	}
-	else
-	{
-		QMessageBox msgBox;
-		msgBox.setText(tr("Error while saving project"));
-		msgBox.exec();
-	}
-}
-
-void MainWindow::OnLoadProject()
-{
-	if (!CloseProject())
-		return;
-	
-	QString filename = QFileDialog::getOpenFileName(this,
-													tr("Load project"),
-													ResourcesManageHelper::GetDefaultDirectory(),
-													tr("Documents (*.uiEditor)") );
-    if (filename.isNull())
-		return;
-
+    QString projectPath = QFileDialog::getExistingDirectory(this,
+                                                                 tr( "Select project directory" ),
+                                                                 ResourcesManageHelper::GetDefaultDirectory());
+    if (projectPath.isNull() || projectPath.isEmpty())
+        return;
+        
 	CommandsController::Instance()->CleanupUndoRedoStack();
-	if (HierarchyTreeController::Instance()->Load(filename))
+	if (HierarchyTreeController::Instance()->Load(projectPath))
 	{
-		//If project was successfully loaded - we should save project path
-		//and add this project to recent files list
-		UpdateProjectSettings(filename);
+		// If project was successfully loaded - we should save project path
+		// and add this project to recent files list
+		UpdateProjectSettings(projectPath);
 	}
 	else
 	{
@@ -470,16 +445,24 @@ bool MainWindow::CloseProject()
 	}
 	
 	HierarchyTreeController::Instance()->CloseProject();
+	// Update project title
+	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
+	
 	return true;
 }
 
-void MainWindow::UpdateProjectSettings(const QString& filename)
+void MainWindow::UpdateProjectSettings(const QString& projectPath)
 {
-	//Add file to recent project files list
-	EditorSettings::Instance()->AddLastOpenedFile(filename.toStdString());
-	//Save current project directory path
-	QDir projectDir = QFileInfo(filename).absoluteDir();
-	EditorSettings::Instance()->SetProjectPath(projectDir.absolutePath().toStdString());
+	// Add file to recent project files list
+	EditorSettings::Instance()->AddLastOpenedFile(projectPath.toStdString());
+	
+	// Save current project absolute directory path
+	QFileInfo fileInfo(projectPath);
+	QString projectFolder = fileInfo.absoluteDir().absolutePath() + "/";
+	EditorSettings::Instance()->SetProjectPath(projectFolder.toStdString());
+	
+	// Set window title
+	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
 }
 
 void MainWindow::OnUndoRequested()

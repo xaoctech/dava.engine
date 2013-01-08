@@ -17,6 +17,7 @@
 #include "ResourcesManageHelper.h"
 
 #include <QFile>
+#include <QDir>
 
 #define PLATFORMS_NODE "platforms"
 #define LOCALIZATION_NODE "localization"
@@ -53,8 +54,11 @@ bool HierarchyTree::Load(const QString& projectPath)
     rootNode.AddTreeNode(platformNode);
 	
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);*/
-		
-	YamlParser* project = YamlParser::Create(projectPath.toStdString());
+	
+	// Get project file
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+
+	YamlParser* project = YamlParser::Create(projectFile.toStdString());
 	if (!project)
 		return false;
 	
@@ -272,7 +276,14 @@ bool HierarchyTree::Save(const QString& projectPath)
 	}
 
 	YamlParser* parser = YamlParser::Create();
-	result &= parser->SaveToYamlFile(projectPath.toStdString(), &root, true);
+	// Create project sub-directories
+	QDir().mkpath(ResourcesManageHelper::GetPlatformPath(projectPath));
+
+	// Get project file path
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+
+	// Save project file
+	result &= parser->SaveToYamlFile(projectFile.toStdString(), &root, true);
 	
     // Return the Localized Values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);

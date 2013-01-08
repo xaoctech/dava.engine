@@ -31,8 +31,7 @@ private slots:
 	
 	void OnNewProject();
 	void OnSaveProject();
-	void OnSaveAsProject();
-	void OnLoadProject();
+    void OnOpenProject();
 	void OnCloseProject();
 	void OnNewPlatform();
 	void OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);

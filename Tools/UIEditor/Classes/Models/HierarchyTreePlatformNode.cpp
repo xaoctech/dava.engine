@@ -18,7 +18,7 @@
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
 
-#define SCREEN_PATH "%1UI/%2.yaml"
+#define SCREEN_PATH "%1/%2.yaml"
 
 HierarchyTreePlatformNode::HierarchyTreePlatformNode(HierarchyTreeRootNode* rootNode, const QString& name) :
 	HierarchyTreeNode(name)
@@ -78,9 +78,11 @@ QString HierarchyTreePlatformNode::GetResourceFolder() const
 {
 	QString path;
 	if (rootNode)
-		path += rootNode->GetProjectFolder();
+	{
+		path = ResourcesManageHelper::GetPlatformPath(rootNode->GetProjectPath());
+	}
 	path += GetName();
-	path += "/Data/";
+
 	return path;
 }
 
@@ -158,7 +160,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
     SaveLocalization(platform);
 
 	QString projectFolder = GetResourceFolder();
-	projectFolder += "UI";
+
 	QDir dir;
 	dir.mkpath(projectFolder);
 	
