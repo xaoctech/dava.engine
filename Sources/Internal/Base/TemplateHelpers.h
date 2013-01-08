@@ -198,10 +198,10 @@ public:
 		if (pObject)
         {
 			COMPILER_ASSERT(TypeTraits<C>::isPointer);
-			if (typeid(*pObject) == typeid(C));
-            {
+			//if (&typeid(*pObject) == &typeid(C))
+            //{
                 return static_cast<C>(pObject);
-            }
+            //}
 		}
 	    return 0;
     }
