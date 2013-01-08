@@ -393,7 +393,7 @@ void ParticlesEditorController::FindEmitterEditorNode(ParticleEmitterNode* emitt
          iter ++)
     {
         const BaseParticleEditorNode::PARTICLEEDITORNODESLIST& emitterEditorNodes = iter->second->GetChildren();
-        for (BaseParticleEditorNode::PARTICLEEDITORNODESLISTCONSTITER innerIter = emitterEditorNodes.begin();
+        for (List<BaseParticleEditorNode*>::const_iterator innerIter = emitterEditorNodes.begin();
              innerIter != emitterEditorNodes.end(); innerIter ++)
         {
             EmitterParticleEditorNode* innerNode = dynamic_cast<EmitterParticleEditorNode*>(*innerIter);
