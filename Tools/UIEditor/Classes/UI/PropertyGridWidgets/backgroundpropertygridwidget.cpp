@@ -108,10 +108,11 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetDefaultDirectory(),
+															ResourcesManageHelper::GetResourceDirectory(),
 															tr( "Sprites (*.* *.txt)" ) );
     if( !spriteName.isNull() )
     {
+		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);
             
@@ -119,6 +120,10 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));
             HandleLineEditEditingFinished(ui->spriteLineEdit);
         }
+		else
+		{
+			ResourcesManageHelper::ShowErrorMessage(spriteName);
+		}
     }
 }
 

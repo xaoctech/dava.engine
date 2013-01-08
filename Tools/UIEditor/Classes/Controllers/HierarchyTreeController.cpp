@@ -29,17 +29,19 @@ bool HierarchyTreeController::Load(const QString& projectPath)
 	CloseProject();
 	
 	bool res = hierarchyTree.Load(projectPath);
-
-	emit HierarchyTreeUpdated();
-	emit ProjectLoaded();
-	
+	if (res)
+	{
+		emit HierarchyTreeUpdated();
+		emit ProjectLoaded();
+	}
 	return res;
 }
 
 bool HierarchyTreeController::Save(const QString& projectPath)
 {
 	bool res = hierarchyTree.Save(projectPath);
-	emit ProjectSaved();
+	if (res)
+		emit ProjectSaved();
 	return res;
 }
 
@@ -222,8 +224,14 @@ void HierarchyTreeController::EmitHierarchyTreeUpdated()
 bool HierarchyTreeController::NewProject(const QString& projectPath)
 {
 	hierarchyTree.CreateProject();
-	emit ProjectCreated();
-	return Save(projectPath);
+	
+	bool res = Save(projectPath);
+	if (res)
+	{
+		emit ProjectCreated();
+	}
+	
+	return res;
 }
 
 void HierarchyTreeController::AddPlatform(const QString& name, const Vector2& size)

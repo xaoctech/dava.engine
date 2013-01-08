@@ -1,14 +1,15 @@
 #include "fontmanagerdialog.h"
 #include "ui_fontmanagerdialog.h"
+#include "ResourcesManageHelper.h"
+#include "EditorFontManager.h"
+
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardItemModel>
 #include <QModelIndexList>
 #include <QStandardItemModel>
-#include "ResourcesManageHelper.h"
 #include <QStringList>
 #include <QTableWidgetItem>
-#include "EditorFontManager.h"
 
 static const QString FONT_TABLE_NAME_COLUMN = "Font Name";
 static const QString FONT_TABLE_TYPE_COLUMN = "Font Type";
@@ -80,17 +81,25 @@ void FontManagerDialog::OkButtonClicked()
         if (fontType == FONT_TYPE_GRAPHIC)
         {
             QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ),
-																		ResourcesManageHelper::GetDefaultDirectory(),
+																		ResourcesManageHelper::GetResourceDirectory(),
 																		tr( "Sprites (*.txt)" ));
              
-            if (!fontSpritePath.isEmpty())
+            if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
             {
-                //Get font definition relative path by it's name
-                QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName);
-                //Get sprite file relative path
-                QString fontSprite = ResourcesManageHelper::GetResourceRelativePath(fontSpritePath);
-                //Create Graphics font to validate it - but first truncate "*.txt" extension of sprite
-                returnFont = GraphicsFont::Create(fontDefinition.toStdString(), fontSprite.toStdString());
+				if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
+				{			
+					// Get font definition relative path by it's name
+					QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName);
+					// Get sprite file relative path
+					QString fontSprite = ResourcesManageHelper::GetResourceRelativePath(fontSpritePath);
+					// Create Graphics font to validate it - but first truncate "*.txt" extension of sprite
+					returnFont = GraphicsFont::Create(fontDefinition.toStdString(), fontSprite.toStdString());
+				}
+				else
+				{
+					ResourcesManageHelper::ShowErrorMessage(fontName);
+					return;
+				}
             }
         }
         else if (fontType == FONT_TYPE_BASIC)

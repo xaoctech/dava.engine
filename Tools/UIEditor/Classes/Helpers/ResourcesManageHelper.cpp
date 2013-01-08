@@ -10,34 +10,42 @@
 #include "HierarchyTreeController.h"
 #include "HierarchyTreePlatformNode.h"
 #include "EditorSettings.h"
+#include "StringUtils.h"
+#include "FileSystem/FileSystem.h"
 
 #include <QApplication>
 #include <QString>
 #include <QStringList>
 #include <QFileInfo>
-#include "StringUtils.h"
-#include "FileSystem/FileSystem.h"
 #include <QDir>
+#include <QMessageBox>
 
-//Resource folder header
-static const QString RES_HEADER = "~res:/";
-//Font resource folder path
+// Resource folder header
+static const QString RES_HEADER = "~res:";
+// Font resource folder path
 static const String FONTS_RES_PATH = "~res:/Fonts/";
-//Button background image path
+// Button background image path
 static const String BACKGROUND_IMAGE_PATH = "~res:/Images/buttonBg.png";
-
-//Help contents path
+// Help contents path
 #if defined(__DAVAENGINE_WIN32__)
 static const String HELP_CONTENTS_PATH = "/Data/Help/UIEditor.html";
 #else
 static const String HELP_CONTENTS_PATH = "~res:/Help/UIEditor.html";
 #endif
 
+// Platform directory path
+static const QString PROJECT_PLATFORM_PATH = "%1/DataSource/UI/";
+// Project file path
+static const QString PROJECT_FILE_NAME = PROJECT_PLATFORM_PATH + "ui.uieditor";
+// Resource wrong location error message
+static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "File %1 is not located inside platform resource folder. It can't be linked with control!";
+
 //Available fonts extensions
 static const QStringList FONTS_EXTENSIONS_FILTER = (QStringList() << "*.ttf" << "*.otf" << "*.fon" << "*.fnt" << "*.def");
 
 QString ResourcesManageHelper::buttonBackgroundImagePath;
 QString ResourcesManageHelper::helpContentsPath;
+QString ResourcesManageHelper::projectTitle;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName)
 {
@@ -53,6 +61,16 @@ QString ResourcesManageHelper::GetFontRelativePath(const QString& resourceFileNa
     return fontPath;
 }
 
+bool ResourcesManageHelper::ValidateResourcePath(const QString& resourcePath)
+{
+	HierarchyTreePlatformNode* platformNode = HierarchyTreeController::Instance()->GetActivePlatform();
+    if (!platformNode)
+		return false;		
+	
+	const QString& resourceFolder = platformNode->GetResourceFolder();
+	// Check if given resource is located inside resource folder
+	return resourcePath.contains(resourceFolder);
+}
 
 QString ResourcesManageHelper::GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension)
 {
@@ -108,6 +126,18 @@ void ResourcesManageHelper::InitInternalResources()
 #else
     helpContentsPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(HELP_CONTENTS_PATH));
 #endif
+	// Save project default title
+    if(DAVA::Core::Instance())
+    {
+        DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
+        if(options)
+        {
+           	projectTitle = options->GetString("title", "UIEditor").c_str();
+        }
+    }
+	// If project name wasn't set - create default name
+	if (projectTitle.isNull() || projectTitle.isEmpty())
+		projectTitle = "UIEditor";
 }
 
 QString ResourcesManageHelper::GetButtonBackgroundImagePath()
@@ -120,6 +150,31 @@ QString ResourcesManageHelper::GetHelpContentsPath()
 	return helpContentsPath;
 }
 
+QString ResourcesManageHelper::GetProjectTitle()
+{
+	QString projectTitleString = projectTitle;	
+	HierarchyTreePlatformNode* platformNode = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (platformNode)
+	{
+		HierarchyTreeRootNode *rootNode = (HierarchyTreeRootNode *)platformNode->GetRoot();
+		if (rootNode)
+		{
+			projectTitleString = QString("%1 - %2").arg(projectTitle).arg(rootNode->GetProjectPath());
+		}		
+	}
+	return projectTitleString;
+}
+
+QString ResourcesManageHelper::GetResourceDirectory()
+{
+	HierarchyTreePlatformNode* platformNode = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (!platformNode)
+		return QString();
+		
+	const QString resourceDir = platformNode->GetResourceFolder();
+	return resourceDir;
+}
+
 QString ResourcesManageHelper::GetDefaultDirectory()
 {
 	QString defaultDir = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
@@ -129,4 +184,22 @@ QString ResourcesManageHelper::GetDefaultDirectory()
   		defaultDir = QDir::currentPath();
 	}
 	return defaultDir;
+}
+
+void ResourcesManageHelper::ShowErrorMessage(const QString& messageParam)
+{
+	QMessageBox messageBox;
+	messageBox.setText(QString(RES_WRONG_LOCATION_ERROR_MESSAGE).arg(messageParam));
+	messageBox.setStandardButtons(QMessageBox::Ok);
+	messageBox.exec();
+}
+
+QString ResourcesManageHelper::GetPlatformPath(const QString& projectPath)
+{
+	return QString(PROJECT_PLATFORM_PATH).arg(projectPath);
+}
+	
+QString ResourcesManageHelper::GetProjectFilePath(const QString& projectPath)
+{
+	return QString(PROJECT_FILE_NAME).arg(projectPath);
 }
