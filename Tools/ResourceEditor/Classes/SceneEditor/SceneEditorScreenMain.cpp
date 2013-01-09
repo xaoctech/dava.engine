@@ -427,15 +427,10 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-
-
-
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-    levelScene->EditScene(pathToFile);
-    levelScene->SetScenePathname(pathToFile);
+    SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
@@ -592,7 +587,7 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
         DVASSERT(0);
     }
     
-		// Get project path
+	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     String projectPath = keyedArchieve->GetString(String("ProjectPath"));
     
