@@ -20,7 +20,7 @@ EmitterParticleEditorNode::EmitterParticleEditorNode(ParticleEffectNode* rootNod
 int32 EmitterParticleEditorNode::GetLayersCount() const
 {
     int32 layersCount = 0;
-    for (PARTICLEEDITORNODESLISTCONSTITER iter = GetChildren().begin(); iter != GetChildren().end();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
          iter ++)
     {
         LayerParticleEditorNode* childNode = dynamic_cast<LayerParticleEditorNode*>(*iter);
@@ -36,7 +36,7 @@ int32 EmitterParticleEditorNode::GetLayersCount() const
 
 void EmitterParticleEditorNode::UpdateLayerNames()
 {
-    for (PARTICLEEDITORNODESLISTCONSTITER iter = GetChildren().begin(); iter != GetChildren().end();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
          iter ++)
     {
         LayerParticleEditorNode* childNode = dynamic_cast<LayerParticleEditorNode*>(*iter);

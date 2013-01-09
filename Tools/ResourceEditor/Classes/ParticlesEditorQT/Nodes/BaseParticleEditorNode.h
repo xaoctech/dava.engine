@@ -38,9 +38,6 @@ public:
 
     // Access to children.
     typedef List<BaseParticleEditorNode*> PARTICLEEDITORNODESLIST;
-    typedef PARTICLEEDITORNODESLIST::iterator PARTICLEEDITORNODESLISTITER;
-    typedef PARTICLEEDITORNODESLIST::const_iterator PARTICLEEDITORNODESLISTCONSTITER;
-    
     const PARTICLEEDITORNODESLIST& GetChildren() const {return childNodes;};
 
 protected:

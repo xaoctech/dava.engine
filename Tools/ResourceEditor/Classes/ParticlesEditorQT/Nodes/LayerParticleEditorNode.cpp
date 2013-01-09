@@ -48,7 +48,7 @@ int32 LayerParticleEditorNode::GetLayerIndex() const
 int32 LayerParticleEditorNode::GetForcesCount() const
 {
     int32 forcesCount = 0;
-    for (PARTICLEEDITORNODESLISTCONSTITER iter = GetChildren().begin(); iter != GetChildren().end();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
          iter ++)
     {
         ForceParticleEditorNode* childNode = dynamic_cast<ForceParticleEditorNode*>(*iter);
@@ -67,7 +67,7 @@ void LayerParticleEditorNode::UpdateForcesIndices()
     ParticleLayer* curLayer = this->GetLayer();
     
     int32 processedChildNodes = 0;
-    for (PARTICLEEDITORNODESLISTCONSTITER iter = GetChildren().begin(); iter != GetChildren().end();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
          iter ++)
     {
         ForceParticleEditorNode* childNode = dynamic_cast<ForceParticleEditorNode*>(*iter);
