@@ -3,6 +3,7 @@
 
 #include "DAVAEngine.h"
 #include <QString>
+#include <QColor>
 
 #define QSTRING_TO_DAVASTRING(str)   (str).toStdString().data()
 
@@ -21,5 +22,8 @@ void ShowErrorDialog(const DAVA::String &errorMessage);
 
 bool IsKeyModificatorPressed(DAVA::int32 key);
 bool IsKeyModificatorsPressed();
+
+QColor ColorToQColor(const DAVA::Color& color);
+DAVA::Color QColorToColor(const QColor& qcolor);
 
 #endif // __QT_UTILS_H__

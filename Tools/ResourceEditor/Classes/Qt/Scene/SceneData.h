@@ -74,6 +74,8 @@ public:
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 
+    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
+	
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
@@ -108,12 +110,6 @@ protected slots:
     void SceneGraphMenuTriggered(QAction *action);
     
 protected:
-
-    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
-    
-    
-    
-    
     EditorScene *scene;
 
     DAVA::WASDCameraController *cameraController;
