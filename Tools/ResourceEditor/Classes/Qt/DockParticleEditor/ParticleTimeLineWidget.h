@@ -49,6 +49,7 @@ private:
 	void AddLine(uint32 lineId, float32 startTime, float32 endTime, const QColor& color, const QString& legend, ParticleLayer* layer);
 	void OnValueChanged(int lineId);
 	void UpdateSizePolicy();
+	QString float2QString(float32 value) const;
 	
 private:
 	QBrush backgroundBrush;
@@ -71,6 +72,13 @@ private:
 	QPoint selectedPoint;
 	ParticleEmitterNode* emitterNode;
 	ParticleEffectNode* effectNode;
+	
+	enum GridStyle
+	{
+		GridStyleAllPosition,
+		GridStyleLimits
+	};
+	GridStyle gridStyle;
 	
 	class SetPointValueDlg: public QDialog
 	{

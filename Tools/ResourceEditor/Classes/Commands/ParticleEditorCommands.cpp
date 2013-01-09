@@ -168,6 +168,7 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleLayer* layer) :
 }
 
 void CommandUpdateParticleLayer::Init(bool isDisabled,
+									  bool additive,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
 									  RefPtr< PropertyLine<float32> > lifeVariation,
@@ -197,6 +198,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 									  float32 endTime)
 {
 	this->isDisabled = isDisabled;
+	this->additive = additive;
 	this->sprite = sprite;
 	this->life = life;
 	this->lifeVariation = lifeVariation;
@@ -230,6 +232,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 void CommandUpdateParticleLayer::Execute()
 {
 	layer->isDisabled = isDisabled;
+	layer->additive = additive;
 	if (layer->GetSprite() != sprite)
 	{
 		layer->SetSprite(sprite);

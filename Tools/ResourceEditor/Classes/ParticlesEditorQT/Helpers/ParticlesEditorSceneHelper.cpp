@@ -110,6 +110,10 @@ SceneNode* ParticlesEditorSceneHelper::PreprocessSceneNode(SceneNode* rawNode)
     {
         ParticleEffectNode* newParentNodeParticleEffect = new ParticleEffectNode();
         curParentNode->AddNode(newParentNodeParticleEffect);
+		
+		// Decrease refcounter of the node just added, since AddNode does Retain.
+		ParticleEffectNode* retainNode = newParentNodeParticleEffect;
+		SafeRelease(retainNode);
 
         // Add the emitter node to the new Effect (this will also remove it from the scene).
         newParentNodeParticleEffect->AddNode(emitterNode);
@@ -168,8 +172,8 @@ void ParticlesEditorSceneHelper::BuildSceneGraphRecursive(BaseParticleEditorNode
         rootItem->SetUserData(emitterNode);
     }
 
-    int childrenCount = rootNode->GetChildren().size();
-    for (BaseParticleEditorNode::PARTICLEEDITORNODESLISTCONSTITER iter = rootNode->GetChildren().begin();
+    int32 childrenCount = rootNode->GetChildren().size();
+    for (List<BaseParticleEditorNode*>::const_iterator iter = rootNode->GetChildren().begin();
          iter != rootNode->GetChildren().end(); iter ++)
     {
         BaseParticleEditorNode* childNode = (*iter);
@@ -215,8 +219,8 @@ void ParticlesEditorSceneHelper::SynchronizeEffectParticleEditorNode(EffectParti
     }
 
     // All the children of Effect Node are actually Emitters.
-    int emittersCountInEffect = effectRootNode->GetChildrenCount();
-    int emittersCountInEffectNode = node->GetEmittersCount();
+    int32 emittersCountInEffect = effectRootNode->GetChildrenCount();
+    int32 emittersCountInEffectNode = node->GetEmittersCount();
 
     if (emittersCountInEffect > 0 && emittersCountInEffectNode == 0)
     {
@@ -256,8 +260,8 @@ void ParticlesEditorSceneHelper::SynchronizeEmitterParticleEditorNode(EmitterPar
         return;
     }
 
-    int layersCountInEmitter = emitter->GetLayers().size();
-    int layersCountInEmitterNode = node->GetLayersCount();
+    int32 layersCountInEmitter = emitter->GetLayers().size();
+    int32 layersCountInEmitterNode = node->GetLayersCount();
 
     if (layersCountInEmitter > 0 && layersCountInEmitterNode == 0)
     {
