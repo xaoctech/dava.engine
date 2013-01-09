@@ -528,6 +528,45 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	SafeRelease(parser);
 }
 
+void ParticleEmitter::SaveToYaml(const String & filename)
+{
+    YamlParser* parser = YamlParser::Create();
+    if (!parser)
+    {
+        Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
+        return;
+    }
+    
+    YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
+    
+    emitterYamlNode->Set("3d", this->is3D);
+    emitterYamlNode->Set("type", GetEmitterTypeName());
+    
+    // Write the property lines.
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionAngle", this->emissionAngle);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionRange", this->emissionRange);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVector", this->emissionVector);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
+    
+    // Now write all the Layers. Note - layers are child of root node, not the emitter one.
+    int32 layersCount = this->layers.size();
+    for (int32 i = 0; i < layersCount; i ++)
+    {
+        this->layers[i]->SaveToYamlNode(rootYamlNode, i);
+    }
+
+    parser->SaveToYamlFile(filename, rootYamlNode, true);
+    parser->Release();
+}
+    
 int32 ParticleEmitter::GetParticleCount()
 {
 	int32 cnt = 0;
@@ -615,6 +654,37 @@ Animation * ParticleEmitter::SizeAnimation(const Vector3 & newSize, float32 time
 	LinearAnimation<Vector3> * animation = new LinearAnimation<Vector3>(this, &_size, newSize, time, interpolationFunc);
 	animation->Start(track);
 	return animation;
+}
+
+String ParticleEmitter::GetEmitterTypeName()
+{
+    switch (this->type)
+    {
+        case EMITTER_POINT:
+        {
+            return "point";
+        }
+
+        case EMITTER_LINE:
+        {
+            return "line";
+        }
+
+        case EMITTER_RECT:
+        {
+            return "rect";
+        }
+
+        case EMITTER_ONCIRCLE:
+        {
+            return "oncircle";
+        }
+
+        default:
+        {
+            return "unknown";
+        }
+    }
 }
 
 }

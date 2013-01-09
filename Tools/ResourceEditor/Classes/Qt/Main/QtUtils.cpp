@@ -113,3 +113,13 @@ bool IsKeyModificatorsPressed()
 {
 	return (IsKeyModificatorPressed(DVKEY_SHIFT) || IsKeyModificatorPressed(DVKEY_CTRL) || IsKeyModificatorPressed(DVKEY_ALT));
 }
+
+QColor ColorToQColor(const DAVA::Color& color)
+{
+	return QColor::fromRgbF(color.r, color.g, color.b, color.a);
+}
+
+DAVA::Color QColorToColor(const QColor &qcolor)
+{
+	return Color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), qcolor.alphaF());
+}

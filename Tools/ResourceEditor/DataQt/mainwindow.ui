@@ -259,7 +259,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -384,6 +384,21 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockParticleEditor">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Particle Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="ParticleEditorWidget" name="dockWidgetContents_3"/>
+  </widget>
   <widget class="QDockWidget" name="dockVisibilityTool">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -407,6 +422,15 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockParticleEditorTimeLine">
+   <property name="windowTitle">
+    <string>Particle time line</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="ParticleTimeLineWidget" name="dockWidgetContents_2"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -576,6 +600,9 @@
    <property name="text">
     <string>Particle Emitter</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionRestoreViews">
    <property name="text">
@@ -658,7 +685,7 @@
   <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
-   <header>QSceneGraphTreeView.h</header>
+   <header>Main/QSceneGraphTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>LibraryView</class>
@@ -681,6 +708,17 @@
    <class>VisibilityToolView</class>
    <extends>QWidget</extends>
    <header>DockVisibilityTool/VisibilityToolView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ParticleEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particleeditorwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ParticleTimeLineWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particletimelinewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
