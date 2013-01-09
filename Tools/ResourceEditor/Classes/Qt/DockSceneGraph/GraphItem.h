@@ -42,7 +42,7 @@ private:
     GraphItem *parentItem;
 };
 
-#include "PointerHolder.h"
+#include "Main/PointerHolder.h"
 DECLARE_POINTER_TYPE(GraphItem *);
 
 

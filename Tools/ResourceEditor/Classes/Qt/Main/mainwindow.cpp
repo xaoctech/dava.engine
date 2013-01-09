@@ -40,7 +40,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
 
     RegisterBasePointerTypes();
    
