@@ -296,7 +296,7 @@ private:
 
     bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
     bool CheckImageSize(const Vector<Image *> &imageSet);
-    
+    bool IsCompressedFormat(PixelFormat format);
     
 	static PixelFormat defaultRGBAFormat;
 	Texture();

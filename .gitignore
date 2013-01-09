@@ -22,5 +22,6 @@ Documentation/doxygen/*
 *.suo
 *.sdf
 *.ipch
-
+!*.cpp
+!*.h
 ddd

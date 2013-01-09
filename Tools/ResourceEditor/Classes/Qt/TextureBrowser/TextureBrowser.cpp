@@ -7,6 +7,7 @@
 #include "Main/mainwindow.h"
 #include "Scene/SceneData.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "SceneEditor/EditorSettings.h"
 
 #include "ui_texturebrowser.h"
@@ -234,11 +235,12 @@ void TextureBrowser::updatePropertiesWarning()
 	{
 		QString warningText = "";
 
-		// for PVR4 and PVR2 only square textures are allowed.
-		if((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2) && 
-			curTexture->width != curTexture->height)
+		if(
+		   ((curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR4 || curDescriptor->pvrCompression.format == DAVA::FORMAT_PVR2)   ||
+		   (curDescriptor->dxtCompression.format >= DAVA::FORMAT_DXT1 && curDescriptor->dxtCompression.format <= DAVA::FORMAT_DXT5NM)) &&
+		   (curTexture->width != curTexture->height))
 		{
-			warningText += "WARNING: Not square PVR2/PVR4 texture.\n";
+			warningText += "WARNING: Not square texture.\n";
 		}
 
 		ui->warningLabel->setText(warningText);
@@ -330,13 +332,14 @@ void TextureBrowser::updateInfoConverted()
 		case ViewDXT:
 			if(curDescriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 			{
-				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::PVR_FILE);
+				DAVA::String compressedTexturePath = DAVA::TextureDescriptor::GetPathnameForFormat(curTexture->GetPathname(), DAVA::DXT_FILE);
 
 				formatStr = DAVA::Texture::GetPixelFormatString(curDescriptor->dxtCompression.format);
 				filesize = QFileInfo(compressedTexturePath.c_str()).size();
 
 				// TODO: more accurate dxt data size calculation
-				datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				//datasize = (curTexture->width * curTexture->height * DAVA::Texture::GetPixelFormatSizeInBits(curDescriptor->dxtCompression.format)) >> 3;
+				datasize = LibDxtHelper::GetDataSize(compressedTexturePath.c_str());
 			}
 			break;
 		}
@@ -361,7 +364,7 @@ void TextureBrowser::setupStatusBar()
 	statusBar->addWidget(statusBarLabel);
 	ui->mainLayout->addWidget(statusBar);
 
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
+//	QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const JobItem *, int)), this, SLOT(convertStatus(const JobItem *, int)));
 }
 
 void TextureBrowser::setupTextureConverAllButton()
