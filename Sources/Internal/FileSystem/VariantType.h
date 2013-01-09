@@ -241,6 +241,8 @@ public:
      \param[in] value	value to set
 	 */
 	void SetMatrix4(const Matrix4 & value);
+
+	void SetVariant(const VariantType& value);
     
 	/**
 		\brief Function to return bool value from variable
@@ -342,8 +344,7 @@ public:
 	 \returns value of variable, or generate assert if variable type is different
 	 */
      const Matrix4 &AsMatrix4() const;
-    
-    
+
 	// File read & write helpers
 	
 	/**
@@ -369,6 +370,8 @@ public:
 		\returns true if values are not equal
 	 */
     bool operator!=(const VariantType& other) const;
+
+	VariantType& operator=(const VariantType& other);
 
 	static VariantType LoadData(const void *src, const MetaInfo *meta);
 	static void SaveData(void *dst, const MetaInfo *meta, const VariantType &val);
