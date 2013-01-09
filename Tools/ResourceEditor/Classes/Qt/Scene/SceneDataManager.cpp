@@ -1,18 +1,15 @@
 #include "SceneDataManager.h"
 
-#include "Main/SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "../SceneEditor/SceneValidator.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
-#include <QTreeView>
-
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
-    ,   sceneGraphView(NULL)
 {
 }
 
@@ -30,16 +27,12 @@ void SceneDataManager::SetActiveScene(EditorScene *scene)
 {
     if(currentScene)
     {
-        currentScene->Deactivate();
+		emit SceneDeactivated(currentScene);
     }
-    
     
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
-    
-    DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView /*, libraryView, libraryModel*/);
 
 	emit SceneActivated(currentScene);
 }
@@ -121,9 +114,16 @@ EditorScene * SceneDataManager::RegisterNewScene()
     data->CreateScene(true);
 
     scenes.push_back(data);
-    
+
+	emit SceneCreated(data);
+
 	connect(data, SIGNAL(SceneChanged(EditorScene *)), this, SLOT(InSceneData_SceneChanged(EditorScene *)));
 	connect(data, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::SceneNode *)));
+
+	connect(data, SIGNAL(SceneGraphModelNeedsRebuild()), this, SLOT(InSceneData_SceneGraphModelNeedsRebuild()));
+	connect(data, SIGNAL(SceneGraphModelNeedSetScene(EditorScene *)), this, SLOT(InSceneData_SceneGraphModelNeedSetScene(EditorScene *)));
+	connect(data, SIGNAL(SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)), this, SLOT(InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)));
+
     return data->GetScene();
 }
 
@@ -166,12 +166,6 @@ SceneData *SceneDataManager::SceneGet(DAVA::int32 index)
     return *it;
 }
 
-
-void SceneDataManager::SetSceneGraphView(QTreeView *view)
-{
-    sceneGraphView = view;
-}
-
 void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 {
 	SceneData *sceneData = (SceneData *) QObject::sender();
@@ -182,6 +176,24 @@ void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
 {
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneNodeSelected(sceneData, node);
+}
+						 
+void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuild()
+{
+	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.
+	emit SceneGraphNeedRebuild();
+}
+
+void SceneDataManager::InSceneData_SceneGraphModelNeedSetScene(EditorScene *scene)
+{
+	SceneData *sceneData = (SceneData *) QObject::sender();
+	emit SceneGraphNeedSetScene(sceneData, scene);
+}
+
+void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node)
+{
+	SceneData *sceneData = (SceneData *) QObject::sender();
+	emit SceneGraphNeedSelectNode(sceneData, node);
 }
 
 void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, Texture *> &textures)
@@ -381,4 +393,11 @@ void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Mater
 	}
 }
 
+void SceneDataManager::SceneNodeSelectedInSceneGraph(SceneNode* node)
+{
+	SceneData *activeScene = SceneGetActive();
+	
+	
+	activeScene->SceneNodeSelectedInGraph(node);
+}
 

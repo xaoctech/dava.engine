@@ -6,7 +6,7 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
-#include "PointerHolder.h"
+#include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
 #include "DockParticleEditor/ParticlesEditorController.h"
@@ -39,17 +39,17 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 {
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
-    node = particlesEditorSceneHelper.PreprocessSceneNode(node);
+    node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
 
     SceneGraphItem *graphItem = new SceneGraphItem();
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
     // Particles Editor nodes are processed separately.
-    if (particlesEditorSceneHelper.AddNodeToSceneGraph(graphItem, node))
+    if (particlesEditorSceneModelHelper.AddNodeToSceneGraph(graphItem, node))
     {
         // Also try to determine selected item from Particle Editor.
-        SceneGraphItem *selectedItem = particlesEditorSceneHelper.GetGraphItemToBeSelected(graphItem, node);
+        SceneGraphItem *selectedItem = particlesEditorSceneModelHelper.GetGraphItemToBeSelected(graphItem, node);
         if (selectedItem)
         {
             this->selectedGraphItemForParticleEditor = selectedItem;
@@ -131,7 +131,7 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     DVASSERT((deselectedSize <= 1) && "Wrong count of deselected items");
 
     // Particles Editor Nodes are handled separately.
-    if (particlesEditorSceneHelper.ProcessSelectionChanged(selected, deselected))
+    if (particlesEditorSceneModelHelper.ProcessSelectionChanged(selected, deselected))
     {
         return;
     }
