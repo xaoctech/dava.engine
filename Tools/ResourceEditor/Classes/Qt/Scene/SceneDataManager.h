@@ -20,24 +20,24 @@ public:
 	EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
 
-	// <--
+ 	// <--
 
 public:
 	// Add the new scene.
 	void AddScene(const DAVA::String &scenePathname);
-	
+
 	// Edit the existing level scene.
 	void EditLevelScene(const String &scenePathname);
-	
+
 	// Edit the active scene.
 	void EditActiveScene(const String &scenePathname);
-	
+
 	// Add the reference scene.
 	void AddReferenceScene(const String &scenePathname);
-	
+
 	// Reload the scene.
 	void ReloadScene(const String &scenePathname);
-	
+
 	DAVA::SceneNode*	SceneGetSelectedNode(SceneData *scene);
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
@@ -65,15 +65,20 @@ signals:
 	void SceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 	
 	// Signals needed for Scene Graph Tree View.
+	void SceneGraphNeedRebuildNode(DAVA::SceneNode* node);
 	void SceneGraphNeedRebuild();
+
 	void SceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
 	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
 
 protected slots:
 	void InSceneData_SceneChanged(EditorScene *scene);
 	void InSceneData_SceneNodeSelected(DAVA::SceneNode *node);
-	
+
+	// Rebuild the Scene Graph for particular node and for the whole graph.
+	void InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
 	void InSceneData_SceneGraphModelNeedsRebuild();
+	
 	void InSceneData_SceneGraphModelNeedSetScene(EditorScene* scene);
 	void InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 
@@ -87,13 +92,13 @@ protected:
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 	void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
-	
+
 	// Edit Scene implementation for any kind of scenes.
 	void EditScene(SceneData* sceneData, const String &scenePathname);
-	
+
 	// Reload the scene node in a recursive way.
 	void ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname);
-	
+
 protected:
     SceneData *currentScene;
     DAVA::List<SceneData *>scenes;
