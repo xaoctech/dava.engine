@@ -248,9 +248,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	}
 
 	//check hardware support, in case of rgb use nvtt to reorder bytes
-	if( !forseSoftwareConvertation &&
-		RenderManager::Instance()->GetCaps().isDXTSupported &&
-		format != Format_RGB )
+	if(!forseSoftwareConvertation && RenderManager::Instance()->GetCaps().isDXTSupported)
 	{
 		uint8* compressedImges = new uint8[info.dataSize];
 	
@@ -261,6 +259,11 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
             SafeDeleteArray(compressedImges);
 			return false;
 		}
+        
+        if(format == Format_RGB)
+        {
+            SwapBRChannels(compressedImges, info.dataSize);
+        }
 
         PixelFormat pixFormat = GetPixelFormat(dec);
 
@@ -291,6 +294,11 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 	}
 	else
 	{
+#if defined (__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)
+        Logger::Error("[NvttHelper::ReadDxtFile] Android should have hardware decoding of DDS. iPhone should have no support of DDS.");
+		return false;
+#else //#if defined (__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)
+        
 		for(uint32 i = 0; i < info.mipmapsCount; ++i)
 		{
 			Image* innerImage = Image::Create(info.width, info.height, FORMAT_RGBA8888);
@@ -309,6 +317,8 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
             info.height = Max((uint32)1, info.height / 2);
             info.width = Max((uint32)1, info.width / 2);
 		}
+#endif //#if defined (__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)
+
 	}
 
 	return true;
