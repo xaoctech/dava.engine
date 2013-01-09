@@ -20,10 +20,24 @@ public:
 	EditorScene * RegisterNewScene();
     void ReleaseScene(EditorScene *scene);
 
-    // void SetSceneGraphView(QTreeView *view);
 	// <--
 
 public:
+	// Add the new scene.
+	void AddScene(const DAVA::String &scenePathname);
+	
+	// Edit the existing level scene.
+	void EditLevelScene(const String &scenePathname);
+	
+	// Edit the active scene.
+	void EditActiveScene(const String &scenePathname);
+	
+	// Add the reference scene.
+	void AddReferenceScene(const String &scenePathname);
+	
+	// Reload the scene.
+	void ReloadScene(const String &scenePathname);
+	
 	DAVA::SceneNode*	SceneGetSelectedNode(SceneData *scene);
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
@@ -73,11 +87,26 @@ protected:
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 	void CompressTextures(const List<Texture *> texturesForCompression, ImageFileFormat fileFormat);
-
-
+	
+	// Edit Scene implementation for any kind of scenes.
+	void EditScene(SceneData* sceneData, const String &scenePathname);
+	
+	// Reload the scene node in a recursive way.
+	void ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname);
+	
 protected:
     SceneData *currentScene;
     DAVA::List<SceneData *>scenes;
+	
+	// This structure is needed to reload scene.
+    struct AddedNode
+    {
+        DAVA::SceneNode *nodeToAdd;
+        DAVA::SceneNode *nodeToRemove;
+        DAVA::SceneNode *parent;
+    };
+	
+    DAVA::Vector<AddedNode> nodesToAdd;
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

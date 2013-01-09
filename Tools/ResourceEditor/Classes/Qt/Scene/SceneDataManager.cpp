@@ -23,6 +23,280 @@ SceneDataManager::~SceneDataManager()
     scenes.clear();
 }
 
+void SceneDataManager::AddScene(const String &scenePathname)
+{
+    String extension = FileSystem::Instance()->GetExtension(scenePathname);
+    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+	
+	SceneData* sceneData = SceneGetActive();
+	if (!sceneData)
+	{
+		DVASSERT(false && "No way to add the scene when SceneGetActive() returns NULL!");
+		return;
+	}
+	
+	EditorScene* scene = sceneData->GetScene();
+	if (!scene)
+	{
+		DVASSERT(false && "sceneData->GetScene() returned NULL!");
+		return;
+	}
+	
+    SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
+	
+    KeyedArchive * customProperties = rootNode->GetCustomProperties();
+    customProperties->SetString("editor.referenceToOwner", scenePathname);
+    
+    rootNode->SetSolid(true);
+    scene->AddNode(rootNode);
+    
+    Camera *currCamera = scene->GetCurrentCamera();
+    if(currCamera)
+    {
+        Vector3 pos = currCamera->GetPosition();
+        Vector3 direction  = currCamera->GetDirection();
+        
+        Vector3 nodePos = pos + 10 * direction;
+        nodePos.z = 0;
+        
+        LandscapeNode * ls = scene->GetLandScape(scene);
+        if(ls)
+        {
+            Vector3 result;
+            bool res = ls->PlacePoint(nodePos, result);
+            if(res)
+            {
+                nodePos = result;
+            }
+        }
+        
+        Matrix4 mod;
+        mod.CreateTranslation(nodePos);
+        rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+    }
+	
+	List<LandscapeNode *> landscapes;
+	rootNode->GetChildNodes(landscapes);
+	
+	bool needUpdateLandscapeController = !landscapes.empty();
+	
+    SafeRelease(rootNode);
+	
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
+    SceneValidator::Instance()->EnumerateSceneTextures();
+	
+	if(needUpdateLandscapeController)
+	{
+		sceneData->SetLandscapesControllerScene(scene);
+	}
+	
+	emit SceneGraphNeedRebuild();
+}
+
+void SceneDataManager::EditLevelScene(const String &scenePathname)
+{
+	SceneData* sceneData = SceneGetLevel();
+	if (!sceneData)
+	{
+		DVASSERT(false && "No way to edit the scene when SceneGetLevel() returns NULL!");
+		return;
+	}
+	
+	return EditScene(sceneData, scenePathname);
+}
+
+void SceneDataManager::EditActiveScene(const String &scenePathname)
+{
+	SceneData* sceneData = SceneGetActive();
+	if (!sceneData)
+	{
+		DVASSERT(false && "No way to edit the scene when SceneGetActive() returns NULL!");
+		return;
+	}
+	
+	return EditScene(sceneData, scenePathname);
+}
+
+void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathname)
+{
+	EditorScene* scene = sceneData->GetScene();
+	if (!scene)
+	{
+		DVASSERT(false && "sceneData->GetScene() returned NULL!");
+		return;
+	}
+	
+    String extension = FileSystem::Instance()->GetExtension(scenePathname);
+    DVASSERT((".sc2" == extension) && "Wrong file extension.");
+	
+    SceneNode * rootNode = scene->GetRootNode(scenePathname);
+    if(rootNode)
+    {
+        sceneData->SetScenePathname(scenePathname);
+		Vector<SceneNode*> tempV;
+		tempV.reserve(rootNode->GetChildrenCount());
+		
+		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		{
+			tempV.push_back(rootNode->GetChild(ci));
+		}
+        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
+        {
+            //рут нода это сама сцена в данном случае
+            scene->AddNode(tempV[ci]);
+        }
+    }
+	
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
+    SceneValidator::Instance()->EnumerateSceneTextures();
+	
+    sceneData->SetLandscapesControllerScene(scene);
+	
+	scene->Update(0);
+	sceneData->EmitSceneChanged();
+	
+    emit SceneGraphNeedRebuild();
+}
+
+void SceneDataManager::AddReferenceScene(const String &scenePathname)
+{
+	String extension = FileSystem::Instance()->GetExtension(scenePathname);
+	DVASSERT((".sc2" == extension) && "Wrong file extension.");
+	
+	SceneData* sceneData = SceneGetActive();
+	if (!sceneData)
+	{
+		DVASSERT(false && "No way to add reference scene when SceneGetActive() returns NULL!");
+		return;
+	}
+	
+	EditorScene* scene = sceneData->GetScene();
+	if (!scene)
+	{
+		DVASSERT(false && "sceneData->GetScene() returned NULL!");
+		return;
+	}
+	
+	SceneNode * rootNode = scene->GetRootNode(scenePathname);
+	
+	DVASSERT(rootNode->GetChildrenCount() == 1);
+	ReferenceNode * refNode = new ReferenceNode();
+	SceneNode * clone = rootNode->GetChild(0)->Clone();
+	refNode->AddNode(clone);
+	refNode->SetName(rootNode->GetName());
+	SafeRelease(clone);
+	
+	KeyedArchive * customProperties = refNode->GetCustomProperties();
+	customProperties->SetString("reference.path", scenePathname);
+	
+	refNode->SetSolid(true);
+	scene->AddNode(refNode);
+	
+	Camera *currCamera = scene->GetCurrentCamera();
+	if(currCamera)
+	{
+		Vector3 pos = currCamera->GetPosition();
+		Vector3 direction  = currCamera->GetDirection();
+		
+		Vector3 nodePos = pos + 10 * direction;
+		nodePos.z = 0;
+		
+		LandscapeNode * ls = scene->GetLandScape(scene);
+		if(ls)
+		{
+			Vector3 result;
+			bool res = ls->PlacePoint(nodePos, result);
+			if(res)
+			{
+				nodePos = result;
+			}
+		}
+		
+		Matrix4 mod;
+		mod.CreateTranslation(nodePos);
+		refNode->SetLocalTransform(refNode->GetLocalTransform() * mod);
+	}
+	SafeRelease(refNode);
+	
+	emit SceneGraphNeedRebuild();
+	
+    //TODO: need save scene automatically?
+    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
+	SceneValidator::Instance()->EnumerateSceneTextures();
+}
+
+void SceneDataManager::ReloadScene(const String &scenePathname)
+{
+	SceneData* sceneData = SceneGetActive();
+	if (!sceneData)
+	{
+		DVASSERT(false && "No way to add reference scene when SceneGetActive() returns NULL!");
+		return;
+	}
+	
+	EditorScene* scene = sceneData->GetScene();
+	if (!scene)
+	{
+		DVASSERT(false && "sceneData->GetScene() returned NULL!");
+		return;
+	}
+	
+	sceneData->SelectNode(NULL);
+    scene->ReleaseRootNode(scenePathname);
+	
+	nodesToAdd.clear();
+    ReloadNode(scene, scene, scenePathname);
+	
+    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
+    {
+        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
+        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
+        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
+        SafeRelease(nodesToAdd[i].nodeToAdd);
+    }
+    nodesToAdd.clear();
+    
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->OnReloadRootNodesQt();
+    }
+    
+    emit SceneGraphNeedRebuild();
+	sceneData->SetLandscapesControllerScene(scene);
+}
+
+void SceneDataManager::ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname)
+{
+	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
+    KeyedArchive *customProperties = node->GetCustomProperties();
+    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
+    {
+        SceneNode *newNode = scene->GetRootNode(nodePathname)->Clone();
+        newNode->SetLocalTransform(node->GetLocalTransform());
+        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
+        newNode->SetSolid(true);
+        
+        SceneNode *parent = node->GetParent();
+        AddedNode addN;
+        addN.nodeToAdd = newNode;
+        addN.nodeToRemove = node;
+        addN.parent = parent;
+        
+        nodesToAdd.push_back(addN);
+        return;
+    }
+    
+    int32 csz = node->GetChildrenCount();
+    for (int ci = 0; ci < csz; ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+        ReloadNode(scene, child, nodePathname);
+    }
+}
+
 void SceneDataManager::SetActiveScene(EditorScene *scene)
 {
     if(currentScene)
@@ -400,4 +674,3 @@ void SceneDataManager::SceneNodeSelectedInSceneGraph(SceneNode* node)
 	
 	activeScene->SceneNodeSelectedInGraph(node);
 }
-
