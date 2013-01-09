@@ -23,7 +23,7 @@ BaseParticleEditorNode::~BaseParticleEditorNode()
 
 void BaseParticleEditorNode::Cleanup()
 {
-    for (PARTICLEEDITORNODESLISTITER iter = childNodes.begin(); iter != childNodes.end();
+    for (List<BaseParticleEditorNode*>::iterator iter = childNodes.begin(); iter != childNodes.end();
          iter ++)
     {
         SAFE_DELETE(*iter);
