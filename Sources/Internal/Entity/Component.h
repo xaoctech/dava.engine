@@ -35,6 +35,7 @@
 namespace DAVA 
 {
     
+class SceneNode;
 class Component
 {
 public:
@@ -54,12 +55,16 @@ public:
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
         COMPONENT_COUNT,
     };
+
+	Component();
     
     virtual ~Component() {};
     virtual uint32 GetType() = 0;
     virtual Component * Clone() = 0;
 
-    
+	void SetEntity(SceneNode * entity);
+protected:
+    SceneNode * entity;
 private:
 };
 
