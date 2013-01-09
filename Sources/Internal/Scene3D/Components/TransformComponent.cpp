@@ -37,7 +37,7 @@ void TransformComponent::SetLocalTransform(const Matrix4 * transform)
 		worldMatrix = *transform;
 	}
 
-	//Scene::GetActiveScene()->ImmediateEvent()
+	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
 void TransformComponent::SetParent(SceneNode * node)
@@ -52,6 +52,8 @@ void TransformComponent::SetParent(SceneNode * node)
 	{
 		parentMatrix = 0;
 	}
+
+	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 };

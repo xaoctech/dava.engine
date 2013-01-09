@@ -120,6 +120,8 @@ void SceneNode::UpdateComponentsFastPtrs()
     
 void SceneNode::AddComponent(Component * component)
 {
+	component->SetEntity(this);
+
     SafeDelete(components[component->GetType()]);
     components[component->GetType()] = component;
     if (scene)
@@ -130,6 +132,8 @@ void SceneNode::AddComponent(Component * component)
 
 void SceneNode::RemoveComponent(Component * component)
 {
+	component->SetEntity(0);
+
     components[component->GetType()] = 0;
     if (scene)
         scene->RemoveComponent(this, component);
@@ -179,8 +183,6 @@ void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
 	transformComponent->SetParent(parent);
-    if (scene)
-        scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -549,6 +551,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		{
 			SafeDelete(dstNode->components[k]);
 			dstNode->components[k] = components[k]->Clone();
+			dstNode->components[k]->SetEntity(dstNode);
 		}
 	}
     dstNode->UpdateComponentsFastPtrs();
@@ -882,14 +885,6 @@ inline const Matrix4 & SceneNode::ModifyLocalTransform()
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     transformComponent->SetLocalTransform(&newMatrix);
-//    scene->transformSystem->NeedUpdate(this);
-    if (scene)
-        scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
-    
-    //localTransform = newMatrix;
-    //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
-    //if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
-    //else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
 
 const Matrix4 & SceneNode::GetLocalTransform()

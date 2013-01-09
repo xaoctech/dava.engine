@@ -12,6 +12,7 @@ namespace DAVA
 TransformSystem::TransformSystem()
 {
 	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
+	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 TransformSystem::~TransformSystem()
@@ -75,10 +76,13 @@ void TransformSystem::SortAndThreadSplit()
 
 void TransformSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 {
-	if(EventSystem::LOCAL_TRANSFORM_CHANGED == event)
+	switch(event)
 	{
+	case EventSystem::LOCAL_TRANSFORM_CHANGED:
+	case EventSystem::TRANSFORM_PARENT_CHANGED:
 		HierahicNeedUpdate(entity);
 		HierahicAddToUpdate(entity);
+		break;
 	}
 }
 
