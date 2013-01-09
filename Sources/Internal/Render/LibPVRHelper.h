@@ -124,7 +124,7 @@ protected:
     static uint32 GetTextureDataSize(PVRHeaderV3 textureHeader, int32 mipLevel = PVRTEX_ALLMIPLEVELS, bool allSurfaces = true, bool allFaces = true);
     static void MapLegacyTextureEnumToNewFormat(PVRTPixelType OldFormat, uint64& newType, EPVRTColourSpace& newCSpace, EPVRTVariableType& newChanType, bool& isPreMult);
     static void ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, PVRHeaderV3& NewHeader);
-    static bool IsGLExtensionSupported(const char * const extension);
+//    static bool IsGLExtensionSupported(const char * const extension);
 
     static const PixelFormat GetCompressedFormat(const uint64 PixelFormat);
     static const PixelFormat GetFloatTypeFormat(const uint64 PixelFormat);

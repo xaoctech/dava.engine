@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../../Libs/ImageMagick-6.7.4-Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -72,6 +72,7 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions>/NODEFAULTLIB:libcmt %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcprtd;msvcprt</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -80,7 +81,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../../Libs/ImageMagick-6.7.4-Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Libs/include;./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../../Libs/ImageMagick-6.7.4-Windows</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE; _CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -96,12 +97,14 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Classes\ResourcePackerSpecific\FrameworkMain.cpp" />
     <ClCompile Include="Classes\ResourcePackerSpecific\GameCore.cpp" />
     <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp" />
+    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
     <ClCompile Include="Win32Specific\ResourcePacker.cpp" />
     <ClCompile Include="Win32Specific\stdafx.cpp" />
@@ -120,6 +123,7 @@
     <ClInclude Include="Classes\ResourcePackerSpecific\FrameworkMain.h" />
     <ClInclude Include="Classes\ResourcePackerSpecific\GameCore.h" />
     <ClInclude Include="Classes\SceneEditor\CommandLineTool.h" />
+    <ClInclude Include="Classes\SceneEditor\DXTConverter.h" />
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
     <ClInclude Include="Win32Specific\stdafx.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
