@@ -133,6 +133,14 @@ bool DavaGLWidget::winEvent(MSG *message, long *result)
 	DAVA::CoreWin32Platform *core = dynamic_cast<DAVA::CoreWin32Platform *>(DAVA::CoreWin32Platform::Instance());
 	if (NULL != core)
 	{
+		if(NULL != message && 
+			(message->message == WM_LBUTTONDOWN ||
+			 message->message == WM_RBUTTONDOWN ||
+			 message->message == WM_MBUTTONDOWN))
+		{
+			core->SetFocused(true);
+		}
+
 		return core->WinEvent(message, result);
 	}
 
