@@ -149,6 +149,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	Vector<QString> sizeLegends;
 	sizeLegends.push_back("size: x"); sizeLegends.push_back("size: y"); sizeLegends.push_back("size: z");
 	emitterSize->AddLines(PropLineWrapper<Vector3>(emitter->size).GetProps(), sizeColors, sizeLegends);
+	emitterSize->EnableLock(true);
 	
 	emitterLife->setValue(emitterLifeTime);
 

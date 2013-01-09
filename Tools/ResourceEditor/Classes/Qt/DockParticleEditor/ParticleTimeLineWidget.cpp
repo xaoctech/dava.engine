@@ -32,6 +32,8 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
 	
+	gridStyle = GridStyleLimits;
+	
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
 			this,
@@ -53,11 +55,6 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	Init(0, 0);
 	
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-	
-	/*Init(0, 4.0f);
-	AddLine(0, 0.5f, 1.5f, Qt::blue, "12341234");
-	AddLine(1, 2.5f, 3.5f, Qt::blue, "12341234");
-	AddLine(2, 0, 4, Qt::red, "12341234");*/
 }
 
 ParticleTimeLineWidget::~ParticleTimeLineWidget()
@@ -183,6 +180,19 @@ void ParticleTimeLineWidget::AddLine(uint32 lineId, float32 startTime, float32 e
 	lines[lineId] = line;
 }
 
+QString ParticleTimeLineWidget::float2QString(float32 value) const
+{
+	QString strValue;
+	if (value < 10)
+		strValue = "%.2f";
+	else if (value < 100)
+		strValue = "%.1f";
+	else
+		strValue = "%.0f";
+	strValue.sprintf(strValue.toAscii(), value);
+	return strValue;
+}
+
 void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 {
 	QPainter painter(this);
@@ -196,9 +206,8 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 	
 	//draw grid
 	{
-		//painter.setPen(Qt::lightGray);
 		painter.setPen(Qt::gray);
-		
+	
 		float step = 18;
 		float steps = graphRect.width() / step;
 		float valueStep = (maxTime - minTime) / steps;
@@ -211,18 +220,21 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			if (!drawText)
 				continue;
 			
-			float value = minTime + i * valueStep;
-			QString strValue;
-			if (value < 10)
-				strValue = "%.2f";
-			else if (value < 100)
-				strValue = "%.1f";
-			else
-				strValue = "%.0f";
-			strValue.sprintf(strValue.toAscii(), value);
-			int textWidth = painter.fontMetrics().width(strValue);
-			QRect textRect(x - textWidth / 2, graphRect.bottom(), textWidth, BOTTOM_INDENT);
-			painter.drawText(textRect, Qt::AlignCenter, strValue);
+			if (gridStyle == GridStyleAllPosition)
+			{
+				float value = minTime + i * valueStep;
+				QString strValue = float2QString(value);
+				int textWidth = painter.fontMetrics().width(strValue);
+				QRect textRect(x - textWidth / 2, graphRect.bottom(), textWidth, BOTTOM_INDENT);
+				painter.drawText(textRect, Qt::AlignCenter, strValue);
+			}
+		}
+
+		if (gridStyle == GridStyleLimits)
+		{
+			QRect textRect(graphRect.left(), graphRect.bottom(), graphRect.width(), BOTTOM_INDENT);
+			painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, float2QString(minTime));
+			painter.drawText(textRect, Qt::AlignRight | Qt::AlignVCenter, float2QString(maxTime));
 		}
 	}
 	
