@@ -27,7 +27,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 {
     String extension = FileSystem::Instance()->GetExtension(scenePathname);
     DVASSERT((".sc2" == extension) && "Wrong file extension.");
-	
+
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
 	{
@@ -41,9 +41,9 @@ void SceneDataManager::AddScene(const String &scenePathname)
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-	
+
     SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
-	
+
     KeyedArchive * customProperties = rootNode->GetCustomProperties();
     customProperties->SetString("editor.referenceToOwner", scenePathname);
     
@@ -90,7 +90,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 	{
 		sceneData->SetLandscapesControllerScene(scene);
 	}
-	
+
 	emit SceneGraphNeedRebuild();
 }
 
@@ -126,7 +126,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-	
+
     String extension = FileSystem::Instance()->GetExtension(scenePathname);
     DVASSERT((".sc2" == extension) && "Wrong file extension.");
 	
@@ -147,16 +147,16 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
             scene->AddNode(tempV[ci]);
         }
     }
-	
+
     //TODO: need save scene automatically?
     bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
-	
+
     sceneData->SetLandscapesControllerScene(scene);
 	
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
-	
+
     emit SceneGraphNeedRebuild();
 }
 
@@ -164,21 +164,21 @@ void SceneDataManager::AddReferenceScene(const String &scenePathname)
 {
 	String extension = FileSystem::Instance()->GetExtension(scenePathname);
 	DVASSERT((".sc2" == extension) && "Wrong file extension.");
-	
+
 	SceneData* sceneData = SceneGetActive();
 	if (!sceneData)
 	{
 		DVASSERT(false && "No way to add reference scene when SceneGetActive() returns NULL!");
 		return;
 	}
-	
+
 	EditorScene* scene = sceneData->GetScene();
 	if (!scene)
 	{
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-	
+
 	SceneNode * rootNode = scene->GetRootNode(scenePathname);
 	
 	DVASSERT(rootNode->GetChildrenCount() == 1);
@@ -242,13 +242,13 @@ void SceneDataManager::ReloadScene(const String &scenePathname)
 		DVASSERT(false && "sceneData->GetScene() returned NULL!");
 		return;
 	}
-	
+
 	sceneData->SelectNode(NULL);
     scene->ReleaseRootNode(scenePathname);
-	
+
 	nodesToAdd.clear();
     ReloadNode(scene, scene, scenePathname);
-	
+
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
@@ -394,7 +394,9 @@ EditorScene * SceneDataManager::RegisterNewScene()
 	connect(data, SIGNAL(SceneChanged(EditorScene *)), this, SLOT(InSceneData_SceneChanged(EditorScene *)));
 	connect(data, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::SceneNode *)));
 
+	connect(data, SIGNAL(SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)));
 	connect(data, SIGNAL(SceneGraphModelNeedsRebuild()), this, SLOT(InSceneData_SceneGraphModelNeedsRebuild()));
+	
 	connect(data, SIGNAL(SceneGraphModelNeedSetScene(EditorScene *)), this, SLOT(InSceneData_SceneGraphModelNeedSetScene(EditorScene *)));
 	connect(data, SIGNAL(SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)), this, SLOT(InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)));
 
@@ -451,7 +453,13 @@ void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneNodeSelected(sceneData, node);
 }
-						 
+
+void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node)
+{
+	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.
+	emit SceneGraphNeedRebuildNode(node);
+}
+
 void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuild()
 {
 	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.
@@ -674,3 +682,4 @@ void SceneDataManager::SceneNodeSelectedInSceneGraph(SceneNode* node)
 	
 	activeScene->SceneNodeSelectedInGraph(node);
 }
+

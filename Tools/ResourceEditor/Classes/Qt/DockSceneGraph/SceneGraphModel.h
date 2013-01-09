@@ -20,6 +20,8 @@ public:
     void SetScene(EditorScene * newScene);
 	EditorScene* GetScene() const {return scene;};
 
+	// Rebuild the model for the appropriate node and for the whole graph.
+	void RebuildNode(DAVA::SceneNode* rootNode);
     virtual void Rebuild();
 
     void SelectNode(DAVA::SceneNode *node);
@@ -50,12 +52,14 @@ protected:
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
     void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node);
-
     
     bool LandscapeEditorModeEnabled() const;
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
+
+	// Add the Graph Items in a recursive way.
+	void AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode);
 
 protected:
 

@@ -47,6 +47,10 @@ SceneData::~SceneData()
     SafeRelease(cameraController);
 }
 
+void SceneData::RebuildSceneGraphNode(DAVA::SceneNode* node)
+{
+	emit SceneGraphModelNeedsRebuildNode(node);
+}
 
 void SceneData::RebuildSceneGraph()
 {

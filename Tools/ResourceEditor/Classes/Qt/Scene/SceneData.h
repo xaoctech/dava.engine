@@ -21,6 +21,10 @@ public:
     SceneData();
     virtual ~SceneData();
 
+	// Rebuild the scene graph for particular node.
+	void RebuildSceneGraphNode(DAVA::SceneNode* node);
+	
+	// Rebuild the whole scene graph.
     void RebuildSceneGraph();
 
     void SetScene(EditorScene *newScene);
@@ -37,10 +41,10 @@ public:
     DAVA::CameraController *GetCameraController();
     
     void CreateScene(bool createEditorCameras);
-	
+
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
-	
+
     void BakeScene();
     
     void ToggleNotPassableLandscape();
@@ -53,16 +57,18 @@ public:
 	void ResetLandsacpeSelection();
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
-	
+
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
-	
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
 	
 	// Signals are specific for Scene Graph Model.
+	void SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
 	void SceneGraphModelNeedsRebuild();
+	
 	void SceneGraphModelNeedSetScene(EditorScene* scene);
 	void SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 
