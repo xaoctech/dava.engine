@@ -38,12 +38,13 @@
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
-#include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/DeleteSystem.h"
+#include "Scene3D/Systems/DeleteSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
@@ -119,6 +120,8 @@ void SceneNode::UpdateComponentsFastPtrs()
     
 void SceneNode::AddComponent(Component * component)
 {
+	component->SetEntity(this);
+
     SafeDelete(components[component->GetType()]);
     components[component->GetType()] = component;
     if (scene)
@@ -129,6 +132,8 @@ void SceneNode::AddComponent(Component * component)
 
 void SceneNode::RemoveComponent(Component * component)
 {
+	component->SetEntity(0);
+
     components[component->GetType()] = 0;
     if (scene)
         scene->RemoveComponent(this, component);
@@ -178,8 +183,6 @@ void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
 	transformComponent->SetParent(parent);
-    if (scene)
-        scene->ImmediateUpdate(this, transformComponent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -548,6 +551,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		{
 			SafeDelete(dstNode->components[k]);
 			dstNode->components[k] = components[k]->Clone();
+			dstNode->components[k]->SetEntity(dstNode);
 		}
 	}
     dstNode->UpdateComponentsFastPtrs();
@@ -874,21 +878,13 @@ inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
     flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
     //scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateUpdate(this, transformComponent);
+    scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
     return GetLocalTransform();
 }
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     transformComponent->SetLocalTransform(&newMatrix);
-//    scene->transformSystem->NeedUpdate(this);
-    if (scene)
-        scene->ImmediateUpdate(this, transformComponent);
-    
-    //localTransform = newMatrix;
-    //flags &= ~NODE_WORLD_MATRIX_ACTUAL;
-    //if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
-    //else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
 
 const Matrix4 & SceneNode::GetLocalTransform()

@@ -1,4 +1,4 @@
-#include "Scene3D/DeleteSystem.h"
+#include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/SceneNode.h"
 
 namespace DAVA

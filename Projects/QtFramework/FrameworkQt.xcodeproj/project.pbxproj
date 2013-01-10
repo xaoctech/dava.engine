@@ -22,12 +22,14 @@
 		508E59B51684A16700D2ECA8 /* RenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59AD1684A07500D2ECA8 /* RenderSystem.cpp */; };
 		508E59BB1684A1A400D2ECA8 /* Component.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59B71684A1A400D2ECA8 /* Component.cpp */; };
 		508E59BC1684A1A400D2ECA8 /* SceneSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59B91684A1A400D2ECA8 /* SceneSystem.cpp */; };
-		508E59BD1684A2C800D2ECA8 /* TransformSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 509E082416848B5100BFD229 /* TransformSystem.cpp */; };
-		5095760F168A44EB0023E6D5 /* DeleteSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095760D168A44EB0023E6D5 /* DeleteSystem.cpp */; };
 		50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957611168DD33D0023E6D5 /* LodComponent.cpp */; };
 		50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957616169617AC0023E6D5 /* LodSystem.cpp */; };
 		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
 		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
+		50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */; };
+		50E8E937169CCFFE005BB2F1 /* DeleteSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E934169CCD9C005BB2F1 /* DeleteSystem.cpp */; };
+		50E8E938169CD00A005BB2F1 /* TransformSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */; };
+		50E8E939169CD00C005BB2F1 /* RenderUpdateSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -323,19 +325,25 @@
 		508E59B81684A1A400D2ECA8 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
 		508E59B91684A1A400D2ECA8 /* SceneSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSystem.cpp; sourceTree = "<group>"; };
 		508E59BA1684A1A400D2ECA8 /* SceneSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneSystem.h; sourceTree = "<group>"; };
-		5095760D168A44EB0023E6D5 /* DeleteSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteSystem.cpp; sourceTree = "<group>"; };
-		5095760E168A44EB0023E6D5 /* DeleteSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteSystem.h; sourceTree = "<group>"; };
 		50957611168DD33D0023E6D5 /* LodComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodComponent.cpp; sourceTree = "<group>"; };
 		50957612168DD33D0023E6D5 /* LodComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodComponent.h; sourceTree = "<group>"; };
 		50957614168E14B40023E6D5 /* RenderDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderDataSource.h; sourceTree = "<group>"; };
 		50957616169617AC0023E6D5 /* LodSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LodSystem.cpp; path = Systems/LodSystem.cpp; sourceTree = "<group>"; };
 		50957617169617AC0023E6D5 /* LodSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LodSystem.h; path = Systems/LodSystem.h; sourceTree = "<group>"; };
-		509E082416848B5100BFD229 /* TransformSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TransformSystem.cpp; sourceTree = "<group>"; };
-		509E082516848B5200BFD229 /* TransformSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransformSystem.h; sourceTree = "<group>"; };
 		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; };
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
 		50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugRenderComponent.h; sourceTree = "<group>"; };
+		50E8E91C169C90C2005BB2F1 /* BoundingBoxComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BoundingBoxComponent.cpp; sourceTree = "<group>"; };
+		50E8E91D169C90C2005BB2F1 /* BoundingBoxComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoundingBoxComponent.h; sourceTree = "<group>"; };
+		50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = EventSystem.cpp; path = Systems/EventSystem.cpp; sourceTree = "<group>"; };
+		50E8E92F169CB3CF005BB2F1 /* EventSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EventSystem.h; path = Systems/EventSystem.h; sourceTree = "<group>"; };
+		50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderUpdateSystem.cpp; path = Systems/RenderUpdateSystem.cpp; sourceTree = "<group>"; };
+		50E8E931169CC87A005BB2F1 /* RenderUpdateSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RenderUpdateSystem.h; path = Systems/RenderUpdateSystem.h; sourceTree = "<group>"; };
+		50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TransformSystem.cpp; path = Systems/TransformSystem.cpp; sourceTree = "<group>"; };
+		50E8E933169CCD4F005BB2F1 /* TransformSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TransformSystem.h; path = Systems/TransformSystem.h; sourceTree = "<group>"; };
+		50E8E934169CCD9C005BB2F1 /* DeleteSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DeleteSystem.cpp; path = Systems/DeleteSystem.cpp; sourceTree = "<group>"; };
+		50E8E935169CCD9D005BB2F1 /* DeleteSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DeleteSystem.h; path = Systems/DeleteSystem.h; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -921,6 +929,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				50E8E91C169C90C2005BB2F1 /* BoundingBoxComponent.cpp */,
+				50E8E91D169C90C2005BB2F1 /* BoundingBoxComponent.h */,
 				50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */,
 				50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */,
 				50957611168DD33D0023E6D5 /* LodComponent.cpp */,
@@ -968,12 +978,18 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */,
+				50E8E933169CCD4F005BB2F1 /* TransformSystem.h */,
+				50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */,
+				50E8E931169CC87A005BB2F1 /* RenderUpdateSystem.h */,
+				50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */,
+				50E8E92F169CB3CF005BB2F1 /* EventSystem.h */,
 				50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */,
 				50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */,
 				50957616169617AC0023E6D5 /* LodSystem.cpp */,
 				50957617169617AC0023E6D5 /* LodSystem.h */,
-				5095760D168A44EB0023E6D5 /* DeleteSystem.cpp */,
-				5095760E168A44EB0023E6D5 /* DeleteSystem.h */,
+				50E8E934169CCD9C005BB2F1 /* DeleteSystem.cpp */,
+				50E8E935169CCD9D005BB2F1 /* DeleteSystem.h */,
 			);
 			name = Systems;
 			sourceTree = "<group>";
@@ -1503,8 +1519,6 @@
 			children = (
 				509576151696178A0023E6D5 /* Systems */,
 				5081EA5016760C7400ECA24C /* Components */,
-				509E082416848B5100BFD229 /* TransformSystem.cpp */,
-				509E082516848B5200BFD229 /* TransformSystem.h */,
 				5C5D990C15B0230D0058B43A /* Scene.cpp */,
 				5C5D990D15B0230D0058B43A /* Scene.h */,
 				5C5D991615B0230D0058B43A /* SceneNode.cpp */,
@@ -2034,12 +2048,14 @@
 				508E59B51684A16700D2ECA8 /* RenderSystem.cpp in Build Sources */,
 				508E59BB1684A1A400D2ECA8 /* Component.cpp in Build Sources */,
 				508E59BC1684A1A400D2ECA8 /* SceneSystem.cpp in Build Sources */,
-				508E59BD1684A2C800D2ECA8 /* TransformSystem.cpp in Build Sources */,
-				5095760F168A44EB0023E6D5 /* DeleteSystem.cpp in Build Sources */,
 				50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */,
 				50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */,
 				50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */,
 				50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */,
+				50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */,
+				50E8E937169CCFFE005BB2F1 /* DeleteSystem.cpp in Build Sources */,
+				50E8E938169CD00A005BB2F1 /* TransformSystem.cpp in Build Sources */,
+				50E8E939169CD00C005BB2F1 /* RenderUpdateSystem.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

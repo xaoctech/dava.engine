@@ -27,48 +27,29 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SPHERE_NODE_H__
-#define __DAVAENGINE_SPHERE_NODE_H__
+#ifndef __DAVAENGINE_SCENE3D_RENDER_DATA_SOURCE_H__
+#define	__DAVAENGINE_SCENE3D_RENDER_DATA_SOURCE_H__
 
-#include "Scene3D/MeshInstanceNode.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
 
-namespace DAVA 
+namespace DAVA
 {
-class Scene;
-class PolygonGroup;
-class SphereNode : public MeshInstanceNode
-{
-public:	
-	SphereNode();
-	virtual ~SphereNode();
-	
-    virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+        
+/* 
+    class RenderDataSource : public BaseObject
+    {
+    public:
+        RenderDataSource();
+        virtual ~RenderDataSource();
+        
+        virtual void PrepareRenderDataObject(RenderDataObject * renderDataObject);
+    private:
+    };
+*/
     
-    void SetQuality(int32 newQuality);
-    int32 GetQuality() const;
-    
-    void SetColor(Color c);
-    const Color & GetColor() const;    
-    
-    void SetRadius(float32 radius);
-    float32 GetRadius() const;
+} // ns
 
-    
-protected:
+#endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_H__ */
 
-    void CreateSphere(float32 radius, Color c);
-    
-    StaticMesh *sphereMesh;
-    
-    int32 quality;
-    
-    float32 radius;
-    Color color;
-};
-	
-};
-
-#endif // __DAVAENGINE_SPHERE_NODE_H__
