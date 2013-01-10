@@ -47,9 +47,10 @@ public:
 		LOD_COMPONENT,
         UPDATE_COMPONENT,
         CAMERA_COMPONENT,
-        LIGHT_COMPONENT,        // LightComponent, PrecomputedLightComponent extends LightComponent.
+        LIGHT_COMPONENT,
+		PARTICLE_EMITTER_COMPONENT,
         ANIMATION_COMPONENT,
-        COLLISION_COMPONENT,    // multiple instances, so we do not implement system right away
+        COLLISION_COMPONENT,    // multiple instances
         PHYSICS_COMPONENT,
         ACTION_COMPONENT,       // actions, something simplier than scripts that can influence logic, can be multiple
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.

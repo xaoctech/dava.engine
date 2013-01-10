@@ -57,6 +57,7 @@ RenderBatch::~RenderBatch()
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
     dataSource = SafeRetain(_polygonGroup);
+	aabbox = dataSource->GetBoundingBox();
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
@@ -100,7 +101,7 @@ void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 
 const AABBox3 & RenderBatch::GetBoundingBox() const
 {
-    return dataSource->GetBoundingBox();
+    return aabbox;
 }
 
 
