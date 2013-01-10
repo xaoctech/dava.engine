@@ -61,6 +61,7 @@
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/ParticleEmitterSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -113,12 +114,18 @@ void Scene::CreateSystems()
 
     transformSystem = new TransformSystem();
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
+
     renderUpdateSystem = new RenderUpdateSystem();
     AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
+
 	lodSystem = new LodSystem();
 	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
+
     debugRenderSystem = new DebugRenderSystem();
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
+
+	particleEmitterSystem = new ParticleEmitterSystem();
+	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
 }
 
 Scene::~Scene()

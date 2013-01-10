@@ -943,24 +943,6 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	//	break;
 	case TYPE_KEYED_ARCHIVE:
 		v.SetKeyedArchive(*((DAVA::KeyedArchive **) src));
-		/*
-		{
-			DAVA::KeyedArchive *srcArchive = *((DAVA::KeyedArchive **) src);
-			DAVA::KeyedArchive *curArchive = v.AsKeyedArchive();
-
-			if(NULL != srcArchive && NULL != curArchive)
-			{
-				curArchive->DeleteAllKeys();
-				Map<String, VariantType*> values = srcArchive->GetArchieveData();
-				Map<String, VariantType*>::iterator i;
-
-				for(i = values.begin(); i != values.end(); ++i)
-				{
-					curArchive->SetVariant(i->first, i->second);
-				}
-			}
-		}
-		*/
 		break;
 	case TYPE_INT64:
 		v.SetInt64(*((DAVA::int64 *) src));

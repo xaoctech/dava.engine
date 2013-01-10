@@ -143,11 +143,9 @@ void ParticleLayer3D::Draw(Camera * camera)
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
-	
-		RenderManager::Instance()->SetRenderData(renderData);
- 		material->PrepareRenderState();
 
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+		renderBatch.SetMaterial(material);
+		renderBatch.SetRenderDataObject(renderData);
 	}
 }
 
