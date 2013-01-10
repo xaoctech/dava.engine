@@ -185,7 +185,7 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
         {
             Vector3 landSize;
             AABBox3 transformedBox;
-            workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+            workingLandscape->GetBoundingBox().GetTransformedBox(*workingLandscape->GetWorldTransformPtr(), transformedBox);
             landSize = transformedBox.max - transformedBox.min;
             
             float32 maxHeight = landSize.z;
@@ -257,7 +257,7 @@ float32 LandscapeEditorHeightmap::GetDropperHeight()
 {
     Vector3 landSize;
     AABBox3 transformedBox;
-    workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+    workingLandscape->GetBoundingBox().GetTransformedBox(*workingLandscape->GetWorldTransformPtr(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
 
     Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
@@ -388,7 +388,8 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(tilemaskImage);
     SafeRelease(toolImageTile);
 
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+    // RETURN TO THIS CODE LATER
+    // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
 
@@ -483,12 +484,13 @@ void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
-    
-    propsControl->SetDelegate(this);
-    
-    return propsControl;
+// RETURN TO THIS CODE LATER
+//    LandscapeEditorPropertyControl *propsControl = 
+//    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
+//    
+//    propsControl->SetDelegate(this);
+//    
+//    return propsControl;
 }
 
 
@@ -551,7 +553,8 @@ void LandscapeEditorHeightmap::OnShowGrid(bool show)
     if(landscapesController)
     {
         LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
-        landscape->SetDebugFlags(workingLandscape->GetDebugFlags());
+        // RETURN TO THIS CODE LATER
+        //landscape->SetDebugFlags(workingLandscape->GetDebugFlags());
     }
 }
 

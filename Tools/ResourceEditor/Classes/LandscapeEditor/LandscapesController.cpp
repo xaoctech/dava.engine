@@ -109,10 +109,11 @@ void LandscapesController::ReleaseScene()
 
 void LandscapesController::ReleaseLandscape(EditorLandscapeNode *landscapeNode)
 {
-    if(landscapeNode && landscapeNode->GetParent())
-    {
-        landscapeNode->GetParent()->RemoveNode(landscapeNode);
-    }
+    // RETURN TO THIS CODE LATER
+    //    if(landscapeNode && landscapeNode->GetParent())
+    //    {
+    //        landscapeNode->GetParent()->RemoveNode(landscapeNode);
+    //    }
     SafeRelease(landscapeNode);
 }
 
@@ -181,13 +182,15 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
         displayingLandscape->SetHeightmap(renderedHeightmap);
     }
     displayingLandscape->SetRenderer(landscapeRenderer);
-    
-    SceneNode *parentNode = landscape->GetParent();
-    if(parentNode)
-    {
-        parentNode->RemoveNode(landscape);
-        parentNode->AddNode(displayingLandscape);
-    }
+
+// RETURN TO THIS CODE LATER
+//
+//    SceneNode *parentNode = landscape->GetParent();
+//    if(parentNode)
+//    {
+//        parentNode->RemoveNode(landscape);
+//        parentNode->AddNode(displayingLandscape);
+//    }
 
     currentLandscape = displayingLandscape;
     return true;
@@ -216,13 +219,14 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
         {
             editorLandscape->SetParentLandscape(NULL);
         }
-        
-        SceneNode *parentNode = hiddingLandscape->GetParent();
-        if(parentNode)
-        {
-            parentNode->RemoveNode(hiddingLandscape);
-            parentNode->AddNode(nestedLandscape);
-        }
+// RETURN TO THIS CODE LATER
+//        
+//        SceneNode *parentNode = hiddingLandscape->GetParent();
+//        if(parentNode)
+//        {
+//            parentNode->RemoveNode(hiddingLandscape);
+//            parentNode->AddNode(nestedLandscape);
+//        }
         
         if(NeedToKillRenderer(nestedLandscape))
         {

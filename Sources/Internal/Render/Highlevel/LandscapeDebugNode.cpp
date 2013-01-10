@@ -30,8 +30,8 @@
 #include "Render/Image.h"
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/LandscapeDebugNode.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/LandscapeDebugNode.h"
+#include "Render/Highlevel/Heightmap.h"
 
 namespace DAVA
 {
@@ -49,7 +49,7 @@ LandscapeDebugNode::~LandscapeDebugNode()
     
 void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box)
 {
-    box = _box;
+    bbox = _box;
     
     SafeRelease(heightmap);
     heightmap = SafeRetain(_debugHeightmapImage);
@@ -106,7 +106,7 @@ void LandscapeDebugNode::RebuildIndexes()
 
 void LandscapeDebugNode::Draw()
 {
-    if (!(flags & NODE_VISIBLE)) return;
+    //if (!(flags & NODE_VISIBLE)) return;
 
     if(0 == heightmap->Size())
         return;

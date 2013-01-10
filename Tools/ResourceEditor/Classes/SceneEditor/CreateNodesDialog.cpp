@@ -11,6 +11,7 @@
 #include "Scene3D/UserNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
+#include "Scene3D/Components/RenderComponent.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -105,7 +106,8 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
     {
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
-            sceneNode = new LandscapeNode();
+            sceneNode = new SceneNode();
+            sceneNode->AddComponent(new RenderComponent(new LandscapeNode()));
             sceneNode->SetName("Landscape");
             break;
 

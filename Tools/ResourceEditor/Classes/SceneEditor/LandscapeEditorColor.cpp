@@ -371,13 +371,15 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
-    
-    propsControl->SetDelegate(this);
-
-    LandscapeEditorSettingsChanged(propsControl->Settings());
-    return propsControl;
+// // RETURN TO THIS CODE LATER
+//    LandscapeEditorPropertyControl *propsControl
+//    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
+//    
+//    propsControl->SetDelegate(this);
+//
+//    LandscapeEditorSettingsChanged(propsControl->Settings());
+//    return propsControl;
+    return 0;
 }
 
 
