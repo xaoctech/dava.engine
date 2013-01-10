@@ -47,7 +47,7 @@ public:
     void PreparePropertiesForMaterialType(int materialType);
 
     //NodesPropertyDelegate
-    virtual void NodesPropertyChanged();
+    virtual void NodesPropertyChanged(const String &forKey);
     
     //Fog control delegate
     virtual void SetupFog(bool enabled, float32 dencity, const Color &newColor);

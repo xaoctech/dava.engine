@@ -1,13 +1,13 @@
 //
-//  ParticlesEditorSceneHelper.h
+//  ParticlesEditorSceneModelHelper.h
 //  ResourceEditorQt
 //
 //  Created by Yuri Coder on 11/26/12.
 //
 //
 
-#ifndef __ResourceEditorQt__ParticlesEditorSceneHelper__
-#define __ResourceEditorQt__ParticlesEditorSceneHelper__
+#ifndef __ResourceEditorQt__ParticlesEditorSceneModelHelper__
+#define __ResourceEditorQt__ParticlesEditorSceneModelHelper__
 
 #include "DAVAEngine.h"
 #include <QItemSelection>
@@ -21,12 +21,14 @@
 #include "ParticlesEditorQT/Nodes/ForceParticleEditorNode.h"
 
 #include "Scene/SceneData.h"
-#include "Main/SceneGraphItem.h"
+#include "DockSceneGraph/SceneGraphItem.h"
+
+#include "Commands/Command.h"
 
 namespace DAVA {
 
-// Scene Helper for Particles Editor.
-class ParticlesEditorSceneHelper
+// Scene Model Helper for Particles Editor.
+class ParticlesEditorSceneModelHelper
 {
 public:
     // Custom processing the Selection Changed in the Scene Graph model. Returns
@@ -39,13 +41,6 @@ public:
     // Preprocess the Scene Node during adding, change its type if needed.
     SceneNode* PreprocessSceneNode(SceneNode* rawNode);
 
-    // Add the new node, if it is related to Particles Editor. Returns TRUE if
-    // no further processing needed.
-    bool AddSceneNode(SceneNode* node) const;
-    
-    // Remove the Scene Node, if it is related to Particles Editor.
-    void RemoveSceneNode(SceneNode* node) const;
-    
     // Add the node and all its children to the Scene Graph.
     bool AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node);
 
@@ -53,9 +48,12 @@ public:
     bool NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const;
 
     // Add Popup Menu items depending on the tree node selected.
-    void AddPopupMenuItems(SceneData* sceneData, QMenu &menu, const QModelIndex &index) const;
+    void AddPopupMenuItems(QMenu &menu, const QModelIndex &index) const;
     
 protected:
+	// Add the action to QT menu.
+	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
+	
     // Build the Scene Graph in a recursive way.
     void BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem);
 
@@ -75,4 +73,4 @@ protected:
 };
 }
 
-#endif /* defined(__ResourceEditorQt__ParticlesEditorSceneHelper__) */
+#endif /* defined(__ResourceEditorQt__ParticlesEditorSceneModelHelper__) */

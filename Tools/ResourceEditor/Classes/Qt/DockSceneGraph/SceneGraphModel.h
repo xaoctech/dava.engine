@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "GraphModel.h"
-#include "ParticlesEditorQT/Helpers/ParticlesEditorSceneHelper.h"
+#include "ParticlesEditorQT/Helpers/ParticlesEditorSceneModelHelper.h"
 
 #include <QObject>
 
@@ -18,13 +18,17 @@ public:
     virtual ~SceneGraphModel();
 
     void SetScene(EditorScene * newScene);
+	EditorScene* GetScene() const {return scene;};
+
+	// Rebuild the model for the appropriate node and for the whole graph.
+	void RebuildNode(DAVA::SceneNode* rootNode);
     virtual void Rebuild();
 
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
-    const DAVA::ParticlesEditorSceneHelper& GetParticlesEditorSceneHelper() const { return particlesEditorSceneHelper; };
-    
+   const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
     virtual Qt::DropActions supportedDropActions() const;
@@ -48,19 +52,21 @@ protected:
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
     void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node);
-
     
     bool LandscapeEditorModeEnabled() const;
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
 
+	// Add the Graph Items in a recursive way.
+	void AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode);
+
 protected:
 
     EditorScene *scene;
     DAVA::SceneNode *selectedNode;
     
-    DAVA::ParticlesEditorSceneHelper particlesEditorSceneHelper;
+    DAVA::ParticlesEditorSceneModelHelper particlesEditorSceneModelHelper;
     
     // Selectted Scene Graph item for Particle Editor.
     SceneGraphItem* selectedGraphItemForParticleEditor;
