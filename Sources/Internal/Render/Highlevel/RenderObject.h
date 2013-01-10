@@ -31,7 +31,7 @@
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+#include "Animation/AnimatedObject.h"
 #include "Base/BaseMath.h"
 #include "Render/Highlevel/RenderSystem.h"
 
@@ -62,7 +62,7 @@ public:
  */
 
 class RenderBatch;
-class RenderObject : public BaseObject
+class RenderObject : public AnimatedObject
 {
 public:
 	enum eFlags
