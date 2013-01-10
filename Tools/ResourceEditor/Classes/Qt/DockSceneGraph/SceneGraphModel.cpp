@@ -6,7 +6,7 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
-#include "PointerHolder.h"
+#include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
 #include "DockParticleEditor/ParticlesEditorController.h"
@@ -39,17 +39,17 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 {
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
-    node = particlesEditorSceneHelper.PreprocessSceneNode(node);
+    node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
 
     SceneGraphItem *graphItem = new SceneGraphItem();
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
     // Particles Editor nodes are processed separately.
-    if (particlesEditorSceneHelper.AddNodeToSceneGraph(graphItem, node))
+    if (particlesEditorSceneModelHelper.AddNodeToSceneGraph(graphItem, node))
     {
         // Also try to determine selected item from Particle Editor.
-        SceneGraphItem *selectedItem = particlesEditorSceneHelper.GetGraphItemToBeSelected(graphItem, node);
+        SceneGraphItem *selectedItem = particlesEditorSceneModelHelper.GetGraphItemToBeSelected(graphItem, node);
         if (selectedItem)
         {
             this->selectedGraphItemForParticleEditor = selectedItem;
@@ -66,6 +66,79 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
             AddNodeToTree(graphItem, node->GetChild(i));
         }
     }
+}
+
+void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
+{
+	if(!rootNode)
+	{
+		return;
+	}
+
+	// Lookup for SceneItem for this particular node.
+	GraphItem* graphItem = ItemForData(rootNode);
+	if (!graphItem)
+	{
+		return;
+	}
+
+	// Do the rebuild itself. Remove the previous children and add new ones.
+	// The separate vector is needed to don't corrupt GraphItem iterator while removing items.
+	Vector<GraphItem*> childrenToRemove;
+	int32 childrenToRemoveCount = graphItem->ChildrenCount();
+	for (int32 i = 0; i < childrenToRemoveCount; i ++)
+	{
+		childrenToRemove.push_back(graphItem->Child(i));
+	}
+	
+	for (int32 i = 0; i < childrenToRemoveCount; i ++)
+	{
+		GraphItem* childItem = childrenToRemove[i];
+		QModelIndex parentIndex = createIndex(graphItem->Row(), 0, graphItem);
+		int32 rowToRemove = childItem->Row();
+
+		// Remove the previous children and add new ones.
+		beginRemoveRows(parentIndex, rowToRemove, rowToRemove);
+		graphItem->RemoveChild(childItem);
+		endRemoveRows();
+	}
+
+	// Add the child nodes only if the root node is not solid.
+	if (!rootNode->GetSolid())
+	{
+		int32 childrenToAddCount = rootNode->GetChildrenCount();
+		for (int32 i = 0; i < childrenToAddCount; i ++)
+		{
+			AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+		}
+	}
+}
+
+void SceneGraphModel::AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode)
+{
+	if (!rootItem || !rootNode)
+	{
+		return;
+	}
+
+	QModelIndex parentIndex = createIndex(rootItem->Row(), 0, rootItem);
+	int32 rowToAdd = rootItem->Row();
+
+	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+
+	// Add the child nodes on this level.
+	SceneGraphItem *graphItem = new SceneGraphItem();
+	graphItem->SetUserData(rootNode);
+	rootItem->AppendChild(graphItem);
+
+	endInsertRows();
+	
+	// Repeat for the children.
+	int32 childrenCount = rootNode->GetChildrenCount();
+	for (uint i = 0; i < childrenCount; i ++)
+	{
+		AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+	}
 }
 
 void SceneGraphModel::Rebuild()
@@ -131,7 +204,7 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     DVASSERT((deselectedSize <= 1) && "Wrong count of deselected items");
 
     // Particles Editor Nodes are handled separately.
-    if (particlesEditorSceneHelper.ProcessSelectionChanged(selected, deselected))
+    if (particlesEditorSceneModelHelper.ProcessSelectionChanged(selected, deselected))
     {
         return;
     }
