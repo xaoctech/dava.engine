@@ -313,6 +313,7 @@
 		5045D664169F2E7A00742C05 /* ParticleEmitterComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterComponent.h; sourceTree = "<group>"; };
 		5045D666169F2E9C00742C05 /* ParticleEmitterSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEmitterSystem.cpp; path = Systems/ParticleEmitterSystem.cpp; sourceTree = "<group>"; };
 		5045D667169F2E9C00742C05 /* ParticleEmitterSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEmitterSystem.h; path = Systems/ParticleEmitterSystem.h; sourceTree = "<group>"; };
+		5045D66A169F36E400742C05 /* IRenderUpdatable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRenderUpdatable.h; sourceTree = "<group>"; };
 		5073EA9E166A400B00101AB5 /* MaterialCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialCompiler.cpp; sourceTree = "<group>"; };
 		5073EA9F166A400B00101AB5 /* MaterialCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCompiler.h; sourceTree = "<group>"; };
 		5073EAA0166A400B00101AB5 /* MaterialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGraph.cpp; sourceTree = "<group>"; };
@@ -976,6 +977,7 @@
 				508E59AC1684A07500D2ECA8 /* RenderPass.h */,
 				508E59AD1684A07500D2ECA8 /* RenderSystem.cpp */,
 				508E59AE1684A07500D2ECA8 /* RenderSystem.h */,
+				5045D66A169F36E400742C05 /* IRenderUpdatable.h */,
 			);
 			path = Highlevel;
 			sourceTree = "<group>";

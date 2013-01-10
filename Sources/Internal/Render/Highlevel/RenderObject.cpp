@@ -46,6 +46,9 @@ RenderObject::~RenderObject()
     
 }
 
+void RenderObject::Update(float32 timeElapsed)
+{
+}
     
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {

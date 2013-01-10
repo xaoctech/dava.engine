@@ -41,6 +41,7 @@
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/Scene.h"
+#include "Platform/SystemTimer.h"
 
 namespace DAVA
 {
@@ -100,7 +101,8 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
     
 void RenderUpdateSystem::Process()
 {
-    RenderSystem::Instance()->Process();
+    float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+    RenderSystem::Instance()->Update(timeElapsed);
 }
     
 };

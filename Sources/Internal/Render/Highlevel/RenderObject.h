@@ -107,8 +107,7 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
 
-    
-    
+    virtual void Update(float32 timeElapsed);
     
 protected:
     uint32 flags;
