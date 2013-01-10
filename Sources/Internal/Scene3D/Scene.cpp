@@ -581,6 +581,8 @@ void Scene::Update(float timeElapsed)
 
 	lodSystem->SetCamera(currentCamera);
 	lodSystem->Process();
+
+	particleEmitterSystem->Process();
     
 //	entityManager->Flush();
 
