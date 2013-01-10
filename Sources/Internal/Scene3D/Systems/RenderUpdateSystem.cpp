@@ -34,6 +34,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
 #include "Scene3D/Camera.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
@@ -73,6 +74,12 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
     RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
     if (!renderObject)return;
 
+    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
+    if (node)
+    {
+        node = 0;
+    }
+    
     entityObjectMap.Insert(entity, renderObject);
     RenderSystem::Instance()->RenderPermanent(renderObject);
 }
@@ -81,6 +88,12 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
     RenderObject * renderObject = entityObjectMap.Value(entity);
     if (!renderObject)return;
+    
+    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
+    if (node)
+    {
+        node = 0;
+    }
 
     RenderSystem::Instance()->RemoveFromRender(renderObject);
 }

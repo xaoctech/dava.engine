@@ -124,10 +124,11 @@ void SceneNode::AddComponent(Component * component)
 
     SafeDelete(components[component->GetType()]);
     components[component->GetType()] = component;
+    UpdateComponentsFastPtrs();
     if (scene)
         scene->AddComponent(this, component);
+    // SHOULD BE DONE AFTER scene->AddComponent
     componentFlags |= 1 << component->GetType();
-    UpdateComponentsFastPtrs();
 }
 
 void SceneNode::RemoveComponent(Component * component)
@@ -137,6 +138,7 @@ void SceneNode::RemoveComponent(Component * component)
     components[component->GetType()] = 0;
     if (scene)
         scene->RemoveComponent(this, component);
+    // SHOULD BE DONE AFTER scene->RemoveComponent
     componentFlags &= ~(1 << component->GetType());
 	delete(component);
     UpdateComponentsFastPtrs();
@@ -153,6 +155,16 @@ Component * SceneNode::GetComponent(uint32 componentType)
 {
     return components[componentType];
 }
+    
+uint32 SceneNode::GetComponentCount()
+{
+    uint32 count = 0;
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+        if (componentFlags >> k)
+            count++;
+    return count;
+}
+
 
 
 void SceneNode::SetScene(Scene * _scene)

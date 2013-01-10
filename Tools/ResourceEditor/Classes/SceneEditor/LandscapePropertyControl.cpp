@@ -2,7 +2,7 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 #include "ControlsFactory.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 #include "../Qt/Main/QtUtils.h"
 #include "SceneValidator.h"
@@ -38,7 +38,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     if((emptyBox.min != bbox.min) && (emptyBox.max != bbox.max))
     {
         AABBox3 transformedBox;
-        bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+        bbox.GetTransformedBox(*landscape->GetWorldTransformPtr(), transformedBox);
         size = transformedBox.max - transformedBox.min;
     }
     propertyList->SetFloatPropertyValue("property.landscape.size", size.x);
@@ -77,7 +77,10 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     
     propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
-    bool showGrid =  (0 != (landscape->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_GRID));
+    
+    // RETURN TO THIS CODE LATER
+    // bool showGrid =  (0 != (landscape->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_GRID));
+    bool showGrid = false;
     propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
 
@@ -300,16 +303,17 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
 {
     if("property.landscape.showgrid" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        
-        if(newValue)
-        {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
-        }
-        else 
-        {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
-        }
+        // RETURN TO THIS CODE LATER
+//        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+//        
+//        if(newValue)
+//        {
+//            landscape->SetDebugFlags(landscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
+//        else 
+//        {
+//            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
     }
     else if (String("property.material.fogenabled") == forKey)
     {

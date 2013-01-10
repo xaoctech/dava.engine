@@ -667,17 +667,19 @@ void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToF
 
 NodesPropertyControl *LandscapeEditorVisibilityCheckTool::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
-
-	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-
-    propsControl->SetDelegate(this);
-
-    LandscapeEditorSettingsChanged(propsControl->Settings());
-
-
-    return propsControl;
+// RETURN TO THIS CODE LATER
+//    LandscapeEditorPropertyControl *propsControl =
+//		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
+//
+//	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+//
+//    propsControl->SetDelegate(this);
+//
+//    LandscapeEditorSettingsChanged(propsControl->Settings());
+//
+//
+//    return propsControl;
+    return 0;
 }
 
 void LandscapeEditorVisibilityCheckTool::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
