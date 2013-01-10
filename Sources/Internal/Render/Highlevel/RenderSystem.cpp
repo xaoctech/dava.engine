@@ -190,12 +190,37 @@ void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
     markedObjects.push_back(renderObject);
 }
-    
-void RenderSystem::Process()
+        
+void RenderSystem::RegisterForUpdate(IRenderUpdatable * updatable)
 {
-    ProcessClipping();
+    objectsForUpdate.push_back(updatable);
 }
     
+void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
+{
+    uint32 size = objectsForUpdate.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		if(objectsForUpdate[i] == updatable)
+		{
+			objectsForUpdate[i] = objectsForUpdate[size - 1];
+			objectsForUpdate.pop_back();
+			return;
+		}
+	}
+}
+
+void RenderSystem::Update(float32 timeElapsed)
+{
+    ProcessClipping();
+    
+    uint32 size = objectsForUpdate.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+        objectsForUpdate[i]->Update(timeElapsed);
+    }
+}
+
 void RenderSystem::Render()
 {
 //    //
