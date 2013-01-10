@@ -19,6 +19,8 @@ public:
 
 	void Init(DAVA::ParticleEmitter* emitter, bool updateMinimize);
 	void Update();
+	
+	virtual bool eventFilter( QObject * o, QEvent * e );
 
 signals:
 	void ValueChanged();

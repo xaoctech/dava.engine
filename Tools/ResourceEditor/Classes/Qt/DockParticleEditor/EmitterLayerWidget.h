@@ -34,6 +34,8 @@ public:
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
 	void Update();
 	
+	virtual bool eventFilter(QObject *, QEvent *);
+	
 signals:
 	void ValueChanged();
 	

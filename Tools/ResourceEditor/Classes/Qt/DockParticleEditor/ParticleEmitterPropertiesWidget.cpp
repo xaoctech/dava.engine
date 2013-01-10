@@ -2,6 +2,7 @@
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
 #include <QLabel>
+#include <QEvent>
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
 	QWidget(parent)
@@ -46,6 +47,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterLifeHBox->addWidget(emitterLife);
 	mainLayout->addLayout(emitterLifeHBox);
 	connect(emitterLife, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	
+	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
+        sp->installEventFilter( this );
+    }
 	
 	blockSignals = false;
 }
@@ -159,4 +164,14 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 void ParticleEmitterPropertiesWidget::Update()
 {
 	Init(emitter, false);
+}
+
+bool ParticleEmitterPropertiesWidget::eventFilter(QObject * o, QEvent * e)
+{
+    if (e->type() == QEvent::Wheel && qobject_cast<QAbstractSpinBox*>(o))
+    {
+        e->ignore();
+        return true;
+    }
+    return QWidget::eventFilter(o, e);
 }
