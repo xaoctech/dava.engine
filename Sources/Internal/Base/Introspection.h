@@ -266,10 +266,10 @@ namespace DAVA
 		return _type::TypeInfo(); \
 	}
 
-#define MEMBER(_name, _desc, ...) \
-	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), __VA_ARGS__),
+#define MEMBER(_name, _desc) \
+	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name)),
 
-#define PROPERTY(_name, _desc, _getter, _setter, ...) \
-	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter, __VA_ARGS__),
+#define PROPERTY(_name, _desc, _getter, _setter) \
+	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__
