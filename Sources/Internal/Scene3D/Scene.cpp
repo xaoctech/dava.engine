@@ -53,7 +53,7 @@
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
-#include "Scene3D/LandscapeNode.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Systems/TransformSystem.h"

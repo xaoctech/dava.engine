@@ -3,9 +3,9 @@
 namespace DAVA 
 {
 
-RenderComponent::RenderComponent()
+RenderComponent::RenderComponent(RenderObject * _object)
 {
-    renderObject = 0;
+    renderObject = SafeRetain(_object);
 }
 
 RenderComponent::~RenderComponent()

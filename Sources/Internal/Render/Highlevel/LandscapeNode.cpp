@@ -27,7 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/LandscapeNode.h"
+#include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Image.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
@@ -38,11 +38,11 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/StringFormat.h"
 #include "Scene3D/SceneFileV2.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/ImageLoader.h"
-
+#include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 
 
@@ -54,8 +54,7 @@ REGISTER_CLASS(LandscapeNode);
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 LandscapeNode::LandscapeNode()
-	: SceneNode()
-    , indices(0)
+    : indices(0)
 {
     heightmapPath = String("");
     
@@ -96,6 +95,8 @@ LandscapeNode::LandscapeNode()
     isFogEnabled = false;
     fogDensity = 0.006f;
     fogColor = Color::White();
+    
+    AddRenderBatch(new LandscapeChunk(this));
 }
 
 LandscapeNode::~LandscapeNode()
@@ -246,7 +247,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPat
     SafeDeleteArray(indices); //TODO: need here or no?
     
 	heightmapPath = heightmapPathname;
-	box = _box;
+	bbox = _box;
 
     InitShaders(); // init new shaders according to the selected rendering mode
     BuildHeightmap();
@@ -328,25 +329,25 @@ void LandscapeNode::BuildLandscape()
 Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint16 height)
 {
     Vector3 res;
-    res.x = (box.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (box.max.x - box.min.x));
-    res.y = (box.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (box.max.y - box.min.y));
-    res.z = (box.min.z + ((float32)height / (float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z));
+    res.x = (bbox.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (bbox.max.x - bbox.min.x));
+    res.y = (bbox.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (bbox.max.y - bbox.min.y));
+    res.z = (bbox.min.z + ((float32)height / (float32)Heightmap::MAX_VALUE) * (bbox.max.z - bbox.min.z));
     return res;
 };
 
 bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal) const
 {
-	if (point.x > box.max.x ||
-		point.x < box.min.x ||
-		point.y > box.max.y ||
-		point.y < box.min.y)		
+	if (point.x > bbox.max.x ||
+		point.x < bbox.min.x ||
+		point.y > bbox.max.y ||
+		point.y < bbox.min.y)
 	{
 		return false;
 	}
-	float32 kW = (float32)(heightmap->Size() - 1) / (box.max.x - box.min.x);
+	float32 kW = (float32)(heightmap->Size() - 1) / (bbox.max.x - bbox.min.x);
 	
-	float32 x = (point.x - box.min.x) * kW;
-	float32 y = (point.y - box.min.y) * kW;
+	float32 x = (point.x - bbox.min.x) * kW;
+	float32 y = (point.y - bbox.min.y) * kW;
 
 	float32 x1 = floor(x);
 	float32 y1 = floor(y);
@@ -386,7 +387,7 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 
 	result.y = point.y;
 
 	result.z = (D - B * y - A * x) / C;
-	result.z = box.min.z + result.z / ((float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z);
+	result.z = bbox.min.z + result.z / ((float32)Heightmap::MAX_VALUE) * (bbox.max.z - bbox.min.z);
 
 	if (normal != 0)
 	{
@@ -1094,7 +1095,7 @@ void LandscapeNode::UnbindMaterial()
 
     
     
-void LandscapeNode::Draw()
+void LandscapeNode::Draw(Camera * camera)
 {
     Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
@@ -1127,7 +1128,7 @@ void LandscapeNode::Draw()
 //    }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    SceneNode::Draw();
+    //SceneNode::Draw();
 
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
 //    if (!(debugFlags & DEBUG_DRAW_GRID))
@@ -1156,8 +1157,8 @@ void LandscapeNode::Draw()
 //    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 //    frustum->Set();
 
-    frustum = scene->GetClipCamera()->GetFrustum();
-    cameraPos = scene->GetClipCamera()->GetPosition();
+    frustum = camera->GetFrustum();
+    cameraPos = camera->GetPosition();
     
     fans.clear();
     
@@ -1317,24 +1318,24 @@ void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vec
 	}
 }
 
-AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
-{
-    AABBox3 retBBox = box;
-    box.GetTransformedBox(GetWorldTransform(), retBBox);
-    
-    const Vector<SceneNode*>::iterator & itEnd = children.end();
-    for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
-    {
-        AABBox3 lbox = (*it)->GetWTMaximumBoundingBoxSlow();
-        if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)
-           &&(-AABBOX_INFINITY != lbox.max.x && -AABBOX_INFINITY != lbox.max.y && -AABBOX_INFINITY != lbox.max.z))
-        {
-            retBBox.AddAABBox(lbox);
-        }
-    }
-    
-    return retBBox;
-}
+//AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
+//{
+////    AABBox3 retBBox = box;
+////    box.GetTransformedBox(GetWorldTransform(), retBBox);
+////
+////    const Vector<SceneNode*>::iterator & itEnd = children.end();
+////    for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+////    {
+////        AABBox3 lbox = (*it)->GetWTMaximumBoundingBoxSlow();
+////        if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)
+////           &&(-AABBOX_INFINITY != lbox.max.x && -AABBOX_INFINITY != lbox.max.y && -AABBOX_INFINITY != lbox.max.z))
+////        {
+////            retBBox.AddAABBox(lbox);
+////        }
+////    }
+//    
+//    return retBBox;
+//}
 
 const String & LandscapeNode::GetHeightmapPathname()
 {
@@ -1343,7 +1344,7 @@ const String & LandscapeNode::GetHeightmapPathname()
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive, sceneFile);
+    //SceneNode::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
     String extension = FileSystem::Instance()->GetExtension(heightmapPath);
@@ -1357,7 +1358,7 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
-    archive->SetByteArrayAsType("bbox", box);
+    archive->SetByteArrayAsType("bbox", bbox);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         if(TEXTURE_DETAIL == k) continue;
@@ -1379,7 +1380,7 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive, sceneFile);
+    //SceneNode::Load(archive, sceneFile);
     
     String path = archive->GetString("hmap");
     path = sceneFile->RelativeToAbsolute(path);
