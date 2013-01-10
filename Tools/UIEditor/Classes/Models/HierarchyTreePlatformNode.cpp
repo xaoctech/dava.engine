@@ -74,6 +74,12 @@ int HierarchyTreePlatformNode::GetHeight() const
 	return height;
 }
 
+HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
+{
+	// Root Node is the parent for the Platform.
+	return this->rootNode;
+}
+
 QString HierarchyTreePlatformNode::GetResourceFolder() const
 {
 	QString path;
@@ -203,4 +209,15 @@ void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPa
 void HierarchyTreePlatformNode::SetLocale(const String& locale)
 {
     this->locale = locale;
+}
+
+void HierarchyTreePlatformNode::ReturnTreeNodeToScene()
+{
+	if (!this->redoParentNode)
+	{
+		return;
+	}
+	
+	// Need to recover the node previously deleted, taking position into account.
+	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }

@@ -16,26 +16,50 @@
 
 using namespace DAVA;
 
-class CreatePlatformCommand: public BaseCommand
+// Base command for Undoable commands which creates differnt Nodes.
+class UndoableHierarchyTreeNodeCommand : public BaseCommand
+{
+public:
+	UndoableHierarchyTreeNodeCommand();
+
+	// Prepare the information needed to remove node from the scene.
+	void PrepareRemoveFromSceneInformation();
+
+	// Set the Redo Node.
+	void SetRedoNode(HierarchyTreeNode* redoNode);
+
+	// Return the Redo Node to scene.
+	void ReturnRedoNodeToScene();
+
+protected:
+	// The Redo Node remembered.
+	HierarchyTreeNode* redoNode;
+};
+
+class CreatePlatformCommand: public UndoableHierarchyTreeNodeCommand
 {
 public:
 	CreatePlatformCommand(const QString& name, const Vector2& size);
     
 	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+	virtual void Rollback();
+
+	virtual bool IsUndoRedoSupported() {return true;};
 
 private:
 	QString name;
 	Vector2 size;
 };
 
-class CreateScreenCommand: public BaseCommand
+class CreateScreenCommand: public UndoableHierarchyTreeNodeCommand
 {
 public:
 	CreateScreenCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
 	
 	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+	virtual void Rollback();
+
+	virtual bool IsUndoRedoSupported() {return true;};
 
 private:
 	QString name;
@@ -54,7 +78,14 @@ public:
 private:
 	QString type;
 	QPoint pos;
+
 	HierarchyTreeNode::HIERARCHYTREENODEID createdControlID;
+	
+	// Prepare the information needed for Redo.
+	void PrepareRedoInformation();
+	
+	// Information needed during Undo/Redo.
+	HierarchyTreeNode* redoNode;
 };
 
 class DeleteSelectedNodeCommand: public BaseCommand
@@ -63,10 +94,17 @@ public:
 	DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	
 	virtual void Execute();
-	virtual bool IsUndoRedoSupported() {return false;};
+	void Rollback();
+	virtual bool IsUndoRedoSupported() {return true;};
 	
 private:
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
+	
+	// Prepare the information needed for Redo.
+	void PrepareRedoInformation();
+	
+	// Information needed during Undo/Redo.
+	HierarchyTreeNode::HIERARCHYTREENODESLIST redoNodes;
 };
 
 class ChangeNodeHeirarchy: public BaseCommand

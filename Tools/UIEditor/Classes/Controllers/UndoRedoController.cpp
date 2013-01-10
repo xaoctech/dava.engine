@@ -46,11 +46,13 @@ void UndoRedoController::AddCommandToUndoStack(BaseCommand* command)
 
 	SafeRetain(command);
 	AddCommandToStack(undoStack, command);
+	
+	// Adding the Undo command should cleanup the Redo stack.
+	CleanupStack(redoStack);
 }
 
 bool UndoRedoController::Undo()
 {
-	Logger::Debug("BEFORE UNDO: undo stack size %i, redo stack size %i", undoStack.size(), redoStack.size());
 	if (!CanUndo())
 	{
 		return false;
@@ -61,15 +63,12 @@ bool UndoRedoController::Undo()
 	undoStack.pop_front();
 
 	command->Rollback();
-	Logger::Debug("AFTER UNDO: undo stack size %i, redo stack size %i", undoStack.size(), redoStack.size());
-
 	return true;
 }
 
 // Redo the last command, returns TRUE if succeeded.
 bool UndoRedoController::Redo()
 {
-	Logger::Debug("BEFORE REDO: undo stack size %i, redo stack size %i", undoStack.size(), redoStack.size());
 	if (!CanRedo())
 	{
 		return false;
@@ -80,8 +79,6 @@ bool UndoRedoController::Redo()
 	redoStack.pop_front();
 	
 	command->Execute();
-	Logger::Debug("AFTER REDO: undo stack size %i, redo stack size %i", undoStack.size(), redoStack.size());
-	
 	return true;
 }
 
