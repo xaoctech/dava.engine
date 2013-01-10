@@ -351,8 +351,6 @@
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
 		50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugRenderComponent.h; sourceTree = "<group>"; };
-		50E8E91C169C90C2005BB2F1 /* BoundingBoxComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BoundingBoxComponent.cpp; sourceTree = "<group>"; };
-		50E8E91D169C90C2005BB2F1 /* BoundingBoxComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoundingBoxComponent.h; sourceTree = "<group>"; };
 		50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = EventSystem.cpp; path = Systems/EventSystem.cpp; sourceTree = "<group>"; };
 		50E8E92F169CB3CF005BB2F1 /* EventSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EventSystem.h; path = Systems/EventSystem.h; sourceTree = "<group>"; };
 		50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderUpdateSystem.cpp; path = Systems/RenderUpdateSystem.cpp; sourceTree = "<group>"; };
@@ -940,8 +938,6 @@
 			children = (
 				5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */,
 				5045D664169F2E7A00742C05 /* ParticleEmitterComponent.h */,
-				50E8E91C169C90C2005BB2F1 /* BoundingBoxComponent.cpp */,
-				50E8E91D169C90C2005BB2F1 /* BoundingBoxComponent.h */,
 				50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */,
 				50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */,
 				50957611168DD33D0023E6D5 /* LodComponent.cpp */,

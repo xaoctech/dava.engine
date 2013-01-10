@@ -1167,7 +1167,10 @@ void LandscapeNode::Draw(Camera * camera)
 #if defined (DRAW_OLD_STYLE)    
     BindMaterial(0);
 	Draw(&quadTreeHead);
-#else //#if defined (DRAW_OLD_STYLE)    
+#else //#if defined (DRAW_OLD_STYLE)   
+    
+    
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
     lod0quads.clear();
     lodNot0quads.clear();
     
