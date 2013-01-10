@@ -2,7 +2,7 @@
 #define __DAVAENGINE_TRANSFORM_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
 #include "Entity/Component.h"
 
 namespace DAVA 

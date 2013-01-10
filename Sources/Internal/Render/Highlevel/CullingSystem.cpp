@@ -27,87 +27,74 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
-#include "Scene3D/Systems/DeleteSystem.h"
+#include "Render/Highlevel/CullingSystem.h"
+#include "Scene3D/SceneNode.h"
+#include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Frustum.h"
+#include "Scene3D/Camera.h"
 
-
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+CullingSystem::CullingSystem()
 {
 }
 
-ApplicationCore::~ApplicationCore()
+CullingSystem::~CullingSystem()
 {
-	
 }
-	
-void ApplicationCore::Update(float32 timeElapsed)
+    
+void CullingSystem::ImmediateUpdate(SceneNode * entity)
 {
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-	if(DeleteSystem::Instance())
-	{
-		DeleteSystem::Instance()->Update();
-	}
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
+    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    if (!renderObject)return;
+    
+    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
+    {
+        Logger::Error("Object in entity was replaced suddenly. ");
+    }
+    
+    // Do we need updates??? 
 }
-
-void ApplicationCore::Draw()
+    
+void CullingSystem::AddEntity(SceneNode * entity)
 {
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
+    
 }
 
-void ApplicationCore::BeginFrame()
+void CullingSystem::RemoveEntity(SceneNode * entity)
 {
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    
 }
-
-void ApplicationCore::EndFrame()
+    
+void CullingSystem::SetCamera(Camera * _camera)
 {
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
+    camera = _camera;
 }
-
-void ApplicationCore::OnSuspend()
+    
+void CullingSystem::Process()
 {
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
+    int32 objectsCulled = 0;
+    
+    Frustum * frustum = camera->GetFrustum();
+
+    uint32 size = renderObjectArray.size();
+    for (uint32 pos = 0; pos < size; ++pos)
+    {
+        RenderObject * node = renderObjectArray[pos];
+        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
+        //if (!frustum->IsInside(node->GetWorldTransformedBox()))
+        {
+            //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
+            objectsCulled++;
+        }
+    }
 }
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
-
+    
+    
 };

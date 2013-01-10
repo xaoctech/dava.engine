@@ -1,15 +1,18 @@
-#include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SceneNode.h"
 #include "Debug/DVAssert.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
 
-
-
 TransformSystem::TransformSystem()
 {
+	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
+	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 TransformSystem::~TransformSystem()
@@ -53,6 +56,7 @@ void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 		if(transform->parentMatrix)
 		{
 			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
+            Scene::GetActiveScene()->ImmediateEvent(entity, Component::TRANSFORM_COMPONENT, EventSystem::WORLD_TRANSFORM_CHANGED);
 		}
 	}
 
@@ -70,10 +74,16 @@ void TransformSystem::SortAndThreadSplit()
 {
 }
 
-void TransformSystem::ImmediateUpdate(SceneNode * entity)
+void TransformSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 {
-	HierahicNeedUpdate(entity);
-	HierahicAddToUpdate(entity);
+	switch(event)
+	{
+	case EventSystem::LOCAL_TRANSFORM_CHANGED:
+	case EventSystem::TRANSFORM_PARENT_CHANGED:
+		HierahicNeedUpdate(entity);
+		HierahicAddToUpdate(entity);
+		break;
+	}
 }
 
 void TransformSystem::HierahicNeedUpdate(SceneNode * entity)

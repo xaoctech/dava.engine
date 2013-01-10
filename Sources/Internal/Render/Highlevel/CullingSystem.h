@@ -27,48 +27,43 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SPHERE_NODE_H__
-#define __DAVAENGINE_SPHERE_NODE_H__
+#ifndef __DAVAENGINE_RENDER_CULLINGSYSTEM_H__
+#define	__DAVAENGINE_RENDER_CULLINGSYSTEM_H__
 
-#include "Scene3D/MeshInstanceNode.h"
+#include "Base/BaseTypes.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
+#include "Entity/SceneSystem.h"
 
-namespace DAVA 
+namespace DAVA
 {
-class Scene;
-class PolygonGroup;
-class SphereNode : public MeshInstanceNode
+class RenderPass;
+class RenderLayer;
+class RenderObject;
+class RenderBatch;
+class SceneNode;
+class Camera;
+
+class CullingSystem : public SceneSystem
 {
-public:	
-	SphereNode();
-	virtual ~SphereNode();
-	
-    virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+public:
+    CullingSystem();
+    virtual ~CullingSystem();
     
-    void SetQuality(int32 newQuality);
-    int32 GetQuality() const;
-    
-    void SetColor(Color c);
-    const Color & GetColor() const;    
-    
-    void SetRadius(float32 radius);
-    float32 GetRadius() const;
+    virtual void AddEntity(SceneNode * entity);
+    virtual void RemoveEntity(SceneNode * entity);
+    virtual void ImmediateUpdate(SceneNode * entity);
 
+    virtual void Process();
     
-protected:
-
-    void CreateSphere(float32 radius, Color c);
+    void SetCamera(Camera * camera);
     
-    StaticMesh *sphereMesh;
-    
-    int32 quality;
-    
-    float32 radius;
-    Color color;
+private:
+    Vector<RenderObject*> renderObjectArray;
+    Camera * camera;
 };
-	
-};
+    
+} // ns
 
-#endif // __DAVAENGINE_SPHERE_NODE_H__
+#endif	/* __DAVAENGINE_RENDER_CULLINGSYSTEM_H__ */
+

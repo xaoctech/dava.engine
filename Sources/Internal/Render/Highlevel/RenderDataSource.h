@@ -27,43 +27,29 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_CUBE_NODE_H__
-#define __DAVAENGINE_CUBE_NODE_H__
+#ifndef __DAVAENGINE_SCENE3D_RENDER_DATA_SOURCE_H__
+#define	__DAVAENGINE_SCENE3D_RENDER_DATA_SOURCE_H__
 
-#include "Scene3D/MeshInstanceNode.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
 
-namespace DAVA 
+namespace DAVA
 {
-class Scene;
-class PolygonGroup;
-class CubeNode : public MeshInstanceNode
-{
-public:	
-	CubeNode();
-	virtual ~CubeNode();
-	
-    virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+        
+/* 
+    class RenderDataSource : public BaseObject
+    {
+    public:
+        RenderDataSource();
+        virtual ~RenderDataSource();
+        
+        virtual void PrepareRenderDataObject(RenderDataObject * renderDataObject);
+    private:
+    };
+*/
     
-    void SetColor(Color c);
-    const Color & GetColor() const;    
+} // ns
 
-    void SetSize(Vector3 size);
-	const Vector3 & GetSize() const;
-    
+#endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_H__ */
 
-protected:
-
-    void CreateCube(Vector3 size, Color c);
-
-    StaticMesh *cubeMesh;
-    
-    Vector3 size;
-    Color color;
-};
-	
-};
-
-#endif // __DAVAENGINE_CUBE_NODE_H__

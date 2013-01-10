@@ -40,10 +40,11 @@
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/LodNode.h"
-#include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -698,7 +699,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			lc->lodLayers.push_back(newLodDataItem);
 		}
 
-		newNode->GetScene()->transformSystem->ImmediateUpdate(newNode);
+		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
 		return true;
 	}
 

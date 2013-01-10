@@ -48,7 +48,7 @@ public:
     
     virtual void AddEntity(SceneNode * entity);
     virtual void RemoveEntity(SceneNode * entity);
-    virtual void ImmediateUpdate(SceneNode * entity);
+    virtual void ImmediateEvent(SceneNode * entity, uint32 event);
     
     
     virtual void Process();

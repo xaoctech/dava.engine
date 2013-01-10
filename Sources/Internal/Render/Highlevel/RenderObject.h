@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 namespace DAVA
 {
@@ -61,13 +62,14 @@ public:
  */
 
 class RenderBatch;
-    
 class RenderObject : public BaseObject
 {
 public:
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
+        VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
+        TRANSFORM_UPDATED = 1 << 15,
 	};
 
     RenderObject();
@@ -84,16 +86,27 @@ public:
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
+    inline void AddFlag(uint32 _flag) { flags |= _flag; }
+    inline void RemoveFlag(uint32 _flag) { flags &= ~_flag; }
     
     inline void SetAABBox(const AABBox3 & bbox);
+    inline void SetWorldAABBox(const AABBox3 & bbox);
     inline void SetBSphere(const Sphere & sphere);
     
-    inline const AABBox3 & GetBoundingBox();
+    inline const AABBox3 & GetBoundingBox() const;
+    inline AABBox3 & GetWorldBoundingBox();
+    
+    inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
+    inline Matrix4 * GetWorldTransformPtr() const;
+
 private:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
     AABBox3 bbox;
+    AABBox3 worldBBox;
+    Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
+
 //    Sphere bsphere;
     
     Vector<RenderBatch*> renderBatchArray;    
@@ -108,11 +121,39 @@ inline void RenderObject::SetRemoveIndex(uint32 _removeIndex)
 {
     removeIndex = _removeIndex;
 }
+    
+inline void RenderObject::SetAABBox(const AABBox3 & _bbox)
+{
+    bbox = _bbox;
+}
 
-inline const AABBox3 & RenderObject::GetBoundingBox()
+inline void RenderObject::SetWorldAABBox(const AABBox3 & _bbox)
+{
+    worldBBox = _bbox;
+}
+
+inline const AABBox3 & RenderObject::GetBoundingBox() const
 {
     return bbox;
 }
+
+inline AABBox3 & RenderObject::GetWorldBoundingBox()
+{
+    return worldBBox;
+}
+    
+inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
+{
+    worldTransform = _worldTransform;
+    flags |= TRANSFORM_UPDATED;
+    RenderSystem::Instance()->MarkForUpdate(this);
+}
+    
+inline Matrix4 * RenderObject::GetWorldTransformPtr() const
+{
+    return worldTransform;
+}
+
     
 } // ns
 

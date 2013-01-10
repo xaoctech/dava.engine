@@ -27,87 +27,67 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
-#include "Scene3D/Systems/DeleteSystem.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/SceneNode.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Frustum.h"
+#include "Scene3D/Camera.h"
 
+#include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Scene3D/Scene.h"
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
-
-namespace DAVA 
+namespace DAVA
 {
+RenderUpdateSystem::RenderUpdateSystem()
+{
+    Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+}
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+RenderUpdateSystem::~RenderUpdateSystem()
 {
 }
 
-ApplicationCore::~ApplicationCore()
+void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 {
-	
+    if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
+    {
+        // Update new transform pointer, and mark that transform is changed
+        Matrix4 * worldTransformPointer = entity->GetTransformComponent()->GetWorldTransform();
+        entity->GetRenderComponent()->GetRenderObject()->SetWorldTransformPtr(worldTransformPointer);
+    }
+    
+    //if (event == EventSystem::ACTIVE_CAMERA_CHANGED)
+    {
+        // entity->GetCameraComponent();
+        // RenderSystem::
+    }
 }
-	
-void ApplicationCore::Update(float32 timeElapsed)
+    
+void RenderUpdateSystem::AddEntity(SceneNode * entity)
 {
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);    
-	UIControlSystem::Instance()->Update();
-	if(DeleteSystem::Instance())
-	{
-		DeleteSystem::Instance()->Update();
-	}
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
+    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    if (!renderObject)return;
 
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
+    entityObjectMap.Insert(entity, renderObject);
+    RenderSystem::Instance()->RenderPermanent(renderObject);
 }
 
-void ApplicationCore::BeginFrame()
+void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
+    RenderObject * renderObject = entityObjectMap.Value(entity);
+    if (!renderObject)return;
 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    RenderSystem::Instance()->RemoveFromRender(renderObject);
 }
-
-void ApplicationCore::EndFrame()
+    
+void RenderUpdateSystem::Process()
 {
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
+    RenderSystem::Instance()->Process();
 }
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
-
+    
 };

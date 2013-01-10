@@ -34,6 +34,8 @@
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/AnimatedMesh.h"
 #include "Render/Image.h"
+#include "Render/Highlevel/RenderSystem.h"
+
 
 #include "Platform/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
@@ -54,10 +56,11 @@
 #include "Scene3D/LandscapeNode.h"
 
 #include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Scene3D/TransformSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -71,6 +74,8 @@ namespace DAVA
 {
     
 REGISTER_CLASS(Scene);
+
+Scene * Scene::activeScene = 0;
     
 Scene::Scene()
 	:   SceneNode()
@@ -82,11 +87,13 @@ Scene::Scene()
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
+	SetActiveScene(this);
+
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
 //	entityManager = new EntityManager();
-	
+
 	CreateComponents();
 	CreateSystems();
 
@@ -102,10 +109,12 @@ void Scene::CreateComponents()
 
 void Scene::CreateSystems()
 {
+	eventSystem = new EventSystem();
+
     transformSystem = new TransformSystem();
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
-    renderSystem = new RenderSystem();
-    AddSystem(renderSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
+    renderUpdateSystem = new RenderUpdateSystem();
+    AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
 	lodSystem = new LodSystem();
 	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
     debugRenderSystem = new DebugRenderSystem();
@@ -145,12 +154,14 @@ Scene::~Scene()
 	SafeRelease(bvHierarchy);
 
     transformSystem = 0;
-    renderSystem = 0;
+    renderUpdateSystem = 0;
 	lodSystem = 0;
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
         SafeDelete(systems[k]);
     systems.clear();
+
+	SafeDelete(eventSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -301,10 +312,10 @@ void Scene::RemoveComponent(SceneNode * entity, Component * component)
     }
 }
     
-void Scene::ImmediateUpdate(SceneNode * entity, Component * updatedComponent)
+void Scene::ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event)
 {
     uint32 systemsCount = systems.size();
-    uint32 updatedComponentFlag = 1 << updatedComponent->GetType();
+    uint32 updatedComponentFlag = 1 << componentType;
     for (uint32 k = 0; k < systemsCount; ++k)
     {
         uint32 requiredComponentFlags = systems[k]->GetRequiredComponents();
@@ -312,7 +323,7 @@ void Scene::ImmediateUpdate(SceneNode * entity, Component * updatedComponent)
         
         if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
         {
-            systems[k]->ImmediateUpdate(entity);
+			eventSystem->NotifySystem(systems[k], entity, event);
         }
     }
 }
@@ -553,6 +564,8 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
+	SetActiveScene(this);
+
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -628,8 +641,8 @@ void Scene::Draw()
         currentCamera->Set();
     }
     
-	if(bvHierarchy)
-        bvHierarchy->Cull();
+	//if(bvHierarchy)
+    //    bvHierarchy->Cull();
 	//VisibilityAABBoxSystem::Run(this);
 
 	//entityManager->Dump();
@@ -640,9 +653,12 @@ void Scene::Draw()
 //        drawArray[k]->Draw();
 //    }
     
+    RenderSystem * renderSystem = RenderSystem::Instance();
+    
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
-    renderSystem->Process();
+    renderUpdateSystem->Process();
+    renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
 
@@ -908,6 +924,21 @@ const String & Scene::GetReferenceNodeSuffix()
 bool Scene::IsReferenceNodeSuffixChanged()
 {
 	return referenceNodeSuffixChanged;
+}
+
+void Scene::SetActiveScene(Scene * scene)
+{
+	activeScene = scene;
+}
+
+Scene * Scene::GetActiveScene()
+{
+	return activeScene;
+}
+
+EventSystem * Scene::GetEventSystem()
+{
+	return eventSystem;
 }
 
 /*void Scene::Save(KeyedArchive * archive)

@@ -63,10 +63,11 @@ class EntityManager;
 class BVHierarchy;
 class Component;
 class SceneSystem;
-class RenderSystem;
+class RenderUpdateSystem;
 class TransformSystem;
 class LodSystem;
 class DebugRenderSystem;
+class EventSystem;
     
 /**
     \ingroup scene3d
@@ -95,13 +96,14 @@ public:
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
     
-    virtual void    ImmediateUpdate(SceneNode * entity, Component * updatedComponent);
+	virtual void ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
     TransformSystem * transformSystem;
-    RenderSystem * renderSystem;
+    RenderUpdateSystem * renderUpdateSystem;
 	LodSystem * lodSystem;
     DebugRenderSystem * debugRenderSystem;
+	EventSystem * eventSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -233,6 +235,11 @@ public:
 	void SetReferenceNodeSuffix(const String & suffix);
 	const String & GetReferenceNodeSuffix();
 	bool IsReferenceNodeSuffixChanged();
+
+	static void SetActiveScene(Scene * scene);
+	static Scene * GetActiveScene();
+
+	EventSystem * GetEventSystem();
     
 protected:	
     
@@ -268,6 +275,8 @@ protected:
 
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
+
+	static Scene * activeScene;
     
     friend class SceneNode;
 };
