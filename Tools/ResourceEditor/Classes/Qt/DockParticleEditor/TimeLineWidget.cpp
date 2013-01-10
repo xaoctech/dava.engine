@@ -147,8 +147,8 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			painter.drawRect(lockRect);
 			if (isLocked)
 			{
-				painter.drawLine(lockRect.topLeft(), lockRect.bottomRight());
-				painter.drawLine(lockRect.topRight(), lockRect.bottomLeft());
+				painter.drawLine(lockRect.topLeft() + QPoint(-1, -1), lockRect.center() + QPoint(-1, 4));
+				painter.drawLine(lockRect.center() + QPoint(-1, 4), lockRect.topRight() + QPoint(4, -1));
 			}
 			
 			lockRect.translate(lockRect.width() + 1, 0);

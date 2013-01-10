@@ -120,6 +120,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 	
+	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
+        sp->installEventFilter( this );
+    }
 	
 	sprite = NULL;
 	blockSignals = false;
@@ -247,8 +250,12 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	alignToMotionSpin->setValue(layer->alignToMotion);
 	
 	//LAYER_START_TIME, LAYER_END_TIME
+	startTimeSpin->setMinimum(0);
 	startTimeSpin->setValue(layer->startTime);
+	startTimeSpin->setMaximum(layer->endTime);
+	endTimeSpin->setMinimum(0);
 	endTimeSpin->setValue(layer->endTime);
+	endTimeSpin->setMaximum(emitter->GetLifeTime());
 	
 	//, LAYER_IS_LONG
 	
@@ -385,4 +392,15 @@ void EmitterLayerWidget::OnValueChanged()
 void EmitterLayerWidget::Update()
 {
 	Init(this->emitter, this->layer, false);
+}
+
+bool EmitterLayerWidget::eventFilter( QObject * o, QEvent * e )
+{
+    if ( e->type() == QEvent::Wheel &&
+		qobject_cast<QAbstractSpinBox*>( o ) )
+    {
+        e->ignore();
+        return true;
+    }
+    return QWidget::eventFilter( o, e );
 }
