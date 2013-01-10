@@ -37,6 +37,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA
 {
@@ -44,7 +45,6 @@ namespace DAVA
 class Scene;
 class SceneNodeAnimation;
 class SceneNodeAnimationKey;
-class KeyedArchive;
 class SceneFileV2;
 class DataNode;
 class Entity;
@@ -384,7 +384,7 @@ public:
 	INTROSPECTION(SceneNode,
 		MEMBER(name, "Name")
 		MEMBER(worldTransform, "World transform")
-		//MEMBER(customProperties, "Custom properties")
+		MEMBER(customProperties, "Custom properties")
 		);
 };
 	
