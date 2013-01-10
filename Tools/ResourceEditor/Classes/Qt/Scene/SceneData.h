@@ -61,6 +61,8 @@ public:
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
 
+	void GetAllSprites(DAVA::List<DAVA::Sprite*> & sprites);
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);

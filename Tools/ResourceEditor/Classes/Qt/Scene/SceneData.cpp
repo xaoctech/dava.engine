@@ -419,3 +419,28 @@ void SceneData::EmitSceneChanged()
 {
 	emit SceneChanged(this->scene);
 }
+
+void SceneData::GetAllSprites(DAVA::List<DAVA::Sprite*> & sprites)
+{
+	Scene* scene = this->GetScene();
+	SceneNode * rootNode = scene->GetRootNode(sceneFilePathname);
+	List<SceneNode*> children;
+	rootNode->GetChildNodes(children);
+	for(auto it = children.begin(); it != children.end(); ++it)
+	{
+		ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(*it);
+		if( NULL != particleEmitterNode)
+		{
+			auto emitter = particleEmitterNode->GetEmitter();
+			Vector<ParticleLayer*> layers = emitter->GetLayers();
+			for(auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer)
+			{
+				Sprite* sprite = (*itLayer)->GetSprite();
+				if(NULL != sprite)
+				{
+					sprites.push_back(sprite);
+				}
+			}
+		}
+	}
+}

@@ -66,6 +66,8 @@ public:
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
+	void PackSprites();
+
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode);
