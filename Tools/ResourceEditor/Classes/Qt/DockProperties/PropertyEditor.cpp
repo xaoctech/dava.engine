@@ -23,14 +23,20 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetNode(DAVA::SceneNode *node)
 {
+	static bool sss = false;
+
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
-		curNode->GetCustomProperties()->SetBool("111", true);
-		curNode->GetCustomProperties()->SetArchive("subArchive", DAVA::Core::Instance()->GetOptions());
+		if(!sss)
+		{
+			curNode->GetCustomProperties()->SetBool("111", true);
+			curNode->GetCustomProperties()->SetArchive("subArchive", DAVA::Core::Instance()->GetOptions());
+			sss = true;
+		}
 
 		const DAVA::IntrospectionInfo *info = curNode->GetTypeInfo();
 		while(NULL != info)

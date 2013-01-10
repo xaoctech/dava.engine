@@ -151,7 +151,6 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 			DAVA::Map<DAVA::String, DAVA::VariantType*> data = archive->GetArchieveData();
 			DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
 
-			printf("Create from archive: %x\n", archive);
 			for(; i != data.end(); ++i)
 			{
 				ChildAdd(i->first.c_str(), new QtPropertyDataDavaVariant(*(i->second)));
@@ -243,7 +242,6 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			QtPropertyDataDavaVariant *childVariantData = (QtPropertyDataDavaVariant *) lastChangedChildData;
 			DAVA::KeyedArchive *archive = curVariantValue.AsKeyedArchive();
 
-			printf("Set to archive: %x\n", archive);
 			if(NULL != archive && NULL != childVariantData)
 			{
 				archive->SetVariant(lastChangedChildKey.toStdString(), &(childVariantData->curVariantValue));
