@@ -3,6 +3,7 @@
 
 #include "DockProperties/PropertyEditor.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
@@ -28,16 +29,15 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
+		curNode->GetCustomProperties()->SetBool("111", true);
+		curNode->GetCustomProperties()->SetArchive("subArchive", DAVA::Core::Instance()->GetOptions());
+
 		const DAVA::IntrospectionInfo *info = curNode->GetTypeInfo();
 		while(NULL != info)
 		{
-			QtPropertyItem* subClassHeader = AppendPropertyHeader(info->Name());
-			for(int i = 0; i < info->MembersCount(); ++i)
-			{
-				QtPropertyDataIntrospection *data = new QtPropertyDataIntrospection(node, info->Member(i));
-				AppendProperty(info->Member(i)->Name(), data);
-			}
+			//QtPropertyItem* subClassHeader = AppendPropertyHeader(info->Name());
 
+			AppendProperty(info->Name(), new QtPropertyDataIntrospection(node, info));
 			info = info->BaseInfo();
 		}
 	}

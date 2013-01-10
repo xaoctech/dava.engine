@@ -11,8 +11,6 @@ QtPropertyData::QtPropertyData(const QVariant &value)
 
 QtPropertyData::~QtPropertyData() 
 {
-	printf("%x\n", this);
-
 	QMapIterator<QString, QtPropertyData*> i = QMapIterator<QString, QtPropertyData*>(children);
 	while(i.hasNext())
 	{
@@ -33,7 +31,7 @@ QVariant QtPropertyData::GetValue()
 	if(value != curValue)
 	{
 		curValue = value;
-		ChildUpdate();
+		ChildNeedUpdate();
 	}
 
 	return curValue;
@@ -44,16 +42,22 @@ void QtPropertyData::SetValue(const QVariant &value)
 	SetValueInternal(value);
 	curValue = value;
 
-	ChildUpdate();
-	if(NULL != parent)
-	{
-		parent->ChildChanged(parent->children.key(this), this);
-	}
+	ChildNeedUpdate();
+	ParentUpdate();
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) 
 { 
 	return CreateEditorInternal(parent, option);
+}
+
+void QtPropertyData::ParentUpdate()
+{
+	if(NULL != parent)
+	{
+		parent->ChildChanged(parent->children.key(this), this);
+		parent->ParentUpdate();
+	}
 }
 
 void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
@@ -126,7 +130,7 @@ void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)
 	// should be re-implemented by sub-class
 }
 
-void QtPropertyData::ChildUpdate()
+void QtPropertyData::ChildNeedUpdate()
 {
 	// should be re-implemented by sub-class
 }

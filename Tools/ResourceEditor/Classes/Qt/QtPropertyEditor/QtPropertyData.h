@@ -19,6 +19,8 @@ public:
 	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option);
 
 protected:
+	void ParentUpdate();
+
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
 	QtPropertyData* ChildGet(const QString &key);
@@ -40,7 +42,7 @@ protected:
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 
 	// Function should be re-implemented by sub-class
-	virtual void ChildUpdate();
+	virtual void ChildNeedUpdate();
 
 private:
 	QVariant curValue;

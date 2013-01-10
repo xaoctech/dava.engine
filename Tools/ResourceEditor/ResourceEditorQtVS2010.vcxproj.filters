@@ -1224,6 +1224,9 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyData.cpp">
       <Filter>Sources\Qt\QtPropertyEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2208,6 +2211,9 @@
       <Filter>Sources\Qt\QtPropertyEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>

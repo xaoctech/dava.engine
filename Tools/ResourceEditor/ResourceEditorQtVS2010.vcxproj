@@ -390,6 +390,7 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
@@ -824,6 +825,7 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItem.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
