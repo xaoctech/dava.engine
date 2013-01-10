@@ -13,6 +13,8 @@
 		5045D65C169F1A7500742C05 /* LandscapeCursor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D654169F17E200742C05 /* LandscapeCursor.cpp */; };
 		5045D65F169F1B1100742C05 /* Heightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D65D169F1B1100742C05 /* Heightmap.cpp */; };
 		5045D662169F1D1000742C05 /* LandscapeChunk.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D660169F1BC200742C05 /* LandscapeChunk.cpp */; };
+		5045D665169F2E7A00742C05 /* ParticleEmitterComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */; };
+		5045D668169F2E9C00742C05 /* ParticleEmitterSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D666169F2E9C00742C05 /* ParticleEmitterSystem.cpp */; };
 		5073EAAB166A400B00101AB5 /* MaterialCompiler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EA9E166A400B00101AB5 /* MaterialCompiler.cpp */; };
 		5073EAAC166A400B00101AB5 /* MaterialGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA0166A400B00101AB5 /* MaterialGraph.cpp */; };
 		5073EAAD166A400B00101AB5 /* MaterialGraphNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5073EAA2166A400B00101AB5 /* MaterialGraphNode.cpp */; };
@@ -307,6 +309,10 @@
 		5045D65E169F1B1100742C05 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		5045D660169F1BC200742C05 /* LandscapeChunk.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeChunk.cpp; sourceTree = "<group>"; };
 		5045D661169F1BC200742C05 /* LandscapeChunk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandscapeChunk.h; sourceTree = "<group>"; };
+		5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterComponent.cpp; sourceTree = "<group>"; };
+		5045D664169F2E7A00742C05 /* ParticleEmitterComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterComponent.h; sourceTree = "<group>"; };
+		5045D666169F2E9C00742C05 /* ParticleEmitterSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEmitterSystem.cpp; path = Systems/ParticleEmitterSystem.cpp; sourceTree = "<group>"; };
+		5045D667169F2E9C00742C05 /* ParticleEmitterSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEmitterSystem.h; path = Systems/ParticleEmitterSystem.h; sourceTree = "<group>"; };
 		5073EA9E166A400B00101AB5 /* MaterialCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialCompiler.cpp; sourceTree = "<group>"; };
 		5073EA9F166A400B00101AB5 /* MaterialCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialCompiler.h; sourceTree = "<group>"; };
 		5073EAA0166A400B00101AB5 /* MaterialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGraph.cpp; sourceTree = "<group>"; };
@@ -932,6 +938,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */,
+				5045D664169F2E7A00742C05 /* ParticleEmitterComponent.h */,
 				50E8E91C169C90C2005BB2F1 /* BoundingBoxComponent.cpp */,
 				50E8E91D169C90C2005BB2F1 /* BoundingBoxComponent.h */,
 				50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */,
@@ -991,6 +999,8 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				5045D666169F2E9C00742C05 /* ParticleEmitterSystem.cpp */,
+				5045D667169F2E9C00742C05 /* ParticleEmitterSystem.h */,
 				50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */,
 				50E8E933169CCD4F005BB2F1 /* TransformSystem.h */,
 				50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */,
@@ -2062,6 +2072,8 @@
 				5045D65C169F1A7500742C05 /* LandscapeCursor.cpp in Build Sources */,
 				5045D65F169F1B1100742C05 /* Heightmap.cpp in Build Sources */,
 				5045D662169F1D1000742C05 /* LandscapeChunk.cpp in Build Sources */,
+				5045D665169F2E7A00742C05 /* ParticleEmitterComponent.cpp in Build Sources */,
+				5045D668169F2E9C00742C05 /* ParticleEmitterSystem.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
