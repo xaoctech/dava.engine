@@ -36,9 +36,10 @@ public:
     
     // Add the node to the list.
     void AddTreeNode(HierarchyTreeNode* treeNode);
-    
+    void AddTreeNode(HierarchyTreeNode* treeNode, HierarchyTreeNode* nodeToAddAfter);
+
     // Remove the node from the list, return TRUE if succeeded.
-    bool RemoveTreeNode(HierarchyTreeNode* treeNode, bool needDelete = true);
+    bool RemoveTreeNode(HierarchyTreeNode* treeNode, bool needDelete, bool needRemoveFromScene);
     
     // Access to the nodes list.
     const HIERARCHYTREENODESLIST& GetChildNodes() const;
@@ -57,6 +58,15 @@ public:
 
 	bool IsHasChild(const HierarchyTreeNode* node) const;
 
+	// Remove the tree node from scene, but keep it in memory.
+	virtual void RemoveTreeNodeFromScene() {};
+	
+	// Return it back to the scene.
+	virtual void ReturnTreeNodeToScene() {};
+
+	// Prepare the Undo/Redo information.
+	void PrepareRemoveFromSceneInformation();
+
 protected:
 	HIERARCHYTREENODEID id;
 	
@@ -72,6 +82,10 @@ protected:
     HierarchyTreeNodeExtraData extraData;
 	
 	static HIERARCHYTREENODEID nextId;
+	
+	// Undo/Redo information.
+	HierarchyTreeNode* redoParentNode;
+	HierarchyTreeNode* redoPreviousNode;
 };
 
 

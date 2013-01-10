@@ -10,7 +10,37 @@
 #include "HierarchyTreeController.h"
 #include "ScreenWrapper.h"
 
-CreatePlatformCommand::CreatePlatformCommand(const QString& name, const Vector2& size)
+UndoableHierarchyTreeNodeCommand::UndoableHierarchyTreeNodeCommand()
+{
+	this->redoNode = NULL;
+}
+
+void UndoableHierarchyTreeNodeCommand::SetRedoNode(HierarchyTreeNode* redoNode)
+{
+	this->redoNode = redoNode;
+}
+
+void UndoableHierarchyTreeNodeCommand::ReturnRedoNodeToScene()
+{
+	if (this->redoNode)
+	{
+		// Need to recover the node previously deleted.
+		HierarchyTreeController::Instance()->ReturnNodeToScene(redoNode);
+	}
+}
+
+void UndoableHierarchyTreeNodeCommand::PrepareRemoveFromSceneInformation()
+{
+	if (this->redoNode)
+	{
+		this->redoNode->PrepareRemoveFromSceneInformation();
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CreatePlatformCommand::CreatePlatformCommand(const QString& name, const Vector2& size) :
+	UndoableHierarchyTreeNodeCommand()
 {
 	this->name = name;
 	this->size = size;
@@ -18,11 +48,31 @@ CreatePlatformCommand::CreatePlatformCommand(const QString& name, const Vector2&
 
 void CreatePlatformCommand::Execute()
 {
-	HierarchyTreeController::Instance()->AddPlatform(name, size);
+	if (this->redoNode == NULL)
+	{
+		SetRedoNode(HierarchyTreeController::Instance()->AddPlatform(name, size));
+	}
+	else
+	{
+		ReturnRedoNodeToScene();
+	}
 }
 
+void CreatePlatformCommand::Rollback()
+{
+	PrepareRemoveFromSceneInformation();
+	
+	if (this->redoNode)
+	{
+		// Remove the created node from the scene, but keep it in memory.
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+	}
+}
 
-CreateScreenCommand::CreateScreenCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId)
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CreateScreenCommand::CreateScreenCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId) :
+	UndoableHierarchyTreeNodeCommand()
 {
 	this->name = name;
 	this->platformId = platformId;
@@ -30,18 +80,48 @@ CreateScreenCommand::CreateScreenCommand(const QString& name, HierarchyTreeNode:
 
 void CreateScreenCommand::Execute()
 {
-	HierarchyTreeController::Instance()->AddScreen(name, platformId);
+	if (this->redoNode == NULL)
+	{
+		SetRedoNode(HierarchyTreeController::Instance()->AddScreen(name, platformId));
+	}
+	else
+	{
+		ReturnRedoNodeToScene();
+	}
 }
+
+void CreateScreenCommand::Rollback()
+{
+	PrepareRemoveFromSceneInformation();
+	
+	if (this->redoNode)
+	{
+		// Remove the created node from the scene, but keep it in memory.
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& pos)
 {
 	this->type = type;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	
+	this->redoNode = NULL;
 }
 
 void CreateControlCommand::Execute()
 {
+	if (this->redoNode)
+	{
+		// Need to recover the node previously deleted.
+		HierarchyTreeController::Instance()->ReturnNodeToScene(redoNode);
+		return;
+	}
+
+	// The command is executed for the first time; create the node.
 	HierarchyTreeNode::HIERARCHYTREENODEID newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, pos);
 	if (newControlID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
 	{
@@ -49,23 +129,7 @@ void CreateControlCommand::Execute()
 		return;
 	}
 	
-	if (this->createdControlID == HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY)
-	{
-		// This is the first time the control is created. Remember its ID.
-		this->createdControlID = newControlID;
-	}
-	else
-	{
-		// The control was already created (and then probably removed and re-created),
-		// so we need to update the ID of the control just created with the remembered one.
-		// This is needed to do not break Undo/Redo queue.
-		HierarchyTreeNode* controlJustCreated = HierarchyTreeController::Instance()->GetTree().GetNode(newControlID);
-		if (controlJustCreated)
-		{
-			// TODO! currently does not work because of crash, found and fix it!
-			//controlJustCreated->UpdateId(this->createdControlID);
-		}
-	}
+	this->createdControlID = newControlID;
 }
 
 void CreateControlCommand::Rollback()
@@ -76,8 +140,29 @@ void CreateControlCommand::Rollback()
 		return;
 	}
 
-	HierarchyTreeController::Instance()->DeleteNode(createdControlID);
+	PrepareRedoInformation();
+	
+	// OK, we have all the information we need to perform Redo. Remove the created node
+	// from the scene, but keep it in memory.
+	HierarchyTreeController::Instance()->DeleteNode(createdControlID, false, true);
 }
+
+void CreateControlCommand::PrepareRedoInformation()
+{
+	// Clone the current control node, remember the pointer to the previous node in the list
+	// to restore the position of the node removed in case of Redo.
+	HierarchyTreeNode* createdNode = HierarchyTreeController::Instance()->GetTree().GetNode(this->createdControlID);
+	if (!createdNode || !createdNode->GetParent())
+	{
+		this->redoNode = NULL;
+		return;
+	}
+	
+	createdNode->PrepareRemoveFromSceneInformation();
+	this->redoNode = createdNode;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
 {
@@ -86,8 +171,44 @@ DeleteSelectedNodeCommand::DeleteSelectedNodeCommand(const HierarchyTreeNode::HI
 
 void DeleteSelectedNodeCommand::Execute()
 {
-	HierarchyTreeController::Instance()->DeleteNodes(this->nodes);
+	if (this->redoNodes.size() == 0)
+	{
+		// Prepare the Redo information for the first time.
+		PrepareRedoInformation();
+	}
+
+	// Delete the node from scene, but keep in memory.
+	HierarchyTreeController::Instance()->DeleteNodes(this->nodes, false, true);
 }
+
+void DeleteSelectedNodeCommand::PrepareRedoInformation()
+{
+	// Remember the nodes which will be removed from the scene.
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->nodes.begin();
+		 iter != this->nodes.end(); iter ++)
+	{
+		HierarchyTreeNode* nodeToRedo = (*iter);
+		if (!nodeToRedo || !nodeToRedo->GetParent())
+		{
+			continue;
+		}
+
+		nodeToRedo->PrepareRemoveFromSceneInformation();
+		this->redoNodes.push_back(nodeToRedo);
+	}
+}
+
+void DeleteSelectedNodeCommand::Rollback()
+{
+	if (redoNodes.size() == 0)
+	{
+		return;
+	}
+
+	HierarchyTreeController::Instance()->ReturnNodeToScene(redoNodes);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ChangeNodeHeirarchy::ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items)
 {

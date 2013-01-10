@@ -96,12 +96,17 @@ void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node)
 	HierarchyTreePlatformNode* oldPlatform = GetPlatform();
 	if (oldPlatform)
 	{
-		oldPlatform->RemoveTreeNode(this, false);
+		oldPlatform->RemoveTreeNode(this, false, false);
 	}
 	
 	parent = newPlatform;
 	GetScreen()->SetRect(Rect(0, 0, newPlatform->GetWidth(), newPlatform->GetHeight()));
 	newPlatform->AddTreeNode(this);
+}
+
+HierarchyTreeNode* HierarchyTreeScreenNode::GetParent()
+{
+	return this->parent;
 }
 
 String HierarchyTreeScreenNode::GetNewControlName(const String& baseName) const
@@ -166,4 +171,15 @@ bool HierarchyTreeScreenNode::Save(const QString& path)
 {
 	FontManager::Instance()->PrepareToSaveFonts();
 	return UIYamlLoader::Save(screen, path.toStdString(), true);
+}
+
+void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
+{
+	if (!this->redoParentNode)
+	{
+		return;
+	}
+	
+	// Need to recover the node previously deleted, taking position into account.
+	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }
