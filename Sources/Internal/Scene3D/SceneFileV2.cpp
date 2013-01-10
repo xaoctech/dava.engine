@@ -756,6 +756,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 
 		RenderComponent * renderComponent = new RenderComponent;
 		renderComponent->SetRenderObject(emitter);
+		
 		newNode->AddComponent(renderComponent);
 	}
 

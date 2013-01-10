@@ -7,6 +7,7 @@
 namespace DAVA
 {
 
+class Component;
 class ParticleEmitterSystem : public SceneSystem
 {
 public:
@@ -15,7 +16,7 @@ public:
 	virtual void Process();
 
 private:
-	Vector<SceneNode*> entities;
+	Vector<Component*> components;
 };
 
 }

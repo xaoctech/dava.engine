@@ -90,7 +90,8 @@ public:
     virtual void Draw(Camera * camera);
     
     const AABBox3 & GetBoundingBox() const;
-private:
+
+protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     Material * material;                    // Should be replaced to NMaterial

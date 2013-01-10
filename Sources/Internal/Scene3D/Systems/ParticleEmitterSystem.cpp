@@ -10,18 +10,19 @@ namespace DAVA
 
 void ParticleEmitterSystem::AddEntity(SceneNode * entity)
 {
-	entities.push_back(entity);
+	components.push_back(entity->components[Component::PARTICLE_EMITTER_COMPONENT]);
 }
 
 void ParticleEmitterSystem::RemoveEntity(SceneNode * entity)
 {
-	uint32 size = entities.size();
+	uint32 size = components.size();
+	Component * deletingComponent = entity->components[Component::PARTICLE_EMITTER_COMPONENT];
 	for(uint32 i = 0; i < size; ++i)
 	{
-		if(entities[i] == entity)
+		if(components[i] == deletingComponent)
 		{
-			entities[i] = entities[size-1];
-			entities.pop_back();
+			components[i] = components[size-1];
+			components.pop_back();
 			return;
 		}
 	}
@@ -33,11 +34,10 @@ void ParticleEmitterSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
-	uint32 size = entities.size();
+	uint32 size = components.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		SceneNode * entity = entities[i];
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(components[i]);
 		component->GetParticleEmitter()->Update(timeElapsed);
 	}
 }

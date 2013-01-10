@@ -138,12 +138,14 @@ void ParticleLayer3D::Draw(Camera * camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
+	renderBatch.SetTotalCount(totalCount);
 	if(totalCount > 0)
 	{			
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 
+		
 		renderBatch.SetMaterial(material);
 		renderBatch.SetRenderDataObject(renderData);
 	}
