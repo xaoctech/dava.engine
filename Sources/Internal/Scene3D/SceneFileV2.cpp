@@ -664,15 +664,12 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		SceneNode * newNode = new SceneNode();
 		lod->SceneNode::Clone(newNode);
 		SceneNode * parent = lod->GetParent();
+
+		DVASSERT(parent);
 		if(parent)
 		{
 			parent->AddNode(newNode);
 			parent->RemoveNode(lod);
-		}
-		else
-		{
-			lod->SetScene(0);
-			lod->Release();
 		}
 
 		newNode->AddComponent(new LodComponent());
@@ -710,10 +707,23 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 	{
 		SceneNode * newNode = new SceneNode();
 		particleEmitterNode->SceneNode::Clone(newNode);
+		SceneNode * parent = particleEmitterNode->GetParent();
 
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(particleEmitterNode);
+		}
+
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
 		ParticleEmitterComponent * particleComponent = new ParticleEmitterComponent();
 		newNode->AddComponent(particleComponent);
-		particleComponent->SetParticleEmitter(particleEmitterNode->GetEmitter());
+		particleComponent->SetParticleEmitter(emitter);
+
+		RenderComponent * renderComponent = new RenderComponent;
+		renderComponent->SetRenderObject(emitter);
+		newNode->AddComponent(renderComponent);
 	}
 
 	return false;
