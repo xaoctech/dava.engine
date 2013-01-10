@@ -45,6 +45,8 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -701,6 +703,17 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 
 		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
 		return true;
+	}
+
+	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(*node);
+	if(particleEmitterNode)
+	{
+		SceneNode * newNode = new SceneNode();
+		particleEmitterNode->SceneNode::Clone(newNode);
+
+		ParticleEmitterComponent * particleComponent = new ParticleEmitterComponent();
+		newNode->AddComponent(particleComponent);
+		particleComponent->SetParticleEmitter(particleEmitterNode->GetEmitter());
 	}
 
 	return false;
