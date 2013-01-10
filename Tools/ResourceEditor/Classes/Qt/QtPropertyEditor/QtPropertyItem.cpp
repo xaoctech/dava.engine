@@ -22,7 +22,7 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 			QList<QStandardItem *> subItems;
 
 			QtPropertyItem *subName = new QtPropertyItem(i.key());
-			QtPropertyItem *subValue = new QtPropertyItem(i.value(), this);
+			QtPropertyItem *subValue = new QtPropertyItem(i.value(), subName);
 
 			subValue->itemDataDeleteByParent = true;
 			subName->setEditable(false);

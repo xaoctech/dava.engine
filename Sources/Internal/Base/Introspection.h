@@ -12,8 +12,8 @@ namespace DAVA
 		friend class IntrospectionInfo;
 
 	public:
-		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type)
-			: name(_name), desc(_desc), offset(_offset), type(_type)	
+		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)	
 		{ }
 
 		const char* Name() const
@@ -46,6 +46,7 @@ namespace DAVA
 		const char *desc;
 		const int offset;
 		const MetaInfo* type;
+		const int flags;
 	};
 
 	template<typename T, typename V>
@@ -265,10 +266,10 @@ namespace DAVA
 		return _type::TypeInfo(); \
 	}
 
-#define MEMBER(_name, _desc) \
-	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name)),
+#define MEMBER(_name, _desc, ...) \
+	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), __VA_ARGS__),
 
-#define PROPERTY(_name, _desc, _getter, _setter) \
-	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter),
+#define PROPERTY(_name, _desc, _getter, _setter, ...) \
+	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter, __VA_ARGS__),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__

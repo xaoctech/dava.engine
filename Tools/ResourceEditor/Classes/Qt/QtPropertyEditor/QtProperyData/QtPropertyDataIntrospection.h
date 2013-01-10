@@ -4,25 +4,24 @@
 #include "Base/Introspection.h"
 #include "QtPropertyEditor/QtPropertyData.h"
 
+#include <QMap>
+
+class QtPropertyDataDavaVariant;
+
 class QtPropertyDataIntrospection : public QtPropertyData
 {
 public:
-	QtPropertyDataIntrospection(void *object, const DAVA::IntrospectionMember *member);
+	QtPropertyDataIntrospection(void *object, const DAVA::IntrospectionInfo *info);
 	virtual ~QtPropertyDataIntrospection();
 
 protected:
 	void *object;
-	const DAVA::IntrospectionMember *member;
+	const DAVA::IntrospectionInfo *info;
+	QMap<QtPropertyDataDavaVariant*, int> childIndexes;
 
 	virtual QVariant GetValueInternal();
-	virtual void SetValueInternal(const QVariant &value);
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-	virtual void ChildUpdate();
-
-private:
-	void SubPropertiesCreate();
-	void SubPropertiesUpdate();
-
+	virtual void ChildNeedUpdate();
 };
 
 #endif // __QT_PROPERTY_DATA_INTROSPECTION_H__
