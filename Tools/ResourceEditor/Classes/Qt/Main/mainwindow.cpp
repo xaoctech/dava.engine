@@ -40,7 +40,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
 
     RegisterBasePointerTypes();
    
@@ -59,6 +58,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
+	
+	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
+	ui->dockParticleEditorTimeLine->hide();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -103,6 +105,8 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
+	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
+	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -112,12 +116,15 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
+	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
+	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
+    
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool);
+                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool, actionParticleEditor);
 
 
     ui->dockDataGraph->hide();
@@ -255,6 +262,20 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
+}
+
+void QtMainWindow::ChangeParticleDockVisible(bool visible)
+{
+	ui->dockParticleEditor->setVisible(visible);
+}
+
+void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
+{
+	ui->dockParticleEditorTimeLine->setVisible(visible);
 }
 
 void QtMainWindow::MenuFileWillShow()

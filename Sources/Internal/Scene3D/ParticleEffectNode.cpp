@@ -117,6 +117,7 @@ void ParticleEffectNode::Restart()
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
 		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
+		particleEmitterNode->GetEmitter()->Pause(false);
 		particleEmitterNode->GetEmitter()->Restart(true);
 	}
 }

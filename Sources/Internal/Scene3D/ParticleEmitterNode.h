@@ -14,7 +14,9 @@ public:
 	ParticleEmitterNode();
 	virtual ~ParticleEmitterNode();
 
-	void LoadFromYaml(String yamlPath);
+	void LoadFromYaml(const String& yamlPath);
+    void SaveToYaml(const String& _yamlPath);
+
 	String GetYamlPath();
 
 	ParticleEmitter * GetEmitter();
