@@ -133,7 +133,9 @@ void LandscapeEditorBase::Close()
 {
     HideAction();
     
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+    // RETURN TO THIS CODE LATER
+    // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+    
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
@@ -292,14 +294,15 @@ void LandscapeEditorBase::OnShowGrid(bool show)
 {
     if(workingLandscape)
     {
-        if(show)
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
-        }
-        else 
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
-        }
+// RETURN TO THIS CODE LATER
+//        if(show)
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
+//        else 
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
     }
     else 
     {

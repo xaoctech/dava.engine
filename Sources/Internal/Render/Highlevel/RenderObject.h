@@ -56,8 +56,7 @@ public:
  
     
     - Mesh(Static)
-    - Mesh(Dynamic)
-    - 
+    - Mesh(Skinned)
  
  */
 
@@ -65,6 +64,14 @@ class RenderBatch;
 class RenderObject : public BaseObject
 {
 public:
+    enum
+    {
+        TYPE_STATIC_MESH = 0,
+        TYPE_SKINNED_MESH,
+        TYPE_LANDSCAPE,
+        TYPE_CUSTOM_DRAW,
+    };
+    
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
@@ -74,6 +81,7 @@ public:
 
     RenderObject();
     virtual ~RenderObject();
+    
     
     inline void SetRemoveIndex(uint32 removeIndex);
     inline uint32 GetRemoveIndex();
@@ -99,7 +107,10 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
 
-private:
+    
+    
+    
+protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;

@@ -50,6 +50,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
 #include "Base/TemplateHelpers.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
@@ -504,11 +505,37 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     //SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
     
     String name = archive->GetString("##name");
-    BaseObject * baseObject = ObjectFactory::Instance()->New(name);
-    SceneNode * node = dynamic_cast<SceneNode*>(baseObject);
+    BaseObject * baseObject = 0;
+    SceneNode * node = 0;
+    
+    bool skipNode = false;
+
+    
+    
+    
+    if (name == "LandscapeNode")
+    {
+        node = new SceneNode();
+        baseObject = node;
+
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        LandscapeNode * landscapeRenderObject = new LandscapeNode();
+        landscapeRenderObject->Load(archive, this);
+        
+        node->AddComponent(new RenderComponent(landscapeRenderObject));
+
+        parent->AddNode(node);
+        // Elegant fix became part of architecture....
+        skipNode = true;
+    }else
+    {
+        baseObject = ObjectFactory::Instance()->New(name);
+        node = dynamic_cast<SceneNode*>(baseObject);
+    }
 
 	//TODO: refactor this elegant fix
-	bool skipNode = false;
 	if(!node) //in case if editor class is loading in non-editor sprsoject
 	{
 		node = new SceneNode();
@@ -556,9 +583,15 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
     if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(SceneNode)))
     {
         KeyedArchive *customProperties = currentNode->GetCustomProperties();
-        bool res = customProperties && customProperties->IsKeyExists("editor.donotremove");
+        bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
-        if (!res)
+        uint32 componentCount = currentNode->GetComponentCount();
+        if (componentCount != 0)
+        {
+            doNotRemove = true;
+        }
+        
+        if (!doNotRemove)
         {
             SceneNode * parent  = currentNode->GetParent();
             if (parent)

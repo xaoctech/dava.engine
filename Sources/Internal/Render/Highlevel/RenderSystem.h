@@ -80,7 +80,15 @@ public:
     void Render();
     
     void MarkForUpdate(RenderObject * renderObject);
-
+    
+    /**
+        \brief This is required for objects that needs permanent update every frame like 
+        Landscape and Particles. 
+     
+     */
+    void RegisterForPermanentUpdate(RenderObject * renderObject);
+    void UnregisterFromPermanentUpdate(RenderObject * renderObject);
+    
 private:
     void ProcessClipping();
     void AddRenderObject(RenderObject * renderObject);
@@ -88,8 +96,9 @@ private:
     void AddRenderBatch(RenderBatch * renderBatch);
     void RemoveRenderBatch(RenderBatch * renderBatch);
     void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
-        
     
+    
+    Vector<RenderObject*> objectsForPermanentUpdate;
     List<RenderObject*> markedObjects;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;
