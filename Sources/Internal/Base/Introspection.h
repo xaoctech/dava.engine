@@ -266,6 +266,17 @@ namespace DAVA
 		return _type::TypeInfo(); \
 	}
 
+#define INTROSPECTION_EMPTY(_type) \
+	const DAVA::IntrospectionInfo* TypeInfo() \
+	{ \
+		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, sizeof(_type), NULL, 0); \
+		return &info; \
+	} \
+	virtual const DAVA::IntrospectionInfo* GetTypeInfo() \
+	{ \
+		return _type::TypeInfo(); \
+	}
+
 #define MEMBER(_name, _desc, _flags) \
 	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 
