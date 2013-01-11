@@ -84,6 +84,8 @@ protected:
 
     void ReleaseScene();
 
+	void FindAllSpriteRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::Sprite*> & sprites);
+
 protected slots:
     void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
 
