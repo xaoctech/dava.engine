@@ -25,15 +25,8 @@ QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 
 QVariant QtPropertyDataIntrospection::GetValueInternal()
 {
-	QVariant v;
-
-	if(NULL != info)
-	{
-		v = info->Name();
-		ChildNeedUpdate();
-	}
-
-	return v;
+	ChildNeedUpdate();
+	return QVariant();
 }
 
 void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyData *data)
