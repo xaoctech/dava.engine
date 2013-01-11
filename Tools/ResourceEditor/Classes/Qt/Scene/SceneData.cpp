@@ -420,27 +420,36 @@ void SceneData::EmitSceneChanged()
 	emit SceneChanged(this->scene);
 }
 
-void SceneData::GetAllSprites(DAVA::List<DAVA::Sprite*> & sprites)
+void SceneData::GetAllSprites(List<DAVA::Sprite*> & sprites)
 {
 	Scene* scene = this->GetScene();
-	SceneNode * rootNode = scene->GetRootNode(sceneFilePathname);
-	List<SceneNode*> children;
-	rootNode->GetChildNodes(children);
-	for(auto it = children.begin(); it != children.end(); ++it)
+	uint32 childCount = scene->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
 	{
-		ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(*it);
-		if( NULL != particleEmitterNode)
+		FindAllSpriteRecursive (scene->GetChild(i), sprites);
+	}
+}
+
+void SceneData::FindAllSpriteRecursive(SceneNode *node , List<DAVA::Sprite*> & sprites)
+{
+	ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
+	if( NULL != particleEmitterNode)
+	{
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
+		Vector<ParticleLayer*> layers = emitter->GetLayers();
+		for(Vector<ParticleLayer*>::const_iterator itLayer = layers.begin(); itLayer != layers.end(); ++itLayer)
 		{
-			auto emitter = particleEmitterNode->GetEmitter();
-			Vector<ParticleLayer*> layers = emitter->GetLayers();
-			for(auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer)
+			Sprite* sprite = (*itLayer)->GetSprite();
+			if(NULL != sprite)
 			{
-				Sprite* sprite = (*itLayer)->GetSprite();
-				if(NULL != sprite)
-				{
-					sprites.push_back(sprite);
-				}
+				sprites.push_back(sprite);
 			}
 		}
+	}
+
+	uint32 childCount = node->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllSpriteRecursive(node->GetChild(i), sprites);
 	}
 }
