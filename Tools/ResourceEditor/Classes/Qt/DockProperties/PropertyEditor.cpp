@@ -1,5 +1,6 @@
 #include "DAVAEngine.h"
 #include "Scene/SceneDataManager.h"
+#include "Entity/Component.h"
 
 #include "DockProperties/PropertyEditor.h"
 #include "QtPropertyEditor/QtPropertyItem.h"
@@ -39,19 +40,35 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 			sss = true;
 		}
 
-		const DAVA::IntrospectionInfo *info = curNode->GetTypeInfo();
-		while(NULL != info)
-		{
-			QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(info->Name(), new QtPropertyDataIntrospection(node, info));
-
-			prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-			prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-
-			info = info->BaseInfo();
-		}
+        AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
+        
+        for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+        {
+            Component *component = curNode->GetComponent(i);
+            if(component)
+            {
+                AppendIntrospectionInfo(component, component->GetTypeInfo());
+            }
+        }
 	}
 
 	expandToDepth(0);
+}
+
+void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+{
+    while(NULL != info)
+    {
+        if(info->MembersCount())
+        {
+            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(info->Name(), new QtPropertyDataIntrospection(object, info));
+            
+            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+            prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+        }
+        
+        info = info->BaseInfo();
+    }
 }
 
 void PropertyEditor::sceneChanged(SceneData *sceneData)

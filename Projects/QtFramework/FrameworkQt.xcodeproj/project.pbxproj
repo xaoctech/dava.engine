@@ -492,7 +492,6 @@
 		5C5D97F115B0230D0058B43A /* AABBox3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AABBox3.h; sourceTree = "<group>"; };
 		5C5D97F215B0230D0058B43A /* BezierSpline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierSpline.cpp; sourceTree = "<group>"; };
 		5C5D97F315B0230D0058B43A /* BezierSpline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierSpline.h; sourceTree = "<group>"; };
-		5C5D97F415B0230D0058B43A /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		5C5D97F515B0230D0058B43A /* Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
 		5C5D97F615B0230D0058B43A /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		5C5D97F715B0230D0058B43A /* Math2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Math2D.cpp; sourceTree = "<group>"; };
@@ -1258,7 +1257,6 @@
 				5C5D97F115B0230D0058B43A /* AABBox3.h */,
 				5C5D97F215B0230D0058B43A /* BezierSpline.cpp */,
 				5C5D97F315B0230D0058B43A /* BezierSpline.h */,
-				5C5D97F415B0230D0058B43A /* Camera.h */,
 				5C5D97F515B0230D0058B43A /* Circle.h */,
 				5C5D97F615B0230D0058B43A /* Color.h */,
 				5C5D97F715B0230D0058B43A /* Math2D.cpp */,

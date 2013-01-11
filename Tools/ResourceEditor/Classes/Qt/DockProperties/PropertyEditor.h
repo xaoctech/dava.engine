@@ -16,6 +16,11 @@ public:
 
 	void SetNode(DAVA::SceneNode *node);
 
+protected:
+    
+    void AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
+    
+    
 public slots:
 	void sceneActivated(SceneData *scene);
 	void sceneChanged(SceneData *scene);
