@@ -34,6 +34,7 @@
 #include "Base/RefPtr.h"
 #include "Base/DynamicObjectCache.h"
 #include "Render/2D/Sprite.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 #include "FileSystem/YamlParser.h"
 #include "Particles/Particle.h"
@@ -128,6 +129,8 @@ public:
 
 	const String & GetRelativeSpriteName();
 
+	RenderBatch * GetRenderBatch();
+
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -156,6 +159,8 @@ protected:
 	// particle layer sprite
 	Sprite 			* sprite;
 	String			relativeSpriteName;
+
+	RenderBatch renderBatch;
 
 public:		
 	Vector2			pivotPoint;

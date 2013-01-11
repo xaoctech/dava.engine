@@ -27,54 +27,37 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/RenderObject.h"
+#ifndef __DAVAENGINE_LANDSCAPE_CHUNK_H__
+#define __DAVAENGINE_LANDSCAPE_CHUNK_H__
+
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
 #include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
-RenderObject::RenderObject()
-    :   flags(VISIBLE)
-    ,   removeIndex(-1)
-    ,   debugFlags(0)
-    ,   worldTransform(0)
-{
-    
-}
-    
-RenderObject::~RenderObject()
-{
-    
-}
 
-void RenderObject::Update(float32 timeElapsed)
-{
-}
+class LandscapeNode;
     
-void RenderObject::AddRenderBatch(RenderBatch * batch)
-{
-	batch->SetRenderObject(this);
-    renderBatchArray.push_back(batch);
-    if (removeIndex != -1)
-    {
-        
-    }
     
-    bbox.AddAABBox(batch->GetBoundingBox());
-}
-
-void RenderObject::RemoveRenderBatch(RenderBatch * batch)
+// Temporary solution. Later will be populated by logic
+class LandscapeChunk : public RenderBatch
 {
-    batch->SetRenderObject(0);
-}
+public:
+    LandscapeChunk(LandscapeNode * node = 0);
+    ~LandscapeChunk();
     
-uint32 RenderObject::GetRenderBatchCount()
-{
-    return (uint32)renderBatchArray.size();
-}
-RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
-{
-    return renderBatchArray[batchIndex];
-}
-
-
+    virtual void Draw(Camera * camera);
+private:
+    LandscapeNode * landscape;
 };
+    
+    
+};
+
+#endif // __DAVAENGINE_LANDSCAPE_CHUNK_H__
+
+
+
+
+

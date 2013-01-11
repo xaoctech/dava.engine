@@ -27,70 +27,27 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
-#define __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
-
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-#include "Scene3D/Frustum.h"
-#include "Scene3D/LandscapeNode.h"
+#include "Render/Highlevel/LandscapeChunk.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
+REGISTER_CLASS(LandscapeChunk);
 
-class Scene;
-class Image;
-class Texture;
-class RenderDataObject;
-class Shader;
-class SceneFileV2;
-class Heightmap;
-
-
-/**    
-    \brief Implementation of cdlod algorithm to render landscapes
-    This class is base of the landscape code on all platforms
-    Landscape node is always axial aligned for simplicity of frustum culling calculations
-    Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
- */ 
-
-class LandscapeDebugNode : public LandscapeNode
+LandscapeChunk::LandscapeChunk(LandscapeNode * _landscape)
+    : landscape(_landscape)
 {
-public:	
-	LandscapeDebugNode();
-	virtual ~LandscapeDebugNode();
     
+}
     
-    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
-  
-    /**
-        \brief Overloaded draw function to draw landscape.
-     */
-	virtual void Draw();
-
-    void SetHeightmapPath(const String &path);
+LandscapeChunk::~LandscapeChunk()
+{
     
-    void RebuildVertexes(const Rect &rebuildAtRect);
+}
     
-protected:	
-    void RebuildIndexes();
-    
-    void DrawLandscape();
-    
-    Vector<LandscapeVertex> debugVertices;
-    Vector<uint32> debugIndices;
-    RenderDataObject * debugRenderDataObject;
-};
-
+void LandscapeChunk::Draw(Camera * camera)
+{
+    landscape->Draw(camera);
+}
     
 };
-
-#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
-
-
-
-
-

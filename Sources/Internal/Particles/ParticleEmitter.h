@@ -37,6 +37,7 @@
 #include "Base/RefPtr.h"
 #include "Particles/ParticlePropertyLine.h"
 #include "Animation/Animation.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA 
 {
@@ -75,7 +76,7 @@ class ParticleLayer;
 	emitAtPoints - this number means that particles will be generated evenly on circle. If it's not defined particles will be generated randomly.
 	life - emitter life in seconds. When accumulated time in ParticleEmitter::Update exceeds this value, emitter restarts and delete all previous particles. 
  */
-class ParticleEmitter : public AnimatedObject
+class ParticleEmitter : public RenderObject
 {
 public:
 	enum eType

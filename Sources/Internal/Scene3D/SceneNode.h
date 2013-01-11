@@ -77,6 +77,7 @@ public:
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType);
     Component * GetComponent(uint32 componentType);
+    uint32 GetComponentCount();
     
     void UpdateComponentsFastPtrs();
     Component * components[Component::COMPONENT_COUNT];

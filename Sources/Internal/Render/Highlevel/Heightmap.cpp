@@ -25,7 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 #include "Render/Image.h"
 #include "Render/ImageLoader.h"
 #include "FileSystem/File.h"

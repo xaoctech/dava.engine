@@ -27,54 +27,70 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/RenderBatch.h"
+#ifndef __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
+#define __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
+
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
+#include "Scene3D/SceneNode.h"
+#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
-RenderObject::RenderObject()
-    :   flags(VISIBLE)
-    ,   removeIndex(-1)
-    ,   debugFlags(0)
-    ,   worldTransform(0)
-{
-    
-}
-    
-RenderObject::~RenderObject()
-{
-    
-}
 
-void RenderObject::Update(float32 timeElapsed)
-{
-}
-    
-void RenderObject::AddRenderBatch(RenderBatch * batch)
-{
-	batch->SetRenderObject(this);
-    renderBatchArray.push_back(batch);
-    if (removeIndex != -1)
-    {
-        
-    }
-    
-    bbox.AddAABBox(batch->GetBoundingBox());
-}
-
-void RenderObject::RemoveRenderBatch(RenderBatch * batch)
-{
-    batch->SetRenderObject(0);
-}
-    
-uint32 RenderObject::GetRenderBatchCount()
-{
-    return (uint32)renderBatchArray.size();
-}
-RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
-{
-    return renderBatchArray[batchIndex];
-}
+class Scene;
+class Image;
+class Texture;
+class RenderDataObject;
+class Shader;
+class SceneFileV2;
+class Heightmap;
 
 
+/**    
+    \brief Implementation of cdlod algorithm to render landscapes
+    This class is base of the landscape code on all platforms
+    Landscape node is always axial aligned for simplicity of frustum culling calculations
+    Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
+ */ 
+
+class LandscapeDebugNode : public LandscapeNode
+{
+public:	
+	LandscapeDebugNode();
+	virtual ~LandscapeDebugNode();
+    
+    
+    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
+  
+    /**
+        \brief Overloaded draw function to draw landscape.
+     */
+	virtual void Draw();
+
+    void SetHeightmapPath(const String &path);
+    
+    void RebuildVertexes(const Rect &rebuildAtRect);
+    
+protected:	
+    void RebuildIndexes();
+    
+    void DrawLandscape();
+    
+    Vector<LandscapeVertex> debugVertices;
+    Vector<uint32> debugIndices;
+    RenderDataObject * debugRenderDataObject;
 };
+
+    
+};
+
+#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
+
+
+
+
+

@@ -1033,10 +1033,11 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-    LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
-    scene->SetSelection(landscape);
-	SelectNodeAtTree(NULL);
-    SelectNodeAtTree(landscape);
+// RETURN TO THIS CODE LATER
+//    LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
+//    scene->SetSelection(landscape);
+//	SelectNodeAtTree(NULL);
+//    SelectNodeAtTree(landscape);
     
     landscapeToolsSelection->Show();
 }

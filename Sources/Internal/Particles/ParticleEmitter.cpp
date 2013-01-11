@@ -108,6 +108,7 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 		layers.push_back(layer);
 		layer->Retain();
 		layer->SetEmitter(this);
+		AddRenderBatch(layer->GetRenderBatch());
 	}	
 }
 

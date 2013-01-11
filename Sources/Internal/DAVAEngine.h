@@ -209,7 +209,8 @@
 #include "Scene3D/SpriteNode.h"
 #include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
-#include "Scene3D/LandscapeNode.h"
+#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Heightmap.h"
 #include "Scene3D/LightNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
@@ -220,7 +221,6 @@
 #include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
-#include "Scene3D/Heightmap.h"
 #include "Scene3D/UserNode.h"
 
 // Application core 

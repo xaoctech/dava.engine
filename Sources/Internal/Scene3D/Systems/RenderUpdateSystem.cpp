@@ -34,12 +34,14 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
 #include "Scene3D/Camera.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/Scene.h"
+#include "Platform/SystemTimer.h"
 
 namespace DAVA
 {
@@ -73,6 +75,12 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
     RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
     if (!renderObject)return;
 
+    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
+    if (node)
+    {
+        node = 0;
+    }
+    
     entityObjectMap.Insert(entity, renderObject);
     RenderSystem::Instance()->RenderPermanent(renderObject);
 }
@@ -81,13 +89,20 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
     RenderObject * renderObject = entityObjectMap.Value(entity);
     if (!renderObject)return;
+    
+    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
+    if (node)
+    {
+        node = 0;
+    }
 
     RenderSystem::Instance()->RemoveFromRender(renderObject);
 }
     
 void RenderUpdateSystem::Process()
 {
-    RenderSystem::Instance()->Process();
+    float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+    RenderSystem::Instance()->Update(timeElapsed);
 }
     
 };
