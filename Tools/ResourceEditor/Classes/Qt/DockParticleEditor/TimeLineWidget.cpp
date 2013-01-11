@@ -40,6 +40,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	
 	isLockEnable = false;
 	isLocked = false;
+	isInteger = false;
 	
 	gridStyle = GridStyleLimits;
 	
@@ -333,7 +334,12 @@ Vector2 TimeLineWidget::GetLogicPoint(const QPoint& point) const
 	x = minTime + x * (maxTime - minTime);
 	float32 y = (graphRect.bottom() - point.y()) / (float32)graphRect.height();
 	y = minValue + y * (maxValue - minValue);
-	
+
+	if (isInteger)
+	{
+		y = GetIntValue(y);
+	}
+
 	return Vector2(x, y);
 }
 
@@ -347,7 +353,7 @@ bool TimeLineWidget::SortPoints(const Vector2& i, const Vector2& j)
 	return (i.x < j.x);
 }
 
-void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine)
+void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
 {
 	lines.clear();
 
@@ -357,6 +363,8 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
+
+	this->isInteger = integer;
 }
 
 void TimeLineWidget::SetMinLimits(float32 minV)
@@ -496,6 +504,21 @@ void TimeLineWidget::UpdateLimits()
 		minValue = newMinValue - limitDelta;
 		maxValue = newMaxValue + limitDelta;
 	}
+
+	if (isInteger)
+	{
+		minValue = GetIntValue(minValue);
+		maxValue = GetIntValue(maxValue);
+
+		if (minValue >= newMinValue)
+		{
+			minValue = GetIntValue(newMinValue - 1.f);
+		}
+		if (maxValue <= newMaxValue)
+		{
+			maxValue = GetIntValue(newMaxValue + 1.f);
+		}
+	}
 }
 
 bool TimeLineWidget::GetValue(uint32 lineId, Vector< PropValue<float32> >* line) const
@@ -556,6 +579,10 @@ void TimeLineWidget::AddPoint(uint32 lineId, const Vector2& point)
 			else
 			{
 				float32 y = GetYFromX(iter->first, point.x);
+				if (isInteger)
+				{
+					y = GetIntValue(y);
+				}
 				iter->second.line.push_back(Vector2(point.x, y));
 			}
 			std::sort(iter->second.line.begin(), iter->second.line.end(), TimeLineWidget::SortPoints);
@@ -757,6 +784,10 @@ void TimeLineWidget::GraphRectClick(QMouseEvent *event)
 			QRect graphRect = GetGraphRect();
 			if (graphRect.contains(point))
 			{
+				if (isInteger)
+				{
+					newPoint.y = GetIntValue(newPoint.y);
+				}
 				AddPoint(selectedLine, newPoint);
 				//find add point
 				for (uint32 i = 0; i < lines[selectedLine].line.size(); ++i)
@@ -1095,10 +1126,16 @@ void TimeLineWidget::ChangePointValueDialog(uint32 pointId, int32 lineId)
 	if (iter->second.line.size() <= pointId)
 		return;
 
-	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this);
+	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this, isInteger);
 	if (dialog.exec())
 	{
-		SetPointValue(iter->first, pointId, Vector2(dialog.GetTime(), dialog.GetValue()), true);
+		float32 value = dialog.GetValue();
+		if (isInteger)
+		{
+			value = GetIntValue(value);
+		}
+
+		SetPointValue(iter->first, pointId, Vector2(dialog.GetTime(), value), true);
 		UpdateLimits();
 		emit ValueChanged();
 		update();
@@ -1110,19 +1147,36 @@ void TimeLineWidget::EnableLock(bool enable)
 	isLockEnable = enable;
 }
 
-SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent):
-	QDialog(parent)
+int32 TimeLineWidget::GetIntValue(float32 value) const
+{
+	float32 sign =	(value < 0) ? -1.f : 1.f;
+	return (int32)(value + 0.5f * sign);
+}
+
+SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
+	QDialog(parent),
+	isInteger(integer)
 {
 	QVBoxLayout* mainBox = new QVBoxLayout;
 	setLayout(mainBox);
 	
 	QHBoxLayout* valueBox = new QHBoxLayout;
 	timeSpin = new QDoubleSpinBox(this);
-	valueSpin = new QDoubleSpinBox(this);
+
+	if(isInteger)
+		valueSpinInt = new QSpinBox(this);
+	else
+		valueSpin = new QDoubleSpinBox(this);
+
 	valueBox->addWidget(new QLabel("T:"));
 	valueBox->addWidget(timeSpin);
 	valueBox->addWidget(new QLabel("V:"));
-	valueBox->addWidget(valueSpin);
+
+	if(isInteger)
+		valueBox->addWidget(valueSpinInt);
+	else
+		valueBox->addWidget(valueSpin);
+
 	mainBox->addLayout(valueBox);
 	
 	QHBoxLayout* btnBox = new QHBoxLayout;
@@ -1135,10 +1189,20 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 	timeSpin->setMinimum(minTime);
 	timeSpin->setMaximum(maxTime);
 	timeSpin->setValue(time);
-	valueSpin->setMinimum(minValue);
-	valueSpin->setMaximum(maxValue);
-	valueSpin->setValue(value);
-	
+
+	if (isInteger)
+	{
+		valueSpinInt->setMinimum((int32)minValue);
+		valueSpinInt->setMaximum((int32)maxValue);
+		valueSpinInt->setValue((int32)value);
+	}
+	else
+	{
+		valueSpin->setMinimum(minValue);
+		valueSpin->setMaximum(maxValue);
+		valueSpin->setValue(value);
+	}
+
 	connect(btnOk,
 			SIGNAL(clicked(bool)),
 			this,
@@ -1149,8 +1213,16 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 			SLOT(reject()));
 
 	btnOk->setDefault(true);
-	valueSpin->setFocus();
-	valueSpin->selectAll();
+	if (isInteger)
+	{
+		valueSpinInt->setFocus();
+		valueSpinInt->selectAll();
+	}
+	else
+	{
+		valueSpin->setFocus();
+		valueSpin->selectAll();
+	}
 }
 
 float32 SetPointValueDlg::GetTime() const
@@ -1160,5 +1232,8 @@ float32 SetPointValueDlg::GetTime() const
 
 float32 SetPointValueDlg::GetValue() const
 {
+	if (isInteger)
+		return valueSpinInt->value();
+
 	return valueSpin->value();
 }

@@ -252,7 +252,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	alphaOverLifeTimeLine->SetMaxLimits(1.f);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
 	
-	frameOverLifeTimeLine->Init(0, 1, updateMinimized);
+	frameOverLifeTimeLine->Init(0, 1, updateMinimized, false, true, true);
 	frameOverLifeTimeLine->SetMinLimits(0);
 	int32 frameCount = 0;
 	if (layer && layer->GetSprite())
