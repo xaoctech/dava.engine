@@ -21,6 +21,8 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 {
 	minValue = std::numeric_limits<float32>::infinity();
 	maxValue = -std::numeric_limits<float32>::infinity();
+	minValueLimit = -std::numeric_limits<float32>::infinity();
+	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
 	
@@ -357,6 +359,16 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 	this->allowDeleteLine = allowDeleteLine;
 }
 
+void TimeLineWidget::SetMinLimits(float32 minV)
+{
+	minValueLimit = minV;
+}
+
+void TimeLineWidget::SetMaxLimits(float32 maxV)
+{
+	maxValueLimit = maxV;
+}
+
 void TimeLineWidget::AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend)
 {
 	LOGIC_POINTS desLine;
@@ -465,6 +477,9 @@ void TimeLineWidget::UpdateLimits()
 	{
 		newMinValue = newMaxValue = 0;
 	}
+	
+	newMinValue = Max(newMinValue, minValueLimit);
+	newMaxValue = Min(newMaxValue, maxValueLimit);
 
 	float32 limitDelta = 0;
 	limitDelta = (newMaxValue - newMinValue) * 0.2f;
@@ -880,6 +895,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 		value.x = Min(lines[lineId].line[pointId + 1].x, value.x);
 	 
 	value.x = Max(minTime, Min(maxTime, value.x));
+	value.y = Max(minValueLimit, Min(maxValueLimit, value.y));
 
 	if (aliasLinePoint)
 	{
@@ -902,12 +918,19 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 			float x1 = lines[lineId].line[i - 1].x;
 			float x2 = lines[lineId].line[i].x;
 			
-			if ((x2 - x1) < 0.01f)
+			if ((x2 - x1) < (maxTime - minTime) * 0.01)
 			{
 				if (i < lines[lineId].line.size() - 1)
 				{
 					if (Abs(x2 - value.x) < 0.01f)
-						lines[lineId].line[i - 1].y = value.y;
+					{
+						//lines[lineId].line[i - 1].y = value.y;
+						for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
+						{
+							if ((isLockEnable && isLocked) || iter->first == lineId)
+								iter->second.line[i - 1].y = value.y;
+						}
+					}
 					//remove next point
 					//lines[lineId].line.erase(lines[lineId].line.begin() + i);
 					DeletePoint(lineId, i);
@@ -915,7 +938,15 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 				else
 				{
 					if (Abs(x1 - value.x) < 0.01f)
-						lines[lineId].line[i].y = value.y;
+					{
+						//lines[lineId].line[i].y = value.y;
+						for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
+						{
+							if ((isLockEnable && isLocked) || iter->first == lineId)
+								iter->second.line[i].y = value.y;
+						}
+					}
+
 					//remove first point
 					//lines[lineId].line.erase(lines[lineId].line.begin() + lines[lineId].line.size() - 2);
 					DeletePoint(lineId, lines[lineId].line.size() - 2);
@@ -1064,7 +1095,7 @@ void TimeLineWidget::ChangePointValueDialog(uint32 pointId, int32 lineId)
 	if (iter->second.line.size() <= pointId)
 		return;
 
-	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, this);
+	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this);
 	if (dialog.exec())
 	{
 		SetPointValue(iter->first, pointId, Vector2(dialog.GetTime(), dialog.GetValue()), true);
@@ -1079,7 +1110,7 @@ void TimeLineWidget::EnableLock(bool enable)
 	isLockEnable = enable;
 }
 
-SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, QWidget *parent):
+SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent):
 	QDialog(parent)
 {
 	QVBoxLayout* mainBox = new QVBoxLayout;
@@ -1104,8 +1135,8 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 	timeSpin->setMinimum(minTime);
 	timeSpin->setMaximum(maxTime);
 	timeSpin->setValue(time);
-	valueSpin->setMinimum(-std::numeric_limits<float32>::infinity());
-	valueSpin->setMaximum(std::numeric_limits<float32>::infinity());
+	valueSpin->setMinimum(minValue);
+	valueSpin->setMaximum(maxValue);
 	valueSpin->setValue(value);
 	
 	connect(btnOk,
