@@ -43,7 +43,7 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterLifeHBox->addWidget(new QLabel("life"));
 	emitterLife = new QDoubleSpinBox(this);
 	emitterLife->setMinimum(0.f);
-	emitterLife->setMaximum(std::numeric_limits<float32>::infinity());
+	emitterLife->setMaximum(10000000);
 	emitterLifeHBox->addWidget(emitterLife);
 	mainLayout->addLayout(emitterLifeHBox);
 	connect(emitterLife, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
