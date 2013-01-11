@@ -37,9 +37,6 @@
     <Filter Include="Sources\SceneEditor\Properties">
       <UniqueIdentifier>{e8644841-40dc-4366-b508-ef7290418d10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Commands">
-      <UniqueIdentifier>{aecaa59c-a106-4de5-8161-f49909abd316}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
@@ -141,6 +138,9 @@
     </Filter>
     <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyData">
       <UniqueIdentifier>{5d52e296-b346-42eb-919f-6af276dc41eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\TextureBrowser\Commands">
+      <UniqueIdentifier>{aecaa59c-a106-4de5-8161-f49909abd316}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -493,22 +493,22 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\Command.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandsManager.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\FileCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandCreateNode.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandViewport.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ToolsCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
       <Filter>Sources\bullet</Filter>
@@ -862,13 +862,13 @@
       <Filter>Sources\bullet</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ViewCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -877,10 +877,10 @@
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
@@ -904,7 +904,7 @@
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
@@ -940,13 +940,13 @@
       <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp">
       <Filter>Sources\Qt\QtPosSaver</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorCustomColors.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
@@ -1072,7 +1072,7 @@
       <Filter>QtGenerated\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.cpp">
       <Filter>Sources\SceneEditor\Landscape</Filter>
@@ -1160,12 +1160,6 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp">
       <Filter>QtGenerated\DockLibrary</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp">
-      <Filter>Sources\Qt\DockProperties</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockProperties\PropertiesView_moc.cpp">
-      <Filter>QtGenerated\DockProperties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp">
       <Filter>Sources\Qt\DockVisibilityTool</Filter>
@@ -1974,13 +1968,13 @@
       <Filter>Sources\bullet</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ViewCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -1989,10 +1983,10 @@
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandReloadTextures.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h">
       <Filter>Sources\LandscapeEditor</Filter>
@@ -2016,7 +2010,7 @@
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h">
       <Filter>Sources\LandscapeEditor</Filter>
@@ -2049,13 +2043,13 @@
       <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h">
       <Filter>Sources\Qt\QtPosSaver</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CustomColorCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorCustomColors.h">
       <Filter>Sources\SceneEditor\Landscape</Filter>
@@ -2127,7 +2121,7 @@
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorVisibilityCheckTool.h">
       <Filter>Sources\SceneEditor\Landscape</Filter>
@@ -2176,9 +2170,6 @@
     </ClInclude>
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
       <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockProperties\PropertiesView.h">
-      <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
       <Filter>Sources\Qt\DockVisibilityTool</Filter>
@@ -2393,22 +2384,22 @@
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\Command.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandsManager.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\FileCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandCreateNode.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\CommandViewport.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+      <Filter>QtGenerated\TextureBrowser\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
