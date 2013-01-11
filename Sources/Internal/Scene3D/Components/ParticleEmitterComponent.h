@@ -24,6 +24,9 @@ public:
 
 private:
 	ParticleEmitter * particleEmitter;
+    
+public:
+    INTROSPECTION_EXTEND_EMPTY(ParticleEmitterComponent, Component);
 };
 
 }
