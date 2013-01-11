@@ -280,10 +280,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-	String projectPath1 = EditorSettings::Instance()->GetProjectPath();
-	QString projectPath = QString::fromStdString(projectPath1);
-	projectPath += "/Data/Particles/";
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), projectPath, QString("Effect File (*.txt)"));
+	String projectPath = EditorSettings::Instance()->GetProjectPath();
+	
+	projectPath += "Data/Gfx/Particles/";
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
 	
