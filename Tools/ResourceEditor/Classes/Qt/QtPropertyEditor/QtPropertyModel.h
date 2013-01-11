@@ -1,6 +1,7 @@
 #ifndef __QT_PROPERTY_MODEL_H__
 #define __QT_PROPERTY_MODEL_H__
 
+#include <QPair>
 #include <QStandardItemModel>
 #include "Base/Introspection.h"
 
@@ -15,11 +16,13 @@ public:
 	QtPropertyModel(QObject* parent = 0);
 	~QtPropertyModel();
 
-	QtPropertyItem* AppendPropertyHeader(const QString &name, QtPropertyItem* parent = NULL);
-	QtPropertyItem* AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
+	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
 
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
+
+protected slots:
+	void ItemChanged(QStandardItem * item);
 };
 
 #endif // __QT_PROPERTY_MODEL_H__

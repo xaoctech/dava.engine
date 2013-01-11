@@ -4,6 +4,32 @@
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
 {
+	// set special flags
+	switch(curVariantValue.type)
+	{
+	case DAVA::VariantType::TYPE_BOOLEAN:
+		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
+		break;
+	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
+	case DAVA::VariantType::TYPE_BYTE_ARRAY:
+		SetFlags(FLAG_IS_DISABLED);
+		break;
+	case DAVA::VariantType::TYPE_FLOAT:
+	case DAVA::VariantType::TYPE_INT32:
+	case DAVA::VariantType::TYPE_INT64:
+	case DAVA::VariantType::TYPE_UINT32:
+	case DAVA::VariantType::TYPE_UINT64:
+	case DAVA::VariantType::TYPE_STRING:
+	case DAVA::VariantType::TYPE_MATRIX2:
+	case DAVA::VariantType::TYPE_MATRIX3:
+	case DAVA::VariantType::TYPE_MATRIX4:
+	case DAVA::VariantType::TYPE_VECTOR2:
+	case DAVA::VariantType::TYPE_VECTOR3:
+	case DAVA::VariantType::TYPE_VECTOR4:
+	default:
+		break;
+	}
+
 	ChildsCreate();
 }
 

@@ -14,7 +14,9 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 {
 	if(NULL != data && NULL != name)
 	{
+		bool hasChildren = false;
 		QMapIterator<QString, QtPropertyData*> i = data->ChildIterator();
+
 		while(i.hasNext())
 		{
 			i.next();
@@ -31,7 +33,12 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 			subItems.append(subValue);
 
 			name->appendRow(subItems);
+
+			hasChildren = true;
 		}
+		
+		ApplyDataFlags();
+		ApplyNameStyle(name);
 	}
 }
 
@@ -97,5 +104,43 @@ void QtPropertyItem::setData(const QVariant & value, int role /* = Qt::UserRole 
 	default:
 		QStandardItem::setData(value, role);
 		break;
+	}
+}
+
+void QtPropertyItem::ApplyNameStyle(QtPropertyItem *name)
+{
+	// if there are childs, set bold font
+	if(name->rowCount() > 0)
+	{
+		QFont curFont = name->font();
+		curFont.setBold(true);
+		name->setFont(curFont);
+	}
+}
+
+void QtPropertyItem::ApplyDataFlags()
+{
+	if(NULL != itemData)
+	{
+		int dataFlags = itemData->GetFlags();
+
+		if(dataFlags & QtPropertyData::FLAG_IS_CHECKABLE)
+		{
+			setCheckable(true);
+			if(itemData->GetValue().toBool())
+			{
+				setCheckState(Qt::Checked);
+			}
+		}
+
+		if(dataFlags & QtPropertyData::FLAG_IS_DISABLED)
+		{
+			setEnabled(false);
+		}
+
+		if(dataFlags & QtPropertyData::FLAG_IS_NOT_EDITABLE)
+		{
+			setEditable(false);
+		}
 	}
 }
