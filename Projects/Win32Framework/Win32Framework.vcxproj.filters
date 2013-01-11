@@ -1191,6 +1191,30 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2047,6 +2071,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
