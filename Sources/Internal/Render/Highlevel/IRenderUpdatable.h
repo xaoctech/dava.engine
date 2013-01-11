@@ -27,50 +27,23 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_COMPONENT_H__
+#ifndef __DAVAENGINE_IRENDERUPDATABLE_H__
+#define __DAVAENGINE_IRENDERUPDATABLE_H__
 
-#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
 
-namespace DAVA 
+namespace DAVA
 {
-    
-class SceneNode;
-class Component
+
+//! Interface to retrieve updates
+class IRenderUpdatable
 {
 public:
-    enum eType
-    {
-        TRANSFORM_COMPONENT = 0,
-        RENDER_COMPONENT,
-        DEBUG_RENDER_COMPONENT, 
-		LOD_COMPONENT,
-        UPDATE_COMPONENT,
-        CAMERA_COMPONENT,
-        LIGHT_COMPONENT,
-		PARTICLE_EMITTER_COMPONENT,
-        ANIMATION_COMPONENT,
-        COLLISION_COMPONENT,    // multiple instances
-        PHYSICS_COMPONENT,
-        ACTION_COMPONENT,       // actions, something simplier than scripts that can influence logic, can be multiple
-        SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
-        COMPONENT_COUNT,
-    };
-
-	Component();
-    
-    virtual ~Component() {};
-    virtual uint32 GetType() = 0;
-    virtual Component * Clone() = 0;
-
-	void SetEntity(SceneNode * entity);
-protected:
-    SceneNode * entity;
-private:
+	virtual void Update(float32 timeElapsed) = 0;
 };
 
-    
-#define IMPLEMENT_COMPONENT_TYPE(TYPE) virtual uint32 GetType() { return TYPE; }; 
-
 };
-#endif //__DAVAENGINE_SCENE3D_COMPONENT_H__
+
+
+#endif // __DAVAENGINE_IRENDERUPDATABLE_H__
+

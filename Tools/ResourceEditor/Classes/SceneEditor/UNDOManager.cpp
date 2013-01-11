@@ -1,5 +1,5 @@
 #include "UNDOManager.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 class VisibilityActionDataStruct: public BaseObject
 {

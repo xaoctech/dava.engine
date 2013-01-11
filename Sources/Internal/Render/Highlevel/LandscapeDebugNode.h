@@ -27,82 +27,70 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/RenderBatch.h"
-#include "Render/Material.h"
-#include "Render/RenderDataObject.h"
-#include "Render/3D/PolygonGroup.h"
-#include "Scene3D/Camera.h"
-#include "Render/Highlevel/RenderObject.h"
+#ifndef __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
+#define __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
+
+#include "Base/BaseObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
+#include "Scene3D/SceneNode.h"
+#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
-    
-RenderBatch::RenderBatch()
-    :   ownerLayer(0)
-    ,   removeIndex(-1)
-{
-    dataSource = 0;
-    renderDataObject = 0;
-    material = 0;
-    startIndex = 0;
-    indexCount = 0;
-    type = PRIMITIVETYPE_TRIANGLELIST;
-	renderObject = 0;
-}
-    
-RenderBatch::~RenderBatch()
-{
-}
-    
-void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
-{
-    dataSource = SafeRetain(_polygonGroup);
-	aabbox = dataSource->GetBoundingBox();
-}
 
-void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
-{
-    renderDataObject = SafeRetain(_renderDataObject);
-}
-
-void RenderBatch::SetMaterial(Material * _material)
-{
-    material = SafeRetain(_material);
-}
-
-static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
-    
-void RenderBatch::Draw(Camera * camera)
-{
-	if(!renderObject)return;
-    Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
-    if (!worldTransformPtr)return;
-    
-    uint32 flags = renderObject->GetFlags();
-    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
-        return;
-	
-    Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-    material->Draw(dataSource, 0);
-}
-    
-    
-const FastName & RenderBatch::GetOwnerLayerName()
-{
-    static FastName fn("OpaqueRenderLayer");
-    return fn;
-}
-
-void RenderBatch::SetRenderObject(RenderObject * _renderObject)
-{
-	renderObject = _renderObject;
-}
-
-const AABBox3 & RenderBatch::GetBoundingBox() const
-{
-    return aabbox;
-}
+class Scene;
+class Image;
+class Texture;
+class RenderDataObject;
+class Shader;
+class SceneFileV2;
+class Heightmap;
 
 
+/**    
+    \brief Implementation of cdlod algorithm to render landscapes
+    This class is base of the landscape code on all platforms
+    Landscape node is always axial aligned for simplicity of frustum culling calculations
+    Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
+ */ 
+
+class LandscapeDebugNode : public LandscapeNode
+{
+public:	
+	LandscapeDebugNode();
+	virtual ~LandscapeDebugNode();
+    
+    
+    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
+  
+    /**
+        \brief Overloaded draw function to draw landscape.
+     */
+	virtual void Draw();
+
+    void SetHeightmapPath(const String &path);
+    
+    void RebuildVertexes(const Rect &rebuildAtRect);
+    
+protected:	
+    void RebuildIndexes();
+    
+    void DrawLandscape();
+    
+    Vector<LandscapeVertex> debugVertices;
+    Vector<uint32> debugIndices;
+    RenderDataObject * debugRenderDataObject;
 };
+
+    
+};
+
+#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
+
+
+
+
+

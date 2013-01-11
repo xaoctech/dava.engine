@@ -11,7 +11,7 @@ namespace DAVA
 class RenderComponent : public Component
 {
 public:
-    RenderComponent();
+    RenderComponent(RenderObject * _object = 0);
     ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);

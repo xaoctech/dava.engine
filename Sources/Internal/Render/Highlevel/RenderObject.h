@@ -31,7 +31,7 @@
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+#include "Animation/AnimatedObject.h"
 #include "Base/BaseMath.h"
 #include "Render/Highlevel/RenderSystem.h"
 
@@ -56,15 +56,22 @@ public:
  
     
     - Mesh(Static)
-    - Mesh(Dynamic)
-    - 
+    - Mesh(Skinned)
  
  */
 
 class RenderBatch;
-class RenderObject : public BaseObject
+class RenderObject : public AnimatedObject
 {
 public:
+    enum
+    {
+        TYPE_STATIC_MESH = 0,
+        TYPE_SKINNED_MESH,
+        TYPE_LANDSCAPE,
+        TYPE_CUSTOM_DRAW,
+    };
+    
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
@@ -74,6 +81,7 @@ public:
 
     RenderObject();
     virtual ~RenderObject();
+    
     
     inline void SetRemoveIndex(uint32 removeIndex);
     inline uint32 GetRemoveIndex();
@@ -99,7 +107,9 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
 
-private:
+    virtual void Update(float32 timeElapsed);
+    
+protected:
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;

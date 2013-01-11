@@ -758,4 +758,9 @@ const String & ParticleLayer::GetRelativeSpriteName()
 	return relativeSpriteName;
 }
 
+RenderBatch * ParticleLayer::GetRenderBatch()
+{
+	return &renderBatch;
+}
+
 }

@@ -36,8 +36,8 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Frustum.h"
-#include "Scene3D/LandscapeCursor.h"
-
+#include "Render/Highlevel/LandscapeCursor.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
@@ -87,7 +87,7 @@ public:
     
 
 };
-    
+
 /**    
     \brief Implementation of cdlod algorithm to render landscapes
     This class is base of the landscape code on all platforms
@@ -95,7 +95,7 @@ public:
     Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
  */ 
 
-class LandscapeNode : public SceneNode
+class LandscapeNode : public RenderObject
 {
 public:	
     enum 
@@ -234,7 +234,7 @@ public:
     /**
         \brief Overloaded draw function to draw landscape
      */
-	virtual void Draw();
+	virtual void Draw(Camera * camera);
 
 	/**
         \brief Get landscape mesh geometry.
@@ -244,11 +244,6 @@ public:
 	 */
 	void GetGeometry(Vector<LandscapeVertex> & vertices, Vector<int32> & indices);
     
-    //Returns maximum Bounding Box as WorlTransformedBox
-    virtual AABBox3 GetWTMaximumBoundingBox();
-
-	inline AABBox3 & GetBoundingBox();
-
     /**
         \brief Function to receive pathname of heightmap object
         \returns pathname of heightmap
@@ -325,7 +320,7 @@ protected:
 
     Texture * CreateTexture(eTextureLevel level, const String & textureName);
     
-    AABBox3     box;
+    //AABBox3     box;
     
     int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
@@ -406,10 +401,6 @@ protected:
     Color   fogColor;
 };
 
-inline AABBox3 & LandscapeNode::GetBoundingBox()
-{
-    return box;
-}
     
 inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
 {

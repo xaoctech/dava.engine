@@ -501,17 +501,19 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
-
-	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-
-    propsControl->SetDelegate(this);
-
-    LandscapeEditorSettingsChanged(propsControl->Settings());
-
-
-    return propsControl;
+// RETURN TO THIS CODE LATER
+//    LandscapeEditorPropertyControl *propsControl =
+//		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
+//
+//	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+//
+//    propsControl->SetDelegate(this);
+//
+//    LandscapeEditorSettingsChanged(propsControl->Settings());
+//
+//
+//    return propsControl;
+    return 0;
 }
 
 void LandscapeEditorCustomColors::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
@@ -551,19 +553,21 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 
 void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
 {
-	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
-	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
-						   GetRelativePathToScenePath(fileName));
-	parent->GetSceneGraph()->UpdatePropertyPanel();
+// RETURN TO THIS CODE LATER
+//	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+//	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
+//						   GetRelativePathToScenePath(fileName));
+//	parent->GetSceneGraph()->UpdatePropertyPanel();
 }
 
 String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
+// RETURN TO THIS CODE LATER
 	String currentSaveName = "";
-
-	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
-	if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
-		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
+//
+//	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
+//	if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
+//		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
 
 	return GetAbsolutePathFromScenePath(currentSaveName);
 }

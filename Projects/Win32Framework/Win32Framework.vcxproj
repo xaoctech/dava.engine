@@ -471,6 +471,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
@@ -510,6 +511,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
@@ -786,6 +788,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
@@ -824,6 +827,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />

@@ -102,6 +102,8 @@ private:
     
     RenderLayer * ownerLayer;
     uint32 removeIndex;
+
+	AABBox3 aabbox;
 };
 
 inline PolygonGroup * RenderBatch::GetPolygonGroup()

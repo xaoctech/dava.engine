@@ -34,6 +34,7 @@
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
 #include "Entity/SceneSystem.h"
+#include "Render/Highlevel/IRenderUpdatable.h"
 
 namespace DAVA
 {
@@ -76,11 +77,18 @@ public:
     void SetCamera(Camera * camera);
     
     
-    void Process();
+    void Update(float32 timeElapsed);
     void Render();
     
     void MarkForUpdate(RenderObject * renderObject);
-
+    
+    /**
+        \brief This is required for objects that needs permanent update every frame like 
+        Landscape and Particles.
+     */
+    void RegisterForUpdate(IRenderUpdatable * renderObject);
+    void UnregisterFromUpdate(IRenderUpdatable * renderObject);
+    
 private:
     void ProcessClipping();
     void AddRenderObject(RenderObject * renderObject);
@@ -88,8 +96,10 @@ private:
     void AddRenderBatch(RenderBatch * renderBatch);
     void RemoveRenderBatch(RenderBatch * renderBatch);
     void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
-        
     
+    
+    Vector<IRenderUpdatable*> objectsForUpdate;
+    Vector<RenderObject*> objectsForPermanentUpdate;
     List<RenderObject*> markedObjects;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;

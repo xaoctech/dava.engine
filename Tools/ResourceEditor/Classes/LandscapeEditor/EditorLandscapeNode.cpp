@@ -36,7 +36,8 @@ using namespace DAVA;
 EditorLandscapeNode::EditorLandscapeNode()
     : LandscapeNode()
 {
-    SetName(String("Landscape_EditorNode"));
+    // RETURN TO THIS CODE LATER
+    //SetName(String("Landscape_EditorNode"));
     
     landscapeRenderer = NULL;
     nestedLandscape = NULL;
@@ -61,15 +62,15 @@ void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
         editorLandscape->SetParentLandscape(this);
     }
     
-    
-    SetDebugFlags(nestedLandscape->GetDebugFlags());
+    // RETURN TO THIS CODE LATER
+    // SetDebugFlags(nestedLandscape->GetDebugFlags());
     
     SetHeightmap(nestedLandscape->GetHeightmap());
     heightmapPath = nestedLandscape->GetHeightmapPathname();
 
     SetTexture(TEXTURE_TILE_FULL, nestedLandscape->GetTexture(TEXTURE_TILE_FULL));
     
-    box = nestedLandscape->GetBoundingBox();
+    bbox = nestedLandscape->GetBoundingBox();
     CopyCursorData(nestedLandscape, this);
     
     SetDisplayedTexture();
@@ -98,7 +99,7 @@ void EditorLandscapeNode::SetRenderer(LandscapeRenderer *renderer)
 
 void EditorLandscapeNode::Draw()
 {
-    if (!(flags & NODE_VISIBLE)) return;
+    //if (!(flags & NODE_VISIBLE)) return;
     if(!landscapeRenderer) return;
     
     landscapeRenderer->BindMaterial(GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
@@ -214,7 +215,8 @@ void EditorLandscapeNode::FlushChanges()
     if(nestedLandscape)
     {
         CopyCursorData(this, nestedLandscape);
-        nestedLandscape->SetDebugFlags(GetDebugFlags());
+        // RETURN TO THIS CODE LATER
+        //nestedLandscape->SetDebugFlags(GetDebugFlags());
     }
 }
 
