@@ -42,9 +42,11 @@ signals:
 protected slots:
 	void OnValueChanged();
 	void OnSpriteBtn();
+	void OnSpritePathChanged(const QString& text);
 	
 private:
 	void InitWidget(QWidget* );
+	void UpdateTooltip();
 	
 private:
 	ParticleEmitter* emitter;

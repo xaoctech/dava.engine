@@ -56,7 +56,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(clicked(bool)),
 			this,
 			SLOT(OnSpriteBtn()));
-	
+	connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
+
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
 	numberTimeLine = new TimeLineWidget(this);
@@ -123,7 +124,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
         sp->installEventFilter( this );
     }
-	
+	spritePathLabel->installEventFilter(this);
+
 	sprite = NULL;
 	blockSignals = false;
 }
@@ -175,7 +177,8 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	SafeRelease(image);
 	SafeRelease(renderSprite);
 
-	QString spriteName = sprite ? QString::fromStdString(sprite->GetName()) : "<none>";
+	String spritePath = FileSystem::Instance()->GetCanonicalPath(sprite->GetName());
+	QString spriteName = sprite ? QString::fromStdString(spritePath) : "<none>";
 	spritePathLabel->setText(spriteName);
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
@@ -400,6 +403,19 @@ void EmitterLayerWidget::Update()
 	Init(this->emitter, this->layer, false);
 }
 
+void EmitterLayerWidget::UpdateTooltip()
+{
+	QFontMetrics fm = spritePathLabel->fontMetrics();
+	if (fm.width(spritePathLabel->text()) >= spritePathLabel->width())
+	{
+		spritePathLabel->setToolTip(spritePathLabel->text());
+	}
+	else
+	{
+		spritePathLabel->setToolTip("");
+	}
+}
+
 bool EmitterLayerWidget::eventFilter( QObject * o, QEvent * e )
 {
     if ( e->type() == QEvent::Wheel &&
@@ -408,5 +424,17 @@ bool EmitterLayerWidget::eventFilter( QObject * o, QEvent * e )
         e->ignore();
         return true;
     }
+
+	if (e->type() == QEvent::Resize && qobject_cast<QLineEdit*>(o))
+	{
+		UpdateTooltip();
+		return true;
+	}
+
     return QWidget::eventFilter( o, e );
+}
+
+void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
+{
+	UpdateTooltip();
 }
