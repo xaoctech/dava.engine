@@ -315,10 +315,10 @@ public:
 
 public:
     INTROSPECTION_EXTEND(Camera, SceneNode,
-		PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV)
-		PROPERTY(position, "Position", GetPosition, SetPosition)
-		PROPERTY(up, "Up", GetUp, SetUp)
-		PROPERTY(left, "Left", GetLeft, SetLeft)
+		PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, 0)
+		PROPERTY(position, "Position", GetPosition, SetPosition, 0)
+		PROPERTY(up, "Up", GetUp, SetUp, 0)
+		PROPERTY(left, "Left", GetLeft, SetLeft, 0)
 		);
 };
 
