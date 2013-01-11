@@ -19,6 +19,8 @@ public:
 	~TimeLineWidget();
 	
 	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true);
+	void SetMinLimits(float32 minV);
+	void SetMaxLimits(float32 maxV);
 	void EnableLock(bool enable);
 	
 	void AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend = "");
@@ -86,6 +88,8 @@ private:
 	float32 maxValue;
 	float32 minTime;
 	float32 maxTime;
+	float32 minValueLimit;
+	float32 maxValueLimit;
 	
 	int32 selectedPoint;
 	int32 selectedLine;
@@ -131,7 +135,7 @@ class SetPointValueDlg: public QDialog
 	Q_OBJECT
 	
 public:
-	explicit SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, QWidget *parent = 0);
+	explicit SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent = 0);
 	
 	float32 GetTime() const;
 	float32 GetValue() const;

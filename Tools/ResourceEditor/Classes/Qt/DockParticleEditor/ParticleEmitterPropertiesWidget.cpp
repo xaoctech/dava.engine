@@ -149,6 +149,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
 
 	emitterSize->Init(0.f, emitterLifeTime, updateMinimize, true);
+	emitterSize->SetMinLimits(0);
 	Vector<QColor> sizeColors;
 	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
 	Vector<QString> sizeLegends;

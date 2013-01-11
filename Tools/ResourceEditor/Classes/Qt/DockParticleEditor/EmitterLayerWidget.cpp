@@ -185,6 +185,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 	//LAYER_NUMBER, LAYER_NUMBER_VARIATION,
 	numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	numberTimeLine->SetMinLimits(0);
 	numberTimeLine->AddLine(0, PropLineWrapper<float32>(layer->number).GetProps(), Qt::blue, "number");
 	numberTimeLine->AddLine(1, PropLineWrapper<float32>(layer->numberVariation).GetProps(), Qt::darkGreen, "number variation");
 
@@ -194,16 +195,19 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	Vector<QString> legends;
 	legends.push_back("size X"); legends.push_back("size Y");
 	sizeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
+	sizeTimeLine->SetMinLimits(0);
 	sizeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->size).GetProps(), colors, legends);
 	sizeTimeLine->EnableLock(true);
 	
 	legends.clear();
 	legends.push_back("size variation X"); legends.push_back("size variation Y");
 	sizeVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
+	sizeVariationTimeLine->SetMinLimits(0);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
 	
 	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	sizeOverLifeTimeLine->SetMinLimits(0);
 	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
 
 
@@ -241,9 +245,18 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	colorOverLifeGradient->SetValues(PropLineWrapper<Color>(layer->colorOverLife).GetProps());
 
 	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
+	alphaOverLifeTimeLine->SetMinLimits(0);
+	alphaOverLifeTimeLine->SetMaxLimits(1.f);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
 	
 	frameOverLifeTimeLine->Init(0, 1, updateMinimized);
+	frameOverLifeTimeLine->SetMinLimits(0);
+	int32 frameCount = 0;
+	if (layer && layer->GetSprite())
+	{
+		frameCount = layer->GetSprite()->GetFrameCount() - 1;
+	}
+	frameOverLifeTimeLine->SetMaxLimits(frameCount);
 	frameOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->frameOverLife).GetProps(), Qt::blue, "frame over life");
 	
 	//LAYER_ALIGN_TO_MOTION,
@@ -343,13 +356,6 @@ void EmitterLayerWidget::OnValueChanged()
 	
 	PropLineWrapper<float32> propFrameOverLife;
 	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
-	if (layer->GetSprite())
-	{
-		float32 maxFrame = Max(0, layer->GetSprite()->GetFrameCount() - 1);
-		Vector< PropValue<float32> >* frameValues = propFrameOverLife.GetPropsPtr();
-		for (uint i = 0; i < frameValues->size(); ++i)
-			(*frameValues)[i].v = Min(maxFrame, (*frameValues)[i].v);
-	}
 	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
 	updateLayerCmd->Init(!enableCheckBox->isChecked(),
