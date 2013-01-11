@@ -2,6 +2,7 @@
 #include "Scene/SceneDataManager.h"
 
 #include "DockProperties/PropertyEditor.h"
+#include "QtPropertyEditor/QtPropertyItem.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
@@ -41,12 +42,16 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 		const DAVA::IntrospectionInfo *info = curNode->GetTypeInfo();
 		while(NULL != info)
 		{
-			//QtPropertyItem* subClassHeader = AppendPropertyHeader(info->Name());
+			QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(info->Name(), new QtPropertyDataIntrospection(node, info));
 
-			AppendProperty(info->Name(), new QtPropertyDataIntrospection(node, info));
+			prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+			prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+
 			info = info->BaseInfo();
 		}
 	}
+
+	expandToDepth(0);
 }
 
 void PropertyEditor::sceneChanged(SceneData *sceneData)

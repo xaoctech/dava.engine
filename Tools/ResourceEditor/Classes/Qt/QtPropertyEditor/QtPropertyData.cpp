@@ -1,11 +1,13 @@
 #include "QtPropertyEditor/QtPropertyData.h"
 
 QtPropertyData::QtPropertyData()
-	: parent(NULL)
+	: curFlags(0)
+	, parent(NULL)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value)
 	: curValue(value)
+	, curFlags(0)
 	, parent(NULL)
 { }
 
@@ -44,6 +46,16 @@ void QtPropertyData::SetValue(const QVariant &value)
 
 	ChildNeedUpdate();
 	ParentUpdate();
+}
+
+int QtPropertyData::GetFlags()
+{
+	return curFlags;
+}
+
+void QtPropertyData::SetFlags(int flags)
+{
+	curFlags = flags;
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) 

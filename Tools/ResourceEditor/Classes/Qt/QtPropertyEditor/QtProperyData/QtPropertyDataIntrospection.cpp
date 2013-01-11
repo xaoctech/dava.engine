@@ -16,6 +16,8 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 			childIndexes.insert(childData, i);
 		}
 	}
+
+	SetFlags(FLAG_IS_DISABLED);
 }
 
 QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
