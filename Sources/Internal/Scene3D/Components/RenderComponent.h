@@ -21,6 +21,10 @@ public:
     RenderObject * GetRenderObject();
 private:
     RenderObject * renderObject;
+    
+public:
+    
+    INTROSPECTION_EXTEND_EMPTY(RenderComponent, Component);
 };
 
 
