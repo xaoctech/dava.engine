@@ -24,8 +24,12 @@ Component * ParticleEmitterComponent::Clone()
 
 void ParticleEmitterComponent::SetParticleEmitter(ParticleEmitter * _particleEmitter)
 {
+	RenderSystem::Instance()->UnregisterFromUpdate(particleEmitter);
+
 	SafeRelease(particleEmitter);
 	particleEmitter = SafeRetain(_particleEmitter);
+
+	RenderSystem::Instance()->RegisterForUpdate(particleEmitter);
 }
 
 ParticleEmitter * ParticleEmitterComponent::GetParticleEmitter()

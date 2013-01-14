@@ -176,10 +176,12 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	}
 }
 
-void ParticleEmitter::Draw()
+void ParticleEmitter::RenderUpdate(float32 timeElapsed)
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
+
+	Camera * camera = RenderSystem::Instance()->GetCamera();
 
 	if(is3D)
 	{
@@ -187,7 +189,7 @@ void ParticleEmitter::Draw()
 		for(it = layers.begin(); it != layers.end(); ++it)
 		{
 			if(!(*it)->isDisabled)
-				(*it)->Draw();
+				(*it)->Draw(camera);
 		}
 	}
 	else
@@ -202,7 +204,7 @@ void ParticleEmitter::Draw()
 		for(it = layers.begin(); it != layers.end(); ++it)
 		{
 			if(!(*it)->isDisabled)
-				(*it)->Draw();
+				(*it)->Draw(camera);
 		}
 
 		if(particlesFollow)

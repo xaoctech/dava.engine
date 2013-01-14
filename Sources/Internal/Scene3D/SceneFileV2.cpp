@@ -46,7 +46,9 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -697,15 +699,12 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		SceneNode * newNode = new SceneNode();
 		lod->SceneNode::Clone(newNode);
 		SceneNode * parent = lod->GetParent();
+
+		DVASSERT(parent);
 		if(parent)
 		{
 			parent->AddNode(newNode);
 			parent->RemoveNode(lod);
-		}
-		else
-		{
-			lod->SetScene(0);
-			lod->Release();
 		}
 
 		newNode->AddComponent(new LodComponent());
@@ -743,10 +742,45 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 	{
 		SceneNode * newNode = new SceneNode();
 		particleEmitterNode->SceneNode::Clone(newNode);
+		SceneNode * parent = particleEmitterNode->GetParent();
 
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(particleEmitterNode);
+		}
+
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
 		ParticleEmitterComponent * particleComponent = new ParticleEmitterComponent();
 		newNode->AddComponent(particleComponent);
-		particleComponent->SetParticleEmitter(particleEmitterNode->GetEmitter());
+		particleComponent->SetParticleEmitter(emitter);
+
+		RenderComponent * renderComponent = new RenderComponent;
+		renderComponent->SetRenderObject(emitter);
+		
+		newNode->AddComponent(renderComponent);
+		return true;
+	}
+
+	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(*node);
+	if(particleEffectNode)
+	{
+		SceneNode * newNode = new SceneNode();
+		particleEffectNode->SceneNode::Clone(newNode);
+		SceneNode * parent = particleEffectNode->GetParent();
+
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(particleEffectNode);
+		}
+
+		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
+		newNode->AddComponent(effectComponent);
+
+		return true;
 	}
 
 	return false;
@@ -785,8 +819,5 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
-
-
-
-    
+ 
 };
