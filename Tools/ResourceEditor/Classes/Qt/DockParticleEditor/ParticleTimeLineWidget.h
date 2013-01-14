@@ -73,12 +73,12 @@ private:
 	ParticleEmitterNode* emitterNode;
 	ParticleEffectNode* effectNode;
 	
-	enum GridStyle
+	enum eGridStyle
 	{
-		GridStyleAllPosition,
-		GridStyleLimits
+		GRID_STYLE_ALL_POSITION,
+		GRID_STYLE_LIMITS
 	};
-	GridStyle gridStyle;
+	eGridStyle gridStyle;
 	
 	class SetPointValueDlg: public QDialog
 	{

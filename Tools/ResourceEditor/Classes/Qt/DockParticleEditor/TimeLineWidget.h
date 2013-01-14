@@ -101,21 +101,20 @@ private:
 	bool isLocked;
 	bool isInteger;
 	
-	enum GridStyle
+	enum eGridStyle
 	{
-		GridStyleAllPosition,
-		GridStyleLimits
+		GRID_STYLE_ALL_POSITION,
+		GRID_STYLE_LIMITS
 	};
-	GridStyle gridStyle;
+	eGridStyle gridStyle;
 	
-	enum SizeState
+	enum eSizeState
 	{
-		SizeStateNormal,
-		SizeStateMinimized,
-		SizeStateDouble
+		SIZE_STATE_NORMAL,
+		SIZE_STATE_MINIMIZED,
+		SIZE_STATE_DOUBLE
 	};
-	SizeState sizeState;
-	SizeState oldState;
+	eSizeState sizeState;
 	bool updateSizeState;
 	bool aliasLinePoint;
 	bool allowDeleteLine;

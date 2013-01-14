@@ -32,7 +32,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
 	
-	gridStyle = GridStyleLimits;
+	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
@@ -220,7 +220,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			if (!drawText)
 				continue;
 			
-			if (gridStyle == GridStyleAllPosition)
+			if (gridStyle == GRID_STYLE_ALL_POSITION)
 			{
 				float value = minTime + i * valueStep;
 				QString strValue = float2QString(value);
@@ -230,7 +230,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			}
 		}
 
-		if (gridStyle == GridStyleLimits)
+		if (gridStyle == GRID_STYLE_LIMITS)
 		{
 			QRect textRect(graphRect.left(), graphRect.bottom(), graphRect.width(), BOTTOM_INDENT);
 			painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, float2QString(minTime));
