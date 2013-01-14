@@ -11,6 +11,7 @@ namespace DAVA
 {
 	template <typename T>
 	struct MetaType;
+    class IntrospectionInfo;
 
 	struct MetaInfo
 	{
