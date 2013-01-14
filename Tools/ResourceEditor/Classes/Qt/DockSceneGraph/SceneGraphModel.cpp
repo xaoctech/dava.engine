@@ -33,6 +33,8 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     SafeRelease(scene);
     scene = SafeRetain(newScene);
  
+	// If the scene is changed, the selection on the Particles Editor level needs to be reset.
+	particlesEditorSceneModelHelper.ResetSelection();
     Rebuild();
 }
 
@@ -60,10 +62,20 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 
     if(!node->GetSolid())
     {
+		// AddNodeToTree() can change the children while Particles Editor adopts orphaned Particle Emitter nodes.
+		// Need to store the original pointers list to the current node's children to process them corrrectly.
+		Vector<DAVA::SceneNode*> originalNodes;
         int32 count = node->GetChildrenCount();
         for(int32 i = 0; i < count; ++i)
         {
-            AddNodeToTree(graphItem, node->GetChild(i));
+			originalNodes.push_back(node->GetChild(i));
+        }
+
+		// Now look through the nodes remembered..
+        for(int32 i = 0; i < count; ++i)
+        {
+            AddNodeToTree(graphItem, originalNodes[i]);
+			// Note - after this call originalNodes[i] may become invalid!
         }
     }
 }
@@ -414,7 +426,7 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
     return true;
 }
 
-void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
+bool SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
 {
     GraphItem *newParentItem = rootItem;
     if(newParentIndex.isValid())
@@ -422,6 +434,11 @@ void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
         newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
     }
     
+	// Ask the Particles Editor if the move should be handled by it separately.
+	if (particlesEditorSceneModelHelper.NeedMoveItemToParent(movedItem, newParentItem))
+	{
+		return particlesEditorSceneModelHelper.MoveItemToParent(movedItem, newParentItem);
+	}
 
     GraphItem *oldParentItem = movedItem->GetParent();
     
@@ -440,6 +457,8 @@ void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
     oldParentNode->RemoveNode(movedNode);
     newParentNode->AddNode(movedNode);
     SafeRelease(movedNode);
+	
+	return true;
 }
 
 QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
