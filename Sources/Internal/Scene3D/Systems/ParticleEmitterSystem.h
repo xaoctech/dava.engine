@@ -2,21 +2,17 @@
 #define __DAVAENGINE_SCENE3D_PARTICLEEMITTERSYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "Scene3D/Systems/BaseProcessSystem.h"
 
 namespace DAVA
 {
 
 class Component;
-class ParticleEmitterSystem : public SceneSystem
+class ParticleEmitterSystem : public BaseProcessSystem
 {
 public:
-	virtual void AddEntity(SceneNode * entity);
-	virtual void RemoveEntity(SceneNode * entity);
+	ParticleEmitterSystem();
 	virtual void Process();
-
-private:
-	Vector<Component*> components;
 };
 
 }

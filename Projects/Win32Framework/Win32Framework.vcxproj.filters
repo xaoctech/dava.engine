@@ -1221,6 +1221,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2101,6 +2107,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

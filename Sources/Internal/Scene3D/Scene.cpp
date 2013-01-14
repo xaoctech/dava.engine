@@ -62,6 +62,7 @@
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -126,6 +127,9 @@ void Scene::CreateSystems()
 
 	particleEmitterSystem = new ParticleEmitterSystem();
 	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
+
+	particleEffectSystem = new ParticleEffectSystem();
+	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 }
 
 Scene::~Scene()
@@ -582,6 +586,7 @@ void Scene::Update(float timeElapsed)
 	lodSystem->SetCamera(currentCamera);
 	lodSystem->Process();
 
+	particleEffectSystem->Process();
 	particleEmitterSystem->Process();
     
 //	entityManager->Flush();
