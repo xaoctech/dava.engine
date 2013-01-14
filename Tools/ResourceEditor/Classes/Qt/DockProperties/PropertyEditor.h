@@ -31,6 +31,8 @@ protected:
 	DAVA::SceneNode *curNode;
 };
 
+#if 0
+
 template<typename T> 
 class HasIntrospection
 {
@@ -119,5 +121,7 @@ typename enable_if<!HasIntrospection<T>::result, const DAVA::IntrospectionInfo*>
 {
 	return NULL;
 }
+
+#endif
 
 #endif // __QT_PROPERTY_WIDGET_H__

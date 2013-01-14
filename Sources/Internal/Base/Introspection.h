@@ -3,6 +3,7 @@
 
 #include "Base/Meta.h"
 #include "Base/FastName.h"
+#include "Base/IntrospectionBase.h"
 #include "FileSystem/VariantType.h"
 
 namespace DAVA
@@ -203,43 +204,6 @@ namespace DAVA
 		const MetaInfo* meta;
 	};
 
-	/*
-	template<typename T> 
-	class HasIntrospection
-	{ 
-		class yes { char m;}; 
-		class no { yes m[2];};
-
-		struct BaseTest
-		{ 
-			const DAVA::IntrospectionInfo* GetTypeInfo()
-			{
-				return NULL;
-			} 
-		}; 
-
-		struct Base : public T, public BaseTest 
-		{}; 
-
-		template <typename C, C c> class Helper{}; 
-
-		template <typename U> 
-		static no Check(U*, Helper<const DAVA::IntrospectionInfo* (BaseTest::*)(), &U::GetTypeInfo>* = 0); 
-
-		static yes Check(...); 
-
-		template <typename U> 
-		static const DAVA::IntrospectionInfo* GetInfo()
-		{
-
-		}
-
-	public: 
-		static const bool result = (sizeof(yes) == sizeof(Check((Base*)(0))));
-		//static const DAVA::IntrospectionInfo* info = Helper<const DAVA::IntrospectionInfo* (BaseTest::*)(), &U::GetTypeInfo>()->GetTypeInfo();
-	};
-	*/
-
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
@@ -297,7 +261,7 @@ namespace DAVA
 		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, sizeof(_type), data, sizeof(data)/sizeof(data[0]), MetaInfo::Instance<_type>()); \
 		return &info; \
 	} \
-	virtual const DAVA::IntrospectionInfo* GetTypeInfo() \
+	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
 	{ \
 		return _type::TypeInfo(); \
 	}
@@ -310,7 +274,7 @@ namespace DAVA
 		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, sizeof(_type), data, sizeof(data)/sizeof(data[0]), MetaInfo::Instance<_type>()); \
 		return &info; \
 	} \
-	virtual const DAVA::IntrospectionInfo* GetTypeInfo() \
+	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
 	{ \
 		return _type::TypeInfo(); \
 	}
@@ -321,7 +285,7 @@ namespace DAVA
 		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, sizeof(_type), NULL, 0, MetaInfo::Instance<_type>()); \
 		return &info; \
 	} \
-	virtual const DAVA::IntrospectionInfo* GetTypeInfo() \
+	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
 	{ \
 		return _type::TypeInfo(); \
 	}
@@ -332,7 +296,7 @@ namespace DAVA
         static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, sizeof(_type), NULL, 0, MetaInfo::Instance<_type>()); \
         return &info; \
     } \
-    virtual const DAVA::IntrospectionInfo* GetTypeInfo() \
+    virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
     { \
         return _type::TypeInfo(); \
     }
