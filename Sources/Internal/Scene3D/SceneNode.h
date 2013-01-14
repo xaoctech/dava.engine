@@ -383,9 +383,9 @@ private:
 
 public:
 	INTROSPECTION(SceneNode,
-		MEMBER(name, "Name")
-		MEMBER(worldTransform, "World transform")
-		MEMBER(customProperties, "Custom properties")
+		MEMBER(name, "Name", 0)
+		MEMBER(worldTransform, "World transform", 0)
+		MEMBER(customProperties, "Custom properties", 0)
 		);
 };
 	

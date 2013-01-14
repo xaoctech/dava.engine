@@ -48,6 +48,7 @@ void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 	// custom setEditorData
 
     QStyledItemDelegate::setEditorData(editor, index);
+
 }
 
 void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
@@ -65,3 +66,16 @@ void QtPropertyItemDelegate::commitAndCloseEditor()
     //emit closeEditor(editor);
 }
 
+void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index) const
+{
+	QStyledItemDelegate::updateEditorGeometry(editor, option, index);
+
+	// tune widget border and geometry
+	if(NULL != editor)
+	{
+		editor->setStyleSheet("border: 2px solid gray;");
+		QRect r = option.rect;
+		r.adjust(0, -2, 0, 2);
+		editor->setGeometry(r);
+	}
+}

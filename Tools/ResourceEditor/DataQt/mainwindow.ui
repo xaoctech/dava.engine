@@ -181,12 +181,9 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="PropertiesView" name="propertiesView" native="true"/>
-        </item>
-        <item>
          <widget class="PropertyEditor" name="propertyEditor">
           <property name="editTriggers">
-           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+           <set>QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
           </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
@@ -702,12 +699,6 @@
    <class>LibraryView</class>
    <extends>QTreeView</extends>
    <header>DockLibrary/libraryview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>PropertiesView</class>
-   <extends>QWidget</extends>
-   <header>DockProperties/PropertiesView.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>CustomColorsView</class>

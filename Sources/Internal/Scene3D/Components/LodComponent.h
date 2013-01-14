@@ -75,6 +75,10 @@ public:
 	float32 forceDistanceSq;
 
 	int32 flags;
+public:
+    
+    INTROSPECTION_EXTEND_EMPTY(LodComponent, Component);
+
 };
 
 int32 LodComponent::GetLodLayersCount()

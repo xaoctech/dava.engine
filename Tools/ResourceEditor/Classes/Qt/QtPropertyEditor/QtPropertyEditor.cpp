@@ -15,12 +15,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 QtPropertyEditor::~QtPropertyEditor()
 { }
 
-QtPropertyItem* QtPropertyEditor::AppendPropertyHeader(const QString &name, QtPropertyItem* parent /*= NULL*/)
-{
-	return curModel->AppendPropertyHeader(name, parent);
-}
-
-QtPropertyItem* QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
+QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
 {
 	return curModel->AppendProperty(name, data, parent);
 }
@@ -35,5 +30,9 @@ void QtPropertyEditor::RemovePropertyAll()
 	curModel->RemovePropertyAll();
 }
 
+void QtPropertyEditor::Expand(QtPropertyItem *item)
+{
+	expand(curModel->indexFromItem(item));
+}
 
 

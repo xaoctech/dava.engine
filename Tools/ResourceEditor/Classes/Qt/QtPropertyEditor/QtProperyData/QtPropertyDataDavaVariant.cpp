@@ -4,6 +4,36 @@
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
 {
+	// set special flags
+	switch(curVariantValue.type)
+	{
+	case DAVA::VariantType::TYPE_BOOLEAN:
+		SetFlags(FLAG_IS_CHECKABLE | FLAG_IS_NOT_EDITABLE);
+		break;
+	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
+	case DAVA::VariantType::TYPE_BYTE_ARRAY:
+		SetFlags(FLAG_IS_DISABLED);
+		break;
+            
+    case DAVA::VariantType::TYPE_MATRIX2:
+    case DAVA::VariantType::TYPE_MATRIX3:
+    case DAVA::VariantType::TYPE_MATRIX4:
+        SetFlags(FLAG_IS_NOT_EDITABLE);
+        break;
+            
+	case DAVA::VariantType::TYPE_FLOAT:
+	case DAVA::VariantType::TYPE_INT32:
+	case DAVA::VariantType::TYPE_INT64:
+	case DAVA::VariantType::TYPE_UINT32:
+	case DAVA::VariantType::TYPE_UINT64:
+	case DAVA::VariantType::TYPE_STRING:
+	case DAVA::VariantType::TYPE_VECTOR2:
+	case DAVA::VariantType::TYPE_VECTOR3:
+	case DAVA::VariantType::TYPE_VECTOR4:
+	default:
+		break;
+	}
+
 	ChildsCreate();
 }
 
@@ -328,7 +358,12 @@ QVariant QtPropertyDataDavaVariant::FromMatrix4(const DAVA::Matrix4 &matrix)
 {
 	QVariant v;
 
-	v = QString("Matrix4");
+	v = QString().sprintf("[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]\n[%g, %g, %g, %g]",
+                          matrix._00, matrix._01, matrix._02, matrix._03,
+                          matrix._10, matrix._11, matrix._12, matrix._13,
+                          matrix._20, matrix._21, matrix._22, matrix._23,
+                          matrix._30, matrix._31, matrix._32, matrix._33
+                          );
 
 	return v;
 }
@@ -337,7 +372,11 @@ QVariant QtPropertyDataDavaVariant::FromMatrix3(const DAVA::Matrix3 &matrix)
 {
 	QVariant v;
 
-	v = QString("Matrix3");
+	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]\n[%g, %g, %g]",
+                          matrix._00, matrix._01, matrix._02,
+                          matrix._10, matrix._11, matrix._12,
+                          matrix._20, matrix._21, matrix._22
+                          );
 
 	return v;
 }
@@ -346,7 +385,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 {
 	QVariant v;
 
-	v = QString().sprintf("([%g, %g], [%g, %g])",
+	v = QString().sprintf("([%g, %g]\n[%g, %g])",
 		matrix._00, matrix._01,
 		matrix._10, matrix._11);
 

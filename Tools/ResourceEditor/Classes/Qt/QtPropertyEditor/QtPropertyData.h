@@ -9,12 +9,24 @@ class QtPropertyData
 	friend class QtPropertyItem;
 
 public:
+	enum
+	{
+		FLAG_EMPTY				= 0x0,
+
+		FLAG_IS_DISABLED		= 0x1,
+		FLAG_IS_CHECKABLE		= 0x2,
+		FLAG_IS_NOT_EDITABLE	= 0x4,
+	};
+
 	QtPropertyData();
 	QtPropertyData(const QVariant &value);
 	virtual ~QtPropertyData() ;
 
 	QVariant GetValue();
 	void SetValue(const QVariant &value);
+
+	int GetFlags();
+	void SetFlags(int flags);
 
 	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option);
 
@@ -46,6 +58,7 @@ protected:
 
 private:
 	QVariant curValue;
+	int curFlags;
 
 	QtPropertyData *parent;
 	QMap<QString, QtPropertyData *> children;

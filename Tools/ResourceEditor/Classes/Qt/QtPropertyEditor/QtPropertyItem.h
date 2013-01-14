@@ -22,6 +22,9 @@ public:
 protected:
 	QtPropertyData* itemData;
 	bool itemDataDeleteByParent;
+
+	void ApplyDataFlags();
+	void ApplyNameStyle(QtPropertyItem *name);
 };
 
 #endif // __QT_PROPERTY_ITEM_H__

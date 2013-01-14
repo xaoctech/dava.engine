@@ -16,11 +16,12 @@ public:
 	QtPropertyEditor(QWidget *parent = 0);
 	~QtPropertyEditor();
 
-	QtPropertyItem* AppendPropertyHeader(const QString &name, QtPropertyItem* parent = NULL);
-	QtPropertyItem* AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
+	QPair<QtPropertyItem*, QtPropertyItem*> AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent = NULL);
 
 	void RemoveProperty(QtPropertyItem* item);
 	void RemovePropertyAll();
+
+	void Expand(QtPropertyItem *);
 
 protected:
 	QtPropertyModel *curModel;
