@@ -74,7 +74,7 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 {
     while(NULL != info)
     {
-        if(info->MembersCount())
+        //if(info->MembersCount())
         {
             QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(info->Name(), new QtPropertyDataIntrospection(object, info));
             

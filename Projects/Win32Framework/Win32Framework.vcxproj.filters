@@ -1197,9 +1197,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1214,6 +1211,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionBase.h">
       <Filter>Internal\Base</Filter>
@@ -2092,6 +2104,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
