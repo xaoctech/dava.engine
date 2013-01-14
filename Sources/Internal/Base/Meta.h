@@ -16,12 +16,6 @@ namespace DAVA
 	{
 		friend class IntrospectionInfo;
 
-		MetaInfo(const char *_type_name, int _type_size)
-			: type_name(_type_name)
-			, type_size(_type_size)
-			, introspection(NULL)
-		{ }
-
 		template <typename MetaT>
 		static MetaInfo *Instance()
 		{
@@ -61,6 +55,12 @@ namespace DAVA
 		}
 
 	private:
+		MetaInfo(const char *_type_name, int _type_size)
+			: type_name(_type_name)
+			, type_size(_type_size)
+			, introspection(NULL)
+		{ }
+
 		const int type_size;
 		const char *type_name;
 
