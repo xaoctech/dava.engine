@@ -35,6 +35,13 @@ private:
 	int32 index;
 
 	friend class TransformSystem;
+    
+public:
+
+    INTROSPECTION_EXTEND(TransformComponent, Component,
+        MEMBER(localMatrix, "Local Transform", 0)
+        MEMBER(worldMatrix, "World Transform", 0)
+    );
 };
 
 Matrix4 * TransformComponent::GetWorldTransform()

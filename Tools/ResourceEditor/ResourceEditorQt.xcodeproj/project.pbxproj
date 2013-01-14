@@ -15,7 +15,6 @@
 		49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B261680990000713D35 /* VisibilityToolView.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
-		4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D138167B42BE003E701F /* PropertiesView.cpp */; };
 		5045D652169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D650169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp */; };
 		50957628169829800023E6D5 /* QtPropertyEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095761B169829800023E6D5 /* QtPropertyEditor.cpp */; };
 		50957629169829800023E6D5 /* QtPropertyItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095761D169829800023E6D5 /* QtPropertyItem.cpp */; };
@@ -27,7 +26,6 @@
 		50E8E8D3169AC651005BB2F1 /* CustomColorsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E885169AC651005BB2F1 /* CustomColorsView_moc.cpp */; };
 		50E8E8D4169AC651005BB2F1 /* LibraryModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E887169AC651005BB2F1 /* LibraryModel_moc.cpp */; };
 		50E8E8D5169AC651005BB2F1 /* LibraryView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E888169AC651005BB2F1 /* LibraryView_moc.cpp */; };
-		50E8E8D6169AC651005BB2F1 /* PropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E88A169AC651005BB2F1 /* PropertiesView_moc.cpp */; };
 		50E8E8D7169AC651005BB2F1 /* PropertyEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E88B169AC651005BB2F1 /* PropertyEditor_moc.cpp */; };
 		50E8E8D8169AC651005BB2F1 /* VisibilityToolView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E88D169AC651005BB2F1 /* VisibilityToolView_moc.cpp */; };
 		50E8E8D9169AC651005BB2F1 /* davaglwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E88F169AC651005BB2F1 /* davaglwidget_moc.cpp */; };
@@ -417,8 +415,6 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
-		4F82D138167B42BE003E701F /* PropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView.cpp; sourceTree = "<group>"; };
-		4F82D139167B42BE003E701F /* PropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesView.h; sourceTree = "<group>"; };
 		5045D650169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaVariant.cpp; sourceTree = "<group>"; };
 		5045D651169EF7B800742C05 /* QtPropertyDataDavaVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataDavaVariant.h; sourceTree = "<group>"; };
 		5095761A169829800023E6D5 /* QtPropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyData.h; sourceTree = "<group>"; };
@@ -438,7 +434,6 @@
 		50E8E885169AC651005BB2F1 /* CustomColorsView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsView_moc.cpp; sourceTree = "<group>"; };
 		50E8E887169AC651005BB2F1 /* LibraryModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel_moc.cpp; sourceTree = "<group>"; };
 		50E8E888169AC651005BB2F1 /* LibraryView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryView_moc.cpp; sourceTree = "<group>"; };
-		50E8E88A169AC651005BB2F1 /* PropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView_moc.cpp; sourceTree = "<group>"; };
 		50E8E88B169AC651005BB2F1 /* PropertyEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditor_moc.cpp; sourceTree = "<group>"; };
 		50E8E88D169AC651005BB2F1 /* VisibilityToolView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolView_moc.cpp; sourceTree = "<group>"; };
 		50E8E88F169AC651005BB2F1 /* davaglwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = davaglwidget_moc.cpp; sourceTree = "<group>"; };
@@ -1231,8 +1226,6 @@
 			children = (
 				50E8E90D169AC70B005BB2F1 /* PropertyEditor.cpp */,
 				50E8E90E169AC70B005BB2F1 /* PropertyEditor.h */,
-				4F82D138167B42BE003E701F /* PropertiesView.cpp */,
-				4F82D139167B42BE003E701F /* PropertiesView.h */,
 			);
 			name = DockProperties;
 			path = Classes/Qt/DockProperties;
@@ -1325,7 +1318,6 @@
 		50E8E889169AC651005BB2F1 /* DockProperties */ = {
 			isa = PBXGroup;
 			children = (
-				50E8E88A169AC651005BB2F1 /* PropertiesView_moc.cpp */,
 				50E8E88B169AC651005BB2F1 /* PropertyEditor_moc.cpp */,
 			);
 			path = DockProperties;
@@ -2847,7 +2839,6 @@
 				E89EF5541677350800477220 /* LibraryModel.cpp in Build Sources */,
 				E89EF5551677350800477220 /* LibraryView.cpp in Build Sources */,
 				E89EF5AB167735AB00477220 /* ProjectManager.cpp in Build Sources */,
-				4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */,
 				49448B2416806E4400713D35 /* CustomColorsView.cpp in Build Sources */,
 				49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */,
 				50957628169829800023E6D5 /* QtPropertyEditor.cpp in Build Sources */,
@@ -2860,7 +2851,6 @@
 				50E8E8D3169AC651005BB2F1 /* CustomColorsView_moc.cpp in Build Sources */,
 				50E8E8D4169AC651005BB2F1 /* LibraryModel_moc.cpp in Build Sources */,
 				50E8E8D5169AC651005BB2F1 /* LibraryView_moc.cpp in Build Sources */,
-				50E8E8D6169AC651005BB2F1 /* PropertiesView_moc.cpp in Build Sources */,
 				50E8E8D7169AC651005BB2F1 /* PropertyEditor_moc.cpp in Build Sources */,
 				50E8E8D8169AC651005BB2F1 /* VisibilityToolView_moc.cpp in Build Sources */,
 				50E8E8D9169AC651005BB2F1 /* davaglwidget_moc.cpp in Build Sources */,

@@ -31,6 +31,7 @@
 #define __DAVAENGINE_SCENE3D_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Introspection.h"
 
 namespace DAVA 
 {
@@ -67,7 +68,9 @@ public:
 	void SetEntity(SceneNode * entity);
 protected:
     SceneNode * entity;
-private:
+
+public:
+	INTROSPECTION_EMPTY(Component);
 };
 
     

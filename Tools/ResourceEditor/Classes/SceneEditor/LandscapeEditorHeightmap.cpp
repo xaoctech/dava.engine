@@ -491,7 +491,7 @@ NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &r
 //    propsControl->SetDelegate(this);
 //    
 //    return propsControl;
-	return 0;
+	return NULL;
 }
 
 
