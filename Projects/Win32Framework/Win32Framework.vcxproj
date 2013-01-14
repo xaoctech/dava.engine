@@ -513,10 +513,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
@@ -833,10 +835,12 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
