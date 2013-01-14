@@ -11,12 +11,16 @@ namespace DAVA
 {
 	template <typename T>
 	struct MetaType;
+    class IntrospectionInfo;
 
 	struct MetaInfo
 	{
+		friend class IntrospectionInfo;
+
 		MetaInfo(const char *_type_name, int _type_size)
 			: type_name(_type_name)
 			, type_size(_type_size)
+			, introspection(NULL)
 		{ }
 
 		template <typename MetaT>
@@ -28,6 +32,12 @@ namespace DAVA
 			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT));
 #endif
 			return &metaInfo;
+		}
+
+		template <typename ClassT>
+		static MetaInfo* Instance(ClassT *var)
+		{
+			return MetaInfo::Instance<ClassT>();
 		}
 
 		template <typename ClassT, typename MemberT>
@@ -46,9 +56,16 @@ namespace DAVA
 			return type_name;
 		}
 
+		inline IntrospectionInfo* GetIntrospectionInfo()
+		{
+			return introspection;
+		}
+
 	private:
 		const int type_size;
 		const char *type_name;
+
+		mutable IntrospectionInfo *introspection;
 	};
 };
 
