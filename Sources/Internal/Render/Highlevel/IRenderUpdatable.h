@@ -39,7 +39,7 @@ namespace DAVA
 class IRenderUpdatable
 {
 public:
-	virtual void Update(float32 timeElapsed) = 0;
+	virtual void RenderUpdate(float32 timeElapsed) = 0;
 };
 
 };

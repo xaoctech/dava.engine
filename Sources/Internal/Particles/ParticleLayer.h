@@ -95,7 +95,7 @@ public:
 	/**
 		\brief This function draws layer properties and layer particles. 
 	 */
-	virtual void Draw();
+	virtual void Draw(Camera * camera);
 	
 	/** 
 		\brief Function to set emitter for layer. 

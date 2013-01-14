@@ -77,6 +77,6 @@ void PreviewControl::Draw(const DAVA::UIGeometricData &geometricData)
     UIControl::Draw(geometricData);
     if(emitter)
     {
-        emitter->Draw();
+        //emitter->Draw();
     }
 }
