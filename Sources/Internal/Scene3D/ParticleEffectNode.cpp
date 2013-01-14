@@ -95,8 +95,11 @@ void ParticleEffectNode::Start()
     int32 childrenCount = GetChildrenCount();
     for (int32 i = 0; i < childrenCount; i ++)
     {
-        ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
-        particleEmitterNode->GetEmitter()->Play();
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		if(component)
+		{
+			component->GetParticleEmitter()->Play();
+		}
     }
 
     this->emittersCurrentlyStopped = 0;
@@ -107,8 +110,11 @@ void ParticleEffectNode::Stop()
 	int32 childrenCount = GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
-		particleEmitterNode->GetEmitter()->Stop();
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		if(component)
+		{
+			component->GetParticleEmitter()->Stop();
+		}
 		emittersCurrentlyStopped++;
 	}
 }
@@ -118,8 +124,11 @@ void ParticleEffectNode::Restart()
 	int32 childrenCount = GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterNode* particleEmitterNode = static_cast<ParticleEmitterNode*>(GetChild(i));
-		particleEmitterNode->GetEmitter()->Restart(true);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		if(component)
+		{
+			component->GetParticleEmitter()->Restart(true);
+		}
 	}
 }
 

@@ -75,6 +75,8 @@ public:
         \brief Set main camera
      */
     void SetCamera(Camera * camera);
+
+	Camera * GetCamera();
     
     
     void Update(float32 timeElapsed);

@@ -1179,9 +1179,6 @@
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp">
       <Filter>QtGenerated\DockCustomColors</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp">
       <Filter>Sources\Qt\QtPropertyBrowser\Dava</Filter>
     </ClCompile>
@@ -1226,6 +1223,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ParticleEffectPropertyControl.cpp">
+      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2186,9 +2186,6 @@
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h">
       <Filter>Sources\Qt\DockCustomColors</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h">
       <Filter>Sources\Qt\QtPropertyBrowser\Dava</Filter>
     </ClInclude>
@@ -2215,6 +2212,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ParticleEffectPropertyControl.h">
+      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

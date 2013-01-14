@@ -559,7 +559,7 @@ void ParticleLayer::ProcessParticle(Particle * particle)
             particle->forcesOverLife[i] = forcesOverLife[i]->GetValue(t);
 }
 
-void ParticleLayer::Draw()
+void ParticleLayer::Draw(Camera * camera)
 {
 	if (additive)
 	{

@@ -673,7 +673,7 @@ void Scene::Draw()
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
-    SceneNode::Draw();
+    //SceneNode::Draw();
     
     if(imposterManager)
 	{
