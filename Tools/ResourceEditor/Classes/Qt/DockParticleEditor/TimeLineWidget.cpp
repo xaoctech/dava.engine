@@ -16,6 +16,8 @@
 #define LOCK_TEXT "Lock "
 #define LOCK_WIDTH 45
 
+#define GRAPH_HEIGHT 150
+
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
 {
@@ -33,7 +35,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	selectedLine = -1;
 	drawLine = -1;
 	
-	sizeState = SizeStateNormal;
+	sizeState = SIZE_STATE_NORMAL;
 	updateSizeState = true;
 	aliasLinePoint = false;
 	allowDeleteLine = true;
@@ -42,7 +44,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	isLocked = false;
 	isInteger = false;
 	
-	gridStyle = GridStyleLimits;
+	gridStyle = GRID_STYLE_LIMITS;
 	
 	setMouseTracking(true);
 	UpdateSizePolicy();
@@ -82,7 +84,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	//draw legend
 	if (lines.size())
 	{
-		if (sizeState == SizeStateMinimized)
+		if (sizeState == SIZE_STATE_MINIMIZED)
 		{
 			LINES_MAP::iterator iter = lines.begin();
 			QString legend = iter->second.legend;
@@ -119,7 +121,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.translate(minimizeRect.center() + QPoint(1, 1));
 		QPolygon polygon;
 		
-		if (sizeState == SizeStateMinimized)
+		if (sizeState == SIZE_STATE_MINIMIZED)
 			painter.rotate(180);
 		
 		polygon.append(QPoint(0, -minimizeRect.height() * 0.25 - 1));
@@ -141,7 +143,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.drawRect(maximizeRect);
 	}
 		
-	if (sizeState != SizeStateMinimized)
+	if (sizeState != SIZE_STATE_MINIMIZED)
 	{
 		//draw lock
 		if (isLockEnable)
@@ -173,7 +175,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				{
 					float value = valueCenter + i * valueStep;
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					if (gridStyle == GridStyleAllPosition)
+					if (gridStyle == GRID_STYLE_ALL_POSITION)
 					{
 						QString strValue = float2QString(value);
 						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
@@ -185,7 +187,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				{
 					float value = valueCenter - i * valueStep;
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					if (gridStyle == GridStyleAllPosition)
+					if (gridStyle == GRID_STYLE_ALL_POSITION)
 					{
 						QString strValue = float2QString(value);
 						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
@@ -203,7 +205,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				painter.drawLine(x, graphRect.top(), x, graphRect.bottom());
 
 				drawText = !drawText;
-				if (drawText && gridStyle == GridStyleAllPosition)
+				if (drawText && gridStyle == GRID_STYLE_ALL_POSITION)
 				{
 					float value = minTime + i * valueStep;
 					QString strValue = float2QString(value);
@@ -213,7 +215,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				}
 			}
 			
-			if (gridStyle == GridStyleLimits)
+			if (gridStyle == GRID_STYLE_LIMITS)
 			{
 				QRect textRect;
 				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
@@ -447,12 +449,12 @@ void TimeLineWidget::PostAddLine()
 {
 	if (updateSizeState)
 	{
-		sizeState = SizeStateMinimized;
+		sizeState = SIZE_STATE_MINIMIZED;
 		for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
 			if (iter->second.line.size())
 			{
-				sizeState = SizeStateNormal;
+				sizeState = SIZE_STATE_NORMAL;
 				break;
 			}
 		}
@@ -676,7 +678,7 @@ QRect TimeLineWidget::GetGraphRect() const
 
 	graphRect.setWidth(graphRect.width() - 5);
 	graphRect.setY(GetLegendHeight());
-	if (sizeState == SizeStateMinimized)
+	if (sizeState == SIZE_STATE_MINIMIZED)
 	{
 		graphRect.setHeight(0);
 	}
@@ -706,19 +708,19 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 		else if (GetMinimizeRect().contains(event->pos()))
 		{
-			if (sizeState == SizeStateMinimized)
-				sizeState = SizeStateNormal;
+			if (sizeState == SIZE_STATE_MINIMIZED)
+				sizeState = SIZE_STATE_NORMAL;
 			else
-				sizeState = SizeStateMinimized;
+				sizeState = SIZE_STATE_MINIMIZED;
 			UpdateSizePolicy();
 			return;
 		}
 		else if (GetMaximizeRect().contains(event->pos()))
 		{
-			if (sizeState == SizeStateNormal)
-				sizeState = SizeStateDouble;
+			if (sizeState == SIZE_STATE_NORMAL)
+				sizeState = SIZE_STATE_DOUBLE;
 			else
-				sizeState = SizeStateNormal;
+				sizeState = SIZE_STATE_NORMAL;
 			UpdateSizePolicy();
 			return;
 		}
@@ -758,7 +760,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 	}
 
-	if (sizeState != SizeStateMinimized)
+	if (sizeState != SIZE_STATE_MINIMIZED)
 		GraphRectClick(event);
 
 	update();
@@ -814,7 +816,7 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	QWidget::mouseMoveEvent(event);
 	
-	if (sizeState == SizeStateMinimized)
+	if (sizeState == SIZE_STATE_MINIMIZED)
 		return;
 		
 	Vector2 point = GetLogicPoint(event->pos());
@@ -1065,28 +1067,24 @@ void TimeLineWidget::UpdateSizePolicy()
 {
 	switch (sizeState)
 	{
-		case SizeStateMinimized:
+		case SIZE_STATE_MINIMIZED:
 		{
 			setMinimumHeight(16);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		} break;
-		case SizeStateNormal:
+		case SIZE_STATE_NORMAL:
 		{
-			setMinimumHeight(GetLegendHeight() + 150);
+			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		} break;
-		case SizeStateDouble:
+		case SIZE_STATE_DOUBLE:
 		{
-			if (oldState != sizeState)
-			{
-				int height = Max(GetLegendHeight() + 150, QWidget::height());
-				height *= 2;
-				setMinimumHeight(height);
-				setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-			}
+			int height = GetLegendHeight() + GRAPH_HEIGHT;
+			height *= 2;
+			setMinimumHeight(height);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		} break;
 	}
-	oldState = sizeState;
 	
 	update();
 }
