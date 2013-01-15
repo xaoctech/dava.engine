@@ -175,7 +175,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
 			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-			customProperties->SetBool("editor.isSolid", false);
+			customProperties->SetBool(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;
 
