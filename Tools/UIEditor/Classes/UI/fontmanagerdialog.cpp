@@ -2,6 +2,7 @@
 #include "ui_fontmanagerdialog.h"
 #include "ResourcesManageHelper.h"
 #include "EditorFontManager.h"
+#include "ResourcePacker.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -23,14 +24,20 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable, QDialog *parent) :
     ui(new Ui::FontManagerDialog)
 {    
     ui->setupUi(this);
-    //Setup ok button - it should be visible only if user want to change font of control.
+    // Setup ok button - it should be visible only if user want to change font of control.
     ui->okButton->setVisible(okButtonEnable);
-    //Set default font
+    // Set default font
     dialogResultFont = EditorFontManager::Instance()->GetDefaultFont()->Clone();
-    //Initialize dialog
+	// Pack graphics fonts sprites each time sprite dialog is opened
+	ResourcePacker *resPacker = new ResourcePacker();
+	resPacker->PackResources(ResourcesManageHelper::GetFontSpritesDatasourceDirectory().toStdString(),
+									ResourcesManageHelper::GetFontSpritesDirectory().toStdString());
+    // Initialize dialog
     ConnectToSignals();
     InitializeTableView();
     UpdateTableViewContents();
+	
+	SafeDelete(resPacker);
 }
 
 FontManagerDialog::~FontManagerDialog()
@@ -81,15 +88,15 @@ void FontManagerDialog::OkButtonClicked()
         if (fontType == FONT_TYPE_GRAPHIC)
         {
             QString fontSpritePath = QFileDialog::getOpenFileName(this, tr( "Select font sprite" ),
-																		ResourcesManageHelper::GetResourceDirectory(),
+																		ResourcesManageHelper::GetFontSpritesDirectory(),
 																		tr( "Sprites (*.txt)" ));
              
             if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
             {
 				if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
-				{			
+				{
 					// Get font definition relative path by it's name
-					QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName);
+					QString fontDefinition = ResourcesManageHelper::GetFontRelativePath(fontName, true);
 					// Get sprite file relative path
 					QString fontSprite = ResourcesManageHelper::GetResourceRelativePath(fontSpritePath);
 					// Create Graphics font to validate it - but first truncate "*.txt" extension of sprite
@@ -145,8 +152,7 @@ void FontManagerDialog::UpdateTableViewContents()
     
     //Get all available fonts in resource folder
     QStringList fontsList = ResourcesManageHelper::GetFontsList();
-    QList<QStandardItem *> itemsList;
-    
+    QList<QStandardItem *> itemsList;    
     
     for (int i = 0; i < fontsList.size(); ++i)
     {

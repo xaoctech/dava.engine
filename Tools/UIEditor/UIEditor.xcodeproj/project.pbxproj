@@ -93,6 +93,13 @@
 		740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 740F353316832022003B35E7 /* EditorSettings.cpp */; };
 		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
 		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
+		74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F20169F1435000FE4B1 /* CommandLineParser.cpp */; };
+		74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F22169F1435000FE4B1 /* DefinitionFile.cpp */; };
+		74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F24169F1435000FE4B1 /* ImagePacker.cpp */; };
+		74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F26169F1435000FE4B1 /* PngImage.cpp */; };
+		74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F28169F1435000FE4B1 /* TexturePacker.cpp */; };
+		74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F33169F1493000FE4B1 /* ResourcePacker.cpp */; };
+		74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F35169F1946000FE4B1 /* PVRConverter.cpp */; };
 		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
 		7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */; };
 		7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */; };
@@ -310,6 +317,20 @@
 		747FA17E1636A8A3000CEEDA /* ui_backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_backgroundpropertygridwidget.h; sourceTree = "<group>"; };
 		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
 		747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextControlMetadata.h; path = Metadata/UITextControlMetadata.h; sourceTree = "<group>"; };
+		74819F20169F1435000FE4B1 /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
+		74819F21169F1435000FE4B1 /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
+		74819F22169F1435000FE4B1 /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
+		74819F23169F1435000FE4B1 /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
+		74819F24169F1435000FE4B1 /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
+		74819F25169F1435000FE4B1 /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
+		74819F26169F1435000FE4B1 /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
+		74819F27169F1435000FE4B1 /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
+		74819F28169F1435000FE4B1 /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
+		74819F29169F1435000FE4B1 /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
+		74819F32169F147B000FE4B1 /* ResourcePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker.h; sourceTree = "<group>"; };
+		74819F33169F1493000FE4B1 /* ResourcePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker.cpp; sourceTree = "<group>"; };
+		74819F35169F1946000FE4B1 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
+		74819F36169F1946000FE4B1 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		7482C8C51688AA9100435155 /* UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISliderMetadata.cpp; path = Metadata/UISliderMetadata.cpp; sourceTree = "<group>"; };
 		7482C8C61688AA9100435155 /* UISliderMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderMetadata.h; path = Metadata/UISliderMetadata.h; sourceTree = "<group>"; };
 		7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sliderpropertygridwidget.cpp; path = PropertyGridWidgets/sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -651,6 +672,35 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		74819F17169F1435000FE4B1 /* ResourcePacker */ = {
+			isa = PBXGroup;
+			children = (
+				74819F1F169F1435000FE4B1 /* TexturePacker */,
+				74819F32169F147B000FE4B1 /* ResourcePacker.h */,
+				74819F33169F1493000FE4B1 /* ResourcePacker.cpp */,
+			);
+			path = ResourcePacker;
+			sourceTree = "<group>";
+		};
+		74819F1F169F1435000FE4B1 /* TexturePacker */ = {
+			isa = PBXGroup;
+			children = (
+				74819F35169F1946000FE4B1 /* PVRConverter.cpp */,
+				74819F36169F1946000FE4B1 /* PVRConverter.h */,
+				74819F20169F1435000FE4B1 /* CommandLineParser.cpp */,
+				74819F21169F1435000FE4B1 /* CommandLineParser.h */,
+				74819F22169F1435000FE4B1 /* DefinitionFile.cpp */,
+				74819F23169F1435000FE4B1 /* DefinitionFile.h */,
+				74819F24169F1435000FE4B1 /* ImagePacker.cpp */,
+				74819F25169F1435000FE4B1 /* ImagePacker.h */,
+				74819F26169F1435000FE4B1 /* PngImage.cpp */,
+				74819F27169F1435000FE4B1 /* PngImage.h */,
+				74819F28169F1435000FE4B1 /* TexturePacker.cpp */,
+				74819F29169F1435000FE4B1 /* TexturePacker.h */,
+			);
+			path = TexturePacker;
+			sourceTree = "<group>";
+		};
 		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
 			isa = PBXGroup;
 			children = (
@@ -737,6 +787,7 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				74819F17169F1435000FE4B1 /* ResourcePacker */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
 				C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */,
@@ -1074,6 +1125,13 @@
 				7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */,
 				7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */,
 				173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */,
+				74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */,
+				74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */,
+				74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */,
+				74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */,
+				74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */,
+				74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */,
+				74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1124,6 +1182,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
@@ -1132,6 +1193,8 @@
 					../dava.framework/Libs/libs/,
 					../dava.framework/Libs/freetype/lib/,
 					../dava.framework/Libs/oggvorbis/lib/,
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
@@ -1160,9 +1223,12 @@
 					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
-					"-L../dava.framework/Libs/libs/",
-					"-L../dava.framework/Libs/freetype/lib/",
-					"-L../dava.framework/Libs/oggvorbis/lib/",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+					"-lMagickCore",
+					"-lMagick++",
+					"-lMagickWand",
 				);
 				PRODUCT_NAME = TemplateProjectQt;
 				SDKROOT = macosx;
@@ -1199,6 +1265,18 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"../../Libs/ImageMagick-6.7.4/",
+					"../../Libs/ImageMagick-6.7.4/delegates/include",
+					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"../../Libs/ImageMagick-6.7.4/lib/",
+					"../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
@@ -1240,6 +1318,18 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"../../Libs/ImageMagick-6.7.4/",
+					"../../Libs/ImageMagick-6.7.4/delegates/include",
+					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"../../Libs/ImageMagick-6.7.4/lib/",
+					"../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
@@ -1280,6 +1370,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
@@ -1288,6 +1381,8 @@
 					../dava.framework/Libs/libs/,
 					../dava.framework/Libs/freetype/lib/,
 					../dava.framework/Libs/oggvorbis/lib/,
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
@@ -1316,9 +1411,12 @@
 					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
-					"-L../dava.framework/Libs/libs/",
-					"-L../dava.framework/Libs/freetype/lib/",
-					"-L../dava.framework/Libs/oggvorbis/lib/",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+					"-lMagickCore",
+					"-lMagick++",
+					"-lMagickWand",
 				);
 				PRODUCT_NAME = TemplateProjectQt;
 				SDKROOT = macosx;
@@ -1335,7 +1433,7 @@
 				8C7174830A1E4DCBA0332EC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "UIEditor" */ = {
 			isa = XCConfigurationList;
@@ -1344,7 +1442,7 @@
 				D70590BEB531B51029F711BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
