@@ -3,21 +3,13 @@
 
 #include "DAVAEngine.h"
 #include "../SceneEditor/CameraController.h"
-
+#include "../../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 #include <QObject>
-#include <QModelIndex>
-#include <QPoint>
 
-class QFileSystemModel;
-class QTreeView;
 class EditorScene;
-class SceneGraphModel;
-//class LibraryModel;
-class Command;
-class QAction;
-class QMenu;
 class LandscapesController;
 class EditorLandscapeNode;
+
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -29,8 +21,12 @@ public:
     SceneData();
     virtual ~SceneData();
 
+	// Rebuild the scene graph for particular node.
+	void RebuildSceneGraphNode(DAVA::SceneNode* node);
+	
+	// Rebuild the whole scene graph.
     void RebuildSceneGraph();
-    
+
     void SetScene(EditorScene *newScene);
     EditorScene * GetScene();
     
@@ -45,21 +41,10 @@ public:
     DAVA::CameraController *GetCameraController();
     
     void CreateScene(bool createEditorCameras);
-    
-    void AddScene(const DAVA::String &scenePathname);
-    void EditScene(const DAVA::String &scenePathname);
-	void AddReferenceScene(const DAVA::String &scenePathname);
-    
+
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *graphview/*, QTreeView *libraryView, LibraryModel *libModel */);
-    void Deactivate();
-
-    void ReloadRootNode(const DAVA::String &scenePathname);
-
-	//void ReloadLibrary();
-    
     void BakeScene();
     
     void ToggleNotPassableLandscape();
@@ -67,18 +52,27 @@ public:
     bool CanSaveScene();
     
     LandscapesController *GetLandscapesController();
-    
-    //void OpenLibraryForFile(const DAVA::String &filePathname);
+	void SetLandscapesControllerScene(EditorScene* scene);
     
 	void ResetLandsacpeSelection();
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);
 
-    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
-	
+	// Emit the SceneChanged singal.
+	void EmitSceneChanged();
+
+	void GetAllSprites(DAVA::List<DAVA::Sprite*> & sprites);
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
+	
+	// Signals are specific for Scene Graph Model.
+	void SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
+	void SceneGraphModelNeedsRebuild();
+	
+	void SceneGraphModelNeedSetScene(EditorScene* scene);
+	void SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
 
 protected:
     
@@ -89,56 +83,26 @@ protected:
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
-    void Execute(Command *command);
-    
-    //void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
-    void ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point);
 
-    void ProcessContextMenuAction(QAction *action);
+	void FindAllSpriteRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::Sprite*> & sprites);
 
 protected slots:
-    
     void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
-    
-    //library
-    //void LibraryContextMenuRequested(const QPoint &point);
-    //void LibraryMenuTriggered(QAction *action);
-    //void FileSelected(const QString &filePathname, bool isFile);
 
-    //Scene Graph
-    void SceneGraphContextMenuRequested(const QPoint &point);
-    void SceneGraphMenuTriggered(QAction *action);
-    
 protected:
     EditorScene *scene;
 
+	// Node currently selected.
+	DAVA::SceneNode* selectedNode;
+	
+	// Controllers related to SceneData.
     DAVA::WASDCameraController *cameraController;
-    
+    LandscapesController *landscapesController;
+	
     DAVA::String sceneFilePathname;
     
-    
-    SceneGraphModel *sceneGraphModel;
-    //DATA
-    //ENTITY
-    //PROPERTY
-    //LibraryModel *libraryModel;
-    
-    //reload root nodes
-    struct AddedNode
-    {
-        DAVA::SceneNode *nodeToAdd;
-        DAVA::SceneNode *nodeToRemove;
-        DAVA::SceneNode *parent;
-    };
-    DAVA::Vector<AddedNode> nodesToAdd;
-
-	QTreeView *sceneGraphView;
-	//QTreeView *libraryView;
-    
-    LandscapesController *landscapesController;
-    
-    //bool skipLibraryPreview;
-
+	// Particles Editor Scene Data Helper.
+	DAVA::ParticlesEditorSceneDataHelper particlesEditorSceneDataHelper;
 };
 
 #endif // __SCENE_DATA_H__

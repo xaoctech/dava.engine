@@ -1,5 +1,5 @@
 #include "Scene/SceneData.h"
-#include "Main/SceneGraphModel.h"
+#include "DockSceneGraph/SceneGraphModel.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -33,40 +33,28 @@ using namespace DAVA;
 SceneData::SceneData()
     :   QObject(NULL)
     ,   scene(NULL)
-    ,   sceneGraphModel(NULL)
+	,	selectedNode(NULL)
 {
-    //libraryModel = NULL;
-    //libraryView = NULL;
-    sceneGraphView = NULL;
-    
     landscapesController = new LandscapesController();
-    
     sceneFilePathname = String("");
-    sceneGraphModel = new SceneGraphModel();
-    sceneGraphModel->SetScene(NULL);
-    
-
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
-    
-    //skipLibraryPreview = false;
-    
-    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelectedInGraph(DAVA::SceneNode *)));
 }
 
 SceneData::~SceneData()
 {
     SafeRelease(scene);
-    
     SafeRelease(landscapesController);
-    
-    SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
 }
 
+void SceneData::RebuildSceneGraphNode(DAVA::SceneNode* node)
+{
+	emit SceneGraphModelNeedsRebuildNode(node);
+}
 
 void SceneData::RebuildSceneGraph()
 {
-    sceneGraphModel->Rebuild();
+	emit SceneGraphModelNeedsRebuild();
 }
 
 EditorScene * SceneData::GetScene()
@@ -77,7 +65,7 @@ EditorScene * SceneData::GetScene()
 void SceneData::AddSceneNode(DAVA::SceneNode *node)
 {
     // Firstly ask Particle Editor to add this node.
-    if (sceneGraphModel->GetParticlesEditorSceneHelper().AddSceneNode(node) == false)
+    if (particlesEditorSceneDataHelper.AddSceneNode(node) == false)
     {
         scene->AddNode(node);
     }
@@ -101,11 +89,10 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
         {
             landscapesController->SaveLandscape(NULL);
         }
-        
-        sceneGraphModel->GetParticlesEditorSceneHelper().RemoveSceneNode(node);
+
+		particlesEditorSceneDataHelper.RemoveSceneNode(node);
         scene->ReleaseUserData(node);
-        
-        sceneGraphModel->SelectNode(NULL);
+		SelectNode(NULL);
         scene->SetSelection(NULL);
         
         parent->RemoveNode(node);
@@ -118,7 +105,8 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
 
 void SceneData::SelectNode(DAVA::SceneNode *node)
 {
-    sceneGraphModel->SelectNode(node);
+	this->selectedNode = node;
+	emit SceneGraphModelNeedsSelectNode(node);
 }
 
 void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
@@ -149,14 +137,13 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
         }
     }
 
+	this->selectedNode = node;
 	emit SceneNodeSelected(node);
 }
 
-
-
 DAVA::SceneNode * SceneData::GetSelectedNode()
 {
-    return sceneGraphModel->GetSelectedNode();
+    return this->selectedNode;
 }
 
 void SceneData::LockAtSelectedNode()
@@ -177,7 +164,7 @@ void SceneData::SetScene(EditorScene *newScene)
     ReleaseScene();
     
     scene = SafeRetain(newScene);
-    sceneGraphModel->SetScene(scene);
+	emit SceneGraphModelNeedSetScene(scene);
     cameraController->SetScene(scene);
     landscapesController->SetScene(scene);
 }
@@ -185,7 +172,7 @@ void SceneData::SetScene(EditorScene *newScene)
 void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
-    sceneGraphModel->SetScene(NULL);
+	emit SceneGraphModelNeedSetScene(NULL);
     landscapesController->SetScene(NULL);
     
     SafeRelease(scene);
@@ -234,152 +221,6 @@ void SceneData::CreateScene(bool createEditorCameras)
     SafeRelease(createdScene);
 }
 
-void SceneData::AddScene(const String &scenePathname)
-{
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
-    
-    SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
-    
-    KeyedArchive * customProperties = rootNode->GetCustomProperties();
-    customProperties->SetString("editor.referenceToOwner", scenePathname);
-    
-    rootNode->SetSolid(true);
-    scene->AddNode(rootNode);
-    
-    Camera *currCamera = scene->GetCurrentCamera();
-    if(currCamera)
-    {
-        Vector3 pos = currCamera->GetPosition();
-        Vector3 direction  = currCamera->GetDirection();
-        
-        Vector3 nodePos = pos + 10 * direction;
-        nodePos.z = 0;
-        
-        LandscapeNode * ls = scene->GetLandScape(scene);
-        if(ls)
-        {
-            Vector3 result;
-            bool res = ls->PlacePoint(nodePos, result);
-            if(res)
-            {
-                nodePos = result;
-            }
-        }
-        
-        Matrix4 mod;
-        mod.CreateTranslation(nodePos);
-        rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
-    }
-
-	List<LandscapeNode *> landscapes;
-	rootNode->GetChildNodes(landscapes);
-
-	bool needUpdateLandscapeController = !landscapes.empty();
-
-    SafeRelease(rootNode);
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
-
-	if(needUpdateLandscapeController)
-	{
-		landscapesController->SetScene(scene);
-	}
-    
-    RebuildSceneGraph();
-}
-
-void SceneData::EditScene(const String &scenePathname)
-{
-    String extension = FileSystem::Instance()->GetExtension(scenePathname);
-    DVASSERT((".sc2" == extension) && "Wrong file extension.");
-
-    SceneNode * rootNode = scene->GetRootNode(scenePathname);
-    if(rootNode)
-    {
-        SetScenePathname(scenePathname);
-		Vector<SceneNode*> tempV;
-		tempV.reserve(rootNode->GetChildrenCount());
-
-		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-		{
-			tempV.push_back(rootNode->GetChild(ci));
-		}
-        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
-        {
-            //рут нода это сама сцена в данном случае
-            scene->AddNode(tempV[ci]);
-        }
-    }
-
-    
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
-   
-    landscapesController->SetScene(scene);
-
-	scene->Update(0);
-	emit SceneChanged(scene);
-
-    RebuildSceneGraph();
-}
-
-void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
-{
-	String extension = FileSystem::Instance()->GetExtension(scenePathname);
-	DVASSERT((".sc2" == extension) && "Wrong file extension.");
-
-	SceneNode * rootNode = scene->GetRootNode(scenePathname);
-
-	DVASSERT(rootNode->GetChildrenCount() == 1);
-	ReferenceNode * refNode = new ReferenceNode();
-	SceneNode * clone = rootNode->GetChild(0)->Clone();
-	refNode->AddNode(clone);
-	refNode->SetName(rootNode->GetName());
-	SafeRelease(clone);
-
-	KeyedArchive * customProperties = refNode->GetCustomProperties();
-	customProperties->SetString("reference.path", scenePathname);
-
-	refNode->SetSolid(true);
-	scene->AddNode(refNode);
-
-	Camera *currCamera = scene->GetCurrentCamera();
-	if(currCamera)
-	{
-		Vector3 pos = currCamera->GetPosition();
-		Vector3 direction  = currCamera->GetDirection();
-
-		Vector3 nodePos = pos + 10 * direction;
-		nodePos.z = 0;
-
-		LandscapeNode * ls = scene->GetLandScape(scene);
-		if(ls)
-		{
-			Vector3 result;
-			bool res = ls->PlacePoint(nodePos, result);
-			if(res)
-			{
-				nodePos = result;
-			}
-		}
-
-		Matrix4 mod;
-		mod.CreateTranslation(nodePos);
-		refNode->SetLocalTransform(refNode->GetLocalTransform() * mod);
-	}
-	SafeRelease(refNode);
-
-	RebuildSceneGraph();
-
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-	SceneValidator::Instance()->EnumerateSceneTextures();
-}
-
 void SceneData::SetScenePathname(const String &newPathname)
 {
     sceneFilePathname = newPathname;
@@ -395,134 +236,6 @@ String SceneData::GetScenePathname() const
 {
     return sceneFilePathname;
 }
-
-void SceneData::Activate(QTreeView *graphview/*, QTreeView *_libraryView, LibraryModel *libModel*/)
-{
-    sceneGraphView = graphview;
-	//libraryView = _libraryView;
-		
-    sceneGraphModel->Activate(sceneGraphView);
-    
-    //connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
-    connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
-    
-    //libraryModel = libModel;
-    //connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
-
-    //QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
-}
-
-void SceneData::Deactivate()
-{
-	/*
-    if(libraryModel)
-    {
-        disconnect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
-        libraryModel = NULL;
-    }
-    
-    disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
-	*/
-    disconnect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
-    
-    sceneGraphModel->Deactivate();
-}
-
-/*
-void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
-{
-    if(!index.isValid())
-    {
-        return;
-    }
-    
-    QFileInfo fileInfo = libraryModel->fileInfo(index);
-    if(fileInfo.isFile())
-    {
-        String filePathname = PathnameToDAVAStyle(fileInfo.filePath());
-        QMenu menu;
-
-        String extension = FileSystem::Instance()->GetExtension(filePathname);
-        if(0 == CompareCaseInsensitive(String(".sc2"), extension))
-        {
-            AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
-            AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
-            AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
-            AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
-        }
-        else if(0 == CompareCaseInsensitive(String(".dae"), extension))
-        {
-            AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
-        }
-
-        connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
-        menu.exec(point);
-    }
-}
-*/
-
-void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
-{
-	SelectNode(NULL);
-
-    scene->ReleaseRootNode(scenePathname);
-    
-    ReloadNode(scene, scenePathname);
-    
-    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
-    {
-        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
-        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
-        SafeRelease(nodesToAdd[i].nodeToAdd);
-    }
-    nodesToAdd.clear();
-    
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->OnReloadRootNodesQt();
-    }
-    
-    RebuildSceneGraph();
-	landscapesController->SetScene(scene);
-}
-
-void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
-{//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
-    KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
-    {
-        SceneNode *newNode = scene->GetRootNode(nodePathname)->Clone();
-        newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
-        newNode->SetSolid(true);
-        
-        SceneNode *parent = node->GetParent();
-        AddedNode addN;
-        addN.nodeToAdd = newNode;
-        addN.nodeToRemove = node;
-        addN.parent = parent;
-        
-        nodesToAdd.push_back(addN);
-        return;
-    }
-    
-    int32 csz = node->GetChildrenCount();
-    for (int ci = 0; ci < csz; ++ci)
-    {
-        SceneNode * child = node->GetChild(ci);
-        ReloadNode(child, nodePathname);
-    }
-}
-
-/*
-void SceneData::ReloadLibrary()
-{
-    libraryModel->Reload();
-}
-*/
 
 void SceneData::BakeNode(DAVA::SceneNode *node)
 {
@@ -596,118 +309,6 @@ void SceneData::BakeScene()
         RebuildSceneGraph();
     }
 }
-/*
-void SceneData::LibraryContextMenuRequested(const QPoint &point)
-{
-    QModelIndex itemIndex = libraryView->indexAt(point);
-    ShowLibraryMenu(itemIndex, QCursor::pos());
-}
-*/
-
-void SceneData::ProcessContextMenuAction(QAction *action)
-{
-    Command *command = PointerHolder<Command *>::ToPointer(action->data());
-    Execute(command);
-}
-/*
-void SceneData::LibraryMenuTriggered(QAction *action)
-{
-    ProcessContextMenuAction(action);
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HideScenePreview();
-    }
-}
-
-void SceneData::FileSelected(const QString &filePathname, bool isFile)
-{
-    //TODO: need best way to display scene preview
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen && !skipLibraryPreview)
-    {
-        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
-        if(0 == CompareCaseInsensitive(extension, String(".sc2")) && isFile)
-        {
-            screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
-        }
-        else
-        {
-            screen->HideScenePreview();
-        }
-    }
-    
-    skipLibraryPreview = false;
-}
-*/
-
-void SceneData::Execute(Command *command)
-{
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
-}
-
-
-void SceneData::SceneGraphMenuTriggered(QAction *action)
-{
-    ProcessContextMenuAction(action);
-}
-
-void SceneData::SceneGraphContextMenuRequested(const QPoint &point)
-{
-    QModelIndex itemIndex = sceneGraphView->indexAt(point);
-    ShowSceneGraphMenu(itemIndex, QCursor::pos());
-}
-
-void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point)
-{
-    if(!index.isValid())
-    {
-        return;
-    }
-    
-    QMenu menu;
-    
-    // For "custom" Particles Editor nodes the "generic" ones aren't needed".
-    if (sceneGraphModel->GetParticlesEditorSceneHelper().NeedDisplaySceneEditorPopupMenuItems(index))
-    {
-        AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
-        AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
-        AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
-
-        AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
-        AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
-        AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
-    
-        SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
-        if(node)
-        {
-            KeyedArchive *properties = node->GetCustomProperties();
-            if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
-            {
-            
-                String filePathname = properties->GetString(String("editor.referenceToOwner"));
-                AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
-                AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
-            }
-        }
-    }
-
-    // We might need more menu items/actions for Particles Editor.
-    sceneGraphModel->GetParticlesEditorSceneHelper().AddPopupMenuItems(this, menu, index);
-    
-    connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
-    menu.exec(point);
-}
-
-void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command)
-{
-    QAction *action = menu->addAction(actionTitle);
-    action->setData(PointerHolder<Command *>::ToQVariant(command));
-}
-
-
 
 void SceneData::ToggleNotPassableLandscape()
 {
@@ -749,17 +350,13 @@ LandscapesController * SceneData::GetLandscapesController()
     return landscapesController;
 }
 
-/*
-void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
+void SceneData::SetLandscapesControllerScene(EditorScene* scene)
 {
-    skipLibraryPreview = true;
-	bool fileWillBeSelected = libraryModel->SelectFile(filePathname);
-	if(!fileWillBeSelected)
+	if (this->landscapesController)
 	{
-		skipLibraryPreview = false;
+		this->landscapesController->SetScene(scene);
 	}
 }
-*/
 
 void SceneData::ResetLandsacpeSelection()
 {
@@ -818,3 +415,41 @@ void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Tex
 	}
 }
 
+void SceneData::EmitSceneChanged()
+{
+	emit SceneChanged(this->scene);
+}
+
+void SceneData::GetAllSprites(List<DAVA::Sprite*> & sprites)
+{
+	Scene* scene = this->GetScene();
+	uint32 childCount = scene->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllSpriteRecursive (scene->GetChild(i), sprites);
+	}
+}
+
+void SceneData::FindAllSpriteRecursive(SceneNode *node , List<DAVA::Sprite*> & sprites)
+{
+	ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
+	if( NULL != particleEmitterNode)
+	{
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
+		Vector<ParticleLayer*> layers = emitter->GetLayers();
+		for(Vector<ParticleLayer*>::const_iterator itLayer = layers.begin(); itLayer != layers.end(); ++itLayer)
+		{
+			Sprite* sprite = (*itLayer)->GetSprite();
+			if(NULL != sprite)
+			{
+				sprites.push_back(sprite);
+			}
+		}
+	}
+
+	uint32 childCount = node->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllSpriteRecursive(node->GetChild(i), sprites);
+	}
+}

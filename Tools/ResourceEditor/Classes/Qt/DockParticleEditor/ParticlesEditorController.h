@@ -12,7 +12,7 @@
 #include "DAVAEngine.h"
 #include "Base/Singleton.h"
 
-#include "Main/SceneGraphItem.h"
+#include "DockSceneGraph/SceneGraphItem.h"
 #include "Scene3D/ParticleEffectNode.h"
 
 #include "ParticlesEditorQT/Nodes/BaseParticleEditorNode.h"
@@ -65,6 +65,8 @@ public:
 
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
+
+	void PackSprites();
 
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);

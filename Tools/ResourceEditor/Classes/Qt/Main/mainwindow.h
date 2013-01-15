@@ -38,6 +38,7 @@ public slots:
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
+	void UpdateParticleSprites();
 
 private slots:
 	void ProjectOpened(const QString &path);

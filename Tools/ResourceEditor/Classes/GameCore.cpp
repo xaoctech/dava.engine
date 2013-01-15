@@ -77,6 +77,7 @@ void GameCore::OnAppStarted()
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     exporterScreen = new ExporterScreen();
+
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
