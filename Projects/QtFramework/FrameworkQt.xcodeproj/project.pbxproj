@@ -275,6 +275,9 @@
 		E856CF00162420180065E32B /* TextureDescriptor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E856CEFE162420180065E32B /* TextureDescriptor.cpp */; };
 		E8674D031637311700748959 /* ImageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8674D011637311700748959 /* ImageLoader.cpp */; };
 		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
+		E8705EA316A542FD00027020 /* BaseProcessSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */; };
+		E8705EA616A5433100027020 /* ParticleLayerBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */; };
+		E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
 /* End PBXBuildFile section */
@@ -859,6 +862,13 @@
 		E86DF3A1161F10AE00A5400A /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
 		E86DF3A2161F10AF00A5400A /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
 		E86DF3A3161F10AF00A5400A /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
+		E8705E9F16A5410500027020 /* IntrospectionBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionBase.h; sourceTree = "<group>"; };
+		E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseProcessSystem.cpp; path = Systems/BaseProcessSystem.cpp; sourceTree = "<group>"; };
+		E8705EA216A542FD00027020 /* BaseProcessSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseProcessSystem.h; path = Systems/BaseProcessSystem.h; sourceTree = "<group>"; };
+		E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerBatch.cpp; sourceTree = "<group>"; };
+		E8705EA516A5433100027020 /* ParticleLayerBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerBatch.h; sourceTree = "<group>"; };
+		E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectSystem.cpp; path = Systems/ParticleEffectSystem.cpp; sourceTree = "<group>"; };
+		E8705EA816A5436600027020 /* ParticleEffectSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectSystem.h; path = Systems/ParticleEffectSystem.h; sourceTree = "<group>"; };
 		E879FCE5161DD6F00038D271 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
@@ -953,6 +963,8 @@
 		508E59A01684A07500D2ECA8 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */,
+				E8705EA516A5433100027020 /* ParticleLayerBatch.h */,
 				5045D65D169F1B1100742C05 /* Heightmap.cpp */,
 				5045D65E169F1B1100742C05 /* Heightmap.h */,
 				5045D654169F17E200742C05 /* LandscapeCursor.cpp */,
@@ -996,6 +1008,10 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */,
+				E8705EA816A5436600027020 /* ParticleEffectSystem.h */,
+				E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */,
+				E8705EA216A542FD00027020 /* BaseProcessSystem.h */,
 				5045D666169F2E9C00742C05 /* ParticleEmitterSystem.cpp */,
 				5045D667169F2E9C00742C05 /* ParticleEmitterSystem.h */,
 				50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */,
@@ -1098,6 +1114,7 @@
 				E84779B716690254004CD20A /* Hash.h */,
 				E84779B816690254004CD20A /* HashMap.h */,
 				E84779B916690254004CD20A /* Introspection.h */,
+				E8705E9F16A5410500027020 /* IntrospectionBase.h */,
 				E84779BA16690254004CD20A /* Mallocator.h */,
 				E84779BB16690254004CD20A /* Meta.h */,
 				E86DF3A1161F10AE00A5400A /* Observable.cpp */,
@@ -2070,6 +2087,9 @@
 				5045D662169F1D1000742C05 /* LandscapeChunk.cpp in Build Sources */,
 				5045D665169F2E7A00742C05 /* ParticleEmitterComponent.cpp in Build Sources */,
 				5045D668169F2E9C00742C05 /* ParticleEmitterSystem.cpp in Build Sources */,
+				E8705EA316A542FD00027020 /* BaseProcessSystem.cpp in Build Sources */,
+				E8705EA616A5433100027020 /* ParticleLayerBatch.cpp in Build Sources */,
+				E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
