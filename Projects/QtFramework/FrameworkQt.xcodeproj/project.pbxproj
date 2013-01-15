@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */; };
+		4F1AE76216A56A27009AF0C2 /* ParticleEffectComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */; };
 		5045D65A169F1A7000742C05 /* LandscapeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D658169F17E500742C05 /* LandscapeNode.cpp */; };
 		5045D65B169F1A7200742C05 /* LandscapeDebugNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D656169F17E200742C05 /* LandscapeDebugNode.cpp */; };
 		5045D65C169F1A7500742C05 /* LandscapeCursor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D654169F17E200742C05 /* LandscapeCursor.cpp */; };
@@ -302,6 +303,8 @@
 /* Begin PBXFileReference section */
 		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
+		4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectComponent.cpp; sourceTree = "<group>"; };
+		4F1AE76116A56A27009AF0C2 /* ParticleEffectComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectComponent.h; sourceTree = "<group>"; };
 		5045D654169F17E200742C05 /* LandscapeCursor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
 		5045D655169F17E200742C05 /* LandscapeCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandscapeCursor.h; sourceTree = "<group>"; };
 		5045D656169F17E200742C05 /* LandscapeDebugNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeDebugNode.cpp; sourceTree = "<group>"; };
@@ -946,6 +949,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */,
+				4F1AE76116A56A27009AF0C2 /* ParticleEffectComponent.h */,
 				5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */,
 				5045D664169F2E7A00742C05 /* ParticleEmitterComponent.h */,
 				50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */,
@@ -2090,6 +2095,7 @@
 				E8705EA316A542FD00027020 /* BaseProcessSystem.cpp in Build Sources */,
 				E8705EA616A5433100027020 /* ParticleLayerBatch.cpp in Build Sources */,
 				E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */,
+				4F1AE76216A56A27009AF0C2 /* ParticleEffectComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
