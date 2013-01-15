@@ -30,17 +30,20 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	//printf("%p, HasIntrospection: %d\n", node, (MetaInfo::Instance(node)->GetIntrospectionInfo() != NULL));
 	printf("SceneNode isIntrospection: %d\n", HasIntrospection<DAVA::SceneNode>::result);
-	//printf("%p, HasIntrospection: = %p\n", node, HasIntrospection<DAVA::SceneNode>::introspection());
-	printf("SceneNode introspection: = %p\n", doSomething(node));
+	printf("SceneNode introspection: = %p\n", GetIntrospection(node));
+	const DAVA::IntrospectionInfo *info = GetIntrospection(node);
+	while(NULL != info)
+	{
+		printf("%s\n", info->Name());
+		for(int i = 0; i < info->MembersCount(); ++i)
+		{
+			printf("  %s\n", info->Member(i)->Name());
+		}
+		printf("\n");
 
-	//printf("%p, This HasIntrospection: %d\n", this, (MetaInfo::Instance(this)->GetIntrospectionInfo() != NULL));
-	printf("PropertyEditor isIntrospection: %d\n", HasIntrospection<PropertyEditor>::result);
-	//printf("%p, This HasIntrospection: %p\n", this, HasIntrospection<PropertyEditor>::introspection());
-	printf("PropertyEditor introspection: = %p\n", doSomething(this));
-
-	//printf("2) %p, This HasIntrospection: %d\n", this, (MetaInfo::Instance(this)->GetIntrospectionInfo() != NULL));
+		info = info->BaseInfo();
+	}
 
 	RemovePropertyAll();
 	if(NULL != curNode)
