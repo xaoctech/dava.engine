@@ -7,8 +7,6 @@
 #include <typeinfo>
 #endif
 
-#include "Base/IntrospectionBase.h"
-
 namespace DAVA
 {
 	template <typename T>
@@ -16,26 +14,16 @@ namespace DAVA
 
 	struct MetaInfo
 	{
-		friend class IntrospectionInfo;
-
 		template <typename MetaT>
 		static MetaInfo *Instance()
 		{
 #ifdef META_USE_TYPEID
-			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT), GetIntrospection<MetaT>());
+			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT));
 #else
-			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT), GetIntrospection<MetaT>());
+			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT));
 #endif
 			return &metaInfo;
 		}
-
-		/*
-		template <typename ClassT>
-		static MetaInfo* Instance(ClassT *var)
-		{
-			return MetaInfo::Instance<ClassT>();
-		}
-		*/
 
 		template <typename ClassT, typename MemberT>
 		static MetaInfo* Instance(MemberT ClassT::*var)
@@ -53,22 +41,14 @@ namespace DAVA
 			return type_name;
 		}
 
-		inline const IntrospectionInfo* GetIntrospectionInfo()
-		{
-			return introspection;
-		}
-
 	private:
-		MetaInfo(const char *_type_name, int _type_size, const IntrospectionInfo* _introspection)
+		MetaInfo(const char *_type_name, int _type_size)
 			: type_name(_type_name)
 			, type_size(_type_size)
-			, introspection(_introspection)
 		{ }
 
 		const int type_size;
 		const char *type_name;
-
-		mutable const IntrospectionInfo *introspection;
 	};
 };
 

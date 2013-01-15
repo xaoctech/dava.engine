@@ -115,23 +115,17 @@ namespace DAVA
 	class IntrospectionInfo
 	{
 	public:
-		IntrospectionInfo(const char *_name, const int _size, const IntrospectionMember **_members, const int _members_count, const MetaInfo *_meta)
+		IntrospectionInfo(const char *_name, const MetaInfo* _meta, const IntrospectionMember **_members, const int _members_count)
 			: name(_name)
-			, size(_size)
+			, meta(_meta)
 			, base_info(NULL)
 			, members(_members)
 			, members_count(_members_count)
-			, meta(_meta)
-		{
-			if(NULL != meta)
-			{
-				meta->introspection = this;
-			}
-		}
+		{ }
 
-		IntrospectionInfo(const IntrospectionInfo *_base, const char *_name, const int _size, const IntrospectionMember **_members, const int _members_count, const MetaInfo *_meta)
+		IntrospectionInfo(const IntrospectionInfo *_base, const char *_name, const MetaInfo* _meta, const IntrospectionMember **_members, const int _members_count)
 			: name(_name)
-			, size(_size)
+			, meta(_meta)
 			, base_info(_base)
 			, members(_members)
 			, members_count(_members_count)
@@ -148,9 +142,9 @@ namespace DAVA
 			return *name;
 		}
 
-		int Size() const
+		const MetaInfo* Type() const
 		{
-			return size;
+			return meta;
 		}
 
 		int MembersCount() const
@@ -184,10 +178,6 @@ namespace DAVA
 			return member;
 		}
 
-		const MetaInfo* Meta() const
-		{
-			return meta;
-		}
 
 		const IntrospectionInfo* BaseInfo() const
 		{
@@ -196,12 +186,11 @@ namespace DAVA
 
 	protected:
 		FastName name;
-		const int size;
+		const MetaInfo* meta;
 
 		const IntrospectionInfo *base_info;
 		const IntrospectionMember **members;
 		const int members_count;
-		const MetaInfo* meta;
 	};
 
 	template<typename TT, typename VV>
@@ -258,7 +247,7 @@ namespace DAVA
 	{ \
 		typedef _type ObjectT; \
 		static const DAVA::IntrospectionMember* data[] = { _members }; \
-		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, sizeof(_type), data, sizeof(data)/sizeof(data[0]), MetaInfo::Instance<_type>()); \
+		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, MetaInfo::Instance<_type>(), data, sizeof(data)/sizeof(data[0])); \
 		return &info; \
 	} \
 	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
@@ -271,7 +260,7 @@ namespace DAVA
 	{ \
 		typedef _type ObjectT; \
 		static const DAVA::IntrospectionMember* data[] = { _members }; \
-		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, sizeof(_type), data, sizeof(data)/sizeof(data[0]), MetaInfo::Instance<_type>()); \
+		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, MetaInfo::Instance<_type>(), data, sizeof(data)/sizeof(data[0])); \
 		return &info; \
 	} \
 	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
@@ -282,7 +271,7 @@ namespace DAVA
 #define INTROSPECTION_EMPTY(_type) \
 	static const DAVA::IntrospectionInfo* TypeInfo() \
 	{ \
-		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, sizeof(_type), NULL, 0, MetaInfo::Instance<_type>()); \
+		static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(#_type, MetaInfo::Instance<_type>(), NULL, 0); \
 		return &info; \
 	} \
 	virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
@@ -293,14 +282,13 @@ namespace DAVA
 #define  INTROSPECTION_EXTEND_EMPTY(_type, _base_type) \
     static const DAVA::IntrospectionInfo* TypeInfo() \
     { \
-        static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, sizeof(_type), NULL, 0, MetaInfo::Instance<_type>()); \
+        static DAVA::IntrospectionInfo info = DAVA::IntrospectionInfo(_base_type::TypeInfo(), #_type, MetaInfo::Instance<_type>(), NULL, 0); \
         return &info; \
     } \
     virtual const DAVA::IntrospectionInfo* GetTypeInfo() const \
     { \
         return _type::TypeInfo(); \
     }
-
 
 #define MEMBER(_name, _desc, _flags) \
 	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
