@@ -7,6 +7,7 @@
 #include "CommandsController.h"
 #include "WidgetSignalsBlocker.h"
 #include "ResourcesManageHelper.h"
+#include "ResourcePacker.h"
 
 #include <QFileDialog>
 
@@ -235,10 +236,15 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
 
     if (senderWidget == NULL)
         return;
+		
+	// Pack all available sprites each time user open sprite dialog
+	ResourcePacker *resPacker = new ResourcePacker();
+	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
 
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetResourceDirectory(),
-															tr( "Sprites (*.* *.txt)" ) );
+															ResourcesManageHelper::GetSpritesDirectory(),
+															tr( "Sprites (*.txt)" ) );
     // Exit if sprite name is empty
     if( spriteName.isNull() || spriteName.isEmpty())
         return;

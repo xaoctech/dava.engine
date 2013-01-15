@@ -283,7 +283,7 @@ bool HierarchyTree::Save(const QString& projectPath)
 
 	YamlParser* parser = YamlParser::Create();
 	// Create project sub-directories
-	QDir().mkpath(ResourcesManageHelper::GetPlatformPath(projectPath));
+	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
 
 	// Get project file path
 	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);

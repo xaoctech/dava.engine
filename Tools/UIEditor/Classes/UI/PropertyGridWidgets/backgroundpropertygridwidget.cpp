@@ -14,6 +14,8 @@
 #include "UIStaticTextMetadata.h"
 #include "ResourcesManageHelper.h"
 
+#include "ResourcePacker.h"
+
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
 
 BackGroundPropertyGridWidget::BackGroundPropertyGridWidget(QWidget *parent) :
@@ -107,9 +109,14 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
+	// Pack all available sprites each time user open sprite dialog
+	ResourcePacker *resPacker = new ResourcePacker();
+	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
+
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
-															ResourcesManageHelper::GetResourceDirectory(),
-															tr( "Sprites (*.* *.txt)" ) );
+															ResourcesManageHelper::GetSpritesDirectory(),
+															tr( "Sprites (*.txt)" ) );
     if( !spriteName.isNull() )
     {
 		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
@@ -125,6 +132,8 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
 			ResourcesManageHelper::ShowErrorMessage(spriteName);
 		}
     }
+	
+	SafeDelete(resPacker);
 }
 
 void BackGroundPropertyGridWidget::RemoveSprite()

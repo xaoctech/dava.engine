@@ -21,24 +21,41 @@ class ResourcesManageHelper{
 
 public:
     // Helper to work with resources
-    static QString GetFontRelativePath(const QString& resourceFileName);
-    static QString GetFontAbsolutePath(const QString& resourceFileName);
+    static QString GetFontRelativePath(const QString& resourceFileName, bool graphicsFont = false);
+    static QString GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont = false);
     static QString GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension = false);
     static QStringList GetFontsList();
 	// Validate if selected resource is located inside project 
 	static bool ValidateResourcePath(const QString& resourcePath);
 	// Functions to work with help contents and button background image
 	static QString GetButtonBackgroundImagePath();
+	// Get path to help contents hmtl file
 	static QString GetHelpContentsPath();
+	
 	// Working directory
 	static QString GetDefaultDirectory();
 	// Resource directory
-	static QString GetResourceDirectory();
+	static QString GetResourceRootDirectory();
+	// Get sprites data directory
+	static QString GetSpritesDirectory();
+	// Get font sprites data directory
+	static QString GetFontSpritesDirectory();
+	// Get sprites datasource directory
+	static QString GetSpritesDatasourceDirectory();
+	// Get font sprites datasource directory
+	static QString GetFontSpritesDatasourceDirectory();
+	// Validate resource folder path
+	static QString GetResourceFolder(const QString& resourcePath);
+	
 	// Get project title string
 	static QString GetProjectTitle();
-	// Path to palform specific files
-	static QString GetPlatformPath(const QString& projectPath);
-	// Project file path
+	// Get the folder wehere palforms are located
+	static QString GetProjectPath();
+	// Get folder with resource data for specified project path
+	static QString GetDataPath(const QString& projectPath);
+	// Path to palform specific files for specified project path
+	static QString GetPlatformRootPath(const QString& projectPath);
+	// Project file path for specified project path
 	static QString GetProjectFilePath(const QString& projectPath);
 	// Initialize project internal resources
 	// Do not use this function elsewhere than during application init!!!

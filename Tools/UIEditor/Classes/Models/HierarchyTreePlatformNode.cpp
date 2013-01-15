@@ -80,12 +80,12 @@ HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
 	return this->rootNode;
 }
 
-QString HierarchyTreePlatformNode::GetResourceFolder() const
+QString HierarchyTreePlatformNode::GetPlatformFolder() const
 {
 	QString path;
 	if (rootNode)
 	{
-		path = ResourcesManageHelper::GetPlatformPath(rootNode->GetProjectPath());
+		path = ResourcesManageHelper::GetPlatformRootPath(rootNode->GetProjectPath());
 	}
 	path += GetName();
 
@@ -94,7 +94,11 @@ QString HierarchyTreePlatformNode::GetResourceFolder() const
 
 void HierarchyTreePlatformNode::ActivatePlatform()
 {
-	FileSystem::Instance()->ReplaceBundleName(GetResourceFolder().toStdString());
+	if (rootNode)
+	{
+		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectPath()).toStdString();
+		FileSystem::Instance()->ReplaceBundleName(bundleName);
+	}
 }
 
 bool HierarchyTreePlatformNode::Load(YamlNode* platform)
@@ -118,7 +122,7 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 				continue;
 			String screenName = screen->AsString();
 			
-			QString screenPath = QString(SCREEN_PATH).arg(GetResourceFolder()).arg(QString::fromStdString(screenName));
+			QString screenPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(screenName));
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
 			result &= screenNode->Load(screenPath);
 			AddTreeNode(screenNode);
@@ -165,10 +169,10 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
 
-	QString projectFolder = GetResourceFolder();
+	QString platformFolder = GetPlatformFolder();
 
 	QDir dir;
-	dir.mkpath(projectFolder);
+	dir.mkpath(platformFolder);
 	
 	bool result = true;
 	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();
@@ -179,7 +183,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 		if (!screenNode)
 			continue;
 		
-		QString screenPath = QString(SCREEN_PATH).arg(GetResourceFolder()).arg(screenNode->GetName());
+		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
 		result &= screenNode->Save(screenPath);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());

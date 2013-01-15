@@ -29,7 +29,7 @@ public:
 
 	HierarchyTreeNode* GetRoot() {return rootNode;};
 	
-	QString GetResourceFolder() const;
+	QString GetPlatformFolder() const;
 	void ActivatePlatform();
 	
 	bool Load(YamlNode* node);
