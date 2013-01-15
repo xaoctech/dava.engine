@@ -7,6 +7,8 @@
 #include <typeinfo>
 #endif
 
+#include "Base/IntrospectionBase.h"
+
 namespace DAVA
 {
 	template <typename T>
@@ -18,9 +20,9 @@ namespace DAVA
 		static MetaInfo *Instance()
 		{
 #ifdef META_USE_TYPEID
-			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT));
+			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT), GetIntrospection<MetaT>());
 #else
-			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT));
+			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT), GetIntrospection<MetaT>());
 #endif
 			return &metaInfo;
 		}
@@ -42,13 +44,15 @@ namespace DAVA
 		}
 
 	private:
-		MetaInfo(const char *_type_name, int _type_size)
+		MetaInfo(const char *_type_name, int _type_size, const IntrospectionInfo *_introspection)
 			: type_name(_type_name)
 			, type_size(_type_size)
+            , introspection(_introspection)
 		{ }
 
 		const int type_size;
 		const char *type_name;
+        const IntrospectionInfo *introspection;
 	};
 };
 
