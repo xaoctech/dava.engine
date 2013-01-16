@@ -23,6 +23,16 @@ LayerParticleEditorNode::LayerParticleEditorNode(EmitterParticleEditorNode* emit
     this->layer = layer;
 }
 
+QString LayerParticleEditorNode::GetName() const
+{
+	if (this->layer)
+	{
+		return QString::fromStdString(this->layer->layerName);
+	}
+	
+	return QString();
+}
+
 int32 LayerParticleEditorNode::GetLayerIndex() const
 {
     ParticleEmitter* emitter = GetEmitterNode()->GetEmitter();

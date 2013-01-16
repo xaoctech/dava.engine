@@ -170,7 +170,6 @@ public:
 		\returns is emitter paused 
 	 */
 	bool IsPaused();
-
 	
 	/**
 		\brief Function adds layer to emitter.
@@ -179,7 +178,31 @@ public:
 		\param[in] layer layer to be added
 	 */
 	void AddLayer(ParticleLayer * layer);
-	
+
+	/**
+	 \brief Function adds layer to emitter to the particular position.
+	 You can use this function if you create emitters on the fly manually. It's not often case, but probably sometimes
+	 it can be required.
+	 \param[in] layer layer to be added
+  	 \param[in] layerToMoveAbove the position above which the layer will be inserted
+	 */
+	void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+
+	/**
+	 \brief Function removes layer to emitter.
+	 You can use this function if you create emitters on the fly manually. It's not often case, but probably sometimes
+	 it can be required.
+	 \param[in] layer layer to be removed
+	 */
+	void RemoveLayer(ParticleLayer * layer);
+
+	/**
+	 \brief Function change the layer's order inside the same emitter.
+	 \param[in] layer layer to be moved
+ 	 \param[in] layerToMoveAbove the position above which the layer will be moved
+	 */
+	void MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+
 	/**
 		\brief Function to clone emitter.
 		This function is needed then you do not want to reload emitter every time from disk.
@@ -280,7 +303,10 @@ public:
     inline bool GetIs3D();
 
 	const String & GetConfigPath() { return configPath; }
-    
+
+	void UpdateEmptyLayerNames();
+	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
+
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
     String GetEmitterTypeName();

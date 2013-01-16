@@ -53,10 +53,12 @@ private:
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	
+	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
 	Sprite* sprite;
 	QLabel* spriteLabel;
+	QPushButton* spriteBtn;
 	//QLabel* spritePathLabel;
 	QLineEdit* spritePathLabel;
 	TimeLineWidget* lifeTimeLine;

@@ -683,3 +683,7 @@ void SceneDataManager::SceneNodeSelectedInSceneGraph(SceneNode* node)
 	activeScene->SceneNodeSelectedInGraph(node);
 }
 
+void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
+{
+	emit SceneGraphNeedRefreshLayer(layer);
+}

@@ -294,6 +294,7 @@ void SceneGraphModel::SelectItem(GraphItem *item, bool needExpand)
     }
 }
 
+
 DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
 {
     return selectedNode;
@@ -475,7 +476,13 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
     return GraphModel::data(index, role);
 }
 
-
-
-
-
+void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
+{
+	// Ask Helper to return us the SceneGraph node for this Particle layer.
+	SceneGraphItem* itemToRefresh = particlesEditorSceneModelHelper.GetGraphItemForParticlesLayer(rootItem, layer);
+	if (itemToRefresh)
+	{
+		QModelIndex refreshIndex = createIndex(itemToRefresh->Row(), 0, itemToRefresh);
+		dataChanged(refreshIndex, refreshIndex);
+	}
+}

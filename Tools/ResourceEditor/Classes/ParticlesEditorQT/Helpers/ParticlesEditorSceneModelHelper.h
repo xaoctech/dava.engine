@@ -60,6 +60,9 @@ public:
 	// Perform the move itself.
 	bool MoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem);
 
+	// Get the Scene Graph item which contains the appropriate Particles Editor objects.
+	SceneGraphItem* GetGraphItemForParticlesLayer(GraphItem* rootItem, DAVA::ParticleLayer* layer);
+
 protected:
 	// Add the action to QT menu.
 	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
@@ -87,6 +90,7 @@ protected:
 	// Whether this move is forbidden?
 	bool IsMoveItemToParentForbidden(GraphItem* movedItem, GraphItem* newParentItem);
 };
+	
 }
 
 #endif /* defined(__ResourceEditorQt__ParticlesEditorSceneModelHelper__) */

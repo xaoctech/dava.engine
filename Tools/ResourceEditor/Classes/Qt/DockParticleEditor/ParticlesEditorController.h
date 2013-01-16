@@ -66,6 +66,16 @@ public:
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
+	// Move different nodes logic.
+	// Move the emitter from one effect to another one.
+	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode);
+	
+	// Move the Layer between Emitters or inside the same Emitter.
+	bool MoveLayer(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode);
+
+	// Move the Layer to the end of another Emitter.
+	bool MoveLayer(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
+
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode);
@@ -83,6 +93,19 @@ protected:
 
     // Cleanup the memory used.
     void Cleanup();
+
+	// Change the layers order for the same Particle Emitter node.
+	// Move the layer in same or different Emitter Nodes.
+	bool ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode);
+	
+	bool ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode);
+
+	// Move the layer to the end of the new emitter node.
+	bool MoveLayerToEmitter(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
+
+	// Common function to move layer between emitters.
+	bool PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode, EmitterParticleEditorNode* newEmitterNode,
+									LayerParticleEditorNode* layerToMove,LayerParticleEditorNode* layerToInsertAbove);
 
     // Particle Effects registered in the system.
     typedef Map<ParticleEffectNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;

@@ -85,7 +85,8 @@ void ParticleTimeLineWidget::OnNodeSelected(ParticleEmitterNode* node)
 		{
 			float32 startTime = Max(minTime, layers[i]->startTime);
 			float32 endTime = Min(maxTime, layers[i]->endTime);
-			AddLine(i, startTime, endTime, colors[i % 3], tr("Layer %1").arg(i + 1), layers[i]);
+			
+			AddLine(i, startTime, endTime, colors[i % 3], QString::fromStdString(layers[i]->layerName), layers[i]);
 		}
 	}
 	
@@ -141,7 +142,8 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
 					{
 						float32 startTime = Max(minTime, layers[iLayer]->startTime);
 						float32 endTime = Min(maxTime, layers[iLayer]->endTime);
-						AddLine(iLines, startTime, endTime, colors[iLines % 3], tr("Layer %1").arg(iLayer + 1), layers[iLayer]);
+						AddLine(iLines, startTime, endTime, colors[iLines % 3],
+								QString::fromStdString(layers[iLayer]->layerName), layers[iLayer]);
 						iLines++;
 					}
 				}
