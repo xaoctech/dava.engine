@@ -36,9 +36,21 @@ public:
 		float32 farDistanceSq;
 
 		LodDistance();
-		void SetDistance(float32 newDistance);
-		void SetNearDistance(float32 newDistance);
-		void SetFarDistance(float32 newDistance);
+		void SetDistance(const float32 &newDistance);
+        float32 GetDistance() const { return distance; };
+        
+		void SetNearDistance(const float32 &newDistance);
+        float32 GetNearDistance() const {return  nearDistance; };
+        
+		void SetFarDistance(const float32 &newDistance);
+        float32 GetFarDistance() const {return farDistance; };
+        
+        INTROSPECTION(LodDistance,
+            PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_FLAG_SERIALIZABLE)
+            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_FLAG_SERIALIZABLE)
+            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_FLAG_SERIALIZABLE)
+        );
+        
 	};
 
 	struct LodData
@@ -75,10 +87,15 @@ public:
 	float32 forceDistanceSq;
 
 	int32 flags;
+    
+//    LodDistance testDistance;
+    
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
-		NULL);
+//                         MEMBER(testDistance, "testDistance", 0)
+                         NULL
+                         );
 
 };
 
