@@ -38,7 +38,10 @@ public slots:
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
+
 	void UpdateParticleSprites();
+
+	void returnToOldMaxMinSizesForDockSceneGraph();
 
 private slots:
 	void ProjectOpened(const QString &path);
@@ -56,6 +59,10 @@ private:
 	QProgressDialog *convertWaitDialog;
     
     //LibraryModel *libraryModel;
+	
+	QSize oldDockSceneGraphMaxSize;
+	QSize oldDockSceneGraphMinSize;
+
 };
 
 

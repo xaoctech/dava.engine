@@ -168,7 +168,8 @@ protected:
 	Sprite 			* sprite;
 	String			relativeSpriteName;
 
-public:		
+public:
+	String			layerName;
 	Vector2			pivotPoint;
 	/*
 	 Properties of particle layer that describe particle system logic

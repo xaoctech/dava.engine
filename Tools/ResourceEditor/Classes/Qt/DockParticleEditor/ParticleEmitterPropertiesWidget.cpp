@@ -2,6 +2,7 @@
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
 #include <QLabel>
+#include <QEvent>
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
 	QWidget(parent)
@@ -42,10 +43,14 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterLifeHBox->addWidget(new QLabel("life"));
 	emitterLife = new QDoubleSpinBox(this);
 	emitterLife->setMinimum(0.f);
-	emitterLife->setMaximum(std::numeric_limits<float32>::infinity());
+	emitterLife->setMaximum(10000000);
 	emitterLifeHBox->addWidget(emitterLife);
 	mainLayout->addLayout(emitterLifeHBox);
 	connect(emitterLife, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	
+	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
+        sp->installEventFilter( this );
+    }
 	
 	blockSignals = false;
 }
@@ -144,6 +149,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
 
 	emitterSize->Init(0.f, emitterLifeTime, updateMinimize, true);
+	emitterSize->SetMinLimits(0);
 	Vector<QColor> sizeColors;
 	sizeColors.push_back(Qt::blue); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::red);
 	Vector<QString> sizeLegends;
@@ -159,4 +165,14 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 void ParticleEmitterPropertiesWidget::Update()
 {
 	Init(emitter, false);
+}
+
+bool ParticleEmitterPropertiesWidget::eventFilter(QObject * o, QEvent * e)
+{
+    if (e->type() == QEvent::Wheel && qobject_cast<QAbstractSpinBox*>(o))
+    {
+        e->ignore();
+        return true;
+    }
+    return QWidget::eventFilter(o, e);
 }

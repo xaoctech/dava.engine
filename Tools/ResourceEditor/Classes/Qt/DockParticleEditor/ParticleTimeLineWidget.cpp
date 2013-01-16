@@ -32,7 +32,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
 	
-	gridStyle = GridStyleLimits;
+	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
@@ -85,7 +85,8 @@ void ParticleTimeLineWidget::OnNodeSelected(ParticleEmitterNode* node)
 		{
 			float32 startTime = Max(minTime, layers[i]->startTime);
 			float32 endTime = Min(maxTime, layers[i]->endTime);
-			AddLine(i, startTime, endTime, colors[i % 3], tr("Layer %1").arg(i + 1), layers[i]);
+			
+			AddLine(i, startTime, endTime, colors[i % 3], QString::fromStdString(layers[i]->layerName), layers[i]);
 		}
 	}
 	
@@ -141,7 +142,8 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
 					{
 						float32 startTime = Max(minTime, layers[iLayer]->startTime);
 						float32 endTime = Min(maxTime, layers[iLayer]->endTime);
-						AddLine(iLines, startTime, endTime, colors[iLines % 3], tr("Layer %1").arg(iLayer + 1), layers[iLayer]);
+						AddLine(iLines, startTime, endTime, colors[iLines % 3],
+								QString::fromStdString(layers[iLayer]->layerName), layers[iLayer]);
 						iLines++;
 					}
 				}
@@ -220,7 +222,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			if (!drawText)
 				continue;
 			
-			if (gridStyle == GridStyleAllPosition)
+			if (gridStyle == GRID_STYLE_ALL_POSITION)
 			{
 				float value = minTime + i * valueStep;
 				QString strValue = float2QString(value);
@@ -230,7 +232,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			}
 		}
 
-		if (gridStyle == GridStyleLimits)
+		if (gridStyle == GRID_STYLE_LIMITS)
 		{
 			QRect textRect(graphRect.left(), graphRect.bottom(), graphRect.width(), BOTTOM_INDENT);
 			painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, float2QString(minTime));

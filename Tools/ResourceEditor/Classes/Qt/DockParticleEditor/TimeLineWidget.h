@@ -18,7 +18,9 @@ public:
 	explicit TimeLineWidget(QWidget *parent = 0);
 	~TimeLineWidget();
 	
-	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true);
+	void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	void SetMinLimits(float32 minV);
+	void SetMaxLimits(float32 maxV);
 	void EnableLock(bool enable);
 	
 	void AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend = "");
@@ -79,6 +81,8 @@ private:
 	
 	QString float2QString(float32 value) const;
 	
+	int32 GetIntValue(float32 value) const;
+
 private:
 	QPoint mouseStartPos;
 	
@@ -86,6 +90,8 @@ private:
 	float32 maxValue;
 	float32 minTime;
 	float32 maxTime;
+	float32 minValueLimit;
+	float32 maxValueLimit;
 	
 	int32 selectedPoint;
 	int32 selectedLine;
@@ -93,22 +99,22 @@ private:
 	
 	bool isLockEnable;
 	bool isLocked;
+	bool isInteger;
 	
-	enum GridStyle
+	enum eGridStyle
 	{
-		GridStyleAllPosition,
-		GridStyleLimits
+		GRID_STYLE_ALL_POSITION,
+		GRID_STYLE_LIMITS
 	};
-	GridStyle gridStyle;
+	eGridStyle gridStyle;
 	
-	enum SizeState
+	enum eSizeState
 	{
-		SizeStateNormal,
-		SizeStateMinimized,
-		SizeStateDouble
+		SIZE_STATE_NORMAL,
+		SIZE_STATE_MINIMIZED,
+		SIZE_STATE_DOUBLE
 	};
-	SizeState sizeState;
-	SizeState oldState;
+	eSizeState sizeState;
 	bool updateSizeState;
 	bool aliasLinePoint;
 	bool allowDeleteLine;
@@ -131,14 +137,17 @@ class SetPointValueDlg: public QDialog
 	Q_OBJECT
 	
 public:
-	explicit SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, QWidget *parent = 0);
+	explicit SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent = 0, bool integer = false);
 	
 	float32 GetTime() const;
 	float32 GetValue() const;
 
 private:
+	bool isInteger;
+
 	QDoubleSpinBox* timeSpin;
 	QDoubleSpinBox* valueSpin;
+	QSpinBox* valueSpinInt;
 };
 
 #endif // TIMELINE_H

@@ -16,11 +16,15 @@
 #define LOCK_TEXT "Lock "
 #define LOCK_WIDTH 45
 
+#define GRAPH_HEIGHT 150
+
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
 {
 	minValue = std::numeric_limits<float32>::infinity();
 	maxValue = -std::numeric_limits<float32>::infinity();
+	minValueLimit = -std::numeric_limits<float32>::infinity();
+	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
 	
@@ -31,15 +35,16 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	selectedLine = -1;
 	drawLine = -1;
 	
-	sizeState = SizeStateNormal;
+	sizeState = SIZE_STATE_NORMAL;
 	updateSizeState = true;
 	aliasLinePoint = false;
 	allowDeleteLine = true;
 	
 	isLockEnable = false;
 	isLocked = false;
+	isInteger = false;
 	
-	gridStyle = GridStyleLimits;
+	gridStyle = GRID_STYLE_LIMITS;
 	
 	setMouseTracking(true);
 	UpdateSizePolicy();
@@ -79,7 +84,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	//draw legend
 	if (lines.size())
 	{
-		if (sizeState == SizeStateMinimized)
+		if (sizeState == SIZE_STATE_MINIMIZED)
 		{
 			LINES_MAP::iterator iter = lines.begin();
 			QString legend = iter->second.legend;
@@ -116,7 +121,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.translate(minimizeRect.center() + QPoint(1, 1));
 		QPolygon polygon;
 		
-		if (sizeState == SizeStateMinimized)
+		if (sizeState == SIZE_STATE_MINIMIZED)
 			painter.rotate(180);
 		
 		polygon.append(QPoint(0, -minimizeRect.height() * 0.25 - 1));
@@ -138,7 +143,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		painter.drawRect(maximizeRect);
 	}
 		
-	if (sizeState != SizeStateMinimized)
+	if (sizeState != SIZE_STATE_MINIMIZED)
 	{
 		//draw lock
 		if (isLockEnable)
@@ -147,8 +152,8 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			painter.drawRect(lockRect);
 			if (isLocked)
 			{
-				painter.drawLine(lockRect.topLeft(), lockRect.bottomRight());
-				painter.drawLine(lockRect.topRight(), lockRect.bottomLeft());
+				painter.drawLine(lockRect.topLeft() + QPoint(-1, -1), lockRect.center() + QPoint(-1, 4));
+				painter.drawLine(lockRect.center() + QPoint(-1, 4), lockRect.topRight() + QPoint(4, -1));
 			}
 			
 			lockRect.translate(lockRect.width() + 1, 0);
@@ -170,7 +175,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				{
 					float value = valueCenter + i * valueStep;
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					if (gridStyle == GridStyleAllPosition)
+					if (gridStyle == GRID_STYLE_ALL_POSITION)
 					{
 						QString strValue = float2QString(value);
 						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
@@ -182,7 +187,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				{
 					float value = valueCenter - i * valueStep;
 					painter.drawLine(graphRect.left(), y, graphRect.right(), y);
-					if (gridStyle == GridStyleAllPosition)
+					if (gridStyle == GRID_STYLE_ALL_POSITION)
 					{
 						QString strValue = float2QString(value);
 						QRect textRect(1, y - LEGEND_WIDTH / 2, graphRect.left() - 2, y - LEGEND_WIDTH / 2);
@@ -200,7 +205,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				painter.drawLine(x, graphRect.top(), x, graphRect.bottom());
 
 				drawText = !drawText;
-				if (drawText && gridStyle == GridStyleAllPosition)
+				if (drawText && gridStyle == GRID_STYLE_ALL_POSITION)
 				{
 					float value = minTime + i * valueStep;
 					QString strValue = float2QString(value);
@@ -210,7 +215,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 				}
 			}
 			
-			if (gridStyle == GridStyleLimits)
+			if (gridStyle == GRID_STYLE_LIMITS)
 			{
 				QRect textRect;
 				textRect = QRect(1, graphRect.top(), graphRect.left(), graphRect.height());
@@ -331,7 +336,12 @@ Vector2 TimeLineWidget::GetLogicPoint(const QPoint& point) const
 	x = minTime + x * (maxTime - minTime);
 	float32 y = (graphRect.bottom() - point.y()) / (float32)graphRect.height();
 	y = minValue + y * (maxValue - minValue);
-	
+
+	if (isInteger)
+	{
+		y = GetIntValue(y);
+	}
+
 	return Vector2(x, y);
 }
 
@@ -345,7 +355,7 @@ bool TimeLineWidget::SortPoints(const Vector2& i, const Vector2& j)
 	return (i.x < j.x);
 }
 
-void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine)
+void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint, bool allowDeleteLine, bool integer)
 {
 	lines.clear();
 
@@ -355,6 +365,18 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
+
+	this->isInteger = integer;
+}
+
+void TimeLineWidget::SetMinLimits(float32 minV)
+{
+	minValueLimit = minV;
+}
+
+void TimeLineWidget::SetMaxLimits(float32 maxV)
+{
+	maxValueLimit = maxV;
 }
 
 void TimeLineWidget::AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend)
@@ -427,12 +449,12 @@ void TimeLineWidget::PostAddLine()
 {
 	if (updateSizeState)
 	{
-		sizeState = SizeStateMinimized;
+		sizeState = SIZE_STATE_MINIMIZED;
 		for (LINES_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 		{
 			if (iter->second.line.size())
 			{
-				sizeState = SizeStateNormal;
+				sizeState = SIZE_STATE_NORMAL;
 				break;
 			}
 		}
@@ -465,6 +487,9 @@ void TimeLineWidget::UpdateLimits()
 	{
 		newMinValue = newMaxValue = 0;
 	}
+	
+	newMinValue = Max(newMinValue, minValueLimit);
+	newMaxValue = Min(newMaxValue, maxValueLimit);
 
 	float32 limitDelta = 0;
 	limitDelta = (newMaxValue - newMinValue) * 0.2f;
@@ -480,6 +505,21 @@ void TimeLineWidget::UpdateLimits()
 	{
 		minValue = newMinValue - limitDelta;
 		maxValue = newMaxValue + limitDelta;
+	}
+
+	if (isInteger)
+	{
+		minValue = GetIntValue(minValue);
+		maxValue = GetIntValue(maxValue);
+
+		if (minValue >= newMinValue)
+		{
+			minValue = GetIntValue(newMinValue - 1.f);
+		}
+		if (maxValue <= newMaxValue)
+		{
+			maxValue = GetIntValue(newMaxValue + 1.f);
+		}
 	}
 }
 
@@ -541,6 +581,10 @@ void TimeLineWidget::AddPoint(uint32 lineId, const Vector2& point)
 			else
 			{
 				float32 y = GetYFromX(iter->first, point.x);
+				if (isInteger)
+				{
+					y = GetIntValue(y);
+				}
 				iter->second.line.push_back(Vector2(point.x, y));
 			}
 			std::sort(iter->second.line.begin(), iter->second.line.end(), TimeLineWidget::SortPoints);
@@ -634,7 +678,7 @@ QRect TimeLineWidget::GetGraphRect() const
 
 	graphRect.setWidth(graphRect.width() - 5);
 	graphRect.setY(GetLegendHeight());
-	if (sizeState == SizeStateMinimized)
+	if (sizeState == SIZE_STATE_MINIMIZED)
 	{
 		graphRect.setHeight(0);
 	}
@@ -664,19 +708,19 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 		else if (GetMinimizeRect().contains(event->pos()))
 		{
-			if (sizeState == SizeStateMinimized)
-				sizeState = SizeStateNormal;
+			if (sizeState == SIZE_STATE_MINIMIZED)
+				sizeState = SIZE_STATE_NORMAL;
 			else
-				sizeState = SizeStateMinimized;
+				sizeState = SIZE_STATE_MINIMIZED;
 			UpdateSizePolicy();
 			return;
 		}
 		else if (GetMaximizeRect().contains(event->pos()))
 		{
-			if (sizeState == SizeStateNormal)
-				sizeState = SizeStateDouble;
+			if (sizeState == SIZE_STATE_NORMAL)
+				sizeState = SIZE_STATE_DOUBLE;
 			else
-				sizeState = SizeStateNormal;
+				sizeState = SIZE_STATE_NORMAL;
 			UpdateSizePolicy();
 			return;
 		}
@@ -716,7 +760,7 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 	}
 
-	if (sizeState != SizeStateMinimized)
+	if (sizeState != SIZE_STATE_MINIMIZED)
 		GraphRectClick(event);
 
 	update();
@@ -742,6 +786,10 @@ void TimeLineWidget::GraphRectClick(QMouseEvent *event)
 			QRect graphRect = GetGraphRect();
 			if (graphRect.contains(point))
 			{
+				if (isInteger)
+				{
+					newPoint.y = GetIntValue(newPoint.y);
+				}
 				AddPoint(selectedLine, newPoint);
 				//find add point
 				for (uint32 i = 0; i < lines[selectedLine].line.size(); ++i)
@@ -768,7 +816,7 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	QWidget::mouseMoveEvent(event);
 	
-	if (sizeState == SizeStateMinimized)
+	if (sizeState == SIZE_STATE_MINIMIZED)
 		return;
 		
 	Vector2 point = GetLogicPoint(event->pos());
@@ -880,6 +928,7 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 		value.x = Min(lines[lineId].line[pointId + 1].x, value.x);
 	 
 	value.x = Max(minTime, Min(maxTime, value.x));
+	value.y = Max(minValueLimit, Min(maxValueLimit, value.y));
 
 	if (aliasLinePoint)
 	{
@@ -902,12 +951,19 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 			float x1 = lines[lineId].line[i - 1].x;
 			float x2 = lines[lineId].line[i].x;
 			
-			if ((x2 - x1) < 0.01f)
+			if ((x2 - x1) < (maxTime - minTime) * 0.01)
 			{
 				if (i < lines[lineId].line.size() - 1)
 				{
 					if (Abs(x2 - value.x) < 0.01f)
-						lines[lineId].line[i - 1].y = value.y;
+					{
+						//lines[lineId].line[i - 1].y = value.y;
+						for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
+						{
+							if ((isLockEnable && isLocked) || iter->first == lineId)
+								iter->second.line[i - 1].y = value.y;
+						}
+					}
 					//remove next point
 					//lines[lineId].line.erase(lines[lineId].line.begin() + i);
 					DeletePoint(lineId, i);
@@ -915,7 +971,15 @@ void TimeLineWidget::SetPointValue(uint32 lineId, uint32 pointId, Vector2 value,
 				else
 				{
 					if (Abs(x1 - value.x) < 0.01f)
-						lines[lineId].line[i].y = value.y;
+					{
+						//lines[lineId].line[i].y = value.y;
+						for (LINES_MAP::iterator iter = lines.begin(); iter != lines.end(); ++iter)
+						{
+							if ((isLockEnable && isLocked) || iter->first == lineId)
+								iter->second.line[i].y = value.y;
+						}
+					}
+
 					//remove first point
 					//lines[lineId].line.erase(lines[lineId].line.begin() + lines[lineId].line.size() - 2);
 					DeletePoint(lineId, lines[lineId].line.size() - 2);
@@ -1003,28 +1067,24 @@ void TimeLineWidget::UpdateSizePolicy()
 {
 	switch (sizeState)
 	{
-		case SizeStateMinimized:
+		case SIZE_STATE_MINIMIZED:
 		{
 			setMinimumHeight(16);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		} break;
-		case SizeStateNormal:
+		case SIZE_STATE_NORMAL:
 		{
-			setMinimumHeight(GetLegendHeight() + 150);
+			setMinimumHeight(GetLegendHeight() + GRAPH_HEIGHT);
 			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		} break;
-		case SizeStateDouble:
+		case SIZE_STATE_DOUBLE:
 		{
-			if (oldState != sizeState)
-			{
-				int height = Max(GetLegendHeight() + 150, QWidget::height());
-				height *= 2;
-				setMinimumHeight(height);
-				setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-			}
+			int height = GetLegendHeight() + GRAPH_HEIGHT;
+			height *= 2;
+			setMinimumHeight(height);
+			setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		} break;
 	}
-	oldState = sizeState;
 	
 	update();
 }
@@ -1064,10 +1124,16 @@ void TimeLineWidget::ChangePointValueDialog(uint32 pointId, int32 lineId)
 	if (iter->second.line.size() <= pointId)
 		return;
 
-	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, this);
+	SetPointValueDlg dialog(iter->second.line[pointId].x, minTime, maxTime, iter->second.line[pointId].y, minValueLimit, maxValueLimit, this, isInteger);
 	if (dialog.exec())
 	{
-		SetPointValue(iter->first, pointId, Vector2(dialog.GetTime(), dialog.GetValue()), true);
+		float32 value = dialog.GetValue();
+		if (isInteger)
+		{
+			value = GetIntValue(value);
+		}
+
+		SetPointValue(iter->first, pointId, Vector2(dialog.GetTime(), value), true);
 		UpdateLimits();
 		emit ValueChanged();
 		update();
@@ -1079,19 +1145,36 @@ void TimeLineWidget::EnableLock(bool enable)
 	isLockEnable = enable;
 }
 
-SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, QWidget *parent):
-	QDialog(parent)
+int32 TimeLineWidget::GetIntValue(float32 value) const
+{
+	float32 sign =	(value < 0) ? -1.f : 1.f;
+	return (int32)(value + 0.5f * sign);
+}
+
+SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
+	QDialog(parent),
+	isInteger(integer)
 {
 	QVBoxLayout* mainBox = new QVBoxLayout;
 	setLayout(mainBox);
 	
 	QHBoxLayout* valueBox = new QHBoxLayout;
 	timeSpin = new QDoubleSpinBox(this);
-	valueSpin = new QDoubleSpinBox(this);
+
+	if(isInteger)
+		valueSpinInt = new QSpinBox(this);
+	else
+		valueSpin = new QDoubleSpinBox(this);
+
 	valueBox->addWidget(new QLabel("T:"));
 	valueBox->addWidget(timeSpin);
 	valueBox->addWidget(new QLabel("V:"));
-	valueBox->addWidget(valueSpin);
+
+	if(isInteger)
+		valueBox->addWidget(valueSpinInt);
+	else
+		valueBox->addWidget(valueSpin);
+
 	mainBox->addLayout(valueBox);
 	
 	QHBoxLayout* btnBox = new QHBoxLayout;
@@ -1104,10 +1187,20 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 	timeSpin->setMinimum(minTime);
 	timeSpin->setMaximum(maxTime);
 	timeSpin->setValue(time);
-	valueSpin->setMinimum(-std::numeric_limits<float32>::infinity());
-	valueSpin->setMaximum(std::numeric_limits<float32>::infinity());
-	valueSpin->setValue(value);
-	
+
+	if (isInteger)
+	{
+		valueSpinInt->setMinimum((int32)minValue);
+		valueSpinInt->setMaximum((int32)maxValue);
+		valueSpinInt->setValue((int32)value);
+	}
+	else
+	{
+		valueSpin->setMinimum(minValue);
+		valueSpin->setMaximum(maxValue);
+		valueSpin->setValue(value);
+	}
+
 	connect(btnOk,
 			SIGNAL(clicked(bool)),
 			this,
@@ -1118,8 +1211,16 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 			SLOT(reject()));
 
 	btnOk->setDefault(true);
-	valueSpin->setFocus();
-	valueSpin->selectAll();
+	if (isInteger)
+	{
+		valueSpinInt->setFocus();
+		valueSpinInt->selectAll();
+	}
+	else
+	{
+		valueSpin->setFocus();
+		valueSpin->selectAll();
+	}
 }
 
 float32 SetPointValueDlg::GetTime() const
@@ -1129,5 +1230,8 @@ float32 SetPointValueDlg::GetTime() const
 
 float32 SetPointValueDlg::GetValue() const
 {
+	if (isInteger)
+		return valueSpinInt->value();
+
 	return valueSpin->value();
 }

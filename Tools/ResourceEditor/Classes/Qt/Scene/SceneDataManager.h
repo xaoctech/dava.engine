@@ -56,6 +56,9 @@ public:
 	// These methods are called by Scene Graph Tree View.
 	void SceneNodeSelectedInSceneGraph(SceneNode* node);
 
+	// Refresh the information regarding the particular Particles Editor nods.
+	void RefreshParticlesLayer(DAVA::ParticleLayer* layer);
+
 signals:
 	void SceneCreated(SceneData *scene);
 	void SceneActivated(SceneData *scene);
@@ -67,6 +70,9 @@ signals:
 	// Signals needed for Scene Graph Tree View.
 	void SceneGraphNeedRebuildNode(DAVA::SceneNode* node);
 	void SceneGraphNeedRebuild();
+	
+	// Signals related to Particles Editor.
+	void SceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer);
 
 	void SceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
 	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);

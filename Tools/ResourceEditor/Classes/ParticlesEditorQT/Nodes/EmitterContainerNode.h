@@ -23,7 +23,8 @@ public:
     virtual ~EmitterContainerNode();
         
     ParticleEmitterNode* GetEmitterNode() const {return emitter;};
-        
+    void UpdateEmitter(ParticleEmitterNode* emitterNode) {this->emitter = emitterNode;};
+
 protected:
     ParticleEmitterNode* emitter;
 };
