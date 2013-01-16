@@ -4,6 +4,7 @@
 #include "Base/Meta.h"
 //#include "Base/FastName.h"
 #include "Base/IntrospectionBase.h"
+#include "Base/IntrospectionFlags.h"
 #include "FileSystem/VariantType.h"
 
 namespace DAVA
@@ -46,6 +47,11 @@ namespace DAVA
 		{
 			VariantType::SaveData(Pointer(object), type, val);
 		}
+        
+        const int Flags() const
+        {
+            return flags;
+        }
 
 	protected:
 		const char* name;

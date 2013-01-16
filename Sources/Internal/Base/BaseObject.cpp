@@ -47,6 +47,23 @@ const String & BaseObject::GetClassName()
 void BaseObject::Save(KeyedArchive * archive)
 {
     archive->SetString("##name", GetClassName());
+    
+    String keyPrefix = String("");
+    const IntrospectionInfo *info = GetIntrospection(this);
+    while(NULL != info)
+    {
+        keyPrefix += String(info->Name());
+        for(int32 i = 0; i < info->MembersCount(); ++i)
+        {
+            if(info->Member(i)->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
+            {
+                VariantType value = info->Member(i)->Value(this);
+                archive->SetVariant(keyPrefix + String(info->Member(i)->Name()), &value);
+            }
+        }
+        
+        info = info->BaseInfo();
+    }
 }
     
 BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
@@ -65,7 +82,27 @@ BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
  */
 void BaseObject::Load(KeyedArchive * archive)
 {
+    String keyPrefix = String("");
+    const IntrospectionInfo *info = GetIntrospection(this);
+    while(NULL != info)
+    {
+        keyPrefix += String(info->Name());
+        for(int32 i = 0; i < info->MembersCount(); ++i)
+        {
+            if(info->Member(i)->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
+            {
+                const VariantType * value = archive->GetVariant(keyPrefix + String(info->Member(i)->Name()));
+                if(value)
+                {
+                    info->Member(i)->SetValue(this, *value);
+                }
+            }
+        }
+        
+        info = info->BaseInfo();
+    }
 }
     
-    
 };
+
+

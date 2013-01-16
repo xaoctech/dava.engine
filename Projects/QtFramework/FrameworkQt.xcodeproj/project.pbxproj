@@ -876,6 +876,7 @@
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
+		E8DE7FC916A5A22A005BFE44 /* IntrospectionFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionFlags.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1120,6 +1121,7 @@
 				E84779B816690254004CD20A /* HashMap.h */,
 				E84779B916690254004CD20A /* Introspection.h */,
 				E8705E9F16A5410500027020 /* IntrospectionBase.h */,
+				E8DE7FC916A5A22A005BFE44 /* IntrospectionFlags.h */,
 				E84779BA16690254004CD20A /* Mallocator.h */,
 				E84779BB16690254004CD20A /* Meta.h */,
 				E86DF3A1161F10AE00A5400A /* Observable.cpp */,
