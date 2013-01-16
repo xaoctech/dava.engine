@@ -36,7 +36,7 @@
 #include "Scene3D/PathManip.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/LodNode.h"
