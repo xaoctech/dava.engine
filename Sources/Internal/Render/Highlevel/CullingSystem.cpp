@@ -50,7 +50,7 @@ CullingSystem::~CullingSystem()
     
 void CullingSystem::ImmediateUpdate(SceneNode * entity)
 {
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
     
     if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN

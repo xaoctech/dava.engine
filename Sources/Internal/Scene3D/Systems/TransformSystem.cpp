@@ -52,7 +52,7 @@ void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 	if(entity->GetFlags() & SceneNode::TRANSFORM_NEED_UPDATE)
 	{
 		multipliedNodes++;
-		TransformComponent * transform = entity->GetTransformComponent();
+		TransformComponent * transform = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
 		if(transform->parentMatrix)
 		{
 			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);

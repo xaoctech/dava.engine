@@ -1236,6 +1236,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionFlags.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2122,6 +2125,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
