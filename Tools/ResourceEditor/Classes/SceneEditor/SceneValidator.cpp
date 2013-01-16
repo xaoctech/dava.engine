@@ -538,19 +538,19 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 
 void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 {
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(forPathname);
-    if(!descriptor)
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+    if(! FileSystem::Instance()->IsFile(descriptorPathname))
     {
 		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
-
-		descriptor = new TextureDescriptor();
+        
+		TextureDescriptor *descriptor = new TextureDescriptor();
 		descriptor->textureFileFormat = PNG_FILE;
         
         String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 		descriptor->Save(descriptorPathname);
+
+        SafeRelease(descriptor);
     }
-    
-    SafeRelease(descriptor);
 }
 
 
