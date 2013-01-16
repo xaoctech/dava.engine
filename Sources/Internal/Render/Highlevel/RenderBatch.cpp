@@ -31,7 +31,7 @@
 #include "Render/Material.h"
 #include "Render/RenderDataObject.h"
 #include "Render/3D/PolygonGroup.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA

@@ -33,6 +33,7 @@
 		50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957611168DD33D0023E6D5 /* LodComponent.cpp */; };
 		50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957616169617AC0023E6D5 /* LodSystem.cpp */; };
 		50A18E2816A6B37D00DC6281 /* CameraComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */; };
+		50A18E4316A70B3600DC6281 /* Camera.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4116A70B3600DC6281 /* Camera.cpp */; };
 		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
 		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
 		50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */; };
@@ -185,7 +186,6 @@
 		5C5D9A4615B0230D0058B43A /* BoneNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E215B0230D0058B43A /* BoneNode.cpp */; };
 		5C5D9A4715B0230D0058B43A /* BVHierarchy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E415B0230D0058B43A /* BVHierarchy.cpp */; };
 		5C5D9A4815B0230D0058B43A /* BVNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E615B0230D0058B43A /* BVNode.cpp */; };
-		5C5D9A4915B0230D0058B43A /* Camera.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98E815B0230D0058B43A /* Camera.cpp */; };
 		5C5D9A4B15B0230D0058B43A /* DataNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98EC15B0230D0058B43A /* DataNode.cpp */; };
 		5C5D9A4C15B0230D0058B43A /* Frustum.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98EE15B0230D0058B43A /* Frustum.cpp */; };
 		5C5D9A4E15B0230D0058B43A /* ImposterManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D98F215B0230D0058B43A /* ImposterManager.cpp */; };
@@ -334,7 +334,7 @@
 		5081EA5216760C7400ECA24C /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformComponent.h; sourceTree = "<group>"; };
 		5081EA58167F5CD900ECA24C /* RenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderComponent.h; sourceTree = "<group>"; };
 		5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderComponent.cpp; sourceTree = "<group>"; };
-		508E59A11684A07500D2ECA8 /* RenderBatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBatch.cpp; sourceTree = "<group>"; };
+		508E59A11684A07500D2ECA8 /* RenderBatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = RenderBatch.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		508E59A21684A07500D2ECA8 /* RenderBatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderBatch.h; sourceTree = "<group>"; };
 		508E59A31684A07500D2ECA8 /* RenderBatchArray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBatchArray.cpp; sourceTree = "<group>"; };
 		508E59A41684A07500D2ECA8 /* RenderBatchArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderBatchArray.h; sourceTree = "<group>"; };
@@ -353,11 +353,13 @@
 		50957611168DD33D0023E6D5 /* LodComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodComponent.cpp; sourceTree = "<group>"; };
 		50957612168DD33D0023E6D5 /* LodComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodComponent.h; sourceTree = "<group>"; };
 		50957614168E14B40023E6D5 /* RenderDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderDataSource.h; sourceTree = "<group>"; };
-		50957616169617AC0023E6D5 /* LodSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LodSystem.cpp; path = Systems/LodSystem.cpp; sourceTree = "<group>"; };
+		50957616169617AC0023E6D5 /* LodSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = LodSystem.cpp; path = Systems/LodSystem.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		50957617169617AC0023E6D5 /* LodSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LodSystem.h; path = Systems/LodSystem.h; sourceTree = "<group>"; };
-		50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraComponent.cpp; sourceTree = "<group>"; };
+		50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CameraComponent.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		50A18E2716A6B37B00DC6281 /* CameraComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraComponent.h; sourceTree = "<group>"; };
-		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; };
+		50A18E4116A70B3600DC6281 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		50A18E4216A70B3600DC6281 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
+		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
 		50E8E914169AF288005BB2F1 /* DebugRenderComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugRenderComponent.h; sourceTree = "<group>"; };
@@ -547,13 +549,13 @@
 		5C5D982515B0230D0058B43A /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
 		5C5D982615B0230D0058B43A /* ParticleEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter.cpp; sourceTree = "<group>"; };
 		5C5D982715B0230D0058B43A /* ParticleEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter.h; sourceTree = "<group>"; };
-		5C5D982815B0230D0058B43A /* ParticleEmitter3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter3D.cpp; sourceTree = "<group>"; };
+		5C5D982815B0230D0058B43A /* ParticleEmitter3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = ParticleEmitter3D.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		5C5D982915B0230D0058B43A /* ParticleEmitter3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter3D.h; sourceTree = "<group>"; };
 		5C5D982A15B0230D0058B43A /* ParticleEmitterObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterObject.cpp; sourceTree = "<group>"; };
 		5C5D982B15B0230D0058B43A /* ParticleEmitterObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterObject.h; sourceTree = "<group>"; };
 		5C5D982C15B0230D0058B43A /* ParticleLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer.cpp; sourceTree = "<group>"; };
 		5C5D982D15B0230D0058B43A /* ParticleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer.h; sourceTree = "<group>"; };
-		5C5D982E15B0230D0058B43A /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
+		5C5D982E15B0230D0058B43A /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = ParticleLayer3D.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		5C5D982F15B0230D0058B43A /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
 		5C5D983015B0230D0058B43A /* ParticlePropertyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlePropertyLine.cpp; sourceTree = "<group>"; };
 		5C5D983115B0230D0058B43A /* ParticlePropertyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePropertyLine.h; sourceTree = "<group>"; };
@@ -686,8 +688,6 @@
 		5C5D98E515B0230D0058B43A /* BVHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVHierarchy.h; sourceTree = "<group>"; };
 		5C5D98E615B0230D0058B43A /* BVNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVNode.cpp; sourceTree = "<group>"; };
 		5C5D98E715B0230D0058B43A /* BVNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVNode.h; sourceTree = "<group>"; };
-		5C5D98E815B0230D0058B43A /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
-		5C5D98E915B0230D0058B43A /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		5C5D98EC15B0230D0058B43A /* DataNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataNode.cpp; sourceTree = "<group>"; };
 		5C5D98ED15B0230D0058B43A /* DataNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataNode.h; sourceTree = "<group>"; };
 		5C5D98EE15B0230D0058B43A /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
@@ -848,7 +848,7 @@
 		5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile_macos.a; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		5CFB116D15AE0696008F64BB /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = "<group>"; };
-		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
+		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = ParticleLayerLong.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
 		E84779B216690254004CD20A /* FastName.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastName.cpp; sourceTree = "<group>"; };
@@ -871,7 +871,7 @@
 		E8705E9F16A5410500027020 /* IntrospectionBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionBase.h; sourceTree = "<group>"; };
 		E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseProcessSystem.cpp; path = Systems/BaseProcessSystem.cpp; sourceTree = "<group>"; };
 		E8705EA216A542FD00027020 /* BaseProcessSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseProcessSystem.h; path = Systems/BaseProcessSystem.h; sourceTree = "<group>"; };
-		E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerBatch.cpp; sourceTree = "<group>"; };
+		E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = ParticleLayerBatch.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E8705EA516A5433100027020 /* ParticleLayerBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerBatch.h; sourceTree = "<group>"; };
 		E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectSystem.cpp; path = Systems/ParticleEffectSystem.cpp; sourceTree = "<group>"; };
 		E8705EA816A5436600027020 /* ParticleEffectSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectSystem.h; path = Systems/ParticleEffectSystem.h; sourceTree = "<group>"; };
@@ -974,6 +974,8 @@
 		508E59A01684A07500D2ECA8 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				50A18E4116A70B3600DC6281 /* Camera.cpp */,
+				50A18E4216A70B3600DC6281 /* Camera.h */,
 				E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */,
 				E8705EA516A5433100027020 /* ParticleLayerBatch.h */,
 				5045D65D169F1B1100742C05 /* Heightmap.cpp */,
@@ -1585,8 +1587,6 @@
 				5C5D98E515B0230D0058B43A /* BVHierarchy.h */,
 				5C5D98E615B0230D0058B43A /* BVNode.cpp */,
 				5C5D98E715B0230D0058B43A /* BVNode.h */,
-				5C5D98E815B0230D0058B43A /* Camera.cpp */,
-				5C5D98E915B0230D0058B43A /* Camera.h */,
 				5C5D98EC15B0230D0058B43A /* DataNode.cpp */,
 				5C5D98ED15B0230D0058B43A /* DataNode.h */,
 				5C5D98EE15B0230D0058B43A /* Frustum.cpp */,
@@ -1988,7 +1988,6 @@
 				5C5D9A4615B0230D0058B43A /* BoneNode.cpp in Build Sources */,
 				5C5D9A4715B0230D0058B43A /* BVHierarchy.cpp in Build Sources */,
 				5C5D9A4815B0230D0058B43A /* BVNode.cpp in Build Sources */,
-				5C5D9A4915B0230D0058B43A /* Camera.cpp in Build Sources */,
 				5C5D9A4B15B0230D0058B43A /* DataNode.cpp in Build Sources */,
 				5C5D9A4C15B0230D0058B43A /* Frustum.cpp in Build Sources */,
 				5C5D9A4E15B0230D0058B43A /* ImposterManager.cpp in Build Sources */,
@@ -2104,6 +2103,7 @@
 				E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */,
 				4F1AE76216A56A27009AF0C2 /* ParticleEffectComponent.cpp in Build Sources */,
 				50A18E2816A6B37D00DC6281 /* CameraComponent.cpp in Build Sources */,
+				50A18E4316A70B3600DC6281 /* Camera.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
