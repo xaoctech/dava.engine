@@ -568,18 +568,18 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		int32 camIndex = -1;
 		sceneFP->Read(&camIndex, sizeof(int32));
 		
-		Camera * cam = SafeRetain(scene->GetCamera(camIndex + cameraIndexOffset));
-		node = cam;//new Camera(scene);
+		//Camera * cam = SafeRetain(scene->GetCamera(camIndex + cameraIndexOffset));
+		//node = cam;//new Camera(scene);
         
-        node->SetDefaultLocalTransform(def.localTransform);
-		node->SetLocalTransform(def.localTransform);
-		node->SetName(name);
-
-        if (parentNode != scene) 
-        {
-            parentNode->AddNode(node);
-        }
-		cam->RestoreOriginalSceneTransform();
+        //        node->SetDefaultLocalTransform(def.localTransform);
+        //		node->SetLocalTransform(def.localTransform);
+        //		node->SetName(name);
+        //
+        //        if (parentNode != scene) 
+        //        {
+        //            parentNode->AddNode(node);
+        //        }
+        //		cam->RestoreOriginalSceneTransform();
 		strcpy(nodeType, "camera node");
 	}
 	else if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH || def.nodeType == SceneNodeDef::SCENE_NODE_ANIMATED_MESH)

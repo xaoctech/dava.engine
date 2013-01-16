@@ -47,6 +47,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Scene3D/ParticleEffectNode.h"
+#include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
@@ -532,6 +533,20 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 
         parent->AddNode(node);
         // Elegant fix became part of architecture....
+        skipNode = true;
+    }else if (name == "Camera")
+    {
+        node = new SceneNode();
+        baseObject = node;
+        
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        Camera * cameraObject = new Camera();
+        cameraObject->Load(archive, this);
+        
+        node->AddComponent(new CameraComponent(cameraObject));
+        parent->AddNode(node);
         skipNode = true;
     }else
     {

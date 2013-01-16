@@ -36,6 +36,7 @@
 #include "Debug/DVAssert.h"
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 #include "Render/RenderBase.h"
 #include <typeinfo>
 
