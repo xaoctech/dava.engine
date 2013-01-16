@@ -30,7 +30,6 @@
 #include "Base/BaseObject.h"
 #include "Base/ObjectFactory.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {

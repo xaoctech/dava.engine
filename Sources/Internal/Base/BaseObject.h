@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObjectChecker.h"
+#include "Base/Introspection.h"
 #include "Debug/DVAssert.h"
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
@@ -150,6 +151,9 @@ protected:
 	}
 	
 	int32 referenceCount;
+
+public:
+	INTROSPECTION(BaseObject, NULL);
 };
 
 

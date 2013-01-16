@@ -77,7 +77,8 @@ public:
 	int32 flags;
 public:
     
-    INTROSPECTION_EXTEND_EMPTY(LodComponent, Component);
+    INTROSPECTION_EXTEND(LodComponent, Component,
+		NULL);
 
 };
 

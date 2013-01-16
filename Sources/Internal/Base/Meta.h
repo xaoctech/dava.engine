@@ -43,6 +43,11 @@ namespace DAVA
 			return type_name;
 		}
 
+		inline const IntrospectionInfo* Introspection() const
+		{
+			return introspection;
+		}
+
 	private:
 		MetaInfo(const char *_type_name, int _type_size, const IntrospectionInfo *_introspection)
 			: type_name(_type_name)

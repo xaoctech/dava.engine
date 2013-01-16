@@ -37,6 +37,7 @@ namespace DAVA
 		}
 	};
 
+	template<> class HasIntrospection<void> { public: static const bool result = false; };
 	template<> class HasIntrospection<bool> { public: static const bool result = false; };
 	template<> class HasIntrospection<int32> { public: static const bool result = false; };
 	template<> class HasIntrospection<uint32> { public: static const bool result = false; };
