@@ -39,6 +39,12 @@ namespace DAVA
 
 	template<> class HasIntrospection<void> { public: static const bool result = false; };
 	template<> class HasIntrospection<bool> { public: static const bool result = false; };
+	template<> class HasIntrospection<char8> { public: static const bool result = false; };
+	template<> class HasIntrospection<char16> { public: static const bool result = false; };
+	template<> class HasIntrospection<int8> { public: static const bool result = false; };
+	template<> class HasIntrospection<uint8> { public: static const bool result = false; };
+	template<> class HasIntrospection<int16> { public: static const bool result = false; };
+	template<> class HasIntrospection<uint16> { public: static const bool result = false; };
 	template<> class HasIntrospection<int32> { public: static const bool result = false; };
 	template<> class HasIntrospection<uint32> { public: static const bool result = false; };
 	template<> class HasIntrospection<int64> { public: static const bool result = false; };
