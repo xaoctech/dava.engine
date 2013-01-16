@@ -26,7 +26,8 @@ private:
 	ParticleEmitter * particleEmitter;
     
 public:
-    INTROSPECTION_EXTEND_EMPTY(ParticleEmitterComponent, Component);
+    INTROSPECTION_EXTEND(ParticleEmitterComponent, Component,
+		NULL);
 };
 
 }

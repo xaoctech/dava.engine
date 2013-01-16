@@ -31,11 +31,12 @@
 #define __DAVAENGINE_VARIANTTYPE_H__
 
 #include "Base/BaseTypes.h"
-#include "FileSystem/File.h"
 
 namespace DAVA 
 {
     
+class File;
+	
 struct MetaInfo;
 
 class Vector2;

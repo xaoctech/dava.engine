@@ -32,6 +32,7 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 
 	printf("SceneNode isIntrospection: %d\n", HasIntrospection<DAVA::SceneNode>::result);
 	printf("SceneNode introspection: = %p\n", GetIntrospection(node));
+	printf("SceneNode introspection(Base): = %p\n", GetIntrospection((DAVA::BaseObject *) node));
 	const DAVA::IntrospectionInfo *info = GetIntrospection(node);
 	while(NULL != info)
 	{
