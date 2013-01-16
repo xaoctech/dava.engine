@@ -14,6 +14,8 @@
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/HeightmapNode.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Render/Highlevel/RenderObject.h"
 
 
 /*
@@ -25,7 +27,7 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 EditorScene::EditorScene()
 :Scene()
 {
-    selectedMeshInstance = NULL;
+    selectedEntity = NULL;
     originalHandler = NULL;
 	selection = 0;
 	lastSelectedPhysics = 0;
@@ -70,19 +72,20 @@ void EditorScene::Update(float32 timeElapsed)
 void EditorScene::CheckNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
+	RenderComponent * renderComponent = curr->GetRenderComponent();
 	UserNode * userNode = dynamic_cast<UserNode *> (curr);	
-	if (mesh)
+	if(renderComponent && renderComponent->GetRenderObject())
 	{
-		if (mesh->GetUserData() == 0 && mesh->IsLodMain(0))
+		if (curr->GetUserData() == 0 && curr->IsLodMain(0))
 		{
 			SceneNodeUserData * data = new SceneNodeUserData();
 			curr->SetUserData(data);
-			data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
+			data->bulletObject = new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform());
 			SafeRelease(data);
 		}
-		else if (mesh->GetUserData())
+		else if (curr->GetUserData())
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)mesh->GetUserData();
+			SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
 			data->bulletObject->UpdateCollisionObject();
 		}
 	}
@@ -138,10 +141,10 @@ SceneNode * GetSolidParent(SceneNode* curr)
 
 SceneNode * GetLodParent(SceneNode * curr)
 {
-	LodNode * node = dynamic_cast<LodNode*> (curr);
-	if (node)
+	bool hasLod = (curr->components[Component::LOD_COMPONENT] != 0);
+	if(hasLod)
 	{
-		return node;
+		return curr;
 	}
 	else 
 	{
@@ -336,7 +339,7 @@ HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject *
 
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
-	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
+	SceneNode * node = curr;
 	if (node == 0)
 		node = dynamic_cast<LightNode *> (curr);
 	if (node == 0)
@@ -370,15 +373,19 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     }
     
 	selection = newSelection;
-    selectedMeshInstance = dynamic_cast<MeshInstanceNode *>(newSelection);
+    selectedEntity = newSelection;
     
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
-		if (solid == 0)
+		if(solid == 0)
+		{
 			solid = GetLodParent(selection);
-		if (solid)
+		}
+		if(solid)
+		{
 			selection = solid;
+		}
 			
 		
 		proxy = GetHighestProxy(selection);
@@ -403,9 +410,9 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
 {
     selectedNode->SetDebugFlags(flags);
-    if(selectedMeshInstance && selectedMeshInstance != selectedNode)
+    if(selectedEntity && selectedEntity != selectedNode)
     {
-        selectedMeshInstance->SetDebugFlags(flags, false);
+        selectedEntity->SetDebugFlags(flags, false);
     }
 }
 
