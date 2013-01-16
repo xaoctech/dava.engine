@@ -33,6 +33,7 @@ void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 Component * LodComponent::Clone()
 {
 	LodComponent * newLod = new LodComponent();
+    // TODO: Add lod cloning
 	return newLod;
 }
 

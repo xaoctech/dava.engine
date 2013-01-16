@@ -35,10 +35,11 @@
 #include "Base/BaseObject.h"
 #include "Base/Introspection.h"
 #include "Scene3D/Frustum.h"
-#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {
+class SceneFileV2;
+
 /**
     \ingroup scene3d
     \brief this class is main class to perform camera transformations in our 3D engine.
@@ -48,7 +49,7 @@ namespace DAVA
     TODO: Should it be a SceneNode? It doesn't use inherited transofrmations!
     TODO: Move math to a separate class, use composition, see CopyMathOnly
  */
-class Camera : public SceneNode
+class Camera : public BaseObject
 {
 public:
 	Camera();
@@ -208,7 +209,7 @@ public:
         \brief Clone current camera
         TODO: remove, make adjustments in copy constructor instead. Clone() is evil, see Effective Java for details.
      */
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    virtual BaseObject * Clone(BaseObject *dstNode = NULL);
     
     /**
         \brief Get project * camera matrix
@@ -314,7 +315,7 @@ public:
     float32 zoomFactor;
 
 public:
-    INTROSPECTION_EXTEND(Camera, SceneNode,
+    INTROSPECTION_EXTEND(Camera, BaseObject,
 		PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, 0)
 		PROPERTY(position, "Position", GetPosition, SetPosition, 0)
 		PROPERTY(up, "Up", GetUp, SetUp, 0)
