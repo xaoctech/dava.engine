@@ -36,7 +36,8 @@ void QSceneGraphTreeView::ConnectToSignals()
 	// Signals to rebuild the particular node and the whole graph.
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
-	
+	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)), this, SLOT(OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)));
+
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
 			this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSelectNode(SceneData*, DAVA::SceneNode*)),
@@ -55,6 +56,8 @@ void QSceneGraphTreeView::DisconnectFromSignals()
 	
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuild()), this, SLOT(OnSceneGraphNeedRebuild()));
+	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)), this, SLOT(OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer*)));
+
 	
 	disconnect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedSetScene(SceneData*, EditorScene*)),
 			   this, SLOT(OnSceneGraphNeedSetScene(SceneData*, EditorScene*)));
@@ -204,3 +207,7 @@ void QSceneGraphTreeView::ExecuteCommand(Command *command)
 	SafeRelease(command);
 }
 
+void QSceneGraphTreeView::OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer)
+{
+	sceneGraphModel->RefreshParticlesLayer(layer);
+}

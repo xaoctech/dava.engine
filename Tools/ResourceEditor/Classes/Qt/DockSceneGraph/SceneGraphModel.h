@@ -24,6 +24,9 @@ public:
 	void RebuildNode(DAVA::SceneNode* rootNode);
     virtual void Rebuild();
 
+	// Refresh the Particle Editor Layer.
+	void RefreshParticlesLayer(DAVA::ParticleLayer* layer);
+
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
@@ -36,7 +39,7 @@ public:
     virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     
-    virtual void MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex);
+    virtual bool MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex);
 
     virtual QVariant data(const QModelIndex &index, int role) const;
     
@@ -51,15 +54,12 @@ protected:
     
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-    void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node);
+    void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate = false);
     
     bool LandscapeEditorModeEnabled() const;
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
-
-	// Add the Graph Items in a recursive way.
-	void AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode);
 
 protected:
 

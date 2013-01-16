@@ -25,6 +25,8 @@ public:
     EmitterParticleEditorNode* GetEmitterEditorNode() const {return emitterEditorNode;};
     ParticleLayer* GetLayer() const {return layer;};
 
+	virtual QString GetName() const;
+
     // Get the layer index in the Particle Emitter.
     int32 GetLayerIndex() const;
 
@@ -33,6 +35,9 @@ public:
 
     // Update the forces indices.
     void UpdateForcesIndices();
+	
+	// Update the Emitter Editor node.
+	void UpdateEmitterEditorNode(EmitterParticleEditorNode* newNode) {this->emitterEditorNode = newNode;};
 
 protected:
     EmitterParticleEditorNode* emitterEditorNode;

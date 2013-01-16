@@ -60,7 +60,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
 	
-	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
+	ui->dockParticleEditor->installEventFilter(this);
+	ChangeParticleDockVisible(false); //hide particle editor dock on start up
 	ui->dockParticleEditorTimeLine->hide();
 }
 
@@ -271,7 +272,34 @@ void QtMainWindow::SetupDockWidgets()
 
 void QtMainWindow::ChangeParticleDockVisible(bool visible)
 {
+	if (ui->dockParticleEditor->isVisible() == visible)
+		return;
+
+	// ui magic :)
+	oldDockSceneGraphMinSize = ui->dockSceneGraph->minimumSize();
+	oldDockSceneGraphMaxSize = ui->dockSceneGraph->maximumSize();
+	
+	int minWidthParticleDock = ui->dockParticleEditor->minimumWidth();
+	int maxWidthParticleDock = ui->dockParticleEditor->maximumWidth();
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setFixedWidth(ui->dockParticleEditor->width());
+	
 	ui->dockParticleEditor->setVisible(visible);
+	
+	ui->dockParticleEditor->setMinimumWidth(minWidthParticleDock);
+	ui->dockParticleEditor->setMaximumWidth(maxWidthParticleDock);
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setVisible(visible);
+	
+	QTimer::singleShot(1, this, SLOT(returnToOldMaxMinSizesForDockSceneGraph()));
+}
+
+void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
+{
+	ui->dockSceneGraph->setMinimumSize(oldDockSceneGraphMinSize);
+	ui->dockSceneGraph->setMaximumSize(oldDockSceneGraphMaxSize);
 }
 
 void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
@@ -325,6 +353,15 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
+	else if (obj == ui->dockParticleEditor)
+	{
+		if (QEvent::Close == event->type())
+		{
+			event->ignore();
+			ChangeParticleDockVisible(false);
+			return true;
+		}
+	}
     
     return QMainWindow::eventFilter(obj, event);
 }

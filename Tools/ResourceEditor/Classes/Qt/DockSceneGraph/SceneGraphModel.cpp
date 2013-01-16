@@ -33,19 +33,30 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     SafeRelease(scene);
     scene = SafeRetain(newScene);
  
+	// If the scene is changed, the selection on the Particles Editor level needs to be reset.
+	particlesEditorSceneModelHelper.ResetSelection();
     Rebuild();
 }
 
-void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
+void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
 {
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
     node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
+
+	if (partialUpdate)
+	{
+		QModelIndex parentIndex = createIndex(parent->Row(), 0, parent);
+		int32 rowToAdd = parent->Row();
+		
+		beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+	}
 
     SceneGraphItem *graphItem = new SceneGraphItem();
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
     // Particles Editor nodes are processed separately.
+	bool nodeAddedByParticleEditor = false;
     if (particlesEditorSceneModelHelper.AddNodeToSceneGraph(graphItem, node))
     {
         // Also try to determine selected item from Particle Editor.
@@ -55,15 +66,35 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
             this->selectedGraphItemForParticleEditor = selectedItem;
         }
 
-        return;
+        nodeAddedByParticleEditor = true;
     }
+
+	if (partialUpdate)
+	{
+		endInsertRows();
+	}
+	
+	if (nodeAddedByParticleEditor)
+	{
+		return;
+	}
 
     if(!node->GetSolid())
     {
+		// AddNodeToTree() can change the children while Particles Editor adopts orphaned Particle Emitter nodes.
+		// Need to store the original pointers list to the current node's children to process them corrrectly.
+		Vector<DAVA::SceneNode*> originalNodes;
         int32 count = node->GetChildrenCount();
         for(int32 i = 0; i < count; ++i)
         {
-            AddNodeToTree(graphItem, node->GetChild(i));
+			originalNodes.push_back(node->GetChild(i));
+        }
+
+		// Now look through the nodes remembered..
+        for(int32 i = 0; i < count; ++i)
+        {
+            AddNodeToTree(graphItem, originalNodes[i], partialUpdate);
+			// Note - after this call originalNodes[i] may become invalid!
         }
     }
 }
@@ -109,37 +140,11 @@ void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
 		int32 childrenToAddCount = rootNode->GetChildrenCount();
 		for (int32 i = 0; i < childrenToAddCount; i ++)
 		{
-			AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+			AddNodeToTree(graphItem, rootNode->GetChild(i), true);
 		}
 	}
 }
 
-void SceneGraphModel::AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode)
-{
-	if (!rootItem || !rootNode)
-	{
-		return;
-	}
-
-	QModelIndex parentIndex = createIndex(rootItem->Row(), 0, rootItem);
-	int32 rowToAdd = rootItem->Row();
-
-	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
-
-	// Add the child nodes on this level.
-	SceneGraphItem *graphItem = new SceneGraphItem();
-	graphItem->SetUserData(rootNode);
-	rootItem->AppendChild(graphItem);
-
-	endInsertRows();
-	
-	// Repeat for the children.
-	int32 childrenCount = rootNode->GetChildrenCount();
-	for (uint i = 0; i < childrenCount; i ++)
-	{
-		AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
-	}
-}
 
 void SceneGraphModel::Rebuild()
 {
@@ -282,6 +287,7 @@ void SceneGraphModel::SelectItem(GraphItem *item, bool needExpand)
     }
 }
 
+
 DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
 {
     return selectedNode;
@@ -414,7 +420,7 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
     return true;
 }
 
-void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
+bool SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
 {
     GraphItem *newParentItem = rootItem;
     if(newParentIndex.isValid())
@@ -422,6 +428,11 @@ void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
         newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
     }
     
+	// Ask the Particles Editor if the move should be handled by it separately.
+	if (particlesEditorSceneModelHelper.NeedMoveItemToParent(movedItem, newParentItem))
+	{
+		return particlesEditorSceneModelHelper.MoveItemToParent(movedItem, newParentItem);
+	}
 
     GraphItem *oldParentItem = movedItem->GetParent();
     
@@ -440,6 +451,8 @@ void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
     oldParentNode->RemoveNode(movedNode);
     newParentNode->AddNode(movedNode);
     SafeRelease(movedNode);
+	
+	return true;
 }
 
 QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
@@ -456,7 +469,13 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
     return GraphModel::data(index, role);
 }
 
-
-
-
-
+void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
+{
+	// Ask Helper to return us the SceneGraph node for this Particle layer.
+	SceneGraphItem* itemToRefresh = particlesEditorSceneModelHelper.GetGraphItemForParticlesLayer(rootItem, layer);
+	if (itemToRefresh)
+	{
+		QModelIndex refreshIndex = createIndex(itemToRefresh->Row(), 0, itemToRefresh);
+		dataChanged(refreshIndex, refreshIndex);
+	}
+}

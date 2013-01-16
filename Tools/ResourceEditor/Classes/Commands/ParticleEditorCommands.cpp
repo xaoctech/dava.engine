@@ -167,7 +167,8 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleLayer* layer) :
 	this->layer = layer;
 }
 
-void CommandUpdateParticleLayer::Init(bool isDisabled,
+void CommandUpdateParticleLayer::Init(const QString& layerName,
+									  bool isDisabled,
 									  bool additive,
 									  Sprite* sprite,
 									  RefPtr< PropertyLine<float32> > life,
@@ -197,6 +198,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 									  float32 startTime,
 									  float32 endTime)
 {
+	this->layerName = layerName;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
 	this->sprite = sprite;
@@ -231,6 +233,7 @@ void CommandUpdateParticleLayer::Init(bool isDisabled,
 
 void CommandUpdateParticleLayer::Execute()
 {
+	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->additive = additive;
 	if (layer->GetSprite() != sprite)
@@ -263,6 +266,8 @@ void CommandUpdateParticleLayer::Execute()
 	layer->alignToMotion = alignToMotion;
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+
+	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
 
 CommandUpdateParticleLayerTime::CommandUpdateParticleLayerTime(ParticleLayer* layer) :

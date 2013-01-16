@@ -160,7 +160,8 @@ class CommandUpdateParticleLayer: public Command
 {
 public:
 	CommandUpdateParticleLayer(ParticleLayer* layer);
-	void Init(bool isDisabled,
+	void Init(const QString& layerName,
+			  bool isDisabled,
 			  bool additive,
 			  Sprite* sprite,
 			  RefPtr< PropertyLine<float32> > life,
@@ -196,7 +197,8 @@ protected:
 	
 private:
 	ParticleLayer* layer;
-	
+
+	QString layerName;
 	bool isDisabled;
 	bool additive;
 	Sprite* sprite;
