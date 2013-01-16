@@ -40,7 +40,7 @@ namespace DAVA
 REGISTER_CLASS(Camera);
 
 
-Camera::Camera() : SceneNode()
+Camera::Camera()
 {
 	Setup(35.0f, 1.0f, 1.0f, 2500.f, false);
 	up = Vector3(0.0f, 1.0f, 0.0f);
@@ -56,6 +56,7 @@ Camera::~Camera()
 	SafeRelease(currentFrustum);
 }
 	
+/*  Code to restore camera information from HIERARCHY of transformations
 void Camera::RestoreOriginalSceneTransform()
 {
 	cameraTransform = GetLocalTransform();
@@ -69,6 +70,8 @@ void Camera::RestoreOriginalSceneTransform()
 	cameraTransform.Inverse();
 	ExtractCameraToValues();
 }
+ */
+    
 
 void Camera::SetFOV(const float32 &fovyInDegrees)
 {
@@ -396,9 +399,9 @@ void Camera::RebuildCameraFromValues()
 	
 void Camera::ExtractCameraToValues()
 {
-	position.x = worldTransform._30;
-	position.y = worldTransform._31;
-	position.z = worldTransform._32;
+	position.x = cameraTransform._30;
+	position.y = cameraTransform._31;
+	position.z = cameraTransform._32;
 	left.x = cameraTransform._00;
 	left.y = cameraTransform._10;
 	left.z = cameraTransform._20;
@@ -435,14 +438,14 @@ void Camera::Set()
     }
 }
 
-SceneNode* Camera::Clone(SceneNode *dstNode)
+BaseObject * Camera::Clone(BaseObject * dstNode)
 {
     if (!dstNode) 
     {
 		DVASSERT_MSG(IsPointerToExactClass<Camera>(this), "Can clone only Camera");
         dstNode = new Camera();
     }
-    SceneNode::Clone(dstNode);
+    // SceneNode::Clone(dstNode);
     Camera *cnd = (Camera*)dstNode;
     cnd->xmin = xmin;
     cnd->xmax = xmax;
@@ -562,7 +565,7 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
     
 void Camera::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive, sceneFile);
+    BaseObject::Save(archive);
     
     archive->SetFloat("cam.xmin", xmin);
     archive->SetFloat("cam.xmax", xmax);
@@ -589,7 +592,7 @@ void Camera::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 void Camera::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive, sceneFile);
+    BaseObject::Load(archive);
     
     // todo add default values
     xmin = archive->GetFloat("cam.xmin");

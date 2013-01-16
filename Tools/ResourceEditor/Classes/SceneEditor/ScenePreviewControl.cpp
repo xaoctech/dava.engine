@@ -1,8 +1,7 @@
 #include "ScenePreviewControl.h"
-
 #include "ControlsFactory.h"
-
 #include "SceneValidator.h"
+#include "Scene3D/Components/CameraComponent.h"
 
 // ***************** PreviewCameraController *************** //
 PreviewCameraController::PreviewCameraController()
@@ -240,7 +239,6 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
             if(!cam)
             {
                 Camera * cam = new Camera();
-                cam->SetName("preview-camera");
                 //cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
                 cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
                 cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
@@ -248,7 +246,12 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
                 
                 cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
                 
-                editorScene->AddNode(cam);
+
+                
+                ScopedPtr<SceneNode> node(new SceneNode());
+                node->SetName("preview-camera");
+                node->AddComponent(new CameraComponent(cam));
+                editorScene->AddNode(node);
                 editorScene->AddCamera(cam);
                 editorScene->SetCurrentCamera(cam);
                 cameraController->SetScene(editorScene);
