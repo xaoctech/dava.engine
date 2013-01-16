@@ -33,8 +33,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Hash.h"
-#include "Debug/DVAssert.h"
 #include "Base/TemplateHelpers.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {

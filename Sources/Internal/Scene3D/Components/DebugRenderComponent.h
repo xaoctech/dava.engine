@@ -37,8 +37,8 @@ private:
     uint32 debugFlags;
     
 public:
-    INTROSPECTION_EXTEND_EMPTY(DebugRenderComponent, Component);
-
+    INTROSPECTION_EXTEND(DebugRenderComponent, Component,
+		NULL);
 };
 
 
