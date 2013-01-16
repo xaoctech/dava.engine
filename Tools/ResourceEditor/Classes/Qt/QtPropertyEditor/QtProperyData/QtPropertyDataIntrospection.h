@@ -17,7 +17,7 @@ public:
 protected:
 	void *object;
 	const DAVA::IntrospectionInfo *info;
-	QMap<QtPropertyDataDavaVariant*, int> childIndexes;
+	QMap<QtPropertyDataDavaVariant*, int> childVariantIndexes;
 
 	virtual QVariant GetValueInternal();
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
