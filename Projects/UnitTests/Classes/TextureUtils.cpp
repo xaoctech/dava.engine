@@ -66,21 +66,22 @@ TextureUtils::CompareResult TextureUtils::CompareSprites(Sprite *first, Sprite *
     int32 step = 1;
     int32 startIndex = 0;
     
-    if(FORMAT_A8 == format)
-    {
-        compareResult.bytesCount = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8));
-        step = 4;
-        startIndex = 3;
-    }
-    else
-    {
-        compareResult.bytesCount = imageSizeInBytes;
-    }
+	if(FORMAT_A8 == format)
+	{
+		compareResult.bytesCount = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8));
+		step = 4;
+		startIndex = 3;
+	}
+	else
+	{
+		compareResult.bytesCount = imageSizeInBytes;
+	}
 
-    for(int32 i = startIndex; i < imageSizeInBytes; i += step)
-    {
-        compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
-    }
+	for(int32 i = startIndex; i < imageSizeInBytes; i += step)
+	{
+		compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
+	}
+
     
 //    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
 //    firstComparer->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
