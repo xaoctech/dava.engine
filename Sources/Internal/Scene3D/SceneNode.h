@@ -77,15 +77,10 @@ public:
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType);
     Component * GetComponent(uint32 componentType);
+	Component * GetOrCreateComponent(uint32 componentType);
     uint32 GetComponentCount();
     
-    void UpdateComponentsFastPtrs();
-    Component * components[Component::COMPONENT_COUNT];
-	TransformComponent * transformComponent;
-    RenderComponent * renderComponent;
     
-    TransformComponent * GetTransformComponent();
-    inline RenderComponent * GetRenderComponent();
     
     inline uint32 GetAvailableComponentFlags();
 
@@ -274,18 +269,6 @@ public:
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
-    
-	inline void SetUserData(BaseObject * newData)
-	{
-		SafeRelease(userData);
-		userData = newData;
-		SafeRetain(userData);
-	}
-
-	inline BaseObject * GetUserData(void)
-	{
-		return userData;
-	}
 	
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
@@ -360,7 +343,6 @@ protected:
 
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 	void SetParent(SceneNode * node);
-	BaseObject * userData;
 
 	Scene * scene;
 	SceneNode * parent;
@@ -377,6 +359,7 @@ protected:
     KeyedArchive *customProperties;
     
 private:
+	Component * components[Component::COMPONENT_COUNT];
     Matrix4 defaultLocalTransform;
    	friend class Scene;
     
@@ -495,11 +478,6 @@ void SceneNode::GetChildNodes(Container<T> & container)
         
         obj->GetChildNodes(container);
     }	
-}
-    
-RenderComponent * SceneNode::GetRenderComponent()
-{
-    return renderComponent;
 }
 
 uint32 SceneNode::GetAvailableComponentFlags()

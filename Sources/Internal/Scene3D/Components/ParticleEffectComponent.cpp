@@ -25,7 +25,7 @@ void ParticleEffectComponent::Start()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Play();
@@ -40,7 +40,7 @@ void ParticleEffectComponent::Stop()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Stop();
@@ -54,7 +54,7 @@ void ParticleEffectComponent::Restart()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Restart();
@@ -77,7 +77,7 @@ void ParticleEffectComponent::EffectUpdate(float32 timeElapsed)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			ParticleEmitter* emitter = component->GetParticleEmitter();
@@ -103,7 +103,7 @@ void ParticleEffectComponent::UpdateDurationForChildNodes(float32 newEmitterLife
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->SetLifeTime(newEmitterLifeTime);

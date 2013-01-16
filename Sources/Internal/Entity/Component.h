@@ -51,6 +51,7 @@ public:
         LIGHT_COMPONENT,
 		PARTICLE_EMITTER_COMPONENT,
 		PARTICLE_EFFECT_COMPONENT,
+		BULLET_COMPONENT,
         ANIMATION_COMPONENT,
         COLLISION_COMPONENT,    // multiple instances
         PHYSICS_COMPONENT,
@@ -58,6 +59,8 @@ public:
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
         COMPONENT_COUNT,
     };
+
+	static Component * CreateByType(uint32 componentType);
 
 	Component();
     

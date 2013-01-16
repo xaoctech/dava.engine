@@ -18,7 +18,7 @@ void LodSystem::Process()
 	for(int32 i = partialUpdateIndices[currentPartialUpdateIndex]; i < partialUpdateIndices[currentPartialUpdateIndex+1]; ++i)
 	{
 		SceneNode * entity = entities[i];
-		LodComponent * lod = static_cast<LodComponent*>(entity->components[Component::LOD_COMPONENT]);
+		LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 		if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 		{
 			UpdateEntityAfterLoad(entity);
@@ -56,7 +56,7 @@ void LodSystem::RemoveEntity(SceneNode * entity)
 
 void LodSystem::UpdateEntityAfterLoad(SceneNode * entity)
 {
-	LodComponent * lod = static_cast<LodComponent*>(entity->components[Component::LOD_COMPONENT]);
+	LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	for (List<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
 	{
 		LodComponent::LodData & ld = *it;
@@ -100,7 +100,7 @@ void LodSystem::UpdatePartialUpdateIndices()
 
 void LodSystem::UpdateLod(SceneNode * entity)
 {
-	LodComponent * lodComponent = static_cast<LodComponent*>(entity->components[Component::LOD_COMPONENT]);
+	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	LodComponent::LodData * oldLod = lodComponent->currentLod;
 	RecheckLod(entity);
 	if (oldLod != lodComponent->currentLod) 
@@ -123,7 +123,7 @@ void LodSystem::UpdateLod(SceneNode * entity)
 
 void LodSystem::RecheckLod(SceneNode * entity)
 {
-	LodComponent * lodComponent = static_cast<LodComponent*>(entity->components[Component::LOD_COMPONENT]);
+	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	if (!lodComponent->currentLod)return;
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 

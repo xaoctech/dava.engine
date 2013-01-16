@@ -15,6 +15,7 @@
 #include "SceneEditor/HeightmapNode.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/BulletComponent.h"
 #include "Render/Highlevel/RenderObject.h"
 
 
@@ -72,38 +73,36 @@ void EditorScene::Update(float32 timeElapsed)
 void EditorScene::CheckNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
-	RenderComponent * renderComponent = curr->GetRenderComponent();
+	RenderComponent * renderComponent = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
+	BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
 	UserNode * userNode = dynamic_cast<UserNode *> (curr);	
 	if(renderComponent && renderComponent->GetRenderObject())
 	{
-		if (curr->GetUserData() == 0 && curr->IsLodMain(0))
+		if (bulletComponent == 0 && curr->IsLodMain(0))
 		{
-			SceneNodeUserData * data = new SceneNodeUserData();
-			curr->SetUserData(data);
-			data->bulletObject = new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform());
-			SafeRelease(data);
+			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+			bulletComponent->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform())));
 		}
-		else if (curr->GetUserData())
+		else if(bulletComponent->GetBulletObject())
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
-			data->bulletObject->UpdateCollisionObject();
+			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
 	}
-	else if (userNode)
-	{
-		if (userNode->GetUserData() == 0)
-		{
-			SceneNodeUserData * data = new SceneNodeUserData();
-			curr->SetUserData(data);
-			data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
-			SafeRelease(data);
-		}
-		else if (userNode->GetUserData())
-		{
-			SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
-			data->bulletObject->UpdateCollisionObject();
-		}
-	}
+	//else if (userNode)
+	//{
+	//	if (userNode->GetUserData() == 0)
+	//	{
+	//		SceneNodeUserData * data = new SceneNodeUserData();
+	//		curr->SetUserData(data);
+	//		data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
+	//		SafeRelease(data);
+	//	}
+	//	else if (userNode->GetUserData())
+	//	{
+	//		SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
+	//		data->bulletObject->UpdateCollisionObject();
+	//	}
+	//}
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -114,8 +113,10 @@ void EditorScene::CheckNodes(SceneNode * curr)
 
 void EditorScene::ReleaseUserData(SceneNode * curr)
 {
-	if (curr)
-		curr->SetUserData(0);
+	if(curr)
+	{
+		curr->RemoveComponent(Component::BULLET_COMPONENT);
+	}
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -141,7 +142,7 @@ SceneNode * GetSolidParent(SceneNode* curr)
 
 SceneNode * GetLodParent(SceneNode * curr)
 {
-	bool hasLod = (curr->components[Component::LOD_COMPONENT] != 0);
+	bool hasLod = (curr->GetComponent(Component::LOD_COMPONENT) != 0);
 	if(hasLod)
 	{
 		return curr;
@@ -174,18 +175,19 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->GetUserData();
-			if (data)
+			BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
+			BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+			if (bulletObject)
 			{
 				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
 				{					
-					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+					if (bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
 					{
 						findedIndex = i;
 						break;
 					}
 				}
-				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+				while (findedIndex >= 0 && bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
 					findedIndex--;
 				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
@@ -345,10 +347,11 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	if (node == 0)
 		node = dynamic_cast<UserNode *> (curr);
 	
-	if (node && node->GetUserData())
+	BulletComponent * bulletComponent = (BulletComponent*)node->GetComponent(Component::BULLET_COMPONENT);
+	if (bulletComponent && bulletComponent->GetBulletObject())
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
-		if (data->bulletObject->GetCollisionObject() == coll)
+		BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+		if (bulletObject->GetCollisionObject() == coll)
 			return curr;
 	}
     
@@ -439,9 +442,12 @@ SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {
-	SceneNodeUserData * userData = (SceneNodeUserData*)curr->GetUserData();
-	if (userData)
-		userData->bulletObject->SetUpdateFlag(value);
+	BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
+	if (bulletComponent)
+	{
+		BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+		bulletObject->SetUpdateFlag(value);
+	}
 	
 	for (int32 i = 0; i < curr->GetChildrenCount(); i++)
 	{
@@ -490,23 +496,6 @@ void EditorScene::DrawGrid()
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	RenderManager::Instance()->SetState(oldState);
-}
-
-void EditorScene::DrawDebugNodes(SceneNode * curr)
-{
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
-	
-	if (mesh && mesh->GetUserData())
-	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
-		data->bulletObject->Draw(mesh->GetWorldTransform(), mesh);
-	}
-
-	int size = curr->GetChildrenCount();
-	for (int i = 0; i < size; i++)
-	{
-		DrawDebugNodes(curr->GetChild(i));
-	}
 }
 
 void EditorScene::SetDrawGrid(bool newDrawGrid)
