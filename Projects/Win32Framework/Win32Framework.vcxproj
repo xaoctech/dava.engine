@@ -551,8 +551,6 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
-    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h" />
-    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
