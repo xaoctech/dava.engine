@@ -70,7 +70,8 @@ protected:
     SceneNode * entity;
 
 public:
-	INTROSPECTION_EMPTY(Component);
+	INTROSPECTION(Component, 
+		NULL);
 };
 
     

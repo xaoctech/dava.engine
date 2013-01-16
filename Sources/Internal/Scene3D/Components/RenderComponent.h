@@ -24,7 +24,8 @@ private:
     
 public:
     
-    INTROSPECTION_EXTEND_EMPTY(RenderComponent, Component);
+    INTROSPECTION_EXTEND(RenderComponent, Component, 
+		NULL);
 };
 
 

@@ -379,13 +379,13 @@ protected:
 private:
     Matrix4 defaultLocalTransform;
    	friend class Scene;
-
+    
 public:
-	INTROSPECTION(SceneNode,
+	INTROSPECTION_EXTEND(SceneNode, BaseObject,
 		MEMBER(name, "Name", 0)
 		MEMBER(worldTransform, "World transform", 0)
 		MEMBER(customProperties, "Custom properties", 0)
-		);
+    );
 };
 	
 inline bool SceneNode::GetVisible(void)
