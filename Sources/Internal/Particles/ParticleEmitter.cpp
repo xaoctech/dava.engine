@@ -34,6 +34,7 @@
 #include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
+#include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 
 namespace DAVA 
@@ -108,7 +109,51 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 		layers.push_back(layer);
 		layer->Retain();
 		layer->SetEmitter(this);
-	}	
+		UpdateLayerNameIfEmpty(layer, layers.size() - 1);
+	}
+}
+
+void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	AddLayer(layer);
+	if (layerToMoveAbove)
+	{
+		MoveLayer(layer, layerToMoveAbove);
+	}
+}
+
+void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+	
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	if (layerIter != this->layers.end())
+	{
+		layers.erase(layerIter);
+		layer->SetEmitter(NULL);
+		SafeRelease(layer);
+	}
+}
+
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+
+	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
+		layerIter == layerToMoveAboveIter)
+	{
+		return;
+	}
+
+	layers.erase(layerIter);
+
+	// Look for the position again - an iterator might be changed.
+	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	layers.insert(layerToMoveAboveIter, layer);
 }
 
 /* float32 ParticleEmitter::GetCurrentNumberScale()
@@ -525,6 +570,10 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		}
 	}
 	
+	// Yuri Coder, 2013/01/15. The "name" node for Layer was just added and may not exist for
+	// old yaml files. Generate the default name for nodes with empty names.
+	UpdateEmptyLayerNames();
+	
 	SafeRelease(parser);
 }
 
@@ -687,4 +736,21 @@ String ParticleEmitter::GetEmitterTypeName()
     }
 }
 
+void ParticleEmitter::UpdateEmptyLayerNames()
+{
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		UpdateLayerNameIfEmpty(this->layers[i], i);
+	}
 }
+
+void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
+{
+	if (layer && layer->layerName.empty())
+	{
+		layer->layerName = Format("Layer %i", index);
+	}
+}
+	
+};

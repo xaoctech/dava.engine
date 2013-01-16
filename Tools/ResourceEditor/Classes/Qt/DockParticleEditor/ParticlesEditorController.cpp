@@ -257,8 +257,6 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
     LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(emitterNode, layer);
     emitterNode->AddChildNode(layerNode);
 
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
     SafeRelease(layer);
 
     return layerNode;
@@ -288,10 +286,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
     
     LayerParticleEditorNode* clonedEditorNode = new LayerParticleEditorNode(emitterNode, clonedLayer);
     emitterNode->AddChildNode(clonedEditorNode);
-    
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
-    
+
     return clonedEditorNode;
 }
 
@@ -325,9 +320,6 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
     Vector<ParticleLayer*>& layers = emitter->GetLayers();
     layers.erase(layers.begin() + layerIndex);
     emitterNode->RemoveChildNode(layerToRemove);
-
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
 }
 
 ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(LayerParticleEditorNode* layerNode)
@@ -411,4 +403,153 @@ void ParticlesEditorController::FindEmitterEditorNode(ParticleEmitterNode* emitt
             break;
         }
     }
+}
+
+bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode)
+{
+	if (!movedItemEmitterNode || !newEffectParentNode)
+	{
+		return false;
+	}
+	
+	if (movedItemEmitterNode->GetParentNode() == newEffectParentNode)
+	{
+		// No sence in moving Emitter to the same parent it currently belongs.
+		return false;
+	}
+
+	// Move the Emitter to the new Effect inside the Particles Editor hierarchy...
+	BaseParticleEditorNode* oldEffectParentNode = movedItemEmitterNode->GetParentNode();
+	oldEffectParentNode->RemoveChildNode(movedItemEmitterNode, false);
+	newEffectParentNode->AddChildNode(movedItemEmitterNode);
+
+	// and inside the SceneGraph.
+	SceneNode* movedNode = movedItemEmitterNode->GetEmitterNode();
+	SceneNode* newParentNode = newEffectParentNode->GetRootNode();
+	SceneNode* oldParentNode = oldEffectParentNode->GetRootNode();
+
+    SafeRetain(movedNode);
+    oldParentNode->RemoveNode(movedNode);
+    newParentNode->AddNode(movedNode);
+    SafeRelease(movedNode);
+
+	return true;
+}
+
+bool ParticlesEditorController::MoveLayer(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode)
+{
+	if (!moveItemNode || !moveAboveNode)
+	{
+		return false;
+	}
+	
+	if (moveAboveNode->GetParentNode() == moveItemNode->GetParentNode())
+	{
+		// We are just changing the layer's order inside the same node.
+		return ChangeLayersOrderInSameEmitter(moveItemNode, moveAboveNode);
+	}
+	else
+	{
+		// We are also changing the "parent" emitters.
+		return ChangeLayersOrderInDifferentEmitters(moveItemNode, moveAboveNode);
+	}
+}
+
+bool ParticlesEditorController::MoveLayer(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode)
+{
+	if (!moveItemNode || !newEmitterNode)
+	{
+		return false;
+	}
+	
+	if (moveItemNode->GetParentNode() == newEmitterNode)
+	{
+		// No need to move the layer inside the same emitter.
+		return false;
+	}
+	
+	return MoveLayerToEmitter(moveItemNode, newEmitterNode);
+}
+
+bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEditorNode* movedItemNode, LayerParticleEditorNode* moveAboveNode)
+{
+	// Change both the order of the representation tree nodes and the layers themselves.
+	BaseParticleEditorNode* parentNode = movedItemNode->GetParentNode();
+	if (!parentNode)
+	{
+		return false;
+	}
+
+	parentNode->MoveChildNode(movedItemNode, moveAboveNode);
+	
+	ParticleLayer* layerToMove = movedItemNode->GetLayer();
+	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
+
+	ParticleEmitter* parentEmitter = movedItemNode->GetEmitterNode()->GetEmitter();
+	parentEmitter->MoveLayer(layerToMove, layerToMoveAbove);
+	
+	return true;
+}
+
+bool ParticlesEditorController::ChangeLayersOrderInDifferentEmitters(LayerParticleEditorNode* moveItemNode, LayerParticleEditorNode* moveAboveNode)
+{
+	// Sanity check.
+	EmitterParticleEditorNode* oldParentNode = dynamic_cast<EmitterParticleEditorNode*>(moveItemNode->GetParentNode());
+	EmitterParticleEditorNode* newParentNode = dynamic_cast<EmitterParticleEditorNode*>(moveAboveNode->GetParentNode());
+	if (!oldParentNode || !newParentNode)
+	{
+		return false;
+	}
+
+	return PerformMoveBetweenEmitters(oldParentNode, newParentNode, moveItemNode, moveAboveNode);
+}
+
+bool ParticlesEditorController::MoveLayerToEmitter(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode)
+{
+	// Sanity check.
+	// Sanity check.
+	EmitterParticleEditorNode* oldParentNode = dynamic_cast<EmitterParticleEditorNode*>(moveItemNode->GetParentNode());
+	if (!oldParentNode)
+	{
+		return false;
+	}
+
+	return PerformMoveBetweenEmitters(oldParentNode, newEmitterNode, moveItemNode, NULL);
+}
+
+bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode,
+														   EmitterParticleEditorNode* newEmitterNode,
+														   LayerParticleEditorNode* layerNodeToMove,
+														   LayerParticleEditorNode* layerNodeToInsertAbove)
+{
+	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetEmitterNode()->GetEmitter();
+	ParticleEmitter* newParentEmitter = newEmitterNode->GetEmitterNode()->GetEmitter();
+	if (!oldParentEmitter || !newParentEmitter)
+	{
+		return false;
+	}
+
+	// Move the Editor node. layerNodeToInsertAbove is allowed to be NULL.
+	newEmitterNode->AddChildNodeAbove(layerNodeToMove, layerNodeToInsertAbove);
+	oldEmitterNode->RemoveChildNode(layerNodeToMove, false);
+	
+	// Move the Particle Layers themselves.
+	ParticleLayer* layerToMove = layerNodeToMove->GetLayer();
+	ParticleLayer* layerToInsertAbove = NULL;
+	if (layerNodeToInsertAbove)
+	{
+		layerToInsertAbove = layerNodeToInsertAbove->GetLayer();
+	}
+
+	SafeRetain(layerToMove);
+	oldParentEmitter->RemoveLayer(layerToMove);
+	
+	newParentEmitter->AddLayer(layerToMove, layerToInsertAbove);
+	SafeRelease(layerToMove);
+	
+	// Update the emitter.
+	layerNodeToMove->UpdateEmitter(newEmitterNode->GetEmitterNode());
+	layerNodeToMove->UpdateEmitterEditorNode(newEmitterNode);
+
+	return true;
 }

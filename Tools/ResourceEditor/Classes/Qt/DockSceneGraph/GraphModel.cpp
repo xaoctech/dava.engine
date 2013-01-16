@@ -256,7 +256,7 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     
 	if (movePerformed)
 	{
-		reset();
+		Rebuild();
 	}
 
     return movePerformed;

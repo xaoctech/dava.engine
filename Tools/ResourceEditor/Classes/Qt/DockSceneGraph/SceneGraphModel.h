@@ -24,6 +24,9 @@ public:
 	void RebuildNode(DAVA::SceneNode* rootNode);
     virtual void Rebuild();
 
+	// Refresh the Particle Editor Layer.
+	void RefreshParticlesLayer(DAVA::ParticleLayer* layer);
+
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 

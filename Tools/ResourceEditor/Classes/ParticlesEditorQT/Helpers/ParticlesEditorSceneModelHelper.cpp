@@ -273,8 +273,6 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
             LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(node, emitter->GetLayers()[i]);
             node->AddChildNode(layerNode);
         }
-
-        node->UpdateLayerNames();
      }
 }
 
@@ -424,6 +422,32 @@ void ParticlesEditorSceneModelHelper::AddActionToMenu(QMenu *menu, const QString
 
 bool ParticlesEditorSceneModelHelper::NeedMoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem)
 {
+	ExtraUserData* movedItemUserData = (static_cast<SceneGraphItem*>(movedItem))->GetExtraUserData();
+	ExtraUserData* newParentItemUserData = (static_cast<SceneGraphItem*>(newParentItem))->GetExtraUserData();
+	
+	if (!movedItemUserData || !newParentItemUserData)
+	{
+		return false;
+	}
+	
+	// Yuri Coder, 2013/14/01. The first case - if we are moving Layers.
+	if (dynamic_cast<LayerParticleEditorNode*>(movedItemUserData) && dynamic_cast<LayerParticleEditorNode*>(newParentItemUserData))
+	{
+		return true;
+	}
+
+	// The second case - if we are moving Layer to particular Emitter.
+	if (dynamic_cast<LayerParticleEditorNode*>(movedItemUserData) && dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData))
+	{
+		return true;
+	}
+
+	// Moving Emitters between different Effect Nodes should also be handled separately.
+	if (dynamic_cast<EmitterParticleEditorNode*>(movedItemUserData) && dynamic_cast<EffectParticleEditorNode*>(newParentItemUserData))
+	{
+		return true;
+	}
+
 	// The move should be separately handled in the following cases:
 	// The Moved Item is Layer or Force.
 	// The New Parent Item is Layer or Force.
@@ -443,6 +467,40 @@ bool ParticlesEditorSceneModelHelper::NeedMoveItemToParent(GraphItem* movedItem,
 
 bool ParticlesEditorSceneModelHelper::MoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem)
 {
+	ExtraUserData* movedItemUserData = (static_cast<SceneGraphItem*>(movedItem))->GetExtraUserData();
+	ExtraUserData* newParentItemUserData = (static_cast<SceneGraphItem*>(newParentItem))->GetExtraUserData();
+	
+	if (!movedItemUserData || !newParentItemUserData)
+	{
+		return false;
+	}
+	
+	// Yuri Coder, 2013/14/01. The first case - if we are moving Layers.
+	LayerParticleEditorNode* movedItemNode = dynamic_cast<LayerParticleEditorNode*>(movedItemUserData);
+	LayerParticleEditorNode* newLayerParentNode = dynamic_cast<LayerParticleEditorNode*>(newParentItemUserData);
+	
+	if (movedItemNode && newLayerParentNode)
+	{
+		// We are moving Layers from one emitter to another one (or changing its order
+		// on the same emitter's level).
+		return ParticlesEditorController::Instance()->MoveLayer(movedItemNode, newLayerParentNode);
+	}
+
+	EmitterParticleEditorNode* newEmitterParentNode = dynamic_cast<EmitterParticleEditorNode*>(newParentItemUserData);
+	if (movedItemNode && newEmitterParentNode)
+	{
+		// We are moving Layers between emitters.
+		return ParticlesEditorController::Instance()->MoveLayer(movedItemNode, newEmitterParentNode);
+	}
+
+	EmitterParticleEditorNode* movedItemEmitterNode = dynamic_cast<EmitterParticleEditorNode*>(movedItemUserData);
+	EffectParticleEditorNode* newEffectParentNode = dynamic_cast<EffectParticleEditorNode*>(newParentItemUserData);
+	if (movedItemEmitterNode && newEffectParentNode)
+	{
+		// We are moving Emitter from one effect to another one.
+		return ParticlesEditorController::Instance()->MoveEmitter(movedItemEmitterNode, newEffectParentNode);
+	}
+
 	if (IsMoveItemToParentForbidden(movedItem, newParentItem))
 	{
 		// The move is forbidden, no update required.
@@ -510,4 +568,34 @@ bool ParticlesEditorSceneModelHelper::IsMoveItemToParentForbidden(GraphItem* mov
 
 
 	return false;
+}
+
+SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemForParticlesLayer(GraphItem* rootItem,
+																			   DAVA::ParticleLayer* layer)
+{
+	// Check fot the current root
+	SceneGraphItem* curItem = dynamic_cast<SceneGraphItem*>(rootItem);
+	if (curItem && curItem->GetExtraUserData())
+	{
+		LayerParticleEditorNode* editorNode = dynamic_cast<LayerParticleEditorNode*>(curItem->GetExtraUserData());
+		if (editorNode && editorNode->GetLayer() == layer)
+		{
+			return curItem;
+		}
+	}
+	
+	// Verify for all children.
+	int32 childrenCount = rootItem->ChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SceneGraphItem* curItem = dynamic_cast<SceneGraphItem*>(rootItem->Child(i));
+		SceneGraphItem* resultItem = GetGraphItemForParticlesLayer(curItem, layer);
+		if (resultItem)
+		{
+			return resultItem;
+		}
+	}
+	
+	// Nothing is found...
+	return NULL;
 }

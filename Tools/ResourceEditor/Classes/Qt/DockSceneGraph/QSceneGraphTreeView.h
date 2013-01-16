@@ -38,6 +38,8 @@ protected slots:
 	void OnSceneGraphNeedRebuildNode(DAVA::SceneNode* node);
 	void OnSceneGraphNeedRebuild();
 
+	void OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer);
+	
 	// Called by us when the Context Menu is requested.
 	void OnSceneGraphContextMenuRequested(const QPoint &point);
 
