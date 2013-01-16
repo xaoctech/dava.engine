@@ -20,10 +20,11 @@ namespace DAVA
 		static MetaInfo *Instance()
 		{
 #ifdef META_USE_TYPEID
-			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT), GetIntrospection<MetaT>());
+			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT));
 #else
-			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT), GetIntrospection<MetaT>());
+			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT));
 #endif
+            metaInfo.OneTimeIntrospectionSafeSet<MetaT>();
 			return &metaInfo;
 		}
 
@@ -47,17 +48,31 @@ namespace DAVA
 		{
 			return introspection;
 		}
+        
+    protected:
+        template<typename T>
+        void OneTimeIntrospectionSafeSet()
+        {
+            if(!introspectionOneTimeSet)
+            {
+                introspectionOneTimeSet = true;
+                introspection = GetIntrospection<T>();
+            }
+        }
 
 	private:
-		MetaInfo(const char *_type_name, int _type_size, const IntrospectionInfo *_introspection)
+		MetaInfo(const char *_type_name, int _type_size)
 			: type_name(_type_name)
 			, type_size(_type_size)
-            , introspection(_introspection)
+            , introspection(NULL)
+            , introspectionOneTimeSet(false)
 		{ }
 
 		const int type_size;
 		const char *type_name;
         const IntrospectionInfo *introspection;
+        
+        bool introspectionOneTimeSet;
 	};
 };
 
