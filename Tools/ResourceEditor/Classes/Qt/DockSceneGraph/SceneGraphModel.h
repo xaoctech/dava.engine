@@ -54,15 +54,12 @@ protected:
     
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-    void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node);
+    void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate = false);
     
     bool LandscapeEditorModeEnabled() const;
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
-
-	// Add the Graph Items in a recursive way.
-	void AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode);
 
 protected:
 

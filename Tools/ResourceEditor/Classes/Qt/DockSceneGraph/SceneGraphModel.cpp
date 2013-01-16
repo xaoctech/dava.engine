@@ -38,16 +38,25 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     Rebuild();
 }
 
-void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
+void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
 {
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
     node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
+
+	if (partialUpdate)
+	{
+		QModelIndex parentIndex = createIndex(parent->Row(), 0, parent);
+		int32 rowToAdd = parent->Row();
+		
+		beginInsertRows(parentIndex, rowToAdd, rowToAdd);
+	}
 
     SceneGraphItem *graphItem = new SceneGraphItem();
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
     // Particles Editor nodes are processed separately.
+	bool nodeAddedByParticleEditor = false;
     if (particlesEditorSceneModelHelper.AddNodeToSceneGraph(graphItem, node))
     {
         // Also try to determine selected item from Particle Editor.
@@ -57,8 +66,18 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
             this->selectedGraphItemForParticleEditor = selectedItem;
         }
 
-        return;
+        nodeAddedByParticleEditor = true;
     }
+
+	if (partialUpdate)
+	{
+		endInsertRows();
+	}
+	
+	if (nodeAddedByParticleEditor)
+	{
+		return;
+	}
 
     if(!node->GetSolid())
     {
@@ -74,7 +93,7 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 		// Now look through the nodes remembered..
         for(int32 i = 0; i < count; ++i)
         {
-            AddNodeToTree(graphItem, originalNodes[i]);
+            AddNodeToTree(graphItem, originalNodes[i], partialUpdate);
 			// Note - after this call originalNodes[i] may become invalid!
         }
     }
@@ -121,37 +140,11 @@ void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
 		int32 childrenToAddCount = rootNode->GetChildrenCount();
 		for (int32 i = 0; i < childrenToAddCount; i ++)
 		{
-			AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
+			AddNodeToTree(graphItem, rootNode->GetChild(i), true);
 		}
 	}
 }
 
-void SceneGraphModel::AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* rootNode)
-{
-	if (!rootItem || !rootNode)
-	{
-		return;
-	}
-
-	QModelIndex parentIndex = createIndex(rootItem->Row(), 0, rootItem);
-	int32 rowToAdd = rootItem->Row();
-
-	beginInsertRows(parentIndex, rowToAdd, rowToAdd);
-
-	// Add the child nodes on this level.
-	SceneGraphItem *graphItem = new SceneGraphItem();
-	graphItem->SetUserData(rootNode);
-	rootItem->AppendChild(graphItem);
-
-	endInsertRows();
-	
-	// Repeat for the children.
-	int32 childrenCount = rootNode->GetChildrenCount();
-	for (uint i = 0; i < childrenCount; i ++)
-	{
-		AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
-	}
-}
 
 void SceneGraphModel::Rebuild()
 {
