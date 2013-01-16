@@ -32,6 +32,7 @@
 		508E59BC1684A1A400D2ECA8 /* SceneSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59B91684A1A400D2ECA8 /* SceneSystem.cpp */; };
 		50957613168DD33D0023E6D5 /* LodComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957611168DD33D0023E6D5 /* LodComponent.cpp */; };
 		50957618169617AC0023E6D5 /* LodSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50957616169617AC0023E6D5 /* LodSystem.cpp */; };
+		50A18E2816A6B37D00DC6281 /* CameraComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */; };
 		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
 		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
 		50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */; };
@@ -354,6 +355,8 @@
 		50957614168E14B40023E6D5 /* RenderDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderDataSource.h; sourceTree = "<group>"; };
 		50957616169617AC0023E6D5 /* LodSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LodSystem.cpp; path = Systems/LodSystem.cpp; sourceTree = "<group>"; };
 		50957617169617AC0023E6D5 /* LodSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LodSystem.h; path = Systems/LodSystem.h; sourceTree = "<group>"; };
+		50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CameraComponent.cpp; sourceTree = "<group>"; };
+		50A18E2716A6B37B00DC6281 /* CameraComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraComponent.h; sourceTree = "<group>"; };
 		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; };
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
@@ -950,6 +953,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */,
+				50A18E2716A6B37B00DC6281 /* CameraComponent.h */,
 				4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */,
 				4F1AE76116A56A27009AF0C2 /* ParticleEffectComponent.h */,
 				5045D663169F2E7A00742C05 /* ParticleEmitterComponent.cpp */,
@@ -2098,6 +2103,7 @@
 				E8705EA616A5433100027020 /* ParticleLayerBatch.cpp in Build Sources */,
 				E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */,
 				4F1AE76216A56A27009AF0C2 /* ParticleEffectComponent.cpp in Build Sources */,
+				50A18E2816A6B37D00DC6281 /* CameraComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
