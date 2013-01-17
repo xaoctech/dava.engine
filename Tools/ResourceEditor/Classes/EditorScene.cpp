@@ -340,8 +340,10 @@ HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject *
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
 	SceneNode * node = curr;
-	if (node == 0)
-		node = dynamic_cast<LightNode *> (curr);
+// LIGHT
+//	if (node == 0)
+//		node = dynamic_cast<LightNode *> (curr);
+    
 	if (node == 0)
 		node = dynamic_cast<UserNode *> (curr);
 	

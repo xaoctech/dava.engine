@@ -48,7 +48,7 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
