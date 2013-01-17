@@ -489,6 +489,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
@@ -527,6 +528,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
@@ -814,6 +816,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
@@ -851,6 +854,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />

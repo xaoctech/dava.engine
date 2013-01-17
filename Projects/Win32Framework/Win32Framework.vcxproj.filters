@@ -1242,6 +1242,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2134,6 +2140,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
