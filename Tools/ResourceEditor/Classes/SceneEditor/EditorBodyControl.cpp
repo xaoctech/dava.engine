@@ -1131,13 +1131,13 @@ void EditorBodyControl::ProcessIsSolidChanging()
     if(selectedNode)
     {
         KeyedArchive *customProperties = selectedNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists(String("editor.isSolid")))
+        if(customProperties && customProperties->IsKeyExists(String(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
             
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-            activeScene->RebuildSceneGraph();
+            activeScene->RebuildSceneGraphNode(selectedNode);
             
 			/* #### dock -->
             KeyedArchive *properties = selectedNode->GetCustomProperties();

@@ -51,7 +51,10 @@ namespace DAVA
     
     
 REGISTER_CLASS(SceneNode);
-	
+
+// Property Names.
+const char* SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
+
 SceneNode::SceneNode()
 	: scene(0)
 	, parent(0)

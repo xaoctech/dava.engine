@@ -475,7 +475,7 @@ void MaterialEditor::OnSetupColor(BaseObject * object, void * userData, void * c
 	}
 }
 
-void MaterialEditor::NodesPropertyChanged()
+void MaterialEditor::NodesPropertyChanged(const String &)
 {
     RefreshList();
 }

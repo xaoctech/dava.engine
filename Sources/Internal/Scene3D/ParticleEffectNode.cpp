@@ -82,10 +82,10 @@ void ParticleEffectNode::UpdateDurationForChildNodes(float32 newEmitterLifeTime)
     int32 childrenCount = GetChildrenCount();
     for (int32 i = 0; i < childrenCount; i ++)
     {
-        ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(GetChild(i));
-        if (particleEmitterNode)
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+        if (emitterComponent)
         {
-            particleEmitterNode->GetEmitter()->SetLifeTime(newEmitterLifeTime);
+            emitterComponent->GetParticleEmitter()->SetLifeTime(newEmitterLifeTime);
         }
     }
 }
@@ -147,7 +147,12 @@ void ParticleEffectNode::Update(float32 timeElapsed)
     int32 childrenCount = GetChildrenCount();
     for (int32 i = 0; i < childrenCount; i ++)
     {
-        ParticleEmitter* emitter = static_cast<ParticleEmitterNode*>(GetChild(i))->GetEmitter();
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if(!emitterComponent)
+		{
+			continue;
+		}
+        ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
         if (IsStopEmitter(emitter))
         {
             emitter->Stop();

@@ -12,6 +12,8 @@
 #include "ParticleEffectPropertyControl.h"
 #include "MeshInstancePropertyControl.h"
 
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+
 PropertyControlCreator::PropertyControlCreator()
 {
     for(int32 iControl = 0; iControl < EPCID_COUNT; ++iControl)
@@ -61,8 +63,8 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
         return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
     }
 
-	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode *>(sceneNode);
-	if(particleEmitterNode)
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(sceneNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (emitterComponent)
 	{
 		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
 	}
