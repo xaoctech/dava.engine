@@ -31,13 +31,15 @@
 #ifndef __DAVAENGINE_LIGHT_NODE_H__
 #define __DAVAENGINE_LIGHT_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Base/BaseObject.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
 
 //default direction (with identity matrix) is -y
 namespace DAVA 
 {
 class SceneFileV2;
-class LightNode : public SceneNode
+class LightNode : public BaseObject
 {
 public:
     enum eType
@@ -53,7 +55,7 @@ public:
     LightNode();
     virtual ~LightNode();
     
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    virtual BaseObject * Clone(BaseObject * dstNode = NULL);
 
     void SetType(eType _type);
     void SetAmbientColor(const Color & _color);
@@ -70,8 +72,8 @@ public:
     const Vector3 & GetPosition() const;
     const Vector3 & GetDirection() const;
     
-    virtual void Update(float32 timeElapsed);
-    virtual void Draw();
+    //virtual void Update(float32 timeElapsed);
+    //virtual void Draw();
     
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);

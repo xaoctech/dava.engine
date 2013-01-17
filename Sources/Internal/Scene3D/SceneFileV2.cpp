@@ -37,6 +37,8 @@
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Mesh.h"
+
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/LodNode.h"
@@ -50,6 +52,7 @@
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -532,6 +535,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->AddComponent(new RenderComponent(landscapeRenderObject));
 
         parent->AddNode(node);
+        
+        SafeRelease(landscapeRenderObject);
         // Elegant fix became part of architecture....
         skipNode = true;
     }else if (name == "Camera")
@@ -547,6 +552,24 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         node->AddComponent(new CameraComponent(cameraObject));
         parent->AddNode(node);
+        
+        SafeRelease(cameraObject);
+        skipNode = true;
+    }else if (name == "LightNode")
+    {
+        node = new SceneNode();
+        baseObject = node;
+        
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        LightNode * light = new LightNode();
+        light->Load(archive, this);
+        
+        node->AddComponent(new LightComponent(light));
+        parent->AddNode(node);
+        
+        SafeRelease(light);
         skipNode = true;
     }else
     {
@@ -677,22 +700,16 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
         
         Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
-        RenderObject * renderObject = new RenderObject;
+        Mesh * mesh = new Mesh();
         
         for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
-            RenderBatch * batch = new RenderBatch;
-            batch->SetPolygonGroup(group->GetPolygonGroup());
-            batch->SetMaterial(group->GetMaterial());
-            batch->SetRenderDataObject(group->GetPolygonGroup()->renderDataObject);
-            batch->SetStartIndex(0);
-            batch->SetIndexCount(group->GetPolygonGroup()->GetIndexCount());
-            renderObject->AddRenderBatch(batch);
+            mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
         }
         
         RenderComponent * renderComponent = new RenderComponent;
-        renderComponent->SetRenderObject(renderObject);
+        renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
         
         SceneNode * parent = oldMeshInstanceNode->GetParent();

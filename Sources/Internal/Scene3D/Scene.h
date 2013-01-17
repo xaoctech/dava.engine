@@ -35,7 +35,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Render/Highlevel/Camera.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 
 namespace DAVA
 {

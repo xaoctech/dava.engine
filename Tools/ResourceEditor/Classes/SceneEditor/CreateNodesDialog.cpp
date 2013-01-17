@@ -15,6 +15,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -119,7 +120,9 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(L"createnode.light"));
             
-            sceneNode = EditorLightNode::CreateSceneAndEditorLight();
+            //sceneNode = //EditorLightNode::CreateSceneAndEditorLight();
+            sceneNode = new SceneNode();
+            sceneNode->AddComponent(new LightComponent(ScopedPtr<LightNode>(new LightNode)));
             sceneNode->SetName("Light");
             break;
         }
