@@ -37,6 +37,8 @@
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Mesh.h"
+
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/LodNode.h"
@@ -698,22 +700,16 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
         
         Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
-        RenderObject * renderObject = new RenderObject;
+        Mesh * mesh = new Mesh();
         
         for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
-            RenderBatch * batch = new RenderBatch;
-            batch->SetPolygonGroup(group->GetPolygonGroup());
-            batch->SetMaterial(group->GetMaterial());
-            batch->SetRenderDataObject(group->GetPolygonGroup()->renderDataObject);
-            batch->SetStartIndex(0);
-            batch->SetIndexCount(group->GetPolygonGroup()->GetIndexCount());
-            renderObject->AddRenderBatch(batch);
+            mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
         }
         
         RenderComponent * renderComponent = new RenderComponent;
-        renderComponent->SetRenderObject(renderObject);
+        renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
         
         SceneNode * parent = oldMeshInstanceNode->GetParent();

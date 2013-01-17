@@ -36,6 +36,8 @@
 		50A18E4316A70B3600DC6281 /* Camera.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4116A70B3600DC6281 /* Camera.cpp */; };
 		50A18E4616A825CA00DC6281 /* Light.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4416A825CA00DC6281 /* Light.cpp */; };
 		50A18E4916A846E200DC6281 /* LightComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4716A846E100DC6281 /* LightComponent.cpp */; };
+		50A18E4C16A84BC900DC6281 /* Mesh.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4A16A84BC800DC6281 /* Mesh.cpp */; };
+		50A18E4F16A84E6C00DC6281 /* BulletComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */; };
 		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
 		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
 		50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */; };
@@ -364,6 +366,10 @@
 		50A18E4516A825CA00DC6281 /* Light.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Light.h; sourceTree = "<group>"; };
 		50A18E4716A846E100DC6281 /* LightComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightComponent.cpp; sourceTree = "<group>"; };
 		50A18E4816A846E100DC6281 /* LightComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightComponent.h; sourceTree = "<group>"; };
+		50A18E4A16A84BC800DC6281 /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		50A18E4B16A84BC900DC6281 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
+		50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletComponent.cpp; sourceTree = "<group>"; };
+		50A18E4E16A84E6C00DC6281 /* BulletComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletComponent.h; sourceTree = "<group>"; };
 		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
@@ -955,6 +961,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */,
+				50A18E4E16A84E6C00DC6281 /* BulletComponent.h */,
 				50A18E4716A846E100DC6281 /* LightComponent.cpp */,
 				50A18E4816A846E100DC6281 /* LightComponent.h */,
 				50A18E2616A6B37B00DC6281 /* CameraComponent.cpp */,
@@ -1001,6 +1009,8 @@
 				508E59A41684A07500D2ECA8 /* RenderBatchArray.h */,
 				508E59A71684A07500D2ECA8 /* RenderLayer.cpp */,
 				508E59A81684A07500D2ECA8 /* RenderLayer.h */,
+				50A18E4A16A84BC800DC6281 /* Mesh.cpp */,
+				50A18E4B16A84BC900DC6281 /* Mesh.h */,
 				508E59A91684A07500D2ECA8 /* RenderObject.cpp */,
 				508E59AA1684A07500D2ECA8 /* RenderObject.h */,
 				508E59AB1684A07500D2ECA8 /* RenderPass.cpp */,
@@ -2108,6 +2118,8 @@
 				50A18E4316A70B3600DC6281 /* Camera.cpp in Build Sources */,
 				50A18E4616A825CA00DC6281 /* Light.cpp in Build Sources */,
 				50A18E4916A846E200DC6281 /* LightComponent.cpp in Build Sources */,
+				50A18E4C16A84BC900DC6281 /* Mesh.cpp in Build Sources */,
+				50A18E4F16A84E6C00DC6281 /* BulletComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

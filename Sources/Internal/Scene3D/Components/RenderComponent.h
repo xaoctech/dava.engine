@@ -24,8 +24,9 @@ private:
     
 public:
     
-    INTROSPECTION_EXTEND(RenderComponent, Component, 
-		NULL);
+    INTROSPECTION_EXTEND(RenderComponent, Component,
+        PROPERTY(renderObject, "renderObject", SetRenderObject, GetRenderObject, INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR)
+		);
 };
 
 
