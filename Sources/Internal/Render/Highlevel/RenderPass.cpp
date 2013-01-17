@@ -29,7 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderLayer.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {

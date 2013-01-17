@@ -27,7 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Render/RenderBase.h"
 #include "Core/Core.h"
 #include "Render/RenderManager.h"

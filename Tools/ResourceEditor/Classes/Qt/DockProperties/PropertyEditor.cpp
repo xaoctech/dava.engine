@@ -7,6 +7,8 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
+#include "Scene3D/Components/LodComponent.h"
+
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
 	, curNode(NULL)
@@ -73,17 +75,33 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 
 void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
 {
-    while(NULL != info)
+    const IntrospectionInfo *currentInfo = info;
+    while(NULL != currentInfo)
     {
         //if(info->MembersCount())
         {
-            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(info->Name(), new QtPropertyDataIntrospection(object, info));
+            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo));
             
             prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
             prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+            
+            LodComponent *lod = dynamic_cast<LodComponent *>(static_cast<BaseObject *>(object));
+            if(lod && currentInfo == info)
+            {
+                int32 count = lod->GetLodLayersCount();
+                for(int32 i = 0; i < count; ++i)
+                {
+                    const IntrospectionInfo *layerInfo = GetIntrospection(&lod->lodLayersArray[i]);
+                    
+                    QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(layerInfo->Name(), new QtPropertyDataIntrospection(&lod->lodLayersArray[i], layerInfo));
+                    prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+                    prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+                }
+            }
+
         }
         
-        info = info->BaseInfo();
+        currentInfo = currentInfo->BaseInfo();
     }
 }
 

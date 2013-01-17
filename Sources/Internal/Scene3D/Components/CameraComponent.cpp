@@ -1,5 +1,5 @@
 #include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
