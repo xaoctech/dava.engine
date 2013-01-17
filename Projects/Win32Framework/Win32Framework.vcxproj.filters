@@ -624,9 +624,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -1239,6 +1236,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1593,9 +1596,6 @@
       <Filter>Internal\Scene2D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp">
@@ -2127,6 +2127,12 @@
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
