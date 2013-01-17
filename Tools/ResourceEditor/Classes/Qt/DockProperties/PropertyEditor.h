@@ -15,6 +15,7 @@ public:
 	~PropertyEditor();
 
 	void SetNode(DAVA::SceneNode *node);
+	void Test();
 
 protected:
     
@@ -31,12 +32,40 @@ protected:
 	DAVA::SceneNode *curNode;
 };
 
-/*
-template<typename T, template <typename K, typename V> class >
-class IntrospectionCollection : public DAVA::IntrospectionMember
+
+class IntrospectionCollectionBase
 {
-	std::vector;
+public:
+	virtual DAVA::MetaInfo* CollectionType() = 0;
+	virtual DAVA::MetaInfo* ValueType() = 0;
 };
-*/
+
+template<template <typename, typename> class C, typename T, typename A>
+class IntrospectionCollection : public IntrospectionCollectionBase
+{
+public:
+	IntrospectionCollection(const C<T, A>& _collection)
+		: collection(&_collection)
+	{ }
+
+	DAVA::MetaInfo* CollectionType()
+	{
+		return DAVA::MetaInfo::Instance<C<T, A> >();
+	}
+
+	DAVA::MetaInfo* ValueType()
+	{
+		return DAVA::MetaInfo::Instance<T>();
+	}
+
+protected:
+	const C<T, A> *collection;
+};
+
+template<template <typename, typename> class Container, class T, class A>
+IntrospectionCollectionBase* fnTest(Container<T, A> &t)
+{
+	return new IntrospectionCollection<Container, T, A>(t);
+}
 
 #endif // __QT_PROPERTY_WIDGET_H__

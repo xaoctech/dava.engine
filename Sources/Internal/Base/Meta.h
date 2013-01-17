@@ -44,19 +44,19 @@ namespace DAVA
 			return type_name;
 		}
 
-		inline const IntrospectionInfo* Introspection() const
+		inline const IntrospectionInfo* GetIntrospection() const
 		{
 			return introspection;
 		}
         
     protected:
-        template<typename T>
+        template<typename IntrospectionT>
         void OneTimeIntrospectionSafeSet()
         {
             if(!introspectionOneTimeSet)
             {
                 introspectionOneTimeSet = true;
-                introspection = GetIntrospection<T>();
+                introspection = DAVA::GetIntrospection<IntrospectionT>();
             }
         }
 

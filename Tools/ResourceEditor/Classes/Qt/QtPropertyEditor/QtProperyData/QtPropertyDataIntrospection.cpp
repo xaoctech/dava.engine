@@ -16,9 +16,9 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 				const DAVA::MetaInfo *memberMetaInfo = member->Type();
 
 				// check if member has introspection
-				if(NULL != memberMetaInfo->Introspection())
+				if(NULL != memberMetaInfo->GetIntrospection())
 				{
-					QtPropertyData *childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->Introspection());
+					QtPropertyData *childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
 					ChildAdd(info->Member(i)->Name(), childData);
 					childVariantIndexes.insert(NULL, i);
 				}
