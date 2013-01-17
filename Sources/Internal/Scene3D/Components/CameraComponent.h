@@ -13,7 +13,7 @@ class CameraComponent : public Component
 {
 public:
     CameraComponent(Camera * _camera = 0);
-    ~CameraComponent();
+    virtual ~CameraComponent();
 
     IMPLEMENT_COMPONENT_TYPE(CAMERA_COMPONENT);
 
@@ -23,6 +23,12 @@ public:
     
 private:
     Camera * camera;
+    
+public:
+
+    INTROSPECTION_EXTEND(CameraComponent, Component,
+                         NULL);
+
 };
 
 

@@ -39,8 +39,8 @@ private:
 public:
 
     INTROSPECTION_EXTEND(TransformComponent, Component,
-        MEMBER(localMatrix, "Local Transform", 0)
-        MEMBER(worldMatrix, "World Transform", 0)
+        MEMBER(localMatrix, "Local Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
+        MEMBER(worldMatrix, "World Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
     );
 };
 
