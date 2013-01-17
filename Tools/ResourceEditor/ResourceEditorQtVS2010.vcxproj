@@ -100,7 +100,7 @@
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <CustomBuildStep>
-      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)/make.bat -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>$(SolutionDir)/alwaysrun</Outputs>
@@ -166,7 +166,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)/make.bat -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>QT generate: MOC, UI, QRC</Message>

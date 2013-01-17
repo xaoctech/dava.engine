@@ -7,9 +7,16 @@ using namespace DAVA;
 
 void ParticlesEditorSpritePackerHelper::UpdateParticleSprites()
 {
+    String projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(projectPath.empty())
+    {
+        Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
+        return;
+    }
+    
 	SpritesPacker packer;
-	packer.SetInputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/Gfx/Particles");
-	packer.SetOutputDir(EditorSettings::Instance()->GetProjectPath()+"Data/Gfx/Particles");
+	packer.SetInputDir(projectPath+"DataSource/Gfx/Particles");
+	packer.SetOutputDir(projectPath+"Data/Gfx/Particles");
 	packer.Pack();
 
 	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
