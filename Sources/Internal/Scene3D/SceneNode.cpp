@@ -571,7 +571,6 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
-    dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
 
 	dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
@@ -625,6 +624,19 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
             n->SetDebugFlags(_debugFlags, isRecursive);
         }
     }
+}
+
+uint32 SceneNode::GetDebugFlags() const
+{
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	if(debugComponent)
+	{
+		return debugComponent->GetDebugFlags();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void SceneNode::SetName(const String & _name)
@@ -970,5 +982,7 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 		}
 	}
 }
+
+
 
 };

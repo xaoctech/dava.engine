@@ -34,7 +34,7 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/LightNode.h"
 
 namespace DAVA

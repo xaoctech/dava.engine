@@ -372,7 +372,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-    uint32 debugFlags;
 
 	Matrix4 worldTransform;
     KeyedArchive *customProperties;
@@ -461,11 +460,6 @@ inline void SceneNode::SetDefaultLocalTransform(const Matrix4 & newMatrix)
 inline void SceneNode::SetTag(int32 _tag)
 {
     tag = _tag;
-}
-    
-inline uint32 SceneNode::GetDebugFlags() const
-{
-    return debugFlags;
 }
     
 template<template <typename> class Container, class T>

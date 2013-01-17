@@ -9,19 +9,20 @@
 
 #include "BulletObject.h"
 //#include "bullet/btBulletCollisionCommon.h"
+#include "Scene3D/Components/RenderComponent.h"
 #include "bullet/BulletCollision/CollisionShapes/btShapeHull.h"
 
 
 BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform)
-:collWorld(collisionWorld),
-collisionPartTransform(&((Matrix4&)pWorldTransform)),
-meshNode(_meshNode),
-updateFlag(true),
-shape(NULL),
-collisionObject(0),
-trimesh(0),
-userNode(0)
-
+:	collWorld(collisionWorld),
+	collisionPartTransform(&((Matrix4&)pWorldTransform)),
+	meshNode(_meshNode),
+	updateFlag(true),
+	shape(NULL),
+	collisionObject(0),
+	trimesh(0),
+	userNode(0),
+	entity(0)
 {    
 	CreateCollisionObject();
 }
@@ -34,10 +35,24 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, User
 	shape(NULL),
 	collisionObject(0),
 	trimesh(0),
-	meshNode(0)
-
+	meshNode(0),
+	entity(0)
 {
 	CreateBoxObject();
+}
+
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const Matrix4 &pWorldTransform)
+:	collWorld(collisionWorld),
+	collisionPartTransform(&((Matrix4&)pWorldTransform)),
+	userNode(0),
+	updateFlag(true),
+	shape(NULL),
+	collisionObject(0),
+	trimesh(0),
+	meshNode(0),
+	entity(_entity)
+{
+	CreateFromEntity();
 }
 
 
@@ -57,6 +72,55 @@ void BulletObject::DeleteCollisionObject()
     }
 	SafeDelete(shape);
 	SafeDelete(trimesh);	
+}
+
+void BulletObject::CreateFromEntity()
+{
+	bool wasPolygonGroup = false;
+
+	RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+	uint32 batchesCount = renderObject->GetRenderBatchCount();
+	for(uint32 batchIndex = 0; batchIndex < batchesCount; ++batchIndex)
+	{
+		RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+		PolygonGroup * pg = batch->GetPolygonGroup();
+		if(pg)
+		{
+			if(!wasPolygonGroup)
+			{
+				collisionObject = new btCollisionObject();
+				trimesh = new btTriangleMesh();
+				createdWith = entity->GetWorldTransform();
+				wasPolygonGroup = true;
+			}
+
+			for(int32 i = 0; i < pg->indexCount / 3; i++)
+			{
+				uint16 index0 = pg->indexArray[i*3];
+				uint16 index1 = pg->indexArray[i*3+1];
+				uint16 index2 = pg->indexArray[i*3+2];
+				Vector3 v;
+				pg->GetCoord(index0, v);
+				v = v * createdWith;
+				btVector3 vertex0(v.x, v.y, v.z);
+				pg->GetCoord(index1, v);
+				v = v * createdWith;
+				btVector3 vertex1(v.x, v.y, v.z);
+				pg->GetCoord(index2, v);
+				v = v * createdWith;
+				btVector3 vertex2(v.x, v.y, v.z);
+
+				trimesh->addTriangle(vertex0,vertex1,vertex2, false);
+			}
+		}
+	}
+
+	if(wasPolygonGroup)
+	{
+		shape = new btBvhTriangleMeshShape(trimesh, true, true);    
+		collisionObject->setCollisionShape(shape);
+		collWorld->addCollisionObject(collisionObject);
+	}
 }
 
 void BulletObject::CreateCollisionObject()
@@ -138,9 +202,11 @@ void BulletObject::UpdateCollisionObject()
 	if (!(*collisionPartTransform == createdWith))
 	{
 		DeleteCollisionObject();
-		if (meshNode)
+		if(entity)
+			CreateFromEntity();
+		else if(meshNode)
 			CreateCollisionObject();
-		else if (userNode)
+		else if(userNode)
 			CreateBoxObject();
 	}
 	
@@ -200,5 +266,7 @@ void BulletObject::Draw(const Matrix4 & worldTransform, MeshInstanceNode * node)
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);	
 	
 }
+
+
 
 

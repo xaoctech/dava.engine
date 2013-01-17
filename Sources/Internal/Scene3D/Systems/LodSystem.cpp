@@ -2,7 +2,7 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Components/LodComponent.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
