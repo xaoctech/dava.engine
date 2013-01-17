@@ -12,7 +12,7 @@
 #include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
 
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
 
