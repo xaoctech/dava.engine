@@ -32,6 +32,7 @@
 #include "Render/3D/PolygonGroup.h"
 namespace DAVA
 {
+
 Mesh::Mesh()
 {
     type = TYPE_MESH;
@@ -51,8 +52,20 @@ void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, Material * material)
     batch->SetStartIndex(0);
     batch->SetIndexCount(polygonGroup->GetIndexCount());
     AddRenderBatch(batch);
- 
+    
+    //polygonGroups.push_back(polygonGroup);
 }
+    
+uint32 Mesh::GetPolygonGroupCount()
+{
+    return (uint32)renderBatchArray.size();
+}
+
+PolygonGroup * Mesh::GetPolygonGroup(uint32 index)
+{
+    return renderBatchArray[index]->GetPolygonGroup();
+}
+
 
 
 

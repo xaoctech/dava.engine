@@ -50,8 +50,11 @@ public:
     
     void AddPolygonGroup(PolygonGroup * polygonGroup, Material * material);
 
+    uint32 GetPolygonGroupCount();
+    PolygonGroup * GetPolygonGroup(uint32 index);
+    
 protected:
-    Vector<PolygonGroup*> polygonGroups;
+    //Vector<PolygonGroup*> polygonGroups;
 };
 
 
