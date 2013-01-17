@@ -88,13 +88,13 @@ public:
 
 	int32 flags;
     
-//    LodDistance testDistance;
+    LodDistance testDistance;
     
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
-//                         MEMBER(testDistance, "testDistance", 0)
-                         NULL
+                         MEMBER(testDistance, "testDistance", 0)
+//                         NULL
                          );
 
 };
