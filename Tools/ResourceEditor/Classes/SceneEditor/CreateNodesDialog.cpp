@@ -146,10 +146,12 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
-			ParticleEmitterNode * node = new ParticleEmitterNode();
-			node->LoadFromYaml("");
-
-			sceneNode = node;
+#pragma warning Commented out because of merging with new engine structure, return to this code later.
+			//Particleemitternode cleaning
+			//ParticleEmitterNode * node = new ParticleEmitterNode();
+			//node->LoadFromYaml("");
+			//
+			//sceneNode = node;
 		}
 			break;
 

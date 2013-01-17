@@ -26,7 +26,7 @@
 #include "SceneEditor/ExporterScreen.h"
 
 #include "TextureBrowser/TextureConvertor.h"
-
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 using namespace DAVA;
 
@@ -75,6 +75,7 @@ void GameCore::OnAppStarted()
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     exporterScreen = new ExporterScreen();
+	new ParticlesEditorController();
 
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 

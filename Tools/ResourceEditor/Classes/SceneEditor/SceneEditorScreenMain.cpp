@@ -27,6 +27,8 @@
 #include "../Qt/Main/QtUtils.h"
 #include "FileSystem/FileSystem.h"
 
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 {
@@ -427,15 +429,10 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-
-
-
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
-    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-    levelScene->EditScene(pathToFile);
-    levelScene->SetScenePathname(pathToFile);
+    SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
@@ -457,7 +454,7 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
     }
 }
 
-void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
+void SceneEditorScreenMain::EditParticleEmitter(SceneNode * emitter)
 {
 	//BodyItem *iBody = FindCurrentBody();
 	if (!particlesEditor->GetParent())
@@ -465,8 +462,14 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 		SafeRelease(particlesEditor);
 		particlesEditor = new ParticlesEditorControl();
 
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+		    return;
+		}
+
 		particlesEditor->SetNode(emitter);
-		particlesEditor->SetEmitter(emitter->GetEmitter());
+		particlesEditor->SetEmitter(emitterComponent->GetParticleEmitter());
 		AddControl(particlesEditor);
 	}
 }
@@ -592,7 +595,7 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
         DVASSERT(0);
     }
     
-		// Get project path
+	// Get project path
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     String projectPath = keyedArchieve->GetString(String("ProjectPath"));
     

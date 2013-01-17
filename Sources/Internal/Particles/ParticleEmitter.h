@@ -99,6 +99,12 @@ public:
 	void LoadFromYaml(const String & pathName);
 	
 	/**
+     \brief Function saves emitter to yaml file.
+     \param[in] pathName path to resource you want to load
+	 */
+    void SaveToYaml(const String & pathName);
+    
+	/**
 		\brief Function sets the position of emitter.
 		This function is needed if you want to move emitter. You should understand that this function changes
 		the virtual position of emitter, but not particle positions. So when you change position particle generation
@@ -279,6 +285,7 @@ public:
     
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
+    String GetEmitterTypeName();
 
 	String configPath;
 	

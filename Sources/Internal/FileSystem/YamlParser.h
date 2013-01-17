@@ -101,6 +101,9 @@ public:
     void            Set(const String& name, float32 value);
     void            Set(const String& name, const char8* value);
     void            Set(const String& name, const String& value);
+    void            Set(const String& name, const Vector2& value);
+    void            Set(const String& name, const Vector3& value);
+    void            Set(const String& name, const Vector4& value);
     void            Set(const String& name, VariantType* varType);
 
     // Setters for Map/Array nodes.
@@ -111,6 +114,9 @@ public:
     void            AddValueToArray(int32 value);
     void            AddValueToArray(float32 value);
     void            AddValueToArray(const String& value);
+    void            AddValueToArray(const Vector2& value);
+    void            AddValueToArray(const Vector3& value);
+    void            AddValueToArray(const Vector4& value);
     void            AddValueToArray(VariantType* value);
     
     // Remove node value from map
@@ -184,6 +190,9 @@ private:
                                   YamlNode* currentNode, int16 depth);
     bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth);
     bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite);
+
+    // Recursively get the array node representation string.
+    String GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode, int16 depth, bool writeAsOuterNode = true);
 
     // Return the identation string of the appropriate depth.
     String PrepareIdentedString(int16 depth);
