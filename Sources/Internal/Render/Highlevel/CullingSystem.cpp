@@ -35,7 +35,7 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
@@ -50,7 +50,7 @@ CullingSystem::~CullingSystem()
     
 void CullingSystem::ImmediateUpdate(SceneNode * entity)
 {
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
     
     if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN

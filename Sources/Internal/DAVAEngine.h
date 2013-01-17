@@ -62,6 +62,7 @@
 
 // ptrs
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 
 // threads
 #include "Platform/Thread.h"
