@@ -75,6 +75,7 @@ public:
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
+		bool isDXTSupported;
 	};
     
     struct Stats
@@ -104,7 +105,7 @@ public:
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
 #ifdef __DAVAENGINE_ANDROID__    
 	void InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight);
-#endif //    #ifdef __DAVASOUND_ANDROID__    
+#endif //    #ifdef __DAVAENGINE_ANDROID__    
 #else
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
 	LPDIRECT3D9		  GetD3D();

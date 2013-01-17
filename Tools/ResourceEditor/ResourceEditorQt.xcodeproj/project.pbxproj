@@ -25,6 +25,7 @@
 		4940AF72164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4940AF6F164C16DA003E95A7 /* LandscapeToolsPanelCustomColors.cpp */; };
 		49448B2416806E4400713D35 /* CustomColorsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B2216806E4400713D35 /* CustomColorsView.cpp */; };
 		49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B261680990000713D35 /* VisibilityToolView.cpp */; };
+		4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
 		4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D138167B42BE003E701F /* PropertiesView.cpp */; };
@@ -308,6 +309,8 @@
 		C1E62B981694753900A9B77C /* ParticleTimeLineWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1E62B971694753900A9B77C /* ParticleTimeLineWidget_moc.cpp */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E822BEA416833349009134EF /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E822BEA016833349009134EF /* ImageSplitter.cpp */; };
+		E822BEA516833349009134EF /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E822BEA216833349009134EF /* ImageSplitterScreen.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E89EF546167734FB00477220 /* TextureBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89EF534167734FB00477220 /* TextureBrowser.cpp */; };
@@ -443,6 +446,8 @@
 		49448B2316806E4400713D35 /* CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsView.h; sourceTree = "<group>"; };
 		49448B261680990000713D35 /* VisibilityToolView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolView.cpp; sourceTree = "<group>"; };
 		49448B271680990000713D35 /* VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityToolView.h; sourceTree = "<group>"; };
+		4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
+		4965F6DC1671EA6900113FB8 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityCheckToolCommands.cpp; path = Classes/Commands/VisibilityCheckToolCommands.cpp; sourceTree = "<group>"; };
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
@@ -1076,6 +1081,10 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E822BEA016833349009134EF /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSplitter.cpp; sourceTree = "<group>"; };
+		E822BEA116833349009134EF /* ImageSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSplitter.h; sourceTree = "<group>"; };
+		E822BEA216833349009134EF /* ImageSplitterScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSplitterScreen.cpp; sourceTree = "<group>"; };
+		E822BEA316833349009134EF /* ImageSplitterScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSplitterScreen.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
@@ -1878,6 +1887,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				4965F6DB1671EA6900113FB8 /* DXTConverter.cpp */,
+				4965F6DC1671EA6900113FB8 /* DXTConverter.h */,
 				E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */,
 				E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */,
 				E8C9B3E1166794EB00810605 /* ColorControl.cpp */,
@@ -2165,6 +2176,18 @@
 			);
 			name = DockParticleEditor;
 			path = _GeneratedQt/DockParticleEditor;
+			sourceTree = "<group>";
+		};
+		E822BE9F16833349009134EF /* ImageSplitter */ = {
+			isa = PBXGroup;
+			children = (
+				E822BEA016833349009134EF /* ImageSplitter.cpp */,
+				E822BEA116833349009134EF /* ImageSplitter.h */,
+				E822BEA216833349009134EF /* ImageSplitterScreen.cpp */,
+				E822BEA316833349009134EF /* ImageSplitterScreen.h */,
+			);
+			name = ImageSplitter;
+			path = Classes/ImageSplitter;
 			sourceTree = "<group>";
 		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
@@ -2466,6 +2489,7 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				E822BE9F16833349009134EF /* ImageSplitter */,
 				C18521A216831F84003D4A6F /* ParticlesEditorQT */,
 				E8EE7E56160DBC8800645405 /* RulerTool */,
 				5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */,
@@ -2902,6 +2926,7 @@
 				E8C9B46416679E3100810605 /* SceneData.cpp in Build Sources */,
 				E8C9B46516679E3100810605 /* SceneDataManager.cpp in Build Sources */,
 				E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */,
+				4965F6DD1671EA6900113FB8 /* DXTConverter.cpp in Build Sources */,
 				E89EF546167734FB00477220 /* TextureBrowser.cpp in Build Sources */,
 				E89EF547167734FB00477220 /* TextureCache.cpp in Build Sources */,
 				E89EF548167734FB00477220 /* TextureConvertor.cpp in Build Sources */,
@@ -2950,6 +2975,8 @@
 				49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */,
 				4F82D1511681FC19003E701F /* CustomColorsView_moc.cpp in Build Sources */,
 				4F82D1531681FC27003E701F /* VisibilityToolView_moc.cpp in Build Sources */,
+				E822BEA416833349009134EF /* ImageSplitter.cpp in Build Sources */,
+				E822BEA516833349009134EF /* ImageSplitterScreen.cpp in Build Sources */,
 				C185219B16831F77003D4A6F /* EmitterLayerWidget.cpp in Build Sources */,
 				C185219C16831F77003D4A6F /* GradientPickerWidget.cpp in Build Sources */,
 				C185219D16831F77003D4A6F /* LayerForceWidget.cpp in Build Sources */,
@@ -3097,6 +3124,40 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+				);
 			};
 			name = Release;
 		};
@@ -3107,6 +3168,40 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					Classes,
+					../../Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					Classes/bullet,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+					./../../Tools/ColladaConverter/Collada15/FCollada,
+					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
+					./Classes/Qt,
+					./_GeneratedQt,
+				);
 			};
 			name = Debug;
 		};

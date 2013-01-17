@@ -14,10 +14,6 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR2] = "OGLPVRTC2";
 	pixelFormatToPVRFormat[DAVA::FORMAT_PVR4] = "OGLPVRTC4";
 	pixelFormatToPVRFormat[DAVA::FORMAT_A8] = "OGL8";
-
-	// dxt map
-	// TODO:
-	// ...
 }
 
 PVRConverter::~PVRConverter()
@@ -101,14 +97,3 @@ void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
 	}
 }
 
-void PVRConverter::SetDXTTexTool(const DAVA::String &textToolPathname)
-{
-	dxtTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	dxtTexToolPathname = FileSystem::Instance()->GetCanonicalPath(dxtTexToolPathname);
-
-	if(!FileSystem::Instance()->IsFile(dxtTexToolPathname))
-	{
-		Logger::Error("DXTTexTool doesn't found in %s\n", dxtTexToolPathname.c_str());
-		dxtTexToolPathname = "";
-	}
-}

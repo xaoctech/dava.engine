@@ -39,6 +39,8 @@ namespace DAVA
 {
 	class DynamicMemoryFile : public File 
 	{
+    protected:
+        
 		DynamicMemoryFile();
 		virtual ~DynamicMemoryFile();
 		
@@ -118,7 +120,7 @@ namespace DAVA
 		//! return true if end of file reached and false in another case
 		virtual bool IsEof();
 		
-	private:
+	protected:
 		int32 currentPtr;
 		Vector<uint8> data;
 		uint32 fileAttributes;

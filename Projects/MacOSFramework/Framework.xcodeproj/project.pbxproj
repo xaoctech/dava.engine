@@ -33,6 +33,9 @@
 		47FBFFD713A790C800E5A7F6 /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */; };
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
+		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		49E7A1D216835E3500F63EFE /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */; };
+		49E7A1D316835E3500F63EFE /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E7A1D116835E3500F63EFE /* LibDxtHelper.h */; };
 		5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49015A42D920064E889 /* KeyedArchiver.cpp */; };
 		5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C19F49115A42D920064E889 /* KeyedArchiver.h */; };
 		5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */; };
@@ -639,6 +642,9 @@
 		47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchy.cpp; sourceTree = "<group>"; };
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
+		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
+		49E7A1D116835E3500F63EFE /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		5C19F49015A42D920064E889 /* KeyedArchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiver.cpp; sourceTree = "<group>"; };
 		5C19F49115A42D920064E889 /* KeyedArchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiver.h; sourceTree = "<group>"; };
 		5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedUnarchiver.cpp; sourceTree = "<group>"; };
@@ -1207,6 +1213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
 				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
 				0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */,
 				5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */,
@@ -1239,6 +1246,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				4910CBF5167B73EC00CF948A /* libdxt_macos.a */,
 				E82366CD16148EF9007B40D0 /* libPVRTexLib.a */,
 				0224B6FF15989F7400CDEF9E /* libtheora_macos.a */,
 				5C50EA1915761947005ABED7 /* libmongodb_macos.a */,
@@ -1753,6 +1761,8 @@
 		FECFC15B12E87E3000C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				49E7A1D016835E3500F63EFE /* LibDxtHelper.cpp */,
+				49E7A1D116835E3500F63EFE /* LibDxtHelper.h */,
 				5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */,
 				5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */,
 				5CF6FF291563A8390070C3DB /* ImageConvert.h */,
@@ -2419,6 +2429,7 @@
 				E8D86646167B4BCB0094C124 /* EGLRenderer.h in Headers */,
 				E8FCE78D16805AB000497559 /* APKFile.h in Headers */,
 				E89CD7351681F16D000E7F24 /* ThreadContext.h in Headers */,
+				49E7A1D316835E3500F63EFE /* LibDxtHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2755,6 +2766,7 @@
 				E8D86645167B4BCB0094C124 /* EGLRenderer.cpp in Sources */,
 				E8FCE78C16805AB000497559 /* APKFile.cpp in Sources */,
 				E89CD7341681F16D000E7F24 /* ThreadContext.cpp in Sources */,
+				49E7A1D216835E3500F63EFE /* LibDxtHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

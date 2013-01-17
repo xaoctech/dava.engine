@@ -41,6 +41,7 @@
 #include "SoundTest.h"
 #include "SplitTest.h"
 #include "PVRTest.h"
+#include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
 
@@ -70,6 +71,7 @@ void GameCore::OnAppStarted()
 
     new CloneTest();
     new PVRTest();
+	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();

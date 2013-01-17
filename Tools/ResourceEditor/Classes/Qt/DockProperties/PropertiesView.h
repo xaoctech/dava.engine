@@ -28,6 +28,7 @@ public:
 	int v1;
 	DAVA::Matrix4 m1;
 	int p1;
+	int pp1;
 
 	int getp1()
 	{
@@ -37,6 +38,7 @@ public:
 	void setp1(const int &_p1)
 	{
 		p1 = _p1;
+		pp1 = _p1 / 2;
 	}
 
 	INTROSPECTION(test1,
@@ -44,6 +46,7 @@ public:
 		MEMBER(m1, "matrix4 text")
 		PROPERTY(p1, "prop1", getp1, setp1)
 		);
+
 };
 
 //REGISTER_META_TYPE(Matrix3);
