@@ -13,6 +13,8 @@
 
 #include "../LandscapeEditor/LandscapesController.h"
 
+#include "Scene3D/Components/CameraComponent.h"
+
 #include "Main/QtMainWindowHandler.h"
 
 
@@ -199,28 +201,32 @@ void SceneData::CreateScene(bool createEditorCameras)
     if(createEditorCameras)
     {
         Camera * cam = new Camera();
-        cam->SetName("editor.main-camera");
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
         cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
         
         cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
-        createdScene->AddNode(cam);
+        ScopedPtr<SceneNode> node(new SceneNode());
+        node->SetName("editor.main-camera");
+        node->AddComponent(new CameraComponent(cam));
+        createdScene->AddNode(node);
         createdScene->AddCamera(cam);
         createdScene->SetCurrentCamera(cam);
         
         SafeRelease(cam);
         
         Camera * cam2 = new Camera();
-        cam2->SetName("editor.debug-camera");
         cam2->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
         cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
         
         cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
         
-        createdScene->AddNode(cam2);
+        ScopedPtr<SceneNode> node2(new SceneNode());
+        node2->SetName("editor.debug-camera");
+        node2->AddComponent(new CameraComponent(cam2));
+        createdScene->AddNode(node2);
         createdScene->AddCamera(cam2);
         
         SafeRelease(cam2);

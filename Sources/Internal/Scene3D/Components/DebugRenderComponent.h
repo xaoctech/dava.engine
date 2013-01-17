@@ -26,7 +26,7 @@ public:
 	};
     
     DebugRenderComponent();
-    ~DebugRenderComponent();
+    virtual ~DebugRenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(DEBUG_RENDER_COMPONENT);
     virtual Component * Clone();
@@ -38,7 +38,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-		NULL);
+                         MEMBER(debugFlags, " debugFlags ", 0)
+    );
 };
 
 

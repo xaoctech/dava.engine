@@ -1,6 +1,6 @@
 #include "Render/Highlevel/ParticleLayerBatch.h"
 #include "Render/Highlevel/RenderObject.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Render/Material.h"
 #include "Render/RenderManager.h"
 

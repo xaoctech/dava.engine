@@ -1,6 +1,6 @@
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
