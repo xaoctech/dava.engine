@@ -61,6 +61,8 @@ public:
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
 
+	void GetAllSprites(DAVA::List<DAVA::Sprite*> & sprites);
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
@@ -81,6 +83,8 @@ protected:
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
+
+	void FindAllSpriteRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::Sprite*> & sprites);
 
 protected slots:
     void SceneNodeSelectedInGraph(DAVA::SceneNode *node);

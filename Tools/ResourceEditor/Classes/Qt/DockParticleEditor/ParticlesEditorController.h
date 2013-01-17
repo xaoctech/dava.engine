@@ -76,6 +76,9 @@ public:
 	// Move the Layer to the end of another Emitter.
 	bool MoveLayer(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
 
+	// Sprites packer entry point.
+	void PackSprites();
+
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode);

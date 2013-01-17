@@ -18,6 +18,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/CommandLineTool.h"
+#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
 
 #include <QApplication>
 #include <QPixmap>
@@ -351,6 +352,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
 
 			TextureCheckConvetAndWait();
+			UpdateParticleSprites();
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -408,6 +410,11 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 			convertWaitDialog->show();
 		}
 	}
+}
+
+void QtMainWindow::UpdateParticleSprites()
+{
+	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
 }
 
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
