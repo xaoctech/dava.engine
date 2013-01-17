@@ -113,7 +113,7 @@ void LandscapeDebugNode::Draw()
     
     BindMaterial(0);
 
-#if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
     if (debugFlags & DEBUG_DRAW_GRID)
     {
         debugFlags &= ~DEBUG_DRAW_GRID;
@@ -129,17 +129,16 @@ void LandscapeDebugNode::Draw()
         RenderManager::Instance()->FlushState();
         
     }
-#endif //#if defined(__DAVAENGINE_OPENGL__)
+#endif //#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
 
     DrawLandscape();
     
-#if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
     if (debugFlags & DEBUG_DRAW_ALL)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-
+#endif //#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
     
 	if(cursor)
 	{

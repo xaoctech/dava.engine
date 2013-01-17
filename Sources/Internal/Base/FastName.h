@@ -41,8 +41,6 @@ struct FastNameDB : public StaticSingleton<FastNameDB>
 
 class FastName
 {
-private:
-
 public:
 	FastName();
 	FastName(const char *name);
@@ -58,6 +56,8 @@ public:
 private:
 	int index;
 
+	void AddRef(int i) const;
+	void RemRef(int i) const;
 };
 
 };

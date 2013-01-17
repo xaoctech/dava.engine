@@ -58,24 +58,6 @@ class EGLRenderer;
 class CorePlatformAndroid: public Core
 {
     
-private:
-    AppHandle appHandle;
-    
-    ASensorManager* sensorManager;
-    const ASensor* accelerometerSensor;
-    ASensorEventQueue* sensorEventQueue;
-    
-    AAssetManager * assetManager;
-
-    SavedState savedState;
-
-    bool animating;
-    
-    bool willQuit;
-    bool davaWasInitialized;
-
-    EGLRenderer *renderer;
-    
 public:
 
 	CorePlatformAndroid();
@@ -98,6 +80,12 @@ public:
     void ReleaseThreadContext(ThreadContext *context);
 
     
+    
+    const char8 * GetInternalStoragePathname();
+    const char8 * GetExternalStoragePathname();
+    
+    Core::eDeviceFamily GetDeviceFamily();
+
 private:
     
     static int32 HandleInput(AppHandle handle, AInputEvent* event);
@@ -105,64 +93,23 @@ private:
     
     void DoFrame();
     
-    
-public:
-    
-    
-//old
-    
-    
-//	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate);
-//
-//	virtual void Quit();
-//
-//	void RenderRecreated();
-//	void ResizeView(int32 w, int32 h);
-//	void RepaintView();
-//
-//	// called from Activity and manage a visible lifetime
-//	void StartVisible();
-//	void StopVisible();
-//
-//	void StartForeground();
-//	void StopForeground();
-//
-//	void OnCreateActivity();
-//	void OnDestroyActivity();
-//
-//	void KeyUp(int32 keyCode);
-//	void KeyDown(int32 keyCode);
-//
-//	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
-//
-//	bool DownloadHttpFile(const String & url, const String & documentsPathname);
-//
-//	void SetAssetManager(AAssetManager * mngr);
-	
 private:
-
-//	void QuitAction();
-//	void ProcessWithoutDrawing();
-//
-//	void UpdateScreenMode();
-
-
-private:
-//	DisplayMode windowedMode;
-//	int32 oldWidth;
-//	int32 oldHeight;
-//
-//	bool wasCreated;
-//	bool renderIsActive;
-//
-//	bool foreground;
-//
-//    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
-//    
-//	Vector<DAVA::UIEvent> totalTouches;
-//	int32 touchPhase;
-//
-//	AndroidSystemDelegate *androidDelegate;
+    AppHandle appHandle;
+    
+    ASensorManager* sensorManager;
+    const ASensor* accelerometerSensor;
+    ASensorEventQueue* sensorEventQueue;
+    
+    AAssetManager * assetManager;
+    
+    SavedState savedState;
+    
+    bool animating;
+    
+    bool willQuit;
+    bool davaWasInitialized;
+    
+    EGLRenderer *renderer;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

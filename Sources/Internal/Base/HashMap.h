@@ -18,12 +18,8 @@ template <typename TKey, typename TValue>
 class HashMap
 {
 private:
-	struct HashMapItemBase
-	{
-	};
-
 	template <typename K, typename V>
-	struct HashMapItem : public HashMapItemBase
+	struct HashMapItem
 	{
 		K key;
 		V value;
@@ -230,6 +226,8 @@ public:
 				item = next;
 			}
 		}
+
+		delete[] oldTable;
 	}
 };
 

@@ -10,6 +10,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
+#include "../LandscapeEditor/EditorLandscapeNode.h"
+
 
 SceneValidator::SceneValidator()
 {
@@ -239,6 +241,13 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
+ 
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    if(editorLandscape)
+    {
+        return;
+    }
+    
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
@@ -537,19 +546,19 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 
 void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 {
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(forPathname);
-    if(!descriptor)
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+    if(! FileSystem::Instance()->IsFile(descriptorPathname))
     {
 		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
-
-		descriptor = new TextureDescriptor();
+        
+		TextureDescriptor *descriptor = new TextureDescriptor();
 		descriptor->textureFileFormat = PNG_FILE;
         
         String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 		descriptor->Save(descriptorPathname);
+
+        SafeRelease(descriptor);
     }
-    
-    SafeRelease(descriptor);
 }
 
 
