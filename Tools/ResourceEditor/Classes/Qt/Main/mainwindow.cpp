@@ -27,6 +27,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
+	, oldDockSceneGraphMinSize(-1, -1)
+	, oldDockSceneGraphMaxSize(-1, -1)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -275,8 +277,13 @@ void QtMainWindow::ChangeParticleDockVisible(bool visible)
 		return;
 
 	// ui magic :)
-	oldDockSceneGraphMinSize = ui->dockSceneGraph->minimumSize();
-	oldDockSceneGraphMaxSize = ui->dockSceneGraph->maximumSize();
+	bool isNeedEmitSignal = false;
+	if (oldDockSceneGraphMaxSize.width() < 0)
+	{
+		oldDockSceneGraphMinSize = ui->dockSceneGraph->minimumSize();
+		oldDockSceneGraphMaxSize = ui->dockSceneGraph->maximumSize();
+		isNeedEmitSignal = true;
+	}
 	
 	int minWidthParticleDock = ui->dockParticleEditor->minimumWidth();
 	int maxWidthParticleDock = ui->dockParticleEditor->maximumWidth();
@@ -292,13 +299,17 @@ void QtMainWindow::ChangeParticleDockVisible(bool visible)
 	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
 	ui->dockParticleEditor->setVisible(visible);
 	
-	QTimer::singleShot(1, this, SLOT(returnToOldMaxMinSizesForDockSceneGraph()));
+	if (isNeedEmitSignal)
+		QTimer::singleShot(1, this, SLOT(returnToOldMaxMinSizesForDockSceneGraph()));
 }
 
 void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
 {
 	ui->dockSceneGraph->setMinimumSize(oldDockSceneGraphMinSize);
 	ui->dockSceneGraph->setMaximumSize(oldDockSceneGraphMaxSize);
+	
+	oldDockSceneGraphMinSize = QSize(-1, -1);
+	oldDockSceneGraphMaxSize = QSize(-1, -1);
 }
 
 void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)

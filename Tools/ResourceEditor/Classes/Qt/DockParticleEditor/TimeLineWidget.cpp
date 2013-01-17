@@ -1188,6 +1188,8 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 	timeSpin->setMaximum(maxTime);
 	timeSpin->setValue(time);
 
+	maxValue = Min(maxValue, 1000000.f);
+
 	if (isInteger)
 	{
 		valueSpinInt->setMinimum((int32)minValue);
