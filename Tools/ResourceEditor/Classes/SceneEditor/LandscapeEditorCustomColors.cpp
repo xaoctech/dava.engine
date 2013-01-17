@@ -553,7 +553,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
 {
 	KeyedArchive* customProps = workingLandscape->GetCustomProperties();
 	customProps->SetString(CUSTOM_COLOR_TEXTURE_PROP,
-						   GetRelativePathToScenePath(fileName));
+						   GetRelativePathToProjectPath(fileName));
 	parent->GetSceneGraph()->UpdatePropertyPanel();
 }
 
@@ -565,7 +565,7 @@ String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 	if(customProps->IsKeyExists(CUSTOM_COLOR_TEXTURE_PROP))
 		currentSaveName = customProps->GetString(CUSTOM_COLOR_TEXTURE_PROP);
 
-	return GetAbsolutePathFromScenePath(currentSaveName);
+	return GetAbsolutePathFromProjectPath(currentSaveName);
 }
 
 String LandscapeEditorCustomColors::GetScenePath()
@@ -587,12 +587,34 @@ String LandscapeEditorCustomColors::GetRelativePathToScenePath(const String &abs
 	return relativePath;
 }
 
+String LandscapeEditorCustomColors::GetRelativePathToProjectPath(const String& absolutePath)
+{
+	if(absolutePath.empty())
+		return "";
+
+	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), absolutePath);
+
+	return relativePath;
+}
+
 String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
 {
 	if(relativePath.empty())
 		return "";
 
 	String absolutePath = GetScenePath() + relativePath;
+	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+
+	return absolutePath;
+}
+
+
+String LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String& relativePath)
+{
+	if(relativePath.empty())
+		return "";
+
+	String absolutePath = EditorSettings::Instance()->GetProjectPath() + relativePath;
 	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
 
 	return absolutePath;
@@ -606,3 +628,6 @@ void LandscapeEditorCustomColors::SaveTexture()
 
 	Close();
 }
+
+
+
