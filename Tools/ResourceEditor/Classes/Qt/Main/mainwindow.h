@@ -39,9 +39,9 @@ public slots:
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 
-	void returnToOldMaxMinSizesForDockSceneGraph();
-
 	void UpdateParticleSprites();
+
+	void returnToOldMaxMinSizesForDockSceneGraph();
 
 private slots:
 	void ProjectOpened(const QString &path);

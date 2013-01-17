@@ -77,8 +77,9 @@ void GameCore::OnAppStarted()
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
     exporterScreen = new ExporterScreen();
-    imageSplitterScreen = new ImageSplitterScreen();
+
 	new ParticlesEditorController();
+    imageSplitterScreen = new ImageSplitterScreen();
 
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 

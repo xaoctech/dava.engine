@@ -66,6 +66,8 @@ public:
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
+	void PackSprites();
+
 	// Move different nodes logic.
 	// Move the emitter from one effect to another one.
 	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode);
