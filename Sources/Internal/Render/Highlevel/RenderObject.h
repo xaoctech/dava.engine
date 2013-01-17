@@ -64,12 +64,13 @@ class RenderBatch;
 class RenderObject : public AnimatedObject
 {
 public:
-    enum
+    enum eType
     {
-        TYPE_MESH = 0,      // Normal mesh
-        TYPE_SKINNED_MESH,  // Animated mesh for skinned animations
-        TYPE_LANDSCAPE,     // Landscape object
-        TYPE_CUSTOM_DRAW,   // Custom drawn object
+        TYPE_RENDEROBJECT = 0,  // Base Render Object
+        TYPE_MESH,              // Normal mesh
+        TYPE_SKINNED_MESH,      // Animated mesh for skinned animations
+        TYPE_LANDSCAPE,         // Landscape object
+        TYPE_CUSTOM_DRAW,       // Custom drawn object
     };
     
 	enum eFlags
@@ -106,8 +107,11 @@ public:
     
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
+    
+    inline eType GetType() { return type; }
 
 protected:
+    eType type;
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
