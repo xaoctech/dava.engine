@@ -224,6 +224,16 @@
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
 
+//Components
+#include "Scene3D/Components/BulletComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+
 // Application core 
 #include "Core/Core.h"
 #include "Core/ApplicationCore.h"

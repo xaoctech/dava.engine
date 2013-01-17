@@ -34,7 +34,7 @@ Component * Component::CreateByType(uint32 componentType)
 	case COLLISION_COMPONENT:
 	case ACTION_COMPONENT:
 	case SCRIPT_COMPONENT:
-	case UPDATE_COMPONENT:
+	case UPDATABLE_COMPONENT:
 	case CAMERA_COMPONENT:
 	case LIGHT_COMPONENT:
 	default:
