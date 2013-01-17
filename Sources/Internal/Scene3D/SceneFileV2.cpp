@@ -694,7 +694,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
     {
         SceneNode * newMeshInstanceNode = new SceneNode();
         oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
-        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetTransformComponent()->Clone());
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone());
         
         Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
@@ -744,7 +744,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		}
 
 		newNode->AddComponent(new LodComponent());
-		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->components[Component::LOD_COMPONENT]);
+		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
 
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
 		{
