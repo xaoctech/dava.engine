@@ -2,6 +2,8 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
+//#include "Base/IntrospectionFlags.h"
+
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info)
 	: object(_object)
 	, info(_info)
@@ -25,6 +27,13 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 				else
 				{
 					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(info->Member(i)->Value(object));
+                    
+                    if(info->Member(i)->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
+                    {
+                        int flags = childData->GetFlags();
+                        childData->SetFlags(flags | FLAG_IS_NOT_EDITABLE);
+                    }
+                    
 					ChildAdd(info->Member(i)->Name(), childData);
 					childVariantIndexes.insert(childData, i);
 				}
