@@ -68,9 +68,9 @@ void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, co
 			if(member)
 			{
 				const DAVA::MetaInfo *memberMetaInfo = member->Type();
-                if(memberMetaInfo && memberMetaInfo->Introspection())
+                if(memberMetaInfo && memberMetaInfo->GetIntrospection())
                 {
-                    SaveIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->Introspection(), member->Pointer(object));
+                    SaveIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->GetIntrospection(), member->Pointer(object));
                 }
                 else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
                 {
@@ -121,9 +121,9 @@ void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, co
 			if(member)
 			{
 				const DAVA::MetaInfo *memberMetaInfo = member->Type();
-                if(memberMetaInfo && memberMetaInfo->Introspection())
+                if(memberMetaInfo && memberMetaInfo->GetIntrospection())
                 {
-                    LoadIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->Introspection(), member->Pointer(object));
+                    LoadIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->GetIntrospection(), member->Pointer(object));
                 }
                 else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
                 {
