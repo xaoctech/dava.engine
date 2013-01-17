@@ -50,6 +50,7 @@
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -532,6 +533,8 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->AddComponent(new RenderComponent(landscapeRenderObject));
 
         parent->AddNode(node);
+        
+        SafeRelease(landscapeRenderObject);
         // Elegant fix became part of architecture....
         skipNode = true;
     }else if (name == "Camera")
@@ -547,6 +550,24 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         node->AddComponent(new CameraComponent(cameraObject));
         parent->AddNode(node);
+        
+        SafeRelease(cameraObject);
+        skipNode = true;
+    }else if (name == "LightNode")
+    {
+        node = new SceneNode();
+        baseObject = node;
+        
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        LightNode * light = new LightNode();
+        light->Load(archive, this);
+        
+        node->AddComponent(new LightComponent(light));
+        parent->AddNode(node);
+        
+        SafeRelease(light);
         skipNode = true;
     }else
     {

@@ -211,7 +211,7 @@
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/Heightmap.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
