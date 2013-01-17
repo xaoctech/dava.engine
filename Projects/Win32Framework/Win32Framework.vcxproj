@@ -416,6 +416,8 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h" />
@@ -430,7 +432,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
@@ -484,6 +485,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h" />
@@ -494,7 +496,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h" />
@@ -748,6 +749,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
@@ -811,6 +814,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp" />
@@ -821,7 +825,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp" />

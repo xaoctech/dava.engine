@@ -519,9 +519,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Light.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -918,9 +915,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -1247,6 +1241,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1874,9 +1877,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
@@ -2146,6 +2146,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
