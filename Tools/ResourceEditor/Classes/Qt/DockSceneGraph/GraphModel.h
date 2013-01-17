@@ -38,7 +38,7 @@ public:
     
     virtual void Rebuild() = 0;
     
-    virtual void MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndext) = 0;
+    virtual bool MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndext) = 0;
     
     
     QItemSelectionModel *GetSelectionModel();

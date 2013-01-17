@@ -5,9 +5,8 @@
 #include <QMimeData>
 #include <QApplication>
 
-#include "QtUtils.h"
-
-#include "PointerHolder.h"
+#include "Main/QtUtils.h"
+#include "Main/PointerHolder.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;
@@ -244,16 +243,22 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     
     QByteArray encodedData = data->data("application/tree.userdata");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+	bool movePerformed = false;
     while (!stream.atEnd())
     {
         QVariant uData;
         stream >> uData;
 
         GraphItem *movedItem = PointerHolder<GraphItem *>::ToPointer(uData);
-        MoveItemToParent(movedItem, parent);
+        movePerformed = MoveItemToParent(movedItem, parent);
     }
     
-    reset();
-    return true;
+	if (movePerformed)
+	{
+		Rebuild();
+	}
+
+    return movePerformed;
 }
 

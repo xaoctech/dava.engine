@@ -101,6 +101,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	{
 		dstLayer = new ParticleLayer();
 	}
+
 	if (life)
 		dstLayer->life.Set(life->Clone());
 	
@@ -193,6 +194,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (frameOverLife)
 		dstLayer->frameOverLife.Set(frameOverLife->Clone());
 	
+	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->additive = additive;
 	dstLayer->startTime = startTime;
@@ -637,6 +639,12 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 			type = TYPE_SINGLE_PARTICLE;
 	}
 
+	YamlNode * nameNode = node->Get("name");
+	if (nameNode)
+	{
+		layerName = nameNode->AsString();
+	}
+	
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
@@ -689,14 +697,26 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		RefPtr< PropertyLine<Vector3> > forceVariation = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("forceVariation%d", k));	
 		RefPtr< PropertyLine<float32> > forceOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, Format("forceOverLife%d", k));
         
+        // Amount of Forces, Forces Variations and Force Overlifes must be identical.
         if(force.Get())
+        {
             forces.push_back(force);
-        if(forceVariation.Get())
+
+            if(forceVariation.Get() == NULL)
+            {
+                forceVariation = force->Clone();
+            }
             forcesVariation.push_back(forceVariation);
-        if(forceOverLife.Get())
+
+            if(forceOverLife.Get() == NULL)
+            {
+                forceOverLife = RefPtr< PropertyLine<float32> >(new PropertyLineValue<float32>(0.0f));
+            }
             forcesOverLife.push_back(forceOverLife);
+		}
 	}
 
+    DVASSERT(forces.size() == forcesOverLife.size());
     DVASSERT(forces.size() == forcesOverLife.size());
 	
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");	
@@ -746,6 +766,96 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		}
 	}
 	
+}
+
+void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
+{
+    YamlNode* layerNode = new YamlNode(YamlNode::TYPE_MAP);
+    String layerNodeName = Format("layer%d", layerIndex);
+    parentNode->AddNodeToMap(layerNodeName, layerNode);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
+                                                                 this->type == TYPE_SINGLE_PARTICLE ? "single" : "particles");
+    if (this->IsLong())
+    {
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", true);
+    }
+    
+    if (this->sprite)
+    {
+        Vector2 pivotPoint(this->pivotPoint.x - (this->sprite->GetWidth() / 2.0f),
+                           this->pivotPoint.y - (this->sprite->GetHeight() / 2.0f));
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", pivotPoint);
+    }
+
+    // Truncate an extension of the sprite file.
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
+        this->relativeSpriteName.substr(0, this->relativeSpriteName.size()-4));
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "numberVariation", this->numberVariation);
+    
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "size", this->size);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeVariation", this->sizeVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeOverLife", this->sizeVariation);
+    
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocity", this->velocity);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityVariation", this->velocityVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityOverLife", this->velocityOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spin", this->spin);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinVariation", this->spinVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinOverLife", this->spinOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandom", this->motionRandom);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandomVariation", this->motionRandomVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandomOverLife", this->motionRandomOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounce", this->bounce);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceVariation", this->bounceVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceOverLife", this->bounceOverLife);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorRandom", this->colorRandom);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "frameOverLife", this->frameOverLife);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
+
+    // Now write the forces.
+    SaveForcesToYamlNode(layerNode);
+}
+
+void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
+{
+    int32 forceCount = this->forces.size();
+    if (forceCount == 0)
+    {
+        // No forces to write.
+        return;
+    }
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "forceCount", forceCount);
+    for (int32 i = 0; i < forceCount; i ++)
+    {
+        String forceDataName = Format("force%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, this->forces[i]);
+
+        forceDataName = Format("forceVariation%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, this->forcesVariation[i]);
+
+        forceDataName = Format("forceOverLife%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, this->forcesOverLife[i]);
+    }
 }
 
 Particle * ParticleLayer::GetHeadParticle()
