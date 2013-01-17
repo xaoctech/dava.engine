@@ -58,6 +58,19 @@ class RenderLayer;
 class RenderDataObject;
 class Camera;
 class RenderObject;
+class RenderBatch;
+
+    
+/*
+    Not finished. We'll return to it when we start batching functionality.
+ */
+class IRenderBatchDataSource
+{
+public:
+    virtual void InitBatch(RenderBatch * renderBatch) = 0;
+    virtual void FillData(RenderBatch * renderBatch) = 0;
+    virtual void ReleaseBatch(RenderBatch * renderBatch) = 0;
+};
 
 class RenderBatch : public BaseObject
 {
