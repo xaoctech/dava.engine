@@ -27,51 +27,36 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SCENE3D_MESH_H__
+#define	__DAVAENGINE_SCENE3D_MESH_H__
+
+#include "Base/BaseTypes.h"
+#include "Animation/AnimatedObject.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Material.h"
 
 namespace DAVA
 {
-RenderObject::RenderObject()
-    :   type(TYPE_RENDEROBJECT)
-    ,   flags(VISIBLE)
-    ,   removeIndex(-1)
-    ,   debugFlags(0)
-    ,   worldTransform(0)
-{
-    
-}
-    
-RenderObject::~RenderObject()
-{
-    
-}
-  
-void RenderObject::AddRenderBatch(RenderBatch * batch)
-{
-	batch->SetRenderObject(this);
-    renderBatchArray.push_back(batch);
-    if (removeIndex != -1)
-    {
-        
-    }
-    
-    bbox.AddAABBox(batch->GetBoundingBox());
-}
 
-void RenderObject::RemoveRenderBatch(RenderBatch * batch)
+class PolygonGroup;
+class RenderBatch;
+class Mesh : public RenderObject
 {
-    batch->SetRenderObject(0);
-}
+public:
+    Mesh();
+    virtual ~Mesh();
     
-uint32 RenderObject::GetRenderBatchCount()
-{
-    return (uint32)renderBatchArray.size();
-}
-RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
-{
-    return renderBatchArray[batchIndex];
-}
+    void AddPolygonGroup(PolygonGroup * polygonGroup, Material * material);
 
-
+protected:
+    Vector<PolygonGroup*> polygonGroups;
 };
+
+
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
+

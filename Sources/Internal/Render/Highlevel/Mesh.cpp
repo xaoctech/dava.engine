@@ -27,51 +27,33 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/RenderBatch.h"
-
+#include "Render/3D/PolygonGroup.h"
 namespace DAVA
 {
-RenderObject::RenderObject()
-    :   type(TYPE_RENDEROBJECT)
-    ,   flags(VISIBLE)
-    ,   removeIndex(-1)
-    ,   debugFlags(0)
-    ,   worldTransform(0)
+Mesh::Mesh()
 {
-    
+    type = TYPE_MESH;
 }
     
-RenderObject::~RenderObject()
+Mesh::~Mesh()
 {
     
-}
-  
-void RenderObject::AddRenderBatch(RenderBatch * batch)
-{
-	batch->SetRenderObject(this);
-    renderBatchArray.push_back(batch);
-    if (removeIndex != -1)
-    {
-        
-    }
-    
-    bbox.AddAABBox(batch->GetBoundingBox());
 }
 
-void RenderObject::RemoveRenderBatch(RenderBatch * batch)
+void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, Material * material)
 {
-    batch->SetRenderObject(0);
+    RenderBatch * batch = new RenderBatch();
+    batch->SetPolygonGroup(polygonGroup);
+    batch->SetMaterial(material);
+    batch->SetRenderDataObject(polygonGroup->renderDataObject);
+    batch->SetStartIndex(0);
+    batch->SetIndexCount(polygonGroup->GetIndexCount());
+    AddRenderBatch(batch);
+ 
 }
-    
-uint32 RenderObject::GetRenderBatchCount()
-{
-    return (uint32)renderBatchArray.size();
-}
-RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
-{
-    return renderBatchArray[batchIndex];
-}
+
 
 
 };
