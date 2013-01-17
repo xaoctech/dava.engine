@@ -1,6 +1,6 @@
 #include "GraphItem.h"
 
-#include "PointerHolder.h"
+#include "Main/PointerHolder.h"
 
 GraphItem::GraphItem(GraphItem *parent)
     :   userData(NULL)

@@ -3,6 +3,7 @@
 
 #include "Command.h"
 #include "../Constants.h"
+#include "EditorScene.h"
 
 /*
 class CommandOpenProject: public Command
@@ -49,6 +50,8 @@ public:
 protected:	
     
     virtual void Execute();
+	void SaveParticleEmitterNodes(EditorScene* scene);
+	void SaveParticleEmitterNodeRecursive(SceneNode* parentNode);
 };
 
 class CommandExport: public Command
