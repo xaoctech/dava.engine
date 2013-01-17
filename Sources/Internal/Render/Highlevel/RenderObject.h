@@ -66,10 +66,10 @@ class RenderObject : public AnimatedObject
 public:
     enum
     {
-        TYPE_STATIC_MESH = 0,
-        TYPE_SKINNED_MESH,
-        TYPE_LANDSCAPE,
-        TYPE_CUSTOM_DRAW,
+        TYPE_MESH = 0,      // Normal mesh
+        TYPE_SKINNED_MESH,  // Animated mesh for skinned animations
+        TYPE_LANDSCAPE,     // Landscape object
+        TYPE_CUSTOM_DRAW,   // Custom drawn object
     };
     
 	enum eFlags
@@ -107,8 +107,6 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
 
-    virtual void Update(float32 timeElapsed);
-    
 protected:
     uint32 flags;
     uint32 debugFlags;
