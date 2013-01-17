@@ -408,6 +408,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
@@ -480,7 +481,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h" />
@@ -737,6 +738,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
@@ -803,7 +805,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp" />
