@@ -20,13 +20,21 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 				// check if member has introspection
 				if(NULL != memberMetaInfo->GetIntrospection())
 				{
-					QtPropertyData *childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
-					ChildAdd(info->Member(i)->Name(), childData);
+					QtPropertyData *childData;
+					if(!memberMetaInfo->IsPointer())
+					{
+						childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
+					}
+					else
+					{
+						childData = new QtPropertyDataIntrospection(*((void **)member->Pointer(object)), memberMetaInfo->GetIntrospection());
+					}
+					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(NULL, i);
 				}
 				else
 				{
-					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(info->Member(i)->Value(object));
+					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
                     
                     if(info->Member(i)->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
                     {
@@ -50,7 +58,7 @@ QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 QVariant QtPropertyDataIntrospection::GetValueInternal()
 {
 	ChildNeedUpdate();
-	return QVariant();
+	return QVariant(info->Name());
 }
 
 void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyData *data)

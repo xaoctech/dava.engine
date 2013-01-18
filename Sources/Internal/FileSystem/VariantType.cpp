@@ -54,13 +54,14 @@ const String VariantType::TYPENAME_FLOAT   = "float";
 const String VariantType::TYPENAME_STRING  = "string";
 const String VariantType::TYPENAME_WIDESTRING = "wideString";
 const String VariantType::TYPENAME_BYTE_ARRAY = "byteArray";
-const String VariantType::TYPENAME_KEYED_ARCHIVE = "keyedArchive";
+const String VariantType::TYPENAME_KEYED_ARCHIVE = "KeyedArchive";
 const String VariantType::TYPENAME_VECTOR2 = "Vector2";
 const String VariantType::TYPENAME_VECTOR3 = "Vector3";
 const String VariantType::TYPENAME_VECTOR4 = "Vector4";
 const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
 const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
 const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
+const String VariantType::TYPENAME_POINTER = "void *";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
@@ -80,7 +81,8 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_VECTOR4,       TYPENAME_VECTOR4,		MetaInfo::Instance<Vector4>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
-    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>())
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
+	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>())
 };
 
 VariantType::VariantType()
@@ -210,6 +212,13 @@ void VariantType::SetMatrix4(const Matrix4 & value)
     matrix4Value = new Matrix4(value);
 }
 
+void VariantType::SetPointer(const void* const &value)
+{
+	ReleasePointer();
+	type = TYPE_POINTER;
+	pointerValue = value;
+}
+
 void VariantType::SetVariant(const VariantType& var)
 {
 	switch(var.type)
@@ -293,6 +302,11 @@ void VariantType::SetVariant(const VariantType& var)
 	case TYPE_MATRIX4:
 		{
 			SetMatrix4(var.AsMatrix4());
+		}
+		break;
+	case  TYPE_POINTER:
+		{
+			SetPointer(var.AsPointer());
 		}
 		break;
 	default:
@@ -402,6 +416,12 @@ const Matrix4 & VariantType::AsMatrix4() const
 {
     DVASSERT(type == TYPE_MATRIX4);
     return *matrix4Value;
+}
+
+const void* const & VariantType::AsPointer() const
+{
+	DVASSERT(type == TYPE_POINTER);
+	return pointerValue;
 }
     
 bool VariantType::Write(File * fp) const
@@ -527,6 +547,11 @@ bool VariantType::Write(File * fp) const
             if (written != sizeof(Matrix4))return false;
 		}
             break;
+	case TYPE_POINTER:
+		{
+			DVASSERT(0 && "Can't write pointer");
+		}
+		break;
             
 	}
 	return true;
@@ -681,6 +706,11 @@ bool VariantType::Read(File * fp)
             if (read != sizeof(Matrix4))return false;
 		}
             break;
+		case TYPE_POINTER:
+			{
+				DVASSERT(0 && "Can't read pointer");
+			}
+			break;
 
 		default:
 		{
@@ -885,6 +915,11 @@ bool VariantType::operator==(const VariantType& other) const
                 isEqual = ( AsMatrix4() == other.AsMatrix4());
             }
                 break;
+			case  TYPE_POINTER:
+				{
+					isEqual = (AsPointer() == other.AsPointer());
+				}
+				break;
                 
         }
     }
@@ -968,6 +1003,9 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 		break;
 	case TYPE_MATRIX4:
 		v.SetMatrix4(*((DAVA::Matrix4 *) src));
+		break;
+	case TYPE_POINTER:
+		v.SetPointer(*((const void **) src));
 		break;
 	default:
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
@@ -1055,6 +1093,9 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 		break;
 	case TYPE_MATRIX4:
 		*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
+		break;
+	case TYPE_POINTER:
+		*((const void **) dst) = val.AsPointer();
 		break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
