@@ -274,7 +274,7 @@ void MeshInstanceNode::Draw()
 {
     //Stats::Instance()->BeginTimeMeasure("Scene.Draw.MeshInstanceNode.Draw", this);
 
-#if 1
+#if 0
     if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
 //    if (GetFullName() == String("MaxScene->node-Cylinder01->VisualSceneNode14->instance_0"))
