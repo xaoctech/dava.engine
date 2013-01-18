@@ -28,7 +28,11 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	selectedPoint(-1, -1),
 	emitterNode(NULL),
 	effectNode(NULL),
+#ifdef Q_WS_WIN
+	nameFont("Courier", 8, QFont::Normal)
+#else
 	nameFont("Courier", 11, QFont::Normal)
+#endif
 {
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
@@ -314,15 +318,14 @@ bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& end
 
 QRect ParticleTimeLineWidget::GetGraphRect() const
 {
-	QPainter painter((QWidget *)this);
-	painter.setFont(nameFont);
-	
+	QFontMetrics metrics(nameFont);
+
 	int legendWidth = 0;
 	for (LINE_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
 	{
-		int width = painter.fontMetrics().width(iter->second.legend);
+		int width = metrics.width(iter->second.legend);
 		width += LEFT_INDENT;
-		width += painter.fontMetrics().width(" ");
+		width += metrics.width(" ");
 		legendWidth = Max(legendWidth, width);
 	}
 	legendWidth = Min(legendWidth, (width() - LEFT_INDENT * 2) / 6);
