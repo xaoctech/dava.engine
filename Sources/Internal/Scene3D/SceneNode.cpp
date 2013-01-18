@@ -691,7 +691,7 @@ AABBox3 SceneNode::GetWTMaximumBoundingBoxSlow()
     if (renderComponent && transformComponent)
     {
         AABBox3 wtBox;
-        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(*transformComponent->GetWorldTransform(), wtBox);
+        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldTransform(), wtBox);
         retBBox.AddAABBox(wtBox);
     }
     
@@ -897,10 +897,7 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
 
 inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    //scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateEvent(this, Component::TRANSFORM_COMPONENT, EventSystem::LOCAL_TRANSFORM_CHANGED);
-    return GetLocalTransform();
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->ModifyLocalTransform();
 }
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
@@ -910,12 +907,12 @@ void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 
 const Matrix4 & SceneNode::GetLocalTransform()
 {
-	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform());
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform();
 }
 
 const Matrix4 & SceneNode::GetWorldTransform()
 {
-	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform());
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }
 
 int32 SceneNode::Release()
