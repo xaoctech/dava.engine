@@ -7,11 +7,15 @@
 //
 
 #include "BaseParticleEditorNode.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 using namespace DAVA;
 
-BaseParticleEditorNode::BaseParticleEditorNode(ParticleEffectNode* rootNode) :
+BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
     ExtraUserData()
 {
+	Component *effectComponent = rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
+	DVASSERT(effectComponent);
+
     this->isMarkedForSelection = false;
     this->rootNode = rootNode;
 }
@@ -46,4 +50,11 @@ void BaseParticleEditorNode::RemoveChildNode(BaseParticleEditorNode* childNode)
 {
     this->childNodes.remove(childNode);
     SAFE_DELETE(childNode);
+}
+
+ParticleEffectComponent* BaseParticleEditorNode::GetParticleEffectComponent() const
+{
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+	return effectComponent;
 }

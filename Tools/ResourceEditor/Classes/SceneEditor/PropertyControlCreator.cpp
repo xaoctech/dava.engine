@@ -75,8 +75,8 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
 	}
 
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode*>(sceneNode);
-	if(particleEffect)
+	Component *effectComponent = sceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
+	if(effectComponent)
 	{
 		return CreateControlForNode(EPCID_PARTICLE_EFFECT, rect, createNodeProperties);
 	}

@@ -14,11 +14,12 @@
 
 namespace DAVA {
 
+class ParticleEffectComponent;
 // Base Particle Editor node - common for all inner nodes.
 class BaseParticleEditorNode : public ExtraUserData
 {
 public:
-    BaseParticleEditorNode(ParticleEffectNode* root);
+    BaseParticleEditorNode(SceneNode* root);
     virtual ~BaseParticleEditorNode();
     
     // Add/remove child node.
@@ -26,9 +27,11 @@ public:
     void RemoveChildNode(BaseParticleEditorNode* childNode);
 
     // Access to the root node.
-    ParticleEffectNode* GetRootNode() const {return rootNode;};
+    SceneNode* GetRootNode() const {return rootNode;};
 
-    // Node name.
+	ParticleEffectComponent* GetParticleEffectComponent() const;
+    
+	// Node name.
     void SetNodeName(const QString& nodeName) {this->nodeName = nodeName;};
     virtual QString GetName() const {return this->nodeName;};
 
@@ -45,7 +48,7 @@ protected:
     void Cleanup();
 
     // Root effect node.
-    ParticleEffectNode* rootNode;
+    SceneNode* rootNode;
 
     // Current node name.
     QString nodeName;

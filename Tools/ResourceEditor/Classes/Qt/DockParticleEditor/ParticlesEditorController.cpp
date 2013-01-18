@@ -8,6 +8,7 @@
 
 #include "ParticlesEditorController.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
 
@@ -24,7 +25,7 @@ ParticlesEditorController::~ParticlesEditorController()
     Cleanup();
 }
 
-EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(ParticleEffectNode* effectNode, bool autoStart)
+EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(SceneNode* effectNode, bool autoStart)
 {
     if (!effectNode)
     {
@@ -32,17 +33,21 @@ EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(
         return NULL;
     }
 
+
+
     EffectParticleEditorNode* rootNode = new EffectParticleEditorNode(effectNode);
     this->particleEffectNodes[effectNode] = rootNode;
     if (autoStart)
     {
-        effectNode->Start();
+    	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(effectNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+		DVASSERT(effectComponent);
+        effectComponent->Start();
     }
 
     return rootNode;
 }
 
-void ParticlesEditorController::UnregiserParticleEffectNode(ParticleEffectNode* effectNode)
+void ParticlesEditorController::UnregiserParticleEffectNode(SceneNode* effectNode)
 {
     if (!effectNode)
     {
@@ -102,7 +107,7 @@ bool ParticlesEditorController::ShouldDisplayPropertiesInSceneEditor(SceneGraphI
     return false;
 }
 
-EffectParticleEditorNode* ParticlesEditorController::GetRootForParticleEffectNode(ParticleEffectNode* effectNode)
+EffectParticleEditorNode* ParticlesEditorController::GetRootForParticleEffectNode(SceneNode* effectNode)
 {
     PARTICLESEFFECTITER iter = this->particleEffectNodes.find(effectNode);
     if (iter == this->particleEffectNodes.end())
@@ -181,7 +186,7 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
 void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitterSceneNode)
 {
     // We are adding new Emitter to the Particle Effect node just selected.
-    ParticleEffectNode* effectNode = NULL;
+    SceneNode* effectNode = NULL;
     BaseParticleEditorNode* selectedNode = GetSelectedNode();
     if (selectedNode)
     {
@@ -236,7 +241,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
         return NULL;
     }
     
-    ParticleEmitter* emitter = emitterNode->GetParticleComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -283,7 +288,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
         return NULL;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -314,7 +319,7 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
         return;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
     if (!emitter)
     {
         return;
