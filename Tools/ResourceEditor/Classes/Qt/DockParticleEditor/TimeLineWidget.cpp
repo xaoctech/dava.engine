@@ -72,7 +72,11 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 {
 	QPainter painter(this);
 
+#ifdef Q_WS_WIN
+	QFont font("Courier", 8, QFont::Normal);
+#else
 	QFont font("Courier", 11, QFont::Normal);
+#endif
 	painter.setFont(font);
 	
 	painter.fillRect(this->rect(), backgroundBrush);
@@ -158,7 +162,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			
 			lockRect.translate(lockRect.width() + 1, 0);
 			lockRect.setWidth(LOCK_WIDTH);
-			painter.drawText(lockRect, LOCK_TEXT);
+			painter.drawText(lockRect.bottomLeft(), LOCK_TEXT);
 		}
 		
 		//draw grid
