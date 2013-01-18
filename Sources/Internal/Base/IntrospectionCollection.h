@@ -5,11 +5,11 @@
 
 namespace DAVA
 {
-	template<template <typename, typename> class C, typename T, typename A>
+	template<template <typename> class C, typename T>
 	class IntrospectionCollection : public IntrospectionCollectionBase
 	{
 	public:
-		typedef typename C<T, A> CollectionT;
+		typedef typename C<T> CollectionT;
 
 		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
 			: IntrospectionCollectionBase(_name, _desc, _offset, _type, _flags)
@@ -17,7 +17,7 @@ namespace DAVA
 
 		DAVA::MetaInfo* CollectionType() const
 		{
-			return DAVA::MetaInfo::Instance<C<T, A> >();
+			return DAVA::MetaInfo::Instance<typename CollectionT >();
 		}
 
 		DAVA::MetaInfo* ValueType() const
@@ -134,10 +134,10 @@ namespace DAVA
 		};
 	};
 
-	template<template <typename, typename> class Container, class T, class A>
-	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T, A> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
+	template<template <typename> class Container, class T>
+	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
-		return new IntrospectionCollection<Container, T, A>(_name, _desc, _offset, _type, _flags);
+		return new IntrospectionCollection<Container, T>(_name, _desc, _offset, _type, _flags);
 	}
 
 };
