@@ -59,7 +59,7 @@ void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
         // Update new transform pointer, and mark that transform is changed
-        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
+        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
         ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject()->SetWorldTransformPtr(worldTransformPointer);
     }
     
