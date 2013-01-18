@@ -26,7 +26,7 @@ LayerParticleEditorNode::LayerParticleEditorNode(EmitterParticleEditorNode* emit
 
 int32 LayerParticleEditorNode::GetLayerIndex() const
 {
-    ParticleEmitter* emitter = GetParticleComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = GetParticleEmitterComponent()->GetParticleEmitter();
     if (!emitter)
     {
         return -1;

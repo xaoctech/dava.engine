@@ -12,7 +12,7 @@
 
 using namespace DAVA;
 
-EmitterContainerNode::EmitterContainerNode(ParticleEffectNode* rootNode, SceneNode* emitter, const QString& nodeName) :
+EmitterContainerNode::EmitterContainerNode(SceneNode* rootNode, SceneNode* emitter, const QString& nodeName) :
     BaseParticleEditorNode(rootNode)
 {
     this->nodeName = nodeName;
@@ -28,7 +28,7 @@ EmitterContainerNode::~EmitterContainerNode()
     this->emitter = NULL;
 }
 
-ParticleEmitterComponent * EmitterContainerNode::GetParticleComponent() const 
+ParticleEmitterComponent * EmitterContainerNode::GetParticleEmitterComponent() const 
 {
 	return static_cast<ParticleEmitterComponent*>(emitter->components[Component::PARTICLE_EMITTER_COMPONENT]);
 }

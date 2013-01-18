@@ -9,6 +9,7 @@
 #include "ParticlesEditorSceneDataHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
 
@@ -21,27 +22,27 @@ bool ParticlesEditorSceneDataHelper::AddSceneNode(SceneNode* node) const
         return true;
     }
     
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode == NULL)
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effectComponent == NULL)
     {
         // Not relevant.
         return false;
     }
 	
     // Register in Particles Editor.
-    ParticlesEditorController::Instance()->RegisterParticleEffectNode(effectNode);
+    ParticlesEditorController::Instance()->RegisterParticleEffectNode(node);
     return false;
 }
 
 void ParticlesEditorSceneDataHelper::RemoveSceneNode(SceneNode *node) const
 {
     // If the Particle Effect node is removed - unregister it.
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode)
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effectComponent)
     {
-        ParticlesEditorController::Instance()->UnregiserParticleEffectNode(effectNode);
+        ParticlesEditorController::Instance()->UnregiserParticleEffectNode(node);
     }
-    
+
     // If the Particle Emitter node is removed - remove it from the tree.
     ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
     if (emitterComponent)

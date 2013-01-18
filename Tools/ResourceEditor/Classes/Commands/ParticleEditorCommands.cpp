@@ -20,6 +20,8 @@
 #include <QFileDialog>
 #include <QString>
 
+#include "Scene3D/Components/ParticleEffectComponent.h"
+
 using namespace DAVA;
 
 CommandOpenParticleEditorConfig::CommandOpenParticleEditorConfig()
@@ -336,14 +338,14 @@ void CommandStartStopParticleEffect::Execute()
     {
         return;
     }
-    
+    ParticleEffectComponent* effectComponent = effectNode->GetParticleEffectComponent();
     if (this->isStart)
     {
-        effectNode->GetRootNode()->Start();
+        effectComponent->Start();
     }
     else
     {
-        effectNode->GetRootNode()->Stop();
+        effectComponent->Stop();
     }
 }
 
@@ -360,8 +362,10 @@ void CommandRestartParticleEffect::Execute()
     {
         return;
     }
-
-    effectNode->GetRootNode()->Restart();
+    
+	ParticleEffectComponent * effectComponent = effectNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+    effectComponent->Restart();
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
@@ -379,7 +383,9 @@ void CommandAddParticleEmitterLayer::Execute()
         return;
     }
 
-	emitterNode->GetRootNode()->Stop();
+	ParticleEffectComponent * effectComponent = emitterNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+    effectComponent->Stop();
 	
     // Lets select this node when the tree will be rebuilt.
     LayerParticleEditorNode* layerNode = ParticlesEditorController::Instance()->AddParticleLayerToNode(emitterNode);
@@ -388,7 +394,7 @@ void CommandAddParticleEmitterLayer::Execute()
         layerNode->SetMarkedToSelection(true);
     }
 
-	emitterNode->GetRootNode()->Restart();
+	effectComponent->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -412,12 +418,19 @@ void CommandRemoveParticleEmitterLayer::Execute()
     // Mark the "parent" Emitter Node to selection.
     layerNode->GetEmitterEditorNode()->SetMarkedToSelection(true);
 
-	ParticleEffectNode* rootNode = layerNode->GetRootNode();
-	if (rootNode)
-		rootNode->Stop();
+	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
+
+	if (effectComponent)
+	{
+		effectComponent->Stop();
+	}
+
     ParticlesEditorController::Instance()->RemoveParticleLayerNode(layerNode);
-	if (rootNode)
-		rootNode->Restart();
+
+	if (effectComponent)
+	{
+		effectComponent->Restart();
+	}
 	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -463,13 +476,15 @@ void CommandAddParticleEmitterForce::Execute()
         return;
     }
 
-	layerNode->GetRootNode()->Stop();
+	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+	effectComponent->Stop();
     ForceParticleEditorNode* forceNode = ParticlesEditorController::Instance()->AddParticleForceToNode(layerNode);
     if (forceNode)
     {
         forceNode->SetMarkedToSelection(true);
     }
-	layerNode->GetRootNode()->Restart();
+	effectComponent->Restart();
 	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -493,12 +508,19 @@ void CommandRemoveParticleEmitterForce::Execute()
     // Mark the "parent" Layer Node to selection.
     forceNode->GetLayerEditorNode()->SetMarkedToSelection(true);
 
-	ParticleEffectNode* rootNode = forceNode->GetRootNode();
-	if (rootNode)
-		rootNode->Stop();
+	
+	ParticleEffectComponent * effectComponent = forceNode->GetParticleEffectComponent();
+	if (effectComponent)
+	{
+		effectComponent->Stop();
+	}
+
     ParticlesEditorController::Instance()->RemoveParticleForceNode(forceNode);
-	if (rootNode)
-		rootNode->Restart();
+
+	if (effectComponent)
+	{
+		effectComponent->Restart();
+	}
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();

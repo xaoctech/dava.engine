@@ -34,8 +34,8 @@ public:
     virtual ~ParticlesEditorController();
     
     // Register/remove the Patricles Effect node.
-    EffectParticleEditorNode* RegisterParticleEffectNode(ParticleEffectNode* effectNode, bool autoStart = true);
-    void UnregiserParticleEffectNode(ParticleEffectNode* effectNode);
+    EffectParticleEditorNode* RegisterParticleEffectNode(SceneNode* effectNode, bool autoStart = true);
+    void UnregiserParticleEffectNode(SceneNode* effectNode);
 
     // Whether the node belongs to Particle Editor?
     bool IsBelongToParticlesEditor(SceneGraphItem* sceneGraphItem);
@@ -50,7 +50,7 @@ public:
     void CleanupSelectedNode();
 
     // Get the Root node for the Particle Effect registered.
-    EffectParticleEditorNode* GetRootForParticleEffectNode(ParticleEffectNode* effectNode);
+    EffectParticleEditorNode* GetRootForParticleEffectNode(SceneNode* effectNode);
     
     // Add/remove different types of Particles Editor nodes to the scene.
     void AddParticleEmitterNodeToScene(SceneNode* emitterSceneNode);
@@ -67,7 +67,7 @@ public:
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
 signals:
-	void EffectSelected(ParticleEffectNode* effectNode);
+	void EffectSelected(SceneNode* effectNode);
     void EmitterSelected(SceneNode* emitterNode);
     void LayerSelected(SceneNode* emitterNode, ParticleLayer* layer);
     void ForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex);
@@ -85,7 +85,7 @@ protected:
     void Cleanup();
 
     // Particle Effects registered in the system.
-    typedef Map<ParticleEffectNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;
+    typedef Map<SceneNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;
     typedef PARTICLESEFFECTMAP::iterator PARTICLESEFFECTITER;
     
     PARTICLESEFFECTMAP particleEffectNodes;

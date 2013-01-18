@@ -14,6 +14,7 @@
 
 #include "Entity/Component.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
 
@@ -108,14 +109,13 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
 	//ParticleEmitterNode* emitterNode = static_cast<ParticleEmitterNode*>(rawNode);
 	//emitterNode->SetEmitter(emitterComponent->GetParticleEmitter());
     SceneNode* curParentNode = rawNode->GetParent();
-    ParticleEffectNode* effectParentNode = dynamic_cast<ParticleEffectNode*>(curParentNode);
-    
+    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(curParentNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     // If the Emitter Node has parent, but its parent is not ParticleEffectNode, we need to
     // "adopt" this node by creating ParticleEffect node and attaching.
-    if (curParentNode && (effectParentNode == NULL))
+    if (curParentNode && (effectComponent == NULL))
     {
-        ParticleEffectNode* newParentNodeParticleEffect = new ParticleEffectNode();
-        curParentNode->AddNode(newParentNodeParticleEffect);
+		SceneNode* newParentNodeParticleEffect = CreateParticleEffectNode();
+		curParentNode->AddNode(newParentNodeParticleEffect);
 
         // Add the emitter node to the new Effect (this will also remove it from the scene).
         newParentNodeParticleEffect->AddNode(rawNode);
@@ -134,20 +134,30 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     return rawNode;
 }
 
+SceneNode* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
+{
+	SceneNode * newParentNodeParticleEffect = new SceneNode();
+	newParentNodeParticleEffect->SetName("Particle effect");
+	ParticleEffectComponent * newEffectComponent = new ParticleEffectComponent();
+	newParentNodeParticleEffect->AddComponent(newEffectComponent);
+
+	return newParentNodeParticleEffect;
+}
+
 bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node)
 {
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode == NULL)
+    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effectComponent == NULL)
     {
         // Not ours - process as-is.
         return false;
     }
 
-    EffectParticleEditorNode* effectEditorNode = ParticlesEditorController::Instance()->GetRootForParticleEffectNode(effectNode);
+    EffectParticleEditorNode* effectEditorNode = ParticlesEditorController::Instance()->GetRootForParticleEffectNode(node);
     if (!effectEditorNode)
     {
         // Possible while loading projects - register the node in this case.
-        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(effectNode);
+        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node);
     }
     
     if (graphItem->GetExtraUserData() == NULL)
@@ -195,7 +205,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
 	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
     if (effectEditorNode)
     {
-		ParticleEffectNode* effectRootNode = node->GetRootNode();
+		SceneNode* effectRootNode = node->GetRootNode();
         SynchronizeEffectParticleEditorNode(effectEditorNode, effectRootNode);
     }
 
@@ -213,7 +223,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
 }
 
 void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
-																	 ParticleEffectNode* effectRootNode)
+																	 SceneNode* effectRootNode)
 {
     if (!node || !effectRootNode)
     {
@@ -251,7 +261,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         return;
     }
 
-    ParticleEmitterComponent* emitterComponent = node->GetParticleComponent();
+    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
     if (!emitterComponent)
     {
         return;
@@ -287,7 +297,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         return;
     }
     
-    ParticleEmitterComponent* emitterComponent = node->GetParticleComponent();
+    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
     if (!emitterComponent)
     {
         return;

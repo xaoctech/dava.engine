@@ -49,9 +49,9 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			SLOT(OnNodeSelected(SceneNode*)));
 
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(ParticleEffectNode*)),
+			SIGNAL(EffectSelected(SceneNode*)),
 			this,
-			SLOT(OnEffectNodeSelected(ParticleEffectNode*)));
+			SLOT(OnEffectNodeSelected(SceneNode*)));
 	
 	Init(0, 0);
 	
@@ -107,7 +107,7 @@ void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
 	}
 }
 
-void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
+void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 {
 	emitterNode = NULL;
 	effectNode = node;

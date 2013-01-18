@@ -32,7 +32,7 @@ signals:
 	
 protected slots:
 	void OnNodeSelected(SceneNode* node);
-	void OnEffectNodeSelected(ParticleEffectNode* node);
+	void OnEffectNodeSelected(SceneNode* node);
 	void OnUpdate();
 	
 protected:
@@ -71,7 +71,7 @@ private:
 	
 	QPoint selectedPoint;
 	SceneNode* emitterNode;
-	ParticleEffectNode* effectNode;
+	SceneNode* effectNode;
 	
 	enum GridStyle
 	{

@@ -19,13 +19,13 @@ class ParticleEmitterComponent;
 class EmitterContainerNode : public BaseParticleEditorNode
 {
 public:
-    EmitterContainerNode(ParticleEffectNode* rootNode, SceneNode* emitter,
+    EmitterContainerNode(SceneNode* rootNode, SceneNode* emitter,
                                   const QString& nodeName);
     virtual ~EmitterContainerNode();
         
     SceneNode* GetEmitterNode() const {return emitter;};
 
-    ParticleEmitterComponent * GetParticleComponent() const; 
+    ParticleEmitterComponent * GetParticleEmitterComponent() const; 
 
 protected:
     SceneNode* emitter;
