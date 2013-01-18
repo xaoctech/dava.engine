@@ -9,7 +9,7 @@ namespace DAVA
 	class IntrospectionCollection : public IntrospectionCollectionBase
 	{
 	public:
-		typedef typename C<T> CollectionT;
+		typedef C<T> CollectionT;
 
 		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
 			: IntrospectionCollectionBase(_name, _desc, _offset, _type, _flags)
@@ -17,7 +17,7 @@ namespace DAVA
 
 		DAVA::MetaInfo* CollectionType() const
 		{
-			return DAVA::MetaInfo::Instance<typename CollectionT >();
+			return DAVA::MetaInfo::Instance<CollectionT >();
 		}
 
 		DAVA::MetaInfo* ValueType() const
@@ -43,10 +43,10 @@ namespace DAVA
 
 			if(NULL != object)
 			{
-				CollectionT *collection = (CollectionT *) object;
+                CollectionT *collection = (CollectionT *) object;
 
-				CollectionT::iterator begin = collection->begin();
-				CollectionT::iterator end = collection->end();
+				typename CollectionT::iterator begin = collection->begin();
+				typename CollectionT::iterator end = collection->end();
 
 				if(begin != end)
 				{
