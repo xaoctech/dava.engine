@@ -14,21 +14,19 @@ public:
 	ParticleEmitterNode();
 	virtual ~ParticleEmitterNode();
 
-	void LoadFromYaml(const String& yamlPath);
-    void SaveToYaml(const String& _yamlPath);
-
-	String GetYamlPath();
-
 	ParticleEmitter * GetEmitter();
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	//virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+protected:
+	void LoadFromYaml(const String& yamlPath);
 
 private:
 	ParticleEmitter * emitter;

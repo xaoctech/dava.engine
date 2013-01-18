@@ -550,7 +550,14 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 
     // In case this emitter already has Editor Nodes - remove them before loading.
     ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
-    //emitterNode->GetEmitterNode()->LoadFromYaml(filePath.toStdString());// ParticleEmitterNode cleaning
+    ParticleEmitterComponent* emitterComponent = emitterNode->GetParticleEmitterComponent();
+
+    if(!emitterComponent || !emitterComponent->GetParticleEmitter())
+    {
+    	return;
+    }
+
+    emitterComponent->LoadFromYaml(filePath.toStdString());
 
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
@@ -570,9 +577,13 @@ void CommandSaveParticleEmitterToYaml::Execute()
         return;
     }
 
-	// ParticleEmitterNode cleaning
-    /*String yamlPath = emitterNode->GetEmitterNode()->GetYamlPath();
+    ParticleEmitterComponent* component = emitterNode->GetParticleEmitterComponent();
+    if (!component || !component->GetParticleEmitter())
+    {
+        return;
+    }
 
+	String yamlPath = component->GetYamlPath();
     if (this->forceAskFilename || yamlPath.empty() )
     {
         QString projectPath = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
@@ -587,7 +598,6 @@ void CommandSaveParticleEmitterToYaml::Execute()
         yamlPath = filePath.toStdString();
     }
 
-    emitterNode->GetEmitterNode()->SaveToYaml(yamlPath);
-	*/
+    component->SaveToYaml(yamlPath);
 }
 

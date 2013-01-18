@@ -168,7 +168,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	RenderManager::Instance()->RestoreRenderTarget();
 	Texture* texture = renderSprite->GetTexture();
 	Image* image = texture->CreateImageFromMemory();
-	//spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::fromDavaImage(image)));
+	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::fromDavaImage(image)));
 	SafeRelease(image);
 	SafeRelease(renderSprite);
 

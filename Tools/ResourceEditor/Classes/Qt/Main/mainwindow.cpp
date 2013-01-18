@@ -138,8 +138,6 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionLandscape,
                                        ui->actionLight,
                                        ui->actionServiceNode,
-                                       ui->actionBox,
-                                       ui->actionSphere,
                                        ui->actionCamera,
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,

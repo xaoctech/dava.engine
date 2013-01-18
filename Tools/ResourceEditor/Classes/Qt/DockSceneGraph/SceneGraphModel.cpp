@@ -135,7 +135,7 @@ void SceneGraphModel::AddGraphItemsRecursive(GraphItem* rootItem, SceneNode* roo
 	
 	// Repeat for the children.
 	int32 childrenCount = rootNode->GetChildrenCount();
-	for (uint i = 0; i < childrenCount; i ++)
+	for (int32 i = 0; i < childrenCount; i ++)
 	{
 		AddGraphItemsRecursive(graphItem, rootNode->GetChild(i));
 	}

@@ -378,26 +378,11 @@
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp" />
-    <ClCompile Include="Classes\Qt\Main\GraphItem.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GraphModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp" />
-    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
-    <ClCompile Include="Classes\Qt\Main\SceneGraphItem.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\SceneGraphModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
@@ -866,26 +851,11 @@
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
-    <ClInclude Include="Classes\Qt\Main\GraphItem.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GraphModel.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\GUIState.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\PointerHolder.h" />
-    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
-    <ClInclude Include="Classes\Qt\Main\SceneGraphItem.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\SceneGraphModel.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />

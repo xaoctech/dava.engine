@@ -17,6 +17,10 @@ public:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
 
+	void LoadFromYaml(const String& yamlPath);
+	void SaveToYaml(const String& _yamlPath);
+	String GetYamlPath();
+
 	virtual Component * Clone();
 
 	void SetParticleEmitter(ParticleEmitter * particleEmitter);

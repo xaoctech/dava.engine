@@ -159,14 +159,21 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
-#pragma warning Commented out because of merging with new engine structure, return to this code later.
-			//Particleemitternode cleaning
-			//ParticleEmitterNode * node = new ParticleEmitterNode();
-			//node->LoadFromYaml("");
-			//
-			//sceneNode = node;
-		}
+			sceneNode = new SceneNode();
+			sceneNode->SetName("Particle Emitter");
+
+			ParticleEmitterComponent* newEmitterComponent = new ParticleEmitterComponent();
+			ParticleEmitter* newEmitter = new ParticleEmitter();
+
+			sceneNode->AddComponent(newEmitterComponent);
+			newEmitterComponent->SetParticleEmitter(newEmitter);
+
+			RenderComponent * renderComponent = new RenderComponent();
+			renderComponent->SetRenderObject(newEmitter);
+			sceneNode->AddComponent(renderComponent);
+
 			break;
+		}
 
 		case ResourceEditor::NODE_USER_NODE:
 			SetHeader(LocalizedString(L"createnode.usernode"));
@@ -186,13 +193,16 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 
 
 		case ResourceEditor::NODE_PARTICLE_EFFECT:
-			{
-				SetHeader(L"Particle Effect");
-				sceneNode = new ParticleEffectNode();
-				sceneNode->SetName("Particle Effect");
-			}
-			break;
+		{
+			SetHeader(L"Particle Effect");
 
+			sceneNode = new SceneNode();
+			ParticleEffectComponent* newEffectComponent = new ParticleEffectComponent();
+			sceneNode->AddComponent(newEffectComponent);
+			sceneNode->SetName("Particle Effect");
+
+			break;
+		}
 
         default:
             break;

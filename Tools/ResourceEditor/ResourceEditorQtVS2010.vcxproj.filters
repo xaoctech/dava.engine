@@ -1023,12 +1023,6 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GraphItem.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GraphModel.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1042,12 +1036,6 @@
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\SceneGraphItem.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\SceneGraphModel.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp">
@@ -1103,9 +1091,6 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp">
       <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp">
-      <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
@@ -2216,12 +2201,6 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GraphItem.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GraphModel.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\GUIState.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2237,12 +2216,6 @@
     <ClInclude Include="Classes\Qt\Main\QtUtils.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\SceneGraphItem.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\SceneGraphModel.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\ScenePreviewDialog.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2254,9 +2227,6 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ColorControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h">
-      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h">
       <Filter>Sources\Qt\DockLibrary</Filter>
