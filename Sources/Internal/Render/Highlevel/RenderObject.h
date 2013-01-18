@@ -31,9 +31,10 @@
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
 #include "Base/BaseMath.h"
+#include "Animation/AnimatedObject.h"
 #include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
@@ -126,7 +127,7 @@ protected:
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
 		MEMBER(flags, "flags", 0)
-		
+		COLLECTION(renderBatchArray, "renderBatchArray", 0)
 		);
 };
 
