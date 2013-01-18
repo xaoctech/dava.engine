@@ -121,7 +121,13 @@ protected:
 
 //    Sphere bsphere;
     
-    Vector<RenderBatch*> renderBatchArray;    
+    Vector<RenderBatch*> renderBatchArray;
+
+public:
+	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
+		MEMBER(flags, "flags", 0)
+		
+		);
 };
 
 inline uint32 RenderObject::GetRemoveIndex()

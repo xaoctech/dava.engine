@@ -23,12 +23,10 @@ private:
     RenderObject * renderObject;
     
 public:
-    
     INTROSPECTION_EXTEND(RenderComponent, Component,
-        //MEMBER(renderObject, "renderObject", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR)
+		MEMBER(renderObject, "renderObject", 0)
         //PROPERTY(renderObject, "renderObject", SetRenderObject, GetRenderObject, INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR)
-        0
-    );
+		);
 };
 
 

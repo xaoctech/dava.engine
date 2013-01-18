@@ -32,21 +32,7 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	printf("SceneNode isIntrospection: %d\n", HasIntrospection<DAVA::SceneNode>::result);
-	printf("SceneNode introspection: = %p\n", GetIntrospection(node));
-	printf("SceneNode introspection(Base): = %p\n", GetIntrospection((DAVA::BaseObject *) node));
-	const DAVA::IntrospectionInfo *info = GetIntrospection(node);
-	while(NULL != info)
-	{
-		printf("%s\n", info->Name());
-		for(int i = 0; i < info->MembersCount(); ++i)
-		{
-			printf("  %s\n", info->Member(i)->Name());
-		}
-		printf("\n");
-
-		info = info->BaseInfo();
-	}
+	Test();
 
 	RemovePropertyAll();
 	if(NULL != curNode)
@@ -127,4 +113,42 @@ void PropertyEditor::sceneReleased(SceneData *sceneData)
 void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
 {
 	SetNode(node);
+}
+
+
+void PropertyEditor::Test()
+{
+	std::vector<int> vec;
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+
+	//IntrospectionCollection<std::vector, int> col(vec);
+	/*
+
+	DAVA::IntrospectionCollectionBase *b = DAVA::CreateIntrospectionCollection(vec);
+	printf("Collection type: %s\n", b->CollectionType()->GetTypeName());
+	printf("Value type: %s\n", b->ValueType()->GetTypeName());
+
+	if(b->Size() > 0)
+	{
+		void *i = b->Begin();
+		while(NULL != i)
+		{
+			b->ValueType();
+			int *p = (int *) b->ItemPointer(i);
+			if(NULL != p)
+			{
+				printf("%d\n", *p);
+			}
+			i = b->Next(i);
+		}
+	}
+	*/
+
+	//aaaGetObjectsToContainer(vec);
+
+
+	//DAVA::MetaInfo* info = DAVA::MetaInfo::Instance< DAVA::Vector<int> >();
+	//printf("%s\n", info->GetTypeName());
 }

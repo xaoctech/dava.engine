@@ -46,6 +46,8 @@ class Vector4;
 struct Matrix2;
 struct Matrix3;
 struct Matrix4;
+
+class KeyedArchive;
     
 /**
  \ingroup filesystem
@@ -74,6 +76,8 @@ public:
     static const String TYPENAME_MATRIX3;   //  "Matrix3"
     static const String TYPENAME_MATRIX4;   // "Matrix4"
 
+	static const String TYPENAME_POINTER;   // "void *"
+
 	VariantType();
     VariantType(const VariantType &var);
 	~VariantType();
@@ -97,6 +101,7 @@ public:
         TYPE_MATRIX2,
         TYPE_MATRIX3,
         TYPE_MATRIX4,
+		TYPE_POINTER,
         
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
@@ -118,7 +123,7 @@ public:
         Matrix2* matrix2Value;
         Matrix3* matrix3Value;
         Matrix4* matrix4Value;
-        void*    pointerValue;
+        const void* pointerValue;
         
         String* stringValue;
         WideString* wideStringValue;
@@ -244,6 +249,8 @@ public:
 	void SetMatrix4(const Matrix4 & value);
 
 	void SetVariant(const VariantType& value);
+
+	void SetPointer(const void* const &value);
     
 	/**
 		\brief Function to return bool value from variable
@@ -345,6 +352,8 @@ public:
 	 \returns value of variable, or generate assert if variable type is different
 	 */
      const Matrix4 &AsMatrix4() const;
+
+	 const void* const & AsPointer() const;
 
 	// File read & write helpers
 	

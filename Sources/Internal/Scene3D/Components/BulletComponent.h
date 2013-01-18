@@ -22,6 +22,11 @@ public:
 
 private:
 	BaseObject * bulletObject;
+    
+public:
+    INTROSPECTION_EXTEND(BulletComponent, Component,
+                         NULL);
+
 };
 
 }

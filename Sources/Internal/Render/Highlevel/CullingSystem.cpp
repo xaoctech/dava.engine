@@ -32,10 +32,10 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
-#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
