@@ -32,17 +32,17 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(NULL, i);
 				}
-				else
+				else if(0 == (member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_HIDDEN))
 				{
 					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
                     
-                    if(info->Member(i)->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
+                    if(member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
                     {
                         int flags = childData->GetFlags();
                         childData->SetFlags(flags | FLAG_IS_NOT_EDITABLE);
                     }
                     
-					ChildAdd(info->Member(i)->Name(), childData);
+					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(childData, i);
 				}
 			}

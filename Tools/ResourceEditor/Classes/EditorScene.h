@@ -85,7 +85,6 @@ protected:
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
-	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
     

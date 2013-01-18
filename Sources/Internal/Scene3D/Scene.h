@@ -35,7 +35,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Render/Highlevel/Camera.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 
 namespace DAVA
 {
@@ -70,6 +70,7 @@ class DebugRenderSystem;
 class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
+class UpdatableSystem;
     
 /**
     \ingroup scene3d
@@ -108,6 +109,7 @@ public:
 	EventSystem * eventSystem;
 	ParticleEmitterSystem * particleEmitterSystem;
 	ParticleEffectSystem * particleEffectSystem;
+	UpdatableSystem * updatableSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

@@ -27,74 +27,39 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/CullingSystem.h"
-#include "Scene3D/SceneNode.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderPass.h"
-#include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/Camera.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Frustum.h"
+#ifndef __DAVAENGINE_SCENE3D_MESH_H__
+#define	__DAVAENGINE_SCENE3D_MESH_H__
+
+#include "Base/BaseTypes.h"
+#include "Animation/AnimatedObject.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Material.h"
 
 namespace DAVA
 {
 
-CullingSystem::CullingSystem()
+class PolygonGroup;
+class RenderBatch;
+class Mesh : public RenderObject
 {
-}
+public:
+    Mesh();
+    virtual ~Mesh();
+    
+    void AddPolygonGroup(PolygonGroup * polygonGroup, Material * material);
 
-CullingSystem::~CullingSystem()
-{
-}
+    uint32 GetPolygonGroupCount();
+    PolygonGroup * GetPolygonGroup(uint32 index);
     
-void CullingSystem::ImmediateUpdate(SceneNode * entity)
-{
-    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
-    if (!renderObject)return;
-    
-    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
-    {
-        Logger::Error("Object in entity was replaced suddenly. ");
-    }
-    
-    // Do we need updates??? 
-}
-    
-void CullingSystem::AddEntity(SceneNode * entity)
-{
-    
-}
-
-void CullingSystem::RemoveEntity(SceneNode * entity)
-{
-    
-}
-    
-void CullingSystem::SetCamera(Camera * _camera)
-{
-    camera = _camera;
-}
-    
-void CullingSystem::Process()
-{
-    int32 objectsCulled = 0;
-    
-    Frustum * frustum = camera->GetFrustum();
-
-    uint32 size = renderObjectArray.size();
-    for (uint32 pos = 0; pos < size; ++pos)
-    {
-        RenderObject * node = renderObjectArray[pos];
-        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        //if (!frustum->IsInside(node->GetWorldTransformedBox()))
-        {
-            //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-            objectsCulled++;
-        }
-    }
-}
-    
-    
+protected:
+    //Vector<PolygonGroup*> polygonGroups;
 };
+
+
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
+

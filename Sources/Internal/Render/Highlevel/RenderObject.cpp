@@ -33,7 +33,8 @@
 namespace DAVA
 {
 RenderObject::RenderObject()
-    :   flags(VISIBLE)
+    :   type(TYPE_RENDEROBJECT)
+    ,   flags(VISIBLE)
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
@@ -45,11 +46,7 @@ RenderObject::~RenderObject()
 {
     
 }
-
-void RenderObject::Update(float32 timeElapsed)
-{
-}
-    
+  
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
 	batch->SetRenderObject(this);

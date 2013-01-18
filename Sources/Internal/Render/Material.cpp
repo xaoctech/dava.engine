@@ -38,7 +38,7 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Render/TextureDescriptor.h"
 
 namespace DAVA 

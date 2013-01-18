@@ -62,6 +62,7 @@
 
 // ptrs
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 
 // threads
 #include "Platform/Thread.h"
@@ -211,7 +212,7 @@
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/Heightmap.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
@@ -222,6 +223,16 @@
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
+
+//Components
+#include "Scene3D/Components/BulletComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 
 // Application core 
 #include "Core/Core.h"

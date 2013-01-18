@@ -45,7 +45,7 @@ void ParticleEffectNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeN
 bool ParticleEffectNode::PrepareNewParticleEmitterNode(SceneNode* node)
 {
     // Only Particle Emitter nodes are allowed.
-    ParticleEmitterComponent * particleEmitterComponent = static_cast<ParticleEmitterComponent*>(node->components[Component::PARTICLE_EMITTER_COMPONENT]);
+    ParticleEmitterComponent * particleEmitterComponent = static_cast<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
     if (!particleEmitterComponent)
     {
         Logger::Warning("ParticleEffectNode::PrepareNewParticleEmitterNode() - attempt to add child node with wrong type!");
@@ -95,7 +95,7 @@ void ParticleEffectNode::Start()
     int32 childrenCount = GetChildrenCount();
     for (int32 i = 0; i < childrenCount; i ++)
     {
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Play();
@@ -110,7 +110,7 @@ void ParticleEffectNode::Stop()
 	int32 childrenCount = GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Stop();
@@ -124,7 +124,7 @@ void ParticleEffectNode::Restart()
 	int32 childrenCount = GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->components[Component::PARTICLE_EMITTER_COMPONENT]);
+		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 		if(component)
 		{
 			component->GetParticleEmitter()->Restart(true);
