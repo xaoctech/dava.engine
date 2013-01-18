@@ -13,13 +13,13 @@ BaseProcessSystem::BaseProcessSystem(uint32 componentId)
 
 void BaseProcessSystem::AddEntity(SceneNode * entity)
 {
-	components.push_back(entity->components[processingComponentId]);
+	components.push_back(entity->GetComponent(processingComponentId));
 }
 
 void BaseProcessSystem::RemoveEntity(SceneNode * entity)
 {
 	uint32 size = components.size();
-	Component * deletingComponent = entity->components[processingComponentId];
+	Component * deletingComponent = entity->GetComponent(processingComponentId);
 	for(uint32 i = 0; i < size; ++i)
 	{
 		if(components[i] == deletingComponent)

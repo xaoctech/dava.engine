@@ -78,7 +78,7 @@ void BulletObject::CreateFromEntity()
 {
 	bool wasPolygonGroup = false;
 
-	RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+	RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
 	uint32 batchesCount = renderObject->GetRenderBatchCount();
 	for(uint32 batchIndex = 0; batchIndex < batchesCount; ++batchIndex)
 	{

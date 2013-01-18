@@ -27,74 +27,46 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/CullingSystem.h"
-#include "Scene3D/SceneNode.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/Camera.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Frustum.h"
-
+#include "Render/3D/PolygonGroup.h"
 namespace DAVA
 {
 
-CullingSystem::CullingSystem()
+Mesh::Mesh()
 {
-}
-
-CullingSystem::~CullingSystem()
-{
+    type = TYPE_MESH;
 }
     
-void CullingSystem::ImmediateUpdate(SceneNode * entity)
-{
-    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
-    if (!renderObject)return;
-    
-    if (renderObject->GetRemoveIndex() == -1) // FAIL, SHOULD NOT HAPPEN
-    {
-        Logger::Error("Object in entity was replaced suddenly. ");
-    }
-    
-    // Do we need updates??? 
-}
-    
-void CullingSystem::AddEntity(SceneNode * entity)
+Mesh::~Mesh()
 {
     
 }
 
-void CullingSystem::RemoveEntity(SceneNode * entity)
+void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, Material * material)
 {
+    RenderBatch * batch = new RenderBatch();
+    batch->SetPolygonGroup(polygonGroup);
+    batch->SetMaterial(material);
+    batch->SetRenderDataObject(polygonGroup->renderDataObject);
+    batch->SetStartIndex(0);
+    batch->SetIndexCount(polygonGroup->GetIndexCount());
+    AddRenderBatch(batch);
     
+    //polygonGroups.push_back(polygonGroup);
 }
     
-void CullingSystem::SetCamera(Camera * _camera)
+uint32 Mesh::GetPolygonGroupCount()
 {
-    camera = _camera;
+    return (uint32)renderBatchArray.size();
 }
-    
-void CullingSystem::Process()
-{
-    int32 objectsCulled = 0;
-    
-    Frustum * frustum = camera->GetFrustum();
 
-    uint32 size = renderObjectArray.size();
-    for (uint32 pos = 0; pos < size; ++pos)
-    {
-        RenderObject * node = renderObjectArray[pos];
-        node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        //if (!frustum->IsInside(node->GetWorldTransformedBox()))
-        {
-            //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-            objectsCulled++;
-        }
-    }
+PolygonGroup * Mesh::GetPolygonGroup(uint32 index)
+{
+    return renderBatchArray[index]->GetPolygonGroup();
 }
-    
-    
+
+
+
+
 };
