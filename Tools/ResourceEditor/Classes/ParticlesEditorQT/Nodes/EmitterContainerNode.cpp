@@ -30,5 +30,5 @@ EmitterContainerNode::~EmitterContainerNode()
 
 ParticleEmitterComponent * EmitterContainerNode::GetParticleEmitterComponent() const 
 {
-	return static_cast<ParticleEmitterComponent*>(emitter->components[Component::PARTICLE_EMITTER_COMPONENT]);
+	return static_cast<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
 }
