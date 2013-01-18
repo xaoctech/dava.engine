@@ -278,6 +278,8 @@
 		E84779BC16690254004CD20A /* FastName.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B216690254004CD20A /* FastName.cpp */; };
 		E84779BD16690254004CD20A /* FixedSizePoolAllocator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B516690254004CD20A /* FixedSizePoolAllocator.cpp */; };
 		E856CF00162420180065E32B /* TextureDescriptor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E856CEFE162420180065E32B /* TextureDescriptor.cpp */; };
+		E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E85D657B16A890BD0071039D /* UpdatableSystem.cpp */; };
+		E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E85D657F16A890EA0071039D /* UpdatableComponent.cpp */; };
 		E8674D031637311700748959 /* ImageLoader.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8674D011637311700748959 /* ImageLoader.cpp */; };
 		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
 		E8705EA316A542FD00027020 /* BaseProcessSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */; };
@@ -871,6 +873,10 @@
 		E84779BB16690254004CD20A /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
 		E856CEFE162420180065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
 		E856CEFF162420180065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
+		E85D657B16A890BD0071039D /* UpdatableSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UpdatableSystem.cpp; path = Systems/UpdatableSystem.cpp; sourceTree = "<group>"; };
+		E85D657C16A890BD0071039D /* UpdatableSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatableSystem.h; path = Systems/UpdatableSystem.h; sourceTree = "<group>"; };
+		E85D657F16A890EA0071039D /* UpdatableComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UpdatableComponent.cpp; sourceTree = "<group>"; };
+		E85D658016A890EA0071039D /* UpdatableComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdatableComponent.h; sourceTree = "<group>"; };
 		E8674D011637311700748959 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
 		E8674D021637311700748959 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
 		E86DF3A1161F10AE00A5400A /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
@@ -961,6 +967,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E85D657F16A890EA0071039D /* UpdatableComponent.cpp */,
+				E85D658016A890EA0071039D /* UpdatableComponent.h */,
 				50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */,
 				50A18E4E16A84E6C00DC6281 /* BulletComponent.h */,
 				50A18E4716A846E100DC6281 /* LightComponent.cpp */,
@@ -1037,6 +1045,8 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E85D657B16A890BD0071039D /* UpdatableSystem.cpp */,
+				E85D657C16A890BD0071039D /* UpdatableSystem.h */,
 				E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */,
 				E8705EA816A5436600027020 /* ParticleEffectSystem.h */,
 				E8705EA116A542FD00027020 /* BaseProcessSystem.cpp */,
@@ -2120,6 +2130,8 @@
 				50A18E4916A846E200DC6281 /* LightComponent.cpp in Build Sources */,
 				50A18E4C16A84BC900DC6281 /* Mesh.cpp in Build Sources */,
 				50A18E4F16A84E6C00DC6281 /* BulletComponent.cpp in Build Sources */,
+				E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */,
+				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
