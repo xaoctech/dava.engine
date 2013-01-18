@@ -30,7 +30,7 @@
 #include "Base/BaseObject.h"
 #include "Base/ObjectFactory.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Base/ObjectFactory.h"
+#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -48,7 +48,43 @@ const String & BaseObject::GetClassName()
 void BaseObject::Save(KeyedArchive * archive)
 {
     archive->SetString("##name", GetClassName());
+    
+    const IntrospectionInfo *info = GetIntrospection(this);
+    if(info)
+    {
+        SaveIntrospection(GetClassName(), archive, info, this);
+    }
 }
+    
+void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
+{
+    String keyPrefix = key;
+    while(NULL != info)
+    {
+        keyPrefix += String(info->Name());
+        for(int32 i = 0; i < info->MembersCount(); ++i)
+        {
+            const IntrospectionMember *member = info->Member(i);
+			if(member)
+			{
+				const DAVA::MetaInfo *memberMetaInfo = member->Type();
+                if(memberMetaInfo && memberMetaInfo->Introspection())
+                {
+                    SaveIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->Introspection(), member->Pointer(object));
+                }
+                else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
+                {
+                    VariantType value = member->Value(object);
+                    archive->SetVariant(keyPrefix + String(member->Name()), &value);
+                }
+			}
+        }
+        
+        info = info->BaseInfo();
+    }
+}
+    
+
     
 BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
 {
@@ -66,7 +102,44 @@ BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
  */
 void BaseObject::Load(KeyedArchive * archive)
 {
+    const IntrospectionInfo *info = GetIntrospection(this);
+    if(info)
+    {
+        LoadIntrospection(GetClassName(), archive, info, this);
+    }
+}
+ 
+void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
+{
+    String keyPrefix = key;
+    while(NULL != info)
+    {
+        keyPrefix += String(info->Name());
+        for(int32 i = 0; i < info->MembersCount(); ++i)
+        {
+            const IntrospectionMember *member = info->Member(i);
+			if(member)
+			{
+				const DAVA::MetaInfo *memberMetaInfo = member->Type();
+                if(memberMetaInfo && memberMetaInfo->Introspection())
+                {
+                    LoadIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->Introspection(), member->Pointer(object));
+                }
+                else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
+                {
+                    const VariantType * value = archive->GetVariant(keyPrefix + String(member->Name()));
+                    if(value)
+                    {
+                        member->SetValue(object, *value);
+                    }
+                }
+			}
+        }
+        
+        info = info->BaseInfo();
+    }
 }
     
-    
 };
+
+

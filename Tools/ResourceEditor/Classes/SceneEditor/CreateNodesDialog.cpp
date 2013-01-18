@@ -11,7 +11,12 @@
 #include "Scene3D/UserNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
+
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/LightComponent.h"
+
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -115,7 +120,9 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(L"createnode.light"));
             
-            sceneNode = EditorLightNode::CreateSceneAndEditorLight();
+            //sceneNode = //EditorLightNode::CreateSceneAndEditorLight();
+            sceneNode = new SceneNode();
+            sceneNode->AddComponent(new LightComponent(ScopedPtr<LightNode>(new LightNode)));
             sceneNode->SetName("Light");
             break;
         }
@@ -131,11 +138,17 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         }
 
         case ResourceEditor::NODE_CAMERA:
+        {
+            
             SetHeader(LocalizedString(L"createnode.camera"));
-            sceneNode = new Camera();
-            ((Camera *)sceneNode)->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+            sceneNode = new SceneNode();
+            
+            Camera * camera = new Camera();
+            camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+            sceneNode->AddComponent(new CameraComponent(camera));
             sceneNode->SetName("Camera");
-            break;
+            SafeRelease(camera);
+        }break;
 
 		case ResourceEditor::NODE_IMPOSTER:
 			SetHeader(LocalizedString(L"createnode.imposter"));

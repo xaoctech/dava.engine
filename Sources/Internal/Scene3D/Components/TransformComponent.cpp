@@ -46,7 +46,7 @@ void TransformComponent::SetParent(SceneNode * node)
 
 	if(node)
 	{
-		parentMatrix = node->GetTransformComponent()->GetWorldTransform();
+		parentMatrix = ((TransformComponent*)node->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 	}
 	else
 	{

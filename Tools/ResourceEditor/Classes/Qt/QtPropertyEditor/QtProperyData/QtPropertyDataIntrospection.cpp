@@ -2,6 +2,8 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
+//#include "Base/IntrospectionFlags.h"
+
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info)
 	: object(_object)
 	, info(_info)
@@ -10,10 +12,32 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	{
 		for(int i = 0; i < info->MembersCount(); ++i)
 		{
-			QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(info->Member(i)->Value(object));
-			ChildAdd(info->Member(i)->Name(), childData);
+			const DAVA::IntrospectionMember *member = info->Member(i);
+			if(NULL != member)
+			{
+				const DAVA::MetaInfo *memberMetaInfo = member->Type();
 
-			childIndexes.insert(childData, i);
+				// check if member has introspection
+				if(NULL != memberMetaInfo->Introspection())
+				{
+					QtPropertyData *childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->Introspection());
+					ChildAdd(member->Name(), childData);
+					childVariantIndexes.insert(NULL, i);
+				}
+				else if(0 == (member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_HIDDEN))
+				{
+					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(info->Member(i)->Value(object));
+                    
+                    if(member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
+                    {
+                        int flags = childData->GetFlags();
+                        childData->SetFlags(flags | FLAG_IS_NOT_EDITABLE);
+                    }
+                    
+					ChildAdd(member->Name(), childData);
+					childVariantIndexes.insert(childData, i);
+				}
+			}
 		}
 	}
 
@@ -32,9 +56,9 @@ QVariant QtPropertyDataIntrospection::GetValueInternal()
 void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyData *data)
 {
 	QtPropertyDataDavaVariant *dataVariant = (QtPropertyDataDavaVariant *) data;
-	if(childIndexes.contains(dataVariant))
+	if(childVariantIndexes.contains(dataVariant))
 	{
-		info->Member(childIndexes[dataVariant])->SetValue(object, dataVariant->GetVariantValue());
+		info->Member(childVariantIndexes[dataVariant])->SetValue(object, dataVariant->GetVariantValue());
 	}
 }
 
@@ -42,12 +66,15 @@ void QtPropertyDataIntrospection::ChildNeedUpdate()
 {
 	for(int i = 0; i < info->MembersCount(); ++i)
 	{
-		QtPropertyDataDavaVariant *childData = childIndexes.key(i);
-		DAVA::VariantType childCurValue = info->Member(i)->Value(object);
-
-		if(childCurValue != childData->GetVariantValue())
+		QtPropertyDataDavaVariant *childData = childVariantIndexes.key(i);
+		if(NULL != childData)
 		{
-			childData->SetVariantValue(childCurValue);
+			DAVA::VariantType childCurValue = info->Member(i)->Value(object);
+
+			if(childCurValue != childData->GetVariantValue())
+			{
+				childData->SetVariantValue(childCurValue);
+			}
 		}
 	}
 }

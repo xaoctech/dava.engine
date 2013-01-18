@@ -56,6 +56,7 @@ REGISTER_CLASS(LandscapeNode);
 LandscapeNode::LandscapeNode()
     : indices(0)
 {
+    type = TYPE_LANDSCAPE;
     heightmapPath = String("");
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)

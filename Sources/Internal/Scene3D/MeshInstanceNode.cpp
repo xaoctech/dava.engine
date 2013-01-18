@@ -211,7 +211,7 @@ MeshInstanceNode::~MeshInstanceNode()
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
 {
     PolygonGroupWithMaterial * polygroup = new PolygonGroupWithMaterial();
-    polygroup->Setup(mesh, polygonGroupIndex, material, transformComponent);
+    polygroup->Setup(mesh, polygonGroupIndex, material, (TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT));
 	polygroups.push_back(polygroup);
 	
 	PolygonGroup * group = polygroup->GetPolygonGroup();
@@ -292,7 +292,7 @@ void MeshInstanceNode::Draw()
     }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = *(transformComponent->GetWorldTransform()) * prevMatrix;
+	Matrix4 meshFinalMatrix = *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform()) * prevMatrix;
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
 //    /* float32 proj[16];

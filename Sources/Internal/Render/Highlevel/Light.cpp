@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky
 =====================================================================================*/
 
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Scene3D/Scene.h"
@@ -39,7 +39,7 @@ namespace DAVA
 REGISTER_CLASS(LightNode);
 
 LightNode::LightNode()
-:	SceneNode(),
+:	BaseObject(),
 	type(TYPE_DIRECTIONAL),
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
@@ -80,7 +80,7 @@ void LightNode::SetIntensity(float32 _intensity)
 }
 
     
-SceneNode* LightNode::Clone(SceneNode *dstNode)
+BaseObject * LightNode::Clone(BaseObject *dstNode)
 {
     if(!dstNode)
     {
@@ -88,7 +88,7 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
         dstNode = new LightNode();
     }
     
-    SceneNode::Clone(dstNode);
+    //BaseObject::Clone(dstNode);
     
     LightNode *lightNode = (LightNode *)dstNode;
     lightNode->type = type;
@@ -98,24 +98,24 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
     return dstNode;
 }
-    
-void LightNode::Update(float32 timeElapsed)
-{
-    bool needUpdateVars = false;
-    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
-    {
-        needUpdateVars = true;
-        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
-    }
-    
-    if (needUpdateVars)
-    {
-        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
-        Matrix3 rotationPart(GetWorldTransform());
-        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
-        direction.Normalize();
-    }
-}
+// LIGHT
+//void LightNode::Update(float32 timeElapsed)
+//{
+//    bool needUpdateVars = false;
+//    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
+//    {
+//        needUpdateVars = true;
+//        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
+//    }
+//    
+//    if (needUpdateVars)
+//    {
+//        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
+//        Matrix3 rotationPart(GetWorldTransform());
+//        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
+//        direction.Normalize();
+//    }
+//}
 
 LightNode::eType LightNode::GetType() const
 {
@@ -153,7 +153,7 @@ float32 LightNode::GetIntensity() const
 
 void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	SceneNode::Save(archive, sceneFile);
+	BaseObject::Save(archive);
 	
 	archive->SetInt32("type", type);
 	archive->SetFloat("ambColor.r", ambientColor.r);
@@ -177,7 +177,7 @@ void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive, sceneFile);
+    BaseObject::Load(archive);
 
     type = (eType)archive->GetInt32("type");
     
@@ -198,13 +198,15 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     intensity = archive->GetFloat("intensity", intensity);
 
-	isDynamic = GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+    
+	//isDynamic = GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
 }
 
-void LightNode::Draw()
-{
-    SceneNode::Draw();
-}
+// LIGHT
+//void LightNode::Draw()
+//{
+//    SceneNode::Draw();
+//}
 
 bool LightNode::IsDynamic()
 {

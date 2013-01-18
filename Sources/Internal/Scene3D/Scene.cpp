@@ -48,7 +48,7 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
@@ -63,6 +63,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
+#include "Scene3D/Systems/UpdatableSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -130,6 +131,9 @@ void Scene::CreateSystems()
 
 	particleEffectSystem = new ParticleEffectSystem();
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
+
+	updatableSystem = new UpdatableSystem();
+	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
 }
 
 Scene::~Scene()
@@ -581,7 +585,11 @@ void Scene::Update(float timeElapsed)
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
     
+	updatableSystem->UpdatePreTransform();
+
     transformSystem->Process();
+
+	updatableSystem->UpdatePostTransform();
 
 	lodSystem->SetCamera(currentCamera);
 	lodSystem->Process();

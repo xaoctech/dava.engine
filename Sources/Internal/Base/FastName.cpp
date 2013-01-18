@@ -5,6 +5,7 @@
 */
 
 #include "FastName.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
