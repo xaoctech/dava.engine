@@ -48,6 +48,11 @@ public:
 
 private:
 	IUpdatable * updatableObject;
+    
+public:
+    INTROSPECTION_EXTEND(UpdatableComponent, Component,
+                         NULL);
+
 };
 
 }
