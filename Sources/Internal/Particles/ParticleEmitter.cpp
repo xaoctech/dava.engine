@@ -40,9 +40,22 @@ namespace DAVA
 {
 ParticleEmitter::ParticleEmitter()
 {
+	Cleanup(false);
+}
+
+ParticleEmitter::~ParticleEmitter()
+{
+	CleanupLayers();
+}
+
+void ParticleEmitter::Cleanup(bool needCleanupLayers)
+{
 	type = EMITTER_POINT;
-    emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionVector.Set(NULL);
+	emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionAngle.Set(NULL);
 	emissionAngle = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(0.0f));
+	emissionRange.Set(NULL);
 	emissionRange = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(360.0f));
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
@@ -59,18 +72,25 @@ ParticleEmitter::ParticleEmitter()
 	isAutorestart = true;
 	particlesFollow = false;
     is3D = false;
+
+	// Also cleanup layers, if needed.
+	if (needCleanupLayers)
+	{
+		CleanupLayers();
+	}
 }
 
-ParticleEmitter::~ParticleEmitter()
+void ParticleEmitter::CleanupLayers()
 {
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
 		SafeRelease(*it);
-	}	
+	}
+
 	layers.clear();
 }
-	
+
 ParticleEmitter * ParticleEmitter::Clone()
 {
 	ParticleEmitter * emitter = new ParticleEmitter();

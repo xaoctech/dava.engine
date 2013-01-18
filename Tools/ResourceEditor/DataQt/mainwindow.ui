@@ -294,7 +294,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -326,11 +326,10 @@
     <addaction name="actionLandscape"/>
     <addaction name="actionLight"/>
     <addaction name="actionServiceNode"/>
-    <addaction name="actionBox"/>
-    <addaction name="actionSphere"/>
     <addaction name="actionCamera"/>
     <addaction name="actionImposter"/>
     <addaction name="actionParticleEmitter"/>
+    <addaction name="actionParticle_Emitter"/>
     <addaction name="actionUserNode"/>
     <addaction name="actionSwitchNode"/>
     <addaction name="actionParticleEffectNode"/>
@@ -547,16 +546,6 @@
     <string>Service Node</string>
    </property>
   </action>
-  <action name="actionBox">
-   <property name="text">
-    <string>Box</string>
-   </property>
-  </action>
-  <action name="actionSphere">
-   <property name="text">
-    <string>Sphere</string>
-   </property>
-  </action>
   <action name="actionCamera">
    <property name="text">
     <string>Camera</string>
@@ -708,6 +697,14 @@
     <string>Particle Effect Node</string>
    </property>
   </action>
+  <action name="actionParticle_Emitter">
+   <property name="text">
+    <string>Particle Emitter</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -744,7 +741,7 @@
    <extends>QTreeView</extends>
    <header>DockProperties/PropertyEditor.h</header>
   </customwidget>
-<customwidget>
+  <customwidget>
    <class>ParticleEditorWidget</class>
    <extends>QWidget</extends>
    <header>DockParticleEditor/particleeditorwidget.h</header>

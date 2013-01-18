@@ -26,8 +26,7 @@ void ParticleEmitterPropertyControl::ReadFrom(SceneNode * sceneNode)
 	propertyList->AddSection("Particles emitter");
 
 	propertyList->AddStringProperty("Yaml path", PropertyList::PROPERTY_IS_READ_ONLY);
-	//particleEmitterNode cleaning
-	//propertyList->SetStringPropertyValue("Yaml path", emitter->GetYamlPath());
+	propertyList->SetStringPropertyValue("Yaml path", emitterComponent->GetYamlPath());
 
 	propertyList->AddMessageProperty("Open editor", Message(this, &ParticleEmitterPropertyControl::OnOpenEditor));
 }

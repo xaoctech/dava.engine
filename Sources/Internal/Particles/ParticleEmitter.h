@@ -282,10 +282,13 @@ public:
     inline bool GetIs3D();
 
 	const String & GetConfigPath() { return configPath; }
-    
+	void Cleanup(bool needCleanupLayers = true);
+
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
     String GetEmitterTypeName();
+
+	void CleanupLayers();
 
 	String configPath;
 	

@@ -177,27 +177,29 @@ void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
 
 void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
 {
-#pragma warning Commented out because of merging with new engine structure, return to this code later.
-	/*
-	ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(parentNode);
-	if (particleEmitterNode)
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>
+		(parentNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	if (!emitterComponent || !emitterComponent->GetParticleEmitter())
 	{
-		// Do we have file name? Ask for it, if not.
-		String yamlPath = particleEmitterNode->GetYamlPath();
-		if (yamlPath.empty())
-		{
-			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(particleEmitterNode->GetName()));
-			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+		return;
+	}
 
-			if (!saveDialogYamlPath.isEmpty())
-			{
-				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
-			}
+	//ParticleEmitter* particleEmitter = emitterComponent->GetParticleEmitter();
+	// Do we have file name? Ask for it, if not.
+	String yamlPath = emitterComponent->GetYamlPath();
+	if (yamlPath.empty())
+	{
+		QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
+		QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+
+		if (!saveDialogYamlPath.isEmpty())
+		{
+			yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
 		}
 
 		if (!yamlPath.empty())
 		{
-			particleEmitterNode->SaveToYaml(yamlPath);
+			emitterComponent->SaveToYaml(yamlPath);
 		}
 	}
 	
@@ -207,7 +209,6 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
 	{
 		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
 	}
-	*/
 }
 
 //Export
