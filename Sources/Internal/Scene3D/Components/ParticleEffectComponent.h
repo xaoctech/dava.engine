@@ -77,7 +77,8 @@ private:
 	int32 emittersCurrentlyStopped;
 
 public:
-	INTROSPECTION_EXTEND_EMPTY(ParticleEffectComponent, Component);
+	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
+		NULL);
 };
 
 }

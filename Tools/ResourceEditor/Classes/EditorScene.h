@@ -81,11 +81,10 @@ protected:
 	SceneNode * selection;
 	SceneNode * proxy;
     
-    MeshInstanceNode *selectedMeshInstance;
+    SceneNode *selectedEntity;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
-	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
     

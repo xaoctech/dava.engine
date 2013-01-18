@@ -33,7 +33,7 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/LandscapeNode.h"
 
 #include "Render/Highlevel/RenderLayer.h"
@@ -59,8 +59,8 @@ void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
         // Update new transform pointer, and mark that transform is changed
-        Matrix4 * worldTransformPointer = entity->GetTransformComponent()->GetWorldTransform();
-        entity->GetRenderComponent()->GetRenderObject()->SetWorldTransformPtr(worldTransformPointer);
+        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
+        ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject()->SetWorldTransformPtr(worldTransformPointer);
     }
     
     //if (event == EventSystem::ACTIVE_CAMERA_CHANGED)
@@ -72,7 +72,7 @@ void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     
 void RenderUpdateSystem::AddEntity(SceneNode * entity)
 {
-    RenderObject * renderObject = entity->GetRenderComponent()->GetRenderObject();
+    RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
 
     LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);

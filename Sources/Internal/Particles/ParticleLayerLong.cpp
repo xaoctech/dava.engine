@@ -2,7 +2,7 @@
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {

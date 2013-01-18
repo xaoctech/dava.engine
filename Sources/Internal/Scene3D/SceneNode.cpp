@@ -61,8 +61,6 @@ SceneNode::SceneNode()
     , inUpdate(false)
     , tag(0)
 	, entity(0)
-	, transformComponent(0)
-    , renderComponent(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
     componentFlags = 0;
@@ -74,7 +72,6 @@ SceneNode::SceneNode()
 	//animation = 0;
     //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
-	userData = 0;
     
     customProperties = new KeyedArchive();
 
@@ -97,7 +94,6 @@ SceneNode::~SceneNode()
     DVASSERT(scene == 0);
     
     RemoveAllChildren();
-	SafeRelease(userData);
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -113,21 +109,12 @@ SceneNode::~SceneNode()
 	//TODO: delete entity?
 }
     
-    
-void SceneNode::UpdateComponentsFastPtrs()
-{
-    transformComponent = dynamic_cast<TransformComponent*>(components[Component::TRANSFORM_COMPONENT]);
-    renderComponent = dynamic_cast<RenderComponent*>(components[Component::RENDER_COMPONENT]);
-}
-
-    
 void SceneNode::AddComponent(Component * component)
 {
 	component->SetEntity(this);
 
     SafeDelete(components[component->GetType()]);
     components[component->GetType()] = component;
-    UpdateComponentsFastPtrs();
     if (scene)
         scene->AddComponent(this, component);
     // SHOULD BE DONE AFTER scene->AddComponent
@@ -144,7 +131,6 @@ void SceneNode::RemoveComponent(Component * component)
     // SHOULD BE DONE AFTER scene->RemoveComponent
     componentFlags &= ~(1 << component->GetType());
 	delete(component);
-    UpdateComponentsFastPtrs();
 }
     
 void SceneNode::RemoveComponent(uint32 componentType)
@@ -157,6 +143,18 @@ void SceneNode::RemoveComponent(uint32 componentType)
 Component * SceneNode::GetComponent(uint32 componentType)
 {
     return components[componentType];
+}
+
+Component * SceneNode::GetOrCreateComponent(uint32 componentType)
+{
+	Component * ret = components[componentType];
+	if(!ret)
+	{
+		components[componentType] = Component::CreateByType(componentType);
+		ret = components[componentType];
+	}
+
+	return ret;
 }
     
 uint32 SceneNode::GetComponentCount()
@@ -197,7 +195,7 @@ Scene * SceneNode::GetScene()
 void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
-	transformComponent->SetParent(parent);
+	((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetParent(parent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -569,12 +567,10 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 			dstNode->components[k]->SetEntity(dstNode);
 		}
 	}
-    dstNode->UpdateComponentsFastPtrs();
     
     dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
-    dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
 
 	dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
@@ -628,6 +624,19 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
             n->SetDebugFlags(_debugFlags, isRecursive);
         }
     }
+}
+
+uint32 SceneNode::GetDebugFlags() const
+{
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	if(debugComponent)
+	{
+		return debugComponent->GetDebugFlags();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void SceneNode::SetName(const String & _name)
@@ -893,28 +902,23 @@ inline const Matrix4 & SceneNode::ModifyLocalTransform()
 {
     flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
     //scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateEvent(this, transformComponent->GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
+    scene->ImmediateEvent(this, Component::TRANSFORM_COMPONENT, EventSystem::LOCAL_TRANSFORM_CHANGED);
     return GetLocalTransform();
 }
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
-    transformComponent->SetLocalTransform(&newMatrix);
+    ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
 }
 
 const Matrix4 & SceneNode::GetLocalTransform()
 {
-	return *(transformComponent->GetLocalTransform());
+	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform());
 }
 
 const Matrix4 & SceneNode::GetWorldTransform()
 {
-	return *(transformComponent->GetWorldTransform());
-}
-
-TransformComponent * SceneNode::GetTransformComponent()
-{
-	return transformComponent;
+	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform());
 }
 
 int32 SceneNode::Release()
@@ -934,9 +938,11 @@ int32 SceneNode::Release()
 
 void SceneNode::SetVisible(bool isVisible)
 {
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 	if(isVisible) 
 	{
 		AddFlag(NODE_VISIBLE);
+		
 		if(renderComponent)
 		{
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
@@ -956,6 +962,7 @@ void SceneNode::SetVisible(bool isVisible)
 
 void SceneNode::SetUpdatable(bool isUpdatable)
 {
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
 	if(isUpdatable) 
 	{
 		AddFlag(NODE_UPDATABLE);
@@ -973,5 +980,9 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 		}
 	}
 }
+
+
+
+
 
 };

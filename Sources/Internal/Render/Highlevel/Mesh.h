@@ -27,3 +27,39 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SCENE3D_MESH_H__
+#define	__DAVAENGINE_SCENE3D_MESH_H__
+
+#include "Base/BaseTypes.h"
+#include "Animation/AnimatedObject.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Material.h"
+
+namespace DAVA
+{
+
+class PolygonGroup;
+class RenderBatch;
+class Mesh : public RenderObject
+{
+public:
+    Mesh();
+    virtual ~Mesh();
+    
+    void AddPolygonGroup(PolygonGroup * polygonGroup, Material * material);
+
+    uint32 GetPolygonGroupCount();
+    PolygonGroup * GetPolygonGroup(uint32 index);
+    
+protected:
+    //Vector<PolygonGroup*> polygonGroups;
+};
+
+
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
+

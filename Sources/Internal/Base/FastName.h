@@ -7,8 +7,7 @@
 #ifndef __DAVAENGINE_FAST_NAME__
 #define __DAVAENGINE_FAST_NAME__
 
-#include "HashMap.h"
-#include "Debug/DVAssert.h"
+#include "Base/HashMap.h"
 #include "Base/StaticSingleton.h"
 
 namespace DAVA

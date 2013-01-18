@@ -13,18 +13,18 @@ LodComponent::LodDistance::LodDistance()
 	distance = nearDistance = nearDistanceSq = farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
 }
 
-void LodComponent::LodDistance::SetDistance(float32 newDistance)
+void LodComponent::LodDistance::SetDistance(const float32 &newDistance)
 {
 	distance = newDistance;
 }
 
-void LodComponent::LodDistance::SetNearDistance(float32 newDistance)
+void LodComponent::LodDistance::SetNearDistance(const float32 &newDistance)
 {
 	nearDistance = newDistance;
 	nearDistanceSq = nearDistance * nearDistance;
 }
 
-void LodComponent::LodDistance::SetFarDistance(float32 newDistance)
+void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 {
 	farDistance = newDistance;
 	farDistanceSq = farDistance * farDistance;
@@ -33,6 +33,7 @@ void LodComponent::LodDistance::SetFarDistance(float32 newDistance)
 Component * LodComponent::Clone()
 {
 	LodComponent * newLod = new LodComponent();
+    // TODO: Add lod cloning
 	return newLod;
 }
 

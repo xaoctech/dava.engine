@@ -46,11 +46,12 @@ public:
         RENDER_COMPONENT,
         DEBUG_RENDER_COMPONENT, 
 		LOD_COMPONENT,
-        UPDATE_COMPONENT,
         CAMERA_COMPONENT,
         LIGHT_COMPONENT,
 		PARTICLE_EMITTER_COMPONENT,
 		PARTICLE_EFFECT_COMPONENT,
+		BULLET_COMPONENT,
+		UPDATABLE_COMPONENT,
         ANIMATION_COMPONENT,
         COLLISION_COMPONENT,    // multiple instances
         PHYSICS_COMPONENT,
@@ -58,6 +59,8 @@ public:
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
         COMPONENT_COUNT,
     };
+
+	static Component * CreateByType(uint32 componentType);
 
 	Component();
     
@@ -70,7 +73,8 @@ protected:
     SceneNode * entity;
 
 public:
-	INTROSPECTION_EMPTY(Component);
+	INTROSPECTION(Component, 
+		NULL);
 };
 
     
