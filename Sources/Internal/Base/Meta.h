@@ -20,9 +20,9 @@ namespace DAVA
 		static MetaInfo *Instance()
 		{
 #ifdef META_USE_TYPEID
-			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT));
+			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT), PointerTraits<MetaT>::result);
 #else
-			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT));
+			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT), PointerTraits<MetaT>::result);
 #endif
             metaInfo.OneTimeIntrospectionSafeSet<MetaT>();
 			return &metaInfo;
@@ -48,6 +48,11 @@ namespace DAVA
 		{
 			return introspection;
 		}
+
+		inline bool IsPointer() const
+		{
+			return isPointer;
+		}
         
     protected:
         template<typename IntrospectionT>
@@ -56,16 +61,17 @@ namespace DAVA
             if(!introspectionOneTimeSet)
             {
                 introspectionOneTimeSet = true;
-                introspection = DAVA::GetIntrospection<IntrospectionT>();
+                introspection = DAVA::GetIntrospection<typename Select<PointerTraits<IntrospectionT>::result, typename PointerTraits<IntrospectionT>::PointeeType, IntrospectionT>::Result>();
             }
         }
 
 	private:
-		MetaInfo(const char *_type_name, int _type_size)
+		MetaInfo(const char *_type_name, int _type_size, bool is_pointer)
 			: type_name(_type_name)
 			, type_size(_type_size)
             , introspection(NULL)
             , introspectionOneTimeSet(false)
+			, isPointer(is_pointer)
 		{ }
 
 		const int type_size;
@@ -73,6 +79,7 @@ namespace DAVA
         const IntrospectionInfo *introspection;
         
         bool introspectionOneTimeSet;
+		bool isPointer;
 	};
 };
 

@@ -7,6 +7,78 @@ namespace DAVA
 {
 	class IntrospectionInfo;
 	class KeyedArchive;
+	struct MetaInfo;
+
+	class IntrospectionCollectionBase
+	{
+	public:
+		virtual MetaInfo* CollectionType() = 0;
+		virtual MetaInfo* ValueType() = 0;
+		virtual int Size() = 0;
+		virtual void* Begin() = 0;
+		virtual void* Next(void* i) = 0;
+		virtual void Finish(void* i) = 0;
+		virtual void ItemValueGet(void* i, void *itemDst) = 0;
+		virtual void ItemValueSet(void* i, void *itemSrc) = 0;
+		virtual void* ItemPointer(void *i) = 0;
+	};
+
+	class IntrospectionMember
+	{
+		friend class IntrospectionInfo;
+
+	public:
+		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)	
+		{ }
+
+		const char* Name() const
+		{
+			return name;
+		}
+
+		const char* Desc() const
+		{
+			return desc;
+		}
+
+		const MetaInfo* Type() const
+		{
+			return type;
+		}
+
+		void* Pointer(void *object) const
+		{
+			return (((char *) object) + offset);
+		}
+
+		virtual VariantType Value(void *object) const
+		{
+			return VariantType::LoadData(Pointer(object), type);
+		}
+
+		virtual void SetValue(void *object, const VariantType &val) const
+		{
+			VariantType::SaveData(Pointer(object), type, val);
+		}
+
+		virtual IntrospectionCollectionBase* Collection() const
+		{
+			return NULL;
+		}
+
+		const int Flags() const
+		{
+			return flags;
+		}
+
+	protected:
+		const char* name;
+		const char *desc;
+		const int offset;
+		const MetaInfo* type;
+		const int flags;
+	};
 
 	template<typename T> 
 	class HasIntrospection
