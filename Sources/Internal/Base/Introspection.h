@@ -1,128 +1,17 @@
 #ifndef __DAVAENGINE_INTROSPECTION_H__
 #define __DAVAENGINE_INTROSPECTION_H__
 
-#include "Base/Meta.h"
-//#include "Base/FastName.h"
-#include "Base/IntrospectionBase.h"
-#include "Base/IntrospectionFlags.h"
+#include "Debug/DVAssert.h"
 #include "FileSystem/VariantType.h"
+
+#include "Base/Meta.h"
+#include "Base/IntrospectionBase.h"
+#include "Base/IntrospectionProperty.h"
+#include "Base/IntrospectionCollection.h"
+#include "Base/IntrospectionFlags.h"
 
 namespace DAVA
 {
-	class IntrospectionMember
-	{
-		friend class IntrospectionInfo;
-
-	public:
-		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)	
-		{ }
-
-		const char* Name() const
-		{
-			return name;
-		}
-
-		const char* Desc() const
-		{
-			return desc;
-		}
-
-		const MetaInfo* Type() const
-		{
-			return type;
-		}
-
-		void* Pointer(void *object) const
-		{
-			return (((char *) object) + offset);
-		}
-
-		virtual VariantType Value(void *object) const
-		{
-			return VariantType::LoadData(Pointer(object), type);
-		}
-
-		virtual void SetValue(void *object, const VariantType &val) const
-		{
-			VariantType::SaveData(Pointer(object), type, val);
-		}
-        
-        const int Flags() const
-        {
-            return flags;
-        }
-
-	protected:
-		const char* name;
-		const char *desc;
-		const int offset;
-		const MetaInfo* type;
-		const int flags;
-	};
-
-	template<typename T, typename V>
-	class IntrospectionProperty : public IntrospectionMember
-	{
-	public:
-		typedef V	 (T::*GetterPtr)() const;
-		typedef void (T::*SetterPtr)(const V &);
-
-		IntrospectionProperty(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, GetterPtr _g, SetterPtr _s, int _flags)
-			: IntrospectionMember(_name, _desc, 0, _type, _flags), getter(_g), setter(_s)
-		{ }
-
-		virtual VariantType Value(void *object) const
-		{
-			T* realObj = (T *) object;
-			V realValue = (realObj->*getter)();
-			return VariantType::LoadData(&realValue, DAVA::MetaInfo::Instance<V>());
-		}
-
-		virtual void SetValue(void *object, const VariantType &val) const
-		{
-			T* realObj = (T *) object;
-			V realValue;
-			VariantType::SaveData(&realValue, DAVA::MetaInfo::Instance<V>(), val);
-			(realObj->*setter)(realValue);
-		}
-
-	protected:
-		const GetterPtr getter;
-		const SetterPtr setter;
-	};
-
-	template<typename T, typename V>
-	class IntrospectionPropertyReturnRef : public IntrospectionMember
-	{
-	public:
-		typedef V&	 (T::*GetterPtr)() const;
-		typedef void (T::*SetterPtr)(const V &);
-
-		IntrospectionPropertyReturnRef(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, GetterPtr _g, SetterPtr _s, int _flags)
-			: IntrospectionMember(_name, _desc, 0, _type, _flags), getter(_g), setter(_s)
-		{ }
-
-		virtual VariantType Value(void *object) const
-		{
-			T* realObj = (T *) object;
-			V& realValue = (realObj->*getter)();
-			return VariantType::LoadData(&realValue, DAVA::MetaInfo::Instance<V>());
-		}
-
-		virtual void SetValue(void *object, const VariantType &val) const
-		{
-			T* realObj = (T *) object;
-			V realValue;
-			VariantType::SaveData(&realValue, DAVA::MetaInfo::Instance<V>(), val);
-			(realObj->*setter)(realValue);
-		}
-
-	protected:
-		const GetterPtr getter;
-		const SetterPtr setter;
-	};
-
 	class IntrospectionInfo
 	{
 	public:
@@ -242,54 +131,6 @@ namespace DAVA
 			members_count = 0;
 		}
 	};
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, 0, _type, (VV (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, 0, _type, _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, const VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, 0, _type, (VV (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, const VV (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, 0, _type, (VV (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV& (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, 0, _type, (VV& (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV& (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, 0, _type, (VV& (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, const VV& (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, 0, _type, (VV& (TT::*)() const) _g, _s, _flags);
-	}
-
-	template<typename TT, typename VV>
-	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, const VV& (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
-	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, 0, _type, (VV& (TT::*)() const) _g, _s, _flags);
-	}
 };
 
 #define INTROSPECTION(_type, _members) \
@@ -325,5 +166,8 @@ namespace DAVA
 
 #define PROPERTY(_name, _desc, _getter, _setter, _flags) \
 	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter, _flags),
+
+#define COLLECTION(_name, _desc, _flags) \
+	DAVA::CreateIntrospectionCollection(&((ObjectT *) 0)->_name, #_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 
 #endif // __DAVAENGINE_INTROSPECTION_H__

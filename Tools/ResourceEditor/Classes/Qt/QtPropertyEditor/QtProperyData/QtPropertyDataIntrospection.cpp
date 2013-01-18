@@ -18,23 +18,31 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 				const DAVA::MetaInfo *memberMetaInfo = member->Type();
 
 				// check if member has introspection
-				if(NULL != memberMetaInfo->Introspection())
+				if(NULL != memberMetaInfo->GetIntrospection())
 				{
-					QtPropertyData *childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->Introspection());
-					ChildAdd(info->Member(i)->Name(), childData);
+					QtPropertyData *childData;
+					if(!memberMetaInfo->IsPointer())
+					{
+						childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
+					}
+					else
+					{
+						childData = new QtPropertyDataIntrospection(*((void **)member->Pointer(object)), memberMetaInfo->GetIntrospection());
+					}
+					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(NULL, i);
 				}
-				else
+				else if(0 == (member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_HIDDEN))
 				{
-					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(info->Member(i)->Value(object));
+					QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
                     
-                    if(info->Member(i)->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
+                    if(member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
                     {
                         int flags = childData->GetFlags();
                         childData->SetFlags(flags | FLAG_IS_NOT_EDITABLE);
                     }
                     
-					ChildAdd(info->Member(i)->Name(), childData);
+					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(childData, i);
 				}
 			}
@@ -50,7 +58,7 @@ QtPropertyDataIntrospection::~QtPropertyDataIntrospection()
 QVariant QtPropertyDataIntrospection::GetValueInternal()
 {
 	ChildNeedUpdate();
-	return QVariant();
+	return QVariant(info->Name());
 }
 
 void QtPropertyDataIntrospection::ChildChanged(const QString &key, QtPropertyData *data)
