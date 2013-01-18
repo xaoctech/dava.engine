@@ -50,7 +50,6 @@ public:
             PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_FLAG_SERIALIZABLE)
             PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_FLAG_SERIALIZABLE)
         );
-        
 	};
 
 	struct LodData
@@ -81,7 +80,7 @@ public:
 
 	LodData *currentLod;
 	List<LodData> lodLayers;
-	LodDistance lodLayersArray[MAX_LOD_LAYERS];
+	Vector<LodDistance> lodLayersArray;
 	int32 forceLodLayer;
 	float32 forceDistance;
 	float32 forceDistanceSq;
@@ -94,6 +93,7 @@ public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
                          MEMBER(testDistance, "testDistance", 0)
+						 COLLECTION(lodLayersArray, "lodLayersArray", 0)
 //                         NULL
                          );
 

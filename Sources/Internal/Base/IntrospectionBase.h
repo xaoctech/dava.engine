@@ -6,22 +6,10 @@
 namespace DAVA
 {
 	class IntrospectionInfo;
+	class IntrospectionCollectionBase;
 	class KeyedArchive;
 	struct MetaInfo;
 
-	class IntrospectionCollectionBase
-	{
-	public:
-		virtual MetaInfo* CollectionType() = 0;
-		virtual MetaInfo* ValueType() = 0;
-		virtual int Size() = 0;
-		virtual void* Begin() = 0;
-		virtual void* Next(void* i) = 0;
-		virtual void Finish(void* i) = 0;
-		virtual void ItemValueGet(void* i, void *itemDst) = 0;
-		virtual void ItemValueSet(void* i, void *itemSrc) = 0;
-		virtual void* ItemPointer(void *i) = 0;
-	};
 
 	class IntrospectionMember
 	{
@@ -62,7 +50,7 @@ namespace DAVA
 			VariantType::SaveData(Pointer(object), type, val);
 		}
 
-		virtual IntrospectionCollectionBase* Collection() const
+		virtual const IntrospectionCollectionBase* Collection() const
 		{
 			return NULL;
 		}
@@ -78,6 +66,26 @@ namespace DAVA
 		const int offset;
 		const MetaInfo* type;
 		const int flags;
+	};
+
+	class IntrospectionCollectionBase : public IntrospectionMember
+	{
+	public:
+		typedef void* Iterator;
+
+		IntrospectionCollectionBase(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: IntrospectionMember(_name, _desc, _offset, _type, _flags)
+		{ }
+
+		virtual MetaInfo* CollectionType() const = 0;
+		virtual MetaInfo* ValueType() const = 0;
+		virtual int Size(void *object) const = 0;
+		virtual Iterator Begin(void *object) const = 0;
+		virtual Iterator Next(Iterator i) const = 0;
+		virtual void Finish(Iterator i) const = 0;
+		virtual void ItemValueGet(Iterator i, void *itemDst) const = 0;
+		virtual void ItemValueSet(Iterator i, void *itemSrc) = 0;
+		virtual void* ItemPointer(Iterator i) const = 0;
 	};
 
 	template<typename T> 
