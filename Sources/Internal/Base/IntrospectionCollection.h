@@ -27,25 +27,25 @@ namespace DAVA
 
 		int Size()
 		{
-			return collection->size();
+			return 0; //collection->size();
 		}
 
 		void* Begin(void *object)
 		{
 			void* i = NULL;
-
-			C<T, A>::iterator begin = collection->begin();
-			C<T, A>::iterator end = collection->end();
-
-			if(begin != end)
-			{
-				CollectionPos *pos = new CollectionPos();
-				pos->curPos = begin;
-				pos->endPos = end;
-
-				i = (void*) pos;
-			}
-
+//
+//			C<T, A>::iterator begin = collection->begin();
+//			C<T, A>::iterator end = collection->end();
+//
+//			if(begin != end)
+//			{
+//				CollectionPos *pos = new CollectionPos();
+//				pos->curPos = begin;
+//				pos->endPos = end;
+//
+//				i = (void*) pos;
+//			}
+//
 			return i;
 		}
 
