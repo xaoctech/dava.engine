@@ -1239,6 +1239,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">

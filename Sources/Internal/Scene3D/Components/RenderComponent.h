@@ -23,9 +23,9 @@ private:
     RenderObject * renderObject;
     
 public:
-    
     INTROSPECTION_EXTEND(RenderComponent, Component, 
-		NULL);
+		MEMBER(renderObject, "renderObject", 0)
+		);
 };
 
 
