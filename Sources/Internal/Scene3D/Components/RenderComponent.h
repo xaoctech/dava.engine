@@ -12,7 +12,7 @@ class RenderComponent : public Component
 {
 public:
     RenderComponent(RenderObject * _object = 0);
-    ~RenderComponent();
+    virtual ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
     virtual Component * Clone();
@@ -24,9 +24,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(RenderComponent, Component,
-		MEMBER(renderObject, "renderObject", 0)
-        //PROPERTY(renderObject, "renderObject", SetRenderObject, GetRenderObject, INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR)
-		);
+        MEMBER(renderObject, "renderObject", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 

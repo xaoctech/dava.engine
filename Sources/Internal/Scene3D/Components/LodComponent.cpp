@@ -82,4 +82,16 @@ void LodComponent::SetCurrentLod(LodData *newLod)
 	}
 }
 
+void LodComponent::SetForceDistance(const float32 &newDistance)
+{
+    forceDistance = newDistance;
+    forceDistanceSq = forceDistance * forceDistance;
+}
+    
+float32 LodComponent::GetForceDistance() const
+{
+    return forceDistance;
+}
+
+    
 };

@@ -33,7 +33,6 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/Introspection.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
@@ -365,9 +364,12 @@ private:
     
 public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
-		MEMBER(name, "Name", 0)
-		MEMBER(worldTransform, "World transform", 0)
-		MEMBER(customProperties, "Custom properties", 0)
+		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(worldTransform, "World transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
     );
 };
 	

@@ -31,6 +31,7 @@
 #include "Base/ObjectFactory.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Base/Introspection.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -49,11 +50,7 @@ void BaseObject::Save(KeyedArchive * archive)
 {
     archive->SetString("##name", GetClassName());
     
-    const IntrospectionInfo *info = GetIntrospection(this);
-    if(info)
-    {
-        SaveIntrospection(GetClassName(), archive, info, this);
-    }
+    SaveIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
     
 void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
@@ -62,30 +59,102 @@ void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, co
     while(NULL != info)
     {
         keyPrefix += String(info->Name());
+        
         for(int32 i = 0; i < info->MembersCount(); ++i)
         {
-            const IntrospectionMember *member = info->Member(i);
-			if(member)
-			{
-				const DAVA::MetaInfo *memberMetaInfo = member->Type();
-                if(memberMetaInfo && memberMetaInfo->GetIntrospection())
-                {
-                    SaveIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->GetIntrospection(), member->Pointer(object));
-                }
-                else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
-                {
-                    VariantType value = member->Value(object);
-                    archive->SetVariant(keyPrefix + String(member->Name()), &value);
-                }
-			}
+			const IntrospectionMember *member = info->Member(i);
+            if(!member)
+            {
+                continue;
+            }
+                
+            String memberKey = keyPrefix + String(member->Name());
+            
+            const MetaInfo *memberMetaInfo = member->Type();
+            if(memberMetaInfo->GetIntrospection())
+            {
+                SaveIntrospection(memberKey, archive, memberMetaInfo->GetIntrospection(), GetMemberObject(member, object));
+            }
+            else if(memberMetaInfo->IsPointer())
+            {
+                //TODO: need to do anything?
+            }
+            else if(member->Collection())
+            {
+                SaveCollection(memberKey, archive, member, object);
+            }
+            else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+            {
+                VariantType value = member->Value(object);
+                archive->SetVariant(memberKey, &value);
+            }
         }
         
         info = info->BaseInfo();
     }
 }
-    
 
+void BaseObject::SaveCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void *object)
+{
+    const IntrospectionCollectionBase *collection = member->Collection();
+    void *collectedObject = member->Pointer(object);
     
+    int32 collectionSize = collection->Size(collectedObject);
+    if(collectionSize > 0)
+    {
+        archive->SetInt32(key + "sizeOfCollection", collectionSize);
+        
+        MetaInfo *valueType = collection->ValueType();
+        IntrospectionCollectionBase::Iterator it = collection->Begin(collectedObject);
+        
+        if(valueType->GetIntrospection())
+        {
+            for(int32 index = 0; index < collectionSize; ++index, it = collection->Next(it))
+            {
+                String itemKey = key + String(Format("item_%d", index));
+                if(valueType->IsPointer())
+                {
+                    SaveIntrospection(itemKey, archive, valueType->GetIntrospection(), *((void **)collection->ItemPointer(it)));
+                }
+                else
+                {
+                    SaveIntrospection(itemKey, archive, valueType->GetIntrospection(), collection->ItemPointer(it));
+                }
+            }
+        }
+        else
+        {
+            for(int32 index = 0; index < collectionSize; ++index, it = collection->Next(it))
+            {
+                String itemKey = key + String(Format("item_%d", index));
+                
+                if(valueType->IsPointer())
+                {
+                    //TODO: need to do anything?
+                }
+                else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+                {
+                    VariantType value = VariantType::LoadData(collection->ItemPointer(it), valueType);
+                    archive->SetVariant(itemKey, &value);
+                }
+            }
+        }
+    }
+}
+    
+void * BaseObject::GetMemberObject(const IntrospectionMember *member, void * object) const
+{
+    const MetaInfo *memberMetaInfo = member->Type();
+    if(memberMetaInfo->IsPointer())
+    {
+        return (*((void **)member->Pointer(object)));
+    }
+
+    return member->Pointer(object);
+}
+
+
+
 BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
 {
     String name = archive->GetString("##name");
@@ -102,11 +171,7 @@ BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
  */
 void BaseObject::Load(KeyedArchive * archive)
 {
-    const IntrospectionInfo *info = GetIntrospection(this);
-    if(info)
-    {
-        LoadIntrospection(GetClassName(), archive, info, this);
-    }
+    LoadIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
  
 void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
@@ -115,28 +180,91 @@ void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, co
     while(NULL != info)
     {
         keyPrefix += String(info->Name());
+        
         for(int32 i = 0; i < info->MembersCount(); ++i)
         {
-            const IntrospectionMember *member = info->Member(i);
-			if(member)
-			{
-				const DAVA::MetaInfo *memberMetaInfo = member->Type();
-                if(memberMetaInfo && memberMetaInfo->GetIntrospection())
+			const IntrospectionMember *member = info->Member(i);
+            if(!member)
+            {
+                continue;
+            }
+            
+            String memberKey = keyPrefix + String(member->Name());
+            
+            const MetaInfo *memberMetaInfo = member->Type();
+            if(memberMetaInfo->GetIntrospection())
+            {
+                LoadIntrospection(memberKey, archive, memberMetaInfo->GetIntrospection(), GetMemberObject(member, object));
+            }
+            else if(memberMetaInfo->IsPointer())
+            {
+                //TODO: need to do anything?
+            }
+            else if(member->Collection())
+            {
+                LoadCollection(memberKey, archive, member, object);
+            }
+            else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+            {
+                const VariantType * value = archive->GetVariant(memberKey);
+                if(value)
                 {
-                    LoadIntrospection(keyPrefix + String(member->Name()), archive, memberMetaInfo->GetIntrospection(), member->Pointer(object));
+                    member->SetValue(object, *value);
                 }
-                else if(member->Flags() & INTROSPECTION_FLAG_SERIALIZABLE)
-                {
-                    const VariantType * value = archive->GetVariant(keyPrefix + String(member->Name()));
-                    if(value)
-                    {
-                        member->SetValue(object, *value);
-                    }
-                }
-			}
+            }
         }
         
         info = info->BaseInfo();
+    }
+}
+ 
+void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void *object)
+{
+    const IntrospectionCollectionBase *collection = member->Collection();
+    void *collectedObject = member->Pointer(object);
+    
+    int32 collectionSize = collection->Size(collectedObject);
+//    int32 collectionSize = archive->GetInt32(key + "sizeOfCollection", 0);
+    if(collectionSize > 0) //Do we need to realocate collection?
+    {
+        MetaInfo *valueType = collection->ValueType();
+        IntrospectionCollectionBase::Iterator it = collection->Begin(collectedObject);
+        
+        if(valueType->GetIntrospection())
+        {
+            for(int32 index = 0; index < collectionSize; ++index, it = collection->Next(it))
+            {
+                String itemKey = key + String(Format("item_%d", index));
+                if(valueType->IsPointer())
+                {
+                    LoadIntrospection(itemKey, archive, valueType->GetIntrospection(), *((void **)collection->ItemPointer(it)));
+                }
+                else
+                {
+                    LoadIntrospection(itemKey, archive, valueType->GetIntrospection(), collection->ItemPointer(it));
+                }
+            }
+        }
+        else
+        {
+            for(int32 index = 0; index < collectionSize; ++index, it = collection->Next(it))
+            {
+                String itemKey = key + String(Format("item_%d", index));
+                
+                if(valueType->IsPointer())
+                {
+                    //TODO: need to do anything?
+                }
+                else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+                {
+                    const VariantType * value = archive->GetVariant(itemKey);
+                    if(value)
+                    {
+                        VariantType::SaveData(collection->ItemPointer(it), valueType, *value);
+                    }
+                }
+            }
+        }
     }
 }
     

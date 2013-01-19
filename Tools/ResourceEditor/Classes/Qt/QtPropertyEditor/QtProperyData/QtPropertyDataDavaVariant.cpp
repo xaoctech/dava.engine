@@ -31,6 +31,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	case DAVA::VariantType::TYPE_VECTOR2:
 	case DAVA::VariantType::TYPE_VECTOR3:
 	case DAVA::VariantType::TYPE_VECTOR4:
+    case DAVA::VariantType::TYPE_COLOR:
 	default:
 		break;
 	}
@@ -100,6 +101,9 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
 	case DAVA::VariantType::TYPE_VECTOR4:
 		v = FromVector4(curVariantValue.AsVector4());
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        v = FromColor(curVariantValue.AsColor());
+        break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -155,6 +159,9 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 	case DAVA::VariantType::TYPE_VECTOR4:
 		ToVector4(value);
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        ToColor(value);
+        break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -218,6 +225,15 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 			ChildAdd("W", vec.w);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        {
+            DAVA::Color color = curVariantValue.AsColor();
+            ChildAdd("R", color.r);
+            ChildAdd("G", color.g);
+            ChildAdd("B", color.b);
+            ChildAdd("A", color.a);
+        }
+        break;
 	}
 }
 
@@ -261,6 +277,15 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 			ChildGet("W")->SetValue(vec.w);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+		{
+			DAVA::Color color = curVariantValue.AsColor();
+			ChildGet("R")->SetValue(color.r);
+			ChildGet("G")->SetValue(color.g);
+			ChildGet("B")->SetValue(color.b);
+			ChildGet("A")->SetValue(color.a);
+		}
+        break;
 	}
 }
 
@@ -312,6 +337,16 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			curVariantValue.SetVector4(vec);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+		{
+			DAVA::Color color;
+			color.r = ChildGet("R")->GetValue().toFloat();
+			color.g = ChildGet("G")->GetValue().toFloat();
+			color.b = ChildGet("B")->GetValue().toFloat();
+			color.a = ChildGet("A")->GetValue().toFloat();
+			curVariantValue.SetColor(color);
+		}
+        break;
 	}
 }
 
@@ -393,6 +428,15 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	return v;
 }
 
+QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
+{
+	QVariant v;
+    
+	v = QString().sprintf("[%g, %g, %g, %g]", color.r, color.g, color.b, color.a);
+	return v;
+}
+
+
 void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
 {
 	// No way to set whole archive
@@ -429,6 +473,12 @@ void QtPropertyDataDavaVariant::ToMatrix3(const QVariant &value)
 }
 
 void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
+{
+	// TODO:
+	// ...
+}
+
+void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
 	// TODO:
 	// ...

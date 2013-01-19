@@ -25,8 +25,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(BulletComponent, Component,
-                         NULL);
-
+        MEMBER(bulletObject, "Bullet Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 }

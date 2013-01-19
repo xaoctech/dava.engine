@@ -35,6 +35,7 @@
 #include "Base/FastName.h"
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
+#include "Render/Material.h"
 
 namespace DAVA
 {
@@ -52,7 +53,7 @@ public:
     uint32 primitiveType;
 };
 */
-class Material;
+//class Material;
 class PolygonGroup;
 class RenderLayer;
 class RenderDataObject;
@@ -118,6 +119,13 @@ protected:
     uint32 removeIndex;
 
 	AABBox3 aabbox;
+    
+public:
+    
+    INTROSPECTION_EXTEND(RenderBatch, BaseObject,
+        MEMBER(material, "Material", INTROSPECTION_EDITOR)
+//        MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+    );
 };
 
 inline PolygonGroup * RenderBatch::GetPolygonGroup()

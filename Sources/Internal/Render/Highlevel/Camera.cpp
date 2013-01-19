@@ -78,10 +78,67 @@ void Camera::SetFOV(const float32 &fovyInDegrees)
     Setup(fovyInDegrees, aspect, znear, zfar, ortho);
 }
     
-void Camera::SetAspect(float32 _aspect)
+void Camera::SetAspect(const float32 &_aspect)
 {
     Setup(fovy, _aspect, znear, zfar, ortho);
 }
+    
+void Camera::SetZNear(const float32 &_zNear)
+{
+    Setup(fovy, aspect, _zNear, zfar, ortho);
+}
+    
+void Camera::SetZFar(const float32 &_zFar)
+{
+    Setup(fovy, aspect, znear, _zFar, ortho);
+}
+
+void Camera::SetIsOrtho(const bool &_ortho)
+{
+    Setup(fovy, aspect, znear, zfar, _ortho);
+}
+    
+    
+void Camera::SetXMin(const float32 &_xmin)
+{
+    Setup(_xmin, xmax, ymin, ymax, znear, zfar);
+}
+
+void Camera::SetXMax(const float32 &_xmax)
+{
+    Setup(xmin, _xmax, ymin, ymax, znear, zfar);
+}
+
+void Camera::SetYMin(const float32 &_ymin)
+{
+    Setup(xmin, xmax, _ymin, ymax, znear, zfar);
+}
+
+void Camera::SetYMax(const float32 &_ymax)
+{
+    Setup(xmin, xmax, ymin, _ymax, znear, zfar);
+}
+    
+float32 Camera::GetXMin() const
+{
+    return xmin;
+}
+
+float32 Camera::GetXMax() const
+{
+    return xmax;
+}
+
+float32 Camera::GetYMin() const
+{
+    return ymin;
+}
+
+float32 Camera::GetYMax() const
+{
+    return ymax;
+}
+
     
 float32 Camera::GetFOV() const
 {
