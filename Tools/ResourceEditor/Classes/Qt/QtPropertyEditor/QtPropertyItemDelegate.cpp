@@ -46,6 +46,17 @@ void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 {
 	// TODO:
 	// custom setEditorData
+    const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
+	if(NULL != propertyModel)
+	{
+		QtPropertyItem* item = (QtPropertyItem*) propertyModel->itemFromIndex(index);
+		QtPropertyData* data = item->GetPropertyData();
+		if(NULL != data)
+		{
+            data->SetEditorData(editor);
+		}
+	}
+
 
     QStyledItemDelegate::setEditorData(editor, index);
 
@@ -56,6 +67,18 @@ void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 	// TODO:
 	// custom setModelData
 
+    const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
+	if(NULL != propertyModel)
+	{
+		QtPropertyItem* item = (QtPropertyItem*) propertyModel->itemFromIndex(index);
+		QtPropertyData* data = item->GetPropertyData();
+		if(NULL != data)
+		{
+            data->EditorDone(editor);
+		}
+	}
+    
+    
     QStyledItemDelegate::setModelData(editor, model, index);
 }
 

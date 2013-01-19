@@ -1,5 +1,8 @@
 #include "DAVAEngine.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "../../Main/QtUtils.h"
+
+#include <QColorDialog>
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
@@ -227,11 +230,11 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
     case DAVA::VariantType::TYPE_COLOR:
         {
-            DAVA::Color color = curVariantValue.AsColor();
-            ChildAdd("R", color.r);
-            ChildAdd("G", color.g);
-            ChildAdd("B", color.b);
-            ChildAdd("A", color.a);
+//            DAVA::Color color = curVariantValue.AsColor();
+//            ChildAdd("R", color.r);
+//            ChildAdd("G", color.g);
+//            ChildAdd("B", color.b);
+//            ChildAdd("A", color.a);
         }
         break;
 	}
@@ -279,11 +282,11 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 		break;
     case DAVA::VariantType::TYPE_COLOR:
 		{
-			DAVA::Color color = curVariantValue.AsColor();
-			ChildGet("R")->SetValue(color.r);
-			ChildGet("G")->SetValue(color.g);
-			ChildGet("B")->SetValue(color.b);
-			ChildGet("A")->SetValue(color.a);
+//			DAVA::Color color = curVariantValue.AsColor();
+//			ChildGet("R")->SetValue(color.r);
+//			ChildGet("G")->SetValue(color.g);
+//			ChildGet("B")->SetValue(color.b);
+//			ChildGet("A")->SetValue(color.a);
 		}
         break;
 	}
@@ -339,12 +342,12 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 		break;
     case DAVA::VariantType::TYPE_COLOR:
 		{
-			DAVA::Color color;
-			color.r = ChildGet("R")->GetValue().toFloat();
-			color.g = ChildGet("G")->GetValue().toFloat();
-			color.b = ChildGet("B")->GetValue().toFloat();
-			color.a = ChildGet("A")->GetValue().toFloat();
-			curVariantValue.SetColor(color);
+//			DAVA::Color color;
+//			color.r = ChildGet("R")->GetValue().toFloat();
+//			color.g = ChildGet("G")->GetValue().toFloat();
+//			color.b = ChildGet("B")->GetValue().toFloat();
+//			color.a = ChildGet("A")->GetValue().toFloat();
+//			curVariantValue.SetColor(color);
 		}
         break;
 	}
@@ -430,10 +433,8 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-	QVariant v;
-    
-	v = QString().sprintf("[%g, %g, %g, %g]", color.r, color.g, color.b, color.a);
-	return v;
+//	return QString().sprintf("[%g, %g, %g, %g]", color.r, color.g, color.b, color.a);
+    return QColorFromColor(color);
 }
 
 
@@ -482,4 +483,34 @@ void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 {
 	// TODO:
 	// ...
+}
+
+QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+        QColorDialog *dlg = new QColorDialog(parent);
+        dlg->setOption(QColorDialog::ShowAlphaChannel, true);
+        return dlg;
+    }
+    
+    return NULL;
+}
+
+void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+        const QColorDialog *dlg = static_cast<QColorDialog *>(editor);
+        curVariantValue.SetColor(ColorFromQColor(dlg->currentColor()));
+    }
+}
+
+void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+        QColorDialog *dlg = static_cast<QColorDialog *>(editor);
+        dlg->setCurrentColor(QColorFromColor(curVariantValue.AsColor()));
+    }
 }
