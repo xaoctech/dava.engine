@@ -22,6 +22,10 @@ protected:
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
 
+	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
+	virtual void EditorDoneInternal(QWidget *editor);
+    virtual void SetEditorDataInternal(QWidget *editor);
+    
 private:
 	void ChildsCreate();
 	void ChildsSetFromMe();

@@ -63,6 +63,16 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 	return CreateEditorInternal(parent, option);
 }
 
+void QtPropertyData::EditorDone(QWidget *editor)
+{
+    return EditorDoneInternal(editor);
+}
+
+void QtPropertyData::SetEditorData(QWidget *editor)
+{
+    return SetEditorDataInternal(editor);
+}
+
 void QtPropertyData::ParentUpdate()
 {
 	if(NULL != parent)
@@ -135,6 +145,16 @@ QWidget* QtPropertyData::CreateEditorInternal(QWidget *parent, const QStyleOptio
 	// should be re-implemented by sub-class
 
 	return NULL;
+}
+
+void QtPropertyData::EditorDoneInternal(QWidget *editor)
+{
+	// should be re-implemented by sub-class
+}
+
+void QtPropertyData::SetEditorDataInternal(QWidget *editor)
+{
+	// should be re-implemented by sub-class
 }
 
 void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)
