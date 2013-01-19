@@ -39,6 +39,7 @@
 #include "Math/Matrix4.h"
 #include "Utils/Utils.h"
 #include "Base/Meta.h"
+#include "Math/Color.h"
 
 namespace DAVA
 {
@@ -62,6 +63,7 @@ const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
 const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
 const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
 const String VariantType::TYPENAME_POINTER = "void *";
+const String VariantType::TYPENAME_COLOR   = "Color";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
@@ -82,7 +84,8 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
-	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>())
+	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>()),
+	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>())
 };
 
 VariantType::VariantType()
@@ -219,6 +222,15 @@ void VariantType::SetPointer(const void* const &value)
 	pointerValue = value;
 }
 
+void VariantType::SetColor(const DAVA::Color &value)
+{
+    ReleasePointer();
+    type = TYPE_COLOR;
+    colorValue = new Color(value);
+}
+
+    
+    
 void VariantType::SetVariant(const VariantType& var)
 {
 	switch(var.type)
@@ -309,6 +321,12 @@ void VariantType::SetVariant(const VariantType& var)
 			SetPointer(var.AsPointer());
 		}
 		break;
+    case  TYPE_COLOR:
+		{
+			SetColor(var.AsColor());
+		}
+        break;
+
 	default:
 		{
 			//DVASSERT(0 && "Something went wrong with VariantType");
@@ -423,6 +441,13 @@ const void* const & VariantType::AsPointer() const
 	DVASSERT(type == TYPE_POINTER);
 	return pointerValue;
 }
+    
+const Color & VariantType::AsColor() const
+{
+    DVASSERT(type == TYPE_COLOR);
+    return *colorValue;
+}
+
     
 bool VariantType::Write(File * fp) const
 {
@@ -552,6 +577,13 @@ bool VariantType::Write(File * fp) const
 			DVASSERT(0 && "Can't write pointer");
 		}
 		break;
+    case TYPE_COLOR:
+		{
+            written = fp->Write(colorValue->color, sizeof(float32) * 4);
+            if (written != sizeof(sizeof(float32) * 4))return false;
+		}
+        break;
+
             
 	}
 	return true;
@@ -711,6 +743,16 @@ bool VariantType::Read(File * fp)
 				DVASSERT(0 && "Can't read pointer");
 			}
 			break;
+        case TYPE_COLOR:
+		{
+            ReleasePointer();
+            
+            colorValue = new Color;
+            read = fp->Read(colorValue->color, sizeof(float32) * 4);
+            if (read != sizeof(sizeof(float32) * 4))return false;
+		}
+            break;
+
 
 		default:
 		{
@@ -787,6 +829,11 @@ void VariantType::ReleasePointer()
             case TYPE_WIDE_STRING:
             {
                 delete wideStringValue;
+            }
+                break;
+            case TYPE_COLOR:
+            {
+                delete colorValue;
             }
                 break;
         }
@@ -920,6 +967,11 @@ bool VariantType::operator==(const VariantType& other) const
 					isEqual = (AsPointer() == other.AsPointer());
 				}
 				break;
+			case  TYPE_COLOR:
+            {
+                isEqual = (AsColor() == other.AsColor());
+            }
+				break;
                 
         }
     }
@@ -1007,6 +1059,9 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	case TYPE_POINTER:
 		v.SetPointer(*((const void **) src));
 		break;
+    case TYPE_COLOR:
+        v.SetColor(*((DAVA::Color *) src));
+        break;
 	default:
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
 	}
@@ -1097,6 +1152,9 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	case TYPE_POINTER:
 		*((const void **) dst) = val.AsPointer();
 		break;
+    case TYPE_COLOR:
+        *((DAVA::Color *) dst) = val.AsColor();
+        break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}

@@ -3,71 +3,64 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
 
-//#include "Base/IntrospectionFlags.h"
-
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info)
 	: object(_object)
 	, info(_info)
 {
 	if(NULL != info)
 	{
-		for(int i = 0; i < info->MembersCount(); ++i)
+		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
 			const DAVA::IntrospectionMember *member = info->Member(i);
-			if(NULL != member)
+			if(member)
 			{
 				const DAVA::MetaInfo *memberMetaInfo = member->Type();
-
 				printf("adding %s, type %s\n", member->Name(), memberMetaInfo->GetTypeName());
 
-				// check if member has introspection
-				if(NULL != memberMetaInfo->GetIntrospection())
+				if(memberMetaInfo->GetIntrospection())
 				{
 					QtPropertyData *childData = NULL;
-
-					if(!memberMetaInfo->IsPointer())
+					if(memberMetaInfo->IsPointer())
 					{
-						childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
+						childData = new QtPropertyDataIntrospection(*((void **)member->Pointer(object)), memberMetaInfo->GetIntrospection());
 					}
 					else
 					{
-						childData = new QtPropertyDataIntrospection(*((void **)member->Pointer(object)), memberMetaInfo->GetIntrospection());
+						childData = new QtPropertyDataIntrospection(member->Pointer(object), memberMetaInfo->GetIntrospection());
 					}
 
 					ChildAdd(member->Name(), childData);
 					childVariantIndexes.insert(NULL, i);
 				}
-				else if(0 == (member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_HIDDEN))
+				else //if(member->Flags() & DAVA::INTROSPECTION_EDITOR)
 				{
-					if(!memberMetaInfo->IsPointer())
-					{
-						if(NULL == member->Collection())
-						{
-							QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
-							if(member->Flags() & DAVA::INTROSPECTION_FLAG_EDITOR_READONLY)
-							{
-								int flags = childData->GetFlags();
-								childData->SetFlags(flags | FLAG_IS_NOT_EDITABLE);
-							}
-
-							ChildAdd(member->Name(), childData);
-							childVariantIndexes.insert(childData, i);
-						}
-						else
-						{
-							QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(member->Pointer(object), member->Collection());
-							ChildAdd(member->Name(), childCollection);
-							childVariantIndexes.insert(NULL, i);
-						}
-					}
-					else
-					{
-						QtPropertyData* childData = new QtPropertyData(QString("##intro_poiner##"));
-						childData->SetFlags(FLAG_IS_NOT_EDITABLE);
+                    if(memberMetaInfo->IsPointer())
+                    {
+                        QtPropertyData* childData = new QtPropertyData(QString("##intro_poiner##"));
+						childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
 						ChildAdd(member->Name(), childData);
 						childVariantIndexes.insert(NULL, i);
-					}
-                    
+                    }
+                    else
+                    {
+                        if(member->Collection())
+                        {
+                            QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(member->Pointer(object), member->Collection());
+							ChildAdd(member->Name(), childCollection);
+							childVariantIndexes.insert(NULL, i);
+                        }
+                        else
+                        {
+                            QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
+							if(member->Flags() & DAVA::INTROSPECTION_EDITOR_READONLY)
+							{
+                                childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
+							}
+                            
+							ChildAdd(member->Name(), childData);
+							childVariantIndexes.insert(childData, i);
+                        }
+                    }
 				}
 			}
 		}

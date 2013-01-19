@@ -92,8 +92,14 @@ protected:
     uint64 pointer;
     Scene * scene;
     String name;
-    std::vector<DataNode*> children;
+    Vector<DataNode*> children;
     int32 index;
+    
+public:
+    
+    INTROSPECTION_EXTEND(DataNode, BaseObject,
+        MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
     
 /*class DataNodeArray : public BaseObject

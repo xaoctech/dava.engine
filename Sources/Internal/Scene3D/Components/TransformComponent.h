@@ -14,7 +14,7 @@ class TransformComponent : public Component
 {
 public:
     TransformComponent();
-    ~TransformComponent();
+    virtual ~TransformComponent();
 
     IMPLEMENT_COMPONENT_TYPE(TRANSFORM_COMPONENT);
 
@@ -42,8 +42,8 @@ private:
 public:
 
     INTROSPECTION_EXTEND(TransformComponent, Component,
-        MEMBER(localMatrix, "Local Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
-        MEMBER(worldMatrix, "World Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
+        MEMBER(localMatrix, "Local Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
+        MEMBER(worldMatrix, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
     );
 };
 

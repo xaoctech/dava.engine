@@ -126,9 +126,14 @@ protected:
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-		MEMBER(flags, "flags", 0)
-		COLLECTION(renderBatchArray, "renderBatchArray", 0)
-		);
+		MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//         MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//         MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 inline uint32 RenderObject::GetRemoveIndex()
