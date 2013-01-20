@@ -76,6 +76,13 @@ protected:
 	uint16 *data;
     int32 size;
     int32 tileSize;
+    
+public:
+    
+    INTROSPECTION_EXTEND(Heightmap, BaseObject,
+        MEMBER(size, "Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(tileSize, "Tile Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+    );
 };
 
 };
