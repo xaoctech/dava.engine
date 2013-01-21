@@ -5,17 +5,11 @@
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	// TODO:
-	// custom paint
-
     QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	// TODO:
-	// custom sizeHint
-
     return QStyledItemDelegate::sizeHint(option, index);
 }
 
@@ -44,8 +38,6 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 
 void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-	// TODO:
-	// custom setEditorData
     const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
 	if(NULL != propertyModel)
 	{
@@ -64,9 +56,6 @@ void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 
 void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-	// TODO:
-	// custom setModelData
-
     const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
 	if(NULL != propertyModel)
 	{
@@ -75,18 +64,11 @@ void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 		if(NULL != data)
 		{
             data->EditorDone(editor);
+			item->setIcon(data->GetIcon());
 		}
 	}
     
-    
     QStyledItemDelegate::setModelData(editor, model, index);
-}
-
-void QtPropertyItemDelegate::commitAndCloseEditor()
-{
-    //StarEditor *editor = qobject_cast<StarEditor *>(sender());
-    //emit commitData(editor);
-    //emit closeEditor(editor);
 }
 
 void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index) const
@@ -96,9 +78,24 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 	// tune widget border and geometry
 	if(NULL != editor)
 	{
-		editor->setStyleSheet("border: 2px solid gray;");
+		editor->setObjectName("customPropertyEditor");
+		editor->setStyleSheet("#customPropertyEditor{ border: 2px solid gray; }");
 		QRect r = option.rect;
 		r.adjust(0, -2, 0, 2);
+
+		// check if item has icon and move editor right if it has one
+		const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
+		if(NULL != propertyModel)
+		{
+			QtPropertyItem* item = (QtPropertyItem*) propertyModel->itemFromIndex(index);
+			QtPropertyData* data = item->GetPropertyData();
+
+			if(!data->GetIcon().isNull())
+			{
+				r.adjust(20, 0, 0, 0);
+			}
+		}
+
 		editor->setGeometry(r);
 	}
 }
