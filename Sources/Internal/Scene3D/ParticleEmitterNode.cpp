@@ -61,7 +61,6 @@ ParticleEmitter * ParticleEmitterNode::GetEmitter()
 	return emitter;
 }
 
-
 SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode)
