@@ -788,13 +788,13 @@ KeyedArchive * SceneNode::GetCustomProperties()
 void SceneNode::SetSolid(bool isSolid)
 {
 //    isSolidNode = isSolid;
-    customProperties->SetBool("editor.isSolid", isSolid);
+    customProperties->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
 bool SceneNode::GetSolid()
 {
 //    return isSolidNode;
-    return customProperties->GetBool("editor.isSolid", false);
+    return customProperties->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 }
 
 void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)

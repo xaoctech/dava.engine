@@ -18,6 +18,7 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/CommandLineTool.h"
+#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
 
 #include <QApplication>
 #include <QPixmap>
@@ -27,6 +28,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
+	, oldDockSceneGraphMinSize(-1, -1)
+	, oldDockSceneGraphMaxSize(-1, -1)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -59,7 +62,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
 	
-	ui->dockParticleEditor->hide(); //hide particle editor dock on start up
+	ui->dockParticleEditor->installEventFilter(this);
+	ChangeParticleDockVisible(false); //hide particle editor dock on start up
 	ui->dockParticleEditorTimeLine->hide();
 }
 
@@ -232,7 +236,7 @@ void QtMainWindow::SetupToolBar()
 
 void QtMainWindow::OpenLastProject()
 {
-    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
 
@@ -268,7 +272,43 @@ void QtMainWindow::SetupDockWidgets()
 
 void QtMainWindow::ChangeParticleDockVisible(bool visible)
 {
+	if (ui->dockParticleEditor->isVisible() == visible)
+		return;
+
+	// ui magic :)
+	bool isNeedEmitSignal = false;
+	if (oldDockSceneGraphMaxSize.width() < 0)
+	{
+		oldDockSceneGraphMinSize = ui->dockSceneGraph->minimumSize();
+		oldDockSceneGraphMaxSize = ui->dockSceneGraph->maximumSize();
+		isNeedEmitSignal = true;
+	}
+	
+	int minWidthParticleDock = ui->dockParticleEditor->minimumWidth();
+	int maxWidthParticleDock = ui->dockParticleEditor->maximumWidth();
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setFixedWidth(ui->dockParticleEditor->width());
+	
 	ui->dockParticleEditor->setVisible(visible);
+	
+	ui->dockParticleEditor->setMinimumWidth(minWidthParticleDock);
+	ui->dockParticleEditor->setMaximumWidth(maxWidthParticleDock);
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setVisible(visible);
+	
+	if (isNeedEmitSignal)
+		QTimer::singleShot(1, this, SLOT(returnToOldMaxMinSizesForDockSceneGraph()));
+}
+
+void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
+{
+	ui->dockSceneGraph->setMinimumSize(oldDockSceneGraphMinSize);
+	ui->dockSceneGraph->setMaximumSize(oldDockSceneGraphMaxSize);
+	
+	oldDockSceneGraphMinSize = QSize(-1, -1);
+	oldDockSceneGraphMaxSize = QSize(-1, -1);
 }
 
 void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
@@ -310,6 +350,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
 
 			TextureCheckConvetAndWait();
+			UpdateParticleSprites();
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -321,6 +362,15 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
+	else if (obj == ui->dockParticleEditor)
+	{
+		if (QEvent::Close == event->type())
+		{
+			event->ignore();
+			ChangeParticleDockVisible(false);
+			return true;
+		}
+	}
     
     return QMainWindow::eventFilter(obj, event);
 }
@@ -342,7 +392,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
-	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && NULL == convertWaitDialog)
+	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread
@@ -360,6 +410,11 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 			convertWaitDialog->show();
 		}
 	}
+}
+
+void QtMainWindow::UpdateParticleSprites()
+{
+	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
 }
 
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)

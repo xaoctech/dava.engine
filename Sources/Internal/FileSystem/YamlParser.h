@@ -156,6 +156,7 @@ class YamlParser : public BaseObject
 protected:
 	YamlParser();
 	virtual ~YamlParser();
+
 	bool Parse(const String & fileName);
 	
 public:

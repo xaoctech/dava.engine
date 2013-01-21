@@ -26,6 +26,8 @@ public:
 	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
 	bool checkAndCompressAll(bool forceConvertAll);
+	
+	static QImage fromDavaImage(DAVA::Image *image);
 
 signals:
 	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);

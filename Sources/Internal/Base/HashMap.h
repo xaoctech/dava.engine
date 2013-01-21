@@ -347,6 +347,8 @@ public:
 				item = next;
 			}
 		}
+
+		delete[] oldTable;
 	}
 
 	Iterator Begin()

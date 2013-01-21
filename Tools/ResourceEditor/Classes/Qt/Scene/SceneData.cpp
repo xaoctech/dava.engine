@@ -425,3 +425,37 @@ void SceneData::EmitSceneChanged()
 {
 	emit SceneChanged(this->scene);
 }
+
+void SceneData::GetAllSprites(List<DAVA::Sprite*> & sprites)
+{
+	Scene* scene = this->GetScene();
+	uint32 childCount = scene->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllSpriteRecursive (scene->GetChild(i), sprites);
+	}
+}
+
+void SceneData::FindAllSpriteRecursive(SceneNode *node , List<DAVA::Sprite*> & sprites)
+{
+	ParticleEmitterNode* particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
+	if( NULL != particleEmitterNode)
+	{
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
+		Vector<ParticleLayer*> layers = emitter->GetLayers();
+		for(Vector<ParticleLayer*>::const_iterator itLayer = layers.begin(); itLayer != layers.end(); ++itLayer)
+		{
+			Sprite* sprite = (*itLayer)->GetSprite();
+			if(NULL != sprite)
+			{
+				sprites.push_back(sprite);
+			}
+		}
+	}
+
+	uint32 childCount = node->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		FindAllSpriteRecursive(node->GetChild(i), sprites);
+	}
+}

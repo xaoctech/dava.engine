@@ -20,7 +20,6 @@ EmitterContainerNode::EmitterContainerNode(SceneNode* rootNode, SceneNode* emitt
 	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
     DVASSERT(emitterComponent);
 	this->emitter = emitter;
-	
 }
 
 EmitterContainerNode::~EmitterContainerNode()

@@ -22,9 +22,6 @@ public:
     
     // Get the layers count.
     int32 GetLayersCount() const;
-
-    // Update the name for child layers.
-    void UpdateLayerNames();
 };
 
 };

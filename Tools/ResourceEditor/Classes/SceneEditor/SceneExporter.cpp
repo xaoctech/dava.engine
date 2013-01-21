@@ -2,6 +2,7 @@
 #include "SceneValidator.h"
 
 #include "PVRConverter.h"
+#include "DXTConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -460,6 +461,12 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				{
 					PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
 					descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+					descriptor->Save();
+				}
+				else if(exportFormat == DXT_FILE)
+				{
+					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
+					descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
 					descriptor->Save();
 				}
 

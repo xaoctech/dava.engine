@@ -39,6 +39,10 @@ public slots:
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 
+	void UpdateParticleSprites();
+
+	void returnToOldMaxMinSizesForDockSceneGraph();
+
 private slots:
 	void ProjectOpened(const QString &path);
     void MenuFileWillShow();
@@ -55,6 +59,10 @@ private:
 	QProgressDialog *convertWaitDialog;
     
     //LibraryModel *libraryModel;
+	
+	QSize oldDockSceneGraphMaxSize;
+	QSize oldDockSceneGraphMinSize;
+
 };
 
 

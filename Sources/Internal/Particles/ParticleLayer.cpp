@@ -101,6 +101,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	{
 		dstLayer = new ParticleLayer();
 	}
+
 	if (life)
 		dstLayer->life.Set(life->Clone());
 	
@@ -193,6 +194,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (frameOverLife)
 		dstLayer->frameOverLife.Set(frameOverLife->Clone());
 	
+	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->additive = additive;
 	dstLayer->startTime = startTime;
@@ -637,6 +639,12 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 			type = TYPE_SINGLE_PARTICLE;
 	}
 
+	YamlNode * nameNode = node->Get("name");
+	if (nameNode)
+	{
+		layerName = nameNode->AsString();
+	}
+	
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
@@ -689,14 +697,26 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		RefPtr< PropertyLine<Vector3> > forceVariation = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("forceVariation%d", k));	
 		RefPtr< PropertyLine<float32> > forceOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, Format("forceOverLife%d", k));
         
+        // Amount of Forces, Forces Variations and Force Overlifes must be identical.
         if(force.Get())
+        {
             forces.push_back(force);
-        if(forceVariation.Get())
+
+            if(forceVariation.Get() == NULL)
+            {
+                forceVariation = force->Clone();
+            }
             forcesVariation.push_back(forceVariation);
-        if(forceOverLife.Get())
+
+            if(forceOverLife.Get() == NULL)
+            {
+                forceOverLife = RefPtr< PropertyLine<float32> >(new PropertyLineValue<float32>(0.0f));
+            }
             forcesOverLife.push_back(forceOverLife);
+		}
 	}
 
+    DVASSERT(forces.size() == forcesOverLife.size());
     DVASSERT(forces.size() == forcesOverLife.size());
 	
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");	
@@ -753,7 +773,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     YamlNode* layerNode = new YamlNode(YamlNode::TYPE_MAP);
     String layerNodeName = Format("layer%d", layerIndex);
     parentNode->AddNodeToMap(layerNodeName, layerNode);
-    
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
                                                                  this->type == TYPE_SINGLE_PARTICLE ? "single" : "particles");
