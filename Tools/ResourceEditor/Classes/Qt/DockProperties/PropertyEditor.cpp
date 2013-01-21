@@ -30,8 +30,6 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	Test();
-
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
@@ -53,6 +51,8 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
             }
         }
 	}
+
+	Test();
 
 	expandToDepth(0);
 }
@@ -105,6 +105,10 @@ void PropertyEditor::Test()
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
+
+	DAVA::VariantType v;
+	v.SetColor(DAVA::Color(1.0, 0.5, 0, 1.0));
+	AppendProperty("test color", new QtPropertyDataDavaVariant(v));
 
 	//IntrospectionCollection<std::vector, int> col(vec);
 	/*

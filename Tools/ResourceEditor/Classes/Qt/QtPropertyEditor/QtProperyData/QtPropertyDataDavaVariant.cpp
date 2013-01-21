@@ -1,8 +1,10 @@
 #include "DAVAEngine.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 #include "../../Main/QtUtils.h"
 
 #include <QColorDialog>
+#include <QLineEdit>
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
@@ -40,6 +42,9 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	}
 
 	ChildsCreate();
+
+	// ensure data is fully initialized (icons set)
+	GetValueInternal();
 }
 
 QtPropertyDataDavaVariant::~QtPropertyDataDavaVariant()
@@ -433,8 +438,13 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-//	return QString().sprintf("[%g, %g, %g, %g]", color.r, color.g, color.b, color.a);
-    return QColorFromColor(color);
+	QColor c = QColorFromColor(color);
+
+	QPixmap pix(16,16);
+	pix.fill(c);
+	SetIcon(pix);
+
+    return c;
 }
 
 
@@ -489,9 +499,8 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
 {
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
-        QColorDialog *dlg = new QColorDialog(parent);
-        dlg->setOption(QColorDialog::ShowAlphaChannel, true);
-        return dlg;
+		QtColorLineEdit *colorLineEdit = new QtColorLineEdit(parent);
+		return colorLineEdit;
     }
     
     return NULL;
@@ -501,8 +510,8 @@ void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 {
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
-        const QColorDialog *dlg = static_cast<QColorDialog *>(editor);
-        curVariantValue.SetColor(ColorFromQColor(dlg->currentColor()));
+		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+        curVariantValue.SetColor(ColorFromQColor(colorLineEdit->GetColor()));
     }
 }
 
@@ -510,7 +519,7 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 {
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
-        QColorDialog *dlg = static_cast<QColorDialog *>(editor);
-        dlg->setCurrentColor(QColorFromColor(curVariantValue.AsColor()));
+		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+		colorLineEdit->SetColor(QColorFromColor(curVariantValue.AsColor()));
     }
 }
