@@ -61,24 +61,22 @@ ParticleEmitter * ParticleEmitterNode::GetEmitter()
 	return emitter;
 }
 
+SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitterNode>(this), "Can clone only ParticleEmitterNode");
+		dstNode = new ParticleEmitterNode();
+	}
 
-#pragma warning TODO: YuriCoder, 2013/01/18. Return to this code!
-//SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
-//{
-//	if (!dstNode) 
-//	{
-//		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitterNode>(this), "Can clone only ParticleEmitterNode");
-//		dstNode = new ParticleEmitterNode();
-//	}
-//
-//	SceneNode::Clone(dstNode);
-//	ParticleEmitterNode *nd = (ParticleEmitterNode *)dstNode;
-//
-//	nd->yamlPath = yamlPath;
-//	nd->LoadFromYaml(yamlPath);
-//
-//	return dstNode;
-//}
+	SceneNode::Clone(dstNode);
+	ParticleEmitterNode *nd = (ParticleEmitterNode *)dstNode;
+
+	nd->yamlPath = yamlPath;
+	nd->LoadFromYaml(yamlPath);
+
+	return dstNode;
+}
 
 void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
