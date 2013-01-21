@@ -50,6 +50,8 @@ struct Matrix4;
 class Color;
 class KeyedArchive;
     
+class FastName;
+    
 /**
  \ingroup filesystem
  \brief Class to store value of all basic types in one instance. Can be used for various serialization / deserialization purposes.
@@ -79,6 +81,7 @@ public:
 
 	static const String TYPENAME_POINTER;   // "void *"
 	static const String TYPENAME_COLOR;     // "Color"
+	static const String TYPENAME_FASTNAME;     // "FastName"
 
 	VariantType();
     VariantType(const VariantType &var);
@@ -105,6 +108,7 @@ public:
         TYPE_MATRIX4,
 		TYPE_POINTER,
         TYPE_COLOR,
+        TYPE_FASTNAME,
         
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
@@ -132,6 +136,7 @@ public:
         WideString* wideStringValue;
         
         Color* colorValue;
+        FastName *fastnameValue;
 	};
 
     struct PairTypeName
@@ -263,6 +268,11 @@ public:
 	 */
 	void SetColor(const Color & value);
 
+    /**
+     \brief Function to set FastName value to variant type variable
+     \param[in] value	value to set
+	 */
+	void SetFastName(const FastName & value);
     
     
 	/**
@@ -373,6 +383,12 @@ public:
          \returns value of variable, or generate assert if variable type is different
      */
     const Color &AsColor() const;
+
+    /**
+         \brief Function to return FastName from variable. Returns pointer to the FastName inside.
+         \returns value of variable, or generate assert if variable type is different
+     */
+    const FastName &AsFastName() const;
 
     
 	// File read & write helpers
