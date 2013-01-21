@@ -48,6 +48,16 @@ void QtPropertyData::SetValue(const QVariant &value)
 	ParentUpdate();
 }
 
+void QtPropertyData::SetIcon(const QIcon &icon)
+{
+	curIcon = icon;
+}
+
+QIcon QtPropertyData::GetIcon()
+{
+	return curIcon;
+}
+
 int QtPropertyData::GetFlags()
 {
 	return curFlags;

@@ -2,6 +2,7 @@
 #define __QT_PROPERTY_DATA_H__
 
 #include <QStyledItemDelegate>
+#include <QIcon>
 #include <QMap>
 
 class QtPropertyData
@@ -24,6 +25,9 @@ public:
 
 	QVariant GetValue();
 	void SetValue(const QVariant &value);
+
+	QIcon GetIcon();
+	void SetIcon(const QIcon &icon);
 
 	int GetFlags();
 	void SetFlags(int flags);
@@ -66,6 +70,7 @@ protected:
 
 private:
 	QVariant curValue;
+	QIcon curIcon;
 	int curFlags;
 
 	QtPropertyData *parent;

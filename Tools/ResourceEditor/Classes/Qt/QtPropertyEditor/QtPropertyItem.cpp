@@ -37,6 +37,8 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 			hasChildren = true;
 		}
 		
+		setIcon(data->GetIcon());
+
 		ApplyDataFlags();
 		ApplyNameStyle(name);
 	}
@@ -75,17 +77,6 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 
 	switch(role)
 	{
-    case Qt::BackgroundColorRole:
-        if(NULL != itemData)
-        {
-            QVariant value = itemData->GetValue();
-            if(value.type() == QVariant::Color)
-            {
-                v = value;
-            }
-        }
-        break;
-            
 	case Qt::DisplayRole:
 	case Qt::EditRole:
 		if(NULL != itemData)
