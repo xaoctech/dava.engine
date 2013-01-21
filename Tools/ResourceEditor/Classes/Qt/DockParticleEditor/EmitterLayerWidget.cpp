@@ -25,6 +25,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	mainBox = new QVBoxLayout;
 	this->setLayout(mainBox);
 	
+	layerNameLineEdit = new QLineEdit();
+	mainBox->addWidget(layerNameLineEdit);
+	connect(layerNameLineEdit,
+			SIGNAL(editingFinished()),
+			this,
+			SLOT(OnValueChanged()));
+
 	enableCheckBox = new QCheckBox("Enable layer");
 	mainBox->addWidget(enableCheckBox);
 	connect(enableCheckBox,
@@ -46,7 +53,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	mainBox->addLayout(spriteHBox);
 	QVBoxLayout* spriteVBox = new QVBoxLayout;
 	spriteHBox->addLayout(spriteVBox);
-	QPushButton* spriteBtn = new QPushButton("Set sprite", this);
+	spriteBtn = new QPushButton("Set sprite", this);
 	spriteBtn->setMinimumHeight(30);
 	spritePathLabel = new QLineEdit(this);
 	spritePathLabel->setReadOnly(true);
@@ -56,7 +63,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			SIGNAL(clicked(bool)),
 			this,
 			SLOT(OnSpriteBtn()));
-	
+	connect(spritePathLabel, SIGNAL(textChanged(const QString&)), this, SLOT(OnSpritePathChanged(const QString&)));
+
 	lifeTimeLine = new TimeLineWidget(this);
 	InitWidget(lifeTimeLine);
 	numberTimeLine = new TimeLineWidget(this);
@@ -120,14 +128,49 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 			this,
 			SLOT(OnValueChanged()));
 	
-	
+	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
+        sp->installEventFilter( this );
+    }
+	spritePathLabel->installEventFilter(this);
+
 	sprite = NULL;
 	blockSignals = false;
 }
 
 EmitterLayerWidget::~EmitterLayerWidget()
 {
-	
+	disconnect(layerNameLineEdit,
+			SIGNAL(editingFinished()),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(enableCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(additiveCheckBox,
+			SIGNAL(stateChanged(int)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(spriteBtn,
+			SIGNAL(clicked(bool)),
+			this,
+			SLOT(OnSpriteBtn()));
+	disconnect(spritePathLabel,
+			SIGNAL(textChanged(const QString&)),
+			this,
+			SLOT(OnSpritePathChanged(const QString&)));
+	disconnect(alignToMotionSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(startTimeSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
+	disconnect(endTimeSpin,
+			SIGNAL(valueChanged(double)),
+			this,
+			SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -152,9 +195,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	float32 emitterLifeTime = emitter->GetLifeTime();
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
 
+	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	enableCheckBox->setChecked(!layer->isDisabled);
 	additiveCheckBox->setChecked(layer->additive);
-	
+
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();
 	Sprite* renderSprite = Sprite::CreateAsRenderTarget(SPRITE_SIZE, SPRITE_SIZE, FORMAT_RGBA8888);
@@ -172,7 +216,12 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	SafeRelease(image);
 	SafeRelease(renderSprite);
 
-	QString spriteName = sprite ? QString::fromStdString(sprite->GetName()) : "<none>";
+	QString spriteName = "<none>";
+	if (sprite)
+	{
+		String spritePath = FileSystem::Instance()->GetCanonicalPath(sprite->GetName());
+		spriteName = QString::fromStdString(spritePath);
+	}
 	spritePathLabel->setText(spriteName);
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
@@ -181,7 +230,9 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	lifeTimeLine->AddLine(1, PropLineWrapper<float32>(layer->lifeVariation).GetProps(), Qt::darkGreen, "life variation");
 
 	//LAYER_NUMBER, LAYER_NUMBER_VARIATION,
-	numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	numberTimeLine->Init(layer->startTime, lifeTime, updateMinimized, false, true, true);
+//		void Init(float32 minT, float32 maxT, bool updateSizeState, bool aliasLinePoint = false, bool allowDeleteLine = true, bool integer = false);
+	numberTimeLine->SetMinLimits(0);
 	numberTimeLine->AddLine(0, PropLineWrapper<float32>(layer->number).GetProps(), Qt::blue, "number");
 	numberTimeLine->AddLine(1, PropLineWrapper<float32>(layer->numberVariation).GetProps(), Qt::darkGreen, "number variation");
 
@@ -191,16 +242,19 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	Vector<QString> legends;
 	legends.push_back("size X"); legends.push_back("size Y");
 	sizeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
+	sizeTimeLine->SetMinLimits(0);
 	sizeTimeLine->AddLines(PropLineWrapper<Vector2>(layer->size).GetProps(), colors, legends);
 	sizeTimeLine->EnableLock(true);
 	
 	legends.clear();
 	legends.push_back("size variation X"); legends.push_back("size variation Y");
 	sizeVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true);
+	sizeVariationTimeLine->SetMinLimits(0);
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
 	
 	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	sizeOverLifeTimeLine->SetMinLimits(0);
 	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
 
 
@@ -238,17 +292,30 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	colorOverLifeGradient->SetValues(PropLineWrapper<Color>(layer->colorOverLife).GetProps());
 
 	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
+	alphaOverLifeTimeLine->SetMinLimits(0);
+	alphaOverLifeTimeLine->SetMaxLimits(1.f);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
 	
-	frameOverLifeTimeLine->Init(0, 1, updateMinimized);
+	frameOverLifeTimeLine->Init(0, 1, updateMinimized, false, true, true);
+	frameOverLifeTimeLine->SetMinLimits(0);
+	int32 frameCount = 0;
+	if (layer && layer->GetSprite())
+	{
+		frameCount = layer->GetSprite()->GetFrameCount() - 1;
+	}
+	frameOverLifeTimeLine->SetMaxLimits(frameCount);
 	frameOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->frameOverLife).GetProps(), Qt::blue, "frame over life");
 	
 	//LAYER_ALIGN_TO_MOTION,
 	alignToMotionSpin->setValue(layer->alignToMotion);
 	
 	//LAYER_START_TIME, LAYER_END_TIME
+	startTimeSpin->setMinimum(0);
 	startTimeSpin->setValue(layer->startTime);
+	startTimeSpin->setMaximum(layer->endTime);
+	endTimeSpin->setMinimum(0);
 	endTimeSpin->setValue(layer->endTime);
+	endTimeSpin->setMaximum(emitter->GetLifeTime());
 	
 	//, LAYER_IS_LONG
 	
@@ -257,10 +324,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-	String projectPath1 = EditorSettings::Instance()->GetProjectPath();
-	QString projectPath = QString::fromStdString(projectPath1);
-	projectPath += "/Data/Particles/";
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), projectPath, QString("Effect File (*.txt)"));
+	String projectPath = EditorSettings::Instance()->GetProjectPath();
+	
+	projectPath += "Data/Gfx/Particles/";
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
 	
@@ -336,16 +403,10 @@ void EmitterLayerWidget::OnValueChanged()
 	
 	PropLineWrapper<float32> propFrameOverLife;
 	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
-	if (layer->GetSprite())
-	{
-		float32 maxFrame = Max(0, layer->GetSprite()->GetFrameCount() - 1);
-		Vector< PropValue<float32> >* frameValues = propFrameOverLife.GetPropsPtr();
-		for (uint i = 0; i < frameValues->size(); ++i)
-			(*frameValues)[i].v = Min(maxFrame, (*frameValues)[i].v);
-	}
 	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
-	updateLayerCmd->Init(!enableCheckBox->isChecked(),
+	updateLayerCmd->Init(layerNameLineEdit->text(),
+						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
 						 sprite,
 						 propLife.GetPropLine(),
@@ -374,7 +435,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)alignToMotionSpin->value(),
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value());
-	
+
 	CommandsManager::Instance()->Execute(updateLayerCmd);
 	SafeRelease(updateLayerCmd);
 	
@@ -385,4 +446,40 @@ void EmitterLayerWidget::OnValueChanged()
 void EmitterLayerWidget::Update()
 {
 	Init(this->emitter, this->layer, false);
+}
+
+void EmitterLayerWidget::UpdateTooltip()
+{
+	QFontMetrics fm = spritePathLabel->fontMetrics();
+	if (fm.width(spritePathLabel->text()) >= spritePathLabel->width())
+	{
+		spritePathLabel->setToolTip(spritePathLabel->text());
+	}
+	else
+	{
+		spritePathLabel->setToolTip("");
+	}
+}
+
+bool EmitterLayerWidget::eventFilter( QObject * o, QEvent * e )
+{
+    if ( e->type() == QEvent::Wheel &&
+		qobject_cast<QAbstractSpinBox*>( o ) )
+    {
+        e->ignore();
+        return true;
+    }
+
+	if (e->type() == QEvent::Resize && qobject_cast<QLineEdit*>(o))
+	{
+		UpdateTooltip();
+		return true;
+	}
+
+    return QWidget::eventFilter( o, e );
+}
+
+void EmitterLayerWidget::OnSpritePathChanged(const QString& text)
+{
+	UpdateTooltip();
 }

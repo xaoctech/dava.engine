@@ -18,6 +18,7 @@ BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
 
     this->isMarkedForSelection = false;
     this->rootNode = rootNode;
+    SetParentNode(NULL);
 }
 
 BaseParticleEditorNode::~BaseParticleEditorNode()
@@ -34,6 +35,7 @@ void BaseParticleEditorNode::Cleanup()
     }
     
     childNodes.clear();
+	SetParentNode(NULL);
 }
 
 void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
@@ -43,6 +45,7 @@ void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
         return;
     }
     
+	childNode->SetParentNode(this);
     this->childNodes.push_back(childNode);
 }
 
@@ -57,4 +60,48 @@ ParticleEffectComponent* BaseParticleEditorNode::GetParticleEffectComponent() co
 	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
 	DVASSERT(effectComponent);
 	return effectComponent;
+}
+
+void BaseParticleEditorNode::AddChildNodeAbove(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove)
+{
+	AddChildNode(childNode);
+	if (childNodeToMoveAbove)
+	{
+		MoveChildNode(childNode, childNodeToMoveAbove);
+	}
+}
+
+void BaseParticleEditorNode::RemoveChildNode(BaseParticleEditorNode* childNode, bool needDeleteNode)
+{
+    this->childNodes.remove(childNode);
+	
+	if (needDeleteNode)
+	{
+		childNode->SetParentNode(NULL);
+		SAFE_DELETE(childNode);
+	}
+}
+
+void BaseParticleEditorNode::MoveChildNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove)
+{
+	PARTICLEEDITORNODESLIST::iterator curPositionIter = std::find(this->childNodes.begin(),
+																  this->childNodes.end(),
+																  childNode);
+	PARTICLEEDITORNODESLIST::iterator newPositionIter = std::find(this->childNodes.begin(),
+																  this->childNodes.end(),
+																  childNodeToMoveAbove);
+
+	if (curPositionIter == this->childNodes.end() ||
+		newPositionIter == this->childNodes.end() ||
+		curPositionIter == newPositionIter)
+	{
+		// No way to move.
+		return;
+	}
+
+	childNodes.remove(childNode);
+	
+	// Re-calculate the new position iter - it might be changed during remove.
+	newPositionIter = std::find(this->childNodes.begin(), this->childNodes.end(), childNodeToMoveAbove);
+	childNodes.insert(newPositionIter, childNode);
 }

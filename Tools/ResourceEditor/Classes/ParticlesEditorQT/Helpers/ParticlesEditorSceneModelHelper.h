@@ -37,6 +37,9 @@ public:
 
     // Custom node selection.
     SceneGraphItem* GetGraphItemToBeSelected(GraphItem* rootItem, SceneNode* node);
+	
+	// Reset the selected item.
+	void ResetSelection();
 
     // Preprocess the Scene Node during adding, change its type if needed.
     SceneNode* PreprocessSceneNode(SceneNode* rawNode);
@@ -50,6 +53,16 @@ public:
     // Add Popup Menu items depending on the tree node selected.
     void AddPopupMenuItems(QMenu &menu, const QModelIndex &index) const;
     
+	// Move the item to parent functionality.
+	// Whether the move should be handled by the Particle Editor?
+	bool NeedMoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem);
+
+	// Perform the move itself.
+	bool MoveItemToParent(GraphItem* movedItem, GraphItem* newParentItem);
+
+	// Get the Scene Graph item which contains the appropriate Particles Editor objects.
+	SceneGraphItem* GetGraphItemForParticlesLayer(GraphItem* rootItem, DAVA::ParticleLayer* layer);
+
 protected:
 	// Add the action to QT menu.
 	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
@@ -60,15 +73,23 @@ protected:
     // Determine whether we need to select Editor Tree Node in a recursive way.
     SceneGraphItem* GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, SceneNode* node);
 
-    // Do the checks needed and return ExtraUserData from model index.
-    ExtraUserData* GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const;
+    // Do the checks needed and return ExtraUserData from model index. or from the item.
+    ExtraUserData* GetExtraUserData(const QModelIndex& modelIndex) const;
+	ExtraUserData* GetExtraUserData(GraphItem* item) const;
+	ExtraUserData* GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const;
     
     // Synchronization of the whole Particle Editor Tree and different types of Nodes.
     void SynchronizeParticleEditorTree(BaseParticleEditorNode* node);
 
-    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode);
+    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, ParticleEffectNode* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
+
+	// Move item to parent functionality.
+	bool IsItemBelongToParticleEditor(GraphItem* item);
+
+	// Whether this move is forbidden?
+	bool IsMoveItemToParentForbidden(GraphItem* movedItem, GraphItem* newParentItem);
 
 	SceneNode* CreateParticleEffectNode();
 };

@@ -187,12 +187,16 @@ void FrameworkDidLaunched()
     
     String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
     String sourceFolder = String("DataSource/3d");
-    if(sourceFolder.length() <= dataSourcePathname.length())
+    
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
-        uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
-        SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
-        creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
-        Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+        if(sourceFolder.length() <= dataSourcePathname.length())
+        {
+            uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
+            SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
+            creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
+            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+        }
     }
     
     
@@ -217,7 +221,7 @@ void FrameworkDidLaunched()
             CommandLineParser::Instance()->SetExtendedOutput(true);
         }
 		
-        if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+        if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
         {
             ProcessRecourcePacker();
             return;  

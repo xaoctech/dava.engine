@@ -13,6 +13,7 @@
 #include "CommandLineParser.h" 
 #include "Render/TextureDescriptor.h"
 #include "../SceneEditor/PVRConverter.h"
+#include "../SceneEditor/DXTConverter.h"
 
 
 #ifdef WIN32
@@ -238,10 +239,11 @@ void TexturePacker::PackToTextures(const char * excludeFolder, const char* outpu
 		printf("* Packing tries started: ");
 	
 	bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
+	bool isDxt = CommandLineParser::Instance()->IsFlagSet("--dxt");
 	for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 		 for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 		 {
-			 if ((isPvr) && (xResolution != yResolution))continue;
+			 if ((isPvr || isDxt) && (xResolution != yResolution))continue;
 
 			 if ((onlySquareTextures) && (xResolution != yResolution))continue;
 			 
@@ -410,10 +412,11 @@ void TexturePacker::PackToMultipleTextures(const char * excludeFolder, const cha
 		std::vector<SizeSortItem> newWorkVector;
 		
         bool isPvr = CommandLineParser::Instance()->IsFlagSet("--pvr");
+		bool isDxt = CommandLineParser::Instance()->IsFlagSet("--dxt");
 		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
-				if (isPvr && (xResolution != yResolution))continue;
+				if ( (isPvr || isDxt) && (xResolution != yResolution))continue;
 
 				if ((onlySquareTextures) && (xResolution != yResolution))continue;
 				
@@ -675,11 +678,21 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
     image->DitherAlpha();
     image->Write(exportedPathname.c_str());
     
-    if (NULL != descriptor && FORMAT_INVALID != descriptor->pvrCompression.format)
+    if (NULL != descriptor  )
     {
-        PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, *descriptor);
-        FileSystem::Instance()->DeleteFile(exportedPathname);
+		if(FORMAT_INVALID != descriptor->pvrCompression.format)
+		{
+			PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, *descriptor);
+			FileSystem::Instance()->DeleteFile(exportedPathname);
+		}
+		else if(FORMAT_INVALID != descriptor->dxtCompression.format)
+		{
+			DXTConverter::ConvertPngToDxt(exportedPathname, *descriptor);
+			FileSystem::Instance()->DeleteFile(exportedPathname);
+		}
+        
     }
+
     
 #if defined TEXTURE_SPLICING_ENABLED
     //TODO: need to enable texture splicing of 2D resources

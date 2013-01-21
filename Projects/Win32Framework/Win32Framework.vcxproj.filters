@@ -1251,6 +1251,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2155,6 +2158,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

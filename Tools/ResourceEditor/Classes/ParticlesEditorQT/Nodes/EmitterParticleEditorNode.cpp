@@ -33,19 +33,3 @@ int32 EmitterParticleEditorNode::GetLayersCount() const
     return layersCount;
     
 }
-
-void EmitterParticleEditorNode::UpdateLayerNames()
-{
-    for (List<BaseParticleEditorNode*>::const_iterator iter = GetChildren().begin(); iter != GetChildren().end();
-         iter ++)
-    {
-        LayerParticleEditorNode* childNode = dynamic_cast<LayerParticleEditorNode*>(*iter);
-        if (!childNode)
-        {
-            continue;
-        }
-        
-        int layerIndex = childNode->GetLayerIndex();
-        (*iter)->SetNodeName(QString("Layer %1").arg(layerIndex + 1));
-    }
-}

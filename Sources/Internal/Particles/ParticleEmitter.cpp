@@ -34,6 +34,7 @@
 #include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
+#include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 
 namespace DAVA 
@@ -548,6 +549,10 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		}
 	}
 	
+	// Yuri Coder, 2013/01/15. The "name" node for Layer was just added and may not exist for
+	// old yaml files. Generate the default name for nodes with empty names.
+	UpdateEmptyLayerNames();
+	
 	SafeRelease(parser);
 }
 
@@ -710,4 +715,21 @@ String ParticleEmitter::GetEmitterTypeName()
     }
 }
 
+void ParticleEmitter::UpdateEmptyLayerNames()
+{
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		UpdateLayerNameIfEmpty(this->layers[i], i);
+	}
 }
+
+void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
+{
+	if (layer && layer->layerName.empty())
+	{
+		layer->layerName = Format("Layer %i", index);
+	}
+}
+	
+};

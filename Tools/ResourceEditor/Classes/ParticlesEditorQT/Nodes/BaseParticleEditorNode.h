@@ -19,19 +19,25 @@ class ParticleEffectComponent;
 class BaseParticleEditorNode : public ExtraUserData
 {
 public:
-    BaseParticleEditorNode(SceneNode* root);
+    BaseParticleEditorNode(ParticleEffectNode* root);
     virtual ~BaseParticleEditorNode();
     
     // Add/remove child node.
-    void AddChildNode(BaseParticleEditorNode* childNode);
-    void RemoveChildNode(BaseParticleEditorNode* childNode);
+    virtual void AddChildNode(BaseParticleEditorNode* childNode);
+    virtual void AddChildNodeAbove(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove);
+	
+    void RemoveChildNode(BaseParticleEditorNode* childNode, bool needDeleteNode = true);
 
+	// Change the order of the children.
+	void MoveChildNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove);
+	
     // Access to the root node.
-    SceneNode* GetRootNode() const {return rootNode;};
+    ParticleEffectNode* GetRootNode() const {return rootNode;};
 
-	ParticleEffectComponent* GetParticleEffectComponent() const;
-    
-	// Node name.
+	// Access to the parent node.
+	BaseParticleEditorNode* GetParentNode() const {return parentNode;};
+
+    // Node name.
     void SetNodeName(const QString& nodeName) {this->nodeName = nodeName;};
     virtual QString GetName() const {return this->nodeName;};
 
@@ -44,11 +50,18 @@ public:
     const PARTICLEEDITORNODESLIST& GetChildren() const {return childNodes;};
 
 protected:
+	// Set the parent of the node.
+	void SetParentNode(BaseParticleEditorNode* parentNode) {this->parentNode = parentNode; };
+
     // Cleanup the node's children.
     void Cleanup();
 
     // Root effect node.
     SceneNode* rootNode;
+    ParticleEffectNode* rootNode;
+
+	// Our parent.
+	BaseParticleEditorNode* parentNode;
 
     // Current node name.
     QString nodeName;

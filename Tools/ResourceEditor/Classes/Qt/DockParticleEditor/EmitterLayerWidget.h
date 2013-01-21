@@ -34,25 +34,31 @@ public:
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
 	void Update();
 	
+	virtual bool eventFilter(QObject *, QEvent *);
+	
 signals:
 	void ValueChanged();
 	
 protected slots:
 	void OnValueChanged();
 	void OnSpriteBtn();
+	void OnSpritePathChanged(const QString& text);
 	
 private:
 	void InitWidget(QWidget* );
+	void UpdateTooltip();
 	
 private:
 	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	
+	QLineEdit* layerNameLineEdit;
 	QCheckBox* enableCheckBox;
 	QCheckBox* additiveCheckBox;
 	Sprite* sprite;
 	QLabel* spriteLabel;
+	QPushButton* spriteBtn;
 	//QLabel* spritePathLabel;
 	QLineEdit* spritePathLabel;
 	TimeLineWidget* lifeTimeLine;

@@ -2,7 +2,7 @@
 
 int APIENTRY WinMain(HINSTANCE hInstance,
 					   HINSTANCE hPrevInstance,
-					   LPTSTR    lpCmdLine,
+					   LPSTR    lpCmdLine,
 					   int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -10,6 +10,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	return DAVA::Core::Run(0, 0, hInstance);
 }
+
 
 /*int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR    lpCmdLine, int       nCmdShow)
 {

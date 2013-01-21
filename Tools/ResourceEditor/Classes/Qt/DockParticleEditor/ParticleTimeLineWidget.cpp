@@ -28,30 +28,35 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	QWidget(parent),
 	selectedPoint(-1, -1),
 	emitterNode(NULL),
-	effectNode(NULL)
+	effectNode(NULL),
+#ifdef Q_WS_WIN
+	nameFont("Courier", 8, QFont::Normal)
+#else
+	nameFont("Courier", 11, QFont::Normal)
+#endif
 {
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
 	
-	gridStyle = GridStyleLimits;
+	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(SceneNode*)),
+			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*)),
+			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32)),
+			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(SceneNode*)),
+			SIGNAL(EffectSelected(ParticleEffectNode*)),
 			this,
-			SLOT(OnEffectNodeSelected(SceneNode*)));
+			SLOT(OnEffectNodeSelected(ParticleEffectNode*)));
 	
 	Init(0, 0);
 	
@@ -91,7 +96,8 @@ void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
 		{
 			float32 startTime = Max(minTime, layers[i]->startTime);
 			float32 endTime = Min(maxTime, layers[i]->endTime);
-			AddLine(i, startTime, endTime, colors[i % 3], tr("Layer %1").arg(i + 1), layers[i]);
+			
+			AddLine(i, startTime, endTime, colors[i % 3], QString::fromStdString(layers[i]->layerName), layers[i]);
 		}
 	}
 	
@@ -157,7 +163,8 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 					{
 						float32 startTime = Max(minTime, layers[iLayer]->startTime);
 						float32 endTime = Min(maxTime, layers[iLayer]->endTime);
-						AddLine(iLines, startTime, endTime, colors[iLines % 3], tr("Layer %1").arg(iLayer + 1), layers[iLayer]);
+						AddLine(iLines, startTime, endTime, colors[iLines % 3],
+								QString::fromStdString(layers[iLayer]->layerName), layers[iLayer]);
 						iLines++;
 					}
 				}
@@ -236,7 +243,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			if (!drawText)
 				continue;
 			
-			if (gridStyle == GridStyleAllPosition)
+			if (gridStyle == GRID_STYLE_ALL_POSITION)
 			{
 				float value = minTime + i * valueStep;
 				QString strValue = float2QString(value);
@@ -246,7 +253,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 			}
 		}
 
-		if (gridStyle == GridStyleLimits)
+		if (gridStyle == GRID_STYLE_LIMITS)
 		{
 			QRect textRect(graphRect.left(), graphRect.bottom(), graphRect.width(), BOTTOM_INDENT);
 			painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, float2QString(minTime));
@@ -254,7 +261,7 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 		}
 	}
 	
-	painter.setFont(QFont("Courier", 12, QFont::Normal));
+	painter.setFont(nameFont);
 	
 	painter.setPen(Qt::black);
 	painter.drawRect(graphRect);
@@ -269,7 +276,21 @@ void ParticleTimeLineWidget::paintEvent(QPaintEvent *)
 		GetLineRect(iter->first, startRect, endRect);
 		painter.setPen(QPen(line.color, 1));
 		painter.drawLine(QPoint(graphRect.left(), startRect.center().y()), QPoint(graphRect.right(), startRect.center().y()));
-		painter.drawText(QPoint(LEFT_INDENT, startRect.bottom()), line.legend);
+		
+		int textMaxWidth = graphRect.left() - LEFT_INDENT - painter.fontMetrics().width("WW");
+		QString legend;
+		for (int i = 0; i < line.legend.length(); ++i)
+		{
+			legend += line.legend.at(i);
+			int textWidth = painter.fontMetrics().width(legend);
+			if (textWidth > textMaxWidth)
+			{
+				legend.remove(legend.length() - 3, 3);
+				legend += "...";
+				break;
+			}
+		}
+		painter.drawText(QPoint(LEFT_INDENT, startRect.bottom()), legend);
 	
 		painter.setPen(QPen(line.color, LINE_WIDTH));
 		if (selectedPoint.x() == iter->first)
@@ -313,9 +334,19 @@ bool ParticleTimeLineWidget::GetLineRect(uint32 id, QRect& startRect, QRect& end
 
 QRect ParticleTimeLineWidget::GetGraphRect() const
 {
-	QRect rect;
-	rect.setTopLeft(QPoint(LEFT_INDENT + 80, TOP_INDENT));
-	rect.setBottomRight(QPoint(width() - LEFT_INDENT - 5, height() - BOTTOM_INDENT));
+	QFontMetrics metrics(nameFont);
+
+	int legendWidth = 0;
+	for (LINE_MAP::const_iterator iter = lines.begin(); iter != lines.end(); ++iter)
+	{
+		int width = metrics.width(iter->second.legend);
+		width += LEFT_INDENT;
+		width += metrics.width(" ");
+		legendWidth = Max(legendWidth, width);
+	}
+	legendWidth = Min(legendWidth, (width() - LEFT_INDENT * 2) / 6);
+	
+	QRect rect = QRect(QPoint(LEFT_INDENT + legendWidth, TOP_INDENT), QSize(width() - LEFT_INDENT * 2 - legendWidth, height() - BOTTOM_INDENT));
 	return rect;
 }
 
