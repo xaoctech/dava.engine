@@ -50,7 +50,7 @@ void BaseObject::Save(KeyedArchive * archive)
 {
     archive->SetString("##name", GetClassName());
     
-    SaveIntrospection(GetClassName(), archive, GetIntrospection(this), this);
+//    SaveIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
     
 void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
@@ -171,7 +171,7 @@ BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
  */
 void BaseObject::Load(KeyedArchive * archive)
 {
-    LoadIntrospection(GetClassName(), archive, GetIntrospection(this), this);
+//    LoadIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
  
 void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
