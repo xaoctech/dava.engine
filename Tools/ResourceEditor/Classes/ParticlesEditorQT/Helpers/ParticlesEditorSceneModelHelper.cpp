@@ -104,7 +104,6 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
     // move the raw Emitter node to it.
-    
 	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(rawNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
     if (!emitterComponent)
     {
