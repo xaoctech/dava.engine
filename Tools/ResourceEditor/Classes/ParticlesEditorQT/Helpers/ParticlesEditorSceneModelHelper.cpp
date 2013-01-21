@@ -227,8 +227,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
     }
 }
 
-void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
-																	 SceneNode* effectRootNode)
+void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode)
 {
     if (!node || !effectRootNode)
     {
@@ -290,8 +289,6 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
             LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(node, emitter->GetLayers()[i]);
             node->AddChildNode(layerNode);
         }
-
-        node->UpdateLayerNames();
      }
 }
 

@@ -49,12 +49,6 @@ void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
     this->childNodes.push_back(childNode);
 }
 
-void BaseParticleEditorNode::RemoveChildNode(BaseParticleEditorNode* childNode)
-{
-    this->childNodes.remove(childNode);
-    SAFE_DELETE(childNode);
-}
-
 ParticleEffectComponent* BaseParticleEditorNode::GetParticleEffectComponent() const
 {
 	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));

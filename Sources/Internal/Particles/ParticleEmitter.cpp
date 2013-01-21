@@ -133,6 +133,49 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 	}	
 }
 
+void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	AddLayer(layer);
+	if (layerToMoveAbove)
+	{
+		MoveLayer(layer, layerToMoveAbove);
+	}
+}
+	
+void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	if (layerIter != this->layers.end())
+	{
+		layers.erase(layerIter);
+		layer->SetEmitter(NULL);
+		SafeRelease(layer);
+	}
+}
+	
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+
+	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
+		layerIter == layerToMoveAboveIter)
+	{
+		return;
+	}
+		
+	layers.erase(layerIter);
+
+	// Look for the position again - an iterator might be changed.
+	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	layers.insert(layerToMoveAboveIter, layer);
+}
+
 /* float32 ParticleEmitter::GetCurrentNumberScale()
 {
 	return number->GetValue(time);

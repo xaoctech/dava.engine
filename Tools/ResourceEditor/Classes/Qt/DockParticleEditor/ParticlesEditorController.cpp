@@ -268,8 +268,6 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
     LayerParticleEditorNode* layerNode = new LayerParticleEditorNode(emitterNode, layer);
     emitterNode->AddChildNode(layerNode);
 
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
     SafeRelease(layer);
 
     return layerNode;
@@ -299,10 +297,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
     
     LayerParticleEditorNode* clonedEditorNode = new LayerParticleEditorNode(emitterNode, clonedLayer);
     emitterNode->AddChildNode(clonedEditorNode);
-    
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
-    
+
     return clonedEditorNode;
 }
 
@@ -336,9 +331,6 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
     Vector<ParticleLayer*>& layers = emitter->GetLayers();
     layers.erase(layers.begin() + layerIndex);
     emitterNode->RemoveChildNode(layerToRemove);
-
-    // Update the names for the layers
-    emitterNode->UpdateLayerNames();
 }
 
 ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(LayerParticleEditorNode* layerNode)
@@ -504,7 +496,7 @@ bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEdit
 	ParticleLayer* layerToMove = movedItemNode->GetLayer();
 	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
 
-	ParticleEmitter* parentEmitter = movedItemNode->GetEmitterNode()->GetEmitter();
+	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitterComponent()->GetParticleEmitter();
 	parentEmitter->MoveLayer(layerToMove, layerToMoveAbove);
 	
 	return true;
@@ -541,8 +533,8 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 														   LayerParticleEditorNode* layerNodeToMove,
 														   LayerParticleEditorNode* layerNodeToInsertAbove)
 {
-	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetEmitterNode()->GetEmitter();
-	ParticleEmitter* newParentEmitter = newEmitterNode->GetEmitterNode()->GetEmitter();
+	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
 	if (!oldParentEmitter || !newParentEmitter)
 	{
 		return false;
@@ -567,7 +559,6 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	SafeRelease(layerToMove);
 	
 	// Update the emitter.
-	layerNodeToMove->UpdateEmitter(newEmitterNode->GetEmitterNode());
 	layerNodeToMove->UpdateEmitterEditorNode(newEmitterNode);
 
 	return true;
