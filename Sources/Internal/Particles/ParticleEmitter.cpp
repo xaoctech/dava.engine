@@ -119,6 +119,8 @@ ParticleEmitter * ParticleEmitter::Clone()
 	emitter->isPaused = isPaused;
 	emitter->isAutorestart = isAutorestart;
 	emitter->particlesFollow = particlesFollow;
+	emitter->configPath = configPath;
+
 	return emitter;
 }
 
