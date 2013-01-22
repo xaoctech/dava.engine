@@ -386,8 +386,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	}
 
 	this->setWindowTitle(strVer + QString("Project - ") + path);
-
-	//this->setWindowTitle(QString("Project - ") + path);
+	UpdateParticleSprites();
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
