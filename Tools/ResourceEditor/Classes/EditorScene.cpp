@@ -301,13 +301,14 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 
 LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 {
-    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent)
+	{
+		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		if (land)
+			return land;
+	}
 	
-    if (land) 
-    {
-		return land;
-    }
-    
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
@@ -318,6 +319,25 @@ LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 	return 0;
 }
 
+SceneNode* EditorScene::GetLandScapeNode(SceneNode *node)
+{
+	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent)
+	{
+		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		if (land)
+			return node;
+	}
+	
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+		SceneNode * result = GetLandScapeNode(child);
+		if (result)
+			return result;
+    }
+	return NULL;
+}
 
 HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject * coll)
 {
