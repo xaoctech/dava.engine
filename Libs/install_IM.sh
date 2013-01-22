@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# MacOS:
+# It is strongly recommended that the X11R6 package be installed since this enables 
+# ImageMagick's X11 support (animate, display, and import will work) and it includes
+# the Freetype v2 DLL required to support TrueType and Postscript Type 1 fonts.
+#
+# Make sure that /usr/X11R6/bin is in your PATH prior to running configure.
+#
+
 
 installPath="ImageMagick-6.7.4"
 imPath="ImageMagick-6.7.4-10"
