@@ -22,17 +22,21 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterPropertiesWidget = NULL;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
+			SIGNAL(EmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnEmitterSelected(ParticleEmitterNode*)));
+			SLOT(OnEmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*)),
+			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnLayerSelected(ParticleEmitterNode*, ParticleLayer*)));
+			SLOT(OnLayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32)),
+			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnForceSelected(ParticleEmitterNode*, ParticleLayer*, int32)));
+			SLOT(OnForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)));
+	connect(ParticlesEditorController::Instance(),
+			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
+			this,
+			SLOT(OnNodeDeselected(BaseParticleEditorNode*)));
 }
 
 ParticleEditorWidget::~ParticleEditorWidget()
@@ -47,7 +51,7 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(emitterPropertiesWidget);
 }
 
-void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode)
+void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -64,6 +68,13 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode)
 
 	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(this);
 	emitterPropertiesWidget->Init(emitter, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterPropertiesWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(emitterPropertiesWidget);
 	connect(emitterPropertiesWidget,
 			SIGNAL(ValueChanged()),
@@ -71,7 +82,7 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode)
 			SLOT(OnValueChanged()));
 }
 
-void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer)
+void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -88,6 +99,13 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 
 	emitterLayerWidget = new EmitterLayerWidget(this);
 	emitterLayerWidget->Init(emitter, layer, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterLayerWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(emitterLayerWidget);
 	connect(emitterLayerWidget,
 			SIGNAL(ValueChanged()),
@@ -95,7 +113,7 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 			SLOT(OnValueChanged()));
 }
 
-void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex)
+void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -112,11 +130,33 @@ void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, Par
 	
 	layerForceWidget = new LayerForceWidget(this);
 	layerForceWidget->Init(emitter, layer, forceIndex, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		layerForceWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(layerForceWidget);
 	connect(layerForceWidget,
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+}
+
+void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
+{
+	if (!particleEditorNode)
+		return;
+
+	KeyedArchive* stateProps = particleEditorNode->GetExtraData();
+
+	if (emitterLayerWidget)
+		emitterLayerWidget->StoreVisualState(stateProps);
+	if (layerForceWidget)
+		layerForceWidget->StoreVisualState(stateProps);
+	if (emitterPropertiesWidget)
+		emitterPropertiesWidget->StoreVisualState(stateProps);
 }
 
 void ParticleEditorWidget::OnUpdate()
