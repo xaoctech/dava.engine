@@ -2,6 +2,7 @@
 
 #include "QtPropertyItemDelegate.h"
 #include "QtPropertyModel.h"
+#include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -26,6 +27,8 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 		{
 			editWidget = data->CreateEditor(parent, option);
 		}
+
+		TryEditorWorkarounds(editWidget);
 	}
 
 	if(NULL == editWidget)
@@ -65,7 +68,7 @@ void QtPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 			//item->setIcon(data->GetIcon());
 		}
 	}
-    
+
     QStyledItemDelegate::setModelData(editor, model, index);
 }
 
@@ -95,5 +98,22 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 		}
 
 		editor->setGeometry(r);
+	}
+}
+
+void QtPropertyItemDelegate::TryEditorWorkarounds(QWidget *editor) const
+{
+	if(NULL != editor)
+	{
+		// workaround: qtColorLineEdit should know about Object that filters it events, that object is this delegate. 
+		// This fix is done for MacOS, to prevent editing cancellation, when color dialog appears
+		QtColorLineEdit *lineEdit = dynamic_cast<QtColorLineEdit *>(editor);
+		if(NULL != lineEdit)
+		{
+			lineEdit->SetItemDelegatePtr(this);
+		}
+
+		// TODO: other workarounds
+		// ...
 	}
 }

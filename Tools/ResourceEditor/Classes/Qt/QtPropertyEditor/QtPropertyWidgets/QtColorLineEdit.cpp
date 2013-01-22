@@ -1,12 +1,15 @@
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QHBoxLayout>
+#include <QEvent>
 #include <QStyle>
 #include <QColorDialog>
 #include <QRegExpValidator>
+#include <QAbstractScrollArea>
 
 QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 	: QLineEdit(parent)
+	, deleg(NULL)
 {
 	QHBoxLayout *layout = new QHBoxLayout(this);
 	toolButton = new QToolButton(this);
@@ -27,6 +30,11 @@ QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 	QObject::connect(this, SIGNAL(editingFinished()), this, SLOT(EditFinished()));
 }
 
+QtColorLineEdit::~QtColorLineEdit()
+{
+	printf("111\n");
+}
+
 void QtColorLineEdit::SetColor(const QColor &color)
 {
 	curColor = color;
@@ -38,12 +46,18 @@ QColor QtColorLineEdit::GetColor() const
 	return curColor;
 }
 
+void QtColorLineEdit::SetItemDelegatePtr(const QAbstractItemDelegate* _deleg)
+{
+	deleg = _deleg;
+}
+
 void QtColorLineEdit::ToolButtonClicked()
 {
 	QColorDialog *dlg = new QColorDialog(this);
 	dlg->setCurrentColor(GetColor());
 	dlg->setOption(QColorDialog::ShowAlphaChannel, true);
 
+	removeEventFilter((QObject *) deleg);
 	if(QDialog::Accepted == dlg->exec())
 	{
 		SetColor(dlg->selectedColor());
