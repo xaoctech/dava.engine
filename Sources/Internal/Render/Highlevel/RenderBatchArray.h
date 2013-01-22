@@ -31,11 +31,12 @@
 #define	__DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
 
 #include "Base/BaseTypes.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
 
-class RenderBatch;
+//class RenderBatch;
 class RenderBatchArray
 {
 public:
@@ -52,6 +53,12 @@ public:
     
 private:
     Vector<RenderBatch*> finalArray;
+    
+public:
+    
+    INTROSPECTION(RenderBatchArray,
+        COLLECTION(finalArray, "Final Array", INTROSPECTION_EDITOR)
+    );
 };
 
 inline uint32 RenderBatchArray::GetCount()
