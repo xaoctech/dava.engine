@@ -545,7 +545,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
         return;
     }
     
-    QString projectPath = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
+    QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
                                                     projectPath, QString("YAML File (*.yaml)"));
 	if (filePath.isEmpty())
@@ -591,7 +591,7 @@ void CommandSaveParticleEmitterToYaml::Execute()
 	String yamlPath = component->GetYamlPath();
     if (this->forceAskFilename || yamlPath.empty() )
     {
-        QString projectPath = QString::fromStdString(EditorSettings::Instance()->GetProjectPath());
+        QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
         QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
  

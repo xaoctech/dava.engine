@@ -476,8 +476,7 @@ void SceneEditorScreenMain::EditParticleEmitter(SceneNode * emitter)
 
 void SceneEditorScreenMain::NewScene()
 {
-    SceneData *levelScene = SceneDataManager::Instance()->SceneGetLevel();
-    levelScene->CreateScene(true);
+	SceneData *levelScene = SceneDataManager::Instance()->CreateNewScene();
     
     bodies[0]->bodyControl->SetScene(levelScene->GetScene());
     bodies[0]->bodyControl->Refresh();
