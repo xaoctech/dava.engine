@@ -13,6 +13,9 @@ public:
 	const DAVA::VariantType& GetVariantValue() const;
 	void SetVariantValue(const DAVA::VariantType& value);
 
+	virtual void SetIcon(const QIcon &icon);
+	virtual QIcon GetIcon();
+
 protected:
 	DAVA::VariantType curVariantValue;
 

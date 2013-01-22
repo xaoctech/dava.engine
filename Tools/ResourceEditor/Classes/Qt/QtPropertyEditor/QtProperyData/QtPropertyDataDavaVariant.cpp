@@ -1,7 +1,7 @@
 #include "DAVAEngine.h"
+#include "Main/QtUtils.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
-#include "../../Main/QtUtils.h"
 
 #include <QColorDialog>
 #include <QLineEdit>
@@ -438,13 +438,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-	QColor c = QColorFromColor(color);
-
-	QPixmap pix(16,16);
-	pix.fill(c);
-	SetIcon(pix);
-
-    return c;
+	return QColorFromColor(color);
 }
 
 
@@ -522,4 +516,24 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
 		colorLineEdit->SetColor(QColorFromColor(curVariantValue.AsColor()));
     }
+}
+
+QIcon QtPropertyDataDavaVariant::GetIcon()
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+	{
+		QPixmap pix(16,16);
+		pix.fill(QColorFromColor(curVariantValue.AsColor()));
+
+		return QIcon(pix);
+	}
+	else
+	{
+		return QtPropertyData::GetIcon();
+	}
+}
+
+void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
+{
+	QtPropertyData::SetIcon(icon);
 }
