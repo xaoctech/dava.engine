@@ -37,6 +37,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	case DAVA::VariantType::TYPE_VECTOR3:
 	case DAVA::VariantType::TYPE_VECTOR4:
     case DAVA::VariantType::TYPE_COLOR:
+    case DAVA::VariantType::TYPE_FASTNAME:
 	default:
 		break;
 	}
@@ -112,6 +113,16 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
     case DAVA::VariantType::TYPE_COLOR:
         v = FromColor(curVariantValue.AsColor());
         break;
+    case DAVA::VariantType::TYPE_FASTNAME:
+        {
+            const char *str = curVariantValue.AsFastName().c_str();
+            if(str)
+            {
+                v = str;
+            }
+        }
+//        v = curVariantValue.AsFastName().c_str();
+        break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -169,6 +180,12 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 		break;
     case DAVA::VariantType::TYPE_COLOR:
         ToColor(value);
+        break;
+    case DAVA::VariantType::TYPE_FASTNAME:
+        {
+            DAVA::String str = value.toString().toStdString();
+            curVariantValue.SetFastName(DAVA::FastName(str.c_str()));
+        }
         break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
@@ -440,6 +457,7 @@ QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
 	return QColorFromColor(color);
 }
+
 
 
 void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
