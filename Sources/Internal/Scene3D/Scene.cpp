@@ -64,6 +64,7 @@
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdatableSystem.h"
+#include "Scene3D/Systems/DeleteSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -113,6 +114,7 @@ void Scene::CreateComponents()
 void Scene::CreateSystems()
 {
 	eventSystem = new EventSystem();
+	deleteSystem = new DeleteSystem();
 
     transformSystem = new TransformSystem();
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
@@ -177,6 +179,7 @@ Scene::~Scene()
     systems.clear();
 
 	SafeDelete(eventSystem);
+	SafeDelete(deleteSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -622,6 +625,8 @@ void Scene::Update(float timeElapsed)
 	{
 		imposterManager->Update(timeElapsed);
 	}
+
+	deleteSystem->Process();
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
     Stats::Instance()->EndTimeMeasure("Scene.Update", this);

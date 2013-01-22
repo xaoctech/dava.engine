@@ -41,7 +41,7 @@ void DebugNode::Draw()
 		return;
 	
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
+	Matrix4 meshFinalMatrix = GetWorldTransform() * prevMatrix;
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);	
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);

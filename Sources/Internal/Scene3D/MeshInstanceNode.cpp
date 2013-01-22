@@ -255,7 +255,7 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     if (needUpdateTransformBox)
 	{
-        bbox.GetTransformedBox(worldTransform, transformedBox);
+        bbox.GetTransformedBox(GetWorldTransform(), transformedBox);
 		//entity->SetData("meshAABox", transformedBox);
 	}
 	//entity->SetData("meshInstanceNode", this);
@@ -806,7 +806,7 @@ void MeshInstanceNode::BakeTransforms()
     
 void MeshInstanceNode::UpdateLights()
 {
-    Vector3 meshPosition = Vector3() * worldTransform;
+    Vector3 meshPosition = Vector3() * GetWorldTransform();
     LightNode * nearestLight = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, meshPosition);
 
     RegisterNearestLight(nearestLight);

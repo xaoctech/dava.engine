@@ -171,7 +171,7 @@ void SpriteNode::Draw()
     {
         case TYPE_OBJECT:
         {
-            meshFinalMatrix = worldTransform * cameraMatrix;
+            meshFinalMatrix = GetWorldTransform() * cameraMatrix;
             break;
         };
         case TYPE_BILLBOARD:
@@ -190,13 +190,13 @@ void SpriteNode::Draw()
             inverse._21 = cameraMatrix._12;
             inverse._22 = cameraMatrix._22;
             
-            meshFinalMatrix = inverse * worldTransform * modelViewMatrix;
+            meshFinalMatrix = inverse * GetWorldTransform() * modelViewMatrix;
             break;
         };
         case TYPE_BILLBOARD_TO_CAMERA:
         {
             Camera * camera = scene->GetCurrentCamera();
-            Vector3 look = camera->GetPosition() - Vector3(0.0f, 0.0f, 0.0f) * worldTransform; 
+            Vector3 look = camera->GetPosition() - Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform(); 
             look.Normalize();
             Vector3 right = CrossProduct(camera->GetUp(), look);
             Vector3 up = CrossProduct(look, right);
@@ -214,7 +214,7 @@ void SpriteNode::Draw()
             matrix._21 = look.y;
             matrix._22 = look.z;
             
-            meshFinalMatrix = matrix * worldTransform * modelViewMatrix;
+            meshFinalMatrix = matrix * GetWorldTransform() * modelViewMatrix;
 
 //            left.x = cameraTransform._00;
 //            left.y = cameraTransform._10;

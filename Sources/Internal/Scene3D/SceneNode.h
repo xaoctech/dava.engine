@@ -171,7 +171,7 @@ public:
      \brief This method means that you always modify matrix you get. 
         If you dont want to modify matrix call GetLocalTransform().
      */
-	const Matrix4 & ModifyLocalTransform(); 
+	Matrix4 & ModifyLocalTransform(); 
     const Matrix4 & GetWorldTransform();
     const Matrix4 & GetDefaultLocalTransform(); 
     
@@ -179,6 +179,7 @@ public:
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     //inline void InvalidateLocalTransform();
+	Matrix4 AccamulateLocalTransform(SceneNode * fromParent);
     
     /*
         \brief Go down by hierarchy and bake all transforms.
@@ -354,8 +355,6 @@ protected:
 	int32	tag;
 
     uint32 flags;
-
-	Matrix4 worldTransform;
     KeyedArchive *customProperties;
     
 private:
@@ -366,7 +365,6 @@ private:
 public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
 		MEMBER(name, "Name", 0)
-		MEMBER(worldTransform, "World transform", 0)
 		MEMBER(customProperties, "Custom properties", 0)
     );
 };
