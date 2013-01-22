@@ -105,6 +105,8 @@ public:
     
     const AABBox3 & GetBoundingBox() const;
 
+	RenderBatch * Clone();
+
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
