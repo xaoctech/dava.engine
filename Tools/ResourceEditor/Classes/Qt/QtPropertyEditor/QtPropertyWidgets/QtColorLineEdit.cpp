@@ -5,7 +5,8 @@
 #include <QStyle>
 #include <QColorDialog>
 #include <QRegExpValidator>
-#include <QAbstractScrollArea>
+#include <QFocusEvent>
+#include <QApplication>
 
 QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 	: QLineEdit(parent)
@@ -53,18 +54,18 @@ void QtColorLineEdit::SetItemDelegatePtr(const QAbstractItemDelegate* _deleg)
 
 void QtColorLineEdit::ToolButtonClicked()
 {
-	QColorDialog *dlg = new QColorDialog(this);
-	dlg->setCurrentColor(GetColor());
-	dlg->setOption(QColorDialog::ShowAlphaChannel, true);
-
 	removeEventFilter((QObject *) deleg);
-	if(QDialog::Accepted == dlg->exec())
-	{
-		SetColor(dlg->selectedColor());
-	}
 
-	delete dlg;
-	close();
+    QColor c = QColorDialog::getColor(GetColor(), NULL, "Select color", QColorDialog::ShowAlphaChannel);
+	if(c.isValid())
+	{
+		SetColor(c);
+	}
+    
+    installEventFilter((QObject *) deleg);
+    
+    QFocusEvent event(QEvent::FocusOut, Qt::MouseFocusReason);
+    QApplication::sendEvent(this, &event);
 }
 
 void QtColorLineEdit::EditFinished()
