@@ -67,16 +67,6 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
                                      Message(this, &LandscapePropertyControl::SaveHeightmapToPng));
 
 
-    propertyList->AddSubsection("Channels");
-    propertyList->AddMessageProperty(String("Save Channels"), Message(this, &LandscapePropertyControl::OnSaveChannels));
-    propertyList->AddFilepathProperty("Red", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("Green", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("Blue", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("Alpha", TextureDescriptor::GetSupportedTextureExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddMessageProperty(String("Load Channels"), Message(this, &LandscapePropertyControl::OnLoadChannels));
-    SetChannelsNames();
-    
-    
     propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
     
     // RETURN TO THIS CODE LATER
@@ -271,7 +261,6 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 			else if("property.landscape.texture.tilemask" == forKey)
 			{
 				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, descriptorPathname);
-                SetChannelsNames();
 			}
 			else if("property.landscape.texture.color" == forKey)
 			{
@@ -403,124 +392,6 @@ void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void
     heightmap->SaveToImage(heightmapPath);
 }
 
-void LandscapePropertyControl::OnLoadChannels(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    LoadChannels();
-}
-
-void LandscapePropertyControl::OnSaveChannels(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    SaveChannels();
-}
-
-void LandscapePropertyControl::SaveChannels()
-{
-	LandscapeNode *landscape = GetLandscape();
-	if (!landscape)
-		return;
-
-    Texture *tileMaskTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
-    if(!tileMaskTexture)
-    {
-        return;
-    }
-    
-    Image *tileMask = tileMaskTexture->CreateImageFromMemory();
-    DVASSERT(tileMask->format == FORMAT_RGBA8888);
-    
-    Image *red = Image::Create(tileMask->width, tileMask->height, FORMAT_A8);
-    Image *green = Image::Create(tileMask->width, tileMask->height, FORMAT_A8);
-    Image *blue = Image::Create(tileMask->width, tileMask->height, FORMAT_A8);
-    Image *alpha = Image::Create(tileMask->width, tileMask->height, FORMAT_A8);
-    
-    int32 size = tileMask->width * tileMask->height;
-    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-    for(int32 i = 0; i < size; ++i)
-    {
-        int32 offset = i * pixelSize;
-        red->data[i] = tileMask->data[offset];
-        green->data[i] = tileMask->data[offset + 1];
-        blue->data[i] = tileMask->data[offset + 2];
-        alpha->data[i] = tileMask->data[offset + 3];
-    }
-    
-    String tileMaskPathname = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_MASK);
-    String redPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".r.png");
-    String greenPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".g.png");
-    String bluePathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".b.png");
-    String alphaPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".a.png");
-    
-    ImageLoader::Save(red, redPathname);
-    ImageLoader::Save(green, greenPathname);
-    ImageLoader::Save(blue, bluePathname);
-    ImageLoader::Save(alpha, alphaPathname);
-    
-    SafeRelease(red);
-    SafeRelease(green);
-    SafeRelease(blue);
-    SafeRelease(alpha);
-    SafeRelease(tileMask);
-}
-
-void LandscapePropertyControl::LoadChannels()
-{
-	LandscapeNode *landscape = GetLandscape();
-	if (!landscape)
-		return;
-
-    Image *red = CreateTopLevelImage(propertyList->GetFilepathPropertyValue("Red"));
-    Image *green = CreateTopLevelImage(propertyList->GetFilepathPropertyValue("Green"));
-    Image *blue = CreateTopLevelImage(propertyList->GetFilepathPropertyValue("Blue"));
-    Image *alpha = CreateTopLevelImage(propertyList->GetFilepathPropertyValue("Alpha"));
-
-    if( (red->width == green->width && red->width == blue->width && red->width == alpha->width)
-       && (red->height == green->height && red->height == blue->height && red->height == alpha->height))
-    {
-
-        Image *tileMask = Image::Create(red->width, red->height, FORMAT_RGBA8888);
-        int32 size = tileMask->width * tileMask->height;
-        int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-        for(int32 i = 0; i < size; ++i)
-        {
-            int32 offset = i * pixelSize;
-            tileMask->data[offset] = red->data[i];
-            tileMask->data[offset + 1] = green->data[i];
-            tileMask->data[offset + 2] = blue->data[i];
-            tileMask->data[offset + 3] = alpha->data[i];
-        }
-        
-        String tileDescriptorName = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_MASK);
-        String tileMaskPathname = FileSystem::Instance()->ReplaceExtension(tileDescriptorName, ".png");
-        ImageLoader::Save(tileMask, tileMaskPathname);
-        SafeRelease(tileMask);
-        
-        landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tileDescriptorName);
-    }
-    
-    SafeRelease(red);
-    SafeRelease(green);
-    SafeRelease(blue);
-    SafeRelease(alpha);
-}
-
-void LandscapePropertyControl::SetChannelsNames()
-{
-	LandscapeNode *landscape = GetLandscape();
-	if (!landscape)
-		return;
-
-    String tileMaskPathname = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_MASK);
-    String redPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".r.png");
-    String greenPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".g.png");
-    String bluePathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".b.png");
-    String alphaPathname = FileSystem::Instance()->ReplaceExtension(tileMaskPathname, ".a.png");
-
-    propertyList->SetFilepathPropertyValue("Red", redPathname);
-    propertyList->SetFilepathPropertyValue("Green", greenPathname);
-    propertyList->SetFilepathPropertyValue("Blue", bluePathname);
-    propertyList->SetFilepathPropertyValue("Alpha", alphaPathname);
-}
-
 LandscapeNode* LandscapePropertyControl::GetLandscape() const
 {
 	RenderComponent* component = cast_if_equal<RenderComponent*>(currentSceneNode->GetComponent(Component::RENDER_COMPONENT));
@@ -528,3 +399,4 @@ LandscapeNode* LandscapePropertyControl::GetLandscape() const
 	DVASSERT(landscape);
 	return landscape;
 }
+
