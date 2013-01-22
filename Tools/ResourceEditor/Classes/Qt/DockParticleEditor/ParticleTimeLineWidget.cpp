@@ -40,15 +40,15 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
+			SIGNAL(EmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)),
 			this,
 			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*)),
+			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)),
 			this,
 			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32)),
+			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
 			SLOT(OnNodeSelected(ParticleEmitterNode*)));
 

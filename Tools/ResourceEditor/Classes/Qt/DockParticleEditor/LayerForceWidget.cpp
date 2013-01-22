@@ -83,6 +83,37 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	blockSignals = false;
 }
 
+void LayerForceWidget::RestoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	forceTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_PROPS"));
+	forceVariationTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_VARIATION_PROPS"));
+	forceOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("FORCE_OVER_LIFE_PROPS"));
+}
+
+void LayerForceWidget::StoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	KeyedArchive* props = new KeyedArchive();
+
+	forceTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("FORCE_PROPS", props);
+
+	props->DeleteAllKeys();
+	forceVariationTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("FORCE_VARIATION_PROPS", props);
+
+	props->DeleteAllKeys();
+	forceOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("FORCE_OVER_LIFE_PROPS", props);
+
+	SafeRelease(props);
+}
+
 void LayerForceWidget::OnValueChanged()
 {
 	if (blockSignals)
