@@ -1257,30 +1257,6 @@
     <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp">
       <Filter>QtGenerated\DockSceneGraph</Filter>
     </ClCompile>
@@ -1410,23 +1386,32 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.cpp">
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\GraphModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\SceneGraphItem_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\SceneGraphModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
+      <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
