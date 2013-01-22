@@ -15,6 +15,7 @@
 		49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B261680990000713D35 /* VisibilityToolView.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		4F1AE79F16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F1AE79D16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.cpp */; };
 		5045D652169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D650169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp */; };
 		50957628169829800023E6D5 /* QtPropertyEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095761B169829800023E6D5 /* QtPropertyEditor.cpp */; };
 		50957629169829800023E6D5 /* QtPropertyItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5095761D169829800023E6D5 /* QtPropertyItem.cpp */; };
@@ -321,6 +322,8 @@
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
+		E859EA3816AD899200D54C4A /* QtColorLineEdit.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E859EA3616AD899200D54C4A /* QtColorLineEdit.cpp */; };
+		E859EA3B16AD89B600D54C4A /* QtColorLineEdit_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E859EA3A16AD89B600D54C4A /* QtColorLineEdit_moc.cpp */; };
 		E86E3545166D2E7A00291970 /* QSceneGraphTreeView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86E3543166D2E7900291970 /* QSceneGraphTreeView.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E89EF546167734FB00477220 /* TextureBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89EF534167734FB00477220 /* TextureBrowser.cpp */; };
@@ -415,6 +418,8 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		4F1AE79D16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataIntoCollection.cpp; sourceTree = "<group>"; };
+		4F1AE79E16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataIntoCollection.h; sourceTree = "<group>"; };
 		5045D650169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataDavaVariant.cpp; sourceTree = "<group>"; };
 		5045D651169EF7B800742C05 /* QtPropertyDataDavaVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataDavaVariant.h; sourceTree = "<group>"; };
 		5095761A169829800023E6D5 /* QtPropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyData.h; sourceTree = "<group>"; };
@@ -1062,6 +1067,9 @@
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
+		E859EA3616AD899200D54C4A /* QtColorLineEdit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit.cpp; sourceTree = "<group>"; };
+		E859EA3716AD899200D54C4A /* QtColorLineEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtColorLineEdit.h; sourceTree = "<group>"; };
+		E859EA3A16AD89B600D54C4A /* QtColorLineEdit_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit_moc.cpp; sourceTree = "<group>"; };
 		E86E3543166D2E7900291970 /* QSceneGraphTreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QSceneGraphTreeView.cpp; sourceTree = "<group>"; };
 		E86E3544166D2E7A00291970 /* QSceneGraphTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QSceneGraphTreeView.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
@@ -1244,6 +1252,7 @@
 				50957620169829800023E6D5 /* QtPropertyItemDelegate.h */,
 				50957621169829800023E6D5 /* QtPropertyModel.cpp */,
 				50957622169829800023E6D5 /* QtPropertyModel.h */,
+				E859EA3516AD899200D54C4A /* QtPropertyWidgets */,
 				50957623169829800023E6D5 /* QtProperyData */,
 			);
 			name = QtPropertyEditor;
@@ -1253,6 +1262,8 @@
 		50957623169829800023E6D5 /* QtProperyData */ = {
 			isa = PBXGroup;
 			children = (
+				4F1AE79D16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.cpp */,
+				4F1AE79E16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.h */,
 				5045D650169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp */,
 				5045D651169EF7B800742C05 /* QtPropertyDataDavaVariant.h */,
 				50957626169829800023E6D5 /* QtPropertyDataIntrospection.cpp */,
@@ -1411,6 +1422,7 @@
 				50E8E8BB169AC651005BB2F1 /* QtPropertyItem_moc.cpp */,
 				50E8E8BC169AC651005BB2F1 /* QtPropertyItemDelegate_moc.cpp */,
 				50E8E8BD169AC651005BB2F1 /* QtPropertyModel_moc.cpp */,
+				E859EA3916AD89B600D54C4A /* QtPropertyWidgets */,
 				50E8E8BE169AC651005BB2F1 /* QtProperyData */,
 			);
 			path = QtPropertyEditor;
@@ -2203,6 +2215,23 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		E859EA3516AD899200D54C4A /* QtPropertyWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				E859EA3616AD899200D54C4A /* QtColorLineEdit.cpp */,
+				E859EA3716AD899200D54C4A /* QtColorLineEdit.h */,
+			);
+			path = QtPropertyWidgets;
+			sourceTree = "<group>";
+		};
+		E859EA3916AD89B600D54C4A /* QtPropertyWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				E859EA3A16AD89B600D54C4A /* QtColorLineEdit_moc.cpp */,
+			);
+			path = QtPropertyWidgets;
+			sourceTree = "<group>";
+		};
 		E89EF533167734FB00477220 /* TextureBrowser */ = {
 			isa = PBXGroup;
 			children = (
@@ -2895,6 +2924,9 @@
 				50E8E90C169AC651005BB2F1 /* TextureScrollArea_moc.cpp in Build Sources */,
 				50E8E90F169AC70B005BB2F1 /* PropertyEditor.cpp in Build Sources */,
 				5045D652169EF7B800742C05 /* QtPropertyDataDavaVariant.cpp in Build Sources */,
+				4F1AE79F16A9AC1D009AF0C2 /* QtPropertyDataIntoCollection.cpp in Build Sources */,
+				E859EA3816AD899200D54C4A /* QtColorLineEdit.cpp in Build Sources */,
+				E859EA3B16AD89B600D54C4A /* QtColorLineEdit_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

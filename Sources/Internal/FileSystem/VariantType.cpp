@@ -39,6 +39,8 @@
 #include "Math/Matrix4.h"
 #include "Utils/Utils.h"
 #include "Base/Meta.h"
+#include "Math/Color.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -62,6 +64,8 @@ const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
 const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
 const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
 const String VariantType::TYPENAME_POINTER = "void *";
+const String VariantType::TYPENAME_COLOR   = "Color";
+const String VariantType::TYPENAME_FASTNAME= "FastName";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
@@ -82,7 +86,9 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
-	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>())
+	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>()),
+	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>()),
+	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>())
 };
 
 VariantType::VariantType()
@@ -219,6 +225,22 @@ void VariantType::SetPointer(const void* const &value)
 	pointerValue = value;
 }
 
+void VariantType::SetColor(const DAVA::Color &value)
+{
+    ReleasePointer();
+    type = TYPE_COLOR;
+    colorValue = new Color(value);
+}
+    
+void VariantType::SetFastName(const DAVA::FastName &value)
+{
+    ReleasePointer();
+    type = TYPE_FASTNAME;
+    
+    fastnameValue = new FastName(value);
+}
+    
+    
 void VariantType::SetVariant(const VariantType& var)
 {
 	switch(var.type)
@@ -309,6 +331,17 @@ void VariantType::SetVariant(const VariantType& var)
 			SetPointer(var.AsPointer());
 		}
 		break;
+    case  TYPE_COLOR:
+		{
+			SetColor(var.AsColor());
+		}
+        break;
+        case TYPE_FASTNAME:
+        {
+            SetFastName(var.AsFastName());
+        }
+        break;
+
 	default:
 		{
 			//DVASSERT(0 && "Something went wrong with VariantType");
@@ -422,6 +455,18 @@ const void* const & VariantType::AsPointer() const
 {
 	DVASSERT(type == TYPE_POINTER);
 	return pointerValue;
+}
+    
+const Color & VariantType::AsColor() const
+{
+    DVASSERT(type == TYPE_COLOR);
+    return *colorValue;
+}
+
+const FastName & VariantType::AsFastName() const
+{
+    DVASSERT(type == TYPE_FASTNAME);
+    return *fastnameValue;
 }
     
 bool VariantType::Write(File * fp) const
@@ -552,6 +597,23 @@ bool VariantType::Write(File * fp) const
 			DVASSERT(0 && "Can't write pointer");
 		}
 		break;
+    case TYPE_COLOR:
+		{
+            written = fp->Write(colorValue->color, sizeof(float32) * 4);
+            if (written != sizeof(sizeof(float32) * 4))return false;
+		}
+        break;
+    case TYPE_FASTNAME:
+    {
+        int32 len = strlen(fastnameValue->c_str());
+        written = fp->Write(&len, 4);
+        if (written != 4)return false;
+        
+        written = fp->Write(fastnameValue->c_str(), len);
+        if (written != len)return false;
+    }
+        break;
+
             
 	}
 	return true;
@@ -711,6 +773,30 @@ bool VariantType::Read(File * fp)
 				DVASSERT(0 && "Can't read pointer");
 			}
 			break;
+        case TYPE_COLOR:
+		{
+            ReleasePointer();
+            
+            colorValue = new Color;
+            read = fp->Read(colorValue->color, sizeof(float32) * 4);
+            if (read != sizeof(sizeof(float32) * 4))return false;
+		}
+            break;
+
+        case TYPE_FASTNAME:
+        {
+            int32 len = 0;
+			read = fp->Read(&len, 4);
+			if (read != 4)return false;
+			
+			char *buf = new char[len + 1];
+			read = fp->Read(buf, len);
+			buf[len] = 0;
+			fastnameValue = new FastName(buf);
+			delete [] buf;
+			if (read != len)return false;
+        }
+            break;
 
 		default:
 		{
@@ -787,6 +873,16 @@ void VariantType::ReleasePointer()
             case TYPE_WIDE_STRING:
             {
                 delete wideStringValue;
+            }
+                break;
+            case TYPE_COLOR:
+            {
+                delete colorValue;
+            }
+                break;
+            case TYPE_FASTNAME:
+            {
+                delete fastnameValue;
             }
                 break;
         }
@@ -920,6 +1016,16 @@ bool VariantType::operator==(const VariantType& other) const
 					isEqual = (AsPointer() == other.AsPointer());
 				}
 				break;
+			case  TYPE_COLOR:
+            {
+                isEqual = (AsColor() == other.AsColor());
+            }
+				break;
+			case  TYPE_FASTNAME:
+            {
+                isEqual = (AsFastName() == other.AsFastName());
+            }
+				break;
                 
         }
     }
@@ -1007,6 +1113,12 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	case TYPE_POINTER:
 		v.SetPointer(*((const void **) src));
 		break;
+    case TYPE_COLOR:
+        v.SetColor(*((DAVA::Color *) src));
+        break;
+    case TYPE_FASTNAME:
+        v.SetFastName(*((DAVA::FastName *) src));
+        break;
 	default:
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
 	}
@@ -1097,6 +1209,12 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	case TYPE_POINTER:
 		*((const void **) dst) = val.AsPointer();
 		break;
+    case TYPE_COLOR:
+        *((DAVA::Color *) dst) = val.AsColor();
+        break;
+    case TYPE_FASTNAME:
+        *((DAVA::FastName *) dst) = val.AsFastName();
+        break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}

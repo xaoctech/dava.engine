@@ -74,7 +74,12 @@ FastName::~FastName()
 
 const char* FastName::c_str() const
 {
-    return FastNameDB::Instance()->namesTable[index];
+	if(index > 0)
+	{
+        return FastNameDB::Instance()->namesTable[index];
+	}
+    
+	return NULL;
 }
 
 FastName& FastName::operator=(const FastName &_name)
@@ -97,14 +102,7 @@ bool FastName::operator!=(const FastName &_name) const
 
 const char* FastName::operator*() const
 {
-	const char *str = NULL;
-
-	if(index > 0)
-	{
-		str = FastNameDB::Instance()->namesTable[index];
-	}
-
-	return str;
+    return c_str();
 }
 
 int FastName::Index() const

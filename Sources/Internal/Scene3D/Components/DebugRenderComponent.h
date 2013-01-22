@@ -38,7 +38,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-                         MEMBER(debugFlags, " debugFlags ", 0)
+        MEMBER(debugFlags, "Debug Flags ", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

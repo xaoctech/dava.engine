@@ -32,6 +32,11 @@ protected:
 	Vector<uint32> colors;
 
 	Material * material;
+    
+public:
+    INTROSPECTION_EXTEND(ParticleLayer3D, ParticleLayer,
+        MEMBER(material, "Material", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 };

@@ -109,8 +109,8 @@ void DataNode::RemoveNode(DataNode * node)
 //        removedCache.push_back(node);
 //        return;
 //    }
-    const std::vector<DataNode*>::iterator & childrenEnd = children.end();
-    for (std::vector<DataNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
+    const Vector<DataNode*>::iterator & childrenEnd = children.end();
+    for (Vector<DataNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
     {
         if (*t == node)
         {
@@ -143,7 +143,7 @@ int32 DataNode::GetChildrenCount()
 
 void DataNode::RemoveAllChildren()
 {
-    for (std::vector<DataNode*>::iterator t = children.begin(); t != children.end(); ++t)
+    for (Vector<DataNode*>::iterator t = children.begin(); t != children.end(); ++t)
     {
         DataNode *node = *t;
         //node->SetParent(0);

@@ -7,8 +7,6 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-#include "Scene3D/Components/LodComponent.h"
-
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
 	, curNode(NULL)
@@ -32,8 +30,6 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	Test();
-
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
@@ -56,6 +52,8 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
         }
 	}
 
+	Test();
+
 	expandToDepth(0);
 }
 
@@ -70,21 +68,6 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
             
             prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
             prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-            
-            LodComponent *lod = dynamic_cast<LodComponent *>(static_cast<BaseObject *>(object));
-            if(lod && currentInfo == info)
-            {
-                int32 count = lod->GetLodLayersCount();
-                for(int32 i = 0; i < count; ++i)
-                {
-                    const IntrospectionInfo *layerInfo = GetIntrospection(&lod->lodLayersArray[i]);
-                    
-                    QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(layerInfo->Name(), new QtPropertyDataIntrospection(&lod->lodLayersArray[i], layerInfo));
-                    prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-                    prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-                }
-            }
-
         }
         
         currentInfo = currentInfo->BaseInfo();
@@ -122,6 +105,10 @@ void PropertyEditor::Test()
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
+
+	DAVA::VariantType v;
+	v.SetColor(DAVA::Color(1.0, 0.5, 0, 1.0));
+	AppendProperty("test color", new QtPropertyDataDavaVariant(v));
 
 	//IntrospectionCollection<std::vector, int> col(vec);
 	/*
