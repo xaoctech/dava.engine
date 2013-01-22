@@ -37,7 +37,7 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 			hasChildren = true;
 		}
 		
-		setIcon(data->GetIcon());
+		//setIcon(data->GetIcon());
 
 		ApplyDataFlags();
 		ApplyNameStyle(name);
@@ -75,19 +75,25 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 {
 	QVariant v;
 
-	switch(role)
+	if(NULL != itemData)
 	{
-	case Qt::DisplayRole:
-	case Qt::EditRole:
-		if(NULL != itemData)
+		switch(role)
 		{
+		case Qt::DecorationRole:
+			v = itemData->GetIcon();
+			break;
+		case Qt::DisplayRole:
+		case Qt::EditRole:
 			v = itemData->GetValue();
+			break;
+		default:
+			break;
 		}
-		break;
-
-	default:
+	}
+	
+	if(v.isNull())
+	{
 		v = QStandardItem::data(role);
-		break;
 	}
 
 	return v;

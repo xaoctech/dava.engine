@@ -26,8 +26,8 @@ public:
 	QVariant GetValue();
 	void SetValue(const QVariant &value);
 
-	QIcon GetIcon();
-	void SetIcon(const QIcon &icon);
+	virtual QIcon GetIcon();
+	virtual void SetIcon(const QIcon &icon);
 
 	int GetFlags();
 	void SetFlags(int flags);

@@ -47,6 +47,8 @@ void QtColorLineEdit::ToolButtonClicked()
 
 	SetColor(dlg->selectedColor());
 	delete dlg;
+
+	emit editingFinished();
 }
 
 void QtColorLineEdit::EditFinished()
