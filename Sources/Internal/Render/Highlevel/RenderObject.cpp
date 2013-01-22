@@ -28,7 +28,6 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {

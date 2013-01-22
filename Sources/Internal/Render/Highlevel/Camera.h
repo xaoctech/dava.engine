@@ -33,7 +33,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Base/Introspection.h"
 #include "Scene3D/Frustum.h"
 
 namespace DAVA
@@ -86,7 +85,28 @@ public:
         \brief Set camera aspect ratio 
         \param[in] aspectYdivX Aspect ratio is viewport height / viewport width
      */
-	void SetAspect(float32 aspectYdivX);
+	void SetAspect(const float32 &aspectYdivX);
+
+
+    /**
+         \brief Function change zNear in camera.
+         \param[in] zNear near clipping distance of camera
+     */
+	void SetZNear(const float32 &_zNear);
+
+    /**
+         \brief Function change zFar in camera.
+         \param[in] zFar far clipping distance of camera
+     */
+	void SetZFar(const float32 &_zFar);
+
+    
+    /**
+         \brief Set camera ortho flag
+         \param[in] _ortho is camera will be with orthographic projection or perspective. By default it's false so camera will be with perspective projection.
+     */
+    void SetIsOrtho(const bool &_ortho);
+    
     
 	/** 
         \brief Function applies camera transformations (projection, model-view matrices) to RenderManager
@@ -99,6 +119,51 @@ public:
      */
 	void RestoreOriginalSceneTransform();
 	
+    
+    /**
+         \brief return current xmin of this camera
+         \returns xmin for this camera
+     */
+    float32 GetXMin() const;
+
+    /**
+         \brief Set camera xmin
+     */
+	void SetXMin(const float32 &_xmin);
+
+    /**
+         \brief return current xmax of this camera
+         \returns xmax for this camera
+     */
+    float32 GetXMax() const;
+
+    /**
+        \brief Set camera xmax
+     */
+	void SetXMax(const float32 &_xmax);
+    
+    /**
+         \brief return current ymin of this camera
+         \returns ymin for this camera
+     */
+    float32 GetYMin() const;
+
+    /**
+        \brief Set camera ymin
+     */
+    void SetYMin(const float32 &_ymin);
+
+    /**
+         \brief return current ymax of this camera
+         \returns ymax for this camera
+     */
+    float32 GetYMax() const;
+
+    /**
+        \brief Set camera ymax
+     */
+	void SetYMax(const float32 &_ymax);
+    
     /**
         \brief return current Field Of View of this camera
         \returns FOV for this camera
@@ -316,11 +381,25 @@ public:
 
 public:
     INTROSPECTION_EXTEND(Camera, BaseObject,
-		PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, 0)
-		PROPERTY(position, "Position", GetPosition, SetPosition, 0)
-		PROPERTY(up, "Up", GetUp, SetUp, 0)
-		PROPERTY(left, "Left", GetLeft, SetLeft, 0)
-		);
+        PROPERTY(xmin, "xmin", GetXMin, SetXMin, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(xmax, "xmax", GetXMax, SetXMax, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(ymin, "ymin", GetYMin, SetYMin, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(ymax, "ymax", GetYMax, SetYMax, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(znear, "znear", GetZNear, SetZNear, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(zfar, "zfar", GetZFar, SetZFar, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(aspect, "aspect", GetAspect, SetAspect, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(fovy, "fovy", GetFOV, SetFOV, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(ortho, "Is Ortho", GetIsOrtho, SetIsOrtho, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+                         
+        PROPERTY(zoomFactor, "Zoom factor", GetFOV, SetFOV, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		PROPERTY(position, "Position", GetPosition, SetPosition, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(target, "Target", GetTarget, SetTarget, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		PROPERTY(up, "Up", GetUp, SetUp, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		PROPERTY(left, "Left", GetLeft, SetLeft, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(direction, "Direction", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 } // ns

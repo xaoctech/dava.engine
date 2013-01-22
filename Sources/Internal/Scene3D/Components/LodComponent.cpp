@@ -42,6 +42,8 @@ LodComponent::LodComponent()
 	forceDistance(INVALID_DISTANCE),
 	forceDistanceSq(INVALID_DISTANCE)
 {
+	lodLayersArray.resize(MAX_LOD_LAYERS);
+
 	flags = NEED_UPDATE_AFTER_LOAD;
 
 	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
@@ -80,4 +82,16 @@ void LodComponent::SetCurrentLod(LodData *newLod)
 	}
 }
 
+void LodComponent::SetForceDistance(const float32 &newDistance)
+{
+    forceDistance = newDistance;
+    forceDistanceSq = forceDistance * forceDistance;
+}
+    
+float32 LodComponent::GetForceDistance() const
+{
+    return forceDistance;
+}
+
+    
 };

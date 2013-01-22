@@ -26,7 +26,8 @@ private:
 public:
     
     INTROSPECTION_EXTEND(LightComponent, Component,
-		NULL);
+        MEMBER(light, "Light", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 

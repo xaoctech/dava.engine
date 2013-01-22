@@ -32,10 +32,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
-class RenderBatch;
+//class RenderBatch;
 class RenderBatchArray;
 class Camera;
     
@@ -55,6 +56,14 @@ private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 index;
     //RenderBatchArray * renderBatchArray;
+    
+public:
+    
+    INTROSPECTION(RenderLayer,
+        MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_EDITOR)
+    );
+
 };
     
 } // ns

@@ -27,7 +27,8 @@ private:
 public:
 
     INTROSPECTION_EXTEND(CameraComponent, Component,
-                         NULL);
+        MEMBER(camera, "Camera", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 
 };
 

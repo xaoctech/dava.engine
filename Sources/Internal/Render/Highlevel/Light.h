@@ -91,6 +91,19 @@ protected:
     float32 intensity;
 
 	bool isDynamic;
+    
+public:
+    
+    INTROSPECTION_EXTEND(LightNode, BaseObject,
+        MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//    MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(intensity, "Intensity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isDynamic, "Is Dynamic", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 };

@@ -1,5 +1,10 @@
 #include "DAVAEngine.h"
+#include "Main/QtUtils.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
+
+#include <QColorDialog>
+#include <QLineEdit>
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
@@ -31,11 +36,16 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	case DAVA::VariantType::TYPE_VECTOR2:
 	case DAVA::VariantType::TYPE_VECTOR3:
 	case DAVA::VariantType::TYPE_VECTOR4:
+    case DAVA::VariantType::TYPE_COLOR:
+    case DAVA::VariantType::TYPE_FASTNAME:
 	default:
 		break;
 	}
 
 	ChildsCreate();
+
+	// ensure data is fully initialized (icons set)
+	GetValueInternal();
 }
 
 QtPropertyDataDavaVariant::~QtPropertyDataDavaVariant()
@@ -100,6 +110,19 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
 	case DAVA::VariantType::TYPE_VECTOR4:
 		v = FromVector4(curVariantValue.AsVector4());
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        v = FromColor(curVariantValue.AsColor());
+        break;
+    case DAVA::VariantType::TYPE_FASTNAME:
+        {
+            const char *str = curVariantValue.AsFastName().c_str();
+            if(str)
+            {
+                v = str;
+            }
+        }
+//        v = curVariantValue.AsFastName().c_str();
+        break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -155,6 +178,15 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
 	case DAVA::VariantType::TYPE_VECTOR4:
 		ToVector4(value);
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        ToColor(value);
+        break;
+    case DAVA::VariantType::TYPE_FASTNAME:
+        {
+            DAVA::String str = value.toString().toStdString();
+            curVariantValue.SetFastName(DAVA::FastName(str.c_str()));
+        }
+        break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -218,6 +250,15 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 			ChildAdd("W", vec.w);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+        {
+//            DAVA::Color color = curVariantValue.AsColor();
+//            ChildAdd("R", color.r);
+//            ChildAdd("G", color.g);
+//            ChildAdd("B", color.b);
+//            ChildAdd("A", color.a);
+        }
+        break;
 	}
 }
 
@@ -261,6 +302,15 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 			ChildGet("W")->SetValue(vec.w);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+		{
+//			DAVA::Color color = curVariantValue.AsColor();
+//			ChildGet("R")->SetValue(color.r);
+//			ChildGet("G")->SetValue(color.g);
+//			ChildGet("B")->SetValue(color.b);
+//			ChildGet("A")->SetValue(color.a);
+		}
+        break;
 	}
 }
 
@@ -312,6 +362,16 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 			curVariantValue.SetVector4(vec);
 		}
 		break;
+    case DAVA::VariantType::TYPE_COLOR:
+		{
+//			DAVA::Color color;
+//			color.r = ChildGet("R")->GetValue().toFloat();
+//			color.g = ChildGet("G")->GetValue().toFloat();
+//			color.b = ChildGet("B")->GetValue().toFloat();
+//			color.a = ChildGet("A")->GetValue().toFloat();
+//			curVariantValue.SetColor(color);
+		}
+        break;
 	}
 }
 
@@ -393,6 +453,13 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 	return v;
 }
 
+QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
+{
+	return QColorFromColor(color);
+}
+
+
+
 void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
 {
 	// No way to set whole archive
@@ -432,4 +499,59 @@ void QtPropertyDataDavaVariant::ToMatrix2(const QVariant &value)
 {
 	// TODO:
 	// ...
+}
+
+void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
+{
+	// TODO:
+	// ...
+}
+
+QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+		QtColorLineEdit *colorLineEdit = new QtColorLineEdit(parent);
+		return colorLineEdit;
+    }
+    
+    return NULL;
+}
+
+void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+        curVariantValue.SetColor(ColorFromQColor(colorLineEdit->GetColor()));
+    }
+}
+
+void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+    {
+		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
+		colorLineEdit->SetColor(QColorFromColor(curVariantValue.AsColor()));
+    }
+}
+
+QIcon QtPropertyDataDavaVariant::GetIcon()
+{
+	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
+	{
+		QPixmap pix(16,16);
+		pix.fill(QColorFromColor(curVariantValue.AsColor()));
+
+		return QIcon(pix);
+	}
+	else
+	{
+		return QtPropertyData::GetIcon();
+	}
+}
+
+void QtPropertyDataDavaVariant::SetIcon(const QIcon &icon)
+{
+	QtPropertyData::SetIcon(icon);
 }

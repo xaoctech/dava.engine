@@ -13,6 +13,9 @@ public:
 	const DAVA::VariantType& GetVariantValue() const;
 	void SetVariantValue(const DAVA::VariantType& value);
 
+	virtual void SetIcon(const QIcon &icon);
+	virtual QIcon GetIcon();
+
 protected:
 	DAVA::VariantType curVariantValue;
 
@@ -22,6 +25,10 @@ protected:
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 	virtual void ChildNeedUpdate();
 
+	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
+	virtual void EditorDoneInternal(QWidget *editor);
+    virtual void SetEditorDataInternal(QWidget *editor);
+    
 private:
 	void ChildsCreate();
 	void ChildsSetFromMe();
@@ -34,6 +41,7 @@ private:
 	QVariant FromMatrix4(const DAVA::Matrix4 &matrix);
 	QVariant FromMatrix3(const DAVA::Matrix3 &matrix);
 	QVariant FromMatrix2(const DAVA::Matrix2 &matrix);
+	QVariant FromColor(const DAVA::Color &color);
 
 	void ToKeyedArchive(const QVariant &value);
 	void ToVector4(const QVariant &value);
@@ -42,6 +50,7 @@ private:
 	void ToMatrix4(const QVariant &value);
 	void ToMatrix3(const QVariant &value);
 	void ToMatrix2(const QVariant &value);
+	void ToColor(const QVariant &value);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_VARIANT_H__

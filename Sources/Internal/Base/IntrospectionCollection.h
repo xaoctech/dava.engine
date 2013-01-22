@@ -5,51 +5,63 @@
 
 namespace DAVA
 {
-	template<template <typename, typename> class C, typename T, typename A>
-	class IntrospectionCollection : public IntrospectionMember, public IntrospectionCollectionBase
+	template<template <typename> class C, typename T>
+	class IntrospectionCollection : public IntrospectionCollectionBase
 	{
 	public:
-		/*
-		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: IntrospectionMember(_name, _desc, _offset, _type, _flags)
-		{ }
-		*/
+		typedef C<T> CollectionT;
 
-		DAVA::MetaInfo* CollectionType()
+		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: IntrospectionCollectionBase(_name, _desc, _offset, _type, _flags)
+		{ }
+
+		DAVA::MetaInfo* CollectionType() const
 		{
-			return DAVA::MetaInfo::Instance<C<T, A> >();
+			return DAVA::MetaInfo::Instance<CollectionT >();
 		}
 
-		DAVA::MetaInfo* ValueType()
+		DAVA::MetaInfo* ValueType() const
 		{
 			return DAVA::MetaInfo::Instance<T>();
 		}
 
-		int Size()
+		int Size(void *object) const
 		{
-			return 0; //collection->size();
+			int size = 0;
+
+			if(NULL != object)
+			{
+				size = ((CollectionT *) object)->size();
+			}
+
+			return size;
 		}
 
-		void* Begin(void *object)
+		Iterator Begin(void *object) const
 		{
-			void* i = NULL;
-//
-//			C<T, A>::iterator begin = collection->begin();
-//			C<T, A>::iterator end = collection->end();
-//
-//			if(begin != end)
-//			{
-//				CollectionPos *pos = new CollectionPos();
-//				pos->curPos = begin;
-//				pos->endPos = end;
-//
-//				i = (void*) pos;
-//			}
-//
+			Iterator i = NULL;
+
+			if(NULL != object)
+			{
+                CollectionT *collection = (CollectionT *) object;
+
+				typename CollectionT::iterator begin = collection->begin();
+				typename CollectionT::iterator end = collection->end();
+
+				if(begin != end)
+				{
+					CollectionPos *pos = new CollectionPos();
+					pos->curPos = begin;
+					pos->endPos = end;
+
+					i = (Iterator) pos;
+				}
+			}
+
 			return i;
 		}
 
-		void* Next(void* i)
+		Iterator Next(Iterator i) const
 		{
 			CollectionPos* pos = (CollectionPos *) i;
 
@@ -67,7 +79,7 @@ namespace DAVA
 			return i;
 		}
 
-		void Finish(void* i)
+		void Finish(Iterator i) const
 		{
 			CollectionPos* pos = (CollectionPos *) i;
 			if(NULL != pos)
@@ -76,7 +88,7 @@ namespace DAVA
 			}
 		}
 
-		void ItemValueGet(void *object, void* i, void *itemDst)
+		void ItemValueGet(Iterator i, void *itemDst) const
 		{
 			CollectionPos* pos = (CollectionPos *) i;
 			if(NULL != pos)
@@ -86,7 +98,7 @@ namespace DAVA
 			}
 		}
 
-		void ItemValueSet(void *object, void* i, void *itemSrc)
+		void ItemValueSet(Iterator i, void *itemSrc)
 		{
 			CollectionPos* pos = (CollectionPos *) i;
 			if(NULL != pos)
@@ -96,7 +108,7 @@ namespace DAVA
 			}
 		}
 
-		void* ItemPointer(void *object, void *i)
+		void* ItemPointer(Iterator i) const 
 		{
 			void *p = NULL;
 			CollectionPos* pos = (CollectionPos *) i;
@@ -109,20 +121,23 @@ namespace DAVA
 			return p;
 		}
 
+		const IntrospectionCollectionBase* Collection() const
+		{
+			return this;
+		}
+
 	protected:
 		struct CollectionPos
 		{
-			typename C<T, A>::iterator curPos;
-			typename C<T, A>::iterator endPos;
+			typename CollectionT::iterator curPos;
+			typename CollectionT::iterator endPos;
 		};
-
-		//C<T, A> *collection;
 	};
 
-	template<template <typename, typename> class Container, class T, class A>
-	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T, A> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
+	template<template <typename> class Container, class T>
+	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
-		return new IntrospectionCollection<Container, T, A>(_name, _desc, _offset, _type, _flags);
+		return new IntrospectionCollection<Container, T>(_name, _desc, _offset, _type, _flags);
 	}
 
 };
