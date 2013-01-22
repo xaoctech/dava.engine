@@ -2158,6 +2158,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
