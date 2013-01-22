@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QToolButton>
+#include <QAbstractItemDelegate>
 
 class QtColorLineEdit : public QLineEdit
 {
@@ -11,12 +12,17 @@ class QtColorLineEdit : public QLineEdit
 
 public:
 	QtColorLineEdit(QWidget * parent);
+	~QtColorLineEdit();
+
 	void SetColor(const QColor &color);
 	QColor GetColor() const;
+
+	void SetItemDelegatePtr(const QAbstractItemDelegate* deleg);
 
 protected:
 	QColor curColor;
 	QToolButton *toolButton;
+	const QAbstractItemDelegate* deleg;
 
 protected slots:
 	void ToolButtonClicked();
