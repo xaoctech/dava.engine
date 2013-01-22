@@ -215,14 +215,15 @@ public:
 public:
     
     INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
-        MEMBER(particlesToGenerate, "Particles To Generate", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(layerTime, "Layer Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(relativeSpriteName, "Relative Sprite Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
-        MEMBER(renderBatch, "Render Batch", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        MEMBER(pivotPoint, "Pivot Point", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
+                         NULL
+//        MEMBER(particlesToGenerate, "Particles To Generate", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(layerTime, "Layer Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(relativeSpriteName, "Relative Sprite Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        MEMBER(renderBatch, "Render Batch", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(pivotPoint, "Pivot Point", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
 //        MEMBER(life, "Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 //        MEMBER(lifeVariation, "Life Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
@@ -258,16 +259,16 @@ public:
 //        MEMBER(alphaOverLife, "Alpha Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 //        MEMBER(colorOverLife, "Color Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 //        MEMBER(frameOverLife, "Frame Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(alignToMotion, "Align To Motion", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(additive, "Additive", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(startTime, "Start Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(endTime, "End Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(frameStart, "Frame Start", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(frameEnd, "Frame End", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
+//        MEMBER(alignToMotion, "Align To Motion", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(additive, "Additive", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(startTime, "Start Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(endTime, "End Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameStart, "Frame Start", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameEnd, "Frame End", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
 //      MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        MEMBER(isDisabled, "Is Disabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(isDisabled, "Is Disabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

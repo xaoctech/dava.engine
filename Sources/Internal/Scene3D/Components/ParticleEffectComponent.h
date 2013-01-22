@@ -78,10 +78,11 @@ private:
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(stopWhenEmpty, "stopWhenEmpty", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(effectDuration, "effectDuration", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         NULL
+//		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(stopWhenEmpty, "stopWhenEmpty", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(effectDuration, "effectDuration", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
