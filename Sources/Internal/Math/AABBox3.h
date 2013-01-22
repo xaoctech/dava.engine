@@ -113,11 +113,11 @@ public:
     void GetCorners(Vector3 * cornersArray) const;
     
 public:
-    
-    INTROSPECTION(AABBox3,
-        MEMBER(min, "Min", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(max, "Max", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-    );
+	//Dizz: introspection changes    
+    //INTROSPECTION(AABBox3,
+    //    MEMBER(min, "Min", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    //    MEMBER(max, "Max", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    //);
 };
 
 //! \brief construct empty bounding box

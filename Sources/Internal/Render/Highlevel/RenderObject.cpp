@@ -72,5 +72,25 @@ RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
     return renderBatchArray[batchIndex];
 }
 
+RenderObject * RenderObject::Clone()
+{
+	RenderObject * ro = new RenderObject();
+
+	ro->type = type;
+	ro->flags = flags;
+	ro->debugFlags = debugFlags;
+	ro->bbox = bbox;
+	ro->worldBBox = worldBBox;
+
+	uint32 size = renderBatchArray.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		ro->renderBatchArray.push_back(renderBatchArray[i]->Clone());
+		ro->renderBatchArray[i]->SetRenderObject(ro);
+	}
+
+	return ro;
+}
+
 
 };
