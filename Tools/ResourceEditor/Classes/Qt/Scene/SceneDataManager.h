@@ -23,6 +23,9 @@ public:
  	// <--
 
 public:
+	// Create the new scene.
+	SceneData* CreateNewScene();
+
 	// Add the new scene.
 	void AddScene(const DAVA::String &scenePathname);
 
@@ -104,6 +107,9 @@ protected:
 
 	// Reload the scene node in a recursive way.
 	void ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname);
+
+	// Update the Particle Editor sprites.
+	void UpdateParticleSprites();
 
 protected:
     SceneData *currentScene;

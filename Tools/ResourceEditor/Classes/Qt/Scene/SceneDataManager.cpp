@@ -6,6 +6,8 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
+#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
+
 using namespace DAVA;
 
 SceneDataManager::SceneDataManager()
@@ -21,6 +23,15 @@ SceneDataManager::~SceneDataManager()
         SafeDelete(*it);
     }
     scenes.clear();
+}
+
+SceneData* SceneDataManager::CreateNewScene()
+{
+	SceneData *levelScene = SceneGetLevel();
+    levelScene->CreateScene(true);
+	
+	UpdateParticleSprites();
+	return levelScene;	
 }
 
 void SceneDataManager::AddScene(const String &scenePathname)
@@ -91,6 +102,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 }
 
@@ -157,6 +169,7 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
 	scene->Update(0);
 	sceneData->EmitSceneChanged();
 
+	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 }
 
@@ -220,6 +233,7 @@ void SceneDataManager::AddReferenceScene(const String &scenePathname)
 	}
 	SafeRelease(refNode);
 	
+	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 	
     //TODO: need save scene automatically?
@@ -264,6 +278,7 @@ void SceneDataManager::ReloadScene(const String &scenePathname)
         screen->OnReloadRootNodesQt();
     }
     
+	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
 	sceneData->SetLandscapesControllerScene(scene);
 }
@@ -687,3 +702,9 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 {
 	emit SceneGraphNeedRefreshLayer(layer);
 }
+
+void SceneDataManager::UpdateParticleSprites()
+{
+	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+}
+
