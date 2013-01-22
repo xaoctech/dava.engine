@@ -348,20 +348,6 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 						break;
 					}
 
-				case DVKEY_BACKSPACE:
-					{
-						bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
-						if(cmdIsPressed)
-						{
-							sceneGraph->RemoveWorkingNode();
-
-                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-							activeScene->SelectNode(NULL);
-							activeScene->RebuildSceneGraph();
-						}
-						break;
-					}
-
 				case DVKEY_C:
 					newCamera = scene->GetCamera(2);
 					break;
@@ -396,6 +382,14 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 					scene->SetClipCamera(scene->GetCamera(0));
 				}
 			}
+            else if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL) && (event->tid == DVKEY_BACKSPACE))
+            {
+                sceneGraph->RemoveWorkingNode();
+                
+                SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+                activeScene->SelectNode(NULL);
+                activeScene->RebuildSceneGraph();
+            }
         }
 	}
 	
