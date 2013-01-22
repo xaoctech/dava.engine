@@ -1,3 +1,9 @@
+/*
+	DAVA SDK
+	Introspection
+	Author: Sergey Zdanevich
+*/
+
 #ifndef __DAVAENGINE_INTROSPECTION_H__
 #define __DAVAENGINE_INTROSPECTION_H__
 
@@ -12,6 +18,30 @@
 
 namespace DAVA
 {
+	// Класс интроспекции. 
+	// Добавляет интроспекцию к любому пользовательскому классу
+	//
+	// Использование:
+	//
+	// 	class A
+	// 	{
+	// 	public:
+	// 		int		i;
+	// 		String	s;
+	// 		Matrix4	m;
+	//		Vector<int> v;
+	//
+	//		String GetName() { return s; }
+	//      void SetName(const String &_s) { s = _s; }
+	// 
+	// 		INTROSPECTION(A,
+	// 			MEMBER(i, "simple int var", 0)
+	// 			MEMBER(s, "string", 0)
+	//			PROPERTY(s, "property with setter and getter", GetName, SetName, 0)
+	//			COLLECTION(v, "vector collection")
+	// 			);
+	// 	};
+	//
 	class IntrospectionInfo
 	{
 	public:

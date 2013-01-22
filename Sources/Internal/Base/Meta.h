@@ -1,66 +1,106 @@
+/*
+	DAVA SDK
+	Meta
+	Author: Sergey Zdanevich
+*/
+
 #ifndef __DAVAENGINE_META_H__
 #define __DAVAENGINE_META_H__
-
-#define META_USE_TYPEID
-
-#ifdef META_USE_TYPEID
-#include <typeinfo>
-#endif
 
 #include "Base/IntrospectionBase.h"
 
 namespace DAVA
 {
-	template <typename T>
-	struct MetaType;
-
+	// Класс мета-информации типов.
 	struct MetaInfo
 	{
+		// MetaInfo::Instance<Т>() - возвращает постоянный для типа Т указатель на мета-информацию.
 		template <typename MetaT>
 		static MetaInfo *Instance()
 		{
-#ifdef META_USE_TYPEID
+			// Для того, чтобы гарантировать постоянный и единственный указатель на мета-информацию для типа Т
+			// эта МИ объявлена как статическая переменная.
 			static MetaInfo metaInfo(typeid(MetaT).name(), sizeof(MetaT), PointerTraits<MetaT>::result);
-#else
-			static MetaInfo metaInfo(MetaType<MetaT>::name, sizeof(MetaT), PointerTraits<MetaT>::result);
-#endif
+
+			// Попробуем найти интроспекцию для данного типа Т и сохранить ее в данной мета-информации (МИ).
+			// Почему поик интроспекции не сделан в конструкторе МИ? Потому, что в этом случае еще не завершившийся статический конструктор МИ
+			// попытается получить инстанс интроспекци, которой в свою очередь, при создании, требуется инстанс данной МИ. Это приведет к повторному
+			// еще не завершившегося конструктора МИ.
             metaInfo.OneTimeIntrospectionSafeSet<MetaT>();
+
+			// Возвращаем инстанс мета-информации.
 			return &metaInfo;
 		}
 
+		// MetaInfo::Instance<C, Т>(T C::*var) - принимает указатель на член класса С типа Т и возвращает 
+		// постоянный для Т указатель на мета-информацию. 
+		//
+		// Данная функция-врапер используется для реализации Интроспекции.
+		// Не рекомендуется ее использование напрямую.
 		template <typename ClassT, typename MemberT>
 		static MetaInfo* Instance(MemberT ClassT::*var)
 		{
 			return MetaInfo::Instance<MemberT>();
 		}
 
+		// Размер типа в байтах
 		inline int GetSize() const
 		{
 			return type_size;
 		}
 
+		// Имя типа
+		// Результат данной функции сильно зависит от платформы и компилятора и следовательно его
+		// использование целесообразно ТОЛЬКО ПРИ ОТЛАДКИ.
+		//
+		// Абсолютно НЕВЕРНЫМ является сравнение типа:
+		// ("int" == meta->GetTypeName())
+		//
+		// ПРАВИЛЬНЫЙ вариант:
+		// (MetaInto::Instance<int>() == meta)
 		inline const char* GetTypeName() const
 		{
 			return type_name;
 		}
 
-		inline const IntrospectionInfo* GetIntrospection() const
-		{
-			return introspection;
-		}
-
+		// Возвращает true если данный тип является указателем
 		inline bool IsPointer() const
 		{
 			return isPointer;
 		}
         
-    protected:
+		// Получение интроспекции для данного типа
+		// В случае отсутствия интроспекции функциия вернет NULL
+		//
+		// ВАЖНО: Результат данной фунции будет идентичен для типа Т и Т*
+		// Пользователь должен использовать функцию IsPointer() для разрешения
+		inline const IntrospectionInfo* GetIntrospection() const
+		{
+			return introspection;
+		}
+
+	protected:
+		// Единожды установить в текущей мета-информации T указатель на интроспекцию 
+		// заданного типа IntrospectionT (IntrospectionT == T всегда)
         template<typename IntrospectionT>
         void OneTimeIntrospectionSafeSet()
         {
             if(!introspectionOneTimeSet)
             {
                 introspectionOneTimeSet = true;
+
+				// Как работает данный шаблон:
+				// typename Select<res1, T1, T2>::Result
+				// Если результат res1 является истиной, то выбирается тип T1 иначе T2
+				//
+				// т.е. <typename Select<PointerTraits<res1, T1, T2>::Result>, 
+				//
+				// при res1 == true преобразуется в
+				//
+				// DAVA::GetIntrospection<typename T1>
+				//
+				// PointerTraits<T>::result - вернет true, если тип Т является указателем, а
+				// PointerTraits<IntrospectionT>::PointeeType - вернет тип указателя 
                 introspection = DAVA::GetIntrospection<typename Select<PointerTraits<IntrospectionT>::result, typename PointerTraits<IntrospectionT>::PointeeType, IntrospectionT>::Result>();
             }
         }
@@ -82,25 +122,5 @@ namespace DAVA
 		bool isPointer;
 	};
 };
-
-#ifndef META_USE_TYPEID
-
-#define REGISTER_META_TYPE(_type) \
-	template<> struct DAVA::MetaType<_type> { static const char* name; }; const char* DAVA::MetaType<_type>::name = #_type
-
-REGISTER_META_TYPE(int);
-REGISTER_META_TYPE(unsigned int);
-REGISTER_META_TYPE(const int);
-REGISTER_META_TYPE(const unsigned int);
-REGISTER_META_TYPE(int*);
-REGISTER_META_TYPE(unsigned int*);
-REGISTER_META_TYPE(const int*);
-REGISTER_META_TYPE(const unsigned int*);
-REGISTER_META_TYPE(std::string);
-REGISTER_META_TYPE(const std::string);
-REGISTER_META_TYPE(std::string *);
-REGISTER_META_TYPE(const std::string *);
-
-#endif // META_USE_TYPEID
 
 #endif // __DAVAENGINE_META_H__
