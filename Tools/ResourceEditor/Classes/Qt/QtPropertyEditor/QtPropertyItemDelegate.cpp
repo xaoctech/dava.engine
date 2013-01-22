@@ -82,7 +82,6 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 		r.adjust(0, -2, 0, 2);
 
 		// check if item has icon and move editor right if it has one
-		/*
 		const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
 		if(NULL != propertyModel)
 		{
@@ -94,7 +93,6 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 				r.adjust(20, 0, 0, 0);
 			}
 		}
-		*/
 
 		editor->setGeometry(r);
 	}

@@ -43,12 +43,14 @@ void QtColorLineEdit::ToolButtonClicked()
 	QColorDialog *dlg = new QColorDialog(this);
 	dlg->setCurrentColor(GetColor());
 	dlg->setOption(QColorDialog::ShowAlphaChannel, true);
-	dlg->exec();
 
-	SetColor(dlg->selectedColor());
+	if(QDialog::Accepted == dlg->exec())
+	{
+		SetColor(dlg->selectedColor());
+	}
+
 	delete dlg;
-
-	emit editingFinished();
+	close();
 }
 
 void QtColorLineEdit::EditFinished()

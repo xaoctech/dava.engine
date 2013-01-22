@@ -10,6 +10,8 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 
 	curItemDelegate = new QtPropertyItemDelegate();
 	setItemDelegate(curItemDelegate);
+
+	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(ItemClicked(const QModelIndex &)));
 }
 
 QtPropertyEditor::~QtPropertyEditor()
@@ -35,4 +37,7 @@ void QtPropertyEditor::Expand(QtPropertyItem *item)
 	expand(curModel->indexFromItem(item));
 }
 
-
+void QtPropertyEditor::ItemClicked(const QModelIndex &index)
+{
+	edit(index);
+}

@@ -26,6 +26,9 @@ public:
 protected:
 	QtPropertyModel *curModel;
 	QtPropertyItemDelegate *curItemDelegate;
+
+protected slots:
+	void ItemClicked(const QModelIndex &);
 };
 
 #endif // __QT_PROPERTY_VIEW_H__
