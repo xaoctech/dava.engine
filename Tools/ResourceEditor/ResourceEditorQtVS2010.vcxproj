@@ -361,7 +361,7 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp" />
-    <ClCompile Include="Classes\Qt\DockProperties\PropertiesView.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.cpp" />
