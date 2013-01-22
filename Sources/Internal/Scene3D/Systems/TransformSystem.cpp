@@ -111,6 +111,7 @@ void TransformSystem::HierahicAddToUpdate(SceneNode * entity)
 		}
 		else
 		{//topmost parent
+			DVASSERT(entity->GetRetainCount() >= 1);
 			updatableEntities.push_back(entity);
 		}
 	}

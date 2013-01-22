@@ -64,7 +64,6 @@ SceneNode::SceneNode()
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
         components[k] = 0;
     
-	worldTransform.Identity();
     defaultLocalTransform.Identity();
 	//animation = 0;
     //debugFlags = DEBUG_DRAW_NONE;
@@ -565,7 +564,6 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		}
 	}
     
-    dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->flags = flags;
@@ -895,7 +893,7 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
     }
 }
 
-inline const Matrix4 & SceneNode::ModifyLocalTransform()
+Matrix4 & SceneNode::ModifyLocalTransform()
 {
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->ModifyLocalTransform();
 }
@@ -919,9 +917,9 @@ int32 SceneNode::Release()
 {
 	if(1 == referenceCount)
 	{
+		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
 		AddFlag(SceneNode::NODE_DELETED);
 		SetScene(0);
-		DeleteSystem::Instance()->MarkNodeAsDeleted(this);
 		return referenceCount;
 	}
 	else
@@ -973,6 +971,15 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
 	}
+}
+
+Matrix4 SceneNode::AccamulateLocalTransform(SceneNode * fromParent)
+{
+	if (fromParent == this) 
+	{
+		return GetLocalTransform();
+	}
+	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
 
 

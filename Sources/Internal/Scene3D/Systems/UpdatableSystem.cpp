@@ -17,16 +17,16 @@ void UpdatableSystem::AddEntity(SceneNode * entity)
 	IUpdatable * object = component->GetUpdatableObject();
 	DVASSERT(object);
 
-	IUpdatablePreTransform * updatePreTransform = dynamic_cast<IUpdatablePreTransform*>(object);
-	if(updatePreTransform)
+	IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
+	if(updateBeforeTransform)
 	{
-		updatesPreTransform.push_back(updatePreTransform);
+		updatesBeforeTransform.push_back(updateBeforeTransform);
 	}
 
-	IUpdatablePostTransform * updatePostTransform = dynamic_cast<IUpdatablePostTransform*>(object);
-	if(updatePostTransform)
+	IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
+	if(updateAfterTransform)
 	{
-		updatesPostTransform.push_back(updatePostTransform);
+		updatesAfterTransform.push_back(updateAfterTransform);
 	}
 }
 
@@ -37,31 +37,31 @@ void UpdatableSystem::RemoveEntity(SceneNode * entity)
 
 	if(object)
 	{
-		IUpdatablePreTransform * updatePreTransform = dynamic_cast<IUpdatablePreTransform*>(object);
-		if(updatePreTransform)
+		IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
+		if(updateBeforeTransform)
 		{
-			uint32 size = updatesPreTransform.size();
+			uint32 size = updatesBeforeTransform.size();
 			for(uint32 i = 0; i < size; ++i)
 			{
-				if(updatesPreTransform[i] == updatePreTransform)
+				if(updatesBeforeTransform[i] == updateBeforeTransform)
 				{
-					updatesPreTransform[i] = updatesPreTransform[size-1];
-					updatesPreTransform.pop_back();
+					updatesBeforeTransform[i] = updatesBeforeTransform[size-1];
+					updatesBeforeTransform.pop_back();
 					return;
 				}
 			}
 		}
 
-		IUpdatablePostTransform * updatePostTransform = dynamic_cast<IUpdatablePostTransform*>(object);
-		if(updatePostTransform)
+		IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
+		if(updateAfterTransform)
 		{
-			uint32 size = updatesPostTransform.size();
+			uint32 size = updatesAfterTransform.size();
 			for(uint32 i = 0; i < size; ++i)
 			{
-				if(updatesPostTransform[i] == updatePostTransform)
+				if(updatesAfterTransform[i] == updateAfterTransform)
 				{
-					updatesPostTransform[i] = updatesPostTransform[size-1];
-					updatesPostTransform.pop_back();
+					updatesAfterTransform[i] = updatesAfterTransform[size-1];
+					updatesAfterTransform.pop_back();
 					return;
 				}
 			}
@@ -77,20 +77,20 @@ void UpdatableSystem::Process()
 void UpdatableSystem::UpdatePreTransform()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-	uint32 size = updatesPreTransform.size();
+	uint32 size = updatesBeforeTransform.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		updatesPreTransform[i]->UpdatePreTransform(timeElapsed);
+		updatesBeforeTransform[i]->UpdateBeforeTransform(timeElapsed);
 	}
 }
 
 void UpdatableSystem::UpdatePostTransform()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-	uint32 size = updatesPostTransform.size();
+	uint32 size = updatesAfterTransform.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		updatesPostTransform[i]->UpdatePostTransform(timeElapsed);
+		updatesAfterTransform[i]->UpdateAfterTransform(timeElapsed);
 	}
 }
 
