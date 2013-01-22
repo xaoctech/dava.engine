@@ -41,22 +41,22 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(ParticleEmitterNode*)),
+			SIGNAL(EmitterSelected(SceneNode*)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32)),
+			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(ParticleEffectNode*)),
+			SIGNAL(EffectSelected(SceneNode*)),
 			this,
-			SLOT(OnEffectNodeSelected(ParticleEffectNode*)));
+			SLOT(OnEffectNodeSelected(SceneNode*)));
 	
 	Init(0, 0);
 	
