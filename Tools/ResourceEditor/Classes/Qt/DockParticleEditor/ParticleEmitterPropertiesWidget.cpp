@@ -162,6 +162,47 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	blockSignals = false;
 }
 
+void ParticleEmitterPropertiesWidget::RestoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	emitterEmissionAngle->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_ANGLE_PROPS"));
+	emitterEmissionRange->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_RANGE_PROPS"));
+	emitterEmissionVector->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_VECTOR_PROPS"));
+	emitterRadius->SetVisualState(visualStateProps->GetArchive("EMITTER_RADIUS_PROPS"));
+	emitterSize->SetVisualState(visualStateProps->GetArchive("EMITTER_SIZE_PROPS"));
+}
+
+void ParticleEmitterPropertiesWidget::StoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	KeyedArchive* props = new KeyedArchive();
+
+	emitterEmissionAngle->GetVisualState(props);
+	visualStateProps->SetArchive("EMITTER_EMISSION_ANGLE_PROPS", props);
+
+	props->DeleteAllKeys();
+	emitterEmissionRange->GetVisualState(props);
+	visualStateProps->SetArchive("EMITTER_EMISSION_RANGE_PROPS", props);
+
+	props->DeleteAllKeys();
+	emitterEmissionVector->GetVisualState(props);
+	visualStateProps->SetArchive("EMITTER_EMISSION_VECTOR_PROPS", props);
+
+	props->DeleteAllKeys();
+	emitterRadius->GetVisualState(props);
+	visualStateProps->SetArchive("EMITTER_RADIUS_PROPS", props);
+
+	props->DeleteAllKeys();
+	emitterSize->GetVisualState(props);
+	visualStateProps->SetArchive("EMITTER_SIZE_PROPS", props);
+
+	SafeRelease(props);
+}
+
 void ParticleEmitterPropertiesWidget::Update()
 {
 	Init(emitter, false);

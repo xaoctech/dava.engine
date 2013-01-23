@@ -53,9 +53,9 @@ private:
 	
 private:
 	QBrush backgroundBrush;
-	
 	float32 minTime;
 	float32 maxTime;
+	QFont nameFont;
 	
 	struct LINE
 	{

@@ -78,6 +78,7 @@ public:
 	Color GetMaterialDiffuseColor();
 	Color GetMaterialSpecularColor();
 
+	String GetParticlesConfigsPath();
     
 protected:
 
