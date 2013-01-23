@@ -161,6 +161,9 @@ protected:
     // Get the palette for "dirty" and "clear" properties.
     virtual const QPalette& GetWidgetPaletteForDirtyProperty() const;
     virtual const QPalette& GetWidgetPaletteForClearProperty() const;
+	
+	// Event filter to block wheel events for comboboxes and spinbox
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 
 protected slots:
     // Properties are updated from the external source and needs to be re-drawn.

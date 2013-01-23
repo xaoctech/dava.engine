@@ -8,6 +8,8 @@
 
 MOC       = ~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc
 UIC       = ~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic
+RCC =~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc
+
 LEX       = flex
 LEXFLAGS  = 
 YACC      = yacc
@@ -32,6 +34,7 @@ mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 COMP_DIR = GeneratedFiles/
 UI_DIR = UI/
 SOURCE_DIR = Classes/
+QRC_DIR = Data/
 
 compilers: \
 	$(COMP_DIR)moc_mainwindow.cpp \
@@ -92,7 +95,8 @@ compilers: \
 	$(COMP_DIR)moc_qcolorbutton.cpp \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_localizationeditordialog.cpp \
-	$(COMP_DIR)ui_localizationeditordialog.h
+	$(COMP_DIR)ui_localizationeditordialog.h \
+	$(COMP_DIR)qrc_icons.cpp
 	
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
@@ -137,7 +141,8 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_qcolorbutton.cpp \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_createscreendlg.cpp \
-	$(COMP_DIR)moc_localizationeditordialog.cpp
+	$(COMP_DIR)moc_localizationeditordialog.cpp \
+	$(COMP_DIR)qrc_icons.cpp
 
 compiler_moc_header_clean:
 	-$(DEL_FILE) \
@@ -180,7 +185,8 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_hierarchytreecontrol.cpp \
 		$(COMP_DIR)moc_qcolorbutton.cpp \
 		$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
-		$(COMP_DIR)moc_localizationeditordialog.cpp
+		$(COMP_DIR)moc_localizationeditordialog.cpp \
+		$(COMP_DIR)qrc_icons.cpp
 
 $(COMP_DIR)moc_mainwindow.cpp: $(SOURCE_DIR)UI/mainwindow.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/mainwindow.h -o $(COMP_DIR)moc_mainwindow.cpp
@@ -299,8 +305,12 @@ $(COMP_DIR)moc_statecomboboxitemdelegate.cpp: $(SOURCE_DIR)UI/statecomboboxitemd
 $(COMP_DIR)moc_localizationeditordialog.cpp: $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h -o $(COMP_DIR)moc_localizationeditordialog.cpp
 
-compiler_rcc_make_all:
+$(COMP_DIR)qrc_icons.cpp : $(QRC_DIR)icons.qrc
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc -name icons $(QRC_DIR)icons.qrc -o $(COMP_DIR)qrc_icons.cpp
+
+compiler_rcc_make_all:  $(COMP_DIR)qrc_icons.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) $(COMP_DIR)qrc_icons.cpp
 compiler_image_collection_make_all: qmake_image_collection.cpp
 compiler_image_collection_clean:
 	-$(DEL_FILE) qmake_image_collection.cpp

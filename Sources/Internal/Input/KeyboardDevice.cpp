@@ -112,6 +112,7 @@ void KeyboardDevice::PrepareKeyTranslator()
 	keyTranslator[VK_UP] = DVKEY_UP;
 	keyTranslator[VK_DOWN] = DVKEY_DOWN;
 	keyTranslator[VK_ESCAPE] = DVKEY_ESCAPE;
+	keyTranslator[VK_DELETE] = DVKEY_DELETE;
 	keyTranslator[VK_BACK] = DVKEY_BACKSPACE;
 	keyTranslator[VK_RETURN] = DVKEY_ENTER;
 	keyTranslator[VK_CONTROL] = DVKEY_CTRL;
@@ -142,6 +143,7 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[0x7C] = DVKEY_RIGHT;
     keyTranslator[0x7E] = DVKEY_UP;
     keyTranslator[0x7D] = DVKEY_DOWN;
+	keyTranslator[0x75] = DVKEY_DELETE;
     keyTranslator[0x35] = DVKEY_ESCAPE;
     keyTranslator[0x33] = DVKEY_BACKSPACE;
     keyTranslator[0x24] = DVKEY_ENTER;
