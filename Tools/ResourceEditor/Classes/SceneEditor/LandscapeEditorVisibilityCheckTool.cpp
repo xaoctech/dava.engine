@@ -120,12 +120,12 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		{
 			case VCT_STATE_SET_POINT:
 				cursorTexture = pointCursorTexture;
-				scale = VISIBILITY_POINT_CURSOR_SCALE;
+				scale = VISIBILITY_POINT_CURSOR_SCALE *2;
 				break;
 				
 			case VCT_STATE_SET_AREA:
 				cursorTexture = areaCursorTexture;
-				scale = (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
+				scale = 2 * (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
 				break;
 
 			default:
@@ -137,7 +137,7 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaledSize, scaledSize) / 2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaledSize);
 	}
@@ -203,7 +203,7 @@ bool LandscapeEditorVisibilityCheckTool::SetPointInputAction(int32 phase)
 	
 	if(phase == UIEvent::PHASE_ENDED)
 	{
-		visibilityPoint = landscapePoint * 2;
+		visibilityPoint = landscapePoint;
 
 		Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
 		if(landRect.PointInside(visibilityPoint))
@@ -232,7 +232,7 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 		if(isVisibilityPointSet)
 		{
 			Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
-			Vector2 visibilityAreaCenter(landscapePoint * 2);
+			Vector2 visibilityAreaCenter(landscapePoint);
 			
 			if(landRect.PointInside(visibilityAreaCenter))
 			{
@@ -344,7 +344,7 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
 
 	
-	// get soource point in propper coords system
+	// get source point in propper coords system
 	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
 	
 	sourcePoint.z = spectatorCoords.z;
@@ -507,7 +507,7 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 
 	PrepareConfig();
 
-    landscapeSize = settings->maskSize;
+    landscapeSize = landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();;
 
 	workingLandscape->CursorEnable();
 
