@@ -46,6 +46,8 @@ ParticleLayer::ParticleLayer()
 	, emitter(0)
 	, sprite(0)
 {
+	renderBatch = new ParticleLayerBatch();
+
 	life = 0;
 	lifeVariation = 0;
 
@@ -90,6 +92,7 @@ ParticleLayer::ParticleLayer()
 
 ParticleLayer::~ParticleLayer()
 {
+	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	head = 0;
 	// dynamic cache automatically delete all particles
@@ -760,7 +763,7 @@ const String & ParticleLayer::GetRelativeSpriteName()
 
 RenderBatch * ParticleLayer::GetRenderBatch()
 {
-	return &renderBatch;
+	return renderBatch;
 }
 
 }

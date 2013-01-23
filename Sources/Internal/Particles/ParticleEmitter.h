@@ -184,7 +184,10 @@ public:
 		
 		\returns absolutelly identical object with same properties
 	 */
-	ParticleEmitter * Clone();
+	//cloned in ParticleEmitterComponent::Clone
+	//ParticleEmitter * Clone();
+
+	virtual RenderObject * Clone();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.

@@ -1,5 +1,6 @@
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA
 {
@@ -12,13 +13,17 @@ ParticleEmitterComponent::ParticleEmitterComponent()
 
 ParticleEmitterComponent::~ParticleEmitterComponent()
 {
+	RenderSystem::Instance()->UnregisterFromUpdate(particleEmitter);
 	SafeRelease(particleEmitter);
 }
 
 Component * ParticleEmitterComponent::Clone()
 {
 	ParticleEmitterComponent * newComponent = new ParticleEmitterComponent();
-	newComponent->SetParticleEmitter(particleEmitter->Clone());
+	ParticleEmitter * newEmitter = new ParticleEmitter3D();
+	newEmitter->LoadFromYaml(particleEmitter->GetConfigPath());
+	newComponent->SetParticleEmitter(newEmitter);
+	SafeRelease(newEmitter);
 	return newComponent;
 }
 

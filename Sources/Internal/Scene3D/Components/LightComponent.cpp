@@ -15,6 +15,7 @@ LightComponent::~LightComponent()
     
 void LightComponent::SetLightObject(LightNode * _light)
 {
+	SafeRelease(light);
     light = SafeRetain(_light);
 }
     
@@ -26,7 +27,7 @@ LightNode * LightComponent::GetLightObject()
 Component * LightComponent::Clone()
 {
     LightComponent * component = new LightComponent();
-    component->light = SafeRetain(light);
+    component->light = (LightNode*)light->Clone();
     return component;
 }
 

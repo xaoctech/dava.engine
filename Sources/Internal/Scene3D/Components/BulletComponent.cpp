@@ -18,7 +18,7 @@ BulletComponent::~BulletComponent()
 Component * BulletComponent::Clone()
 {
 	BulletComponent * newComponent = new BulletComponent();
-	newComponent->SetBulletObject(bulletObject);
+	//bulletObject is intentionally not cloned
 	return newComponent;
 }
 

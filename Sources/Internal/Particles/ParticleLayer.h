@@ -160,7 +160,7 @@ protected:
 	Sprite 			* sprite;
 	String			relativeSpriteName;
 
-	ParticleLayerBatch renderBatch;
+	ParticleLayerBatch * renderBatch;
 
 public:		
 	Vector2			pivotPoint;
