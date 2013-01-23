@@ -42,6 +42,7 @@ private:
 	QVariant FromMatrix3(const DAVA::Matrix3 &matrix);
 	QVariant FromMatrix2(const DAVA::Matrix2 &matrix);
 	QVariant FromColor(const DAVA::Color &color);
+	QVariant FromAABBox3(const DAVA::AABBox3 &aabbox);
 
 	void ToKeyedArchive(const QVariant &value);
 	void ToVector4(const QVariant &value);
@@ -51,6 +52,7 @@ private:
 	void ToMatrix3(const QVariant &value);
 	void ToMatrix2(const QVariant &value);
 	void ToColor(const QVariant &value);
+	void ToAABBox3(const QVariant &value);
 };
 
 #endif // __QT_PROPERTY_DATA_DAVA_VARIANT_H__
