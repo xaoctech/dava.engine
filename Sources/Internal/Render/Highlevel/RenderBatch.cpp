@@ -33,6 +33,7 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderLayer.h"
 
 namespace DAVA
 {
@@ -102,6 +103,26 @@ void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 const AABBox3 & RenderBatch::GetBoundingBox() const
 {
     return aabbox;
+}
+
+RenderBatch * RenderBatch::Clone()
+{
+	RenderBatch * rb = new RenderBatch();
+
+	rb->dataSource = SafeRetain(dataSource);
+	rb->renderDataObject = SafeRetain(renderDataObject);
+	rb->material = SafeRetain(material);
+
+	rb->startIndex = startIndex;
+	rb->indexCount = indexCount;
+	rb->type = type;
+
+	rb->ownerLayer = ownerLayer;
+	ownerLayer->AddRenderBatch(rb);
+
+	rb->aabbox = aabbox;
+
+	return rb;
 }
 
 

@@ -17,6 +17,14 @@ ParticleEffectComponent::ParticleEffectComponent()
 Component * ParticleEffectComponent::Clone()
 {
 	ParticleEffectComponent * newComponent = new ParticleEffectComponent();
+
+	newComponent->stopAfterNRepeats = stopAfterNRepeats;
+	newComponent->stopWhenEmpty = stopWhenEmpty;
+	newComponent->needEmitPlaybackComplete = needEmitPlaybackComplete;
+	newComponent->playbackComplete = playbackComplete;
+	newComponent->effectDuration = effectDuration;
+	newComponent->emittersCurrentlyStopped = emittersCurrentlyStopped;
+
 	return newComponent;
 }
 

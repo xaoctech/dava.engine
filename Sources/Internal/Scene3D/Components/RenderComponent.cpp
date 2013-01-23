@@ -26,7 +26,7 @@ RenderObject * RenderComponent::GetRenderObject()
 Component * RenderComponent::Clone()
 {
     RenderComponent * component = new RenderComponent();
-    component->renderObject = SafeRetain(renderObject);
+    component->renderObject = renderObject->Clone();
     return component;
 }
 

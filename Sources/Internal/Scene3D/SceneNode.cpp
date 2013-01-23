@@ -559,7 +559,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		if(components[k])
 		{
 			SafeDelete(dstNode->components[k]);
-			dstNode->components[k] = components[k]->Clone();
+			dstNode->AddComponent(components[k]->Clone());
 			dstNode->components[k]->SetEntity(dstNode);
 		}
 	}
@@ -568,8 +568,8 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->tag = tag;
     dstNode->flags = flags;
 
-	dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
+	//dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
+	//dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
