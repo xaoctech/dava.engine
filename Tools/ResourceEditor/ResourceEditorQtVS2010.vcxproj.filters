@@ -1176,9 +1176,6 @@
     <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp">
       <Filter>Sources\ImageSplitter</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneHelper.cpp">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp">
       <Filter>Sources\ParticlesEditorQT\Nodes</Filter>
     </ClCompile>
@@ -1289,6 +1286,9 @@
     </ClCompile>
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.cpp">
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2320,6 +2320,9 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.h">
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

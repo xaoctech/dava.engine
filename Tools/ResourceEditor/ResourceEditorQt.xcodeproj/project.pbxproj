@@ -27,6 +27,7 @@
 		49448B281680990000713D35 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49448B261680990000713D35 /* VisibilityToolView.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		49E0E11F16AE8E2E007B9244 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49E0E11D16AE8E2D007B9244 /* BaseParticleEditorContentWidget.cpp */; };
 		4F82D13A167B42BE003E701F /* PropertiesView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D138167B42BE003E701F /* PropertiesView.cpp */; };
 		4F82D13D167B42F3003E701F /* PropertiesView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D13C167B42F3003E701F /* PropertiesView_moc.cpp */; };
 		4F82D1511681FC19003E701F /* CustomColorsView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F82D1501681FC19003E701F /* CustomColorsView_moc.cpp */; };
@@ -451,6 +452,8 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		49E0E11D16AE8E2D007B9244 /* BaseParticleEditorContentWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorContentWidget.cpp; sourceTree = "<group>"; };
+		49E0E11E16AE8E2D007B9244 /* BaseParticleEditorContentWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseParticleEditorContentWidget.h; sourceTree = "<group>"; };
 		4F82D138167B42BE003E701F /* PropertiesView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView.cpp; sourceTree = "<group>"; };
 		4F82D139167B42BE003E701F /* PropertiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesView.h; sourceTree = "<group>"; };
 		4F82D13C167B42F3003E701F /* PropertiesView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesView_moc.cpp; sourceTree = "<group>"; };
@@ -2131,6 +2134,8 @@
 				C185219A16831F77003D4A6F /* TimeLineWidget.h */,
 				C1E62B94169466E200A9B77C /* ParticleTimeLineWidget.cpp */,
 				C1E62B95169466E200A9B77C /* ParticleTimeLineWidget.h */,
+				49E0E11D16AE8E2D007B9244 /* BaseParticleEditorContentWidget.cpp */,
+				49E0E11E16AE8E2D007B9244 /* BaseParticleEditorContentWidget.h */,
 			);
 			name = DockParticleEditor;
 			path = Classes/Qt/DockParticleEditor;
@@ -3017,6 +3022,7 @@
 				8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */,
 				8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */,
 				8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */,
+				49E0E11F16AE8E2E007B9244 /* BaseParticleEditorContentWidget.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

@@ -72,7 +72,11 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 {
 	QPainter painter(this);
 
+#ifdef Q_WS_WIN
+	QFont font("Courier", 8, QFont::Normal);
+#else
 	QFont font("Courier", 11, QFont::Normal);
+#endif
 	painter.setFont(font);
 	
 	painter.fillRect(this->rect(), backgroundBrush);
@@ -158,7 +162,7 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 			
 			lockRect.translate(lockRect.width() + 1, 0);
 			lockRect.setWidth(LOCK_WIDTH);
-			painter.drawText(lockRect, LOCK_TEXT);
+			painter.drawText(lockRect.bottomLeft(), LOCK_TEXT);
 		}
 		
 		//draw grid
@@ -1145,6 +1149,29 @@ void TimeLineWidget::EnableLock(bool enable)
 	isLockEnable = enable;
 }
 
+
+void TimeLineWidget::SetVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+	
+	isLocked = visualStateProps->GetBool("IS_LOCKED", false);
+	sizeState = (eSizeState)visualStateProps->GetInt32("SIZE_STATE", SIZE_STATE_NORMAL);
+	drawLine = visualStateProps->GetInt32("DRAW_LINE", -1);
+
+	UpdateSizePolicy();
+}
+
+void TimeLineWidget::GetVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	visualStateProps->SetBool("IS_LOCKED", isLocked);
+	visualStateProps->SetInt32("SIZE_STATE", sizeState);
+	visualStateProps->SetInt32("DRAW_LINE", drawLine);
+}
+
 int32 TimeLineWidget::GetIntValue(float32 value) const
 {
 	float32 sign =	(value < 0) ? -1.f : 1.f;
@@ -1187,6 +1214,8 @@ SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTim
 	timeSpin->setMinimum(minTime);
 	timeSpin->setMaximum(maxTime);
 	timeSpin->setValue(time);
+
+	maxValue = Min(maxValue, 1000000.f);
 
 	if (isInteger)
 	{

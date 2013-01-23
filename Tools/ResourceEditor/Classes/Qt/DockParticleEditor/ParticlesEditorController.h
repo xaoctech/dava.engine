@@ -66,8 +66,6 @@ public:
     ForceParticleEditorNode* AddParticleForceToNode(LayerParticleEditorNode* layerNode);
     void RemoveParticleForceNode(ForceParticleEditorNode* forceNode);
 
-	void PackSprites();
-
 	// Move different nodes logic.
 	// Move the emitter from one effect to another one.
 	bool MoveEmitter(EmitterParticleEditorNode* movedItemEmitterNode, EffectParticleEditorNode* newEffectParentNode);
@@ -78,15 +76,20 @@ public:
 	// Move the Layer to the end of another Emitter.
 	bool MoveLayer(LayerParticleEditorNode* moveItemNode, EmitterParticleEditorNode* newEmitterNode);
 
+	// Sprites packer entry point.
+	void PackSprites();
+
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
-    void EmitterSelected(ParticleEmitterNode* emitterNode);
-    void LayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer);
-    void ForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex);
+    void EmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode);
+	void LayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
+    void ForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	void NodeDeselected(BaseParticleEditorNode* editorNode);
 
 protected:
     // Emit the selected node changed.
     void EmitSelectedNodeChanged();
+	void EmitNodeWillBeDeselected();
 
 	// Find the Emitter Editor node by the appropriate Scene Node.
     void FindEmitterEditorNode(ParticleEmitterNode* emitterSceneNode,
