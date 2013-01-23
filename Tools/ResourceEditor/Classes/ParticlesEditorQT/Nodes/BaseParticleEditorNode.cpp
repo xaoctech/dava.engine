@@ -8,6 +8,7 @@
 
 #include "BaseParticleEditorNode.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "FileSystem/KeyedArchive.h"
 using namespace DAVA;
 
 BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
@@ -19,6 +20,8 @@ BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
     this->isMarkedForSelection = false;
     this->rootNode = rootNode;
     SetParentNode(NULL);
+
+	extraData = new KeyedArchive();
 }
 
 BaseParticleEditorNode::~BaseParticleEditorNode()
@@ -36,6 +39,9 @@ void BaseParticleEditorNode::Cleanup()
     
     childNodes.clear();
 	SetParentNode(NULL);
+
+	ClearExtraData();
+	SafeRelease(extraData);
 }
 
 void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
@@ -98,4 +104,14 @@ void BaseParticleEditorNode::MoveChildNode(BaseParticleEditorNode* childNode, Ba
 	// Re-calculate the new position iter - it might be changed during remove.
 	newPositionIter = std::find(this->childNodes.begin(), this->childNodes.end(), childNodeToMoveAbove);
 	childNodes.insert(newPositionIter, childNode);
+}
+
+KeyedArchive* BaseParticleEditorNode::GetExtraData()
+{
+	return extraData;
+}
+
+void BaseParticleEditorNode::ClearExtraData()
+{
+	extraData->DeleteAllKeys();
 }

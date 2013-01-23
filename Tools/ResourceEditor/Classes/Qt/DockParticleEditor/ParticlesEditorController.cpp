@@ -126,6 +126,10 @@ void ParticlesEditorController::SetSelectedNode(SceneGraphItem* selectedItem, bo
         return;
     }
     
+	if (isEmitEvent)
+	{
+		EmitNodeWillBeDeselected();
+	}
     this->selectedNode = dynamic_cast<BaseParticleEditorNode*>(selectedItem->GetExtraUserData());
     if (isEmitEvent)
     {
@@ -139,11 +143,19 @@ void ParticlesEditorController::CleanupSelectedNode()
     EmitSelectedNodeChanged();
 }
 
+void ParticlesEditorController::EmitNodeWillBeDeselected()
+{
+	if (this->selectedNode == NULL)
+		return;
+
+	emit NodeDeselected(this->selectedNode);
+}
+
 void ParticlesEditorController::EmitSelectedNodeChanged()
 {
     if (this->selectedNode == NULL)
     {
-        emit EmitterSelected(NULL);
+        emit EmitterSelected(NULL, this->selectedNode);
         return;
     }
 
@@ -151,7 +163,7 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
 	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(this->selectedNode);
     if (effectEditorNode)
     {
-		emit EmitterSelected(NULL);
+		emit EmitterSelected(NULL, this->selectedNode);
 		emit EffectSelected(effectEditorNode->GetRootNode());
         return;
     }
@@ -159,14 +171,14 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     EmitterParticleEditorNode* emitterEditorNode = dynamic_cast<EmitterParticleEditorNode*>(this->selectedNode);
     if (emitterEditorNode)
     {
-        emit EmitterSelected(emitterEditorNode->GetEmitterNode());
+        emit EmitterSelected(emitterEditorNode->GetEmitterNode(), this->selectedNode);
         return;
     }
     
     LayerParticleEditorNode* layerEditorNode = dynamic_cast<LayerParticleEditorNode*>(this->selectedNode);
     if (layerEditorNode)
     {
-        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer());
+        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode);
         return;
     }
     
@@ -174,13 +186,13 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     if (forceEditorNode)
     {
         emit ForceSelected(forceEditorNode->GetEmitterNode(), forceEditorNode->GetLayer(),
-                           forceEditorNode->GetForceIndex());
+                           forceEditorNode->GetForceIndex(), this->selectedNode);
         return;
     }
 
     // Cleanip the selection in case we don't know what to do.
     Logger::Warning("ParticlesEditorController::EmitSelectedNodeChanged() - unknown selected node type!");
-    EmitterSelected(NULL);
+    EmitterSelected(NULL, this->selectedNode);
 }
 
 void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitterSceneNode)
