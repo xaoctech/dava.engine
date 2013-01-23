@@ -66,7 +66,7 @@ public:
     NMaterial * GetNMaterial();
     NMaterialInstance * GetNMaterialInstance();
     
-    Component * Clone();
+    //Component * Clone();
 private:
 	Material * material;
     NMaterial * nMaterial;

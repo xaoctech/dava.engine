@@ -16,6 +16,8 @@ public:
 	virtual void Draw(Camera * camera);
 	void SetTotalCount(int32 totalCount);
 
+	virtual RenderBatch * Clone();
+
 protected:
 	int32 totalCount;
     
