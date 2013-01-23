@@ -9,7 +9,6 @@ QT       += core gui opengl network
 TARGET = TemplateProjectQt
 TEMPLATE = app
 
-
 INCLUDEPATH += ../dava.framework/Sources/Internal
 INCLUDEPATH += ../dava.framework/Sources/External
 INCLUDEPATH += ../dava.framework/Sources/External/Freetype
@@ -155,6 +154,7 @@ macx {
 
 QMAKE_INFO_PLIST = Info.plist
 
+RESOURCES     += Data/icons.qrc
 
 FILETYPES.files = Data/
 FILETYPES.path = Contents/Resources

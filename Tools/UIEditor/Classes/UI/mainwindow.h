@@ -59,6 +59,11 @@ private:
 	void InitMenu();
 	void UpdateMenu();
 	void UpdateProjectSettings(const QString& filename);
+	// Save/restore positions of DockWidgets and main window geometry
+	void SaveMainWindowState();
+	void RestoreMainWindowState();
+	// Create toolbar for HierarchyTreeDockWidget
+	void CreateHierarchyDockWidgetToolbar();
 
 private:
     Ui::MainWindow *ui;

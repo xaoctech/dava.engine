@@ -20,8 +20,14 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QSettings>
 
 #define SPIN_SCALE 10.f
+
+const QString APP_NAME = "UIEditor";
+const QString APP_COMPANY = "DAVA";
+const QString APP_GEOMETRY = "geometry";
+const QString APP_STATE = "windowstate";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -94,6 +100,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	//HierarchyTreeController::Instance()->GetTree().Save(":asd");
 	
 	InitMenu();
+	RestoreMainWindowState();
+	CreateHierarchyDockWidgetToolbar();
 }
 
 MainWindow::~MainWindow()
@@ -103,7 +111,49 @@ MainWindow::~MainWindow()
         SafeDelete(recentPojectActions[i]);
     }
 	
+	SaveMainWindowState();
+	
     delete ui;
+}
+
+void MainWindow::SaveMainWindowState()
+{
+	QSettings settings(APP_COMPANY, APP_NAME);
+    settings.setValue(APP_GEOMETRY, saveGeometry());
+    settings.setValue(APP_STATE, saveState());
+}
+
+void MainWindow::RestoreMainWindowState()
+{
+	QSettings settings(APP_COMPANY, APP_NAME);
+	// Check settings befor applying it
+	if (!settings.value(APP_GEOMETRY).isNull() && settings.value(APP_GEOMETRY).isValid())
+	{
+    	restoreGeometry(settings.value(APP_GEOMETRY).toByteArray());
+	}
+	if (!settings.value(APP_STATE).isNull() && settings.value(APP_STATE).isValid())
+	{
+    	restoreState(settings.value(APP_STATE).toByteArray());
+	}
+}
+
+void MainWindow::CreateHierarchyDockWidgetToolbar()
+{
+	QMainWindow *window = new QMainWindow(0);
+ 	QToolBar *toolBar = new QToolBar(window);
+	// Change size of icons to 16x16 (default is 32x32)
+	toolBar->setIconSize(QSize(16, 16));
+	// Set actions for toolbar
+ 	toolBar->addAction(ui->actionNew_platform);
+	toolBar->addAction(ui->actionNew_screen);
+	// Disable moving of toolbar
+	toolBar->setMovable(false);
+	// Set toolbar position
+	window->setCentralWidget(ui->hierarchyDockWidgetContents);
+	window->addToolBar(toolBar);
+	window->setParent(ui->hierarchyDockWidget);
+	// link toolbar to hierarchyDockWidget
+ 	ui->hierarchyDockWidget->setWidget(window);
 }
 
 void MainWindow::OnUpdateScaleRequest(float scaleDelta)
@@ -157,6 +207,12 @@ void MainWindow::OnSelectedScreenChanged()
 		UpdateSliders();
 		ui->horizontalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosX());
 		ui->verticalScrollBar->setValue(HierarchyTreeController::Instance()->GetActiveScreen()->GetPosY());
+		// Enable library widget for selected screen
+		ui->libraryDockWidget->setEnabled(true);
+	}
+	else
+	{	// Disable library widget if no screen is selected
+		ui->libraryDockWidget->setEnabled(false);
 	}
 	
 	screenChangeUpdate = false;
@@ -259,8 +315,8 @@ void MainWindow::UpdateMenu()
 {
 	//ui->actionNew
 	ui->actionSave_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
-	ui->actionSave_As_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionClose_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
+	ui->menuProject->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_screen->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
 }

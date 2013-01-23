@@ -36,7 +36,8 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable, QDialog *parent) :
     ConnectToSignals();
     InitializeTableView();
     UpdateTableViewContents();
-	
+ 	UpdateDialogInformation();
+
 	SafeDelete(resPacker);
 }
 
@@ -52,6 +53,25 @@ void FontManagerDialog::ConnectToSignals()
     //Connect signal and slots
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(OkButtonClicked()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
+}
+
+void FontManagerDialog::UpdateDialogInformation()
+{
+	QString resDir = ResourcesManageHelper::GetResourceRootDirectory();
+	// If resource folders are not available - hide infromation text
+	if (resDir.isNull() || resDir.isEmpty())
+	{
+		ui->graphicsFontPath->setHidden(true);
+		ui->trueTypeFontPath->setHidden(true);
+		ui->trueTypeFontPathLabel->setHidden(true);
+		ui->graphicsFontPathLabel->setHidden(true);	
+	}
+	else
+	{
+		// Show font folders
+		ui->graphicsFontPath->setText(resDir + "/Fondef");
+    	ui->trueTypeFontPath->setText(resDir + "/Fonts");
+	}
 }
 
 void FontManagerDialog::InitializeTableView()

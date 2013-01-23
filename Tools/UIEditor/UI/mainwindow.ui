@@ -107,11 +107,14 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="HierarchyTreeWidget" name="dockWidgetContents">
+   <widget class="HierarchyTreeWidget" name="hierarchyDockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_3"/>
    </widget>
   </widget>
   <widget class="QDockWidget" name="libraryDockWidget">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="minimumSize">
     <size>
      <width>320</width>
@@ -161,13 +164,19 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuProject">
+     <property name="title">
+      <string>Project</string>
+     </property>
+     <addaction name="actionNew_platform"/>
+     <addaction name="actionNew_screen"/>
+    </widget>
     <addaction name="actionNew_project"/>
     <addaction name="actionSave_project"/>
     <addaction name="actionOpen_project"/>
     <addaction name="actionClose_project"/>
     <addaction name="separator"/>
-    <addaction name="actionNew_platform"/>
-    <addaction name="actionNew_screen"/>
+    <addaction name="menuProject"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -209,12 +218,31 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionNew_project"/>
+   <addaction name="actionOpen_project"/>
+   <addaction name="actionSave_project"/>
+   <addaction name="actionClose_project"/>
+   <addaction name="separator"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="propertiesDockWidget">
@@ -233,8 +261,24 @@
    <widget class="PropertyGridContainerWidget" name="propertiesDockWidgetContents"/>
   </widget>
   <action name="actionOpen_project">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/openproject.png</normaloff>:/icons/openproject.png</iconset>
+   </property>
    <property name="text">
     <string>Open project</string>
+   </property>
+   <property name="toolTip">
+    <string>Open project</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionExit">
@@ -243,6 +287,10 @@
    </property>
   </action>
   <action name="actionNew_project">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/newscene.png</normaloff>:/icons/newscene.png</iconset>
+   </property>
    <property name="text">
     <string>New project</string>
    </property>
@@ -279,18 +327,15 @@
     <string>Font Manager</string>
    </property>
   </action>
-  <action name="actionNew_platform">
-   <property name="text">
-    <string>New platform</string>
-   </property>
-  </action>
-  <action name="actionNew_screen">
-   <property name="text">
-    <string>New screen</string>
-   </property>
-  </action>
   <action name="actionClose_project">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/101.png</normaloff>:/icons/101.png</iconset>
+   </property>
    <property name="text">
+    <string>Close project</string>
+   </property>
+   <property name="toolTip">
     <string>Close project</string>
    </property>
   </action>
@@ -300,13 +345,15 @@
    </property>
   </action>
   <action name="actionSave_project">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/savescene.png</normaloff>:/icons/savescene.png</iconset>
+   </property>
    <property name="text">
     <string>Save project</string>
    </property>
-  </action>
-  <action name="actionSave_As_project">
-   <property name="text">
-    <string>Save project as</string>
+   <property name="toolTip">
+    <string>Save project</string>
    </property>
   </action>
   <action name="actionHelpContents">
@@ -315,6 +362,10 @@
    </property>
   </action>
   <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/118.png</normaloff>:/icons/118.png</iconset>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -326,6 +377,10 @@
    </property>
   </action>
   <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/117.png</normaloff>:/icons/117.png</iconset>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
@@ -334,6 +389,24 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionNew_platform">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/079.png</normaloff>:/icons/079.png</iconset>
+   </property>
+   <property name="text">
+    <string>New platform</string>
+   </property>
+  </action>
+  <action name="actionNew_screen">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/068.png</normaloff>:/icons/068.png</iconset>
+   </property>
+   <property name="text">
+    <string>New screen</string>
    </property>
   </action>
  </widget>
@@ -364,6 +437,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../Data/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

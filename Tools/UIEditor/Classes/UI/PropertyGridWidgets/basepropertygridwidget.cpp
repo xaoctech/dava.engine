@@ -829,3 +829,39 @@ const QPalette& BasePropertyGridWidget::GetWidgetPaletteForClearProperty() const
 {
     return this->clearPropertyPalette;
 }
+
+bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	// Try to cast sender object to one of the types - QComboBox, QAbstractSpinBox or QSlider
+	// All these widget have to ignore mouse wheel event if they are not in focus
+	QWidget *eventWidget = qobject_cast<QAbstractSpinBox*>(obj);
+	if (!eventWidget)
+	{
+		eventWidget = qobject_cast<QComboBox*>(obj);
+		if (!eventWidget)
+		{
+			eventWidget = qobject_cast<QSlider*>(obj);
+		}
+	}
+	// If spinbox or combobox recieved a focus - we should allow to change its value with mouse wheel
+	if ( event->type() == QEvent::FocusIn && eventWidget )
+	{
+		eventWidget->setFocusPolicy(Qt::WheelFocus);
+	}
+	// If spinbox or combobox lost a focus - disable wheel events for it
+	if ( event->type() == QEvent::FocusOut && eventWidget )
+	{
+		eventWidget->setFocusPolicy(Qt::StrongFocus);
+	}
+	// Ignore wheel event if spinbox or combobox is not in focus
+    if ( event->type() == QEvent::Wheel && eventWidget )
+    {
+		if (!eventWidget->hasFocus())
+		{
+        	event->ignore();
+        	return true;
+		}
+    }
+    
+    return QWidget::eventFilter( obj, event );
+}
