@@ -120,6 +120,12 @@ public:
 	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
 
 	/**
+     \brief Function to save layer to yaml node.
+     Normally this function is called from ParticleEmitter.
+	 */
+    void SaveToYamlNode(YamlNode* parentNode, int32 layerIndex);
+
+	/**
 		\brief Get head(first) particle of the layer.
 		Can be used to iterate through the particles'.
 	 */
@@ -129,6 +135,9 @@ public:
 
 	const String & GetRelativeSpriteName();
 
+    // Whether this layer is Long Layer?
+    virtual bool IsLong() {return false;};
+    
 	RenderBatch * GetRenderBatch();
 
 protected:	
@@ -144,6 +153,8 @@ protected:
 	void RunParticle(Particle * particle);
 	void ProcessParticle(Particle * particle);
 	
+    void SaveForcesToYamlNode(YamlNode* layerNode);
+
 	// list of particles
 	Particle *	head;
 	int32		count;
@@ -162,7 +173,8 @@ protected:
 
 	ParticleLayerBatch renderBatch;
 
-public:		
+public:
+	String			layerName;
 	Vector2			pivotPoint;
 	/*
 	 Properties of particle layer that describe particle system logic

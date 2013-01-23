@@ -602,6 +602,58 @@ void YamlNode::Set(const String& name, const String& value)
     }
 }
 
+void YamlNode::Set(const String& name, const Vector2& value)
+{
+    if (type == TYPE_MAP)
+    {
+        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+        stringNode->Set(name, value);
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+    }
+    else if (type == TYPE_STRING)
+    {
+        VariantType variantValue;
+        variantValue.SetVector2(value);
+        FillContentAccordingToVariantTypeValue(&variantValue);
+    }
+}
+    
+void YamlNode::Set(const String& name, const Vector3& value)
+{
+    if (type == TYPE_MAP)
+    {
+        // For Maps just add the new String node.
+        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+        stringNode->Set(name, value);
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+    }
+    else if (type == TYPE_STRING)
+    {
+        // Just initialize the value.
+        VariantType variantValue;
+        variantValue.SetVector3(value);
+        FillContentAccordingToVariantTypeValue(&variantValue);
+    }
+}
+
+void YamlNode::Set(const String& name, const Vector4& value)
+{
+    if (type == TYPE_MAP)
+    {
+        // For Maps just add the new String node.
+        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+        stringNode->Set(name, value);
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+    }
+    else if (type == TYPE_STRING)
+    {
+        // Just initialize the value.
+        VariantType variantValue;
+        variantValue.SetVector4(value);
+        FillContentAccordingToVariantTypeValue(&variantValue);
+    }
+}
+
 void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
 {
     DVASSERT(this->type == TYPE_MAP);
@@ -629,6 +681,33 @@ void  YamlNode::AddValueToArray(float32 value)
     YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
     childNode->Set("", value);
     
+    AddNodeToArray(childNode);
+}
+
+void  YamlNode::AddValueToArray(const Vector2& value)
+{
+    DVASSERT(this->type == TYPE_ARRAY);
+    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
+    childNode->Set("", value);
+        
+    AddNodeToArray(childNode);
+}
+
+void  YamlNode::AddValueToArray(const Vector3& value)
+{
+    DVASSERT(this->type == TYPE_ARRAY);
+    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
+    childNode->Set("", value);
+        
+    AddNodeToArray(childNode);
+}
+
+void  YamlNode::AddValueToArray(const Vector4& value)
+{
+    DVASSERT(this->type == TYPE_ARRAY);
+    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
+    childNode->Set("", value);
+        
     AddNodeToArray(childNode);
 }
 
@@ -1295,43 +1374,82 @@ bool YamlParser::WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeNa
 {
     DVASSERT(currentNode->GetType() == YamlNode::TYPE_ARRAY);
 
-    const char8* NAME_VALUE_DELIMITER = ": ";
+    String resultString = GetArrayNodeRepresentation(nodeName, currentNode, depth);
+    return WriteStringToYamlFile(fileToSave, resultString);
+}
 
+String YamlParser::GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode,
+                                              int16 depth, bool writeAsOuterNode)
+{
+    DVASSERT(currentNode->GetType() == YamlNode::TYPE_ARRAY);
+    
+    const char8* NAME_VALUE_DELIMITER = ": ";
+    
     const char8* ARRAY_OPEN_DELIMITER = "[";
     const char8* ARRAY_INNER_DELIMITER = ", ";
     const char8* ARRAY_CLOSE_DELIMITER = "]";
-
-    String resultString = PrepareIdentedString(depth);
     
-    resultString += nodeName;
-    resultString += NAME_VALUE_DELIMITER;
+    String resultString;
+    if (writeAsOuterNode)
+    {
+        resultString = PrepareIdentedString(depth);
+        resultString += nodeName;
+        resultString += NAME_VALUE_DELIMITER;
+    }
+
     resultString += ARRAY_OPEN_DELIMITER;
-  
+    
     Vector<YamlNode*>& arrayData = currentNode->AsVector();
     for (Vector<YamlNode*>::iterator iter = arrayData.begin(); iter != arrayData.end(); iter ++)
     {
         YamlNode* arrayNode = (*iter);
-    
-        // Yuri Coder, 11/15/2012 Inner arrays are currently not supported.
-        DVASSERT(arrayNode->GetType() == YamlNode::TYPE_STRING);
         
-        resultString += arrayNode->AsString();
+        switch (arrayNode->GetType())
+        {
+            case YamlNode::TYPE_ARRAY:
+            {
+                // Call us recursive to determine inner node representation.
+                // Note - node name and identation is not needed here.
+                resultString += GetArrayNodeRepresentation("", arrayNode, 0, false);
+                break;
+            }
+                
+            case YamlNode::TYPE_STRING:
+            {
+                // Just get the string value
+                resultString += arrayNode->AsString();
+                break;
+            }
+                
+            default:
+            {
+                // Yuri Coder, 2012/12/13. Other node types inside array aren't supported yet.
+                DVASSERT(false);
+                break;
+            }
+        }
+
         if (arrayNode != arrayData.back())
         {
             // Have more nodes - insert space between them.
             resultString += ARRAY_INNER_DELIMITER;
         }
     }
-
+    
     resultString += ARRAY_CLOSE_DELIMITER;
-    resultString += '\n';
-    return WriteStringToYamlFile(fileToSave, resultString);
+    
+    if (writeAsOuterNode)
+    {
+        resultString += '\n';
+    }
+
+    return resultString;
 }
 
 bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite)
 {
-    int16 prevFileSize = fileToSave->GetSize();
-    int16 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
+    uint32 prevFileSize = fileToSave->GetSize();
+    uint32 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
     
     return (fileToSave->GetSize() == prevFileSize + bytesWritten);
 }

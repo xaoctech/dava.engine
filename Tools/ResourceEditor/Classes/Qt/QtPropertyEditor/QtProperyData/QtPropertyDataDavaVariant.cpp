@@ -455,7 +455,7 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-	return QColorFromColor(color);
+	return ColorToQColor(color);
 }
 
 
@@ -523,7 +523,7 @@ void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-        curVariantValue.SetColor(ColorFromQColor(colorLineEdit->GetColor()));
+        curVariantValue.SetColor(QColorToColor(colorLineEdit->GetColor()));
     }
 }
 
@@ -532,7 +532,7 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-		colorLineEdit->SetColor(QColorFromColor(curVariantValue.AsColor()));
+		colorLineEdit->SetColor(ColorToQColor(curVariantValue.AsColor()));
     }
 }
 
@@ -541,7 +541,7 @@ QIcon QtPropertyDataDavaVariant::GetIcon()
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 	{
 		QPixmap pix(16,16);
-		pix.fill(QColorFromColor(curVariantValue.AsColor()));
+		pix.fill(ColorToQColor(curVariantValue.AsColor()));
 
 		return QIcon(pix);
 	}

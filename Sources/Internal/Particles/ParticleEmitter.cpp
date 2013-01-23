@@ -34,15 +34,29 @@
 #include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
+#include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 
 namespace DAVA 
 {
 ParticleEmitter::ParticleEmitter()
 {
+	Cleanup(false);
+}
+
+ParticleEmitter::~ParticleEmitter()
+{
+	CleanupLayers();
+}
+
+void ParticleEmitter::Cleanup(bool needCleanupLayers)
+{
 	type = EMITTER_POINT;
-    emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionVector.Set(NULL);
+	emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionAngle.Set(NULL);
 	emissionAngle = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(0.0f));
+	emissionRange.Set(NULL);
 	emissionRange = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(360.0f));
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
@@ -59,18 +73,25 @@ ParticleEmitter::ParticleEmitter()
 	isAutorestart = true;
 	particlesFollow = false;
     is3D = false;
+
+	// Also cleanup layers, if needed.
+	if (needCleanupLayers)
+	{
+		CleanupLayers();
+	}
 }
 
-ParticleEmitter::~ParticleEmitter()
+void ParticleEmitter::CleanupLayers()
 {
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
 		SafeRelease(*it);
-	}	
+	}
+
 	layers.clear();
 }
-	
+
 ParticleEmitter * ParticleEmitter::Clone()
 {
 	ParticleEmitter * emitter = new ParticleEmitter();
@@ -98,6 +119,8 @@ ParticleEmitter * ParticleEmitter::Clone()
 	emitter->isPaused = isPaused;
 	emitter->isAutorestart = isAutorestart;
 	emitter->particlesFollow = particlesFollow;
+	emitter->configPath = configPath;
+
 	return emitter;
 }
 
@@ -110,6 +133,49 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 		layer->SetEmitter(this);
 		AddRenderBatch(layer->GetRenderBatch());
 	}	
+}
+
+void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	AddLayer(layer);
+	if (layerToMoveAbove)
+	{
+		MoveLayer(layer, layerToMoveAbove);
+	}
+}
+	
+void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
+{
+	if (!layer)
+	{
+		return;
+	}
+
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	if (layerIter != this->layers.end())
+	{
+		layers.erase(layerIter);
+		layer->SetEmitter(NULL);
+		SafeRelease(layer);
+	}
+}
+	
+void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
+{
+	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
+	Vector<DAVA::ParticleLayer*>::iterator layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+
+	if (layerIter == layers.end() || layerToMoveAboveIter == layers.end() ||
+		layerIter == layerToMoveAboveIter)
+	{
+		return;
+	}
+		
+	layers.erase(layerIter);
+
+	// Look for the position again - an iterator might be changed.
+	layerToMoveAboveIter = std::find(layers.begin(), layers.end(),layerToMoveAbove);
+	layers.insert(layerToMoveAboveIter, layer);
 }
 
 /* float32 ParticleEmitter::GetCurrentNumberScale()
@@ -528,9 +594,52 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		}
 	}
 	
+	// Yuri Coder, 2013/01/15. The "name" node for Layer was just added and may not exist for
+	// old yaml files. Generate the default name for nodes with empty names.
+	UpdateEmptyLayerNames();
+	
 	SafeRelease(parser);
 }
 
+void ParticleEmitter::SaveToYaml(const String & filename)
+{
+    YamlParser* parser = YamlParser::Create();
+    if (!parser)
+    {
+        Logger::Error("ParticleEmitter::SaveToYaml() - unable to create parser!");
+        return;
+    }
+    
+    YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
+    
+    emitterYamlNode->Set("3d", this->is3D);
+    emitterYamlNode->Set("type", GetEmitterTypeName());
+    
+    // Write the property lines.
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionAngle", this->emissionAngle);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionRange", this->emissionRange);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "emissionVector", this->emissionVector);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(emitterYamlNode, "colorOverLife", this->colorOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(emitterYamlNode, "size", this->size);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(emitterYamlNode, "life", this->lifeTime);
+    
+    // Now write all the Layers. Note - layers are child of root node, not the emitter one.
+    int32 layersCount = this->layers.size();
+    for (int32 i = 0; i < layersCount; i ++)
+    {
+        this->layers[i]->SaveToYamlNode(rootYamlNode, i);
+    }
+
+    parser->SaveToYamlFile(filename, rootYamlNode, true);
+    parser->Release();
+}
+    
 int32 ParticleEmitter::GetParticleCount()
 {
 	int32 cnt = 0;
@@ -620,4 +729,52 @@ Animation * ParticleEmitter::SizeAnimation(const Vector3 & newSize, float32 time
 	return animation;
 }
 
+String ParticleEmitter::GetEmitterTypeName()
+{
+    switch (this->type)
+    {
+        case EMITTER_POINT:
+        {
+            return "point";
+        }
+
+        case EMITTER_LINE:
+        {
+            return "line";
+        }
+
+        case EMITTER_RECT:
+        {
+            return "rect";
+        }
+
+        case EMITTER_ONCIRCLE:
+        {
+            return "oncircle";
+        }
+
+        default:
+        {
+            return "unknown";
+        }
+    }
 }
+
+void ParticleEmitter::UpdateEmptyLayerNames()
+{
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		UpdateLayerNameIfEmpty(this->layers[i], i);
+	}
+}
+
+void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
+{
+	if (layer && layer->layerName.empty())
+	{
+		layer->layerName = Format("Layer %i", index);
+	}
+}
+	
+};

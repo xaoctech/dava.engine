@@ -2354,8 +2354,9 @@ void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
 
 void ParticlesEditorControl::LoadFromYaml(const String &pathToFile)
 {
-	particleEmitterNode->LoadFromYaml(pathToFile);
-	SetEmitter(particleEmitterNode->GetEmitter());
+	//This code should not be used any more because of new particle editor structure.
+	//particleEmitterNode->LoadFromYaml(pathToFile);
+	//SetEmitter(particleEmitterNode->GetEmitter());
 }
 
 void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
@@ -3454,7 +3455,7 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 	propList->Refresh();
 }
 
-void ParticlesEditorControl::SetNode(ParticleEmitterNode * node)
+void ParticlesEditorControl::SetNode(SceneNode * node)
 {
 	SafeRelease(particleEmitterNode);
 	particleEmitterNode = SafeRetain(node);

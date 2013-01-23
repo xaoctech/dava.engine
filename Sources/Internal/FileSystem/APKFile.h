@@ -34,44 +34,30 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "FileSystem/DynamicMemoryFile.h"
+
 namespace DAVA
 {
     
-class File;
-class APKFile
+
+class APKFile: public DynamicMemoryFile
 {
+
+public:
+    static File * CreateFromAssets(const String &filePath, uint32 attributes);
+
 private:
     
     APKFile();
-    
-public:
-    static File * CreateFromAssets(const String &filePath, uint32 attributes);
+    virtual ~APKFile();
+
+    static APKFile * CreateFromData(const String &filePath, const uint8 * data, int32 dataSize, uint32 attributes);
+
 };
 
 
 };
-//#if defined(__cplusplus) 
-//extern "C"
-//{
-//#endif
-//
-//typedef void NvAPKFile;
-//
-//
-//void        NvAPKInit(AAssetManager* assetManager);
-//
-//NvAPKFile*  NvAPKOpen(char const* path);
-//void        NvAPKClose(NvAPKFile* file);
-//int         NvAPKGetc(NvAPKFile *stream);
-//char*       NvAPKGets(char* s, int size, NvAPKFile* stream);
-//size_t      NvAPKSize(NvAPKFile* stream);
-//long        NvAPKSeek(NvAPKFile* stream, long offset, int type);
-//long        NvAPKTell(NvAPKFile* stream);
-//size_t      NvAPKRead(void* ptr, size_t size, size_t nmemb, NvAPKFile* stream);
-//int         NvAPKEOF(NvAPKFile *stream);
-//
-//#if defined(__cplusplus)
-//}
+
 
 #endif // __DAVAENGINE_ANDROID__
 

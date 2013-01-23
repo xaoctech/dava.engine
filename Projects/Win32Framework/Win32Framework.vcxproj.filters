@@ -1236,6 +1236,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1254,8 +1257,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2161,6 +2164,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

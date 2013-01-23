@@ -125,6 +125,9 @@
 
 #include "Render/Cursor.h"
 
+#include "Render/LibDxtHelper.h"
+
+
 // Fonts
 #include "Render/2D/Font.h"
 #include "Render/2D/GraphicsFont.h"

@@ -37,4 +37,25 @@ ParticleEmitter * ParticleEmitterComponent::GetParticleEmitter()
 	return particleEmitter;
 }
 
+void ParticleEmitterComponent::LoadFromYaml(const String& yamlPath)
+{
+	particleEmitter->Cleanup();
+	particleEmitter->LoadFromYaml(yamlPath);
+}
+
+void ParticleEmitterComponent::SaveToYaml(const String& yamlPath)
+{
+	particleEmitter->SaveToYaml(yamlPath);
+}
+
+String ParticleEmitterComponent::GetYamlPath()
+{
+	if (particleEmitter)
+	{
+		return particleEmitter->GetConfigPath();
+	}
+
+	return String();
+}
+
 }

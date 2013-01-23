@@ -35,6 +35,8 @@
 #include "UI/UIControl.h"
 #include "FileSystem/File.h"
 
+#if !defined(__DAVAENGINE_ANDROID__)
+
 namespace DAVA
 {
 
@@ -133,4 +135,7 @@ private:
 };
 
 }
+
+#endif //#if !defined(__DAVAENGINE_ANDROID__)
+
 #endif

@@ -22,5 +22,10 @@ Documentation/doxygen/*
 *.suo
 *.sdf
 *.ipch
-
+!*.cpp
+!*.h
 ddd
+/ParticleEditorGraphIssues/
+/scene_sample/
+/scene_sample_multi/
+/testproj/
