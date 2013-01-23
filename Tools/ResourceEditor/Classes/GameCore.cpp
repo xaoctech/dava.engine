@@ -101,6 +101,11 @@ void GameCore::OnAppStarted()
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
     }
+
+	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using
+	// ParticleEffectNode and thus REGISTER_CLASS(ParticleEffectNode) must not be removed during optimization.
+	ParticleEffectNode* effectNode = new ParticleEffectNode();
+	delete effectNode;
 }
 
 void GameCore::OnAppFinished()
