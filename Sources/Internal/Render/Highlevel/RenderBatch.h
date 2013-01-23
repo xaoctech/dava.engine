@@ -126,7 +126,7 @@ public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
         MEMBER(material, "Material", INTROSPECTION_EDITOR)
-        MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+        //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
     );
 };
 

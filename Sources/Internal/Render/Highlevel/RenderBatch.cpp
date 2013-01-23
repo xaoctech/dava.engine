@@ -53,6 +53,9 @@ RenderBatch::RenderBatch()
     
 RenderBatch::~RenderBatch()
 {
+	SafeRelease(dataSource);
+	SafeRelease(renderDataObject);
+	SafeRelease(material);
 }
     
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
@@ -118,7 +121,10 @@ RenderBatch * RenderBatch::Clone()
 	rb->type = type;
 
 	rb->ownerLayer = ownerLayer;
-	ownerLayer->AddRenderBatch(rb);
+	if(ownerLayer)
+	{
+		ownerLayer->AddRenderBatch(rb);
+	}
 
 	rb->aabbox = aabbox;
 
