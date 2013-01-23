@@ -12,13 +12,14 @@
 #include <DAVAEngine.h>
 
 #include <QWidget>
+#include "BaseParticleEditorContentWidget.h"
 
 using namespace DAVA;
 
 class TimeLineWidget;
 class QVBoxLayout;
 
-class LayerForceWidget: public QWidget
+class LayerForceWidget: public QWidget, public BaseParticleEditorContentWidget
 {
     Q_OBJECT
     
@@ -28,7 +29,10 @@ public:
 	
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized);
 	void Update();
-	
+
+	virtual void StoreVisualState(KeyedArchive* visualStateProps);
+	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
+
 signals:
 	void ValueChanged();
 	

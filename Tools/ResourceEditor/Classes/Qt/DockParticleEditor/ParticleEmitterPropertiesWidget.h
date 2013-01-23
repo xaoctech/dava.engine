@@ -5,11 +5,12 @@
 #include <QVBoxLayout>
 #include "GradientPickerWidget.h"
 #include "TimeLineWidget.h"
+#include "BaseParticleEditorContentWidget.h"
 
 #include <QComboBox>
 #include <QDoubleSpinBox>
 
-class ParticleEmitterPropertiesWidget: public QWidget
+class ParticleEmitterPropertiesWidget: public QWidget, public BaseParticleEditorContentWidget
 {
 	Q_OBJECT
 	
@@ -21,6 +22,9 @@ public:
 	void Update();
 	
 	virtual bool eventFilter( QObject * o, QEvent * e );
+
+	virtual void StoreVisualState(KeyedArchive* visualStateProps);
+	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
 
 signals:
 	void ValueChanged();

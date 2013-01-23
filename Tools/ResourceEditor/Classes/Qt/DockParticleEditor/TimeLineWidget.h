@@ -22,6 +22,8 @@ public:
 	void SetMinLimits(float32 minV);
 	void SetMaxLimits(float32 maxV);
 	void EnableLock(bool enable);
+	void SetVisualState(KeyedArchive* visualStateProps);
+	void GetVisualState(KeyedArchive* visualStateProps);
 	
 	void AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend = "");
 	void AddLines(const Vector< PropValue<Vector2> >& lines, const Vector<QColor>& colors, const Vector<QString>& legends);

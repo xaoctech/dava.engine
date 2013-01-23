@@ -53,6 +53,9 @@ public:
     typedef List<BaseParticleEditorNode*> PARTICLEEDITORNODESLIST;
     const PARTICLEEDITORNODESLIST& GetChildren() const {return childNodes;};
 
+	KeyedArchive* GetExtraData();
+	void ClearExtraData();
+
 protected:
 	// Set the parent of the node.
 	void SetParentNode(BaseParticleEditorNode* parentNode) {this->parentNode = parentNode; };
@@ -74,6 +77,8 @@ protected:
     
     // Whether the node is marked for selection.
     bool isMarkedForSelection;
+
+	KeyedArchive* extraData;
 };
 
 }
