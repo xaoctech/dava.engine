@@ -91,7 +91,7 @@ public:
 
     void EditMaterial(Material *material);
 
-	void EditParticleEmitter(ParticleEmitterNode * emitter);
+	void EditParticleEmitter(SceneNode * emitter);
     
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
@@ -186,7 +186,7 @@ public: //For Qt integration
     void SaveSceneToFile(const String &pathToFile);
    
 
-    void ExportAs(ResourceEditor::eExportFormat format);
+    void ExportAs(ImageFileFormat format);
 
 	void SaveToFolder(const String & folder);
 	

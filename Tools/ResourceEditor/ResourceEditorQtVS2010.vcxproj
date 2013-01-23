@@ -98,7 +98,7 @@
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <CustomBuildStep>
-      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)/make.bat -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>$(SolutionDir)/alwaysrun</Outputs>
@@ -163,7 +163,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>$(SolutionDir)/make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)/make.bat -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>QT generate: MOC, UI, QRC</Message>
@@ -338,6 +338,8 @@
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitter.cpp" />
+    <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
@@ -345,6 +347,15 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp" />
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp" />
+    <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
@@ -352,20 +363,29 @@
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\LayerForceWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\GraphItem.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\GraphModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
-    <ClCompile Include="Classes\Qt\Main\GraphItem.cpp" />
-    <ClCompile Include="Classes\Qt\Main\GraphModel.cpp" />
+    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp" />
     <ClCompile Include="Classes\Qt\Main\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp" />
-    <ClCompile Include="Classes\Qt\Main\QSceneGraphTreeView.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
-    <ClCompile Include="Classes\Qt\Main\SceneGraphItem.cpp" />
-    <ClCompile Include="Classes\Qt\Main\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialTree.cpp" />
@@ -417,6 +437,7 @@
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\DataGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
@@ -489,19 +510,27 @@
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\LayerForceWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEditorWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleEmitterPropertiesWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticlesEditorController_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\ParticleTimeLineWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockProperties\PropertyEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\QSceneGraphTreeView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\GraphItem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\GraphModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\PointerHolder_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\QSceneGraphTreeView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\SceneGraphItem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\SceneGraphModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ScenePreviewDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialTreeItem_moc.cpp" />
@@ -774,6 +803,8 @@
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h" />
+    <ClInclude Include="Classes\ImageSplitter\ImageSplitterScreen.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />
@@ -782,6 +813,15 @@
     <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h" />
+    <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
@@ -789,19 +829,28 @@
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\LayerForceWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEditorWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleEmitterPropertiesWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticlesEditorController.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
-    <ClInclude Include="Classes\Qt\Main\GraphItem.h" />
-    <ClInclude Include="Classes\Qt\Main\GraphModel.h" />
+    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
     <ClInclude Include="Classes\Qt\Main\GUIState.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\PointerHolder.h" />
-    <ClInclude Include="Classes\Qt\Main\QSceneGraphTreeView.h" />
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
-    <ClInclude Include="Classes\Qt\Main\SceneGraphItem.h" />
-    <ClInclude Include="Classes\Qt\Main\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\Main\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialTree.h" />
@@ -854,6 +903,7 @@
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\DataGraph.h" />
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\DXTConverter.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />
@@ -926,12 +976,16 @@
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="_GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataQt\mainwindow.ui">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="DataQt\CustomColorsView.ui" />
-    <None Include="DataQt\mainwindow.ui" />
     <None Include="DataQt\materialbrowser.ui" />
+    <None Include="DataQt\ParticleProperty.ui" />
     <None Include="DataQt\texturedialog.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
