@@ -22,8 +22,8 @@ TransformComponent::~TransformComponent()
 Component * TransformComponent::Clone()
 {
     TransformComponent * newTransform = new TransformComponent();
-    newTransform->localMatrix = this->localMatrix;
-    newTransform->worldMatrix = this->worldMatrix;
+	newTransform->localMatrix = localMatrix;
+	newTransform->worldMatrix = worldMatrix;
     newTransform->parent = this->parent;
     return newTransform;
 }

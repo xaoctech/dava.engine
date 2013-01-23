@@ -111,6 +111,8 @@ public:
     
     inline eType GetType() { return type; }
 
+	RenderObject * Clone();
+
 protected:
     eType type;
     uint32 flags;
