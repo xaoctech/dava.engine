@@ -24,6 +24,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
     case DAVA::VariantType::TYPE_MATRIX2:
     case DAVA::VariantType::TYPE_MATRIX3:
     case DAVA::VariantType::TYPE_MATRIX4:
+	case DAVA::VariantType::TYPE_AABBOX3:
         SetFlags(FLAG_IS_NOT_EDITABLE);
         break;
             
@@ -123,6 +124,9 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
         }
 //        v = curVariantValue.AsFastName().c_str();
         break;
+	case DAVA::VariantType::TYPE_AABBOX3:
+		v = FromAABBox3(curVariantValue.AsAABBox3());
+		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -187,6 +191,9 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
             curVariantValue.SetFastName(DAVA::FastName(str.c_str()));
         }
         break;
+	case DAVA::VariantType::TYPE_AABBOX3:
+		ToAABBox3(value);
+		break;
 
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
 	default:
@@ -259,6 +266,8 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 //            ChildAdd("A", color.a);
         }
         break;
+	case DAVA::VariantType::TYPE_AABBOX3:
+		break;
 	}
 }
 
@@ -311,6 +320,8 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 //			ChildGet("A")->SetValue(color.a);
 		}
         break;
+	case DAVA::VariantType::TYPE_AABBOX3:
+		break;
 	}
 }
 
@@ -372,6 +383,8 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 //			curVariantValue.SetColor(color);
 		}
         break;
+	case DAVA::VariantType::TYPE_AABBOX3:
+		break;
 	}
 }
 
@@ -458,6 +471,18 @@ QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 	return QColorFromColor(color);
 }
 
+QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
+{
+	QVariant v;
+
+	v = QString().sprintf("[%g, %g, %g]\n[%g, %g, %g]",
+		aabbox.min.x, aabbox.min.y, aabbox.min.z,
+		aabbox.max.x, aabbox.max.y, aabbox.max.z
+		);
+
+	return v;
+}
+
 
 
 void QtPropertyDataDavaVariant::ToKeyedArchive(const QVariant &value)
@@ -506,6 +531,13 @@ void QtPropertyDataDavaVariant::ToColor(const QVariant &value)
 	// TODO:
 	// ...
 }
+
+void QtPropertyDataDavaVariant::ToAABBox3(const QVariant &value)
+{
+	// TODO:
+	// ...
+}
+
 
 QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option)
 {
