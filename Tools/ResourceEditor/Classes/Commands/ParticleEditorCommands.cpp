@@ -546,6 +546,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
     }
     
     QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
+	Logger::Debug("Project path: %s", projectPath.toStdString().c_str());
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
                                                     projectPath, QString("YAML File (*.yaml)"));
 	if (filePath.isEmpty())

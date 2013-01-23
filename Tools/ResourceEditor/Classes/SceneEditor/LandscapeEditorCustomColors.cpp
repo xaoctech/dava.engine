@@ -78,7 +78,6 @@ void LandscapeEditorCustomColors::PrepareRenderLayers()
 	RenderManager::Instance()->SetRenderTarget(colorSprite);
 	
 	Vector2 newPoint = workingLandscape->GetCursor()->GetCursorPosition(); 
-    newPoint *= 2; 
 	RenderManager::Instance()->SetColor(paintColor);
 	
     blankSprite->SetPosition(newPoint); 
@@ -193,16 +192,11 @@ uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DA
 	
 	for (uint32 i = 0; i < radius*2; ++i)
 	{
-		//Vector<float> tmp(10) - get error, with std::vector ok
 		Vector<bool> tmp;
 		tmp.resize(radius*2);
 		matrixForCircle.push_back(tmp);
 	}
-	
-
 	DrawCircle(matrixForCircle);
-	
-	
 	for(uint32 i = 0; i <matrixForCircle.size(); ++i)
 	{
 		for(uint32 j = 0; j < matrixForCircle.size(); ++j)
@@ -240,15 +234,16 @@ void LandscapeEditorCustomColors::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
 		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
-		workingLandscape->SetCursorScale(radius);
+		
+		workingLandscape->SetCursorScale(radius*2);
 	}
 }
 
 void LandscapeEditorCustomColors::SetRadius(int _radius)
 {
-	radius = _radius;
+	radius = _radius % 2 == 0 ? _radius : ++_radius;//in order to avoid dark boundaries
 	UpdateCircleTexture(true);
 }
 
@@ -342,7 +337,7 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-    landscapeSize = settings->maskSize;
+    landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 	//save fog status and disable it for more convenience

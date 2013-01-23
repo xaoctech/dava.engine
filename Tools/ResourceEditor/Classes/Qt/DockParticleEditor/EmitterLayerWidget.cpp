@@ -322,6 +322,77 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	blockSignals = false;
 }
 
+void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	lifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_LIFE_PROPS"));
+	numberTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_NUMBER_PROPS"));
+	sizeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_PROPS"));
+	sizeVariationTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_VARIATION_PROPS"));
+	sizeOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SIZE_OVER_LIFE_PROPS"));
+	velocityTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_VELOCITY_PROPS"));
+	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
+	motionTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_MOTION_RANDOM_PROPS"));
+	bounceTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_BOUNCE_PROPS"));
+	frameOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FRAME_OVER_LIFE_PROPS"));
+	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
+}
+
+void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	KeyedArchive* props = new KeyedArchive();
+
+	lifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_LIFE_PROPS", props);
+
+	props->DeleteAllKeys();
+	numberTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_NUMBER_PROPS", props);
+
+	props->DeleteAllKeys();
+	sizeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_SIZE_PROPS", props);
+
+	props->DeleteAllKeys();
+	sizeVariationTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_SIZE_VARIATION_PROPS", props);
+
+	props->DeleteAllKeys();
+	sizeOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_SIZE_OVER_LIFE_PROPS", props);
+
+	props->DeleteAllKeys();
+	velocityTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_VELOCITY_PROPS", props);
+
+	props->DeleteAllKeys();
+	spinTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_SPIN_PROPS", props);
+
+	props->DeleteAllKeys();
+	motionTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_MOTION_RANDOM_PROPS", props);
+
+	props->DeleteAllKeys();
+	bounceTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_BOUNCE_PROPS", props);
+
+	props->DeleteAllKeys();
+	alphaOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_ALPHA_OVER_LIFE_PROPS", props);
+
+	props->DeleteAllKeys();
+	frameOverLifeTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_FRAME_OVER_LIFE_PROPS", props);
+
+	SafeRelease(props);
+}
+
 void EmitterLayerWidget::OnSpriteBtn()
 {
 	String projectPath = EditorSettings::Instance()->GetProjectPath();

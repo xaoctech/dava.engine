@@ -12,6 +12,7 @@
 #include <DAVAEngine.h>
 #include "TimeLineWidget.h"
 #include "GradientPickerWidget.h"
+#include "BaseParticleEditorContentWidget.h"
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -23,7 +24,7 @@
 
 using namespace DAVA;
 
-class EmitterLayerWidget: public QWidget
+class EmitterLayerWidget: public QWidget, public BaseParticleEditorContentWidget
 {
     Q_OBJECT
     
@@ -35,7 +36,10 @@ public:
 	void Update();
 	
 	virtual bool eventFilter(QObject *, QEvent *);
-	
+
+	virtual void StoreVisualState(KeyedArchive* visualStateProps);
+	virtual void RestoreVisualState(KeyedArchive* visualStateProps);
+
 signals:
 	void ValueChanged();
 	

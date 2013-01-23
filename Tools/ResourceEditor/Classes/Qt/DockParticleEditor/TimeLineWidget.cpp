@@ -1149,6 +1149,29 @@ void TimeLineWidget::EnableLock(bool enable)
 	isLockEnable = enable;
 }
 
+
+void TimeLineWidget::SetVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+	
+	isLocked = visualStateProps->GetBool("IS_LOCKED", false);
+	sizeState = (eSizeState)visualStateProps->GetInt32("SIZE_STATE", SIZE_STATE_NORMAL);
+	drawLine = visualStateProps->GetInt32("DRAW_LINE", -1);
+
+	UpdateSizePolicy();
+}
+
+void TimeLineWidget::GetVisualState(KeyedArchive* visualStateProps)
+{
+	if (!visualStateProps)
+		return;
+
+	visualStateProps->SetBool("IS_LOCKED", isLocked);
+	visualStateProps->SetInt32("SIZE_STATE", sizeState);
+	visualStateProps->SetInt32("DRAW_LINE", drawLine);
+}
+
 int32 TimeLineWidget::GetIntValue(float32 value) const
 {
 	float32 sign =	(value < 0) ? -1.f : 1.f;

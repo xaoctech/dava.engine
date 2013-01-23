@@ -24,17 +24,21 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterPropertiesWidget = NULL;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(SceneNode*)),
+			SIGNAL(EmitterSelected(SceneNode*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnEmitterSelected(SceneNode*)));
+			SLOT(OnEmitterSelected(SceneNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*)));
+			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32)),
+			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnForceSelected(SceneNode*, ParticleLayer*, int32)));
+			SLOT(OnForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)));
+	connect(ParticlesEditorController::Instance(),
+			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
+			this,
+			SLOT(OnNodeDeselected(BaseParticleEditorNode*)));
 }
 
 ParticleEditorWidget::~ParticleEditorWidget()
@@ -49,7 +53,7 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(emitterPropertiesWidget);
 }
 
-void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode)
+void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -71,6 +75,13 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode)
 
 	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(this);
 	emitterPropertiesWidget->Init(emitter, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterPropertiesWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(emitterPropertiesWidget);
 	connect(emitterPropertiesWidget,
 			SIGNAL(ValueChanged()),
@@ -78,7 +89,7 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode)
 			SLOT(OnValueChanged()));
 }
 
-void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer)
+void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -100,6 +111,13 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 
 	emitterLayerWidget = new EmitterLayerWidget(this);
 	emitterLayerWidget->Init(emitter, layer, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterLayerWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(emitterLayerWidget);
 	connect(emitterLayerWidget,
 			SIGNAL(ValueChanged()),
@@ -107,7 +125,7 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 			SLOT(OnValueChanged()));
 }
 
-void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex)
+void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -129,11 +147,33 @@ void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer
 	
 	layerForceWidget = new LayerForceWidget(this);
 	layerForceWidget->Init(emitter, layer, forceIndex, true);
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		layerForceWidget->RestoreVisualState(stateProps);
+	}
+
 	setWidget(layerForceWidget);
 	connect(layerForceWidget,
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+}
+
+void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
+{
+	if (!particleEditorNode)
+		return;
+
+	KeyedArchive* stateProps = particleEditorNode->GetExtraData();
+
+	if (emitterLayerWidget)
+		emitterLayerWidget->StoreVisualState(stateProps);
+	if (layerForceWidget)
+		layerForceWidget->StoreVisualState(stateProps);
+	if (emitterPropertiesWidget)
+		emitterPropertiesWidget->StoreVisualState(stateProps);
 }
 
 void ParticleEditorWidget::OnUpdate()
