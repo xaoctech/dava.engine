@@ -54,7 +54,9 @@ void RenderLayer::AddRenderBatch(RenderBatch * batch)
 
 void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
 {
-    renderBatchArray[batch->GetRemoveIndex()] = renderBatchArray[renderBatchArray.size() - 1];
+	uint32 oldIndex = batch->GetRemoveIndex();
+    renderBatchArray[oldIndex] = renderBatchArray[renderBatchArray.size() - 1];
+	renderBatchArray[oldIndex]->SetRemoveIndex(this, oldIndex);
     renderBatchArray.pop_back();
     batch->SetRemoveIndex(0, -1);
 }
