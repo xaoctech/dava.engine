@@ -36,12 +36,13 @@ public:
 	void EditorDone(QWidget *editor);
 	void SetEditorData(QWidget *editor);
 
-protected:
-	void ParentUpdate();
-
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
 	QtPropertyData* ChildGet(const QString &key);
+    
+protected:
+	void ParentUpdate();
+
 	QMapIterator<QString, QtPropertyData*> ChildIterator();
 
 protected:

@@ -24,7 +24,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
     case DAVA::VariantType::TYPE_MATRIX2:
     case DAVA::VariantType::TYPE_MATRIX3:
     case DAVA::VariantType::TYPE_MATRIX4:
-	case DAVA::VariantType::TYPE_AABBOX3:
+    case DAVA::VariantType::TYPE_AABBOX3:
         SetFlags(FLAG_IS_NOT_EDITABLE);
         break;
             
@@ -267,6 +267,24 @@ void QtPropertyDataDavaVariant::ChildsCreate()
         }
         break;
 	case DAVA::VariantType::TYPE_AABBOX3:
+        {
+            DAVA::AABBox3 box = curVariantValue.AsAABBox3();
+            
+            ChildAdd("min", FromVector3(box.min));
+            ChildAdd("max", FromVector3(box.max));
+            
+            QtPropertyData* min = ChildGet("min");
+            min->SetFlags(FLAG_IS_NOT_EDITABLE);
+            min->ChildAdd("X", box.min.x);
+            min->ChildAdd("Y", box.min.y);
+            min->ChildAdd("Z", box.min.z);
+            
+            QtPropertyData* max = ChildGet("max");
+            max->SetFlags(FLAG_IS_NOT_EDITABLE);
+            max->ChildAdd("X", box.max.x);
+            max->ChildAdd("Y", box.max.y);
+            max->ChildAdd("Z", box.max.z);
+        }
 		break;
 	}
 }
@@ -320,8 +338,23 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 //			ChildGet("A")->SetValue(color.a);
 		}
         break;
-	case DAVA::VariantType::TYPE_AABBOX3:
-		break;
+        case DAVA::VariantType::TYPE_AABBOX3:
+        {
+            DAVA::AABBox3 box = curVariantValue.AsAABBox3();
+            
+            QtPropertyData* min = ChildGet("min");
+            min->SetValue(FromVector3(box.min));
+            min->ChildGet("X")->SetValue(box.min.x);
+            min->ChildGet("Y")->SetValue(box.min.y);
+            min->ChildGet("Z")->SetValue(box.min.z);
+            
+            QtPropertyData* max = ChildGet("max");
+            max->SetValue(FromVector3(box.max));
+            max->ChildGet("X")->SetValue(box.max.x);
+            max->ChildGet("Y")->SetValue(box.max.y);
+            max->ChildGet("Z")->SetValue(box.max.z);
+        }
+            break;
 	}
 }
 
@@ -383,8 +416,23 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 //			curVariantValue.SetColor(color);
 		}
         break;
-	case DAVA::VariantType::TYPE_AABBOX3:
-		break;
+        case DAVA::VariantType::TYPE_AABBOX3:
+        {
+            DAVA::AABBox3 box;
+            
+            QtPropertyData* min = ChildGet("min");
+            box.min.x = min->ChildGet("X")->GetValue().toFloat();
+            box.min.y = min->ChildGet("Y")->GetValue().toFloat();
+            box.min.z = min->ChildGet("Z")->GetValue().toFloat();
+            
+            QtPropertyData* max = ChildGet("max");
+            box.max.x = max->ChildGet("X")->GetValue().toFloat();
+            box.max.y = max->ChildGet("Y")->GetValue().toFloat();
+            box.max.z = max->ChildGet("Z")->GetValue().toFloat();
+            
+            curVariantValue.SetAABBox3(box);
+        }
+            break;
 	}
 }
 
