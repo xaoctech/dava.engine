@@ -65,7 +65,7 @@ void QtLayerWin32::WidgetDestroyed()
 void QtLayerWin32::OnSuspend()
 {
     SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
+//    Core::Instance()->SetIsActive(false);
 }
     
 void QtLayerWin32::OnResume()
