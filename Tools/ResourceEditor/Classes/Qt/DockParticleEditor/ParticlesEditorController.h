@@ -82,7 +82,7 @@ public:
 signals:
 	void EffectSelected(SceneNode* effectNode);
     void EmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode);
-	void LayerSelected(SceneNodeNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
+	void LayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
     void ForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 	void NodeDeselected(BaseParticleEditorNode* editorNode);
 
