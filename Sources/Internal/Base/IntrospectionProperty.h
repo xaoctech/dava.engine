@@ -5,6 +5,37 @@
 
 namespace DAVA
 {
+	// Класс представляет расширение базового класса IntrospectionMember и описывает члена интроспекции, как свойство
+	// Свойство в отличии от базового члена интроспекции позволяет указать методы класса, 
+	// которые будут использоваться при получении/установки значений в данный член интроспекции.
+	// Свойства требуются в том случае, если логика работы класса такова, что при изменение одной переменной
+	// может поменять другая.
+	// 
+	// В классе переопределены виртуальные функции базового класса - IntrospectionMember: Value(), SetValue()
+	// 
+	// Пример:
+	// class A
+	// {
+	// public:
+	//		int sum;
+	//		
+	//		int GetA() {return a;};
+	//		int GetB() {return b;};
+	//		
+	//		void SetA(int _a) {a = _a; sum = a + b;};
+	//		void SetB(int _b) {b = _b; sum = a + b;};
+	//		
+	// protected:
+	//		int a;
+	//		int b;
+	//		
+	// public:
+	//		INTROSPECTION(A, 
+	//			MEMBER(sum, "Sum a+b", 0)
+	//			PROPERTY(a, "a value", GetA, SetA, 0)
+	//			PROPERTY(b, "b value", GetB, SetB, 0)
+	//		);
+	// };
 	template<typename T, typename V>
 	class IntrospectionProperty : public IntrospectionMember
 	{
@@ -36,6 +67,8 @@ namespace DAVA
 		const SetterPtr setter;
 	};
 
+	// Этот класс по сути спеуиализация IntrospectionProperty, с той лишь разницой, что
+	// возвращаемое Get функцией значение является ссылкой.
 	template<typename T, typename V>
 	class IntrospectionPropertyReturnRef : public IntrospectionMember
 	{
@@ -67,6 +100,8 @@ namespace DAVA
 		const SetterPtr setter;
 	};
 
+	// Набор функций для автоматического вывода параметро и создания IntrospectionProperty или IntrospectionPropertyRef
+	// в зависимости от входных типов
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const MetaInfo *_type, VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
