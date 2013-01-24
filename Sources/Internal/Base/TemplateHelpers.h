@@ -46,8 +46,15 @@ template <bool> struct CompileTimeError;
 template <> struct CompileTimeError<true> {};
 #define COMPILER_ASSERT(expr)  (DAVA::CompileTimeError<(expr)!=0>());
 
+template<bool C, typename T = void>
+struct EnableIf
+{
+	typedef T type;
+};
 
-
+template<typename T>
+struct EnableIf<false, T> 
+{ };
 
 template <int v>
 class Int2Type
@@ -61,7 +68,6 @@ class Type2Type
     typedef T OriginalType;
 };
     
-    
 template <bool flag, typename T, typename U>
 struct Select
 {
@@ -72,7 +78,6 @@ struct Select<false, T, U>
 {
     typedef U Result;
 };
-    
     
 template <class TO, class FROM>
 class Conversion

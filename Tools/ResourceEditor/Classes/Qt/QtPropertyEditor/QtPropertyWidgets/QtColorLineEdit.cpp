@@ -31,11 +31,6 @@ QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 	QObject::connect(this, SIGNAL(editingFinished()), this, SLOT(EditFinished()));
 }
 
-QtColorLineEdit::~QtColorLineEdit()
-{
-	printf("111\n");
-}
-
 void QtColorLineEdit::SetColor(const QColor &color)
 {
 	curColor = color;
@@ -66,6 +61,8 @@ void QtColorLineEdit::ToolButtonClicked()
     
     QFocusEvent event(QEvent::FocusOut, Qt::MouseFocusReason);
     QApplication::sendEvent(this, &event);
+
+	close();
 }
 
 void QtColorLineEdit::EditFinished()

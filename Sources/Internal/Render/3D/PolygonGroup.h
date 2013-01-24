@@ -184,7 +184,10 @@ public:
 
 private:	
     void    UpdateDataPointersAndStreams();
-
+    
+public:
+    
+    INTROSPECTION_EXTEND(PolygonGroup, DataNode, NULL);
 };
 
 // Static Mesh Implementation	
