@@ -142,6 +142,32 @@ namespace DAVA
 			return (ptr1 == ptr2);
 		}
 	};
+
+	template<> struct Hash <DAVA::int32>
+	{
+		size_t operator()(const DAVA::int32 i) const
+		{
+			return i;
+		}
+
+		bool Compare(const DAVA::int32 i1, const DAVA::int32 i2)
+		{
+			return (i1 == i2);
+		}
+	};
+
+	template<> struct Hash <DAVA::uint32>
+	{
+		size_t operator()(const DAVA::uint32 i) const
+		{
+			return i;
+		}
+
+		bool Compare(const DAVA::uint32 i1, const DAVA::uint32 i2)
+		{
+			return (i1 == i2);
+		}
+	};
 };
 
 #endif // __DAVAENGINE_HASH__
