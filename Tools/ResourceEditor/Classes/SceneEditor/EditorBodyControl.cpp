@@ -256,7 +256,7 @@ void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 	if(node)
 	{
 		Vector3 result;
-		LandscapeNode * ls = scene->GetLandScape(scene);
+		LandscapeNode * ls = scene->GetLandscape(scene);
 		if (ls)
 		{
 			const Matrix4 & itemWT = node->GetWorldTransform();
@@ -1033,7 +1033,7 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-	SceneNode* sceneNode = EditorScene::GetLandScapeNode(scene);
+	SceneNode* sceneNode = EditorScene::GetLandscapeNode(scene);
 	if (sceneNode)
 	{
 		scene->SetSelection(sceneNode);

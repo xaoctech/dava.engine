@@ -73,7 +73,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
     SafeRelease(workingScene);
     
-    workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
+    workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
     if(!workingLandscape)
     {
         ShowErrorDialog(String("No landscape at level."));

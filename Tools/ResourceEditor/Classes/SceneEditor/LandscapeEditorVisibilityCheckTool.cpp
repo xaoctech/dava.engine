@@ -700,7 +700,7 @@ void LandscapeEditorVisibilityCheckTool::RecreateHeightmapNode()
 
 bool LandscapeEditorVisibilityCheckTool::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene"));

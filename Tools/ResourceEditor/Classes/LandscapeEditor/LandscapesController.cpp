@@ -162,16 +162,13 @@ void LandscapesController::ToggleNotPassableLandscape()
 
 bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLandscape)
 {
-    Vector<LandscapeNode *>landscapes;
-    scene->GetChildNodes(landscapes);
-    
-    if(1 != landscapes.size())
+	LandscapeNode *landscape = EditorScene::GetLandscape(scene);
+	if (!landscape)
     {
         Logger::Error("[LandscapesController::ShowEditorLandscape] Can be only one landscape");
         return false;
     }
-
-    LandscapeNode *landscape = landscapes[0];
+	
     displayingLandscape->SetNestedLandscape(landscape);
     
     if(!landscapeRenderer)
@@ -182,15 +179,13 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
         displayingLandscape->SetHeightmap(renderedHeightmap);
     }
     displayingLandscape->SetRenderer(landscapeRenderer);
-
-// RETURN TO THIS CODE LATER
-//
-//    SceneNode *parentNode = landscape->GetParent();
-//    if(parentNode)
-//    {
-//        parentNode->RemoveNode(landscape);
-//        parentNode->AddNode(displayingLandscape);
-//    }
+	
+	displayingLandscape->SetWorldTransformPtr(landscape->GetWorldTransformPtr());
+	SceneNode* lanscapeNode = EditorScene::GetLandscapeNode(scene);
+	
+	lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
+	RenderComponent* component = new RenderComponent(displayingLandscape);
+	lanscapeNode->AddComponent(component);
 
     currentLandscape = displayingLandscape;
     return true;
@@ -219,14 +214,10 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
         {
             editorLandscape->SetParentLandscape(NULL);
         }
-// RETURN TO THIS CODE LATER
-//        
-//        SceneNode *parentNode = hiddingLandscape->GetParent();
-//        if(parentNode)
-//        {
-//            parentNode->RemoveNode(hiddingLandscape);
-//            parentNode->AddNode(nestedLandscape);
-//        }
+		
+		SceneNode* lanscapeNode = EditorScene::GetLandscapeNode(scene);
+		lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
+		lanscapeNode->AddComponent(new RenderComponent(nestedLandscape));
         
         if(NeedToKillRenderer(nestedLandscape))
         {

@@ -525,7 +525,7 @@ void LandscapeEditorCustomColors::RecreateHeightmapNode()
 
 bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscapeNode from scene"));
