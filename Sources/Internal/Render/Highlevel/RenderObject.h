@@ -111,7 +111,7 @@ public:
     
     inline eType GetType() { return type; }
 
-	RenderObject * Clone();
+	virtual RenderObject * Clone();
 
 protected:
     eType type;

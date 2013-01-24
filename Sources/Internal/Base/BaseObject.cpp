@@ -63,7 +63,7 @@ void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, co
         for(int32 i = 0; i < info->MembersCount(); ++i)
         {
 			const IntrospectionMember *member = info->Member(i);
-            if(!member)
+            if(!member || 0 == (member->Flags() & INTROSPECTION_SERIALIZABLE))
             {
                 continue;
             }
@@ -83,7 +83,7 @@ void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, co
             {
                 SaveCollection(memberKey, archive, member, object);
             }
-            else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+            else
             {
                 VariantType value = member->Value(object);
                 archive->SetVariant(memberKey, &value);
@@ -132,7 +132,7 @@ void BaseObject::SaveCollection(const String &key, KeyedArchive * archive, const
                 {
                     //TODO: need to do anything?
                 }
-                else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+                else
                 {
                     VariantType value = VariantType::LoadData(collection->ItemPointer(it), valueType);
                     archive->SetVariant(itemKey, &value);
@@ -184,7 +184,7 @@ void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, co
         for(int32 i = 0; i < info->MembersCount(); ++i)
         {
 			const IntrospectionMember *member = info->Member(i);
-            if(!member)
+            if(!member || 0 == (member->Flags() & INTROSPECTION_SERIALIZABLE))
             {
                 continue;
             }
@@ -204,7 +204,7 @@ void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, co
             {
                 LoadCollection(memberKey, archive, member, object);
             }
-            else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+            else
             {
                 const VariantType * value = archive->GetVariant(memberKey);
                 if(value)
@@ -224,8 +224,8 @@ void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const
     void *collectedObject = member->Pointer(object);
     
     int32 collectionSize = collection->Size(collectedObject);
-//    int32 collectionSize = archive->GetInt32(key + "sizeOfCollection", 0);
-    if(collectionSize > 0) //Do we need to realocate collection?
+    int32 requestedCollectionSize = archive->GetInt32(key + "sizeOfCollection", 0);
+    if(collectionSize > 0 && requestedCollectionSize == collectionSize) //Do we need to realocate collection?
     {
         MetaInfo *valueType = collection->ValueType();
         IntrospectionCollectionBase::Iterator it = collection->Begin(collectedObject);
@@ -255,7 +255,7 @@ void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const
                 {
                     //TODO: need to do anything?
                 }
-                else if(member->Flags() & INTROSPECTION_SERIALIZABLE)
+                else
                 {
                     const VariantType * value = archive->GetVariant(itemKey);
                     if(value)
@@ -265,6 +265,10 @@ void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const
                 }
             }
         }
+    }
+    else
+    {
+        Logger::Error("[BaseObject::LoadCollection] Need resize collection");
     }
 }
     
