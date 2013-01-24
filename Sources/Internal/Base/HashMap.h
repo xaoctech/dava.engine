@@ -124,7 +124,6 @@ public:
 	void Remove(const TKey &key)
 	{
 		size_t index = GetIndex(key);
-
 		HashMapItem<TKey, TValue>* item = table[index];
 		HashMapItem<TKey, TValue>* prev = NULL;
 
@@ -132,26 +131,23 @@ public:
 		{
 			if(hashFn.Compare(item->key, key))
 			{
+				if(NULL != prev)
+				{
+					prev->next = item->next;
+				}
+				else
+				{
+					table[index] = item->next;
+				}
+
+				sz--;
+				delete item;
+
 				break;
 			}
 
 			prev = item;
 			item = item->next;
-		}
-
-		if(NULL != item)
-		{
-			if(NULL != prev)
-			{
-				prev->next = item->next;
-			}
-			else
-			{
-				table[index] = NULL;
-			}
-
-			sz--;
-			delete item;
 		}
 	}
 
