@@ -45,6 +45,8 @@ public:
 	bool Save(const QString& path);
 	
 	virtual void ReturnTreeNodeToScene();
+	
+	Rect GetRect() const;
 
 private:
 	void BuildHierarchyTree(HierarchyTreeNode* parent, List<UIControl*> child);
