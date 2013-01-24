@@ -40,7 +40,7 @@ void ResourcePacker::PackResources(const String & inputDir, const String & outpu
 	clearProcessDirectory = true;
 	inputGfxDirectory = inputDir;
 	outputGfxDirectory = outputDir;
-	excludeDirectory = "/"+FileSystem::Instance()->RealPath(inputDir + "/../");
+	excludeDirectory = FileSystem::Instance()->RealPath(inputDir + "/../");
 	isLightmapsPacking = true;
 	
 	StartPacking();
@@ -113,8 +113,15 @@ bool ResourcePacker::IsMD5ChangedDir(const String & processDirectoryPath, const 
 	MD5::ForDirectory(pathname, newMD5Digest, isRecursive);
 
 	file = File::Create(md5FileName, File::CREATE | File::WRITE);
-	int32 bytes = file->Write(newMD5Digest, 16);
-	DVASSERT(bytes == 16 && "16 bytes should be always written for md5 file");
+	if (!file)
+	{
+		isChanged = true;
+	}
+	else
+	{
+		int32 bytes = file->Write(newMD5Digest, 16);
+		DVASSERT(bytes == 16 && "16 bytes should be always written for md5 file");
+	}
 	SafeRelease(file);
 
 	// if already changed return without compare
@@ -152,8 +159,15 @@ bool ResourcePacker::IsMD5ChangedFile(const String & processDirectoryPath, const
 	MD5::ForFile(pathname, newMD5Digest);
 	
 	file = File::Create(md5FileName, File::CREATE | File::WRITE);
-	int32 bytes = file->Write(newMD5Digest, 16);
-	DVASSERT(bytes == 16 && "16 bytes should be always written for md5 file");
+	if (!file)
+	{
+		isChanged = true;
+	}
+	else
+	{
+		int32 bytes = file->Write(newMD5Digest, 16);
+		DVASSERT(bytes == 16 && "16 bytes should be always written for md5 file");
+	}
 	SafeRelease(file);
 
 	for (int32 k = 0; k < 16; ++k)
