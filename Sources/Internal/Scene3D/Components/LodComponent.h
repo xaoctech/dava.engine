@@ -95,9 +95,9 @@ public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
         COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_EDITOR)
-        PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_EDITOR)
-        MEMBER(flags, "Flags", INTROSPECTION_EDITOR)
+        MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
