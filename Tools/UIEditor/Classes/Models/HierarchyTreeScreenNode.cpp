@@ -183,3 +183,22 @@ void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
 	// Need to recover the node previously deleted, taking position into account.
 	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }
+
+Rect HierarchyTreeScreenNode::GetRect() const
+{
+	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
+	
+	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
+	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+	{
+		const HierarchyTreeControlNode* control = dynamic_cast<const HierarchyTreeControlNode*>(*iter);
+		if (!control)
+			continue;
+		
+		Rect controlRect = control->GetRect();
+		
+		rect = rect.Combine(controlRect);
+	}
+	
+	return rect;
+}

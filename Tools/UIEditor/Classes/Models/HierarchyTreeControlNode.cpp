@@ -235,3 +235,23 @@ void HierarchyTreeControlNode::ReturnTreeNodeToScene()
 	// We just reset extra references to uiObject and parentUIObject - no additional release needed.
 	this->needReleaseUIObjects = false;
 }
+
+Rect HierarchyTreeControlNode::GetRect() const
+{
+	Rect rect;
+	if (uiObject)
+		rect = uiObject->GetRect(true);
+
+	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
+	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+	{
+		const HierarchyTreeControlNode* control = dynamic_cast<const HierarchyTreeControlNode*>(*iter);
+		if (!control)
+			continue;
+		
+		Rect controlRect = control->GetRect();
+		rect = rect.Combine(controlRect);
+	}
+
+	return rect;
+}

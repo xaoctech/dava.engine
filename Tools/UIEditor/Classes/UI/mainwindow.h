@@ -49,6 +49,7 @@ private slots:
 	void OnRedoRequested();
 	
 	void OnUndoRedoAvailabilityChanged();
+	void OnChangePropertySucceeded();
 
 private:
 	bool CloseProject();

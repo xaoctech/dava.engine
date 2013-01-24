@@ -95,10 +95,12 @@ MainWindow::MainWindow(QWidget *parent) :
 			SIGNAL(UndoRedoAvailabilityChanged()),
 			this,
 			SLOT(OnUndoRedoAvailabilityChanged()));
-
-	//HierarchyTreeController::Instance()->Load("/Users/adebt/Downloads/Project1/project1.uieditor");
-	//HierarchyTreeController::Instance()->GetTree().Save(":asd");
 	
+	connect(CommandsController::Instance(),
+			SIGNAL(UndoRedoAvailabilityChanged()),
+			this,
+			SLOT(OnChangePropertySucceeded()));
+
 	InitMenu();
 	RestoreMainWindowState();
 	CreateHierarchyDockWidgetToolbar();
@@ -223,15 +225,20 @@ void MainWindow::OnSelectedScreenChanged()
 void MainWindow::UpdateSliders()
 {
 	QRect widgetRect = ui->davaGlWidget->rect();
-	QRect viewRect(0, 0, (int)ScreenWrapper::Instance()->GetWidth(), (int)ScreenWrapper::Instance()->GetHeight());
-	int valueV = (viewRect.height() - widgetRect.height()) / 2;
+	QRect viewRect = ScreenWrapper::Instance()->GetRect();
+
+	int valueV = viewRect.height() - widgetRect.height();
 	if (valueV < 0) valueV = 0;
-	int valueH = (viewRect.width() - widgetRect.width()) / 2;
+	int valueH = viewRect.width() - widgetRect.width();
 	if (valueH < 0) valueH = 0;
-	ui->verticalScrollBar->setMinimum(0);
-	ui->verticalScrollBar->setMaximum(valueV);
-	ui->horizontalScrollBar->setMinimum(0);
-	ui->horizontalScrollBar->setMaximum(valueH);
+	if (ui->verticalScrollBar->maximum() != valueV ||
+		ui->horizontalScrollBar-> maximum() != valueH)
+	{
+		ui->verticalScrollBar->setMinimum(0);
+		ui->verticalScrollBar->setMaximum(valueV);
+		ui->horizontalScrollBar->setMinimum(0);
+		ui->horizontalScrollBar->setMaximum(valueH);
+	}
 }
 
 void MainWindow::UpdateScreenPosition()
@@ -535,4 +542,9 @@ void MainWindow::OnUndoRedoAvailabilityChanged()
 {
 	this->ui->actionUndo->setEnabled(CommandsController::Instance()->IsUndoAvailable());
 	this->ui->actionRedo->setEnabled(CommandsController::Instance()->IsRedoAvailable());
+}
+
+void MainWindow::OnChangePropertySucceeded()
+{
+	OnSelectedScreenChanged();
 }

@@ -790,9 +790,9 @@
 		C15C2FDF162AD6E400818631 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				74819F17169F1435000FE4B1 /* ResourcePacker */,
 				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
 				C17246101637E18900709AAF /* EditorFontManager.cpp */,
+				740F353316832022003B35E7 /* EditorSettings.cpp */,
 				C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */,
 				C15C2FE3162AD6E400818631 /* GameCore.cpp */,
 				C15C2FE5162AD6E400818631 /* main.cpp */,
@@ -801,18 +801,18 @@
 				C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */,
 				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
 				C17246111637E18900709AAF /* EditorFontManager.h */,
+				740F35311683200F003B35E7 /* EditorSettings.h */,
 				C15C2FE2162AD6E400818631 /* FrameworkMain.h */,
 				C15C2FE4162AD6E400818631 /* GameCore.h */,
 				C10740E1163A94450069A640 /* ScreenControl.h */,
 				C10740E3163A94450069A640 /* ScreenManager.h */,
 				C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */,
-				740F353316832022003B35E7 /* EditorSettings.cpp */,
-				740F35311683200F003B35E7 /* EditorSettings.h */,
 				17F2EF2916355E1000DEE054 /* Commands */,
 				176D3951162C38FF0099AACF /* Controllers */,
 				17112B5616392E880017E713 /* Helpers */,
 				176D3958162C3C8C0099AACF /* Metadata */,
 				176D3941162C2F5D0099AACF /* Models */,
+				74819F17169F1435000FE4B1 /* ResourcePacker */,
 				C15C2FE8162AD6E400818631 /* UI */,
 			);
 			path = Classes;
@@ -1272,6 +1272,7 @@
 					"../../Libs/ImageMagick-6.7.4/",
 					"../../Libs/ImageMagick-6.7.4/delegates/include",
 					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					../../Libs/libpng/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
@@ -1325,6 +1326,7 @@
 					"../../Libs/ImageMagick-6.7.4/",
 					"../../Libs/ImageMagick-6.7.4/delegates/include",
 					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					../../Libs/libpng/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",

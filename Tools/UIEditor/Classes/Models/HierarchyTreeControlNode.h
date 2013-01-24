@@ -35,6 +35,8 @@ public:
 	// Remove/return Tree Node from the scene.
 	virtual void RemoveTreeNodeFromScene();
 	virtual void ReturnTreeNodeToScene();
+	
+	Rect GetRect() const;
 
 private:
 	void AddControlToParent();
