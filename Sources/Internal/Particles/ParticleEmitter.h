@@ -307,6 +307,8 @@ public:
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
 
+	void ReloadLayerSprites();
+
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
     String GetEmitterTypeName();

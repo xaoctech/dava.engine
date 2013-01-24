@@ -159,7 +159,7 @@ private:
 class CommandUpdateParticleLayer: public Command
 {
 public:
-	CommandUpdateParticleLayer(ParticleLayer* layer);
+	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
 	void Init(const QString& layerName,
 			  bool isDisabled,
 			  bool additive,
@@ -196,6 +196,7 @@ protected:
     virtual void Execute();
 	
 private:
+	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 
 	QString layerName;

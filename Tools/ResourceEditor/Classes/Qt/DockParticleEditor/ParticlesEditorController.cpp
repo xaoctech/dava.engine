@@ -222,6 +222,7 @@ void ParticlesEditorController::RemoveParticleEmitterNode(ParticleEmitterNode* e
 
     if (effectEditorNode && emitterEditorNode)
     {
+		CleanupSelectedNodeIfDeleting(emitterEditorNode);
         effectEditorNode->RemoveChildNode(emitterEditorNode);
     }
 }
@@ -327,7 +328,10 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
     {
         return;
     }
-   
+
+	// Reset the selected node in case it is one to be removed.
+	CleanupSelectedNodeIfDeleting(layerToRemove);
+
     // Remove the node from the layers list and also from the emitter.
     Vector<ParticleLayer*>& layers = emitter->GetLayers();
     layers.erase(layers.begin() + layerIndex);
@@ -376,6 +380,9 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
     {
         return;
     }
+
+	// If the selected node is one to be removed - clean it up.
+	CleanupSelectedNodeIfDeleting(forceNode);
 
     // Remove the force from the emitter...
     int forceIndex = forceNode->GetForceIndex();
@@ -564,4 +571,20 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	layerNodeToMove->UpdateEmitterEditorNode(newEmitterNode);
 
 	return true;
+}
+
+void ParticlesEditorController::RefreshSelectedNode()
+{
+	if (this->selectedNode)
+	{
+		EmitSelectedNodeChanged();
+	}
+}
+
+void ParticlesEditorController::CleanupSelectedNodeIfDeleting(BaseParticleEditorNode* nodeToBeDeleted)
+{
+	if (this->selectedNode == nodeToBeDeleted)
+	{
+		this->selectedNode = NULL;
+	}
 }
