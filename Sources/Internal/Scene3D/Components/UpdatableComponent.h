@@ -13,18 +13,24 @@ class IUpdatable
 {
 public:
 	virtual ~IUpdatable() {};
+    
+    INTROSPECTION(IUpdatable, NULL);
 };
 
 class IUpdatableBeforeTransform : public IUpdatable
 {
 public:
 	virtual void UpdateBeforeTransform(float32 timeElapsed) = 0;
+
+    INTROSPECTION_EXTEND(IUpdatableBeforeTransform, IUpdatable, NULL);
 };
 
 class IUpdatableAfterTransform : public IUpdatable
 {
 public:
 	virtual void UpdateAfterTransform(float32 timeElapsed) = 0;
+
+    INTROSPECTION_EXTEND(IUpdatableAfterTransform, IUpdatable, NULL);
 };
 
 class UpdatableComponent : public Component
@@ -51,7 +57,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(UpdatableComponent, Component,
-                         NULL);
+        MEMBER(updatableObject, "Updatable Object", INTROSPECTION_SERIALIZABLE)
+    );
 
 };
 
