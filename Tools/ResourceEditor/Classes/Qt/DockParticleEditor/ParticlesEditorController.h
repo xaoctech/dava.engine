@@ -115,6 +115,9 @@ protected:
 	bool PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode, EmitterParticleEditorNode* newEmitterNode,
 									LayerParticleEditorNode* layerToMove,LayerParticleEditorNode* layerToInsertAbove);
 
+	// Cleanup the selected node in case it is one to be deleted.
+	void CleanupSelectedNodeIfDeleting(BaseParticleEditorNode* nodeToBeDeleted);
+
     // Particle Effects registered in the system.
     typedef Map<ParticleEffectNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;
     typedef PARTICLESEFFECTMAP::iterator PARTICLESEFFECTITER;
