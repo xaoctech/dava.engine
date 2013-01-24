@@ -51,6 +51,8 @@ class Color;
 class KeyedArchive;
     
 class FastName;
+
+class AABBox3;
     
 /**
  \ingroup filesystem
@@ -82,6 +84,7 @@ public:
 	static const String TYPENAME_POINTER;   // "void *"
 	static const String TYPENAME_COLOR;     // "Color"
 	static const String TYPENAME_FASTNAME;     // "FastName"
+	static const String TYPENAME_AABBOX3;     // "AABBox3"
 
 	VariantType();
     VariantType(const VariantType &var);
@@ -109,6 +112,7 @@ public:
 		TYPE_POINTER,
         TYPE_COLOR,
         TYPE_FASTNAME,
+		TYPE_AABBOX3,
         
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
@@ -137,6 +141,8 @@ public:
         
         Color* colorValue;
         FastName *fastnameValue;
+
+		AABBox3 *aabbox3;
 	};
 
     struct PairTypeName
@@ -274,7 +280,13 @@ public:
 	 */
 	void SetFastName(const FastName & value);
     
-    
+
+    /**
+		 \brief Function to set AABBox3 value to variant type variable
+		 \param[in] value	value to set
+	 */
+	void SetAABBox3(const AABBox3 & value);
+
 	/**
 		\brief Function to return bool value from variable
 		\returns value of variable, or generate assert if variable type is different
@@ -390,7 +402,13 @@ public:
      */
     const FastName &AsFastName() const;
 
-    
+
+    /**
+         \brief Function to return AABBox3 from variable. Returns pointer to the FastName inside.
+         \returns value of variable, or generate assert if variable type is different
+     */
+    const AABBox3 &AsAABBox3() const;
+
 	// File read & write helpers
 	
 	/**

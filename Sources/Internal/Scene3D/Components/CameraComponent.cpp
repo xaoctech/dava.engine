@@ -19,6 +19,7 @@ CameraComponent::~CameraComponent()
     
 void CameraComponent::SetCamera(Camera * _camera)
 {
+	SafeRelease(camera);
     camera = SafeRetain(_camera);
 }
 
@@ -26,7 +27,7 @@ void CameraComponent::SetCamera(Camera * _camera)
 Component * CameraComponent::Clone()
 {
     CameraComponent * newComponent = new CameraComponent();
-    //newComponent->camera = this->camera->Clone();
+    newComponent->camera = (Camera*)camera->Clone();
 
     return newComponent;
 }

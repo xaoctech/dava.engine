@@ -15,6 +15,7 @@ RenderComponent::~RenderComponent()
     
 void RenderComponent::SetRenderObject(RenderObject * _renderObject)
 {
+	SafeRelease(renderObject);
     renderObject = SafeRetain(_renderObject);
 }
     

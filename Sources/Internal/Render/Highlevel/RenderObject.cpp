@@ -43,11 +43,16 @@ RenderObject::RenderObject()
     
 RenderObject::~RenderObject()
 {
-    
+	uint32 size = renderBatchArray.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		renderBatchArray[i]->Release();
+	}
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
+	batch->Retain();
 	batch->SetRenderObject(this);
     renderBatchArray.push_back(batch);
     if (removeIndex != -1)
@@ -61,6 +66,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
     batch->SetRenderObject(0);
+	batch->Release();
 }
     
 uint32 RenderObject::GetRenderBatchCount()
