@@ -70,7 +70,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
         Vector3 nodePos = pos + 10 * direction;
         nodePos.z = 0;
         
-        LandscapeNode * ls = scene->GetLandScape(scene);
+        LandscapeNode * ls = scene->GetLandscape(scene);
         if(ls)
         {
             Vector3 result;
@@ -216,7 +216,7 @@ void SceneDataManager::AddReferenceScene(const String &scenePathname)
 		Vector3 nodePos = pos + 10 * direction;
 		nodePos.z = 0;
 		
-		LandscapeNode * ls = scene->GetLandScape(scene);
+		LandscapeNode * ls = scene->GetLandscape(scene);
 		if(ls)
 		{
 			Vector3 result;
