@@ -37,6 +37,10 @@
 #include "Base/BaseMath.h"
 #include "Render/Material.h"
 
+#include "Render/3D/PolygonGroup.h"
+#include "Render/RenderDataObject.h"
+#include "Render/Highlevel/RenderObject.h"
+
 namespace DAVA
 {
 
@@ -53,10 +57,7 @@ public:
     uint32 primitiveType;
 };
 */
-//class Material;
-class PolygonGroup;
 class RenderLayer;
-class RenderDataObject;
 class Camera;
 class RenderObject;
 class RenderBatch;
@@ -125,8 +126,19 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
-        MEMBER(material, "Material", INTROSPECTION_EDITOR)
-        MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+        MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(material, "Material", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
+        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+
+        MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+//        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        MEMBER(ownerLayer, "Owner Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY) 
+        MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+                         
+        MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
     );
 };
 
