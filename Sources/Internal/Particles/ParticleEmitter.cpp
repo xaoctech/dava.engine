@@ -91,37 +91,41 @@ void ParticleEmitter::CleanupLayers()
 
 	layers.clear();
 }
-
-ParticleEmitter * ParticleEmitter::Clone()
-{
-	ParticleEmitter * emitter = new ParticleEmitter();
-	for (int32 k = 0; k < (int32)layers.size(); ++k)
-	{
-		ParticleLayer * newLayer = layers[k]->Clone();
-		newLayer->SetEmitter(emitter);
-		emitter->layers.push_back(newLayer);
-	}
-    emitter->emissionVector = emissionVector;
-	if (emissionAngle)
-		emitter->emissionAngle = emissionAngle->Clone();
-	if (emissionRange)
-		emitter->emissionRange = emissionRange->Clone();
-	if(colorOverLife)
-		emitter->colorOverLife = colorOverLife->Clone();
-	if (radius)
-		emitter->radius = radius->Clone();
-    if (size)
-        emitter->size = size->Clone();
 	
-	emitter->type = type;
-	emitter->lifeTime = lifeTime;
-	emitter->emitPointsCount = emitPointsCount;
-	emitter->isPaused = isPaused;
-	emitter->isAutorestart = isAutorestart;
-	emitter->particlesFollow = particlesFollow;
-	emitter->configPath = configPath;
+//ParticleEmitter * ParticleEmitter::Clone()
+//{
+//	ParticleEmitter * emitter = new ParticleEmitter();
+//	for (int32 k = 0; k < (int32)layers.size(); ++k)
+//	{
+//		ParticleLayer * newLayer = layers[k]->Clone();
+//		newLayer->SetEmitter(emitter);
+//		emitter->layers.push_back(newLayer);
+//	}
+//    emitter->emissionVector = emissionVector;
+//	if (emissionAngle)
+//		emitter->emissionAngle = emissionAngle->Clone();
+//	if (emissionRange)
+//		emitter->emissionRange = emissionRange->Clone();
+//	if(colorOverLife)
+//		emitter->colorOverLife = colorOverLife->Clone();
+//	if (radius)
+//		emitter->radius = radius->Clone();
+//    if (size)
+//        emitter->size = size->Clone();
+//	
+//	emitter->type = type;
+//	emitter->lifeTime = lifeTime;
+//	emitter->emitPointsCount = emitPointsCount;
+//	emitter->isPaused = isPaused;
+//	emitter->isAutorestart = isAutorestart;
+//	emitter->particlesFollow = particlesFollow;
+//	return emitter;
+//}
 
-	return emitter;
+RenderObject * ParticleEmitter::Clone()
+{
+	//should not clone as RenderObject
+	return 0;
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)

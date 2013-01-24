@@ -12,7 +12,6 @@ class QtColorLineEdit : public QLineEdit
 
 public:
 	QtColorLineEdit(QWidget * parent);
-	~QtColorLineEdit();
 
 	void SetColor(const QColor &color);
 	QColor GetColor() const;

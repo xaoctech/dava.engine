@@ -19,7 +19,8 @@
 namespace DAVA
 {
 	// Класс интроспекции. 
-	// Добавляет интроспекцию к любому пользовательскому классу
+	// Добавляет интроспекцию к любому пользовательскому классу. Интроспекция статическая и существует в единичном экземпляре,
+	// не зависимо от количества объектов класса.
 	//
 	// Использование:
 	//
@@ -41,6 +42,16 @@ namespace DAVA
 	//			COLLECTION(v, "vector collection")
 	// 			);
 	// 	};
+	//
+	//  class B : public A
+	//	{
+	//	public:
+	//		int b;
+	//	
+	//		INTROSPECTION_EXTEND(B, A, 
+	//			MEMBER(b)
+	//			);
+	//	}
 	//
 	class IntrospectionInfo
 	{
@@ -85,6 +96,7 @@ namespace DAVA
 			return members_count;
 		}
 
+		// Возвращает указатель на член интроспекции по заданному индексу, или NULL если такой не найден.
 		const IntrospectionMember* Member(int index) const
 		{
 			const IntrospectionMember *member = NULL;
@@ -96,6 +108,7 @@ namespace DAVA
 			return member;
 		}
 
+		// Возвращает указатель на член интроспекции по заданному имени, или NULL если такой не найден.
 		const IntrospectionMember* Member(const char* name) const
 		{
 			const IntrospectionMember *member = NULL;
@@ -115,11 +128,14 @@ namespace DAVA
 			return member;
 		}
 
+		// Возвращает указатель на базовую интроспекцию, или NULL если такой не существует.
 		const IntrospectionInfo* BaseInfo() const
 		{
 			return base_info;
 		}
         
+		// Единожды установить в текущей интроспекции для типа Т указатель 
+		// на мета-информацию типа T
         template<typename T>
         void OneTimeMetaSafeSet()
         {
@@ -140,14 +156,24 @@ namespace DAVA
         
         bool metaOneTimeSet;
 
+		// Инициализация членов интроспекции
+		// Все члены интроспекция должны быть валидны(созданы), в противном случае
+		// данная интроспекция будет пустой
 		void MembersInit()
 		{
-			if(members_count > 0 && NULL == members[0])
+			// Проверяем или все члены интроспекции валидны
+			for(int i = 0; i < members_count; ++i)
 			{
-				MembersRelease();
+				// Если хоть один не создан, то освобождаем все остальные.
+				if(NULL == members[i])
+				{
+					MembersRelease();
+					break;
+				}
 			}
 		}
 
+		// Освобождает члены интроспекции и устанавливает их количество в 0
 		void MembersRelease()
 		{
 			for(int i = 0; i < members_count; ++i)
@@ -163,6 +189,8 @@ namespace DAVA
 	};
 };
 
+
+// Определение интоспекции внутри класса. См. пример в описании класса IntrospectionInfo
 #define INTROSPECTION(_type, _members) \
 	static const DAVA::IntrospectionInfo* TypeInfo() \
 	{ \
@@ -177,6 +205,7 @@ namespace DAVA
 		return _type::TypeInfo(); \
 	}
 
+// Наследование интоспекции. См. пример в описании класса IntrospectionInfo
 #define  INTROSPECTION_EXTEND(_type, _base_type, _members) \
 	static const DAVA::IntrospectionInfo* TypeInfo() \
 	{ \
@@ -191,12 +220,15 @@ namespace DAVA
 		return _type::TypeInfo(); \
 	}
 
+// Определение обычного члена интроспекции. Доступ к нему осуществляется непосредственно.
 #define MEMBER(_name, _desc, _flags) \
 	new DAVA::IntrospectionMember(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 
+// Определение члена интроспекции, как свойства. Доступ к нему осуществляется через функци Get/Set. 
 #define PROPERTY(_name, _desc, _getter, _setter, _flags) \
 	DAVA::CreateIntrospectionProperty(#_name, _desc, DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter, _flags),
 
+// Определение члена интроспекции, как коллекции. Доступ - см. IntrospectionCollection
 #define COLLECTION(_name, _desc, _flags) \
 	DAVA::CreateIntrospectionCollection(&((ObjectT *) 0)->_name, #_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), _flags),
 

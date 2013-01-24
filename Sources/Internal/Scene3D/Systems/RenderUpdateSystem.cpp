@@ -96,7 +96,12 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
         node = 0;
     }
 
+	
     RenderSystem::Instance()->RemoveFromRender(renderObject);
+
+	//renderObject->Release();
+	//this ruins objects deletion
+	entityObjectMap.Remove(entity);
 }
     
 void RenderUpdateSystem::Process()

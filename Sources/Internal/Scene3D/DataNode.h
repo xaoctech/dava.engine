@@ -88,6 +88,7 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    
 protected:
     uint64 pointer;
     Scene * scene;
@@ -99,6 +100,9 @@ public:
     
     INTROSPECTION_EXTEND(DataNode, BaseObject,
         MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(index, "Index", INTROSPECTION_SERIALIZABLE)
+        MEMBER(pointer, "Pointer", INTROSPECTION_SERIALIZABLE)
+        COLLECTION(children, "Children", INTROSPECTION_EDITOR)
     );
 };
     
