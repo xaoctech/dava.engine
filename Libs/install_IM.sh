@@ -7,7 +7,7 @@
 # Make sure that /usr/X11R6/bin is in your PATH prior to running configure.
 #
 
-type -p X &>/dev/null && echo 'X11 is installed' || echo 'WARNING: X11 is not detected. It is strongly recommended that the X11R6 package be installed since this enables ImageMagick's X11 support (animate, display, and import will work). Make sure that /usr/X11R6/bin is in your PATH.'
+type -p X &>/dev/null && echo 'X11 is installed' || echo 'WARNING: X11 is not detected. It is strongly recommended that the X11R6 package be installed since this enables ImageMagick X11 support (animate, display, and import will work). Make sure that /usr/X11R6/bin is in your PATH.'
 
 installPath="ImageMagick-6.7.4"
 imPath="ImageMagick-6.7.4-10"
