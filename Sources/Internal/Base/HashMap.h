@@ -100,12 +100,7 @@ protected:
 		if(NULL != table[index])
 		{
 			HashMapItem<TKey, TValue>* i = table[index];
-
-			while(NULL != i->next)
-			{
-				i = i->next;
-			}
-
+			item->next = i->next;
 			i->next = item;
 		}
 		else

@@ -722,6 +722,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		{
 			DVASSERT(0 && "How we appeared here");
 		}
+		newMeshInstanceNode->Release();
         return true;
     }
 
@@ -766,6 +767,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		}
 
 		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
+		newNode->Release();
 		return true;
 	}
 
@@ -792,6 +794,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		renderComponent->SetRenderObject(emitter);
 		
 		newNode->AddComponent(renderComponent);
+		newNode->Release();
 		return true;
 	}
 
@@ -811,7 +814,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 
 		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
 		newNode->AddComponent(effectComponent);
-
+		newNode->Release();
 		return true;
 	}
 
