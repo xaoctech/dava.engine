@@ -84,7 +84,10 @@ ParticleLayer::ParticleLayer()
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
-    
+
+	frameStart = 0;
+	frameEnd = 0;
+
     isDisabled = false;
 }
 
