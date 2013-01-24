@@ -23,6 +23,9 @@ void ShowErrorDialog(const DAVA::String &errorMessage);
 bool IsKeyModificatorPressed(DAVA::int32 key);
 bool IsKeyModificatorsPressed();
 
+DAVA::Color ColorFromQColor(const QColor &color);
+QColor QColorFromColor(const DAVA::Color &color);
+
 QColor ColorToQColor(const DAVA::Color& color);
 DAVA::Color QColorToColor(const QColor& qcolor);
 
