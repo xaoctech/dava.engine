@@ -565,3 +565,11 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 
 	return true;
 }
+
+void ParticlesEditorController::RefreshSelectedNode()
+{
+	if (this->selectedNode)
+	{
+		EmitSelectedNodeChanged();
+	}
+}

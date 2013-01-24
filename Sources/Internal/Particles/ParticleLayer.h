@@ -137,6 +137,9 @@ public:
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
     
+	// Reload the layer sprite, update the Frames timeline if needed.
+	void ReloadSprite();
+
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -151,6 +154,8 @@ protected:
 	void ProcessParticle(Particle * particle);
 	
     void SaveForcesToYamlNode(YamlNode* layerNode);
+
+	void UpdateFrameTimeline();
 
 	// list of particles
 	Particle *	head;

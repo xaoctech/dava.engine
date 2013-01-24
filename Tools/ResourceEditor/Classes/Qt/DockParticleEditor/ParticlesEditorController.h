@@ -79,6 +79,9 @@ public:
 	// Sprites packer entry point.
 	void PackSprites();
 
+	// Refresh the selected node (called if something is changed outside).
+	void RefreshSelectedNode();
+
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode);

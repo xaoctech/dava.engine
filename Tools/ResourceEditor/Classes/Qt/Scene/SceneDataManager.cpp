@@ -102,6 +102,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 		sceneData->SetLandscapesControllerScene(scene);
 	}
 
+	SceneHidePreview();
 	UpdateParticleSprites();
 	emit SceneGraphNeedRebuild();
 }
