@@ -161,9 +161,10 @@ void CommandUpdateEmitter::Execute()
 	emitter->SetLifeTime(life);
 }
 
-CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleLayer* layer) :
+CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
+	this->emitter = emitter;
 	this->layer = layer;
 }
 
@@ -236,10 +237,6 @@ void CommandUpdateParticleLayer::Execute()
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->additive = additive;
-	if (layer->GetSprite() != sprite)
-	{
-		layer->SetSprite(sprite);
-	}
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -266,6 +263,15 @@ void CommandUpdateParticleLayer::Execute()
 	layer->alignToMotion = alignToMotion;
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+
+	// This code must be after layer->frameOverlife set call, since setSprite
+	// may change the frames.
+	if (layer->GetSprite() != sprite)
+	{
+		emitter->Stop();
+		layer->SetSprite(sprite);
+		emitter->Play();
+	}
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
