@@ -41,7 +41,15 @@
 		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		492A98DC1644149F006AAE2A /* Image.mm in Sources */ = {isa = PBXBuildFile; fileRef = 492A98DB1644149F006AAE2A /* Image.mm */; };
-		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
+		4977C9FE16B01AFE0010672A /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4977C9F816B01AFE0010672A /* DLCSystem.cpp */; };
+		4977C9FF16B01AFF0010672A /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 4977C9F916B01AFE0010672A /* DLCSystem.h */; };
+		4977CA0016B01AFF0010672A /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4977C9FA16B01AFE0010672A /* DLCUnpacker.cpp */; };
+		4977CA0116B01AFF0010672A /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 4977C9FB16B01AFE0010672A /* DLCUnpacker.h */; };
+		4977CA0216B01AFF0010672A /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4977C9FC16B01AFE0010672A /* FileDownloader.cpp */; };
+		4977CA0316B01AFF0010672A /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4977C9FD16B01AFE0010672A /* FileDownloader.h */; };
+		4977CA0916B01CAB0010672A /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4977CA0816B01CAB0010672A /* libcurl_ios.a */; };
+		4977CA2216B01F5D0010672A /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
+		49B774B516B1404800A80FA3 /* libdxt_ios_simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B774B416B1404800A80FA3 /* libdxt_ios_simulator.a */; };
 		49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1E516835EC400F63EFE /* LibDxtHelper.cpp */; };
 		49E7A1E816835EC400F63EFE /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E7A1E616835EC400F63EFE /* LibDxtHelper.h */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
@@ -615,6 +623,14 @@
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		492A98DB1644149F006AAE2A /* Image.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Image.mm; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
+		4977C9F816B01AFE0010672A /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystem.cpp; sourceTree = "<group>"; };
+		4977C9F916B01AFE0010672A /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystem.h; sourceTree = "<group>"; };
+		4977C9FA16B01AFE0010672A /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCUnpacker.cpp; sourceTree = "<group>"; };
+		4977C9FB16B01AFE0010672A /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCUnpacker.h; sourceTree = "<group>"; };
+		4977C9FC16B01AFE0010672A /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileDownloader.cpp; sourceTree = "<group>"; };
+		4977C9FD16B01AFE0010672A /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownloader.h; sourceTree = "<group>"; };
+		4977CA0816B01CAB0010672A /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
+		49B774B416B1404800A80FA3 /* libdxt_ios_simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios_simulator.a; path = ../../Libs/libs/libdxt_ios_simulator.a; sourceTree = "<group>"; };
 		49E7A1E516835EC400F63EFE /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
 		49E7A1E616835EC400F63EFE /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
@@ -1143,7 +1159,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
+				49B774B516B1404800A80FA3 /* libdxt_ios_simulator.a in Frameworks */,
+				4977CA2216B01F5D0010672A /* libdxt_ios.a in Frameworks */,
+				4977CA0916B01CAB0010672A /* libcurl_ios.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
 				0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */,
 				0224B7331598AC2800CDEF9E /* libtheora_ios.a in Frameworks */,
@@ -1171,6 +1189,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				49B774B416B1404800A80FA3 /* libdxt_ios_simulator.a */,
+				4977CA0816B01CAB0010672A /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
 				0224B7481598B40100CDEF9E /* libogg_ios.a */,
@@ -1206,6 +1226,19 @@
 				AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		4977C9F716B01AFE0010672A /* DLC */ = {
+			isa = PBXGroup;
+			children = (
+				4977C9F816B01AFE0010672A /* DLCSystem.cpp */,
+				4977C9F916B01AFE0010672A /* DLCSystem.h */,
+				4977C9FA16B01AFE0010672A /* DLCUnpacker.cpp */,
+				4977C9FB16B01AFE0010672A /* DLCUnpacker.h */,
+				4977C9FC16B01AFE0010672A /* FileDownloader.cpp */,
+				4977C9FD16B01AFE0010672A /* FileDownloader.h */,
+			);
+			path = DLC;
 			sourceTree = "<group>";
 		};
 		5C0105D4157799C400E0B939 /* Database */ = {
@@ -1318,6 +1351,7 @@
 		FECFB32D12E5904400C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				4977C9F716B01AFE0010672A /* DLC */,
 				C7EFBC6C158B4D1A00BF42E0 /* Entity */,
 				C7E895CD157FA00C00B0E00A /* Autotesting */,
 				FECFB32E12E5904400C71562 /* Animation */,
@@ -2271,6 +2305,9 @@
 				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
 				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
 				49E7A1E816835EC400F63EFE /* LibDxtHelper.h in Headers */,
+				4977C9FF16B01AFF0010672A /* DLCSystem.h in Headers */,
+				4977CA0116B01AFF0010672A /* DLCUnpacker.h in Headers */,
+				4977CA0316B01AFF0010672A /* FileDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2595,6 +2632,9 @@
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
 				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
 				49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */,
+				4977C9FE16B01AFE0010672A /* DLCSystem.cpp in Sources */,
+				4977CA0016B01AFF0010672A /* DLCUnpacker.cpp in Sources */,
+				4977CA0216B01AFF0010672A /* FileDownloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

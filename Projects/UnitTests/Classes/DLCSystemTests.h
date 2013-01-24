@@ -9,8 +9,8 @@
 #ifndef __DAVAENGINE_DLCSystemTests_h
 #define __DAVAENGINE_DLCSystemTests_h
 
-#include "DLCSystem.h"
-
+#include "DLC/DLCSystem.h"
+#include "TestTemplate.h"
 
 namespace DAVA
 {
@@ -18,6 +18,8 @@ namespace DAVA
 class DLCSystemTests: public DLCSystemDelegate
 {
 public:
+	DLCSystemTests();
+
     void StartTests();
     
     void Test1();
@@ -37,9 +39,12 @@ public:
     virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index);
     // All DLC files has downloaded
     virtual void AllDLCCompleted();
-    
-    
-protected:
+
+	bool IsFinished() { return isFinished; };
+	bool IsNeedNextTest() { return needNextTest; };
+	uint32 GetCurTestNumber() { return state; };
+
+public:
     enum States
     {
         TEST_1 = 0,
@@ -52,12 +57,29 @@ protected:
         TEST_8
     };
 private:
-    uint16 state;
+    States state;
     bool isSucsess;
+	bool isFinished;
+	bool needNextTest;
 };
 
-
 }// End DAVA
+
+class DLCTest: public TestTemplate<DLCTest>
+{
+public:
+	DLCTest();
+
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+	void DLCTestFunction(PerfFuncData * data);
+
+private:
+	DLCSystemTests* tests;
+
+	bool isStarted;
+};
 
 
 #endif
