@@ -22,8 +22,8 @@ TransformComponent::~TransformComponent()
 Component * TransformComponent::Clone()
 {
     TransformComponent * newTransform = new TransformComponent();
-    newTransform->localMatrix = this->localMatrix;
-    newTransform->worldMatrix = this->worldMatrix;
+	newTransform->localMatrix = localMatrix;
+	newTransform->worldMatrix = worldMatrix;
     newTransform->parent = this->parent;
     return newTransform;
 }
@@ -46,7 +46,7 @@ void TransformComponent::SetParent(SceneNode * node)
 
 	if(node)
 	{
-		parentMatrix = ((TransformComponent*)node->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
+		parentMatrix = ((TransformComponent*)node->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 	}
 	else
 	{
@@ -54,6 +54,12 @@ void TransformComponent::SetParent(SceneNode * node)
 	}
 
 	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::TRANSFORM_PARENT_CHANGED);
+}
+
+Matrix4 & TransformComponent::ModifyLocalTransform()
+{
+	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
+	return localMatrix;
 }
 
 };

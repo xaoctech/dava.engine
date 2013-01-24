@@ -71,6 +71,7 @@ class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
 class UpdatableSystem;
+class DeleteSystem;
     
 /**
     \ingroup scene3d
@@ -110,6 +111,7 @@ public:
 	ParticleEmitterSystem * particleEmitterSystem;
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
+	DeleteSystem * deleteSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

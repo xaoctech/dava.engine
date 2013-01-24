@@ -145,8 +145,12 @@ public:
 protected:
     
     void SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void SaveCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
+    
     void LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void LoadCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
 
+    void * GetMemberObject(const IntrospectionMember *member, void * object) const;
     
 	
 	BaseObject(const BaseObject & b)

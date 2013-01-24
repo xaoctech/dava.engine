@@ -2,20 +2,19 @@
 #define __DAVAENGINE_DELETE_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
 
 namespace DAVA 
 {
 
 class SceneNode;
 
-class DeleteSystem : public Singleton<DeleteSystem>
+class DeleteSystem
 {
 public:
 	DeleteSystem();
 	virtual ~DeleteSystem();
 
-	void Update();
+	void Process();
 
 	void MarkNodeAsDeleted(SceneNode * node);
 

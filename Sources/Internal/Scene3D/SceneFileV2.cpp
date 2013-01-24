@@ -838,8 +838,9 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-    RemoveEmptySceneNodes(rootNode);
-    RemoveEmptyHierarchy(rootNode);
+	//MERGE: commented
+    //RemoveEmptySceneNodes(rootNode);
+    //RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)

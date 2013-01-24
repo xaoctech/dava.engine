@@ -183,10 +183,13 @@
         <item>
          <widget class="PropertyEditor" name="propertyEditor">
           <property name="editTriggers">
-           <set>QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           <set>QAbstractItemView::AllEditTriggers</set>
           </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::NoSelection</enum>
           </property>
           <property name="indentation">
            <number>20</number>

@@ -2,6 +2,7 @@
 #define __QT_PROPERTY_DATA_H__
 
 #include <QStyledItemDelegate>
+#include <QIcon>
 #include <QMap>
 
 class QtPropertyData
@@ -25,10 +26,15 @@ public:
 	QVariant GetValue();
 	void SetValue(const QVariant &value);
 
+	virtual QIcon GetIcon();
+	virtual void SetIcon(const QIcon &icon);
+
 	int GetFlags();
 	void SetFlags(int flags);
 
 	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option);
+	void EditorDone(QWidget *editor);
+	void SetEditorData(QWidget *editor);
 
 protected:
 	void ParentUpdate();
@@ -50,6 +56,12 @@ protected:
 	// Function should be re-implemented by sub-class
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
 
+    // Function should be re-implemented by sub-class
+	virtual void EditorDoneInternal(QWidget *editor);
+
+    // Function should be re-implemented by sub-class
+	virtual void SetEditorDataInternal(QWidget *editor);
+
 	// Function should be re-implemented by sub-class
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
 
@@ -58,6 +70,7 @@ protected:
 
 private:
 	QVariant curValue;
+	QIcon curIcon;
 	int curFlags;
 
 	QtPropertyData *parent;

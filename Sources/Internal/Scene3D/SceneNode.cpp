@@ -67,7 +67,6 @@ SceneNode::SceneNode()
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
         components[k] = 0;
     
-	worldTransform.Identity();
     defaultLocalTransform.Identity();
 	//animation = 0;
     //debugFlags = DEBUG_DRAW_NONE;
@@ -563,18 +562,17 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		if(components[k])
 		{
 			SafeDelete(dstNode->components[k]);
-			dstNode->components[k] = components[k]->Clone();
+			dstNode->AddComponent(components[k]->Clone());
 			dstNode->components[k]->SetEntity(dstNode);
 		}
 	}
     
-    dstNode->worldTransform = worldTransform;
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->flags = flags;
 
-	dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
+	//dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
+	//dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
@@ -694,7 +692,7 @@ AABBox3 SceneNode::GetWTMaximumBoundingBoxSlow()
     if (renderComponent && transformComponent)
     {
         AABBox3 wtBox;
-        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(*transformComponent->GetWorldTransform(), wtBox);
+        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldTransform(), wtBox);
         retBBox.AddAABBox(wtBox);
     }
     
@@ -898,12 +896,9 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
     }
 }
 
-inline const Matrix4 & SceneNode::ModifyLocalTransform()
+Matrix4 & SceneNode::ModifyLocalTransform()
 {
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    //scene->transformSystem->NeedUpdate(this);
-    scene->ImmediateEvent(this, Component::TRANSFORM_COMPONENT, EventSystem::LOCAL_TRANSFORM_CHANGED);
-    return GetLocalTransform();
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->ModifyLocalTransform();
 }
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
@@ -913,21 +908,21 @@ void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 
 const Matrix4 & SceneNode::GetLocalTransform()
 {
-	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform());
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform();
 }
 
 const Matrix4 & SceneNode::GetWorldTransform()
 {
-	return *(((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform());
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }
 
 int32 SceneNode::Release()
 {
 	if(1 == referenceCount)
 	{
+		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
 		AddFlag(SceneNode::NODE_DELETED);
 		SetScene(0);
-		DeleteSystem::Instance()->MarkNodeAsDeleted(this);
 		return referenceCount;
 	}
 	else
@@ -979,6 +974,15 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
 	}
+}
+
+Matrix4 SceneNode::AccamulateLocalTransform(SceneNode * fromParent)
+{
+	if (fromParent == this) 
+	{
+		return GetLocalTransform();
+	}
+	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
 
 

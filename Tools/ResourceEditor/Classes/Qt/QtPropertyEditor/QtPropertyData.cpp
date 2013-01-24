@@ -48,6 +48,16 @@ void QtPropertyData::SetValue(const QVariant &value)
 	ParentUpdate();
 }
 
+void QtPropertyData::SetIcon(const QIcon &icon)
+{
+	curIcon = icon;
+}
+
+QIcon QtPropertyData::GetIcon()
+{
+	return curIcon;
+}
+
 int QtPropertyData::GetFlags()
 {
 	return curFlags;
@@ -61,6 +71,16 @@ void QtPropertyData::SetFlags(int flags)
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) 
 { 
 	return CreateEditorInternal(parent, option);
+}
+
+void QtPropertyData::EditorDone(QWidget *editor)
+{
+    return EditorDoneInternal(editor);
+}
+
+void QtPropertyData::SetEditorData(QWidget *editor)
+{
+    return SetEditorDataInternal(editor);
 }
 
 void QtPropertyData::ParentUpdate()
@@ -135,6 +155,16 @@ QWidget* QtPropertyData::CreateEditorInternal(QWidget *parent, const QStyleOptio
 	// should be re-implemented by sub-class
 
 	return NULL;
+}
+
+void QtPropertyData::EditorDoneInternal(QWidget *editor)
+{
+	// should be re-implemented by sub-class
+}
+
+void QtPropertyData::SetEditorDataInternal(QWidget *editor)
+{
+	// should be re-implemented by sub-class
 }
 
 void QtPropertyData::ChildChanged(const QString &key, QtPropertyData *data)

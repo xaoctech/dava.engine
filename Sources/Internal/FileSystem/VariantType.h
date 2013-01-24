@@ -46,6 +46,11 @@ class Vector4;
 struct Matrix2;
 struct Matrix3;
 struct Matrix4;
+
+class Color;
+class KeyedArchive;
+    
+class FastName;
     
 /**
  \ingroup filesystem
@@ -74,6 +79,10 @@ public:
     static const String TYPENAME_MATRIX3;   //  "Matrix3"
     static const String TYPENAME_MATRIX4;   // "Matrix4"
 
+	static const String TYPENAME_POINTER;   // "void *"
+	static const String TYPENAME_COLOR;     // "Color"
+	static const String TYPENAME_FASTNAME;     // "FastName"
+
 	VariantType();
     VariantType(const VariantType &var);
 	~VariantType();
@@ -97,6 +106,9 @@ public:
         TYPE_MATRIX2,
         TYPE_MATRIX3,
         TYPE_MATRIX4,
+		TYPE_POINTER,
+        TYPE_COLOR,
+        TYPE_FASTNAME,
         
         TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
@@ -118,10 +130,13 @@ public:
         Matrix2* matrix2Value;
         Matrix3* matrix3Value;
         Matrix4* matrix4Value;
-        void*    pointerValue;
+        const void* pointerValue;
         
         String* stringValue;
         WideString* wideStringValue;
+        
+        Color* colorValue;
+        FastName *fastnameValue;
 	};
 
     struct PairTypeName
@@ -244,6 +259,21 @@ public:
 	void SetMatrix4(const Matrix4 & value);
 
 	void SetVariant(const VariantType& value);
+
+	void SetPointer(const void* const &value);
+
+    /**
+     \brief Function to set Color value to variant type variable
+     \param[in] value	value to set
+	 */
+	void SetColor(const Color & value);
+
+    /**
+     \brief Function to set FastName value to variant type variable
+     \param[in] value	value to set
+	 */
+	void SetFastName(const FastName & value);
+    
     
 	/**
 		\brief Function to return bool value from variable
@@ -346,6 +376,21 @@ public:
 	 */
      const Matrix4 &AsMatrix4() const;
 
+	 const void* const & AsPointer() const;
+
+    /**
+         \brief Function to return Color from variable. Returns pointer to the Color inside.
+         \returns value of variable, or generate assert if variable type is different
+     */
+    const Color &AsColor() const;
+
+    /**
+         \brief Function to return FastName from variable. Returns pointer to the FastName inside.
+         \returns value of variable, or generate assert if variable type is different
+     */
+    const FastName &AsFastName() const;
+
+    
 	// File read & write helpers
 	
 	/**

@@ -1,5 +1,6 @@
 #include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/SceneNode.h"
+#include "Render/RenderManager.h"
 
 namespace DAVA
 {
@@ -10,7 +11,7 @@ DeleteSystem::DeleteSystem()
 	deletedNodesToDelete = &deletedNodes2;
 }
 
-void DeleteSystem::Update()
+void DeleteSystem::Process()
 {
 	uint32 size = deletedNodesToDelete->size();
 	for(uint32 i = 0; i < size; ++i)
@@ -31,7 +32,7 @@ void DeleteSystem::MarkNodeAsDeleted(SceneNode * node)
 
 DeleteSystem::~DeleteSystem()
 {
-	Update();
+	Process();
 }
 
 }

@@ -33,7 +33,6 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/Introspection.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 #include "Entity/Component.h"
@@ -171,7 +170,7 @@ public:
      \brief This method means that you always modify matrix you get. 
         If you dont want to modify matrix call GetLocalTransform().
      */
-	const Matrix4 & ModifyLocalTransform(); 
+	Matrix4 & ModifyLocalTransform(); 
     const Matrix4 & GetWorldTransform();
     const Matrix4 & GetDefaultLocalTransform(); 
     
@@ -179,6 +178,7 @@ public:
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     //inline void InvalidateLocalTransform();
+	Matrix4 AccamulateLocalTransform(SceneNode * fromParent);
     
     /*
         \brief Go down by hierarchy and bake all transforms.
@@ -367,9 +367,12 @@ private:
     
 public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
-		MEMBER(name, "Name", 0)
-		MEMBER(worldTransform, "World transform", 0)
-		MEMBER(customProperties, "Custom properties", 0)
+		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(worldTransform, "World transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
     );
 };
 	

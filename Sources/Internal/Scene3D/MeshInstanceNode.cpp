@@ -255,7 +255,7 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     if (needUpdateTransformBox)
 	{
-        bbox.GetTransformedBox(worldTransform, transformedBox);
+        bbox.GetTransformedBox(GetWorldTransform(), transformedBox);
 		//entity->SetData("meshAABox", transformedBox);
 	}
 	//entity->SetData("meshInstanceNode", this);
@@ -274,7 +274,7 @@ void MeshInstanceNode::Draw()
 {
     //Stats::Instance()->BeginTimeMeasure("Scene.Draw.MeshInstanceNode.Draw", this);
 
-#if 1
+#if 0
     if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
 //    if (GetFullName() == String("MaxScene->node-Cylinder01->VisualSceneNode14->instance_0"))
@@ -806,7 +806,7 @@ void MeshInstanceNode::BakeTransforms()
     
 void MeshInstanceNode::UpdateLights()
 {
-    Vector3 meshPosition = Vector3() * worldTransform;
+    Vector3 meshPosition = Vector3() * GetWorldTransform();
     LightNode * nearestLight = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, meshPosition);
 
     RegisterNearestLight(nearestLight);

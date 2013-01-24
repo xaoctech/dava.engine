@@ -4,11 +4,11 @@
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
 #include "Base/BaseObject.h"
+#include "Particles/ParticleEmitter.h"
 
 namespace DAVA
 {
 
-class ParticleEmitter;
 class ParticleEmitterComponent : public Component
 {
 public:
@@ -31,7 +31,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(ParticleEmitterComponent, Component,
-		NULL);
+        MEMBER(particleEmitter, "Particle Emitter", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 }

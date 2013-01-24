@@ -46,11 +46,10 @@ public:
         float32 GetFarDistance() const {return farDistance; };
         
         INTROSPECTION(LodDistance,
-            PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_FLAG_SERIALIZABLE)
-            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_FLAG_SERIALIZABLE)
-            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_FLAG_SERIALIZABLE)
+            PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         );
-        
 	};
 
 	struct LodData
@@ -81,22 +80,25 @@ public:
 
 	LodData *currentLod;
 	List<LodData> lodLayers;
-	LodDistance lodLayersArray[MAX_LOD_LAYERS];
+	Vector<LodDistance> lodLayersArray;
 	int32 forceLodLayer;
+
+    void SetForceDistance(const float32 &newDistance);
+    float32 GetForceDistance() const;
 	float32 forceDistance;
 	float32 forceDistanceSq;
 
 	int32 flags;
     
-//    LodDistance testDistance;
-    
+
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
-//                         MEMBER(testDistance, "testDistance", 0)
-                         NULL
-                         );
-
+        COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_EDITOR)
+        PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_EDITOR)
+    );
 };
 
 int32 LodComponent::GetLodLayersCount()

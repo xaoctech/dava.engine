@@ -105,6 +105,13 @@ void RenderSystem::RenderPermanent(RenderObject * renderObject)
 
 void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 {
+	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+	for (uint32 k = 0; k < renderBatchCount; ++k)
+	{
+		RenderBatch * batch = renderObject->GetRenderBatch(k);
+		RemoveRenderBatch(batch);
+	}
+
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
     renderObjectArray.pop_back();
