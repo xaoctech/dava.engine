@@ -12,19 +12,19 @@ class BaseObject;
 class IUpdatable
 {
 public:
-	virtual ~IUpdatable() = 0;
+	virtual ~IUpdatable() {};
 };
 
-class IUpdatablePreTransform : public IUpdatable
+class IUpdatableBeforeTransform : public IUpdatable
 {
 public:
-	virtual void UpdatePreTransform(float32 timeElapsed) = 0;
+	virtual void UpdateBeforeTransform(float32 timeElapsed) = 0;
 };
 
-class IUpdatablePostTransform : public IUpdatable
+class IUpdatableAfterTransform : public IUpdatable
 {
 public:
-	virtual void UpdatePostTransform(float32 timeElapsed) = 0;
+	virtual void UpdateAfterTransform(float32 timeElapsed) = 0;
 };
 
 class UpdatableComponent : public Component

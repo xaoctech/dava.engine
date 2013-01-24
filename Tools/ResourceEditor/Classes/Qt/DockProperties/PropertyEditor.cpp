@@ -7,8 +7,6 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-#include "Scene3D/Components/LodComponent.h"
-
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
 	, curNode(NULL)
@@ -32,22 +30,6 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
-	printf("SceneNode isIntrospection: %d\n", HasIntrospection<DAVA::SceneNode>::result);
-	printf("SceneNode introspection: = %p\n", GetIntrospection(node));
-	printf("SceneNode introspection(Base): = %p\n", GetIntrospection((DAVA::BaseObject *) node));
-	const DAVA::IntrospectionInfo *info = GetIntrospection(node);
-	while(NULL != info)
-	{
-		printf("%s\n", info->Name());
-		for(int i = 0; i < info->MembersCount(); ++i)
-		{
-			printf("  %s\n", info->Member(i)->Name());
-		}
-		printf("\n");
-
-		info = info->BaseInfo();
-	}
-
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
@@ -70,6 +52,8 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
         }
 	}
 
+	Test();
+
 	expandToDepth(0);
 }
 
@@ -84,21 +68,6 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
             
             prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
             prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-            
-            LodComponent *lod = dynamic_cast<LodComponent *>(static_cast<BaseObject *>(object));
-            if(lod && currentInfo == info)
-            {
-                int32 count = lod->GetLodLayersCount();
-                for(int32 i = 0; i < count; ++i)
-                {
-                    const IntrospectionInfo *layerInfo = GetIntrospection(&lod->lodLayersArray[i]);
-                    
-                    QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(layerInfo->Name(), new QtPropertyDataIntrospection(&lod->lodLayersArray[i], layerInfo));
-                    prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-                    prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
-                }
-            }
-
         }
         
         currentInfo = currentInfo->BaseInfo();
@@ -127,4 +96,46 @@ void PropertyEditor::sceneReleased(SceneData *sceneData)
 void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
 {
 	SetNode(node);
+}
+
+
+void PropertyEditor::Test()
+{
+	std::vector<int> vec;
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+
+	DAVA::VariantType v;
+	v.SetColor(DAVA::Color(1.0, 0.5, 0, 1.0));
+	AppendProperty("test color", new QtPropertyDataDavaVariant(v));
+
+	//IntrospectionCollection<std::vector, int> col(vec);
+	/*
+
+	DAVA::IntrospectionCollectionBase *b = DAVA::CreateIntrospectionCollection(vec);
+	printf("Collection type: %s\n", b->CollectionType()->GetTypeName());
+	printf("Value type: %s\n", b->ValueType()->GetTypeName());
+
+	if(b->Size() > 0)
+	{
+		void *i = b->Begin();
+		while(NULL != i)
+		{
+			b->ValueType();
+			int *p = (int *) b->ItemPointer(i);
+			if(NULL != p)
+			{
+				printf("%d\n", *p);
+			}
+			i = b->Next(i);
+		}
+	}
+	*/
+
+	//aaaGetObjectsToContainer(vec);
+
+
+	//DAVA::MetaInfo* info = DAVA::MetaInfo::Instance< DAVA::Vector<int> >();
+	//printf("%s\n", info->GetTypeName());
 }

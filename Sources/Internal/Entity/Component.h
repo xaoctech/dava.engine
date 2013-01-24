@@ -68,7 +68,7 @@ public:
     virtual uint32 GetType() = 0;
     virtual Component * Clone() = 0;
 
-	void SetEntity(SceneNode * entity);
+	virtual void SetEntity(SceneNode * entity);
 protected:
     SceneNode * entity;
 

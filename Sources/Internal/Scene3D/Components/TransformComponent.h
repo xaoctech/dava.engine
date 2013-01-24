@@ -14,12 +14,15 @@ class TransformComponent : public Component
 {
 public:
     TransformComponent();
-    ~TransformComponent();
+    virtual ~TransformComponent();
 
     IMPLEMENT_COMPONENT_TYPE(TRANSFORM_COMPONENT);
 
-    inline Matrix4 * GetWorldTransform();
-	inline Matrix4 * GetLocalTransform();
+	inline Matrix4 * GetWorldTransformPtr();
+    inline const Matrix4 & GetWorldTransform();
+	inline const Matrix4 & GetLocalTransform();
+	Matrix4 & ModifyLocalTransform();
+
 	inline int32 GetIndex();
 
 	void SetLocalTransform(const Matrix4 * transform);
@@ -39,24 +42,30 @@ private:
 public:
 
     INTROSPECTION_EXTEND(TransformComponent, Component,
-        MEMBER(localMatrix, "Local Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
-        MEMBER(worldMatrix, "World Transform", INTROSPECTION_FLAG_SERIALIZABLE | INTROSPECTION_FLAG_EDITOR_READONLY)
+        MEMBER(localMatrix, "Local Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
+        MEMBER(worldMatrix, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
     );
 };
 
-Matrix4 * TransformComponent::GetWorldTransform()
+const Matrix4 & TransformComponent::GetWorldTransform()
 {
-	return &worldMatrix;
+	return worldMatrix;
 }
 
-Matrix4 * TransformComponent::GetLocalTransform()
+const Matrix4 & TransformComponent::GetLocalTransform()
 {
-	return &localMatrix;
+	return localMatrix;
 }
 
 int32 TransformComponent::GetIndex()
 {
 	return index;
+}
+
+
+Matrix4 * TransformComponent::GetWorldTransformPtr()
+{
+	return &worldMatrix;
 }
 
 };

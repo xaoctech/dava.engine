@@ -26,6 +26,7 @@ void ParticleEmitterNode::Update(float32 timeElapsed)
 {
 	if(emitter)
 	{
+		const Matrix4 & worldTransform = GetWorldTransform();
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
 		emitter->rotationMatrix = Matrix3(worldTransform);;
 		emitter->SetPosition(position);
@@ -55,7 +56,12 @@ void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
 }
-
+/*
+String ParticleEmitterNode::GetYamlPath()
+{
+	return yamlPath;
+}
+*/
 ParticleEmitter * ParticleEmitterNode::GetEmitter()
 {
 	return emitter;
@@ -63,7 +69,7 @@ ParticleEmitter * ParticleEmitterNode::GetEmitter()
 
 SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
-	if (!dstNode)
+	if (!dstNode) 
 	{
 		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitterNode>(this), "Can clone only ParticleEmitterNode");
 		dstNode = new ParticleEmitterNode();

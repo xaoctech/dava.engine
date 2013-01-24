@@ -464,11 +464,14 @@ SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {
-	BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
-	if (bulletComponent)
+	if(lastSelectedPhysics)
 	{
-		BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
-		bulletObject->SetUpdateFlag(value);
+		BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
+		if (bulletComponent)
+		{
+			BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+			bulletObject->SetUpdateFlag(value);
+		}
 	}
 	
 	for (int32 i = 0; i < curr->GetChildrenCount(); i++)

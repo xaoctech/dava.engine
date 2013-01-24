@@ -32,10 +32,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Render/Highlevel/RenderLayer.h"
 
 namespace DAVA
 {
-class RenderLayer;
+//class RenderLayer;
 class Camera;
 class RenderPass
 {
@@ -53,6 +54,14 @@ public:
 private:
     Vector<RenderLayer*> renderLayers;
     FastName name;
+    
+public:
+    
+    INTROSPECTION(RenderPass,
+        COLLECTION(renderLayers, "Render Layers", INTROSPECTION_EDITOR)
+        MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+    );
+
 };
     
 } // ns

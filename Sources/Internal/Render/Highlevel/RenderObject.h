@@ -31,9 +31,10 @@
 #define	__DAVAENGINE_SCENE3D_RENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
 #include "Base/BaseMath.h"
+#include "Animation/AnimatedObject.h"
 #include "Render/Highlevel/RenderSystem.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
@@ -110,6 +111,8 @@ public:
     
     inline eType GetType() { return type; }
 
+	RenderObject * Clone();
+
 protected:
     eType type;
     uint32 flags;
@@ -121,7 +124,19 @@ protected:
 
 //    Sphere bsphere;
     
-    Vector<RenderBatch*> renderBatchArray;    
+    Vector<RenderBatch*> renderBatchArray;
+
+public:
+	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
+//         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+         COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 inline uint32 RenderObject::GetRemoveIndex()

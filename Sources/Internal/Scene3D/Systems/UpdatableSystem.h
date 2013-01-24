@@ -7,8 +7,8 @@
 namespace DAVA
 {
 
-class IUpdatablePreTransform;
-class IUpdatablePostTransform;
+class IUpdatableBeforeTransform;
+class IUpdatableAfterTransform;
 class UpdatableSystem : public SceneSystem
 {
 public:
@@ -21,8 +21,8 @@ public:
 	void UpdatePostTransform();
 
 private:
-	Vector<IUpdatablePreTransform*> updatesPreTransform;
-	Vector<IUpdatablePostTransform*> updatesPostTransform;
+	Vector<IUpdatableBeforeTransform*> updatesBeforeTransform;
+	Vector<IUpdatableAfterTransform*> updatesAfterTransform;
 };
 
 }
