@@ -51,9 +51,11 @@ private:
 
 	static Vector<Image *> CreateFromPNG(File *file);
 	static Vector<Image *> CreateFromPVR(File *file);
+	static Vector<Image *> CreateFromDXT(File *file);
     
     static bool IsPVRFile(File *file);
     static bool IsPNGFile(File *file);
+	static bool IsDXTFile(File *file);
 };
 	
 };

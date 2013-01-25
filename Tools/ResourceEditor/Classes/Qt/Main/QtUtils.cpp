@@ -114,15 +114,12 @@ bool IsKeyModificatorsPressed()
 	return (IsKeyModificatorPressed(DVKEY_SHIFT) || IsKeyModificatorPressed(DVKEY_CTRL) || IsKeyModificatorPressed(DVKEY_ALT));
 }
 
-DAVA::Color ColorFromQColor(const QColor &color)
+QColor ColorToQColor(const DAVA::Color& color)
 {
-    return Color((DAVA::float32)color.red() / 255.f,
-                                 (DAVA::float32)color.green() / 255.f,
-                                 (DAVA::float32)color.blue() / 255.f,
-                                 (DAVA::float32)color.alpha() / 255.f);
+	return QColor::fromRgbF(color.r, color.g, color.b, color.a);
 }
 
-QColor QColorFromColor(const DAVA::Color &color)
+DAVA::Color QColorToColor(const QColor &qcolor)
 {
-    return QColor(color.r * 255, color.g * 255, color.b * 255, color.a * 255);
+	return Color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), qcolor.alphaF());
 }

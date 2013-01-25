@@ -14,6 +14,9 @@
     <Filter Include="Sources\CommandLineTool">
       <UniqueIdentifier>{e1cbfa9e-e4bb-4941-8152-b962de178cc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DXTConverter">
+      <UniqueIdentifier>{4f948d37-4806-4fc2-8e35-54296c5941c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Win32Specific\ResourcePacker.cpp">
@@ -64,6 +67,9 @@
     <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
       <Filter>Sources\CommandLineTool</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\DXTConverter.cpp">
+      <Filter>Sources\DXTConverter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Win32Specific\stdafx.h">
@@ -110,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
       <Filter>Sources\CommandLineTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\DXTConverter.h">
+      <Filter>Sources\DXTConverter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

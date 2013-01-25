@@ -33,7 +33,6 @@
 
 #include "Platform/Android/CorePlatformAndroid.h"
 #include "FileSystem/FileSystem.h"
-#include "FileSystem/File.h"
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/ResourceArchive.h"
 
@@ -43,10 +42,15 @@ namespace DAVA
 {
 
 APKFile::APKFile()
+    : DynamicMemoryFile()
 {
     
 }
 
+APKFile::~APKFile()
+{
+    
+}
 
 File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
 {
@@ -70,8 +74,10 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
             
 			uint8 * buffer = new uint8[size];
 			item.archive->LoadResource(relfilename, buffer);
-			DynamicMemoryFile * file =  DynamicMemoryFile::Create(buffer, size, attributes);
-			return file;
+
+            APKFile *fileInstance = CreateFromData(relfilename, buffer, size, attributes);
+            SafeDeleteArray(buffer);
+			return fileInstance;
 		}
 	}
     
@@ -101,7 +107,6 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
     uint32 dataSize = AAsset_getLength(asset);
 //    Logger::Debug("[APKFile::CreateFromAssets] fileSize is %d (%s)", dataSize, filePath.c_str());
 
-
     uint8 *data = new uint8[dataSize];
     
     uint32 readSize = AAsset_read(asset, data, dataSize * sizeof(uint8));
@@ -109,10 +114,27 @@ File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
 
     DVASSERT_MSG(readSize == dataSize * sizeof(uint8), "Can't read full file");
 
-    DynamicMemoryFile *fileInstance = DynamicMemoryFile::Create(data, readSize, File::READ);
+    APKFile *fileInstance = CreateFromData(filePath, data, readSize, attributes);
     DVASSERT_MSG(fileInstance, "Can't create dynamic file from memory");
+    SafeDeleteArray(data);
     return fileInstance;
 }
+    
+APKFile * APKFile::CreateFromData(const String &filePath, const uint8 * data, int32 dataSize, uint32 attributes)
+{
+    APKFile *fl = new APKFile();
+	fl->filename = filePath;
+	fl->Write(data, dataSize);
+	fl->fileAttributes = attributes;
+	fl->currentPtr = 0;
+
+//	Logger::Debug("[APKFile::CreateFromData] fileSize is %d (%s) (%p) ", dataSize, filePath.c_str(), fl);
+    
+    return fl;
+}
+
+    
+
     
 };
 

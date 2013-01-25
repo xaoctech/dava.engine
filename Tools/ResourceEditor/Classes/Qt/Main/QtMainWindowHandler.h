@@ -124,6 +124,7 @@ public slots:
 	void OpenParticleEditorConfig();
 	void SaveParticleEditorConfig();
 	void OpenParticleEditorSprite();
+	void CreateParticleEmitterNode();
 	
 signals:
 

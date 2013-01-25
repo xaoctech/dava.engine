@@ -58,6 +58,9 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
 
 void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
     
     UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
@@ -391,6 +394,9 @@ void ControlsFactory::CustomizeDialog(UIControl *c)
 
 void ControlsFactory::SetScrollbar(DAVA::UIList *l)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     
@@ -431,6 +437,9 @@ void ControlsFactory::RemoveScrollbar(UIList *l)
 
 void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
     
     Rect fr = h->GetRect();

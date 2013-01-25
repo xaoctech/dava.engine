@@ -129,6 +129,7 @@ bool ThreadContext::CreateWindowSurface(ANativeWindow *window)
     
     width = ANativeWindow_getWidth(window);
     height = ANativeWindow_getHeight(window);
+    Logger::Debug("[ThreadContext::CreateSurface] width = %f, height = %f", width, height);
 
     return true;
 }
@@ -137,8 +138,8 @@ bool ThreadContext::CreateBufferSurface(float32 width, float32 height)
 {
     GLint surfAttribs[] =
     {
-        EGL_HEIGHT, width,
-        EGL_WIDTH, height,
+        EGL_HEIGHT, height,
+        EGL_WIDTH, width,
         EGL_NONE
     };
     

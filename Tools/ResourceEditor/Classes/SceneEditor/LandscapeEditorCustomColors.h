@@ -52,6 +52,8 @@ protected:
 	String GetScenePath();
 	String GetRelativePathToScenePath(const String& absolutePath);
 	String GetAbsolutePathFromScenePath(const String& relativePath);
+	String GetRelativePathToProjectPath(const String& absolutePath);
+	String GetAbsolutePathFromProjectPath(const String& relativePath);
 	void StoreSaveFileName(const String& fileName);
 
 	void LoadTextureAction(const String& pathToFile);
@@ -85,6 +87,7 @@ protected:
 	int32		radius;
 
 	bool		isCursorTransparent;
+	bool		isFogEnabled;
 };
 
 

@@ -19,6 +19,8 @@ public:
 	TextureConvertor();
 	~TextureConvertor();
 
+	static QImage fromDavaImage(DAVA::Image *image);
+
 	void loadOriginal(const DAVA::TextureDescriptor *descriptor);
 	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
@@ -51,8 +53,6 @@ private:
 	QImage convertThreadPVR(JobItem *item);
 	QImage convertThreadDXT(JobItem *item);
 	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures, bool forceConverAll);
-
-	QImage fromDavaImage(DAVA::Image *image);
 
 	int jobGetConvertFreeIndex();
 	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
