@@ -42,6 +42,7 @@
 #include "SplitTest.h"
 #include "MaterialCompilerTest.h"
 #include "PVRTest.h"
+#include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
 
@@ -78,6 +79,7 @@ void GameCore::OnAppStarted()
     new MaterialCompilerTest();
     new CloneTest();
     new PVRTest();
+	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();

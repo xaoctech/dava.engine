@@ -159,12 +159,21 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
-			ParticleEmitterNode * node = new ParticleEmitterNode();
-			node->LoadFromYaml("");
+			sceneNode = new SceneNode();
+			sceneNode->SetName("Particle Emitter");
 
-			sceneNode = node;
-		}
+			ParticleEmitterComponent* newEmitterComponent = new ParticleEmitterComponent();
+			ParticleEmitter* newEmitter = new ParticleEmitter();
+
+			sceneNode->AddComponent(newEmitterComponent);
+			newEmitterComponent->SetParticleEmitter(newEmitter);
+
+			RenderComponent * renderComponent = new RenderComponent();
+			renderComponent->SetRenderObject(newEmitter);
+			sceneNode->AddComponent(renderComponent);
+
 			break;
+		}
 
 		case ResourceEditor::NODE_USER_NODE:
 			SetHeader(LocalizedString(L"createnode.usernode"));
@@ -178,19 +187,22 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
 			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-			customProperties->SetBool("editor.isSolid", false);
+			customProperties->SetBool(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;
 
 
 		case ResourceEditor::NODE_PARTICLE_EFFECT:
-			{
-				SetHeader(L"Particle Effect");
-				sceneNode = new ParticleEffectNode();
-				sceneNode->SetName("Particle Effect");
-			}
-			break;
+		{
+			SetHeader(L"Particle Effect");
 
+			sceneNode = new SceneNode();
+			ParticleEffectComponent* newEffectComponent = new ParticleEffectComponent();
+			sceneNode->AddComponent(newEffectComponent);
+			sceneNode->SetName("Particle Effect");
+
+			break;
+		}
 
         default:
             break;

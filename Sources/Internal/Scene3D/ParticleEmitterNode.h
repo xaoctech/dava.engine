@@ -14,9 +14,6 @@ public:
 	ParticleEmitterNode();
 	virtual ~ParticleEmitterNode();
 
-	void LoadFromYaml(String yamlPath);
-	String GetYamlPath();
-
 	ParticleEmitter * GetEmitter();
 
 	virtual void Update(float32 timeElapsed);
@@ -27,6 +24,9 @@ public:
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+protected:
+	void LoadFromYaml(const String& yamlPath);
 
 private:
 	ParticleEmitter * emitter;

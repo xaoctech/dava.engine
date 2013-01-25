@@ -274,7 +274,7 @@ bool LibPngWrapper::IsPngFile(File *file)
 
 void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
-	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
+//	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
 	
 	png_structp png_ptr;

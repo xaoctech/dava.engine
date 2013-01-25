@@ -58,6 +58,11 @@ String EditorSettings::GetProjectPath()
     return settings->GetString(String("ProjectPath"), String(""));
 }
 
+String EditorSettings::GetParticlesConfigsPath()
+{
+	return GetProjectPath() + "Data/Configs/Particles/";
+}
+
 float32 EditorSettings::GetCameraSpeed()
 {
     int32 index = settings->GetInt32("CameraSpeedIndex", 0);

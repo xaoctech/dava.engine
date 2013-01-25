@@ -42,7 +42,7 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	texSurf = NULL;
 	circleTexture = NULL;
 
-	
+	isFogEnabled = false;
 	isCursorTransparent = false;
 
 	radius = 64;
@@ -78,7 +78,6 @@ void LandscapeEditorCustomColors::PrepareRenderLayers()
 	RenderManager::Instance()->SetRenderTarget(colorSprite);
 	
 	Vector2 newPoint = workingLandscape->GetCursor()->GetCursorPosition(); 
-    newPoint *= 2; 
 	RenderManager::Instance()->SetColor(paintColor);
 	
     blankSprite->SetPosition(newPoint); 
@@ -193,16 +192,11 @@ uint8*	LandscapeEditorCustomColors::DrawFilledCircleWithFormat(uint32 radius, DA
 	
 	for (uint32 i = 0; i < radius*2; ++i)
 	{
-		//Vector<float> tmp(10) - get error, with std::vector ok
 		Vector<bool> tmp;
 		tmp.resize(radius*2);
 		matrixForCircle.push_back(tmp);
 	}
-	
-
 	DrawCircle(matrixForCircle);
-	
-	
 	for(uint32 i = 0; i <matrixForCircle.size(); ++i)
 	{
 		for(uint32 j = 0; j < matrixForCircle.size(); ++j)
@@ -240,15 +234,16 @@ void LandscapeEditorCustomColors::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
 		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
-		workingLandscape->SetCursorScale(radius);
+		
+		workingLandscape->SetCursorScale(radius*2);
 	}
 }
 
 void LandscapeEditorCustomColors::SetRadius(int _radius)
 {
-	radius = _radius;
+	radius = _radius % 2 == 0 ? _radius : ++_radius;//in order to avoid dark boundaries
 	UpdateCircleTexture(true);
 }
 
@@ -328,11 +323,8 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorCustomColors::HideAction()
 {
-	//SaveTextureAction(GetCurrentSaveFileName());
-
-	workingLandscape->SetFog(true);
 	workingLandscape->CursorDisable();
-	
+	workingLandscape->SetFog(isFogEnabled);
     workingLandscape->SetHeightmap(savedHeightmap);
     SafeRelease(editedHeightmap);
     SafeRelease(savedHeightmap);
@@ -345,11 +337,12 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-    landscapeSize = settings->maskSize;
+    landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
+	//save fog status and disable it for more convenience
+	isFogEnabled = workingLandscape->IsFogEnabled();
 	workingLandscape->SetFog(false);
-
 	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 
 	String loadFileName = GetCurrentSaveFileName();
@@ -387,11 +380,8 @@ void LandscapeEditorCustomColors::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_COLORIZE == type)
     {
-        //Image::EnableAlphaPremultiplication(false);
-        
         Texture *tex = UNDOManager::Instance()->UndoColorize();
-        
-        //Image::EnableAlphaPremultiplication(true);
+
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
 		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
@@ -446,19 +436,17 @@ void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 
     if(colorSprite)
     {
-		if(pathToFile.empty())
+		if(!pathToFile.empty())
 		{
-
+			Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
+			if(img)
+			{
+				StoreSaveFileName(pathToFile);
+				ImageLoader::Save(img, pathToFile);
+				SafeRelease(img);
+			}
 		}
-
-        Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
-        if(img)
-        {
-			StoreSaveFileName(pathToFile);
-			ImageLoader::Save(img, pathToFile);
-            SafeRelease(img);
-        }
-    }
+	}
 }
 
 void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
@@ -501,19 +489,15 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect &rect)
 {
-// RETURN TO THIS CODE LATER
-//    LandscapeEditorPropertyControl *propsControl =
-//		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
-//
-//	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-//
-//    propsControl->SetDelegate(this);
-//
-//    LandscapeEditorSettingsChanged(propsControl->Settings());
-//
-//
-//    return propsControl;
-    return 0;
+	LandscapeEditorPropertyControl *propsControl =
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
+		//(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
+
+	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+	propsControl->SetDelegate(this);
+	LandscapeEditorSettingsChanged(propsControl->Settings());
+
+	return propsControl;
 }
 
 void LandscapeEditorCustomColors::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
@@ -591,6 +575,16 @@ String LandscapeEditorCustomColors::GetRelativePathToScenePath(const String &abs
 	return relativePath;
 }
 
+String LandscapeEditorCustomColors::GetRelativePathToProjectPath(const String& absolutePath)
+{
+	if(absolutePath.empty())
+		return "";
+
+	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), absolutePath);
+
+	return relativePath;
+}
+
 String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
 {
 	if(relativePath.empty())
@@ -602,11 +596,25 @@ String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &r
 	return absolutePath;
 }
 
+
+String LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String& relativePath)
+{
+	if(relativePath.empty())
+		return "";
+
+	String absolutePath = EditorSettings::Instance()->GetProjectPath() + relativePath;
+	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+
+	return absolutePath;
+}
+
 void LandscapeEditorCustomColors::SaveTexture()
 {
-	Command * saveCommand = new CommandSaveTextureCustomColors;
-	CommandsManager::Instance()->Execute(saveCommand);
-	SafeRelease(saveCommand);
-
+	if(UNDOAction::ACTION_COLORIZE == UNDOManager::Instance()->GetLastUNDOAction())
+    {
+		Command * saveCommand = new CommandSaveTextureCustomColors;
+		CommandsManager::Instance()->Execute(saveCommand);
+		SafeRelease(saveCommand);
+	}
 	Close();
 }

@@ -1033,12 +1033,13 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-// RETURN TO THIS CODE LATER
-//    LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
-//    scene->SetSelection(landscape);
-//	SelectNodeAtTree(NULL);
-//    SelectNodeAtTree(landscape);
-    
+	SceneNode* sceneNode = EditorScene::GetLandScapeNode(scene);
+	if (sceneNode)
+	{
+		scene->SetSelection(sceneNode);
+		SelectNodeAtTree(NULL);
+		SelectNodeAtTree(sceneNode);
+	}
     landscapeToolsSelection->Show();
 }
 
@@ -1131,13 +1132,13 @@ void EditorBodyControl::ProcessIsSolidChanging()
     if(selectedNode)
     {
         KeyedArchive *customProperties = selectedNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists(String("editor.isSolid")))
+        if(customProperties && customProperties->IsKeyExists(String(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
             
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-            activeScene->RebuildSceneGraph();
+            activeScene->RebuildSceneGraphNode(selectedNode);
             
 			/* #### dock -->
             KeyedArchive *properties = selectedNode->GetCustomProperties();

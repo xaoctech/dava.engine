@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */; };
+		4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4910CC2A167B7E6600CF948A /* libdxt_macos.a */; };
+		49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1BF16835A2800F63EFE /* LibDxtHelper.cpp */; };
 		4F1AE76216A56A27009AF0C2 /* ParticleEffectComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */; };
 		5045D65A169F1A7000742C05 /* LandscapeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D658169F17E500742C05 /* LandscapeNode.cpp */; };
 		5045D65B169F1A7200742C05 /* LandscapeDebugNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5045D656169F17E200742C05 /* LandscapeDebugNode.cpp */; };
@@ -309,6 +311,9 @@
 /* Begin PBXFileReference section */
 		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
+		4910CC2A167B7E6600CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		49E7A1BF16835A2800F63EFE /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
+		49E7A1C016835A2800F63EFE /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		4F1AE76016A56A27009AF0C2 /* ParticleEffectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectComponent.cpp; sourceTree = "<group>"; };
 		4F1AE76116A56A27009AF0C2 /* ParticleEffectComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectComponent.h; sourceTree = "<group>"; };
 		5045D654169F17E200742C05 /* LandscapeCursor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
@@ -901,6 +906,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */,
 				E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */,
 				5C5D9AA115B0272B0058B43A /* libBox2D_MacOS.a in Frameworks & Libraries */,
 				5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */,
@@ -926,6 +932,7 @@
 		05596AB53D8D521C69802C27 /* FrameworkQt */ = {
 			isa = PBXGroup;
 			children = (
+				4910CC2A167B7E6600CF948A /* libdxt_macos.a */,
 				5C5D971E15B022930058B43A /* Internal */,
 				5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */,
 				5CFB116D15AE0696008F64BB /* libtheora_macos.a */,
@@ -1440,6 +1447,8 @@
 			children = (
 				508E59A01684A07500D2ECA8 /* Highlevel */,
 				5073EA9D166A400B00101AB5 /* Material */,
+				49E7A1BF16835A2800F63EFE /* LibDxtHelper.cpp */,
+				49E7A1C016835A2800F63EFE /* LibDxtHelper.h */,
 				5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */,
 				5CBF71B315C6DF5E00CD1736 /* RenderOptions.h */,
 				5C5D987315B0230D0058B43A /* 2D */,
@@ -2132,6 +2141,7 @@
 				50A18E4F16A84E6C00DC6281 /* BulletComponent.cpp in Build Sources */,
 				E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */,
 				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
+				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2207,6 +2217,19 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Libs/include,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/libs\"",
@@ -2223,6 +2246,19 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Libs/include,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/libs\"",

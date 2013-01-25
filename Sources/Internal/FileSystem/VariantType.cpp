@@ -41,6 +41,7 @@
 #include "Base/Meta.h"
 #include "Math/Color.h"
 #include "Base/FastName.h"
+#include "Math/AABBox3.h"
 
 namespace DAVA
 {
@@ -66,6 +67,7 @@ const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
 const String VariantType::TYPENAME_POINTER = "void *";
 const String VariantType::TYPENAME_COLOR   = "Color";
 const String VariantType::TYPENAME_FASTNAME= "FastName";
+const String VariantType::TYPENAME_AABBOX3 = "AABBox3";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
@@ -88,7 +90,8 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
 	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>()),
 	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>()),
-	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>())
+	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>()),
+	VariantType::PairTypeName(VariantType::TYPE_AABBOX3,       TYPENAME_AABBOX3,        MetaInfo::Instance<AABBox3>())
 };
 
 VariantType::VariantType()
@@ -240,7 +243,16 @@ void VariantType::SetFastName(const DAVA::FastName &value)
     fastnameValue = new FastName(value);
 }
     
-    
+void VariantType::SetAABBox3(const DAVA::AABBox3 &value)
+{
+	ReleasePointer();
+	type = TYPE_AABBOX3;
+
+	aabbox3 = new AABBox3(value);
+}
+
+
+
 void VariantType::SetVariant(const VariantType& var)
 {
 	switch(var.type)
@@ -336,11 +348,16 @@ void VariantType::SetVariant(const VariantType& var)
 			SetColor(var.AsColor());
 		}
         break;
-        case TYPE_FASTNAME:
+    case TYPE_FASTNAME:
         {
             SetFastName(var.AsFastName());
         }
         break;
+	case TYPE_AABBOX3:
+		{
+			SetAABBox3(var.AsAABBox3());
+		}
+		break;
 
 	default:
 		{
@@ -468,7 +485,14 @@ const FastName & VariantType::AsFastName() const
     DVASSERT(type == TYPE_FASTNAME);
     return *fastnameValue;
 }
-    
+
+const AABBox3 & VariantType::AsAABBox3() const
+{
+	DVASSERT(type == TYPE_AABBOX3);
+	return *aabbox3;
+}
+
+
 bool VariantType::Write(File * fp) const
 {
 	DVASSERT(type != TYPE_NONE)
@@ -604,16 +628,21 @@ bool VariantType::Write(File * fp) const
 		}
         break;
     case TYPE_FASTNAME:
-    {
-        int32 len = strlen(fastnameValue->c_str());
-        written = fp->Write(&len, 4);
-        if (written != 4)return false;
+	    {
+			int32 len = strlen(fastnameValue->c_str());
+			written = fp->Write(&len, 4);
+			if (written != 4)return false;
         
-        written = fp->Write(fastnameValue->c_str(), len);
-        if (written != len)return false;
-    }
+			written = fp->Write(fastnameValue->c_str(), len);
+			if (written != len)return false;
+	    }
         break;
-
+	case TYPE_AABBOX3:
+		{
+			written = fp->Write(aabbox3, sizeof(AABBox3));
+			if (written != sizeof(AABBox3))return false;
+		}
+		break;
             
 	}
 	return true;
@@ -774,29 +803,37 @@ bool VariantType::Read(File * fp)
 			}
 			break;
         case TYPE_COLOR:
-		{
-            ReleasePointer();
-            
-            colorValue = new Color;
-            read = fp->Read(colorValue->color, sizeof(float32) * 4);
-            if (read != sizeof(sizeof(float32) * 4))return false;
-		}
+			{
+				ReleasePointer();
+
+				colorValue = new Color;
+				read = fp->Read(colorValue->color, sizeof(float32) * 4);
+				if (read != sizeof(sizeof(float32) * 4))return false;
+			}
             break;
 
         case TYPE_FASTNAME:
-        {
-            int32 len = 0;
-			read = fp->Read(&len, 4);
-			if (read != 4)return false;
+			{
+				int32 len = 0;
+				read = fp->Read(&len, 4);
+				if (read != 4)return false;
 			
-			char *buf = new char[len + 1];
-			read = fp->Read(buf, len);
-			buf[len] = 0;
-			fastnameValue = new FastName(buf);
-			delete [] buf;
-			if (read != len)return false;
-        }
+				char *buf = new char[len + 1];
+				read = fp->Read(buf, len);
+				buf[len] = 0;
+				fastnameValue = new FastName(buf);
+				delete [] buf;
+				if (read != len)return false;
+			}
             break;
+
+		case TYPE_AABBOX3:
+			{
+				aabbox3 = new AABBox3;
+				read = fp->Read(aabbox3, sizeof(AABBox3));
+				if (read != sizeof(AABBox3))return false;
+			}
+			break;
 
 		default:
 		{
@@ -884,7 +921,12 @@ void VariantType::ReleasePointer()
             {
                 delete fastnameValue;
             }
-                break;
+			break;
+			case TYPE_AABBOX3:
+				{
+					delete aabbox3;
+				}
+				break;
         }
         
         // It is enough to set only pointerValue to NULL - all other pointers are in union, so
@@ -1026,6 +1068,11 @@ bool VariantType::operator==(const VariantType& other) const
                 isEqual = (AsFastName() == other.AsFastName());
             }
 				break;
+			case  TYPE_AABBOX3:
+				{
+					isEqual = (AsAABBox3() == other.AsAABBox3());
+				}
+				break;
                 
         }
     }
@@ -1119,6 +1166,9 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
     case TYPE_FASTNAME:
         v.SetFastName(*((DAVA::FastName *) src));
         break;
+	case TYPE_AABBOX3:
+		v.SetAABBox3(*((DAVA::AABBox3 *) src));
+		break;
 	default:
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
 	}
@@ -1215,6 +1265,9 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
     case TYPE_FASTNAME:
         *((DAVA::FastName *) dst) = val.AsFastName();
         break;
+	case TYPE_AABBOX3:
+		*((DAVA::AABBox3 *) dst) = val.AsAABBox3();
+		break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}

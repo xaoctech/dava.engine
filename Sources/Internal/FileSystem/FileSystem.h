@@ -312,6 +312,7 @@ private:
      and unless the result is empty, it will always start with a slash.
 	 */
 	static String NormalizePath(const String & path);
+	virtual eCreateDirectoryResult CreateExactDirectory(const String & filePath);
 
     
     String tempRetPath;

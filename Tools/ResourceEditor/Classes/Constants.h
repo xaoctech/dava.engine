@@ -4,15 +4,6 @@
 namespace ResourceEditor 
 {
 
-enum eExportFormat
-{
-    FORMAT_PNG = 0,
-    FORMAT_PVR,
-    FORMAT_DXT,
-    
-    FORMAT_COUNT
-};
-    
 enum eNodeType
 {
     NODE_LANDSCAPE  = 0,

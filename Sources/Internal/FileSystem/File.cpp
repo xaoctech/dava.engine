@@ -57,12 +57,7 @@ File::~File()
 	
 File * File::Create(const String &filePath, uint32 attributes)
 {
-#if defined (__DAVAENGINE_ANDROID__)
-	String pathname = FileSystem::Instance()->GetCanonicalPath(filePath);
-	return FileSystem::Instance()->CreateFileForFrameworkPath(pathname, attributes);
-#else //#if defined (__DAVAENGINE_ANDROID__)
 	return FileSystem::Instance()->CreateFileForFrameworkPath(filePath, attributes);
-#endif //#if defined (__DAVAENGINE_ANDROID__)
 }
 
 
@@ -89,6 +84,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 			uint8 * buffer = new uint8[size];
 			item.archive->LoadResource(relfilename, buffer);
 			DynamicMemoryFile * file =  DynamicMemoryFile::Create(buffer, size, attributes);
+            SafeDeleteArray(buffer);
 			return file;
 		}
 	}
