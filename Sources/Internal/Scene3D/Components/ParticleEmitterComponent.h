@@ -21,7 +21,7 @@ public:
 	void SaveToYaml(const String& _yamlPath);
 	String GetYamlPath();
 
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void SetParticleEmitter(ParticleEmitter * particleEmitter);
 	ParticleEmitter * GetParticleEmitter();

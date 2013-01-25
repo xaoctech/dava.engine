@@ -17,9 +17,11 @@ ParticleEmitterComponent::~ParticleEmitterComponent()
 	SafeRelease(particleEmitter);
 }
 
-Component * ParticleEmitterComponent::Clone()
+Component * ParticleEmitterComponent::Clone(SceneNode * toEntity)
 {
 	ParticleEmitterComponent * newComponent = new ParticleEmitterComponent();
+	newComponent->SetEntity(toEntity);
+
 	ParticleEmitter * newEmitter = new ParticleEmitter3D();
 	newEmitter->LoadFromYaml(particleEmitter->GetConfigPath());
 	newComponent->SetParticleEmitter(newEmitter);

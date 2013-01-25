@@ -17,7 +17,7 @@ public:
 
 	ParticleEffectComponent();
 
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void Start();
 

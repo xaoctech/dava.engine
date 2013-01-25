@@ -15,9 +15,10 @@ BulletComponent::~BulletComponent()
 	SafeRelease(bulletObject);
 }
 
-Component * BulletComponent::Clone()
+Component * BulletComponent::Clone(SceneNode * toEntity)
 {
 	BulletComponent * newComponent = new BulletComponent();
+	newComponent->SetEntity(toEntity);
 	//bulletObject is intentionally not cloned
 	return newComponent;
 }
