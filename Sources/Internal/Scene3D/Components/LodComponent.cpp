@@ -30,10 +30,13 @@ void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 	farDistanceSq = farDistance * farDistance;
 }
 
-Component * LodComponent::Clone()
+Component * LodComponent::Clone(SceneNode * toEntity)
 {
 	LodComponent * newLod = new LodComponent();
-    // TODO: Add lod cloning
+	newLod->SetEntity(toEntity);
+   
+
+
 	return newLod;
 }
 

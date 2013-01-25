@@ -74,7 +74,7 @@ public:
 	};
 
 	LodComponent();
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	static float32 GetDefaultDistance(int32 layer);
 	void SetCurrentLod(LodData *newLod);
