@@ -712,7 +712,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         }
         SceneNode * newMeshInstanceNode = new SceneNode();
         oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
-        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone());
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode));
         
         //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
@@ -884,8 +884,8 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     rootNode->BakeTransforms();
     
 	//MERGE: commented
-    //RemoveEmptySceneNodes(rootNode);
-    //RemoveEmptyHierarchy(rootNode);
+    RemoveEmptySceneNodes(rootNode);
+    RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
