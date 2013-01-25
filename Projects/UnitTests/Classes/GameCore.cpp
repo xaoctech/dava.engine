@@ -44,6 +44,7 @@
 #include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
+#include "DLCSystemTests.h"
 
 using namespace DAVA;
 
@@ -69,15 +70,16 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new CloneTest();
-    new PVRTest();
-	new DXTTest();
-	new EntityTest();	
-	new MemoryAllocatorsTest();
-	new HashMapTest();
-	new SoundTest();
-	new SplitTest();
-    new KeyedArchiveYamlTest();
+//    new CloneTest();
+//    new PVRTest();
+//	new DXTTest();
+//	new EntityTest();	
+//	new MemoryAllocatorsTest();
+//	new HashMapTest();
+//	new SoundTest();
+//	new SplitTest();
+//    new KeyedArchiveYamlTest();
+	new DLCTest();
     
     errors.reserve(TestCount());
 
