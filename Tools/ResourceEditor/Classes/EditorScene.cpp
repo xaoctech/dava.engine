@@ -83,7 +83,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
 			bulletComponent->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform())));
 		}
-		else if(bulletComponent->GetBulletObject())
+		else if(bulletComponent && bulletComponent->GetBulletObject())
 		{
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
