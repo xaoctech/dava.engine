@@ -706,6 +706,27 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
             mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
+            
+            
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+                {
+                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+            
+            if (oldMeshInstanceNode->GetLightmapCount() > 0)
+            {
+                RenderBatch * batch = mesh->GetRenderBatch(k);
+                batch->GetMaterialInstance()->SetLightmap(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap,
+                                                          oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmapName);
+                batch->GetMaterialInstance()->SetUVOffsetScale(oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset,
+                                                               oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
+            }
         }
         
         RenderComponent * renderComponent = new RenderComponent;
@@ -723,6 +744,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			DVASSERT(0 && "How we appeared here");
 		}
 		newMeshInstanceNode->Release();
+        
+        SafeRelease(mesh);
         return true;
     }
 
