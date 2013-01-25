@@ -23,68 +23,49 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_FILE_PATH_H__
+#define __DAVAENGINE_FILE_PATH_H__
 
-#ifndef __DAVAENGINE_HEIGHT_MAP_H__
-#define __DAVAENGINE_HEIGHT_MAP_H__
-
+#include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
 namespace DAVA
 {
-    
-class Image;
-class Heightmap: public BaseObject
+/**
+	\ingroup filesystem
+	\brief class to work with file pathname
+ */
+class FilePath: public BaseObject
 {
 public:
+	
+	FilePath();
+    FilePath(const String &absolutePath);
+    FilePath(const String &relativePath, const String &folder);
 
-    enum eHightmapConst
-    {
-        MAX_VALUE = 65535,   //(2^16 - 1)
-        IMAGE_CORRECTION = MAX_VALUE / 255 //(2^8 - 1)
-    };
-
+	virtual ~FilePath();
+	
+    void SetAbsolutePath(const String &absolutePath);
+    void SetRelativePath(const String &relativePath);
+    void SetRelativePath(const String &relativePath, const String &folder);
     
-    Heightmap();
-	virtual ~Heightmap();
-    
-    bool BuildFromImage(Image *image);
-    void SaveToImage(const String & filename);
-    
-    virtual void Save(const String &filePathname);
-    virtual bool Load(const String &filePathname);
-    
-    uint16 * Data();
-    int32 Size();
-    
-    int32 GetTileSize();
-    void SetTileSize(int32 newSize);
-    
-    static const String FileExtension();
-
-    Heightmap *Clone(Heightmap *clonedHeightmap);
-
-protected:
-    
-    Heightmap *CreateHeightmapForSize(int32 newSize);
-    
-    bool AllocateData(int32 newSize);
-    void ReleaseData();    
+    const String GetAbsolutePath() const;
+    const String GetRelativePath() const;
+    const String GetRelativePath(const String &folder) const;
     
 protected:
     
-	uint16 *data;
-    int32 size;
-    int32 tileSize;
-    
+    String absolutePathname;
+
 public:
-    
-    INTROSPECTION_EXTEND(Heightmap, BaseObject,
-        MEMBER(size, "Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(tileSize, "Tile Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+    INTROSPECTION_EXTEND(FilePath, BaseObject,
+        MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
-
 };
 
-#endif //__DAVAENGINE_HEIGHT_MAP_H__
+#endif //__DAVAENGINE_FILE_PATH_H__

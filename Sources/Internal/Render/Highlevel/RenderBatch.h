@@ -116,7 +116,9 @@ protected:
     
     uint32 startIndex;
     uint32 indexCount;
-    ePrimitiveType type;
+    
+//    ePrimitiveType type; //TODO: waiting for enums at introspection
+    uint8 type;
     
     RenderLayer * ownerLayer;
     uint32 removeIndex;
@@ -133,7 +135,7 @@ public:
 
         MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
         MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
-//        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
 //        MEMBER(ownerLayer, "Owner Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY) 
         MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE)
