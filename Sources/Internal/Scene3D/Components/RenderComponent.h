@@ -15,7 +15,7 @@ public:
     virtual ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();

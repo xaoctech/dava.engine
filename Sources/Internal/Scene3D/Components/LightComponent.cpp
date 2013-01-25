@@ -24,9 +24,10 @@ LightNode * LightComponent::GetLightObject()
     return light;
 }
     
-Component * LightComponent::Clone()
+Component * LightComponent::Clone(SceneNode * toEntity)
 {
     LightComponent * component = new LightComponent();
+	SetEntity(toEntity);
     component->light = (LightNode*)light->Clone();
     return component;
 }
