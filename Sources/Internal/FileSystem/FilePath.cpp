@@ -23,68 +23,70 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_HEIGHT_MAP_H__
-#define __DAVAENGINE_HEIGHT_MAP_H__
-
-#include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
-    
-class Image;
-class Heightmap: public BaseObject
+	
+FilePath::FilePath()
 {
-public:
+    SetAbsolutePath(String(""));
+}
+    
+FilePath::FilePath(const String &absolutePath)
+{
+    SetAbsolutePath(absolutePath);
+}
 
-    enum eHightmapConst
-    {
-        MAX_VALUE = 65535,   //(2^16 - 1)
-        IMAGE_CORRECTION = MAX_VALUE / 255 //(2^8 - 1)
-    };
+FilePath::FilePath(const String &relativePath, const String &folder)
+{
+    SetRelativePath(relativePath, folder);
+}
+
+FilePath::~FilePath()
+{
+}
+    
+    
+void FilePath::SetAbsolutePath(const String &absolutePath)
+{
+    absolutePathname = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+}
+
+void FilePath::SetRelativePath(const String &relativePath)
+{
+    SetRelativePath(relativePath, FileSystem::Instance()->GetCurrentWorkingDirectory());
+}
+
+void FilePath::SetRelativePath(const String &relativePath, const String &folder)
+{
+    absolutePathname = folder + "/" + relativePath;
+    absolutePathname = FileSystem::GetCanonicalPath(absolutePathname);
+}
+
+
+const String FilePath::GetAbsolutePath() const
+{
+    return absolutePathname;
+}
+
+
+const String FilePath::GetRelativePath() const
+{
+    return GetRelativePath(FileSystem::Instance()->GetCurrentWorkingDirectory());
+}
+
+const String FilePath::GetRelativePath(const String &folder) const
+{
+    String folderCanonical = FileSystem::Instance()->GetCanonicalPath(folder);
+    return FileSystem::AbsoluteToRelativePath(folderCanonical, absolutePathname);
+}
+
 
     
-    Heightmap();
-	virtual ~Heightmap();
-    
-    bool BuildFromImage(Image *image);
-    void SaveToImage(const String & filename);
-    
-    virtual void Save(const String &filePathname);
-    virtual bool Load(const String &filePathname);
-    
-    uint16 * Data();
-    int32 Size();
-    
-    int32 GetTileSize();
-    void SetTileSize(int32 newSize);
-    
-    static const String FileExtension();
-
-    Heightmap *Clone(Heightmap *clonedHeightmap);
-
-protected:
-    
-    Heightmap *CreateHeightmapForSize(int32 newSize);
-    
-    bool AllocateData(int32 newSize);
-    void ReleaseData();    
-    
-protected:
-    
-	uint16 *data;
-    int32 size;
-    int32 tileSize;
-    
-public:
-    
-    INTROSPECTION_EXTEND(Heightmap, BaseObject,
-        MEMBER(size, "Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(tileSize, "Tile Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-    );
-};
-
-};
-
-#endif //__DAVAENGINE_HEIGHT_MAP_H__
+}

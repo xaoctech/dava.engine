@@ -599,7 +599,7 @@ void Material::PrepareRenderState()
 		//Dizz: temporary solution
 		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
 
-		renderStateBlock.SetBlendMode(blendSrc, blendDst);
+		renderStateBlock.SetBlendMode((eBlendMode)blendSrc, (eBlendMode)blendDst);
 	}
 	else
 	{

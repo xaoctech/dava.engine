@@ -84,7 +84,10 @@ public:
 protected:
     Vector3 position;
     Vector3 direction;
-    eType type;
+    
+//    eType type; //TODO: waiting for enums at introspection
+    uint8 type;
+    
     Color ambientColor;
     Color diffuseColor;
     Color specularColor;
@@ -97,7 +100,9 @@ public:
     INTROSPECTION_EXTEND(LightNode, BaseObject,
         MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//    MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
         MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

@@ -119,7 +119,7 @@ BaseObject * LightNode::Clone(BaseObject *dstNode)
 
 LightNode::eType LightNode::GetType() const
 {
-    return type;
+    return (eType)type;
 }
 const Vector3 & LightNode::GetPosition() const
 {

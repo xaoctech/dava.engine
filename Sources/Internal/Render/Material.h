@@ -185,7 +185,8 @@ public:
     //void UnbindMaterial();
     
     
-    eType   type;
+//    eType   type; //TODO: waiting for enums at introspection
+    uint8 type;
 
 	Vector4 reflective;
 	float32	reflectivity;
@@ -245,8 +246,10 @@ private:
     Vector2 uvOffset;
 	Vector2 uvScale;
 
-	eBlendMode blendSrc;
-	eBlendMode blendDst;
+//	eBlendMode blendSrc; //TODO: waiting for enums at introspection
+//	eBlendMode blendDst; //TODO: waiting for enums at introspection
+	uint8 blendSrc;
+	uint8 blendDst;
 
 
     void RebuildShader();
@@ -318,12 +321,12 @@ public:
         MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
         MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-//         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
 //        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
@@ -369,11 +372,11 @@ inline void Material::SetBlendDest(eBlendMode _blendDest)
 }
 inline eBlendMode Material::GetBlendSrc() const
 {
-    return blendSrc;
+    return (eBlendMode)blendSrc;
 }
 inline eBlendMode Material::GetBlendDest() const
 {
-    return blendDst;
+    return (eBlendMode)blendDst;
 }
 
 };
