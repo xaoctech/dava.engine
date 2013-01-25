@@ -310,6 +310,13 @@ void LandscapeEditorBase::OnShowGrid(bool show)
     }
 }
 
+void LandscapeEditorBase::ClearSceneResources()
+{
+	if(IsActive())
+	{
+		HideAction();
+	}
+}
 
 void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {

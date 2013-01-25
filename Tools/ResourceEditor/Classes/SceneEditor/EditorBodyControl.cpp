@@ -1082,6 +1082,11 @@ NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
 
 void EditorBodyControl::SetScene(EditorScene *newScene)
 {
+	if(landscapeRulerTool)
+    {
+        landscapeRulerTool->DisableTool();
+        SafeRelease(landscapeRulerTool);
+    }
     SafeRelease(scene);
     scene = SafeRetain(newScene);
     
@@ -1094,6 +1099,41 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     }
     
     modificationPanel->SetScene(scene);
+
+	if(landscapeEditorColor)
+	{
+		if(ColorIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_COLOR_MAP);
+		}
+		landscapeEditorColor->ClearSceneResources();
+	}
+	if(landscapeEditorHeightmap)
+	{
+		if(HightMapIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_HEIGHTMAP);
+		}
+		landscapeEditorHeightmap->ClearSceneResources();
+	}
+	if(landscapeEditorCustomColors)
+	{
+		if(CustomColorIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS);
+		}
+		landscapeEditorCustomColors->ClearSceneResources();
+	}
+	if(landscapeEditorVisibilityTool)
+	{
+		if(VisibilityToolIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL);
+		}
+		landscapeEditorVisibilityTool->ClearSceneResources();
+	}
+
+
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)
@@ -1182,6 +1222,46 @@ bool EditorBodyControl::RulerToolTriggered()
 bool EditorBodyControl::RulerToolIsActive()
 {
     return (NULL != landscapeRulerTool);
+}
+
+bool EditorBodyControl::CustomColorIsActive()
+{
+	if (NULL != landscapeEditorCustomColors)
+	{
+		return landscapeEditorCustomColors->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::VisibilityToolIsActive()
+{
+	if (NULL != landscapeEditorVisibilityTool)
+	{
+		return landscapeEditorVisibilityTool->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::ColorIsActive()
+{
+	if (NULL != landscapeEditorColor)
+	{
+		return landscapeEditorColor->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::HightMapIsActive()
+{
+	if (NULL != landscapeEditorHeightmap)
+	{
+		return landscapeEditorHeightmap->IsActive();
+	}
+
+	return false;
 }
 
 void EditorBodyControl::VisibilityToolSetPoint()

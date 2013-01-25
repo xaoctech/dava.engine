@@ -323,11 +323,15 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 
 void LandscapeEditorCustomColors::HideAction()
 {
+	if(!IsActive())
+	{
+		return;
+	}
 	workingLandscape->CursorDisable();
 	workingLandscape->SetFog(isFogEnabled);
-    workingLandscape->SetHeightmap(savedHeightmap);
-    SafeRelease(editedHeightmap);
-    SafeRelease(savedHeightmap);
+	workingLandscape->SetHeightmap(savedHeightmap);
+	SafeRelease(editedHeightmap);
+	SafeRelease(savedHeightmap);
 
 	SafeRelease(texSurf);
 	SafeRelease(circleTexture);
@@ -617,4 +621,10 @@ void LandscapeEditorCustomColors::SaveTexture()
 		SafeRelease(saveCommand);
 	}
 	Close();
+}
+
+void LandscapeEditorCustomColors::ClearSceneResources()
+{
+	LandscapeEditorBase::ClearSceneResources();
+	SafeRelease(colorSprite);
 }
