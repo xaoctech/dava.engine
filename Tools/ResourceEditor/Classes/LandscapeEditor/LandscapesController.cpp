@@ -319,6 +319,10 @@ RulerToolLandscape *LandscapesController::CreateRulerToolLandscape()
 
 void LandscapesController::ReleaseRulerToolLandscape()
 {
+	if(!rulerToolLandscape)
+	{
+		return;
+	}
     bool hidden = HideEditorLandscape(rulerToolLandscape);
     if(hidden)
     {
