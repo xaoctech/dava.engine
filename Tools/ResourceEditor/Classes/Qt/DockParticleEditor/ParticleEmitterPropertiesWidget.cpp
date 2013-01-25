@@ -2,6 +2,7 @@
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
 #include <QLabel>
+#include <QLineEdit>
 #include <QEvent>
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
@@ -9,6 +10,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 {
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
+
+	emitterYamlPath = new QLineEdit(this);
+	emitterYamlPath->setReadOnly(true);
+	mainLayout->addWidget(emitterYamlPath);
 
 	QHBoxLayout* emitterTypeHBox = new QHBoxLayout();
 	emitterTypeHBox->addWidget(new QLabel("type"));
@@ -127,6 +132,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 
+	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
 	emitterType->setCurrentIndex(emitter->type);
 
 	emitterEmissionAngle->Init(0.f, emitterLifeTime, updateMinimize);

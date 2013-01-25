@@ -37,6 +37,7 @@ private:
 
 	ParticleEmitter* emitter;
 
+	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
 	TimeLineWidget* emitterEmissionAngle;
 	TimeLineWidget* emitterEmissionRange;
