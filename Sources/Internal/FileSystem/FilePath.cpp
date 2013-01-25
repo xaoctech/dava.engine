@@ -35,46 +35,133 @@ namespace DAVA
 	
 FilePath::FilePath()
 {
-    SetAbsolutePath(String(""));
+    sourcePathname = String("");
+    absolutePathname = String("");
+    relativePathname = String("");
+    relativeFolder = String("");
+}
+
+FilePath::FilePath(const FilePath &path)
+{
+    sourcePathname = path.sourcePathname;
+    absolutePathname = path.absolutePathname;
+    relativePathname = path.relativePathname;
+    relativeFolder = path.relativeFolder;
 }
     
-FilePath::FilePath(const String &absolutePath)
+FilePath::FilePath(const String &sourcePath)
 {
-    SetAbsolutePath(absolutePath);
+    sourcePathname = sourcePath;
+    absolutePathname = String("");
+    relativePathname = String("");
+    relativeFolder = String("");
 }
 
-FilePath::FilePath(const String &relativePath, const String &folder)
+    
+FilePath * FilePath::CreateFromPathname(const String &sourcePath)
 {
-    SetRelativePath(relativePath, folder);
-}
+    FilePath *path = new FilePath();
+    path->sourcePathname = sourcePath;
+    path->absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
 
+    return path;
+}
+    
+FilePath * FilePath::CreateFromAbsolutePath(const String &absolutePath)
+{
+    FilePath *path = new FilePath();
+    path->sourcePathname = absolutePath;
+    path->absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
+
+    return path;
+}
+    
+FilePath * FilePath::CreateFromRelativePath(const String &relativePath)
+{
+    return CreateFromRelativePath(relativePath, FileSystem::Instance()->GetCurrentWorkingDirectory());
+}
+    
+FilePath * FilePath::CreateFromRelativePath(const String &relativePath, const String &folder)
+{
+    FilePath *path = new FilePath();
+    path->sourcePathname = relativePath;
+    path->SetRelativePath(relativePath, folder);
+    
+    return path;
+}
+    
+    
 FilePath::~FilePath()
 {
+    
 }
-    
-    
+	
+void FilePath::SetSourcePath(const String &sourcePath)
+{
+    sourcePathname = sourcePath;
+}
+
 void FilePath::SetAbsolutePath(const String &absolutePath)
 {
-    absolutePathname = FileSystem::Instance()->GetCanonicalPath(absolutePath);
+    absolutePathname = absolutePath;
 }
 
 void FilePath::SetRelativePath(const String &relativePath)
 {
-    SetRelativePath(relativePath, FileSystem::Instance()->GetCurrentWorkingDirectory());
+    SetRelativePath(relativeFolder, FileSystem::Instance()->GetCurrentWorkingDirectory());
 }
 
 void FilePath::SetRelativePath(const String &relativePath, const String &folder)
 {
-    absolutePathname = folder + "/" + relativePath;
-    absolutePathname = FileSystem::GetCanonicalPath(absolutePathname);
+    relativePathname = relativePath;
+    relativeFolder = FileSystem::Instance()->GetCanonicalPath(folder);
+    
+    absolutePathname = CreateAbsoluteFromRelative(relativePathname, relativeFolder);
+}
+    
+FilePath& FilePath::operator=(const FilePath &path)
+{
+    this->sourcePathname = path.sourcePathname;
+    this->absolutePathname = path.absolutePathname;
+    this->relativePathname = path.relativePathname;
+    this->relativeFolder = path.relativeFolder;
+
+    return *this;
+}
+    
+FilePath& FilePath::operator=(const String &pathname)
+{
+    this->sourcePathname = pathname;
+    this->absolutePathname = String("");
+    this->relativePathname = String("");
+    this->relativeFolder = String("");
+    
+    return *this;
 }
 
+    
+FilePath::operator String()
+{
+    return sourcePathname;
+}
+    
+const String FilePath::GetSourcePath() const
+{
+    return sourcePathname;
+}
 
 const String FilePath::GetAbsolutePath() const
 {
-    return absolutePathname;
+    if(!absolutePathname.empty())
+        return absolutePathname;
+    
+    if(!relativePathname.empty())
+    {
+        return CreateAbsoluteFromRelative(relativePathname, relativeFolder);
+    }
+    
+    return String("");
 }
-
 
 const String FilePath::GetRelativePath() const
 {
@@ -83,10 +170,15 @@ const String FilePath::GetRelativePath() const
 
 const String FilePath::GetRelativePath(const String &folder) const
 {
-    String folderCanonical = FileSystem::Instance()->GetCanonicalPath(folder);
-    return FileSystem::AbsoluteToRelativePath(folderCanonical, absolutePathname);
+    String path = FileSystem::Instance()->AbsoluteToRelativePath(folder, absolutePathname);
+    return path;
 }
 
+const String FilePath::CreateAbsoluteFromRelative(const String &relativePath, const String &folder)
+{
+    String path = folder + String("/") + relativePath;
+    return FileSystem::Instance()->GetCanonicalPath(path);
+}
 
     
 }

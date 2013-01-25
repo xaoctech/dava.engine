@@ -44,26 +44,49 @@ class FilePath: public BaseObject
 public:
 	
 	FilePath();
-    FilePath(const String &absolutePath);
-    FilePath(const String &relativePath, const String &folder);
+    FilePath(const FilePath &path);
+    FilePath(const String &sourcePath);
 
+    static FilePath * CreateFromPathname(const String &sourcePath);
+    static FilePath * CreateFromAbsolutePath(const String &absolutePath);
+    static FilePath * CreateFromRelativePath(const String &relativePath);
+    static FilePath * CreateFromRelativePath(const String &relativePath, const String &folder);
+    
+    
 	virtual ~FilePath();
 	
+    void SetSourcePath(const String &sourcePath);
     void SetAbsolutePath(const String &absolutePath);
     void SetRelativePath(const String &relativePath);
     void SetRelativePath(const String &relativePath, const String &folder);
-    
+
+    FilePath& operator=(const FilePath &path);
+    FilePath& operator=(const String &pathname);
+    operator String();
+
+    const String GetSourcePath() const;
     const String GetAbsolutePath() const;
     const String GetRelativePath() const;
     const String GetRelativePath(const String &folder) const;
     
 protected:
     
+    static const String CreateAbsoluteFromRelative(const String &relativePath, const String &folder);
+    
+    
+    String sourcePathname;
     String absolutePathname;
+    
+    String relativePathname;
+    String relativeFolder;
 
 public:
     INTROSPECTION_EXTEND(FilePath, BaseObject,
+        MEMBER(sourcePathname, "Source Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(relativePathname, "Relative Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(relativeFolder, "Relative Folder", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 };
