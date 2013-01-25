@@ -16,6 +16,7 @@ void DeleteSystem::Process()
 	uint32 size = deletedNodesToDelete->size();
 	for(uint32 i = 0; i < size; ++i)
 	{
+		DVASSERT(deletedNodesToDelete->at(i)->GetRetainCount() == 1);
 		SafeDelete(deletedNodesToDelete->at(i));
 	}
 	deletedNodesToDelete->clear();

@@ -263,7 +263,7 @@ public:
 			}
 			else
 			{
-				table[index] = NULL;
+				table[index] = item->next;
 			}
 
 			sz--;
