@@ -723,6 +723,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			DVASSERT(0 && "How we appeared here");
 		}
 		newMeshInstanceNode->Release();
+		mesh->Release();
+		DVASSERT(mesh->GetRetainCount() == 2);
         return true;
     }
 

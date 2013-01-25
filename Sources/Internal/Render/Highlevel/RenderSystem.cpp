@@ -89,7 +89,7 @@ RenderSystem::~RenderSystem()
     
 void RenderSystem::RenderPermanent(RenderObject * renderObject)
 {
-    //entityObjectMap.Insert(entity, renderObject);
+    renderObject->Retain();
     renderObjectArray.push_back(renderObject);
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
     
@@ -119,6 +119,8 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
     renderObject->SetRemoveIndex(-1);
     
     RemoveRenderObject(renderObject);
+
+	renderObject->Release();
 }
 
 void RenderSystem::AddRenderObject(RenderObject * renderObject)

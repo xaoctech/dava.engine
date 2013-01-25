@@ -60,17 +60,20 @@ RenderBatch::~RenderBatch()
     
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	SafeRelease(dataSource);
     dataSource = SafeRetain(_polygonGroup);
 	aabbox = dataSource->GetBoundingBox();
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
 {
+	SafeRelease(renderDataObject);
     renderDataObject = SafeRetain(_renderDataObject);
 }
 
 void RenderBatch::SetMaterial(Material * _material)
 {
+	SafeRelease(material);
     material = SafeRetain(_material);
 }
 

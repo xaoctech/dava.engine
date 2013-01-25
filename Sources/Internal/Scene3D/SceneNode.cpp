@@ -90,7 +90,6 @@ SceneNode::~SceneNode()
 //    }
     DVASSERT(scene == 0);
     
-    RemoveAllChildren();
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -102,8 +101,6 @@ SceneNode::~SceneNode()
 	}
 
 //  Logger::Debug("~SceneNode: %p", this);
-
-	//TODO: delete entity?
 }
     
 void SceneNode::AddComponent(Component * component)
@@ -172,7 +169,10 @@ void SceneNode::SetScene(Scene * _scene)
         return;
     }
     // Сheck 
-    if (scene)scene->UnregisterNode(this);
+    if (scene)
+	{
+		scene->UnregisterNode(this);
+	}
     scene = _scene;
     if (scene)scene->RegisterNode(this);
     
@@ -926,6 +926,8 @@ int32 SceneNode::Release()
 {
 	if(1 == referenceCount)
 	{
+		RemoveAllChildren();
+
 		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
 		AddFlag(SceneNode::NODE_DELETED);
 		SetScene(0);
