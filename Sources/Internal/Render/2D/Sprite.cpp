@@ -52,6 +52,7 @@ Vector<Vector2> Sprite::clippedVertices;
 Sprite::Sprite()
 {
 	textures = 0;
+	textureNames = 0;
 	frameTextureIndex = 0;
 	textureCount = 0;
 	
@@ -216,6 +217,7 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 	file->ReadLine(tempBuf, 1024);
 	sscanf(tempBuf, "%d", &textureCount);
 	textures = new Texture*[textureCount];
+	textureNames = new String[textureCount];
 //	timeSpriteRead = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead;
 
 	char textureCharName[128];
@@ -226,7 +228,7 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 		String tp = texturePath + textureCharName;
 //		Logger::Debug("Opening texture: %s", tp.c_str());
 		textures[k] = Texture::CreateFromFile(tp);
-
+		textureNames[k] = tp;
 		DVASSERT_MSG(textures[k], "ERROR: Texture loading failed"/* + pathName*/);
 	}
 
@@ -421,9 +423,15 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	this->type = SPRITE_FROM_TEXTURE;
 	this->textureCount = 1;
 	this->textures = new Texture*[this->textureCount];
-	
+	this->textureNames = new String[this->textureCount];
+
+
 	this->textures[0] = SafeRetain(fromTexture);
-	
+	if(this->textures[0])
+	{
+		this->textureNames[0] = this->textures[0]->GetPathname();
+	}
+
 //	int32 width = sprWidth;
 	this->size.dx = (float32)sprWidth;
 
@@ -559,6 +567,7 @@ void Sprite::Clear()
 		SafeRelease(textures[k]);
 	}
 	SafeDeleteArray(textures);
+	SafeDeleteArray(textureNames);
 	
 	if (frameVertices != 0)
 	{
@@ -1379,6 +1388,8 @@ void Sprite::PrepareForNewSize()
 	Logger::Debug("erasing from sprite from map");
 	spriteMap.erase(relativePathname);
 	textures = 0;
+	textureNames = 0;
+
 	frameTextureIndex = 0;
 	textureCount = 0;
 	
@@ -1514,10 +1525,19 @@ void Sprite::Reload()
     {
         for(int32 i = 0; i < textureCount; ++i)
         {
-            if(textures[i] && !textures[i]->GetPathname().empty())
-            {
+			if(textures[i] == Texture::GetPinkPlaceholder())
+			{
+				SafeRelease(textures[i]);
+				textures[i] = Texture::CreateFromFile(textureNames[i]);
+			}
+			else if(textures[i] && !textures[i]->GetPathname().empty())
+			{
 				textures[i]->Reload();
-            }
+			}
+			else
+			{
+				Logger::Error("[Sprite::Reloa] Something strange with texture_%d", i);
+			}
         }
         
         Clear();

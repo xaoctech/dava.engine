@@ -310,6 +310,7 @@ protected:
 	String  relativeTexturePathname;
 	
 	Texture ** textures;
+	String *textureNames;
 	int32 *frameTextureIndex;
 	int32 textureCount;
 	
