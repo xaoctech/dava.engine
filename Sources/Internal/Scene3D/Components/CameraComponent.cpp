@@ -27,7 +27,7 @@ void CameraComponent::SetCamera(Camera * _camera)
 Component * CameraComponent::Clone(SceneNode * toEntity)
 {
     CameraComponent * newComponent = new CameraComponent();
-	SetEntity(toEntity);
+	newComponent->SetEntity(toEntity);
     newComponent->camera = (Camera*)camera->Clone();
 
     return newComponent;
