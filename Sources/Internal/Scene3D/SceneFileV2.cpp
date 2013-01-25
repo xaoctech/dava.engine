@@ -689,16 +689,32 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 }
 
     
-bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
+bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 {
-    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(node);
     if (oldMeshInstanceNode)
     {
+        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+
+        for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
+        {
+            PolygonGroupWithMaterial * group = polygroups[k];
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+                {
+                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+        }
         SceneNode * newMeshInstanceNode = new SceneNode();
         oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
         newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone());
         
-        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+        //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
         Mesh * mesh = new Mesh();
         
@@ -710,10 +726,10 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
             
             if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
             {
-                if (oldMeshInstanceNode->GetLightmapCount() == 0)
-                {
-                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
-                }
+//                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+//                {
+//                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+//                }
                 
                 //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
                 //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
@@ -749,7 +765,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
         return true;
     }
 
-	LodNode * lod = dynamic_cast<LodNode*>(*node);
+	LodNode * lod = dynamic_cast<LodNode*>(node);
 	if(lod)
 	{
 		SceneNode * newNode = new SceneNode();
@@ -794,7 +810,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		return true;
 	}
 
-	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(*node);
+	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
 	if(particleEmitterNode)
 	{
 		SceneNode * newNode = new SceneNode();
@@ -821,7 +837,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		return true;
 	}
 
-	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(*node);
+	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(node);
 	if(particleEffectNode)
 	{
 		SceneNode * newNode = new SceneNode();
@@ -849,8 +865,12 @@ void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
 	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
 	{
 		SceneNode * childNode = currentNode->GetChild(c);
-		bool wasReplace = ReplaceNodeAfterLoad(&childNode);
 		ReplaceOldNodes(childNode);
+        /**
+            Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
+            was deep in hierarchy first.
+         */
+		bool wasReplace = ReplaceNodeAfterLoad(childNode);
 		if(wasReplace)
 		{
 			c--;
