@@ -86,7 +86,10 @@ ParticleLayer::ParticleLayer()
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
-    
+
+	frameStart = 0;
+	frameEnd = 0;
+
     isDisabled = false;
 }
 
@@ -225,6 +228,8 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
     DeleteAllParticles();
 	SafeRelease(sprite);
 	sprite = SafeRetain(_sprite);
+	UpdateFrameTimeline();
+
 	if(sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
@@ -874,6 +879,55 @@ const String & ParticleLayer::GetRelativeSpriteName()
 RenderBatch * ParticleLayer::GetRenderBatch()
 {
 	return renderBatch;
+}
+
+void ParticleLayer::ReloadSprite()
+{
+	if (this->sprite)
+	{
+		this->sprite->Reload();
+	}
+	
+	UpdateFrameTimeline();
+}
+
+void ParticleLayer::UpdateFrameTimeline()
+{
+	if (!this->frameOverLife)
+	{
+		return;
+	}
+
+	if (!this->sprite)
+	{
+		this->frameOverLife.Set(NULL);
+		return;
+	}
+
+	float32 maxFrame = (float32)this->sprite->GetFrameCount() - 1;
+	PropertyLineValue<float32>* pv = dynamic_cast< PropertyLineValue<float32> *>(frameOverLife.Get());
+	PropertyLineKeyframes<float32>* pk = dynamic_cast< PropertyLineKeyframes<float32> *>(frameOverLife.Get());
+	if (pv)
+	{
+		// Limit the single value.
+		if (pv->value > maxFrame)
+		{
+			pv->value = maxFrame;
+		}
+	}
+	
+	if (pk)
+	{
+		// Limit all the frames.
+		int32 framesCount = pk->keys.size();
+		for (int32 i = 0; i < framesCount; i ++)
+		{
+			if (pk->keys[i].value > maxFrame)
+			{
+				pk->keys[i].value = maxFrame;
+			}
+		}
+	}
 }
 
 }

@@ -475,7 +475,7 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propFrameOverLife;
 	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
 	
-	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(layer);
+	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
 	updateLayerCmd->Init(layerNameLineEdit->text(),
 						 !enableCheckBox->isChecked(),
 						 additiveCheckBox->isChecked(),
