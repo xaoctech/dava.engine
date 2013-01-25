@@ -289,6 +289,7 @@
 		E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
+		E8A264AB16B2975D0024B4DB /* FilePath.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A264A916B2975D0024B4DB /* FilePath.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -898,6 +899,8 @@
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
+		E8A264A916B2975D0024B4DB /* FilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePath.cpp; sourceTree = "<group>"; };
+		E8A264AA16B2975D0024B4DB /* FilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilePath.h; sourceTree = "<group>"; };
 		E8DE7FC916A5A22A005BFE44 /* IntrospectionFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionFlags.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1269,6 +1272,8 @@
 				5C5D97C215B0230D0058B43A /* File.h */,
 				5C5D97C415B0230D0058B43A /* FileList.cpp */,
 				5C5D97C515B0230D0058B43A /* FileList.h */,
+				E8A264A916B2975D0024B4DB /* FilePath.cpp */,
+				E8A264AA16B2975D0024B4DB /* FilePath.h */,
 				5C5D97C615B0230D0058B43A /* FileSystem.cpp */,
 				5C5D97C715B0230D0058B43A /* FileSystem.h */,
 				5C5D97C815B0230D0058B43A /* FileSystemObjective.mm */,
@@ -2142,6 +2147,7 @@
 				E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */,
 				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
 				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
+				E8A264AB16B2975D0024B4DB /* FilePath.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
