@@ -12,6 +12,7 @@ class ParticleLayerBatch : public RenderBatch
 {
 public:
 	ParticleLayerBatch();
+	virtual ~ParticleLayerBatch();
 
 	virtual void Draw(Camera * camera);
 	void SetTotalCount(int32 totalCount);

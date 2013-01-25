@@ -60,8 +60,26 @@ public:
     void SetLight(int32 lightIndex, LightNode * lightNode);
     LightNode * GetLight(int32 lightIndex);
     
+    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
+    
 private:
+    Texture * lightmapTexture;
+    String lightmapName;
+    Vector2 uvOffset;
+    Vector2 uvScale;
+    
     LightNode * lightNodes[LIGHT_NODE_MAX_COUNT];
+    
+    friend class Material;
+public:
+    INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
+                         //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
+                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
+                         MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
+                         MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+                         );
 };
     
     
@@ -175,7 +193,7 @@ public:
         Function should be used if you want to render something with this material.
      */
     //void BindMaterial();
-	void PrepareRenderState();
+	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
     /**
@@ -305,6 +323,7 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
+        //MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isOpaque, "Is Opaque", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

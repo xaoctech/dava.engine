@@ -14,6 +14,10 @@ ParticleLayerBatch::ParticleLayerBatch()
 
 }
 
+ParticleLayerBatch::~ParticleLayerBatch()
+{
+}
+
 
 static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
 
@@ -49,6 +53,8 @@ RenderBatch * ParticleLayerBatch::Clone()
 
 	return rb;
 }
+
+
 
 
 
