@@ -83,7 +83,6 @@ protected:
 
     void ReleaseScene();
 
-	void FindAllSpriteRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::Sprite*> & sprites);
 	void FindAllParticleEffectsRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::SceneNode*> & particleEffects);
 
 protected slots:
