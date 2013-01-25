@@ -131,6 +131,8 @@
 		E89ECC841663A9A100D17C41 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7E1663A9A100D17C41 /* Hash.h */; };
 		E89ECC851663A9A100D17C41 /* Introspection.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC7F1663A9A100D17C41 /* Introspection.h */; };
 		E89ECC861663A9A100D17C41 /* Meta.h in Headers */ = {isa = PBXBuildFile; fileRef = E89ECC801663A9A100D17C41 /* Meta.h */; };
+		E8A264B916B2AD160024B4DB /* FilePath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8A264B716B2AD160024B4DB /* FilePath.cpp */; };
+		E8A264BA16B2AD160024B4DB /* FilePath.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A264B816B2AD160024B4DB /* FilePath.h */; };
 		E8D8662E167B44E10094C124 /* AndroidSpecifics.h in Headers */ = {isa = PBXBuildFile; fileRef = E8D8662B167B44E10094C124 /* AndroidSpecifics.h */; };
 		E8D8662F167B44E10094C124 /* CorePlatformAndroid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8D8662C167B44E10094C124 /* CorePlatformAndroid.cpp */; };
 		E8D86630167B44E10094C124 /* CorePlatformAndroid.h in Headers */ = {isa = PBXBuildFile; fileRef = E8D8662D167B44E10094C124 /* CorePlatformAndroid.h */; };
@@ -745,6 +747,8 @@
 		E89ECC7E1663A9A100D17C41 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		E89ECC7F1663A9A100D17C41 /* Introspection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Introspection.h; sourceTree = "<group>"; };
 		E89ECC801663A9A100D17C41 /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		E8A264B716B2AD160024B4DB /* FilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePath.cpp; sourceTree = "<group>"; };
+		E8A264B816B2AD160024B4DB /* FilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilePath.h; sourceTree = "<group>"; };
 		E8D8662B167B44E10094C124 /* AndroidSpecifics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AndroidSpecifics.h; sourceTree = "<group>"; };
 		E8D8662C167B44E10094C124 /* CorePlatformAndroid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorePlatformAndroid.cpp; sourceTree = "<group>"; };
 		E8D8662D167B44E10094C124 /* CorePlatformAndroid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorePlatformAndroid.h; sourceTree = "<group>"; };
@@ -1622,6 +1626,8 @@
 				FECFC0E912E87E3000C71562 /* File.h */,
 				FE9420911332605600515418 /* FileList.cpp */,
 				FE9420921332605600515418 /* FileList.h */,
+				E8A264B716B2AD160024B4DB /* FilePath.cpp */,
+				E8A264B816B2AD160024B4DB /* FilePath.h */,
 				5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */,
 				FECFC0EA12E87E3000C71562 /* FileSystem.cpp */,
 				FECFC0EB12E87E3000C71562 /* FileSystem.h */,
@@ -2430,6 +2436,7 @@
 				E8FCE78D16805AB000497559 /* APKFile.h in Headers */,
 				E89CD7351681F16D000E7F24 /* ThreadContext.h in Headers */,
 				49E7A1D316835E3500F63EFE /* LibDxtHelper.h in Headers */,
+				E8A264BA16B2AD160024B4DB /* FilePath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2767,6 +2774,7 @@
 				E8FCE78C16805AB000497559 /* APKFile.cpp in Sources */,
 				E89CD7341681F16D000E7F24 /* ThreadContext.cpp in Sources */,
 				49E7A1D216835E3500F63EFE /* LibDxtHelper.cpp in Sources */,
+				E8A264B916B2AD160024B4DB /* FilePath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
