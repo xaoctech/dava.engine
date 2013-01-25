@@ -563,8 +563,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		if(components[k])
 		{
 			SafeDelete(dstNode->components[k]);
-			dstNode->AddComponent(components[k]->Clone());
-			dstNode->components[k]->SetEntity(dstNode);
+			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
 	}
 

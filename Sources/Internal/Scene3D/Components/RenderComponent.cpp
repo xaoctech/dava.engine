@@ -24,9 +24,11 @@ RenderObject * RenderComponent::GetRenderObject()
     return renderObject;
 }
     
-Component * RenderComponent::Clone()
+Component * RenderComponent::Clone(SceneNode * toEntity)
 {
     RenderComponent * component = new RenderComponent();
+	SetEntity(toEntity);
+
     component->renderObject = renderObject->Clone();
     return component;
 }

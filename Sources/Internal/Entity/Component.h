@@ -66,7 +66,7 @@ public:
     
     virtual ~Component() {};
     virtual uint32 GetType() = 0;
-    virtual Component * Clone() = 0;
+    virtual Component * Clone(SceneNode * toEntity) = 0;
 
 	virtual void SetEntity(SceneNode * entity);
 protected:

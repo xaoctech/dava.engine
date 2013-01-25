@@ -15,7 +15,7 @@ public:
     ~LightComponent();
     
     IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
     void SetLightObject(LightNode * _light);
     LightNode * GetLightObject();
