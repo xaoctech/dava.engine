@@ -91,7 +91,8 @@ public:
     
     void SetMaterial(Material * _material);
     inline Material * GetMaterial();
-
+    inline InstanceMaterialState * GetMaterialInstance();
+    
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
     
@@ -112,6 +113,7 @@ protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     Material * material;                    // Should be replaced to NMaterial
+    InstanceMaterialState * materialInstance; // Should be replaced by NMaterialInstance
 	RenderObject * renderObject;
     
     uint32 startIndex;
@@ -139,6 +141,8 @@ public:
         MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE)
                          
         MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
+        MEMBER(material, "Material", INTROSPECTION_EDITOR)
+        MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)
     );
 };
 
@@ -155,6 +159,11 @@ inline RenderDataObject * RenderBatch::GetRenderDataObject()
 inline Material * RenderBatch::GetMaterial()
 {
     return material;
+}
+    
+inline InstanceMaterialState * RenderBatch::GetMaterialInstance()
+{
+    return materialInstance;
 }
 
 inline RenderObject * RenderBatch::GetRenderObject()
