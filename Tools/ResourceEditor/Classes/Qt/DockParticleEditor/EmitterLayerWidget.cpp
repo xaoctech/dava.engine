@@ -16,6 +16,7 @@
 #include <QGraphicsWidget>
 #include <QFileDialog>
 #include <QFile>
+#include <QMessageBox>
 
 #define SPRITE_SIZE 60
 
@@ -401,6 +402,23 @@ void EmitterLayerWidget::OnSpriteBtn()
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
+	
+	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
+	// this is according to the DF-551 issue.
+	String filePathToBeOpened;
+	String fileNameToBeOpened;
+	FileSystem::SplitPath(filePath.toStdString(), filePathToBeOpened, fileNameToBeOpened);
+	if (filePathToBeOpened != projectPath)
+	{
+		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
+			arg(QString::fromStdString(filePathToBeOpened)).
+			arg(QString::fromStdString(projectPath));
+
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
+		msgBox.exec();
+
+		// TODO: return here in case we'll decide to not allow opening sprite from incorrect path.
+	}
 	
 	filePath.remove(filePath.size() - 4, 4);
 	Sprite* sprite = Sprite::Create(filePath.toStdString());
