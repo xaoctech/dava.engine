@@ -88,19 +88,18 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
 void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
     RenderObject * renderObject = entityObjectMap.Value(entity);
-    if (!renderObject)return;
+    if (!renderObject)
+	{
+		return;
+	}
     
     LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
     if (node)
     {
         node = 0;
     }
-
-	
     RenderSystem::Instance()->RemoveFromRender(renderObject);
 
-	//renderObject->Release();
-	//this ruins objects deletion
 	entityObjectMap.Remove(entity);
 }
     

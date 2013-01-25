@@ -49,6 +49,7 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
+    materialInstance = new InstanceMaterialState();
 }
     
 RenderBatch::~RenderBatch()
@@ -56,21 +57,25 @@ RenderBatch::~RenderBatch()
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	SafeRelease(material);
+    SafeRelease(materialInstance);
 }
     
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	SafeRelease(dataSource);
     dataSource = SafeRetain(_polygonGroup);
 	aabbox = dataSource->GetBoundingBox();
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
 {
+	SafeRelease(renderDataObject);
     renderDataObject = SafeRetain(_renderDataObject);
 }
 
 void RenderBatch::SetMaterial(Material * _material)
 {
+	SafeRelease(material);
     material = SafeRetain(_material);
 }
 
@@ -88,7 +93,7 @@ void RenderBatch::Draw(Camera * camera)
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-    material->Draw(dataSource, 0);
+    material->Draw(dataSource,  materialInstance);
 }
     
     
@@ -115,6 +120,7 @@ RenderBatch * RenderBatch::Clone()
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	rb->material = SafeRetain(material);
+    rb->materialInstance = SafeRetain(materialInstance);
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;

@@ -46,6 +46,7 @@ RenderObject::~RenderObject()
 	uint32 size = renderBatchArray.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
+		DVASSERT(renderBatchArray[i]->GetOwnerLayer() == 0);
 		renderBatchArray[i]->Release();
 	}
 }
@@ -88,11 +89,10 @@ RenderObject * RenderObject::Clone()
 	ro->bbox = bbox;
 	ro->worldBBox = worldBBox;
 
-	uint32 size = renderBatchArray.size();
+	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		ro->renderBatchArray.push_back(renderBatchArray[i]->Clone());
-		ro->renderBatchArray[i]->SetRenderObject(ro);
+		ro->AddRenderBatch(GetRenderBatch(i)->Clone());
 	}
 
 	return ro;
