@@ -66,6 +66,7 @@
 #include "Scene3D/Systems/UpdatableSystem.h"
 #include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
+#include "Scene3D/Systems/SwitchSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -140,6 +141,9 @@ void Scene::CreateSystems()
     
     lightUpdateSystem = new LightUpdateSystem();
     AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
+
+	switchSystem = new SwitchSystem();
+	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
 }
 
 Scene::~Scene()
@@ -600,6 +604,8 @@ void Scene::Update(float timeElapsed)
 
 	lodSystem->SetCamera(currentCamera);
 	lodSystem->Process();
+
+	switchSystem->Process();
 
 	particleEffectSystem->Process();
 	particleEmitterSystem->Process();

@@ -22,7 +22,7 @@ public:
 
 private:
 	//partial update per frame
-	static const int32 UPDATE_PART_PER_FRAME = 3;
+	static const int32 UPDATE_PART_PER_FRAME = 1;
 	Vector<int32> partialUpdateIndices;
 	int32 currentPartialUpdateIndex;
 	void UpdatePartialUpdateIndices();
