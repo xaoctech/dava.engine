@@ -22,12 +22,12 @@ TransformComponent::~TransformComponent()
 Component * TransformComponent::Clone(SceneNode * toEntity)
 {
     TransformComponent * newTransform = new TransformComponent();
-	SetEntity(toEntity);
+	newTransform->SetEntity(toEntity);
 	newTransform->localMatrix = localMatrix;
 	newTransform->worldMatrix = worldMatrix;
     newTransform->parent = this->parent;
 
-	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::TRANSFORM_PARENT_CHANGED);
+	Scene::GetActiveScene()->ImmediateEvent(toEntity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
 
     return newTransform;
 }
