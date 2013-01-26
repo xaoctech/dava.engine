@@ -27,7 +27,7 @@ RenderObject * RenderComponent::GetRenderObject()
 Component * RenderComponent::Clone(SceneNode * toEntity)
 {
     RenderComponent * component = new RenderComponent();
-	SetEntity(toEntity);
+	component->SetEntity(toEntity);
 
     component->renderObject = renderObject->Clone();
     return component;

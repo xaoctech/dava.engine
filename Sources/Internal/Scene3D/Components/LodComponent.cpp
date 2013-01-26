@@ -33,8 +33,62 @@ void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 Component * LodComponent::Clone(SceneNode * toEntity)
 {
 	LodComponent * newLod = new LodComponent();
-	SetEntity(toEntity);
-    // TODO: Add lod cloning
+	newLod->SetEntity(toEntity);
+
+	newLod->lodLayers = lodLayers;
+	const List<LodData>::const_iterator endLod = newLod->lodLayers.end();
+	for (List<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
+	{
+		LodData & ld = *it;
+		ld.nodes.clear();
+	}
+	//if(!newLod->lodLayers.empty())
+	//{
+	//	const List<LodData>::const_iterator endLod = newLod->lodLayers.end();
+	//	newLod->currentLod = &(*newLod->lodLayers.begin());
+	//	for (List<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
+	//	{
+	//		LodData & ld = *it;
+	//		uint32 size = ld.nodes.size();
+	//		for (uint32 idx = 0; idx < size; ++idx)
+	//		{
+	//			int32 count = entity->GetChildrenCount();
+	//			for (int32 i = 0; i < count; i++) 
+	//			{
+	//				SceneNode * child = entity->GetChild(i);
+	//				if(child == ld.nodes[idx])
+	//				{
+	//					ld.nodes[idx] = toEntity->GetChild(i);
+	//					if (newLod->currentLod != &ld) 
+	//					{
+	//						ld.nodes[idx]->SetUpdatable(false);
+	//					}
+	//					else 
+	//					{
+	//						ld.nodes[idx]->SetUpdatable(true);
+	//					}
+
+	//					break;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+
+	//Lod values
+	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
+	{
+		newLod->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
+		newLod->lodLayersArray[iLayer].nearDistance = lodLayersArray[iLayer].nearDistance;
+		newLod->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
+		newLod->lodLayersArray[iLayer].farDistance = lodLayersArray[iLayer].farDistance;
+		newLod->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
+	}
+
+	newLod->forceDistance = forceDistance;
+	newLod->forceDistanceSq = forceDistanceSq;
+	newLod->forceLodLayer = forceLodLayer;
+
 	return newLod;
 }
 

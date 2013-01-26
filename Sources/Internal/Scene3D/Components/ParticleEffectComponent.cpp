@@ -17,7 +17,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 Component * ParticleEffectComponent::Clone(SceneNode * toEntity)
 {
 	ParticleEffectComponent * newComponent = new ParticleEffectComponent();
-	SetEntity(toEntity);
+	newComponent->SetEntity(toEntity);
 
 	newComponent->stopAfterNRepeats = stopAfterNRepeats;
 	newComponent->stopWhenEmpty = stopWhenEmpty;

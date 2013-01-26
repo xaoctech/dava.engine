@@ -18,7 +18,7 @@ BulletComponent::~BulletComponent()
 Component * BulletComponent::Clone(SceneNode * toEntity)
 {
 	BulletComponent * newComponent = new BulletComponent();
-	SetEntity(toEntity);
+	newComponent->SetEntity(toEntity);
 	//bulletObject is intentionally not cloned
 	return newComponent;
 }

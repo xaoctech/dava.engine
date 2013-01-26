@@ -14,7 +14,7 @@ UpdatableComponent::UpdatableComponent()
 Component * UpdatableComponent::Clone(SceneNode * toEntity)
 {
 	UpdatableComponent * newComponent = new UpdatableComponent();
-	SetEntity(toEntity);
+	newComponent->SetEntity(toEntity);
 
 	newComponent->SetUpdatableObject(updatableObject);
 	

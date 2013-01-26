@@ -16,12 +16,19 @@ void ParticleEffectSystem::Process()
 {
 	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
 
-	uint32 size = components.size();
-	for(uint32 i = 0; i < size; ++i)
+	size = components.size();
+	for(index = 0; index < size; ++index)
 	{
-		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(components[i]);
+		ParticleEffectComponent * component = static_cast<ParticleEffectComponent*>(components[index]);
 		component->EffectUpdate(timeElapsed);
 	}
+}
+
+void ParticleEffectSystem::RemoveEntity(SceneNode * entity)
+{
+	BaseProcessSystem::RemoveEntity(entity);
+	--size;
+	--index;
 }
 
 }

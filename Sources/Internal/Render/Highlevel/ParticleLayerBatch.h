@@ -8,6 +8,7 @@
 namespace DAVA
 {
 
+class ParticleLayer;
 class ParticleLayerBatch : public RenderBatch
 {
 public:
@@ -16,11 +17,13 @@ public:
 
 	virtual void Draw(Camera * camera);
 	void SetTotalCount(int32 totalCount);
+	void SetParticleLayer(ParticleLayer * particleLayer);
 
 	virtual RenderBatch * Clone();
 
 protected:
 	int32 totalCount;
+	ParticleLayer * particleLayer;
     
 public:
     INTROSPECTION_EXTEND(ParticleLayerBatch, RenderBatch,
