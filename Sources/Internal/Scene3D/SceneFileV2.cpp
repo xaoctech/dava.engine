@@ -36,6 +36,7 @@
 #include "Scene3D/PathManip.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
+#include "Scene3D/SwitchNode.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Mesh.h"
 
@@ -53,6 +54,7 @@
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -868,6 +870,29 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 
 		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
 		newNode->AddComponent(effectComponent);
+		newNode->Release();
+		return true;
+	}
+
+	SwitchNode * sw = dynamic_cast<SwitchNode*>(node);
+	if(sw)
+	{
+		SceneNode * newNode = new SceneNode();
+		sw->Clone(newNode);
+
+		SwitchComponent * swConponent = new SwitchComponent();
+		newNode->AddComponent(swConponent);
+		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
+
+		SceneNode * parent = sw->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(sw);
+		}
+		sw->SetSwitchIndex(0);
+
 		newNode->Release();
 		return true;
 	}
