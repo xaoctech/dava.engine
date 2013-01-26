@@ -139,7 +139,7 @@ void Scene::CreateSystems()
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
     
     lightUpdateSystem = new LightUpdateSystem();
-    AddSystem(lightUpdateSystem, (1 << Component::LIGHT_COMPONENT));
+    AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
 }
 
 Scene::~Scene()
