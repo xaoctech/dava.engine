@@ -672,10 +672,15 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 
     if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
     {
-        if (currentNode->GetComponentCount() > 0)
+        if (currentNode->GetComponentCount() == 1)
         {
-            return false;
+            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
+            if (!isTransfrom)
+                return false;
         }
+        else if (currentNode->GetComponentCount() >= 2)
+            return false;
+        
         if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
         {
             SceneNode * parent  = currentNode->GetParent();
