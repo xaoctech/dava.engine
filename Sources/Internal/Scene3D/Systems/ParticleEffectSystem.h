@@ -13,6 +13,11 @@ class ParticleEffectSystem : public BaseProcessSystem
 public:
 	ParticleEffectSystem();
 	virtual void Process();
+
+	virtual void RemoveEntity(SceneNode * entity);
+
+	uint32 index;
+	uint32 size;
 };
 
 }
