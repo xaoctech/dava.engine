@@ -555,7 +555,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         SafeRelease(cameraObject);
         skipNode = true;
-    }else if (name == "LightNode")
+    }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
     {
         node = new SceneNode();
         baseObject = node;
@@ -563,8 +563,11 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->SetScene(scene);
         node->Load(archive, this);
         
+        bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+        
         LightNode * light = new LightNode();
         light->Load(archive, this);
+        light->SetDynamic(isDynamic);
         
         node->AddComponent(new LightComponent(light));
         parent->AddNode(node);
@@ -665,6 +668,10 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 
     if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
     {
+        if (currentNode->GetComponentCount() > 0)
+        {
+            return false;
+        }
         if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
         {
             SceneNode * parent  = currentNode->GetParent();

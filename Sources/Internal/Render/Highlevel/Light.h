@@ -72,6 +72,8 @@ public:
     const Vector3 & GetPosition() const;
     const Vector3 & GetDirection() const;
     
+    void SetPositionDirectionFromMatrix(const Matrix4 & worldTransform);
+
     //virtual void Update(float32 timeElapsed);
     //virtual void Draw();
     
