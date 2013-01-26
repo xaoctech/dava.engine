@@ -771,13 +771,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		lod->SceneNode::Clone(newNode);
 		SceneNode * parent = lod->GetParent();
 
-		DVASSERT(parent);
-		if(parent)
-		{
-			parent->AddNode(newNode);
-			parent->RemoveNode(lod);
-		}
-
 		newNode->AddComponent(new LodComponent());
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
 
@@ -802,6 +795,13 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 			newLodDataItem.nodes = oldDataItem->nodes;
 
 			lc->lodLayers.push_back(newLodDataItem);
+		}
+
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(lod);
 		}
 
 		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
