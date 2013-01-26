@@ -517,7 +517,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     SceneNode * node = 0;
     
     bool skipNode = false;
-
+    bool removeChildren = false;
     
     
     
@@ -574,6 +574,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         SafeRelease(light);
         skipNode = true;
+        removeChildren = true;
     }else
     {
         baseObject = ObjectFactory::Instance()->New(name);
@@ -611,6 +612,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			LoadHierarchy(scene, node, file, level + 1);
 		}
+        if (removeChildren)
+            node->RemoveAllChildren();
+
         SafeRelease(node);
     }
     
