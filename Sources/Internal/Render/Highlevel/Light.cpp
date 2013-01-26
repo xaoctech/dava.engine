@@ -32,6 +32,8 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/RenderSystem.h"
+
 
 namespace DAVA 
 {
@@ -98,24 +100,15 @@ BaseObject * LightNode::Clone(BaseObject *dstNode)
     
     return dstNode;
 }
-// LIGHT
-//void LightNode::Update(float32 timeElapsed)
-//{
-//    bool needUpdateVars = false;
-//    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
-//    {
-//        needUpdateVars = true;
-//        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
-//    }
-//    
-//    if (needUpdateVars)
-//    {
-//        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
-//        Matrix3 rotationPart(GetWorldTransform());
-//        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
-//        direction.Normalize();
-//    }
-//}
+
+void LightNode::SetPositionDirectionFromMatrix(const Matrix4 & worldTransform)
+{
+    position = Vector3(0.0f, 0.0f, 0.0f) * worldTransform;
+    direction = MultiplyVectorMat3x3(Vector3(0.0, -1.0f, 0.0f), worldTransform);
+    direction.Normalize();
+    
+    RenderSystem::Instance()->MarkForUpdate(this);
+}
 
 LightNode::eType LightNode::GetType() const
 {

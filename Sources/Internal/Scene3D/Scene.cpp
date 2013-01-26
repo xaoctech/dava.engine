@@ -65,6 +65,7 @@
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdatableSystem.h"
 #include "Scene3D/Systems/DeleteSystem.h"
+#include "Scene3D/Systems/LightUpdateSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -136,6 +137,9 @@ void Scene::CreateSystems()
 
 	updatableSystem = new UpdatableSystem();
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
+    
+    lightUpdateSystem = new LightUpdateSystem();
+    AddSystem(lightUpdateSystem, (1 << Component::LIGHT_COMPONENT));
 }
 
 Scene::~Scene()

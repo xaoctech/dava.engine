@@ -36,11 +36,13 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Light.h"
 
 namespace DAVA
 {
     static FastName PASS_ZPRE_PASS("ZPrePass");
     static FastName PASS_FORWARD_PASS("ForwardPass");
+    static FastName SHADOW_VOLUME_PASS("ShadowVolumePass");
     static FastName PASS_DEFERRED_PASS("DeferredPass");
 
 RenderSystem::RenderSystem()
@@ -48,6 +50,8 @@ RenderSystem::RenderSystem()
     // Build forward renderer.
     renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
     renderPassesMap.Insert("ForwardPass", new RenderPass("ForwardPass"));
+    renderPassesMap.Insert("ShadowVolumePass", new RenderPass("ShadowVolumePass"));
+
     
     // renderPasses.push_back(new RenderPass("GBufferPass"));
     // renderPasses.push_back(new LightPrePass("LightPrePass"));
@@ -55,6 +59,7 @@ RenderSystem::RenderSystem()
 
     renderLayersMap.Insert("OpaqueRenderLayer", new RenderLayer("OpaqueRenderLayer"));
     renderLayersMap.Insert("TransclucentRenderLayer", new RenderLayer("TransclucentRenderLayer"));
+    renderLayersMap.Insert("ShadowVolumeLayer", new RenderLayer("ShadowVolumeLayer"));
     
     renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
@@ -62,6 +67,9 @@ RenderSystem::RenderSystem()
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD_PASS];
     forwardPass->AddRenderLayer(renderLayersMap["OpaqueRenderLayer"]);
     forwardPass->AddRenderLayer(renderLayersMap["TransclucentRenderLayer"]);
+
+    RenderPass * shadowVolumePass = renderPassesMap[SHADOW_VOLUME_PASS];
+    shadowVolumePass->AddRenderLayer(renderLayersMap["ShadowVolumeLayer"]);
 }
 
 RenderSystem::~RenderSystem()
@@ -86,7 +94,7 @@ RenderSystem::~RenderSystem()
 //    renderPasses.clear();
 }
     
-    
+
 void RenderSystem::RenderPermanent(RenderObject * renderObject)
 {
     renderObject->Retain();
@@ -178,9 +186,22 @@ void RenderSystem::ProcessClipping()
     {
         RenderObject * obj = *it;
         obj->GetBoundingBox().GetTransformedBox(*obj->GetWorldTransformPtr(), obj->GetWorldBoundingBox());
+        FindNearestLights(obj);
         objectBoxesUpdated++;
     }
     markedObjects.clear();
+    
+//    List<RenderObject*>::iterator endLights = movedLights.end();
+//    for (List<LightNode*>::iterator it = movedLights.begin(); it != endLights; ++it)
+//    {
+//        FindNearestLights(*it);
+//    }
+    if (movedLights.size() > 0)
+    {
+        FindNearestLights();
+    }
+    movedLights.clear();
+    
     
     int32 objectsCulled = 0;
     
@@ -204,7 +225,12 @@ void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
     markedObjects.push_back(renderObject);
 }
-        
+  
+void RenderSystem::MarkForUpdate(LightNode * lightNode)
+{
+    movedLights.push_back(lightNode);
+}
+    
 void RenderSystem::RegisterForUpdate(IRenderUpdatable * updatable)
 {
     objectsForUpdate.push_back(updatable);
@@ -223,6 +249,58 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
 		}
 	}
 }
+    
+void RenderSystem::FindNearestLights(RenderObject * renderObject)
+{
+    LightNode * nearestLight = 0;
+    float32 squareMinDistance = 10000000.0f;
+    Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+    
+    uint32 size = lights.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        LightNode * light = lights[k];
+        
+        if (!light->IsDynamic())continue;
+        
+        const Vector3 & lightPosition = light->GetPosition();
+        
+        float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+        if (squareDistanceToLight < squareMinDistance)
+        {
+            squareMinDistance = squareDistanceToLight;
+            nearestLight = light;
+        }
+    }
+    
+    uint32 renderBatchCount = renderObject->GetRenderBatchCount();
+    for (uint32 k = 0; k < renderBatchCount; ++k)
+    {
+        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        batch->GetMaterialInstance()->SetLight(0, nearestLight);
+    }
+}
+
+void RenderSystem::FindNearestLights()
+{
+    uint32 size = (uint32)renderObjectArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        FindNearestLights(renderObjectArray[k]);
+    }
+}
+    
+void RenderSystem::AddLight(LightNode * light)
+{
+    lights.push_back(SafeRetain(light));
+    FindNearestLights();
+}
+    
+void RenderSystem::RemoveLight(LightNode * light)
+{
+    lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
+}
+
 
 void RenderSystem::Update(float32 timeElapsed)
 {
@@ -237,13 +315,6 @@ void RenderSystem::Update(float32 timeElapsed)
 
 void RenderSystem::Render()
 {
-//    //
-//    uint32 size = (uint32)renderObjectArray.size();
-//    for (uint32 k = 0; k < renderObjectArray.size(); ++k)
-//    {
-//        renderObjectArray[k]->Draw();
-//    }
-    
     uint32 size = (uint32)renderPassOrder.size();
     for (uint32 k = 0; k < size; ++k)
     {
