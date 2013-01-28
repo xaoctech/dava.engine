@@ -33,6 +33,7 @@ public:
     ~EmitterLayerWidget();
 
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, bool updateMinimized);
+	ParticleLayer* GetLayer() const {return layer;};
 	void Update();
 	
 	virtual bool eventFilter(QObject *, QEvent *);
@@ -53,7 +54,6 @@ private:
 	void UpdateTooltip();
 	
 private:
-	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	

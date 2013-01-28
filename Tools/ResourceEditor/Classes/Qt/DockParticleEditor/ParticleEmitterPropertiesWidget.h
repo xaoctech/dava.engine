@@ -39,8 +39,6 @@ protected:
 private:
 	QVBoxLayout* mainLayout;
 
-	ParticleEmitter* emitter;
-
 	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
 	TimeLineWidget* emitterEmissionAngle;
