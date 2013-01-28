@@ -279,7 +279,6 @@ protected:
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
-	ShadowRect * shadowRect;
 
 	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;

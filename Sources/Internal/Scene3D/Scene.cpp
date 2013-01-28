@@ -47,7 +47,6 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
-#include "Scene3D/ShadowRect.h"
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
@@ -88,7 +87,6 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
-	,	shadowRect(0)
 	,	imposterManager(0)
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
@@ -175,7 +173,6 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
-	SafeRelease(shadowRect);
 	SafeRelease(bvHierarchy);
 
     transformSystem = 0;
@@ -708,57 +705,7 @@ void Scene::Draw()
 		imposterManager->Draw();
 	}
     
-	//LandscapeGeometrySystem::Run(this);
-	//MeshInstanceDrawSystem::Run(this);
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW) && shadowVolumes.size() > 0)
-	{
-		if(!shadowRect)
-		{
-			shadowRect = ShadowRect::Create();
-		}
-
-		//2nd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
-
-		RenderManager::Instance()->ClearStencilBuffer(0);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
-		
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
-		RenderManager::State()->SetStencilRef(1);
-		RenderManager::State()->SetStencilMask(0xFFFFFFFF);
-
-		RenderManager::State()->SetStencilPass(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT, STENCILOP_DECR_WRAP);
-
-		RenderManager::State()->SetStencilPass(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_BACK, STENCILOP_INCR_WRAP);
-		
-		RenderManager::Instance()->FlushState();
-		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
-		for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
-		{
-			(*it)->DrawShadow();
-		}
-
-		//3rd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
-		
-		RenderManager::State()->SetStencilRef(0);
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
-		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		shadowRect->Draw();
-	}
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
