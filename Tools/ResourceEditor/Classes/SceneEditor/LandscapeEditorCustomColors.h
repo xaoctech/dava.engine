@@ -39,6 +39,8 @@ public:
 	void LoadColorLayer(const String &pathName);
 	String GetCurrentSaveFileName();
 
+	void ClearSceneResources();
+
 protected:
 
     virtual void InputAction(int32 phase, bool intersects);

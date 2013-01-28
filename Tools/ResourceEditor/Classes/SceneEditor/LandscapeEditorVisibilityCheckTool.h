@@ -45,6 +45,7 @@ public:
 	void SetState(eVisibilityCheckToolState newState);
 	void SetVisibilityAreaSize(uint32 size);
 	void SaveColorLayer(const String &pathName);
+	void ClearSceneResources();
 
 protected:
 

@@ -13,8 +13,7 @@ public:
 	static void UpdateParticleSprites();
 
 protected: 
-
-	static void UpdateParticleSprites(SceneData* sceneData);
+	static void ReloadParticleSprites(SceneData* sceneData);
 };
 };
 #endif /* defined(__ResourceEditorQt__ParticlesEditorSpritePackerHelper__) */

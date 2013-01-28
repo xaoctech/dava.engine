@@ -159,7 +159,7 @@ private:
 class CommandUpdateParticleLayer: public Command
 {
 public:
-	CommandUpdateParticleLayer(ParticleLayer* layer);
+	CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer);
 	void Init(const QString& layerName,
 			  bool isDisabled,
 			  bool additive,
@@ -187,6 +187,8 @@ public:
 			  RefPtr< PropertyLine<float32> > alphaOverLife,
 			  RefPtr< PropertyLine<Color> > colorOverLife,
 			  RefPtr< PropertyLine<float32> > frameOverLife,
+			  RefPtr< PropertyLine<float32> > angle,
+			  RefPtr< PropertyLine<float32> > angleVariation,
 			  float32 alignToMotion,
 			  float32 startTime,
 			  float32 endTime
@@ -196,6 +198,7 @@ protected:
     virtual void Execute();
 	
 private:
+	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 
 	QString layerName;
@@ -225,6 +228,8 @@ private:
 	RefPtr< PropertyLine<float32> > alphaOverLife;
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<float32> > frameOverLife;
+	RefPtr< PropertyLine<float32> > angle;
+	RefPtr< PropertyLine<float32> > angleVariation;
 	float32 alignToMotion;
 	float32 startTime;
 	float32 endTime;

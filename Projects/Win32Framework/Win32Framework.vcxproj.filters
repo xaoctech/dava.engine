@@ -2124,4 +2124,12 @@
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </None>
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </None>
+  </ItemGroup>
 </Project>
