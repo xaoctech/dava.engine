@@ -148,5 +148,17 @@ float32 LodComponent::GetForceDistance() const
     return forceDistance;
 }
 
+void LodComponent::GetLodData(List<LodData*> &retLodLayers)
+{
+	retLodLayers.clear();
+
+	List<LodData>::const_iterator endIt = lodLayers.end();
+	for(List<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
+	{
+		LodData *ld = &(*it);
+		retLodLayers.push_back(ld);
+	}
+}
+
     
 };
