@@ -32,11 +32,19 @@
 
 #define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
-#include <signal.h>
-#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+	#if defined(__DAVAENGINE_WIN32__)
+		#define OGLDebugBreak() { __debugbreak(); }
+	#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
+		#include <signal.h>
+		#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+	#else //PLATFORMS
+		//other platforms
+	#endif //PLATFORMS
 #else
 #define OGLDebugBreak()
 #endif
+
+
 
 #if defined(__DAVAENGINE_OPENGL__)
 namespace DAVA
