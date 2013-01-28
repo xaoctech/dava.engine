@@ -154,7 +154,7 @@ private:
 
     bool ReplaceNodeAfterLoad(SceneNode * node);
 	void ReplaceOldNodes(SceneNode * currentNode);
-    
+
     
     bool isDebugLogEnabled;
     bool isSaveForGame;
