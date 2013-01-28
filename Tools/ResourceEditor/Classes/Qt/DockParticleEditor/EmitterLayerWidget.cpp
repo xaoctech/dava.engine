@@ -16,6 +16,7 @@
 #include <QGraphicsWidget>
 #include <QFileDialog>
 #include <QFile>
+#include <QMessageBox>
 
 #define SPRITE_SIZE 60
 
@@ -93,6 +94,9 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	
 	frameOverLifeTimeLine = new TimeLineWidget(this);
 	InitWidget(frameOverLifeTimeLine);
+	
+	angleTimeLine = new TimeLineWidget(this);
+	InitWidget(angleTimeLine);
 	
 	QHBoxLayout* alignToMotionLayout = new QHBoxLayout;
 	mainBox->addLayout(alignToMotionLayout);
@@ -274,7 +278,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	
 	//LAYER_MOTION_RANDOM, LAYER_MOTION_RANDOM_VARIATION, LAYER_MOTION_RANDOM_OVER_LIFE,
 	motionTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
-	motionTimeLine->AddLine(0, PropLineWrapper<float32>(layer->motionRandom).GetProps(), Qt::blue, "motion Random");
+	motionTimeLine->AddLine(0, PropLineWrapper<float32>(layer->motionRandom).GetProps(), Qt::blue, "motion random");
 	motionTimeLine->AddLine(1, PropLineWrapper<float32>(layer->motionRandomVariation).GetProps(), Qt::darkGreen, "motion random variation");
 	motionTimeLine->AddLine(2, PropLineWrapper<float32>(layer->motionRandomOverLife).GetProps(), Qt::red, "motion random over life");
 
@@ -305,6 +309,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	}
 	frameOverLifeTimeLine->SetMaxLimits(frameCount);
 	frameOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->frameOverLife).GetProps(), Qt::blue, "frame over life");
+	
+	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
+	angleTimeLine->AddLine(1, PropLineWrapper<float32>(layer->angleVariation).GetProps(), Qt::darkGreen, "angle variation");
 	
 	//LAYER_ALIGN_TO_MOTION,
 	alignToMotionSpin->setValue(layer->alignToMotion);
@@ -338,6 +346,7 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	bounceTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_BOUNCE_PROPS"));
 	frameOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FRAME_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
+	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
 
 void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
@@ -389,6 +398,10 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	props->DeleteAllKeys();
 	frameOverLifeTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_FRAME_OVER_LIFE_PROPS", props);
+	
+	props->DeleteAllKeys();
+	angleTimeLine->GetVisualState(props);
+	visualStateProps->SetArchive("LAYER_ANGLE", props);
 
 	SafeRelease(props);
 }
@@ -401,6 +414,33 @@ void EmitterLayerWidget::OnSpriteBtn()
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
+	
+	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
+	// this is according to the DF-551 issue.
+	String filePathToBeOpened;
+	String fileNameToBeOpened;
+	FileSystem::SplitPath(filePath.toStdString(), filePathToBeOpened, fileNameToBeOpened);
+
+#ifdef __DAVAENGINE_WIN32__
+	// Remove the drive name, if any.
+	String::size_type driveNamePos = filePathToBeOpened.find(":/");
+	if (driveNamePos != String::npos && filePathToBeOpened.length() > 2)
+	{
+		filePathToBeOpened = filePathToBeOpened.substr(2, filePathToBeOpened.length() - 2);
+	}
+#endif
+
+	if (filePathToBeOpened != projectPath)
+	{
+		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
+			arg(QString::fromStdString(filePathToBeOpened)).
+			arg(QString::fromStdString(projectPath));
+
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
+		msgBox.exec();
+
+		// TODO: return here in case we'll decide to not allow opening sprite from incorrect path.
+	}
 	
 	filePath.remove(filePath.size() - 4, 4);
 	Sprite* sprite = Sprite::Create(filePath.toStdString());
@@ -475,6 +515,11 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propFrameOverLife;
 	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
 	
+	PropLineWrapper<float32> propAngle;
+	PropLineWrapper<float32> propAngleVariation;
+	angleTimeLine->GetValue(0, propAngle.GetPropsPtr());
+	angleTimeLine->GetValue(1, propAngleVariation.GetPropsPtr());
+	
 	CommandUpdateParticleLayer* updateLayerCmd = new CommandUpdateParticleLayer(emitter, layer);
 	updateLayerCmd->Init(layerNameLineEdit->text(),
 						 !enableCheckBox->isChecked(),
@@ -503,6 +548,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 propAlphaOverLife.GetPropLine(),
 						 propColorOverLife.GetPropLine(),
 						 propFrameOverLife.GetPropLine(),
+						 propAngle.GetPropLine(),
+						 propAngleVariation.GetPropLine(),
 						 (float32)alignToMotionSpin->value(),
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value());
