@@ -579,28 +579,19 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->tag = tag;
     dstNode->flags = flags;
 
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
-
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
-
-//    Logger::Debug("Node %s clonned", name.c_str());
     
     dstNode->nodeAnimations = nodeAnimations;
     
-    
-//    Logger::Debug("Children +++++++++++++++++++++++++++++++");
     std::vector<SceneNode*>::iterator it = children.begin();
-    
-    const std::vector<SceneNode*>::iterator & childsEnd = children.end();
-    for(; it != childsEnd; it++)
-    {
-        SceneNode *n = (*it)->Clone();
-        dstNode->AddNode(n);
-        n->Release();
-    }
-//    Logger::Debug("Children -------------------------------");
+	const std::vector<SceneNode*>::iterator & childsEnd = children.end();
+	for(; it != childsEnd; it++)
+	{
+		SceneNode *n = (*it)->Clone();
+		dstNode->AddNode(n);
+		n->Release();
+	}
     
     return dstNode;
 }

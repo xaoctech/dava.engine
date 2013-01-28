@@ -44,6 +44,7 @@ class RenderObject;
 class RenderBatch;
 class SceneNode;
 class Camera;
+class LightNode;
     
 class RenderSystem : public StaticSingleton<RenderSystem>
 {
@@ -83,7 +84,7 @@ public:
     void Render();
     
     void MarkForUpdate(RenderObject * renderObject);
-    
+    void MarkForUpdate(LightNode * lightNode);
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
@@ -91,8 +92,14 @@ public:
     void RegisterForUpdate(IRenderUpdatable * renderObject);
     void UnregisterFromUpdate(IRenderUpdatable * renderObject);
     
+    
+    void AddLight(LightNode * light);
+    void RemoveLight(LightNode * light);
+    
 private:
     void ProcessClipping();
+    void FindNearestLights();
+    void FindNearestLights(RenderObject * renderObject);
     void AddRenderObject(RenderObject * renderObject);
     void RemoveRenderObject(RenderObject * renderObject);
     void AddRenderBatch(RenderBatch * renderBatch);
@@ -103,6 +110,7 @@ private:
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
     List<RenderObject*> markedObjects;
+    List<LightNode*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;
     
@@ -110,6 +118,7 @@ private:
     FastNameMap<RenderLayer*> renderLayersMap;
     
     Vector<RenderObject*> renderObjectArray;
+    Vector<LightNode*> lights;
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     

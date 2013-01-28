@@ -4,7 +4,6 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
