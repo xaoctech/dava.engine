@@ -26,7 +26,7 @@ void ParticleEmitterNode::Update(float32 timeElapsed)
 {
 	if(emitter)
 	{
-//		const Matrix4 & worldTransform = GetWorldTransform();
+		const Matrix4 & worldTransform = GetWorldTransform();
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
 		emitter->rotationMatrix = Matrix3(worldTransform);;
 		emitter->SetPosition(position);

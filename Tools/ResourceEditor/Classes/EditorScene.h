@@ -53,8 +53,8 @@ public:
 	void DrawGrid();
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
-	LandscapeNode * GetLandScape(SceneNode *node);
-	static SceneNode* GetLandScapeNode(SceneNode *node);
+	static LandscapeNode * GetLandscape(SceneNode *node);
+	static SceneNode* GetLandscapeNode(SceneNode *node);
     
     void SetDrawGrid(bool newDrawGrid);
 	

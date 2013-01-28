@@ -47,7 +47,7 @@ public:
 
     void SetRenderer(LandscapeRenderer *renderer);
     
-	virtual void Draw();
+	virtual void Draw(DAVA::Camera * camera);
     virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
     
     virtual void SetHeightmap(DAVA::Heightmap *height);

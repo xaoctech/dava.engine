@@ -309,6 +309,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1717E6B716B0224400BF0532 /* IntrospectionCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionCollection.h; sourceTree = "<group>"; };
+		1717E6B816B0224400BF0532 /* IntrospectionProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionProperty.h; sourceTree = "<group>"; };
 		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		4910CC2A167B7E6600CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -1152,6 +1154,8 @@
 		5C5D975415B0230D0058B43A /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				1717E6B716B0224400BF0532 /* IntrospectionCollection.h */,
+				1717E6B816B0224400BF0532 /* IntrospectionProperty.h */,
 				E84779B216690254004CD20A /* FastName.cpp */,
 				E84779B316690254004CD20A /* FastName.h */,
 				E84779B416690254004CD20A /* FastNameMap.h */,

@@ -41,8 +41,7 @@ LandscapeEditorVisibilityCheckTool::LandscapeEditorVisibilityCheckTool(Landscape
 	isCursorTransparent = false;
 
 	areaCursorTexture = cursorTexture;
-	pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
-	pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	pointCursorTexture = NULL;
 }
 
 LandscapeEditorVisibilityCheckTool::~LandscapeEditorVisibilityCheckTool()
@@ -489,6 +488,10 @@ bool LandscapeEditorVisibilityCheckTool::CheckIsInCircle(Vector2 circleCentre, f
 
 void LandscapeEditorVisibilityCheckTool::HideAction()
 {
+	if(!IsActive())
+	{
+		return;
+	}
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
@@ -503,11 +506,16 @@ void LandscapeEditorVisibilityCheckTool::HideAction()
 
 void LandscapeEditorVisibilityCheckTool::ShowAction()
 {
+	if(pointCursorTexture == NULL)
+	{
+		pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
+		pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	}
 	SetState(VCT_STATE_NORMAL);
 
 	PrepareConfig();
 
-    landscapeSize = landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();;
+    landscapeSize = landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 
@@ -700,7 +708,7 @@ void LandscapeEditorVisibilityCheckTool::RecreateHeightmapNode()
 
 bool LandscapeEditorVisibilityCheckTool::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene"));
@@ -747,4 +755,13 @@ void LandscapeEditorVisibilityCheckTool::CopyImageRectToImage(Image* imageFrom, 
 
 		memcpy(imageToRow, imageFromRow, fromWidth * pixelSize);
 	}
+}
+
+void LandscapeEditorVisibilityCheckTool::ClearSceneResources()
+{
+	LandscapeEditorBase::ClearSceneResources();
+	SafeRelease(visibilityAreaSprite);
+	SafeRelease(pointCursorTexture);
+	visibilityPoint.x = 0;
+	visibilityPoint.y = 0;
 }
