@@ -31,6 +31,10 @@ signals:
 	
 public slots:
 	void OnValueChanged();
+	void OnEmitterYamlPathChanged(const QString& newPath);
+
+protected:
+	void UpdateTooltip();
 
 private:
 	QVBoxLayout* mainLayout;
