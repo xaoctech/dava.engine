@@ -115,6 +115,8 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	{
 		file = fopen(filename.c_str(),"ab");
 		if (!file)return NULL;
+		fseek(file, 0, SEEK_END);
+		size = ftell(file);
 	}
 	else 
 	{
