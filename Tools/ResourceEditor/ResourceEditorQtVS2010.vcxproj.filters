@@ -1440,6 +1440,9 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2605,6 +2608,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
+      <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
