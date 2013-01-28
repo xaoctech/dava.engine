@@ -107,7 +107,7 @@ public:
     
     const AABBox3 & GetBoundingBox() const;
 
-	virtual RenderBatch * Clone();
+	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 
 protected:
     PolygonGroup * dataSource;

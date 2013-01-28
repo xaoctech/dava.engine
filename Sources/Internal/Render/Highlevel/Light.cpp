@@ -47,7 +47,7 @@ LightNode::LightNode()
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
     specularColor(1.0f, 1.0f, 1.0f, 1.0f),
     intensity(300.0f),
-	isDynamic(true)
+	flags(IS_DYNAMIC | CAST_SHADOW)
 {
 }
     
@@ -203,12 +203,28 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 bool LightNode::IsDynamic()
 {
-	return isDynamic;
+	return (flags & IS_DYNAMIC) != 0;
 }
 
 void LightNode::SetDynamic(bool _isDynamic)
 {
-	isDynamic = _isDynamic;
+	flags |= IS_DYNAMIC;
 }
 
+void LightNode::AddFlag(uint32 flag)
+{
+    flags |= flag;
+}
+void LightNode::RemoveFlag(uint32 flag)
+{
+    flags &= ~flag;
+}
+    
+uint32 LightNode::GetFlags()
+{
+    return flags;
+}
+
+    
+    
 };

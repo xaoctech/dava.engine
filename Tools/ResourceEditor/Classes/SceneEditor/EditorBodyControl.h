@@ -107,6 +107,11 @@ public:
 
     bool RulerToolIsActive();
     bool RulerToolTriggered();
+
+	bool CustomColorIsActive();
+	bool VisibilityToolIsActive();
+	bool ColorIsActive();
+	bool HightMapIsActive();
     
 	void UpdateModificationPanel(void);
 

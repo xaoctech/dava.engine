@@ -59,7 +59,6 @@ void RenderPass::RemoveRenderLayer(RenderLayer * layer)
     
 }
 
-
 void RenderPass::Draw(Camera * camera)
 {
     // Set Render Target

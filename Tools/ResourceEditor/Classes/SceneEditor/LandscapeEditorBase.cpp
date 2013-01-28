@@ -73,7 +73,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
     SafeRelease(workingScene);
     
-    workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
+    workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
     if(!workingLandscape)
     {
         ShowErrorDialog(String("No landscape at level."));
@@ -310,6 +310,13 @@ void LandscapeEditorBase::OnShowGrid(bool show)
     }
 }
 
+void LandscapeEditorBase::ClearSceneResources()
+{
+	if(IsActive())
+	{
+		HideAction();
+	}
+}
 
 void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
