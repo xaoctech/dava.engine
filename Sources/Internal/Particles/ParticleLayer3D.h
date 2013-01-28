@@ -24,6 +24,8 @@ public:
 	virtual void Draw(Camera * camera);
 
 	Material * GetMaterial();
+	
+	virtual void SetAdditive(bool additive);
 
 protected:
 	RenderDataObject * renderData;
