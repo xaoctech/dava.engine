@@ -121,6 +121,9 @@
     <Filter Include="Internal\Scene3D\Systems">
       <UniqueIdentifier>{182b255d-1f50-474b-b265-7dcc2a0f0a55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Base\Radix">
+      <UniqueIdentifier>{43813d6b-dd92-4284-b1af-ec15e0904636}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -897,9 +900,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -1071,9 +1071,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1214,6 +1211,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Radix\Radix.h">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1865,9 +1874,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -2003,9 +2009,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2122,6 +2125,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\Radix\Radix.cpp">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

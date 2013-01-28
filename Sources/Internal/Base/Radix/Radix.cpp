@@ -31,8 +31,8 @@ permitted provided that the following conditions are met:
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
-#include <sys/time.h>
+//#include <strings.h>
+//#include <sys/time.h>
 #include "Base/Radix/Radix.h"
 
 namespace DAVA
