@@ -290,6 +290,9 @@
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
 		E8A264AB16B2975D0024B4DB /* FilePath.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8A264A916B2975D0024B4DB /* FilePath.cpp */; };
+		E8CC09D716B66FF300E78511 /* SwitchSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CC09D516B66FF300E78511 /* SwitchSystem.cpp */; };
+		E8CC09DB16B6700C00E78511 /* LightUpdateSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CC09D916B6700C00E78511 /* LightUpdateSystem.cpp */; };
+		E8CC09DE16B6705600E78511 /* SwitchComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8CC09DC16B6705600E78511 /* SwitchComponent.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -901,6 +904,12 @@
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
 		E8A264A916B2975D0024B4DB /* FilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePath.cpp; sourceTree = "<group>"; };
 		E8A264AA16B2975D0024B4DB /* FilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilePath.h; sourceTree = "<group>"; };
+		E8CC09D516B66FF300E78511 /* SwitchSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchSystem.cpp; path = Systems/SwitchSystem.cpp; sourceTree = "<group>"; };
+		E8CC09D616B66FF300E78511 /* SwitchSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchSystem.h; path = Systems/SwitchSystem.h; sourceTree = "<group>"; };
+		E8CC09D916B6700C00E78511 /* LightUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LightUpdateSystem.cpp; path = Systems/LightUpdateSystem.cpp; sourceTree = "<group>"; };
+		E8CC09DA16B6700C00E78511 /* LightUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LightUpdateSystem.h; path = Systems/LightUpdateSystem.h; sourceTree = "<group>"; };
+		E8CC09DC16B6705600E78511 /* SwitchComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchComponent.cpp; sourceTree = "<group>"; };
+		E8CC09DD16B6705600E78511 /* SwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchComponent.h; sourceTree = "<group>"; };
 		E8DE7FC916A5A22A005BFE44 /* IntrospectionFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionFlags.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -977,6 +986,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				E8CC09DC16B6705600E78511 /* SwitchComponent.cpp */,
+				E8CC09DD16B6705600E78511 /* SwitchComponent.h */,
 				E85D657F16A890EA0071039D /* UpdatableComponent.cpp */,
 				E85D658016A890EA0071039D /* UpdatableComponent.h */,
 				50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */,
@@ -1055,6 +1066,10 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				E8CC09D916B6700C00E78511 /* LightUpdateSystem.cpp */,
+				E8CC09DA16B6700C00E78511 /* LightUpdateSystem.h */,
+				E8CC09D516B66FF300E78511 /* SwitchSystem.cpp */,
+				E8CC09D616B66FF300E78511 /* SwitchSystem.h */,
 				E85D657B16A890BD0071039D /* UpdatableSystem.cpp */,
 				E85D657C16A890BD0071039D /* UpdatableSystem.h */,
 				E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */,
@@ -2148,6 +2163,9 @@
 				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
 				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
 				E8A264AB16B2975D0024B4DB /* FilePath.cpp in Build Sources */,
+				E8CC09D716B66FF300E78511 /* SwitchSystem.cpp in Build Sources */,
+				E8CC09DB16B6700C00E78511 /* LightUpdateSystem.cpp in Build Sources */,
+				E8CC09DE16B6705600E78511 /* SwitchComponent.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
