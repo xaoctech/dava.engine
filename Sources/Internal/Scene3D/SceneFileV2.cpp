@@ -36,6 +36,7 @@
 #include "Scene3D/PathManip.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
+#include "Scene3D/SwitchNode.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Mesh.h"
 
@@ -53,6 +54,7 @@
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -517,7 +519,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     SceneNode * node = 0;
     
     bool skipNode = false;
-
+    bool removeChildren = false;
     
     
     
@@ -555,7 +557,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         SafeRelease(cameraObject);
         skipNode = true;
-    }else if (name == "LightNode")
+    }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
     {
         node = new SceneNode();
         baseObject = node;
@@ -563,14 +565,18 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->SetScene(scene);
         node->Load(archive, this);
         
+        bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+        
         LightNode * light = new LightNode();
         light->Load(archive, this);
+        light->SetDynamic(isDynamic);
         
         node->AddComponent(new LightComponent(light));
         parent->AddNode(node);
         
         SafeRelease(light);
         skipNode = true;
+        removeChildren = true;
     }else
     {
         baseObject = ObjectFactory::Instance()->New(name);
@@ -608,6 +614,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			LoadHierarchy(scene, node, file, level + 1);
 		}
+        if (removeChildren)
+            node->RemoveAllChildren();
+
         SafeRelease(node);
     }
     
@@ -665,6 +674,15 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 
     if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
     {
+        if (currentNode->GetComponentCount() == 1)
+        {
+            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
+            if (!isTransfrom)
+                return false;
+        }
+        else if (currentNode->GetComponentCount() >= 2)
+            return false;
+        
         if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
         {
             SceneNode * parent  = currentNode->GetParent();
@@ -771,13 +789,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		lod->SceneNode::Clone(newNode);
 		SceneNode * parent = lod->GetParent();
 
-		DVASSERT(parent);
-		if(parent)
-		{
-			parent->AddNode(newNode);
-			parent->RemoveNode(lod);
-		}
-
 		newNode->AddComponent(new LodComponent());
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
 
@@ -802,6 +813,13 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 			newLodDataItem.nodes = oldDataItem->nodes;
 
 			lc->lodLayers.push_back(newLodDataItem);
+		}
+
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(lod);
 		}
 
 		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
@@ -852,6 +870,29 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 
 		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
 		newNode->AddComponent(effectComponent);
+		newNode->Release();
+		return true;
+	}
+
+	SwitchNode * sw = dynamic_cast<SwitchNode*>(node);
+	if(sw)
+	{
+		SceneNode * newNode = new SceneNode();
+		sw->Clone(newNode);
+
+		SwitchComponent * swConponent = new SwitchComponent();
+		newNode->AddComponent(swConponent);
+		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
+
+		SceneNode * parent = sw->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(sw);
+		}
+		sw->SetSwitchIndex(0);
+
 		newNode->Release();
 		return true;
 	}
