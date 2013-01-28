@@ -420,6 +420,16 @@ void EmitterLayerWidget::OnSpriteBtn()
 	String filePathToBeOpened;
 	String fileNameToBeOpened;
 	FileSystem::SplitPath(filePath.toStdString(), filePathToBeOpened, fileNameToBeOpened);
+
+#ifdef __DAVAENGINE_WIN32__
+	// Remove the drive name, if any.
+	String::size_type driveNamePos = filePathToBeOpened.find(":/");
+	if (driveNamePos != String::npos && filePathToBeOpened.length() > 2)
+	{
+		filePathToBeOpened = filePathToBeOpened.substr(2, filePathToBeOpened.length() - 2);
+	}
+#endif
+
 	if (filePathToBeOpened != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
