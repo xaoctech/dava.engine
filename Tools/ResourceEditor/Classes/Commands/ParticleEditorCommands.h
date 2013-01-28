@@ -187,6 +187,8 @@ public:
 			  RefPtr< PropertyLine<float32> > alphaOverLife,
 			  RefPtr< PropertyLine<Color> > colorOverLife,
 			  RefPtr< PropertyLine<float32> > frameOverLife,
+			  RefPtr< PropertyLine<float32> > angle,
+			  RefPtr< PropertyLine<float32> > angleVariation,
 			  float32 alignToMotion,
 			  float32 startTime,
 			  float32 endTime
@@ -226,6 +228,8 @@ private:
 	RefPtr< PropertyLine<float32> > alphaOverLife;
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<float32> > frameOverLife;
+	RefPtr< PropertyLine<float32> > angle;
+	RefPtr< PropertyLine<float32> > angleVariation;
 	float32 alignToMotion;
 	float32 startTime;
 	float32 endTime;
