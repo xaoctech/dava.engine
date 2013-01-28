@@ -948,5 +948,10 @@ void ParticleLayer::UpdateFrameTimeline()
 		}
 	}
 }
+	
+void ParticleLayer::SetAdditive(bool additive)
+{
+	this->additive = additive;
+}
 
 }

@@ -242,7 +242,7 @@ void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
-	layer->additive = additive;
+	layer->SetAdditive(additive);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
