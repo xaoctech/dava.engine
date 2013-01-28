@@ -52,6 +52,12 @@ public:
 		TYPE_COUNT
     };
     
+    enum
+    {
+        IS_DYNAMIC = 1 << 0,
+        CAST_SHADOW = 1 << 1,
+    };
+    
     LightNode();
     virtual ~LightNode();
     
@@ -82,6 +88,9 @@ public:
 
 	bool IsDynamic();
 	void SetDynamic(bool isDynamic);
+    void AddFlag(uint32 flag);
+    void RemoveFlag(uint32 flag);
+    uint32 GetFlags();
     
 protected:
     Vector3 position;
@@ -95,7 +104,7 @@ protected:
     Color specularColor;
     float32 intensity;
 
-	bool isDynamic;
+	uint32 flags;
     
 public:
     
@@ -109,7 +118,7 @@ public:
         MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(intensity, "Intensity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isDynamic, "Is Dynamic", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

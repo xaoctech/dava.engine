@@ -31,6 +31,7 @@
 #include "Scene3D/SceneNode.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -50,7 +51,7 @@ RenderSystem::RenderSystem()
     // Build forward renderer.
     renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
     renderPassesMap.Insert("ForwardPass", new RenderPass("ForwardPass"));
-    renderPassesMap.Insert("ShadowVolumePass", new RenderPass("ShadowVolumePass"));
+    renderPassesMap.Insert("ShadowVolumePass", new ShadowVolumeRenderPass("ShadowVolumePass"));
 
     
     // renderPasses.push_back(new RenderPass("GBufferPass"));
@@ -59,17 +60,21 @@ RenderSystem::RenderSystem()
 
     renderLayersMap.Insert("OpaqueRenderLayer", new RenderLayer("OpaqueRenderLayer"));
     renderLayersMap.Insert("TransclucentRenderLayer", new RenderLayer("TransclucentRenderLayer"));
-    renderLayersMap.Insert("ShadowVolumeLayer", new RenderLayer("ShadowVolumeLayer"));
+    renderLayersMap.Insert("ShadowVolumeRenderLayer", new RenderLayer("ShadowVolumeRenderLayer"));
     
-    renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
-    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD_PASS];
     forwardPass->AddRenderLayer(renderLayersMap["OpaqueRenderLayer"]);
     forwardPass->AddRenderLayer(renderLayersMap["TransclucentRenderLayer"]);
 
-    RenderPass * shadowVolumePass = renderPassesMap[SHADOW_VOLUME_PASS];
-    shadowVolumePass->AddRenderLayer(renderLayersMap["ShadowVolumeLayer"]);
+    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[SHADOW_VOLUME_PASS];
+    shadowVolumePass->AddRenderLayer(renderLayersMap["ShadowVolumeRenderLayer"]);
+
+
+//    renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
+    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
+    renderPassOrder.push_back(renderPassesMap[SHADOW_VOLUME_PASS]);
+
 }
 
 RenderSystem::~RenderSystem()
@@ -301,6 +306,10 @@ void RenderSystem::RemoveLight(LightNode * light)
     lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
 }
 
+Vector<LightNode*> & RenderSystem::GetLights()
+{
+    return lights;
+}
 
 void RenderSystem::Update(float32 timeElapsed)
 {

@@ -27,51 +27,31 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
+#ifndef __DAVAENGINE_SCENE3D_SHADOW_VOLUME_RENDER_PASS_H__
+#define	__DAVAENGINE_SCENE3D_SHADOW_VOLUME_RENDER_PASS_H__
 
 #include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/FastName.h"
+#include "Render/Highlevel/RenderPass.h"
 
 namespace DAVA
 {
-
-//class RenderBatch;
-class RenderBatchArray
+//class RenderLayer;
+class Camera;
+class ShadowRect;
+class ShadowVolumeRenderPass : public RenderPass
 {
 public:
-    RenderBatchArray();
-    virtual ~RenderBatchArray();
+    ShadowVolumeRenderPass(const char * name);
+    virtual ~ShadowVolumeRenderPass();
     
-    void AddRenderBatch(RenderBatch * batch);
-    void RemoveRenderBatch(RenderBatch * batch);
-    
-    void Update();
-
-    inline uint32 GetCount();
-    inline RenderBatch * GetBatch(uint32 index);
+    virtual void Draw(Camera * camera);
     
 private:
-    Vector<RenderBatch*> finalArray;
-    
-public:
-    
-    INTROSPECTION(RenderBatchArray,
-        COLLECTION(finalArray, "Final Array", INTROSPECTION_EDITOR)
-    );
+    ShadowRect * shadowRect;
 };
-
-inline uint32 RenderBatchArray::GetCount()
-{
-    return (uint32)finalArray.size();
-}
-
-inline RenderBatch * RenderBatchArray::GetBatch(uint32 index)
-{
-    return finalArray[index];
-}
     
 } // ns
 
-#endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__ */
+#endif	/* __DAVAENGINE_SCENE3D_SHADOW_VOLUME_RENDER_PASS_H__ */
 

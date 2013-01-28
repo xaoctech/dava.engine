@@ -297,9 +297,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-
-
-LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
+LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
 	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
 	if (renderComponent)
@@ -312,14 +310,14 @@ LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandScape(child);
+		LandscapeNode * result = GetLandscape(child);
 		if (result)
 			return result;
     }
 	return 0;
 }
 
-SceneNode* EditorScene::GetLandScapeNode(SceneNode *node)
+SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
 	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
 	if (renderComponent)
@@ -332,7 +330,7 @@ SceneNode* EditorScene::GetLandScapeNode(SceneNode *node)
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
-		SceneNode * result = GetLandScapeNode(child);
+		SceneNode * result = GetLandscapeNode(child);
 		if (result)
 			return result;
     }

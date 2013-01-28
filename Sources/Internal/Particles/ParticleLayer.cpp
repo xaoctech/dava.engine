@@ -82,12 +82,18 @@ ParticleLayer::ParticleLayer()
 	particlesToGenerate = 0.0f;
 	alignToMotion = 0.0f;
 	
+	angle = 0;
+	angleVariation = 0;
+
 	layerTime = 0.0f;
 	additive = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
-    
+
+	frameStart = 0;
+	frameEnd = 0;
+
     isDisabled = false;
 }
 
@@ -198,6 +204,12 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (frameOverLife)
 		dstLayer->frameOverLife.Set(frameOverLife->Clone());
 	
+	if (angle)
+		dstLayer->angle.Set(angle->Clone());
+	
+	if (angleVariation)
+		dstLayer->angleVariation.Set(angleVariation->Clone());
+	
 	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->additive = additive;
@@ -226,6 +238,8 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
     DeleteAllParticles();
 	SafeRelease(sprite);
 	sprite = SafeRetain(_sprite);
+	UpdateFrameTimeline();
+
 	if(sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
@@ -460,7 +474,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	//particle->position = emitter->GetPosition();	
 	// parameters should be prepared inside prepare emitter parameters
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
-	particle->angle += alignToMotion;
+	//particle->angle += alignToMotion;
+	if (angle)
+		particle->angle += DegToRad(angle->GetValue(layerTime));
+	if (angleVariation)
+		particle->angle += DegToRad(angleVariation->GetValue(layerTime) * randCoeff);
 
 	particle->sizeOverLife = 1.0f;
 	particle->velocityOverLife = 1.0f;
@@ -688,7 +706,10 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 
 	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");	
 	velocityVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityVariation");	
-	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");	
+	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");
+	
+	angle = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angle");
+	angleVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angleVariation");
 	
 	int32 forceCount = 0;
 	YamlNode * forceCountNode = node->Get("forceCount");
@@ -822,6 +843,9 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounce", this->bounce);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceVariation", this->bounceVariation);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceOverLife", this->bounceOverLife);
+	
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "angle", this->angle);
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "angleVariation", this->angleVariation);
 
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorRandom", this->colorRandom);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
@@ -875,6 +899,55 @@ const String & ParticleLayer::GetRelativeSpriteName()
 RenderBatch * ParticleLayer::GetRenderBatch()
 {
 	return renderBatch;
+}
+
+void ParticleLayer::ReloadSprite()
+{
+	if (this->sprite)
+	{
+		this->sprite->Reload();
+	}
+	
+	UpdateFrameTimeline();
+}
+
+void ParticleLayer::UpdateFrameTimeline()
+{
+	if (!this->frameOverLife)
+	{
+		return;
+	}
+
+	if (!this->sprite)
+	{
+		this->frameOverLife.Set(NULL);
+		return;
+	}
+
+	float32 maxFrame = (float32)this->sprite->GetFrameCount() - 1;
+	PropertyLineValue<float32>* pv = dynamic_cast< PropertyLineValue<float32> *>(frameOverLife.Get());
+	PropertyLineKeyframes<float32>* pk = dynamic_cast< PropertyLineKeyframes<float32> *>(frameOverLife.Get());
+	if (pv)
+	{
+		// Limit the single value.
+		if (pv->value > maxFrame)
+		{
+			pv->value = maxFrame;
+		}
+	}
+	
+	if (pk)
+	{
+		// Limit all the frames.
+		int32 framesCount = pk->keys.size();
+		for (int32 i = 0; i < framesCount; i ++)
+		{
+			if (pk->keys[i].value > maxFrame)
+			{
+				pk->keys[i].value = maxFrame;
+			}
+		}
+	}
 }
 
 }

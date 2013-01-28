@@ -85,7 +85,10 @@ void RenderBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
-    if (!worldTransformPtr)return;
+    if (!worldTransformPtr)
+    {
+        return;
+    }
     
     uint32 flags = renderObject->GetFlags();
     if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
@@ -113,9 +116,11 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
     return aabbox;
 }
 
-RenderBatch * RenderBatch::Clone()
+RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 {
-	RenderBatch * rb = new RenderBatch();
+    RenderBatch * rb = destination;
+    if (!rb)
+        rb = new RenderBatch();
 
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);

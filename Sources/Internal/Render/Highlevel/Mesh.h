@@ -62,4 +62,3 @@ protected:
 } // ns
 
 #endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */
-

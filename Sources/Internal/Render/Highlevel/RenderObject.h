@@ -113,6 +113,8 @@ public:
 
 	virtual RenderObject * Clone();
 
+    void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+    
 protected:
 //    eType type; //TODO: waiting for enums at introspection
     uint8 type;
@@ -123,7 +125,7 @@ protected:
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
-
+    String ownerDebugInfo;
 //    Sphere bsphere;
     
     Vector<RenderBatch*> renderBatchArray;

@@ -55,12 +55,14 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/ShadowVolumeNode.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
 #include "Base/TemplateHelpers.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/ShadowVolume.h"
 
 namespace DAVA
 {
@@ -763,11 +765,32 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
             }
         }
         
+        mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
+        
+        //
+        SceneNode * parent = oldMeshInstanceNode->GetParent();
+        for (uint32 k = 0; k < parent->GetChildrenCount(); ++k)
+        {
+            ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
+            if (oldShadowVolumeNode)
+            {
+                ShadowVolume * newShadowVolume = new ShadowVolume();
+                newShadowVolume->SetPolygonGroup(oldShadowVolumeNode->GetPolygonGroup());
+                mesh->AddRenderBatch(newShadowVolume);
+                
+                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                
+                parent->RemoveNode(oldShadowVolumeNode);
+            }
+        }
+        
+        
+        
+        
         RenderComponent * renderComponent = new RenderComponent;
         renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
         
-        SceneNode * parent = oldMeshInstanceNode->GetParent();
 		if(parent)
 		{
 			parent->AddNode(newMeshInstanceNode);
@@ -898,7 +921,9 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	}
 
 	return false;
-}
+} 
+    
+
 
 void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
 {
@@ -917,6 +942,7 @@ void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
 		}
 	}
 }
+
     
 void SceneFileV2::OptimizeScene(SceneNode * rootNode)
 {
@@ -924,7 +950,7 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-	//MERGE: commented
+    //MERGE: commented
     RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);

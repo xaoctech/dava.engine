@@ -163,9 +163,10 @@ void CommandUpdateEmitter::Execute()
 	emitter->SetLifeTime(life);
 }
 
-CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleLayer* layer) :
+CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter, ParticleLayer* layer) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
+	this->emitter = emitter;
 	this->layer = layer;
 }
 
@@ -196,6 +197,8 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
 									  RefPtr< PropertyLine<float32> > frameOverLife,
+									  RefPtr< PropertyLine<float32> > angle,
+									  RefPtr< PropertyLine<float32> > angleVariation,
 									  float32 alignToMotion,
 									  float32 startTime,
 									  float32 endTime)
@@ -226,8 +229,10 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->colorRandom = colorRandom;
 	this->alphaOverLife = alphaOverLife;
 	this->colorOverLife = colorOverLife;
-	this->alignToMotion = alignToMotion;
 	this->frameOverLife = frameOverLife;
+	this->angle = angle;
+	this->angleVariation = angleVariation;
+	this->alignToMotion = alignToMotion;
 	this->startTime = startTime;
 	this->endTime = endTime;
 }
@@ -238,10 +243,6 @@ void CommandUpdateParticleLayer::Execute()
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
 	layer->additive = additive;
-	if (layer->GetSprite() != sprite)
-	{
-		layer->SetSprite(sprite);
-	}
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -265,9 +266,20 @@ void CommandUpdateParticleLayer::Execute()
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
 	layer->frameOverLife = frameOverLife;
+	layer->angle = angle;
+	layer->angleVariation = angleVariation;
 	layer->alignToMotion = alignToMotion;
 	layer->startTime = startTime;
 	layer->endTime = endTime;
+
+	// This code must be after layer->frameOverlife set call, since setSprite
+	// may change the frames.
+	if (layer->GetSprite() != sprite)
+	{
+		emitter->Stop();
+		layer->SetSprite(sprite);
+		emitter->Play();
+	}
 
 	SceneDataManager::Instance()->RefreshParticlesLayer(layer);
 }
