@@ -54,7 +54,9 @@ void ParticleEditorWidget::DeleteOldWidget()
 
 void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
-	if (emitterNode && emitterPropertiesWidget && emitterPropertiesWidget->GetEmitter() == emitterNode->GetEmitter())
+	if (emitterNode &&
+		emitterPropertiesWidget &&
+		emitterPropertiesWidget->GetEmitter() == emitterNode->GetEmitter())
 		return;
 	
 	DeleteOldWidget();
@@ -91,7 +93,10 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, B
 
 void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
 {
-	if (emitterNode && emitterLayerWidget && emitterLayerWidget->GetEmitter() == emitterNode->GetEmitter())
+	if (emitterNode &&
+		emitterLayerWidget &&
+		emitterLayerWidget->GetEmitter() == emitterNode->GetEmitter() &&
+		emitterLayerWidget->GetLayer() == layer)
 		return;
 
 	DeleteOldWidget();
@@ -128,7 +133,11 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 
 void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
-	if (emitterNode && layerForceWidget && layerForceWidget->GetEmitter() == emitterNode->GetEmitter())
+	if (emitterNode &&
+		layerForceWidget &&
+		layerForceWidget->GetEmitter() == emitterNode->GetEmitter() &&
+		layerForceWidget->GetLayer() == layer &&
+		layerForceWidget->GetForceIndex() == forceIndex)
 		return;
 
 	DeleteOldWidget();
