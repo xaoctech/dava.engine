@@ -28,6 +28,9 @@ public:
     ~LayerForceWidget();
 	
 	void Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized);
+	ParticleLayer* GetLayer() const {return layer;};
+	int32 GetForceIndex() const {return forceIndex;};
+
 	void Update();
 
 	virtual void StoreVisualState(KeyedArchive* visualStateProps);
