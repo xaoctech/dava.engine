@@ -23,32 +23,64 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "RenderBatchArray.h"
 
+#ifndef __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+#define __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+
+#include "Render/3D/PolygonGroup.h"
+#include "Render/Shader.h"
+#include "Render/3D/EdgeAdjacency.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
+
+class PolygonGroup;
+class LightNode;
     
-RenderBatchArray::RenderBatchArray()
+class ShadowVolume : public RenderBatch
 {
+public:
+	ShadowVolume();
+	virtual ~ShadowVolume();
+
+    virtual void Draw(Camera * camera);
+
+    virtual const FastName & GetOwnerLayerName();
+
+	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
+    void SetPolygonGroup(PolygonGroup * polygonGroup);
+    PolygonGroup * GetPolygonGroup();
     
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
+
+private:
+	Shader * shader;
+
+	//shadow mesh generation
+	PolygonGroup * shadowPolygonGroup;
+
+	struct EdgeMapping
+	{
+		int32 oldEdge[2];
+		int32 newEdge[2][2];
+
+	public:
+		EdgeMapping()
+		{
+			Memset(oldEdge, -1, sizeof(oldEdge));
+			Memset(newEdge, -1, sizeof(newEdge));
+		}
+	};
+
+	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
+};
+
 }
 
-RenderBatchArray::~RenderBatchArray()
-{
-    
-}
-
-
-void RenderBatchArray::Update()
-{
-    
-}
-
-    
-    
-}
+#endif //__DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__

@@ -25,7 +25,6 @@
 		5081EA5516760C7400ECA24C /* TransformComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5116760C7400ECA24C /* TransformComponent.cpp */; };
 		5081EA5E167FBB8300ECA24C /* RenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */; };
 		508E59AF1684A14D00D2ECA8 /* RenderBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59A11684A07500D2ECA8 /* RenderBatch.cpp */; };
-		508E59B01684A15300D2ECA8 /* RenderBatchArray.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59A31684A07500D2ECA8 /* RenderBatchArray.cpp */; };
 		508E59B21684A15F00D2ECA8 /* RenderLayer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59A71684A07500D2ECA8 /* RenderLayer.cpp */; };
 		508E59B31684A16200D2ECA8 /* RenderObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59A91684A07500D2ECA8 /* RenderObject.cpp */; };
 		508E59B41684A16500D2ECA8 /* RenderPass.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 508E59AB1684A07500D2ECA8 /* RenderPass.cpp */; };
@@ -40,12 +39,18 @@
 		50A18E4916A846E200DC6281 /* LightComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4716A846E100DC6281 /* LightComponent.cpp */; };
 		50A18E4C16A84BC900DC6281 /* Mesh.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4A16A84BC800DC6281 /* Mesh.cpp */; };
 		50A18E4F16A84E6C00DC6281 /* BulletComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */; };
+		50D77CB316B2DF86002BB037 /* LightUpdateSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50D77CB116B2DF85002BB037 /* LightUpdateSystem.cpp */; };
 		50E8E915169AF409005BB2F1 /* DebugRenderSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */; };
 		50E8E916169B0566005BB2F1 /* DebugRenderComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */; };
 		50E8E936169CCFFA005BB2F1 /* EventSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */; };
 		50E8E937169CCFFE005BB2F1 /* DeleteSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E934169CCD9C005BB2F1 /* DeleteSystem.cpp */; };
 		50E8E938169CD00A005BB2F1 /* TransformSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E932169CCD4F005BB2F1 /* TransformSystem.cpp */; };
 		50E8E939169CD00C005BB2F1 /* RenderUpdateSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */; };
+		50F082A116B41B2000DDF5B8 /* ShadowVolume.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50F0829F16B41B2000DDF5B8 /* ShadowVolume.cpp */; };
+		50F082A516B421ED00DDF5B8 /* ShadowVolumeRenderPass.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50F082A316B421ED00DDF5B8 /* ShadowVolumeRenderPass.cpp */; };
+		50F082B816B4326A00DDF5B8 /* SwitchSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50F082B616B4326A00DDF5B8 /* SwitchSystem.cpp */; };
+		50F082BB16B4327800DDF5B8 /* SwitchComponent.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50F082B916B4327800DDF5B8 /* SwitchComponent.cpp */; };
+		50F082BE16B68B3C00DDF5B8 /* ShadowRect.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50F082BC16B68B3B00DDF5B8 /* ShadowRect.cpp */; };
 		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
 		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
@@ -212,7 +217,6 @@
 		5C5D9A6115B0230D0058B43A /* SceneNodeAnimation.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D991815B0230D0058B43A /* SceneNodeAnimation.cpp */; };
 		5C5D9A6215B0230D0058B43A /* SceneNodeAnimationKey.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D991A15B0230D0058B43A /* SceneNodeAnimationKey.cpp */; };
 		5C5D9A6315B0230D0058B43A /* SceneNodeAnimationList.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D991C15B0230D0058B43A /* SceneNodeAnimationList.cpp */; };
-		5C5D9A6415B0230D0058B43A /* ShadowRect.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D991E15B0230D0058B43A /* ShadowRect.cpp */; };
 		5C5D9A6515B0230D0058B43A /* ShadowVolumeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992015B0230D0058B43A /* ShadowVolumeNode.cpp */; };
 		5C5D9A6615B0230D0058B43A /* SkeletonNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992215B0230D0058B43A /* SkeletonNode.cpp */; };
 		5C5D9A6815B0230D0058B43A /* SpriteNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D992615B0230D0058B43A /* SpriteNode.cpp */; };
@@ -348,8 +352,6 @@
 		5081EA5D167FBB8300ECA24C /* RenderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderComponent.cpp; sourceTree = "<group>"; };
 		508E59A11684A07500D2ECA8 /* RenderBatch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = RenderBatch.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		508E59A21684A07500D2ECA8 /* RenderBatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderBatch.h; sourceTree = "<group>"; };
-		508E59A31684A07500D2ECA8 /* RenderBatchArray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBatchArray.cpp; sourceTree = "<group>"; };
-		508E59A41684A07500D2ECA8 /* RenderBatchArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderBatchArray.h; sourceTree = "<group>"; };
 		508E59A71684A07500D2ECA8 /* RenderLayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderLayer.cpp; sourceTree = "<group>"; };
 		508E59A81684A07500D2ECA8 /* RenderLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderLayer.h; sourceTree = "<group>"; };
 		508E59A91684A07500D2ECA8 /* RenderObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderObject.cpp; sourceTree = "<group>"; };
@@ -379,6 +381,8 @@
 		50A18E4B16A84BC900DC6281 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletComponent.cpp; sourceTree = "<group>"; };
 		50A18E4E16A84E6C00DC6281 /* BulletComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletComponent.h; sourceTree = "<group>"; };
+		50D77CB116B2DF85002BB037 /* LightUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LightUpdateSystem.cpp; path = Systems/LightUpdateSystem.cpp; sourceTree = "<group>"; };
+		50D77CB216B2DF86002BB037 /* LightUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LightUpdateSystem.h; path = Systems/LightUpdateSystem.h; sourceTree = "<group>"; };
 		50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = DebugRenderSystem.cpp; path = Systems/DebugRenderSystem.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		50E8E911169AF09C005BB2F1 /* DebugRenderSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugRenderSystem.h; path = Systems/DebugRenderSystem.h; sourceTree = "<group>"; };
 		50E8E913169AF288005BB2F1 /* DebugRenderComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderComponent.cpp; sourceTree = "<group>"; };
@@ -391,6 +395,16 @@
 		50E8E933169CCD4F005BB2F1 /* TransformSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TransformSystem.h; path = Systems/TransformSystem.h; sourceTree = "<group>"; };
 		50E8E934169CCD9C005BB2F1 /* DeleteSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DeleteSystem.cpp; path = Systems/DeleteSystem.cpp; sourceTree = "<group>"; };
 		50E8E935169CCD9D005BB2F1 /* DeleteSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DeleteSystem.h; path = Systems/DeleteSystem.h; sourceTree = "<group>"; };
+		50F0829F16B41B2000DDF5B8 /* ShadowVolume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolume.cpp; sourceTree = "<group>"; };
+		50F082A016B41B2000DDF5B8 /* ShadowVolume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolume.h; sourceTree = "<group>"; };
+		50F082A316B421ED00DDF5B8 /* ShadowVolumeRenderPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeRenderPass.cpp; sourceTree = "<group>"; };
+		50F082A416B421ED00DDF5B8 /* ShadowVolumeRenderPass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeRenderPass.h; sourceTree = "<group>"; };
+		50F082B616B4326A00DDF5B8 /* SwitchSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchSystem.cpp; path = Systems/SwitchSystem.cpp; sourceTree = "<group>"; };
+		50F082B716B4326A00DDF5B8 /* SwitchSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchSystem.h; path = Systems/SwitchSystem.h; sourceTree = "<group>"; };
+		50F082B916B4327800DDF5B8 /* SwitchComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchComponent.cpp; sourceTree = "<group>"; };
+		50F082BA16B4327800DDF5B8 /* SwitchComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchComponent.h; sourceTree = "<group>"; };
+		50F082BC16B68B3B00DDF5B8 /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
+		50F082BD16B68B3B00DDF5B8 /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
@@ -747,8 +761,6 @@
 		5C5D991B15B0230D0058B43A /* SceneNodeAnimationKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeAnimationKey.h; sourceTree = "<group>"; };
 		5C5D991C15B0230D0058B43A /* SceneNodeAnimationList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNodeAnimationList.cpp; sourceTree = "<group>"; };
 		5C5D991D15B0230D0058B43A /* SceneNodeAnimationList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeAnimationList.h; sourceTree = "<group>"; };
-		5C5D991E15B0230D0058B43A /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
-		5C5D991F15B0230D0058B43A /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C5D992015B0230D0058B43A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5C5D992115B0230D0058B43A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C5D992215B0230D0058B43A /* SkeletonNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkeletonNode.cpp; sourceTree = "<group>"; };
@@ -976,6 +988,8 @@
 		5081EA5016760C7400ECA24C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				50F082B916B4327800DDF5B8 /* SwitchComponent.cpp */,
+				50F082BA16B4327800DDF5B8 /* SwitchComponent.h */,
 				E85D657F16A890EA0071039D /* UpdatableComponent.cpp */,
 				E85D658016A890EA0071039D /* UpdatableComponent.h */,
 				50A18E4D16A84E6C00DC6281 /* BulletComponent.cpp */,
@@ -1003,6 +1017,8 @@
 		508E59A01684A07500D2ECA8 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				50F082BC16B68B3B00DDF5B8 /* ShadowRect.cpp */,
+				50F082BD16B68B3B00DDF5B8 /* ShadowRect.h */,
 				50A18E4416A825CA00DC6281 /* Light.cpp */,
 				50A18E4516A825CA00DC6281 /* Light.h */,
 				50A18E4116A70B3600DC6281 /* Camera.cpp */,
@@ -1022,8 +1038,8 @@
 				50957614168E14B40023E6D5 /* RenderDataSource.h */,
 				508E59A11684A07500D2ECA8 /* RenderBatch.cpp */,
 				508E59A21684A07500D2ECA8 /* RenderBatch.h */,
-				508E59A31684A07500D2ECA8 /* RenderBatchArray.cpp */,
-				508E59A41684A07500D2ECA8 /* RenderBatchArray.h */,
+				50F0829F16B41B2000DDF5B8 /* ShadowVolume.cpp */,
+				50F082A016B41B2000DDF5B8 /* ShadowVolume.h */,
 				508E59A71684A07500D2ECA8 /* RenderLayer.cpp */,
 				508E59A81684A07500D2ECA8 /* RenderLayer.h */,
 				50A18E4A16A84BC800DC6281 /* Mesh.cpp */,
@@ -1032,6 +1048,8 @@
 				508E59AA1684A07500D2ECA8 /* RenderObject.h */,
 				508E59AB1684A07500D2ECA8 /* RenderPass.cpp */,
 				508E59AC1684A07500D2ECA8 /* RenderPass.h */,
+				50F082A316B421ED00DDF5B8 /* ShadowVolumeRenderPass.cpp */,
+				50F082A416B421ED00DDF5B8 /* ShadowVolumeRenderPass.h */,
 				508E59AD1684A07500D2ECA8 /* RenderSystem.cpp */,
 				508E59AE1684A07500D2ECA8 /* RenderSystem.h */,
 				5045D66A169F36E400742C05 /* IRenderUpdatable.h */,
@@ -1054,6 +1072,8 @@
 		509576151696178A0023E6D5 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				50F082B616B4326A00DDF5B8 /* SwitchSystem.cpp */,
+				50F082B716B4326A00DDF5B8 /* SwitchSystem.h */,
 				E85D657B16A890BD0071039D /* UpdatableSystem.cpp */,
 				E85D657C16A890BD0071039D /* UpdatableSystem.h */,
 				E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */,
@@ -1066,6 +1086,8 @@
 				50E8E933169CCD4F005BB2F1 /* TransformSystem.h */,
 				50E8E930169CC87A005BB2F1 /* RenderUpdateSystem.cpp */,
 				50E8E931169CC87A005BB2F1 /* RenderUpdateSystem.h */,
+				50D77CB116B2DF85002BB037 /* LightUpdateSystem.cpp */,
+				50D77CB216B2DF86002BB037 /* LightUpdateSystem.h */,
 				50E8E92E169CB3CF005BB2F1 /* EventSystem.cpp */,
 				50E8E92F169CB3CF005BB2F1 /* EventSystem.h */,
 				50E8E910169AF09C005BB2F1 /* DebugRenderSystem.cpp */,
@@ -1661,8 +1683,6 @@
 				5C5D991B15B0230D0058B43A /* SceneNodeAnimationKey.h */,
 				5C5D991C15B0230D0058B43A /* SceneNodeAnimationList.cpp */,
 				5C5D991D15B0230D0058B43A /* SceneNodeAnimationList.h */,
-				5C5D991E15B0230D0058B43A /* ShadowRect.cpp */,
-				5C5D991F15B0230D0058B43A /* ShadowRect.h */,
 				5C5D992015B0230D0058B43A /* ShadowVolumeNode.cpp */,
 				5C5D992115B0230D0058B43A /* ShadowVolumeNode.h */,
 				5C5D992215B0230D0058B43A /* SkeletonNode.cpp */,
@@ -2044,7 +2064,6 @@
 				5C5D9A6115B0230D0058B43A /* SceneNodeAnimation.cpp in Build Sources */,
 				5C5D9A6215B0230D0058B43A /* SceneNodeAnimationKey.cpp in Build Sources */,
 				5C5D9A6315B0230D0058B43A /* SceneNodeAnimationList.cpp in Build Sources */,
-				5C5D9A6415B0230D0058B43A /* ShadowRect.cpp in Build Sources */,
 				5C5D9A6515B0230D0058B43A /* ShadowVolumeNode.cpp in Build Sources */,
 				5C5D9A6615B0230D0058B43A /* SkeletonNode.cpp in Build Sources */,
 				5C5D9A6815B0230D0058B43A /* SpriteNode.cpp in Build Sources */,
@@ -2111,7 +2130,6 @@
 				5081EA5516760C7400ECA24C /* TransformComponent.cpp in Build Sources */,
 				5081EA5E167FBB8300ECA24C /* RenderComponent.cpp in Build Sources */,
 				508E59AF1684A14D00D2ECA8 /* RenderBatch.cpp in Build Sources */,
-				508E59B01684A15300D2ECA8 /* RenderBatchArray.cpp in Build Sources */,
 				508E59B21684A15F00D2ECA8 /* RenderLayer.cpp in Build Sources */,
 				508E59B31684A16200D2ECA8 /* RenderObject.cpp in Build Sources */,
 				508E59B41684A16500D2ECA8 /* RenderPass.cpp in Build Sources */,
@@ -2146,6 +2164,12 @@
 				E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */,
 				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
 				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
+				50D77CB316B2DF86002BB037 /* LightUpdateSystem.cpp in Build Sources */,
+				50F082A116B41B2000DDF5B8 /* ShadowVolume.cpp in Build Sources */,
+				50F082A516B421ED00DDF5B8 /* ShadowVolumeRenderPass.cpp in Build Sources */,
+				50F082B816B4326A00DDF5B8 /* SwitchSystem.cpp in Build Sources */,
+				50F082BB16B4327800DDF5B8 /* SwitchComponent.cpp in Build Sources */,
+				50F082BE16B68B3C00DDF5B8 /* ShadowRect.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

@@ -18,7 +18,7 @@ varying mediump vec2 varTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 uniform sampler2D texture1;
 varying mediump vec2 varTexCoord1;
-#endif 
+#endif
 
 #if defined(PIXEL_LIT)
 uniform sampler2D normalMapTexture;

@@ -94,6 +94,7 @@ RenderObject * RenderObject::Clone()
 	{
 		ro->AddRenderBatch(GetRenderBatch(i)->Clone());
 	}
+    ro->ownerDebugInfo = ownerDebugInfo;
 
 	return ro;
 }

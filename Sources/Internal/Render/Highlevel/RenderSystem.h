@@ -95,12 +95,15 @@ public:
     
     void AddLight(LightNode * light);
     void RemoveLight(LightNode * light);
+    Vector<LightNode*> & GetLights();
+
     
 private:
     void ProcessClipping();
     void FindNearestLights();
     void FindNearestLights(RenderObject * renderObject);
     void AddRenderObject(RenderObject * renderObject);
+    
     void RemoveRenderObject(RenderObject * renderObject);
     void AddRenderBatch(RenderBatch * renderBatch);
     void RemoveRenderBatch(RenderBatch * renderBatch);
@@ -125,6 +128,9 @@ private:
     //HashMap<SceneNode*, RenderObject *> entityObjectMap;
     Camera * camera;
     //Vector<RenderObject*> forRemove;
+    
+    
+    friend class RenderPass;
 };
     
 } // ns
