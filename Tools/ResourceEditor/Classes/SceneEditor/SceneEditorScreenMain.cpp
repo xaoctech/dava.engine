@@ -212,11 +212,10 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
             
         }
     }
-    AddControl(bodies[btn->GetTag()]->bodyControl);
-    bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
-    
-    SceneDataManager::Instance()->SetActiveScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+
+	ActivateBodyItem(bodies[btn->GetTag()]);
 }
+
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
 {
     UIButton *btn = (UIButton *)owner;
@@ -266,7 +265,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
         }
 
         //set as current
-        bodies[tag]->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+		ActivateBodyItem(bodies[tag]);
     }
 }
 
@@ -902,4 +901,17 @@ void SceneEditorScreenMain::ProcessIsSolidChanging()
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->ProcessIsSolidChanging();
+}
+
+void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem)
+{
+	if (!activeItem)
+	{
+		return;
+	}
+	
+	AddControl(activeItem->bodyControl);
+	activeItem->headerButton->SetSelected(true, false);
+    
+	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
 }
