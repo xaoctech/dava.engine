@@ -353,6 +353,7 @@
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
+    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\LayerForceWidget.cpp" />
@@ -821,6 +822,7 @@
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
+    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\LayerForceWidget.h" />
