@@ -95,8 +95,11 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
-	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-	activeScene->ResetLandsacpeSelection();
+	if(SceneDataManager::Instance())
+	{
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		activeScene->ResetLandsacpeSelection();
+	}
 
     if(landscapesController)
     {
