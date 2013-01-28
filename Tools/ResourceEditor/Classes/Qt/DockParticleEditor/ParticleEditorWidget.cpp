@@ -11,6 +11,7 @@
 #include "LayerForceWidget.h"
 #include "ParticlesEditorController.h"
 #include "ui_mainwindow.h"
+#include <QScrollBar>
 
 ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	QScrollArea(parent)
@@ -69,17 +70,20 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, B
 	emitterPropertiesWidget = new ParticleEmitterPropertiesWidget(this);
 	emitterPropertiesWidget->Init(emitter, true);
 
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		emitterPropertiesWidget->RestoreVisualState(stateProps);
-	}
-
 	setWidget(emitterPropertiesWidget);
 	connect(emitterPropertiesWidget,
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterPropertiesWidget->RestoreVisualState(stateProps);
+		
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
 }
 
 void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
@@ -100,17 +104,20 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 	emitterLayerWidget = new EmitterLayerWidget(this);
 	emitterLayerWidget->Init(emitter, layer, true);
 
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		emitterLayerWidget->RestoreVisualState(stateProps);
-	}
-
 	setWidget(emitterLayerWidget);
 	connect(emitterLayerWidget,
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		emitterLayerWidget->RestoreVisualState(stateProps);
+		
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
 }
 
 void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
@@ -131,17 +138,20 @@ void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, Par
 	layerForceWidget = new LayerForceWidget(this);
 	layerForceWidget->Init(emitter, layer, forceIndex, true);
 
-	if (editorNode)
-	{
-		KeyedArchive* stateProps = editorNode->GetExtraData();
-		layerForceWidget->RestoreVisualState(stateProps);
-	}
-
 	setWidget(layerForceWidget);
 	connect(layerForceWidget,
 			SIGNAL(ValueChanged()),
 			this,
 			SLOT(OnValueChanged()));
+
+	if (editorNode)
+	{
+		KeyedArchive* stateProps = editorNode->GetExtraData();
+		layerForceWidget->RestoreVisualState(stateProps);
+
+		int32 scrollValue = stateProps->GetInt32("EDITOR_SCROLL_VALUE", 0);
+		verticalScrollBar()->setValue(scrollValue);
+	}
 }
 
 void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEditorNode)
@@ -157,6 +167,8 @@ void ParticleEditorWidget::OnNodeDeselected(BaseParticleEditorNode* particleEdit
 		layerForceWidget->StoreVisualState(stateProps);
 	if (emitterPropertiesWidget)
 		emitterPropertiesWidget->StoreVisualState(stateProps);
+
+	stateProps->SetInt32("EDITOR_SCROLL_VALUE", verticalScrollBar()->value());
 }
 
 void ParticleEditorWidget::OnUpdate()

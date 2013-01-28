@@ -183,7 +183,7 @@ public:
 	RefPtr< PropertyLine<float32> > lifeVariation;		// variation part of life that added to particle life during generation of the particle
 	
 	RefPtr< PropertyLine<float32> > number;				// number of particles per second
-	RefPtr< PropertyLine<float32> > numberVariation;		// variation part of number that added to particle count during generation of the particle
+	RefPtr< PropertyLine<float32> > numberVariation;	// variation part of number that added to particle count during generation of the particle
 	
 	RefPtr< PropertyLine<Vector2> > size;				// size of particles in pixels 
 	RefPtr< PropertyLine<Vector2> > sizeVariation;		// size variation in pixels
@@ -213,6 +213,9 @@ public:
 	RefPtr< PropertyLine<float32> > alphaOverLife;	
 	RefPtr< PropertyLine<Color> > colorOverLife;	
 	RefPtr< PropertyLine<float32> > frameOverLife;				// in frame index
+
+	RefPtr< PropertyLine<float32> > angle;				// sprite angle in degrees
+	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
 	float32		alignToMotion;
 	bool		additive;

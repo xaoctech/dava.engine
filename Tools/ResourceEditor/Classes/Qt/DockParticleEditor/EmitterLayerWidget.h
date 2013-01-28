@@ -76,6 +76,7 @@ private:
 	TimeLineWidget* bounceTimeLine;
 	TimeLineWidget* alphaOverLifeTimeLine;
 	TimeLineWidget* frameOverLifeTimeLine;
+	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;
 	QDoubleSpinBox* alignToMotionSpin;
