@@ -53,7 +53,6 @@ private:
 	void UpdateTooltip();
 	
 private:
-	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 	QVBoxLayout* mainBox;
 	

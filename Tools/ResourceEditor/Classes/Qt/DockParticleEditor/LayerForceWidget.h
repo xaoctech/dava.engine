@@ -44,7 +44,6 @@ protected:
 	
 private:
 	QVBoxLayout* mainBox;
-	ParticleEmitter* emitter;
 	ParticleLayer* layer;
 	int32 forceIndex;
 	

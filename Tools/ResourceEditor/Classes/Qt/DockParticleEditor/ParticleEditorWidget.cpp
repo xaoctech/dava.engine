@@ -54,6 +54,16 @@ void ParticleEditorWidget::DeleteOldWidget()
 
 void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
+	if (emitterNode)
+	{
+		if (emitterLayerWidget && emitterLayerWidget->GetEmitter() == emitterNode->GetEmitter())
+			return;
+		if (layerForceWidget && layerForceWidget->GetEmitter() == emitterNode->GetEmitter())
+			return;
+		if (emitterPropertiesWidget && emitterPropertiesWidget->GetEmitter() == emitterNode->GetEmitter())
+			return;
+	}
+	
 	DeleteOldWidget();
 	
 	if (!emitterNode)
