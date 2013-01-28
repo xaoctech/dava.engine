@@ -675,17 +675,7 @@ void Scene::Draw()
         currentCamera->Set();
     }
     
-	//if(bvHierarchy)
-    //    bvHierarchy->Cull();
-	//VisibilityAABBoxSystem::Run(this);
 
-	//entityManager->Dump();
-    
-//    uint32 size = (uint32)drawArray.size();
-//    for (uint32 k = 0; k < size; ++k)
-//    {
-//        drawArray[k]->Draw();
-//    }
     
     RenderSystem * renderSystem = RenderSystem::Instance();
     
