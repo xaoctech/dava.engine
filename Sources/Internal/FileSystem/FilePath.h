@@ -65,9 +65,11 @@ public:
 	operator String();
 
     const String & GetSourcePath() const;
-    const String & GetAbsolutePath() const;
-    const String & GetRelativePath() const;
-    const String & GetRelativePath(const String &folder) const;
+    const String GetAbsolutePath() const;
+    const String GetRelativePath() const;
+    const String GetRelativePath(const String &folder) const;
+    
+    const bool Initalized() const;
     
 protected:
     

@@ -33,5 +33,26 @@ Component * RenderComponent::Clone(SceneNode * toEntity)
     return component;
 }
 
+void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
+{
+    uint32 count = renderObject->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *renderBatch = renderObject->GetRenderBatch(i);
+
+        Material *material = renderBatch->GetMaterial();
+        if(material)
+        {
+            dataNodes.insert(material);
+        }
+        
+        PolygonGroup *pg = renderBatch->GetPolygonGroup();
+        if(pg)
+        {
+            dataNodes.insert(pg);
+        }
+    }
+}
+    
 
 };
