@@ -49,13 +49,13 @@ FilePath::FilePath(const FilePath &path)
     relativeFolder = path.relativeFolder;
 }
     
-FilePath::FilePath(const String &sourcePath)
-{
-    sourcePathname = sourcePath;
-    absolutePathname = String("");
-    relativePathname = String("");
-    relativeFolder = String("");
-}
+// FilePath::FilePath(const String &sourcePath)
+// {
+//     sourcePathname = sourcePath;
+//     absolutePathname = String("");
+//     relativePathname = String("");
+//     relativeFolder = String("");
+// }
     
 FilePath::~FilePath()
 {
@@ -122,21 +122,21 @@ FilePath& FilePath::operator=(const FilePath &path)
     return *this;
 }
     
-FilePath& FilePath::operator=(const String &pathname)
-{
-    this->sourcePathname = pathname;
-    this->absolutePathname = String("");
-    this->relativePathname = String("");
-    this->relativeFolder = String("");
-    
-    return *this;
-}
-
-    
-FilePath::operator String()
-{
-    return sourcePathname;
-}
+// FilePath& FilePath::operator=(const String &pathname)
+// {
+//     this->sourcePathname = pathname;
+//     this->absolutePathname = String("");
+//     this->relativePathname = String("");
+//     this->relativeFolder = String("");
+//     
+//     return *this;
+// }
+// 
+//     
+// FilePath::operator String()
+// {
+//     return sourcePathname;
+// }
     
 const String FilePath::GetSourcePath() const
 {
