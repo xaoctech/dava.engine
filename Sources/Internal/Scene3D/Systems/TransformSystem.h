@@ -16,7 +16,7 @@ class Transform;
 class TransformSystem : public SceneSystem
 {
 public:
-	TransformSystem();
+	TransformSystem(Scene * scene);
 	~TransformSystem();
 
     Transform * CreateTransform();

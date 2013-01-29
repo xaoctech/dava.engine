@@ -12,7 +12,7 @@ class Camera;
 class LodSystem : public SceneSystem
 {
 public:
-	LodSystem();
+	LodSystem(Scene * scene);
 
 	virtual void Process();
 	virtual void AddEntity(SceneNode * entity);

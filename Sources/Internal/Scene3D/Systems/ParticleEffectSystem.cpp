@@ -6,8 +6,8 @@
 namespace DAVA
 {
 
-ParticleEffectSystem::ParticleEffectSystem()
-:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT)
+ParticleEffectSystem::ParticleEffectSystem(Scene * scene)
+:	BaseProcessSystem(Component::PARTICLE_EFFECT_COMPONENT, scene)
 {
 
 }

@@ -8,9 +8,10 @@
 namespace DAVA
 {
 
-SwitchSystem::SwitchSystem()
+SwitchSystem::SwitchSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
 }
 
 void SwitchSystem::Process()

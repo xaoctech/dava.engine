@@ -8,10 +8,11 @@
 namespace DAVA
 {
 
-TransformSystem::TransformSystem()
+TransformSystem::TransformSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
-	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 TransformSystem::~TransformSystem()
@@ -55,7 +56,7 @@ void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 		if(transform->parentMatrix)
 		{
 			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
-            Scene::GetActiveScene()->ImmediateEvent(entity, Component::TRANSFORM_COMPONENT, EventSystem::WORLD_TRANSFORM_CHANGED);
+            GetScene()->ImmediateEvent(entity, Component::TRANSFORM_COMPONENT, EventSystem::WORLD_TRANSFORM_CHANGED);
 		}
 	}
 

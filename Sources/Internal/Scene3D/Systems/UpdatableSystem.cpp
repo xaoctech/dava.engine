@@ -6,7 +6,8 @@
 namespace DAVA
 {
 
-UpdatableSystem::UpdatableSystem()
+UpdatableSystem::UpdatableSystem(Scene * scene)
+:	SceneSystem(scene)
 {
 
 }

@@ -51,7 +51,7 @@ class Camera;
 class RenderUpdateSystem : public SceneSystem
 {
 public:
-    RenderUpdateSystem();
+    RenderUpdateSystem(Scene * scene);
     virtual ~RenderUpdateSystem();
     
     virtual void AddEntity(SceneNode * entity);

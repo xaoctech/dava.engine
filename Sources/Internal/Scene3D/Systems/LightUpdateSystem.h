@@ -52,7 +52,7 @@ class LightNode;
 class LightUpdateSystem : public SceneSystem
 {
 public:
-    LightUpdateSystem();
+    LightUpdateSystem(Scene * scene);
     virtual ~LightUpdateSystem();
     
     virtual void AddEntity(SceneNode * entity);

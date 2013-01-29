@@ -45,9 +45,10 @@
 
 namespace DAVA
 {
-LightUpdateSystem::LightUpdateSystem()
+LightUpdateSystem::LightUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-    Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
 LightUpdateSystem::~LightUpdateSystem()
@@ -76,7 +77,7 @@ void LightUpdateSystem::AddEntity(SceneNode * entity)
     if (!lightObject)return;
 
     entityObjectMap.Insert(entity, lightObject);
-    RenderSystem::Instance()->AddLight(lightObject);
+    GetScene()->GetRenderSystem()->AddLight(lightObject);
 }
 
 void LightUpdateSystem::RemoveEntity(SceneNode * entity)
@@ -87,7 +88,7 @@ void LightUpdateSystem::RemoveEntity(SceneNode * entity)
 		return;
 	}
     
-    RenderSystem::Instance()->RemoveLight(lightObject);
+    GetScene()->GetRenderSystem()->RemoveLight(lightObject);
 	entityObjectMap.Remove(entity);
 }
        

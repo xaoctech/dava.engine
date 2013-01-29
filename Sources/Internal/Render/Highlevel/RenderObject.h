@@ -35,6 +35,7 @@
 #include "Animation/AnimatedObject.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -178,7 +179,7 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
-    RenderSystem::Instance()->MarkForUpdate(this);
+    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const

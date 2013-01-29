@@ -72,7 +72,10 @@ void ShadowVolume::Draw(Camera * camera)
 //        return;
     
     LightNode * light = GetMaterialInstance()->GetLight(0);
-    if (!(light->GetFlags() & LightNode::CAST_SHADOW))return;
+    if((!light) || (!(light->GetFlags() & LightNode::CAST_SHADOW)))
+	{
+		return;
+	}
     
 
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();

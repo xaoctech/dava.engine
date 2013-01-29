@@ -32,8 +32,9 @@
 namespace DAVA 
 {
     
-SceneSystem::SceneSystem()
-    : requiredComponents(0)
+SceneSystem::SceneSystem(Scene * _scene)
+:	requiredComponents(0),
+	scene(_scene)
 {
 }
 
@@ -72,6 +73,9 @@ void SceneSystem::Process()
     
 }
 
-
+Scene * SceneSystem::GetScene()
+{
+	return scene;
+}
 
 };

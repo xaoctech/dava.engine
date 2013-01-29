@@ -10,7 +10,7 @@ namespace DAVA
 class SwitchSystem : public SceneSystem
 {
 public:
-	SwitchSystem();
+	SwitchSystem(Scene * scene);
 
 	virtual void Process();
 	virtual void ImmediateEvent(SceneNode * entity, uint32 event);
