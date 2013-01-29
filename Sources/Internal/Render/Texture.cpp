@@ -695,7 +695,7 @@ Texture * Texture::PureCreate(const String & pathName)
     if(texture)
     {
 		texture->relativePathname = descriptor->pathname;
-        textureMap[descriptor->pathname] = texture;
+        textureMap[texture->relativePathname] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -758,7 +758,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 	
 	DVASSERT(NULL != descriptor);
     
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
+    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname.GetSourcePath(), fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;

@@ -19,6 +19,13 @@ public:
 
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
+    
+    /**
+     \brief This function should be implemented in each node that have data nodes inside it.
+     */
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+    
 private:
     RenderObject * renderObject;
     
