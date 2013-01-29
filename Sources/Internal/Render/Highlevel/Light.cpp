@@ -107,7 +107,7 @@ void LightNode::SetPositionDirectionFromMatrix(const Matrix4 & worldTransform)
     direction = MultiplyVectorMat3x3(Vector3(0.0, -1.0f, 0.0f), worldTransform);
     direction.Normalize();
     
-    RenderSystem::Instance()->MarkForUpdate(this);
+    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
 }
 
 LightNode::eType LightNode::GetType() const

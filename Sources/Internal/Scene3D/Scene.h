@@ -63,6 +63,7 @@ class EntityManager;
 class BVHierarchy;
 class Component;
 class SceneSystem;
+class RenderSystem;
 class RenderUpdateSystem;
 class TransformSystem;
 class LodSystem;
@@ -116,6 +117,7 @@ public:
 	DeleteSystem * deleteSystem;
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
+	RenderSystem * renderSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -251,6 +253,7 @@ public:
 	static Scene * GetActiveScene();
 
 	EventSystem * GetEventSystem();
+	RenderSystem * GetRenderSystem();
     
 protected:	
     

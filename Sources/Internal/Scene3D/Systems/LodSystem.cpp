@@ -7,7 +7,8 @@
 namespace DAVA
 {
 
-LodSystem::LodSystem()
+LodSystem::LodSystem(Scene * scene)
+:	SceneSystem(scene)
 {
 	camera = 0;
 	UpdatePartialUpdateIndices();

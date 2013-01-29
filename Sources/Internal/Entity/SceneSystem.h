@@ -36,11 +36,12 @@ namespace DAVA
 {
 
 class SceneNode;
-    
+class Scene;    
+
 class SceneSystem
 {
 public:
-    SceneSystem();
+    SceneSystem(Scene * scene);
     virtual ~SceneSystem();
     
     void SetRequiredComponents(uint32 requiredComponents);
@@ -50,10 +51,14 @@ public:
     virtual void RemoveEntity(SceneNode * entity);
     virtual void ImmediateEvent(SceneNode * entity, uint32 event);
     
-    
     virtual void Process();
+
+protected:
+	Scene * GetScene();
+
 private:
     uint32 requiredComponents;
+	Scene * scene;
 };
 
 };

@@ -53,6 +53,7 @@
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Systems/TransformSystem.h"
@@ -113,34 +114,35 @@ void Scene::CreateComponents()
 
 void Scene::CreateSystems()
 {
+	renderSystem = new RenderSystem();
 	eventSystem = new EventSystem();
 	deleteSystem = new DeleteSystem();
 
-    transformSystem = new TransformSystem();
+    transformSystem = new TransformSystem(this);
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
 
-    renderUpdateSystem = new RenderUpdateSystem();
+    renderUpdateSystem = new RenderUpdateSystem(this);
     AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
 
-	lodSystem = new LodSystem();
+	lodSystem = new LodSystem(this);
 	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
 
-    debugRenderSystem = new DebugRenderSystem();
+    debugRenderSystem = new DebugRenderSystem(this);
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
 
-	particleEmitterSystem = new ParticleEmitterSystem();
+	particleEmitterSystem = new ParticleEmitterSystem(this);
 	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
 
-	particleEffectSystem = new ParticleEffectSystem();
+	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 
-	updatableSystem = new UpdatableSystem();
+	updatableSystem = new UpdatableSystem(this);
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
     
-    lightUpdateSystem = new LightUpdateSystem();
+    lightUpdateSystem = new LightUpdateSystem(this);
     AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
 
-	switchSystem = new SwitchSystem();
+	switchSystem = new SwitchSystem(this);
 	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
 }
 
@@ -185,6 +187,7 @@ Scene::~Scene()
 
 	SafeDelete(eventSystem);
 	SafeDelete(deleteSystem);
+	SafeDelete(renderSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -643,7 +646,7 @@ void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
 
-    
+    SetActiveScene(this);
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -674,10 +677,6 @@ void Scene::Draw()
     {
         currentCamera->Set();
     }
-    
-
-    
-    RenderSystem * renderSystem = RenderSystem::Instance();
     
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
@@ -913,6 +912,11 @@ Scene * Scene::GetActiveScene()
 EventSystem * Scene::GetEventSystem()
 {
 	return eventSystem;
+}
+
+RenderSystem * Scene::GetRenderSystem()
+{
+	return renderSystem;
 }
 
 /*void Scene::Save(KeyedArchive * archive)

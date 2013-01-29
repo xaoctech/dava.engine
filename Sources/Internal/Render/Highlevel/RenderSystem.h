@@ -46,7 +46,7 @@ class SceneNode;
 class Camera;
 class LightNode;
     
-class RenderSystem : public StaticSingleton<RenderSystem>
+class RenderSystem
 {
 public:
     RenderSystem();

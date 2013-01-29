@@ -49,7 +49,7 @@ ShadowVolumeRenderPass::~ShadowVolumeRenderPass()
 
 void ShadowVolumeRenderPass::Draw(Camera * camera)
 {
-    RenderSystem * renderSystem = RenderSystem::Instance();
+    RenderSystem * renderSystem = Scene::GetActiveScene()->GetRenderSystem();
     
     // Draw all layers with their materials
     uint32 size = (uint32)renderLayers.size();

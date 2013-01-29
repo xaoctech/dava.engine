@@ -13,7 +13,7 @@ ParticleEmitterComponent::ParticleEmitterComponent()
 
 ParticleEmitterComponent::~ParticleEmitterComponent()
 {
-	RenderSystem::Instance()->UnregisterFromUpdate(particleEmitter);
+	Scene::GetActiveScene()->GetRenderSystem()->UnregisterFromUpdate(particleEmitter);
 	SafeRelease(particleEmitter);
 }
 
@@ -31,12 +31,12 @@ Component * ParticleEmitterComponent::Clone(SceneNode * toEntity)
 
 void ParticleEmitterComponent::SetParticleEmitter(ParticleEmitter * _particleEmitter)
 {
-	RenderSystem::Instance()->UnregisterFromUpdate(particleEmitter);
+	Scene::GetActiveScene()->GetRenderSystem()->UnregisterFromUpdate(particleEmitter);
 
 	SafeRelease(particleEmitter);
 	particleEmitter = SafeRetain(_particleEmitter);
 
-	RenderSystem::Instance()->RegisterForUpdate(particleEmitter);
+	Scene::GetActiveScene()->GetRenderSystem()->RegisterForUpdate(particleEmitter);
 }
 
 ParticleEmitter * ParticleEmitterComponent::GetParticleEmitter()

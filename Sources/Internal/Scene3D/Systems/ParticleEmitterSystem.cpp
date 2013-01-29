@@ -6,8 +6,8 @@
 namespace DAVA
 {
 
-ParticleEmitterSystem::ParticleEmitterSystem()
-:	BaseProcessSystem(Component::PARTICLE_EMITTER_COMPONENT)
+ParticleEmitterSystem::ParticleEmitterSystem(Scene * scene)
+:	BaseProcessSystem(Component::PARTICLE_EMITTER_COMPONENT, scene)
 {
 
 }
