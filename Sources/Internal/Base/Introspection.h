@@ -104,7 +104,7 @@ namespace DAVA
 			, members_count(_members_count)
 		{ }
 
-		IntrospectionInfo::~IntrospectionInfo()
+		~IntrospectionInfo()
 		{
 			for(int i = 0; i < members_count; ++i)
 				delete members[i];
