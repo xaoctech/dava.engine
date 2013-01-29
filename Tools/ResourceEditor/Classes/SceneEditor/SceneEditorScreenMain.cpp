@@ -209,11 +209,10 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
             
             RemoveControl(bodies[i]->bodyControl);
             bodies[i]->headerButton->SetSelected(false, false);
-            
         }
     }
 
-	ActivateBodyItem(bodies[btn->GetTag()]);
+	ActivateBodyItem(bodies[btn->GetTag()], false);
 }
 
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
@@ -265,7 +264,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
         }
 
         //set as current
-		ActivateBodyItem(bodies[tag]);
+		ActivateBodyItem(bodies[tag], true);
     }
 }
 
@@ -903,7 +902,7 @@ void SceneEditorScreenMain::ProcessIsSolidChanging()
     iBody->bodyControl->ProcessIsSolidChanging();
 }
 
-void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem)
+void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem, bool forceResetSelection)
 {
 	if (!activeItem)
 	{
@@ -911,7 +910,21 @@ void SceneEditorScreenMain::ActivateBodyItem(BodyItem* activeItem)
 	}
 	
 	AddControl(activeItem->bodyControl);
-	activeItem->headerButton->SetSelected(true, false);
-    
+	activeItem->headerButton->SetSelected(true, true);
+
+	if (forceResetSelection)
+	{
+		for(int32 i = 0; i < (int32)bodies.size(); ++i)
+		{
+			if (bodies[i] == activeItem)
+			{
+				continue;
+			}
+
+			RemoveControl(bodies[i]->bodyControl);
+			bodies[i]->headerButton->SetSelected(false, false);
+		}
+	}
+
 	SceneDataManager::Instance()->SetActiveScene(activeItem->bodyControl->GetScene());
 }
