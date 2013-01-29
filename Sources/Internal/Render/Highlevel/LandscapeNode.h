@@ -390,7 +390,8 @@ protected:
     
     int32 flashQueueCounter;
     
-    eTiledShaderMode tiledShaderMode;
+//    eTiledShaderMode tiledShaderMode;
+    uint8 tiledShaderMode;
     
     int32 nearLodIndex;
     int32 farLodIndex;
@@ -399,12 +400,26 @@ protected:
     bool    isFogEnabled;
     float32 fogDensity;
     Color   fogColor;
+    
+    
+public:
+    
+    INTROSPECTION_EXTEND(LandscapeNode, RenderObject,
+        MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(tiledShaderMode, "Tiled Shader Mode", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(bbox, "bbox", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
     
 inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
 {
-    return tiledShaderMode;
+    return (eTiledShaderMode)tiledShaderMode;
 }
     
 };
