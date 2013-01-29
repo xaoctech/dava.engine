@@ -274,6 +274,7 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FileList.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchive.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.h" />
@@ -631,6 +632,7 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\FileList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchive.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.cpp" />

@@ -1224,6 +1224,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h">
+      <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2138,13 +2141,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp">
+      <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
