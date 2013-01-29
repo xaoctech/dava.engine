@@ -462,42 +462,6 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLView.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLViewController.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES1Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES2Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ESRenderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\HelperAppDelegate.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\AppDelegate.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\MainWindowController.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\OpenGLView.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -1017,15 +981,6 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <Filter>Internal\Platform\Qt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
@@ -1070,12 +1025,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
       <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h">
-      <Filter>Internal\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
       <Filter>Internal\Base</Filter>
@@ -1253,6 +1202,11 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
       <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssertMessage.h">
+      <Filter>Internal\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1483,12 +1437,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp">
       <Filter>Internal\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp">
       <Filter>Internal\Render</Filter>
@@ -1982,12 +1930,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
@@ -2162,13 +2104,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp">
+      <Filter>Internal\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

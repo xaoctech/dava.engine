@@ -94,5 +94,5 @@ void LayerParticleEditorNode::UpdateForcesIndices()
 
     // We have to update exactly the same child nodes as the forces count we have.
     int32 forcesCount = curLayer->forces.size();
-    DVASSERT(forcesCount == processedChildNodes);
+    //DVASSERT(forcesCount == processedChildNodes);
 }
