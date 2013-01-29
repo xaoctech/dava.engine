@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -1047,9 +1047,6 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1457,6 +1454,18 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
+      <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2327,9 +2336,6 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GUIState.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\mainwindow.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2575,6 +2581,15 @@
     </ClInclude>
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.h">
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\GUIState.h">
+      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

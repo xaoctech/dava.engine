@@ -9,23 +9,20 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 	if(NULL != collection && collection->Size(object) > 0)
 	{
 		int index = 0;
-		DAVA::MetaInfo *valueType = collection->ValueType();
+		DAVA::MetaInfo *valueType = collection->ItemType();
 		DAVA::IntrospectionCollectionBase::Iterator i = collection->Begin(object);
 		while(NULL != i)
 		{
 			if(NULL != valueType->GetIntrospection())
 			{
-				QtPropertyData *childData;
-				if(!valueType->IsPointer())
-				{
-					childData = new QtPropertyDataIntrospection(collection->ItemPointer(i), valueType->GetIntrospection());
-				}
-				else
-				{
-					childData = new QtPropertyDataIntrospection(*((void **)collection->ItemPointer(i)), valueType->GetIntrospection());
-				}
+				void * itemObject = collection->ItemData(i);
+				const DAVA::IntrospectionInfo *itemInfo = valueType->GetIntrospection(itemObject);
 
-				ChildAdd(QString::number(index), childData);
+				if(NULL != itemInfo && NULL != itemObject)
+				{
+					QtPropertyData *childData = new QtPropertyDataIntrospection(itemObject, itemInfo);
+					ChildAdd(QString::number(index), childData);
+				}
 			}
 			else
 			{
@@ -36,8 +33,9 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 				}
 				else
 				{
-					QtPropertyData* childData = new QtPropertyData(QString("##collect_poiner##"));
-					childData->SetFlags(FLAG_IS_NOT_EDITABLE);
+					QString s;
+					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", collection->ItemData(i)));
+					childData->SetFlags(FLAG_IS_DISABLED);
 					ChildAdd(QString::number(index), childData);
 				}
 			}
@@ -56,5 +54,5 @@ QtPropertyDataIntroCollection::~QtPropertyDataIntroCollection()
 QVariant QtPropertyDataIntroCollection::GetValueInternal()
 {
 	ChildNeedUpdate();
-	return QVariant(collection->CollectionType()->GetTypeName());
+	return QString().sprintf("Collection, size %d", collection->Size(object));
 }

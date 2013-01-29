@@ -582,6 +582,7 @@
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
