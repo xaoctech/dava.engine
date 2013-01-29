@@ -292,6 +292,7 @@
 		E8705EA616A5433100027020 /* ParticleLayerBatch.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA416A5433100027020 /* ParticleLayerBatch.cpp */; };
 		E8705EA916A5436600027020 /* ParticleEffectSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
+		E8868D0816B7BE7A0037D930 /* FilePath.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8868D0616B7BE7A0037D930 /* FilePath.cpp */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
 /* End PBXBuildFile section */
 
@@ -909,6 +910,8 @@
 		E8705EA716A5436600027020 /* ParticleEffectSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectSystem.cpp; path = Systems/ParticleEffectSystem.cpp; sourceTree = "<group>"; };
 		E8705EA816A5436600027020 /* ParticleEffectSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectSystem.h; path = Systems/ParticleEffectSystem.h; sourceTree = "<group>"; };
 		E879FCE5161DD6F00038D271 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E8868D0616B7BE7A0037D930 /* FilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePath.cpp; sourceTree = "<group>"; };
+		E8868D0716B7BE7A0037D930 /* FilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilePath.h; sourceTree = "<group>"; };
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
@@ -1295,6 +1298,8 @@
 				5C5D97C215B0230D0058B43A /* File.h */,
 				5C5D97C415B0230D0058B43A /* FileList.cpp */,
 				5C5D97C515B0230D0058B43A /* FileList.h */,
+				E8868D0616B7BE7A0037D930 /* FilePath.cpp */,
+				E8868D0716B7BE7A0037D930 /* FilePath.h */,
 				5C5D97C615B0230D0058B43A /* FileSystem.cpp */,
 				5C5D97C715B0230D0058B43A /* FileSystem.h */,
 				5C5D97C815B0230D0058B43A /* FileSystemObjective.mm */,
@@ -2170,6 +2175,7 @@
 				50F082B816B4326A00DDF5B8 /* SwitchSystem.cpp in Build Sources */,
 				50F082BB16B4327800DDF5B8 /* SwitchComponent.cpp in Build Sources */,
 				50F082BE16B68B3C00DDF5B8 /* ShadowRect.cpp in Build Sources */,
+				E8868D0816B7BE7A0037D930 /* FilePath.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

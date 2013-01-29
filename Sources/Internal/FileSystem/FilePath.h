@@ -46,15 +46,14 @@ public:
 	FilePath();
     FilePath(const FilePath &path);
     FilePath(const String &sourcePath);
-
-    static FilePath * CreateFromPathname(const String &sourcePath);
-    static FilePath * CreateFromAbsolutePath(const String &absolutePath);
-    static FilePath * CreateFromRelativePath(const String &relativePath);
-    static FilePath * CreateFromRelativePath(const String &relativePath, const String &folder);
-    
-    
 	virtual ~FilePath();
-	
+
+    
+    void InitFromPathname(const String &sourcePath);
+    void InitFromAbsolutePath(const String &absolutePath);
+    void InitFromRelativePath(const String &relativePath);
+    void InitFromRelativePath(const String &relativePath, const String &folder);
+    
     void SetSourcePath(const String &sourcePath);
     void SetAbsolutePath(const String &absolutePath);
     void SetRelativePath(const String &relativePath);
