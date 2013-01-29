@@ -20,6 +20,8 @@ public:
 
 	virtual void SetCamera(Camera * camera);
 
+	void UpdateEntityAfterLoad(SceneNode * entity);
+
 private:
 	//partial update per frame
 	static const int32 UPDATE_PART_PER_FRAME = 1;
@@ -27,7 +29,7 @@ private:
 	int32 currentPartialUpdateIndex;
 	void UpdatePartialUpdateIndices();
 
-	void UpdateEntityAfterLoad(SceneNode * entity);
+	
 	Vector<SceneNode*> entities;
 
 	void UpdateLod(SceneNode * entity);

@@ -216,6 +216,7 @@
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
@@ -226,6 +227,7 @@
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
+#include "Scene3D/Systems/LodSystem.h"
 
 //Components
 #include "Scene3D/Components/BulletComponent.h"
