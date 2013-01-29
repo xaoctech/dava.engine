@@ -204,7 +204,7 @@ public:
     
     
 //    eType   type; //TODO: waiting for enums at introspection
-    uint8 type;
+    uint32 type;
 
 	Vector4 reflective;
 	float32	reflectivity;
@@ -266,8 +266,8 @@ private:
 
 //	eBlendMode blendSrc; //TODO: waiting for enums at introspection
 //	eBlendMode blendDst; //TODO: waiting for enums at introspection
-	uint8 blendSrc;
-	uint8 blendDst;
+	uint32 blendSrc;
+	uint32 blendDst;
 
 
     void RebuildShader();
@@ -323,7 +323,6 @@ private:
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
-        //MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isOpaque, "Is Opaque", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -345,7 +344,7 @@ public:
 
         MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
 //        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );

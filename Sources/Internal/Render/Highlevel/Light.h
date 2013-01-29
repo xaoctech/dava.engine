@@ -97,7 +97,7 @@ protected:
     Vector3 direction;
     
 //    eType type; //TODO: waiting for enums at introspection
-    uint8 type;
+    uint32 type;
     
     Color ambientColor;
     Color diffuseColor;
