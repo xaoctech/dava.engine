@@ -7,16 +7,18 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
-	if(NULL != info && object)
+	while(NULL != _info && object)
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
-			const DAVA::IntrospectionMember *member = info->Member(i);
+			const DAVA::IntrospectionMember *member = _info->Member(i);
 			if(member)
 			{
                 AddMember(member, i);
 			}
 		}
+
+		_info = _info->BaseInfo();
 	}
 
 	SetFlags(FLAG_IS_DISABLED);
@@ -29,7 +31,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 {
     const DAVA::MetaInfo *memberMetaInfo = member->Type();
 
-    if(memberMetaInfo->GetIntrospection())
+    if(memberMetaInfo->GetIntrospection(object))
     {
         AddMemberIntrospection(member, index);
     }
@@ -37,8 +39,9 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
     {
         if(memberMetaInfo->IsPointer())
         {
-            QtPropertyData* childData = new QtPropertyData(QString("##intro_poiner##"));
-            childData->SetFlags(childData->GetFlags() | FLAG_IS_NOT_EDITABLE);
+			QString s;
+            QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", member->Data(object)));
+            childData->SetFlags(childData->GetFlags() | FLAG_IS_DISABLED);
             ChildAdd(member->Name(), childData);
             childVariantIndexes.insert(NULL, index);
         }
@@ -46,7 +49,7 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
         {
             if(member->Collection())
             {
-                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(member->Pointer(object), member->Collection());
+                QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(member->Data(object), member->Collection());
                 ChildAdd(member->Name(), childCollection);
                 childVariantIndexes.insert(NULL, index);
             }
@@ -67,32 +70,15 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 
 void QtPropertyDataIntrospection::AddMemberIntrospection(const DAVA::IntrospectionMember *member, const DAVA::int32 &index)
 {
-    const DAVA::MetaInfo *memberMetaInfo = member->Type();
-    const DAVA::IntrospectionInfo *memberInfo = memberMetaInfo->GetIntrospection();
-    void *memberObject = NULL;
-    if(memberMetaInfo->IsPointer())
-    {
-        memberObject = *((void **)member->Pointer(object));
-    }
-    else
-    {
-        memberObject = member->Pointer(object);
-    }
-    
-    QtPropertyDataIntrospection *parent = this;
-    DAVA::int32 currentIndex = index;
-    
-    while (memberInfo)
-    {
-        QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberInfo);
-        
-        parent->ChildAdd(memberInfo->Name(), childData);
-        parent->childVariantIndexes.insert(NULL, currentIndex);
-        
-        memberInfo = memberInfo->BaseInfo();
-        currentIndex = 0;
-        parent = childData;
-    }
+	void *memberObject = member->Data(object);
+	const DAVA::IntrospectionInfo *memberIntrospection = member->Type()->GetIntrospection(memberObject);
+
+	if(NULL != memberObject && NULL != memberIntrospection)
+	{
+		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection);
+		ChildAdd(member->Name(), childData);
+		childVariantIndexes.insert(NULL, index);
+	}
 }
 
 

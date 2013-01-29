@@ -361,7 +361,7 @@ protected:
     KeyedArchive *customProperties;
     
 private:
-	Component * components[Component::COMPONENT_COUNT];
+	Vector<Component *> components;
     Matrix4 defaultLocalTransform;
    	friend class Scene;
     
@@ -370,9 +370,11 @@ public:
 		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		MEMBER(worldTransform, "World transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
         MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+
+		COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 	
