@@ -117,7 +117,7 @@ public:
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
-    uint8 type;
+    uint32 type;
 
     uint32 flags;
     uint32 debugFlags;

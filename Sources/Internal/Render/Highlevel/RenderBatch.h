@@ -120,7 +120,7 @@ protected:
     uint32 indexCount;
     
 //    ePrimitiveType type; //TODO: waiting for enums at introspection
-    uint8 type;
+    uint32 type;
     
     RenderLayer * ownerLayer;
     uint32 removeIndex;
