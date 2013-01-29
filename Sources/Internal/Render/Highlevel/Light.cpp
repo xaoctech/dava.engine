@@ -112,7 +112,7 @@ void LightNode::SetPositionDirectionFromMatrix(const Matrix4 & worldTransform)
 
 LightNode::eType LightNode::GetType() const
 {
-    return type;
+    return (eType)type;
 }
 const Vector3 & LightNode::GetPosition() const
 {

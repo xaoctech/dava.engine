@@ -110,14 +110,16 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
     
-    inline eType GetType() { return type; }
+    inline eType GetType() { return (eType)type; }
 
 	virtual RenderObject * Clone();
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     
 protected:
-    eType type;
+//    eType type; //TODO: waiting for enums at introspection
+    uint32 type;
+
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
@@ -131,7 +133,7 @@ protected:
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-//        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
