@@ -49,13 +49,10 @@ FilePath::FilePath(const FilePath &path)
     relativeFolder = path.relativeFolder;
 }
     
-// FilePath::FilePath(const String &sourcePath)
-// {
-//     sourcePathname = sourcePath;
-//     absolutePathname = String("");
-//     relativePathname = String("");
-//     relativeFolder = String("");
-// }
+FilePath::FilePath(const String &sourcePath)
+{
+	InitFromPathname(sourcePath);
+}
     
 FilePath::~FilePath()
 {
@@ -68,12 +65,18 @@ void FilePath::InitFromPathname(const String &sourcePath)
 {
     sourcePathname = sourcePath;
     absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
+
+	relativePathname = String("");
+	relativeFolder = String("");
 }
     
 void FilePath::InitFromAbsolutePath(const String &absolutePath)
 {
     sourcePathname = absolutePath;
     absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
+	
+	relativePathname = String("");
+	relativeFolder = String("");
 }
     
 void FilePath::InitFromRelativePath(const String &relativePath)
@@ -86,7 +89,6 @@ void FilePath::InitFromRelativePath(const String &relativePath, const String &fo
     sourcePathname = relativePath;
     SetRelativePath(relativePath, folder);
 }
-    
     
 	
 void FilePath::SetSourcePath(const String &sourcePath)
@@ -122,28 +124,25 @@ FilePath& FilePath::operator=(const FilePath &path)
     return *this;
 }
     
-// FilePath& FilePath::operator=(const String &pathname)
-// {
-//     this->sourcePathname = pathname;
-//     this->absolutePathname = String("");
-//     this->relativePathname = String("");
-//     this->relativeFolder = String("");
-//     
-//     return *this;
-// }
-// 
-//     
-// FilePath::operator String()
-// {
-//     return sourcePathname;
-// }
+FilePath& FilePath::operator=(const String &pathname)
+{
+	this->InitFromPathname(pathname);
+
+    return *this;
+}
+
     
-const String FilePath::GetSourcePath() const
+FilePath::operator String()
+{
+    return GetSourcePath();
+}
+
+const String & FilePath::GetSourcePath() const
 {
     return sourcePathname;
 }
 
-const String FilePath::GetAbsolutePath() const
+const String & FilePath::GetAbsolutePath() const
 {
     if(!absolutePathname.empty())
         return absolutePathname;
@@ -156,12 +155,12 @@ const String FilePath::GetAbsolutePath() const
     return String("");
 }
 
-const String FilePath::GetRelativePath() const
+const String & FilePath::GetRelativePath() const
 {
     return GetRelativePath(FileSystem::Instance()->GetCurrentWorkingDirectory());
 }
 
-const String FilePath::GetRelativePath(const String &folder) const
+const String & FilePath::GetRelativePath(const String &folder) const
 {
     String path = FileSystem::Instance()->AbsoluteToRelativePath(folder, absolutePathname);
     return path;
