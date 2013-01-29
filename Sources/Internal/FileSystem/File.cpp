@@ -123,8 +123,8 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 
 
 	File * fileInstance = new File();
-//	fileInstance->filename = filename;
-	fileInstance->filename.InitFromPathname(filename);
+	fileInstance->filename = filename;
+//	fileInstance->filename.InitFromPathname(filename);
 	fileInstance->size = size;
 	fileInstance->file = file;
 	return fileInstance;

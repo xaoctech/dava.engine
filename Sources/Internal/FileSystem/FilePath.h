@@ -45,7 +45,7 @@ public:
 	
 	FilePath();
     FilePath(const FilePath &path);
-//    FilePath(const String &sourcePath); //Temporary commented to correct reafactoring
+    FilePath(const String &sourcePath); 
 	virtual ~FilePath();
 
     
@@ -60,19 +60,21 @@ public:
     void SetRelativePath(const String &relativePath, const String &folder);
 
     FilePath& operator=(const FilePath &path);
-//    FilePath& operator=(const String &pathname); //Temporary commented to correct reafactoring
-//    operator String(); //Temporary commented to correct reafactoring
+    FilePath& operator=(const String &pathname);
 
-    const String GetSourcePath() const;
-    const String GetAbsolutePath() const;
-    const String GetRelativePath() const;
-    const String GetRelativePath(const String &folder) const;
+	operator String();
+
+    const String & GetSourcePath() const;
+    const String & GetAbsolutePath() const;
+    const String & GetRelativePath() const;
+    const String & GetRelativePath(const String &folder) const;
     
 protected:
     
     static const String CreateAbsoluteFromRelative(const String &relativePath, const String &folder);
     
-    
+protected:
+
     String sourcePathname;
     String absolutePathname;
     

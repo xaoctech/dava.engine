@@ -734,7 +734,7 @@ TextureDescriptor * Texture::CreateDescriptor() const
 {
     if(!isRenderTarget)
     {
-        return TextureDescriptor::CreateFromFile(relativePathname);
+        return TextureDescriptor::CreateFromFile(relativePathname.GetSourcePath());
     }
 
     return NULL;
@@ -929,7 +929,7 @@ void Texture::DumpTextures()
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetSourcePath().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
 		cnt++;
         
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
