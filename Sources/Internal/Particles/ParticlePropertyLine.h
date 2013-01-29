@@ -32,6 +32,7 @@
 
 #include "FileSystem/YamlParser.h"
 #include "Base/RefPtr.h"
+#include <limits>
 
 namespace DAVA
 {

@@ -114,7 +114,12 @@
 
 /* Configure process defines this to 1 when it finds out that system  */
 /* header file ws2tcpip.h must be included by the external interface. */
-/* #undef CURL_PULL_WS2TCPIP_H */
+
+#ifdef _MSC_VER
+#define CURL_PULL_WS2TCPIP_H 1
+#else
+#undef CURL_PULL_WS2TCPIP_H
+#endif
 #ifdef CURL_PULL_WS2TCPIP_H
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN
@@ -126,7 +131,12 @@
 
 /* Configure process defines this to 1 when it finds out that system   */
 /* header file sys/types.h must be included by the external interface. */
+
+#ifdef _MSC_VER
+#undef CURL_PULL_SYS_TYPES_H
+#else
 #define CURL_PULL_SYS_TYPES_H 1
+#endif
 #ifdef CURL_PULL_SYS_TYPES_H
 #  include <sys/types.h>
 #endif
@@ -140,14 +150,22 @@
 
 /* Configure process defines this to 1 when it finds out that system  */
 /* header file inttypes.h must be included by the external interface. */
+#ifdef _MSC_VER
+#undef CURL_PULL_INTTYPES_H
+#else
 #define CURL_PULL_INTTYPES_H 1
+#endif
 #ifdef CURL_PULL_INTTYPES_H
 #  include <inttypes.h>
 #endif
 
 /* Configure process defines this to 1 when it finds out that system    */
 /* header file sys/socket.h must be included by the external interface. */
+#ifdef _MSC_VER
+#undef CURL_PULL_SYS_SOCKET_H
+#else
 #define CURL_PULL_SYS_SOCKET_H 1
+#endif
 #ifdef CURL_PULL_SYS_SOCKET_H
 #  include <sys/socket.h>
 #endif

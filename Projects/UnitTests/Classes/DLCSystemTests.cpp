@@ -10,6 +10,11 @@
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/File.h"
 
+#ifdef __DAVAENGINE_WIN32__
+#include "Windows.h"
+#define sleep(x) Sleep((x) * 1000)
+#endif
+
 namespace DAVA
 {
 

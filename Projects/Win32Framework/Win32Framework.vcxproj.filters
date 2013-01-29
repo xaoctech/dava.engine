@@ -121,6 +121,9 @@
     <Filter Include="Internal\Platform\Qt\MacOS">
       <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\DLC">
+      <UniqueIdentifier>{adb309fb-7c9c-456d-893e-6013acf3f10c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1140,12 +1143,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
@@ -1169,6 +1166,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
       <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h">
+      <Filter>Internal\DLC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1999,6 +2005,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp">
+      <Filter>Internal\DLC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
