@@ -68,7 +68,7 @@
 
 
 // Runtime assert
-
+#include "Debug\DVAssertMessage.h"
 #if defined(__DAVAENGINE_WIN32__)
 #define DebugBreak() { __debugbreak(); }
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
@@ -84,6 +84,7 @@
 	if (!(expr))\
 	{\
 		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
@@ -91,6 +92,7 @@
 	if (!(expr))\
 	{\
 		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
@@ -98,6 +100,7 @@
     if (!(expr))\
     {\
         DAVA::Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
     }\
 
 #define DVVERIFY(expr) DVASSERT(expr)
