@@ -63,6 +63,7 @@ class EntityManager;
 class BVHierarchy;
 class Component;
 class SceneSystem;
+class RenderSystem;
 class RenderUpdateSystem;
 class TransformSystem;
 class LodSystem;
@@ -72,6 +73,8 @@ class ParticleEmitterSystem;
 class ParticleEffectSystem;
 class UpdatableSystem;
 class DeleteSystem;
+class LightUpdateSystem;
+class SwitchSystem;
     
 /**
     \ingroup scene3d
@@ -112,7 +115,9 @@ public:
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
 	DeleteSystem * deleteSystem;
-    
+    LightUpdateSystem * lightUpdateSystem;
+	SwitchSystem * switchSystem;
+	RenderSystem * renderSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -248,6 +253,7 @@ public:
 	static Scene * GetActiveScene();
 
 	EventSystem * GetEventSystem();
+	RenderSystem * GetRenderSystem();
     
 protected:	
     
@@ -276,7 +282,6 @@ protected:
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
-	ShadowRect * shadowRect;
 
 	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;

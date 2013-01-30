@@ -36,6 +36,7 @@
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -91,7 +92,6 @@ void ParticleEmitter::CleanupLayers()
 
 	layers.clear();
 }
-
 
 //ParticleEmitter * ParticleEmitter::Clone()
 //{
@@ -252,7 +252,7 @@ void ParticleEmitter::RenderUpdate(float32 timeElapsed)
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
 
-	Camera * camera = RenderSystem::Instance()->GetCamera();
+	Camera * camera = Scene::GetActiveScene()->GetRenderSystem()->GetCamera();
 
 	if(is3D)
 	{
@@ -451,6 +451,13 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 		Vector3 speed = qvq1_v * velocity;
 		particle->speed = speed.Length();
         particle->direction = speed/particle->speed;
+		if (particle->direction.x <= EPSILON && particle->direction.x >= -EPSILON)
+			particle->direction.x = 0.f;
+		if (particle->direction.y <= EPSILON && particle->direction.y >= -EPSILON)
+			particle->direction.y = 0.f;
+		if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
+			particle->direction.z = 0.f;
+
 
         if (type == EMITTER_ONCIRCLE)
         {
@@ -781,5 +788,13 @@ void ParticleEmitter::UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index)
 		layer->layerName = Format("Layer %i", index);
 	}
 }
-	
+
+void ParticleEmitter::ReloadLayerSprites()
+{
+	int32 layersCount = this->GetLayers().size();
+	for (int i = 0; i < layersCount; i ++)
+	{
+		this->GetLayers()[i]->ReloadSprite();
+	}
+}
 };

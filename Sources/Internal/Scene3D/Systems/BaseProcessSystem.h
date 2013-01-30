@@ -11,7 +11,7 @@ class Component;
 class BaseProcessSystem : public SceneSystem
 {
 public:
-	BaseProcessSystem(uint32 componentId);	
+	BaseProcessSystem(uint32 componentId, Scene * scene);	
 
 	virtual void AddEntity(SceneNode * entity);
 	virtual void RemoveEntity(SceneNode * entity);

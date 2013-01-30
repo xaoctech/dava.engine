@@ -27,51 +27,66 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
+#ifndef __DAVAENGINE_FILE_PATH_H__
+#define __DAVAENGINE_FILE_PATH_H__
 
 #include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
-
-//class RenderBatch;
-class RenderBatchArray
+/**
+	\ingroup filesystem
+	\brief class to work with file pathname
+ */
+class FilePath: public BaseObject
 {
 public:
-    RenderBatchArray();
-    virtual ~RenderBatchArray();
-    
-    void AddRenderBatch(RenderBatch * batch);
-    void RemoveRenderBatch(RenderBatch * batch);
-    
-    void Update();
+	
+	FilePath();
+    FilePath(const FilePath &path);
+    FilePath(const String &absolutePath); 
+	virtual ~FilePath();
 
-    inline uint32 GetCount();
-    inline RenderBatch * GetBatch(uint32 index);
     
-private:
-    Vector<RenderBatch*> finalArray;
+    void InitFromAbsolutePath(const String &absolutePath);
+    void InitFromRelativePath(const String &relativePath);
+    void InitFromRelativePath(const String &relativePath, const String &folder);
     
+    void SetAbsolutePath(const String &absolutePath);
+    void SetRelativePath(const String &relativePath);
+    void SetRelativePath(const String &relativePath, const String &folder);
+
+    FilePath& operator=(const FilePath &path);
+    FilePath& operator=(const String &pathname);
+
+	operator String();
+
+    const String & GetAbsolutePath() const;
+    const String GetRelativePath() const;
+    const String GetRelativePath(const String &folder) const;
+    
+    const bool Initalized() const;
+    
+protected:
+    
+    static const String CreateAbsoluteFromRelative(const String &relativePath, const String &folder);
+    
+protected:
+
+    String absolutePathname;
+    
+    String relativePathname;
+    String relativeFolder;
+
 public:
-    
-    INTROSPECTION(RenderBatchArray,
-        COLLECTION(finalArray, "Final Array", INTROSPECTION_EDITOR)
+    INTROSPECTION_EXTEND(FilePath, BaseObject,
+        MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(relativePathname, "Relative Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(relativeFolder, "Relative Folder", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
+};
 
-inline uint32 RenderBatchArray::GetCount()
-{
-    return (uint32)finalArray.size();
-}
-
-inline RenderBatch * RenderBatchArray::GetBatch(uint32 index)
-{
-    return finalArray[index];
-}
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__ */
-
+#endif //__DAVAENGINE_FILE_PATH_H__

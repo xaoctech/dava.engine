@@ -35,6 +35,8 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderStateBlock.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA
 {
 
@@ -60,8 +62,26 @@ public:
     void SetLight(int32 lightIndex, LightNode * lightNode);
     LightNode * GetLight(int32 lightIndex);
     
+    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
+    
 private:
+    Texture * lightmapTexture;
+    String lightmapName;
+    Vector2 uvOffset;
+    Vector2 uvScale;
+    
     LightNode * lightNodes[LIGHT_NODE_MAX_COUNT];
+    
+    friend class Material;
+public:
+    INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
+                         //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
+                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
+                         MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
+                         MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+                         );
 };
     
     
@@ -175,7 +195,7 @@ public:
         Function should be used if you want to render something with this material.
      */
     //void BindMaterial();
-	void PrepareRenderState();
+	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
     /**
@@ -185,7 +205,8 @@ public:
     //void UnbindMaterial();
     
     
-    eType   type;
+//    eType   type; //TODO: waiting for enums at introspection
+    uint32 type;
 
 	Vector4 reflective;
 	float32	reflectivity;
@@ -238,15 +259,19 @@ private:
     
     
     Texture * textures[TEXTURE_COUNT];
-    String names[TEXTURE_COUNT];
+//    String names[TEXTURE_COUNT];
+	Vector<FilePath> names;
+
     String textureSlotNames[TEXTURE_COUNT];
     uint32 textureSlotCount;
     
     Vector2 uvOffset;
 	Vector2 uvScale;
 
-	eBlendMode blendSrc;
-	eBlendMode blendDst;
+//	eBlendMode blendSrc; //TODO: waiting for enums at introspection
+//	eBlendMode blendDst; //TODO: waiting for enums at introspection
+	uint32 blendSrc;
+	uint32 blendDst;
 
 
     void RebuildShader();
@@ -318,7 +343,14 @@ public:
         MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
         MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
@@ -331,7 +363,7 @@ Texture * Material::GetTexture(eTextureLevel level) const
 inline const String & Material::GetTextureName(eTextureLevel level) const
 {
 	DVASSERT(level < TEXTURE_COUNT);
-	return names[level];
+	return names[level].GetAbsolutePath();
 }
     
 inline void Material::SetUvOffset(const Vector2 & _uvOffset)
@@ -362,11 +394,11 @@ inline void Material::SetBlendDest(eBlendMode _blendDest)
 }
 inline eBlendMode Material::GetBlendSrc() const
 {
-    return blendSrc;
+    return (eBlendMode)blendSrc;
 }
 inline eBlendMode Material::GetBlendDest() const
 {
-    return blendDst;
+    return (eBlendMode)blendDst;
 }
 
 };

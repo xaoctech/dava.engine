@@ -13,24 +13,18 @@ class IUpdatable
 {
 public:
 	virtual ~IUpdatable() {};
-    
-    INTROSPECTION(IUpdatable, NULL);
 };
 
-class IUpdatableBeforeTransform : public IUpdatable
+class IUpdatableBeforeTransform : public virtual IUpdatable
 {
 public:
 	virtual void UpdateBeforeTransform(float32 timeElapsed) = 0;
-
-    INTROSPECTION_EXTEND(IUpdatableBeforeTransform, IUpdatable, NULL);
 };
 
-class IUpdatableAfterTransform : public IUpdatable
+class IUpdatableAfterTransform : public virtual IUpdatable
 {
 public:
 	virtual void UpdateAfterTransform(float32 timeElapsed) = 0;
-
-    INTROSPECTION_EXTEND(IUpdatableAfterTransform, IUpdatable, NULL);
 };
 
 class UpdatableComponent : public Component
@@ -47,7 +41,7 @@ public:
 	};
 
 	UpdatableComponent();
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void SetUpdatableObject(IUpdatable * updatableObject);
 	IUpdatable * GetUpdatableObject();

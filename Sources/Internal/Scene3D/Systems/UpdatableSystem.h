@@ -12,7 +12,7 @@ class IUpdatableAfterTransform;
 class UpdatableSystem : public SceneSystem
 {
 public:
-	UpdatableSystem();
+	UpdatableSystem(Scene * scene);
 	virtual void Process();
 	virtual void AddEntity(SceneNode * entity);
 	virtual void RemoveEntity(SceneNode * entity);

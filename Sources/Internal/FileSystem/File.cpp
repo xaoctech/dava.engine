@@ -124,17 +124,19 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 
 	File * fileInstance = new File();
 	fileInstance->filename = filename;
+//	fileInstance->filename.InitFromPathname(filename);
 	fileInstance->size = size;
 	fileInstance->file = file;
 	return fileInstance;
 }
 
-const char8 * File::GetFilename()
+const String File::GetFilename()
 {
-	return filename.c_str();
+//	return filename.c_str();
+	return filename.GetAbsolutePath();
 }
 
-const char8 * File::GetPathname()
+const String File::GetPathname()
 {
 	Logger::Debug("[AnsiFile::GetPathname] not implemented; allways return NULL;");
 	return 0;

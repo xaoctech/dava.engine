@@ -12,8 +12,9 @@
 namespace DAVA
 {
 
-DebugRenderSystem::DebugRenderSystem()
-    : camera(0)
+DebugRenderSystem::DebugRenderSystem(Scene * scene)
+:	SceneSystem(scene),
+	camera(0)
 {
 }
     

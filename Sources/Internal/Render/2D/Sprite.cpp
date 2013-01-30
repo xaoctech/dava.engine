@@ -1528,6 +1528,11 @@ void Sprite::Reload()
             InitFromFile(fp, relativePathname, relativeTexturePathname);
             SafeRelease(fp);
         }
+		else
+		{
+			Logger::Warning("Unable to reload sprite %s", relativePathname.c_str());
+			InitFromTexture(Texture::GetPinkPlaceholder(), 0, 0, 16.0f, 16.0f, 16, 16, false);
+		}
     }
 }
     

@@ -51,7 +51,7 @@ class Camera;
 class RenderUpdateSystem : public SceneSystem
 {
 public:
-    RenderUpdateSystem();
+    RenderUpdateSystem(Scene * scene);
     virtual ~RenderUpdateSystem();
     
     virtual void AddEntity(SceneNode * entity);
@@ -59,18 +59,8 @@ public:
     virtual void ImmediateEvent(SceneNode * entity, uint32 event);
 
     virtual void Process();
-    void ProcessClipping();
-    
-    void SetCamera(Camera * camera);
     
 private:
-    void AddRenderObject(RenderObject * renderObject);
-    void RemoveRenderObject(RenderObject * renderObject);
-    void AddRenderBatch(RenderBatch * renderBatch);
-    void RemoveRenderBatch(RenderBatch * renderBatch);
-    void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
-    
-    
     HashMap<SceneNode*, RenderObject*> entityObjectMap;
 };
     
