@@ -177,7 +177,7 @@ public:
 		it can be required. 
 		\param[in] layer layer to be added
 	 */
-	void AddLayer(ParticleLayer * layer);
+	virtual void AddLayer(ParticleLayer * layer);
 
 	/**
 	 \brief Function adds layer to emitter to the particular position.
@@ -186,7 +186,7 @@ public:
 	 \param[in] layer layer to be added
   	 \param[in] layerToMoveAbove the position above which the layer will be inserted
 	 */
-	void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
+	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
 
 	/**
 	 \brief Function removes layer to emitter.
@@ -244,7 +244,7 @@ public:
 		If you using ParticleEmitter directly you should call this function to draw emitter.
 		Instead of use it directly check ParticleEmitterObject class, that allow you to use ParticleEmitters inside GameObject hierarchy.
 	 */
-	void Draw();
+	virtual void Draw();
 
 	/**
 	 \brief Enable/disable autorestart.
@@ -299,8 +299,8 @@ public:
     
 	void SetLifeTime(float32 time);
     
-    inline void Set3D(bool is3D);
     inline bool GetIs3D();
+	virtual bool Is3DFlagCorrect();
 
 	const String & GetConfigPath() { return configPath; }
 
@@ -310,7 +310,10 @@ public:
 	void ReloadLayerSprites();
 
 protected:
-	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
+	// Virtual methods which are different for 2D and 3D emitters.
+	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
+	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong);
+
     String GetEmitterTypeName();
 
 	String configPath;
@@ -358,11 +361,6 @@ inline void ParticleEmitter::SetPosition(const Vector3 &_position)
 inline Vector3 & ParticleEmitter::GetPosition()
 {
 	return position;
-}
-    
-inline void ParticleEmitter::Set3D(bool _is3D)
-{
-    is3D = _is3D;
 }
     
 inline bool ParticleEmitter::GetIs3D()

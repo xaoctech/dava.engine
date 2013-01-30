@@ -11,7 +11,7 @@
 #include "../EditorScene.h"
 
 #include "../LandscapeEditor/EditorLandscapeNode.h"
-
+#include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 SceneValidator::SceneValidator()
 {
@@ -45,7 +45,8 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
         ValidateLodNodes(scene, errorsLog);
-        
+		ValidateParticleEmitterNodes(scene, errorsLog);
+
         for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
             SceneNode * node = *it;
@@ -453,6 +454,22 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
             }
         }
     }
+}
+
+void SceneValidator::ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog)
+{
+    Vector<ParticleEmitterNode *> particleEmitterNodes;
+    scene->GetChildNodes(particleEmitterNodes);
+	
+	for(int32 index = 0; index < (int32)particleEmitterNodes.size(); ++index)
+    {
+		ParticleEmitterNode* node = particleEmitterNodes[index];
+		String validationMsg;
+		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitterNode(node, validationMsg))
+		{
+			errorsLog.insert(validationMsg);
+		}
+	}
 }
 
 String SceneValidator::SetPathForChecking(const String &pathname)
