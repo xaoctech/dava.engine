@@ -45,14 +45,16 @@ public:
 	
 	FilePath();
     FilePath(const FilePath &path);
-    FilePath(const String &absolutePath); 
+    FilePath(const String &sourcePath); 
 	virtual ~FilePath();
 
     
+    void InitFromPathname(const String &sourcePath);
     void InitFromAbsolutePath(const String &absolutePath);
     void InitFromRelativePath(const String &relativePath);
     void InitFromRelativePath(const String &relativePath, const String &folder);
     
+    void SetSourcePath(const String &sourcePath);
     void SetAbsolutePath(const String &absolutePath);
     void SetRelativePath(const String &relativePath);
     void SetRelativePath(const String &relativePath, const String &folder);
@@ -62,7 +64,8 @@ public:
 
 	operator String();
 
-    const String & GetAbsolutePath() const;
+    const String & GetSourcePath() const;
+    const String GetAbsolutePath() const;
     const String GetRelativePath() const;
     const String GetRelativePath(const String &folder) const;
     
@@ -74,6 +77,7 @@ protected:
     
 protected:
 
+    String sourcePathname;
     String absolutePathname;
     
     String relativePathname;
@@ -81,6 +85,7 @@ protected:
 
 public:
     INTROSPECTION_EXTEND(FilePath, BaseObject,
+        MEMBER(sourcePathname, "Source Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(relativePathname, "Relative Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

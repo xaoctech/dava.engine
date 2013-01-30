@@ -35,8 +35,6 @@
 #include "Scene3D/DataNode.h"
 #include "Render/RenderStateBlock.h"
 
-#include "FileSystem/FilePath.h"
-
 namespace DAVA
 {
 
@@ -259,9 +257,7 @@ private:
     
     
     Texture * textures[TEXTURE_COUNT];
-//    String names[TEXTURE_COUNT];
-	Vector<FilePath> names;
-
+    String names[TEXTURE_COUNT];
     String textureSlotNames[TEXTURE_COUNT];
     uint32 textureSlotCount;
     
@@ -363,7 +359,7 @@ Texture * Material::GetTexture(eTextureLevel level) const
 inline const String & Material::GetTextureName(eTextureLevel level) const
 {
 	DVASSERT(level < TEXTURE_COUNT);
-	return names[level].GetAbsolutePath();
+	return names[level];
 }
     
 inline void Material::SetUvOffset(const Vector2 & _uvOffset)

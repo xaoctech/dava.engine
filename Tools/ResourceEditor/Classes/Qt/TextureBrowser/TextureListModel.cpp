@@ -172,7 +172,7 @@ void TextureListModel::setHighlight(DAVA::SceneNode *node)
 		const DAVA::String descPath = t->first;
 		for(int i = 0; i < textureDescriptorsAll.size(); ++i)
 		{
-			if(textureDescriptorsAll[i]->pathname.GetAbsolutePath() == descPath)
+			if(textureDescriptorsAll[i]->pathname.GetSourcePath() == descPath)
 			{
 				textureDescriptorsHighlight.push_back(textureDescriptorsAll[i]);
 			}
@@ -207,7 +207,7 @@ void TextureListModel::applyFilterAndSort()
 
 	for(int i = 0; i < (int) textureDescriptorsAll.size(); ++i)
 	{
-		if( (curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.GetAbsolutePath().find(curFilter.toStdString())) &&	// text filter
+		if( (curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.GetSourcePath().find(curFilter.toStdString())) &&	// text filter
 			(!curFilterBySelectedNode || textureDescriptorsHighlight.contains(textureDescriptorsAll[i])))						// cur selected node filter
 		{
 			textureDescriptorsFiltredSorted.push_back(textureDescriptorsAll[i]);
@@ -247,7 +247,7 @@ void TextureListModel::applyFilterAndSort()
 
 bool SortFnByName::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-	return QFileInfo(t1->pathname.GetAbsolutePath().c_str()).completeBaseName() < QFileInfo(t2->pathname.GetAbsolutePath().c_str()).completeBaseName();
+	return QFileInfo(t1->pathname.GetSourcePath().c_str()).completeBaseName() < QFileInfo(t2->pathname.GetSourcePath().c_str()).completeBaseName();
 }
 
 bool SortFnByFileSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)

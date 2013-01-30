@@ -143,8 +143,6 @@ Material::Material()
 	,	renderStateBlock()
     ,   isWireframe(false)
 {
-	names.resize(TEXTURE_COUNT);
-
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
 
 //    if (scene)
@@ -399,7 +397,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if (names[k].Initalized())
+        if (names[k].length() > 0)
         {
             String filename = sceneFile->AbsoluteToRelative(names[k]);
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
@@ -437,28 +435,19 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < texCount; ++k)
     {
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
-        if (!relativePathname.empty())
+        if (relativePathname.length() > 0)
         {
-			if(relativePathname[0] == '~') //path like ~res:/
+			String absolutePathname = relativePathname;
+			if(!absolutePathname.empty() && absolutePathname[0] != '~') //not path like ~res:/Gfx...
 			{
-				names[k].InitFromAbsolutePath(relativePathname);
-			}
-			else
-			{
-				names[k].InitFromRelativePath(relativePathname, sceneFile->GetScenePath());
+				absolutePathname = sceneFile->RelativeToAbsolute(relativePathname);
 			}
 
-// 			String absolutePathname = relativePathname;
-// 			if(!absolutePathname.empty() && absolutePathname[0] != '~') //not path like ~res:/Gfx...
-// 			{
-// 				absolutePathname = sceneFile->RelativeToAbsolute(relativePathname);
-// 			}
-// 
-//             names[k] = absolutePathname;
+            names[k] = absolutePathname;
             if(sceneFile->DebugLogEnabled())
-                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
+                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
-            textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
+            textures[k] = Texture::CreateFromFile(names[k]);
         }
         
 //        if (names[k].size())

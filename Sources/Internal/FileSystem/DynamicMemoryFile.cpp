@@ -80,12 +80,12 @@ void * DynamicMemoryFile::GetData()
 
 const String DynamicMemoryFile::GetFilename()
 {
-	return filename.GetAbsolutePath();
+	return filename.GetSourcePath();
 }
 
 const String DynamicMemoryFile::GetPathname()
 {
-	return filename.GetAbsolutePath();
+	return filename.GetSourcePath();
 }
 
 uint32 DynamicMemoryFile::Write(const void * pointerToData, uint32 dataSize)
