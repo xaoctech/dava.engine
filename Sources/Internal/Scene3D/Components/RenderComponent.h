@@ -29,6 +29,9 @@ public:
 private:
     RenderObject * renderObject;
     
+	void InsterDataNode(DataNode *node, Set<DataNode*> & dataNodes);
+
+
 public:
     INTROSPECTION_EXTEND(RenderComponent, Component,
         MEMBER(renderObject, "renderObject", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
