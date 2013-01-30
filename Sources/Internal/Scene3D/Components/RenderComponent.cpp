@@ -43,16 +43,26 @@ void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
         Material *material = renderBatch->GetMaterial();
         if(material)
         {
-            dataNodes.insert(material);
+			InsterDataNode(material, dataNodes);
         }
         
         PolygonGroup *pg = renderBatch->GetPolygonGroup();
         if(pg)
         {
-            dataNodes.insert(pg);
+			InsterDataNode(pg, dataNodes);
         }
     }
 }
-    
+
+void RenderComponent::InsterDataNode(DataNode *node, Set<DataNode*> & dataNodes)
+{
+	dataNodes.insert(node);
+
+	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		InsterDataNode(node->GetChild(i), dataNodes);
+	}
+}
+
 
 };
