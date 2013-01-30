@@ -116,4 +116,20 @@ void TransformSystem::HierahicAddToUpdate(SceneNode * entity)
 		}
 	}
 }
+
+//void TransformSystem::RemoveEntity(SceneNode * entity)
+//{
+//	//TODO: use hashmap
+//	uint32 size = updatableEntities.size();
+//	for(uint32 i = 0; i < size; ++i)
+//	{
+//		if(updatableEntities[i] == entity)
+//		{
+//			updatableEntities[i] = updatableEntities[size-1];
+//			updatableEntities.pop_back();
+//			return;
+//		}
+//	}
+//}
+
 };
