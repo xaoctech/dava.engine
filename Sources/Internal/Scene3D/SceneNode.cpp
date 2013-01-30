@@ -796,6 +796,15 @@ bool SceneNode::GetSolid()
 
 void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    {
+        if(components[k])
+        {
+            components[k]->GetDataNodes(dataNodes);
+        }
+    }
+
+    
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)
     {

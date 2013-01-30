@@ -1531,7 +1531,7 @@ void Sprite::Reload()
 		else
 		{
 			Logger::Warning("Unable to reload sprite %s", relativePathname.c_str());
-			InitFromTexture(Texture::GetPinkPlaceholder(), 0.f, 0.f, 16.0f, 16.0f, 16.0f, 16.0f, false);
+			InitFromTexture(Texture::GetPinkPlaceholder(), 0, 0, 16.0f, 16.0f, 16, 16, false);
 		}
     }
 }
