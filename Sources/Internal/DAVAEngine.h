@@ -228,6 +228,7 @@
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
 #include "Scene3D/Systems/LodSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 //Components
 #include "Scene3D/Components/BulletComponent.h"
