@@ -45,7 +45,7 @@ public:
 	
 	FilePath();
     FilePath(const FilePath &path);
-    FilePath(const String &sourcePath); 
+//    FilePath(const String &sourcePath); 
 	virtual ~FilePath();
 
     
@@ -60,9 +60,9 @@ public:
     void SetRelativePath(const String &relativePath, const String &folder);
 
     FilePath& operator=(const FilePath &path);
-    FilePath& operator=(const String &pathname);
+//    FilePath& operator=(const String &pathname);
 
-	operator String();
+//	operator String();
 
     const String & GetSourcePath() const;
     const String GetAbsolutePath() const;

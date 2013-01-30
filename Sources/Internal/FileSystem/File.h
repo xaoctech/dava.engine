@@ -33,8 +33,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
-#include "FileSystem/FilePath.h"
-
 #if defined(__DAVAENGINE_ANDROID__)
 	#include "zip/zip.h"
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -194,8 +192,7 @@ private:
 	FILE	*	file;
 	uint32		size;
 protected:
-//	String	filename;
-	FilePath filename;
+	String	filename;
 };
 };
 

@@ -50,7 +50,6 @@ DynamicMemoryFile * DynamicMemoryFile::Create(uint32 attributes)
 	DynamicMemoryFile *fl = new DynamicMemoryFile();
 	fl->fileAttributes = attributes;
  	fl->filename = Format("memoryfile_%p", fl);
-//	fl->filename.InitFromPathname(Format("memoryfile_%p", fl));
 	
 	return fl;
 }
@@ -80,12 +79,12 @@ void * DynamicMemoryFile::GetData()
 
 const String DynamicMemoryFile::GetFilename()
 {
-	return filename.GetSourcePath();
+	return filename;
 }
 
 const String DynamicMemoryFile::GetPathname()
 {
-	return filename.GetSourcePath();
+	return filename;
 }
 
 uint32 DynamicMemoryFile::Write(const void * pointerToData, uint32 dataSize)

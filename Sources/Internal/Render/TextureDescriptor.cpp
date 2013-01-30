@@ -134,7 +134,7 @@ bool TextureDescriptor::Load(const String &filePathname)
         return false;
     }
     
-    pathname.InitFromPathname(filePathname);
+    pathname = filePathname;
     
     int32 signature;
     file->Read(&signature, sizeof(signature));
@@ -170,8 +170,8 @@ bool TextureDescriptor::Load(const String &filePathname)
 
 void TextureDescriptor::Save() const
 {
-    DVASSERT_MSG(pathname.Initalized(), "Can use this method only after calling Load()");
-    Save(pathname.GetSourcePath());
+    DVASSERT_MSG(!pathname.empty(), "Can use this method only after calling Load()");
+    Save(pathname);
 }
     
 void TextureDescriptor::Save(const String &filePathname) const
@@ -264,7 +264,7 @@ void TextureDescriptor::Export(const String &filePathname)
 
 void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
 {
-    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.GetSourcePath().c_str(), version);
+    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
     
     if(version == 2)
     {
@@ -467,12 +467,12 @@ bool TextureDescriptor::GetGenerateMipMaps() const
     
 String TextureDescriptor::GetSourceTexturePathname() const
 {
-    if(pathname.Initalized())
+    if(pathname.empty())
     {
-        return FileSystem::Instance()->ReplaceExtension(pathname.GetSourcePath(), GetSourceTextureExtension());
+        return String("");
     }
     
-    return String("");
+    return FileSystem::Instance()->ReplaceExtension(pathname, GetSourceTextureExtension());
 }
 
 String TextureDescriptor::GetDescriptorPathname(const String &texturePathname)
