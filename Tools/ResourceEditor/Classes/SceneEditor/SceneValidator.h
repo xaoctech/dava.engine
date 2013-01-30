@@ -106,7 +106,7 @@ protected:
     void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
-
+	void ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog);
     
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
