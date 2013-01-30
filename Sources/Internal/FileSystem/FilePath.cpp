@@ -35,7 +35,6 @@ namespace DAVA
 	
 FilePath::FilePath()
 {
-    sourcePathname = String("");
     absolutePathname = String("");
     relativePathname = String("");
     relativeFolder = String("");
@@ -43,15 +42,14 @@ FilePath::FilePath()
 
 FilePath::FilePath(const FilePath &path)
 {
-    sourcePathname = path.sourcePathname;
     absolutePathname = path.absolutePathname;
     relativePathname = path.relativePathname;
     relativeFolder = path.relativeFolder;
 }
     
-FilePath::FilePath(const String &sourcePath)
+FilePath::FilePath(const String &absolutePath)
 {
-	InitFromPathname(sourcePath);
+	InitFromAbsolutePath(absolutePath);
 }
     
 FilePath::~FilePath()
@@ -59,20 +57,8 @@ FilePath::~FilePath()
     
 }
 
-
-    
-void FilePath::InitFromPathname(const String &sourcePath)
-{
-    sourcePathname = sourcePath;
-    absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
-
-	relativePathname = String("");
-	relativeFolder = String("");
-}
-    
 void FilePath::InitFromAbsolutePath(const String &absolutePath)
 {
-    sourcePathname = absolutePath;
     absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
 	
 	relativePathname = String("");
@@ -86,16 +72,10 @@ void FilePath::InitFromRelativePath(const String &relativePath)
     
 void FilePath::InitFromRelativePath(const String &relativePath, const String &folder)
 {
-    sourcePathname = relativePath;
     SetRelativePath(relativePath, folder);
 }
     
 	
-void FilePath::SetSourcePath(const String &sourcePath)
-{
-    sourcePathname = sourcePath;
-}
-
 void FilePath::SetAbsolutePath(const String &absolutePath)
 {
     absolutePathname = absolutePath;
@@ -116,7 +96,6 @@ void FilePath::SetRelativePath(const String &relativePath, const String &folder)
     
 FilePath& FilePath::operator=(const FilePath &path)
 {
-    this->sourcePathname = path.sourcePathname;
     this->absolutePathname = path.absolutePathname;
     this->relativePathname = path.relativePathname;
     this->relativeFolder = path.relativeFolder;
@@ -126,7 +105,7 @@ FilePath& FilePath::operator=(const FilePath &path)
     
 FilePath& FilePath::operator=(const String &pathname)
 {
-	this->InitFromPathname(pathname);
+	this->InitFromAbsolutePath(pathname);
 
     return *this;
 }
@@ -134,25 +113,13 @@ FilePath& FilePath::operator=(const String &pathname)
     
 FilePath::operator String()
 {
-    return GetSourcePath();
+    return GetAbsolutePath();
 }
 
-const String & FilePath::GetSourcePath() const
-{
-    return sourcePathname;
-}
 
-const String FilePath::GetAbsolutePath() const
+const String & FilePath::GetAbsolutePath() const
 {
-    if(!absolutePathname.empty())
-        return absolutePathname;
-    
-    if(!relativePathname.empty())
-    {
-        return CreateAbsoluteFromRelative(relativePathname, relativeFolder);
-    }
-    
-    return String("");
+	return absolutePathname;
 }
 
 const String FilePath::GetRelativePath() const
@@ -174,7 +141,7 @@ const String FilePath::CreateAbsoluteFromRelative(const String &relativePath, co
     
 const bool FilePath::Initalized() const
 {
-    return (!sourcePathname.empty());
+    return (!absolutePathname.empty());
 }
 
     

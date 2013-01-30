@@ -803,7 +803,7 @@ void TextureBrowser::convertStatus(const JobItem *jobCur, int jobLeft)
 
 	if(NULL != jobCur && NULL != jobCur->descriptor)
 	{
-		statusText += QString("Converting %1").arg(QString(jobCur->descriptor->pathname.GetSourcePath().c_str()));
+		statusText += QString("Converting %1").arg(QString(jobCur->descriptor->pathname.GetAbsolutePath().c_str()));
 	}
 
 	if(jobLeft > 0)

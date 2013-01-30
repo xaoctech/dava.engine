@@ -370,7 +370,7 @@ void TextureConvertor::threadOriginalFinished()
 	{
 		emit readyOriginal(curJobOriginal->descriptor, loadOriginalWatcher.result());
 
-		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.GetSourcePath().c_str());
+		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.GetAbsolutePath().c_str());
 
 		delete curJobOriginal;
 		curJobOriginal = NULL;

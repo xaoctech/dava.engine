@@ -657,7 +657,7 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
 		//Create texture from descriptor pathname and real image file
-        String pathname = descriptor->pathname.GetSourcePath();
+        String pathname = descriptor->pathname.GetAbsolutePath();
 		workingTexture = Texture::CreateFromFile(pathname);
 		RestoreTexture(pathname, workingTexture);
 

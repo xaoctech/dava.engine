@@ -133,7 +133,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 const String File::GetFilename()
 {
 //	return filename.c_str();
-	return filename.GetSourcePath();
+	return filename.GetAbsolutePath();
 }
 
 const String File::GetPathname()

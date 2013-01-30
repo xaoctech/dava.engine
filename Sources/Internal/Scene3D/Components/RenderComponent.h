@@ -29,7 +29,7 @@ public:
 private:
     RenderObject * renderObject;
     
-	void InsterDataNode(DataNode *node, Set<DataNode*> & dataNodes);
+	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
 
 
 public:
