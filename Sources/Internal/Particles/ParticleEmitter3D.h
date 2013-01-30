@@ -17,9 +17,9 @@ public:
 	virtual void AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove);
 
 	virtual bool Is3DFlagCorrect();
-	
-	virtual void Draw();
+
 	void Draw(Camera * camera);
+	virtual void RenderUpdate(float32 timeElapsed);
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.

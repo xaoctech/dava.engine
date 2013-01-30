@@ -3,6 +3,7 @@
 
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA
 {

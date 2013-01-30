@@ -102,6 +102,7 @@ public:
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);
+	void EnumerateParticleEmitterComponents(SceneNode* rootNode, Vector<ParticleEmitterComponent*>& components);
     
     void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
