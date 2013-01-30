@@ -3,6 +3,7 @@
 
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA
 {
@@ -31,7 +32,7 @@ public:
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 private:
-	ParticleEmitter * emitter;
+	ParticleEmitter3D * emitter;
 	String yamlPath;
 };
 

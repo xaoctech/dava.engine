@@ -547,6 +547,14 @@ void CommandLoadParticleEmitterFromYaml::Execute()
     ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
     emitterNode->GetEmitterNode()->LoadFromYaml(filePath.toStdString());
 
+	// Perform the validation of the Yaml file loaded.
+	String validationMessage;
+	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitterNode(emitterNode->GetEmitterNode(),
+																	validationMessage) == false)
+	{
+		ShowErrorDialog(validationMessage);
+	}
+
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
 
