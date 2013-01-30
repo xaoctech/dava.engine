@@ -1,5 +1,6 @@
 #include "Particles/ParticleEmitter3D.h"
 #include "Particles/ParticleLayer3D.h"
+#include "Particles/ParticleLayerLong.h"
 #include "Render/Highlevel/Camera.h"
 #include "Utils/Random.h"
 
@@ -29,17 +30,17 @@ void ParticleEmitter3D::AddLayer(ParticleLayer * layer, ParticleLayer * layerToM
 	}
 }
 
-void ParticleEmitter3D::Draw()
+void ParticleEmitter3D::RenderUpdate(float32 timeElapsed)
 {
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		if(!(*it)->isDisabled)
-			(*it)->Draw();
-	}
+	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
+
+	Camera * camera = RenderSystem::Instance()->GetCamera();
+	Draw(camera);
+
+	RenderManager::Instance()->SetBlendMode(srcMode, destMode);
 }
 
-RENDERUPDATE!!!
 void ParticleEmitter3D::Draw(Camera * camera)
 {
 	Vector<ParticleLayer*>::iterator it;
