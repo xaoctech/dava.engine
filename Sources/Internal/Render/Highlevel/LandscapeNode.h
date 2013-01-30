@@ -39,6 +39,8 @@
 #include "Render/Highlevel/LandscapeCursor.h"
 #include "Render/Highlevel/RenderObject.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA
 {
 
@@ -330,7 +332,8 @@ protected:
     
     uint16 * indices;
     Texture * textures[TEXTURE_COUNT];
-    String textureNames[TEXTURE_COUNT];
+//    String textureNames[TEXTURE_COUNT];
+    Vector<FilePath> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //

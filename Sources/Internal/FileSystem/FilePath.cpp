@@ -61,14 +61,15 @@ FilePath::~FilePath()
 
 
     
-void FilePath::InitFromPathname(const String &sourcePath)
-{
-    sourcePathname = sourcePath;
-    absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
-
-	relativePathname = String("");
-	relativeFolder = String("");
-}
+//void FilePath::InitFromPathname(const String &sourcePath)
+//{
+//    InitFromAbsolutePath(sourcePath);
+////    sourcePathname = sourcePath;
+////    absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
+////
+////	relativePathname = String("");
+////	relativeFolder = String("");
+//}
     
 void FilePath::InitFromAbsolutePath(const String &absolutePath)
 {
@@ -137,22 +138,14 @@ FilePath& FilePath::operator=(const FilePath &path)
 //    return GetSourcePath();
 //}
 
-const String & FilePath::GetSourcePath() const
-{
-    return sourcePathname;
-}
+//const String & FilePath::GetSourcePath() const
+//{
+//    return sourcePathname;
+//}
 
-const String FilePath::GetAbsolutePath() const
+const String & FilePath::GetAbsolutePath() const
 {
-    if(!absolutePathname.empty())
-        return absolutePathname;
-    
-    if(!relativePathname.empty())
-    {
-        return CreateAbsoluteFromRelative(relativePathname, relativeFolder);
-    }
-    
-    return String("");
+    return absolutePathname;
 }
 
 const String FilePath::GetRelativePath() const
