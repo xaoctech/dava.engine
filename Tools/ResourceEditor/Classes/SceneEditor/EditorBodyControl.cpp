@@ -1157,7 +1157,12 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
     UIControl::SetSize(newSize);
 
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    scene3dView->SetSize(newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET));
+    Vector2 viewSize = newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET);
+    
+    viewSize.dx = Max(1.f, viewSize.dx);
+    viewSize.dy = Max(1.f, viewSize.dy);
+    
+    scene3dView->SetSize(viewSize);
     
     sceneGraph->SetSize(newSize);
     
