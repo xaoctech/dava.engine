@@ -224,7 +224,10 @@ void ComboBox::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
     SetSelectedIndex(selectedCell->GetIndex(), true);
     comboButton->SetSelected(false);
-    list->GetParent()->RemoveControl(list);
+	if(list->GetParent())
+	{
+		list->GetParent()->RemoveControl(list);
+	}
 }
 
 void ComboBox::WillDisappear()
