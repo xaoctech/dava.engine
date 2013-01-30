@@ -331,7 +331,7 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 inline const String & Texture::GetPathname() const
 {
 //	return relativePathname;
-	return relativePathname.GetSourcePath();
+	return relativePathname.GetAbsolutePath();
 }
 
 };

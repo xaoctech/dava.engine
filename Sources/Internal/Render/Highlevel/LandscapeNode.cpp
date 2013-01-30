@@ -54,7 +54,7 @@ REGISTER_CLASS(LandscapeNode);
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 LandscapeNode::LandscapeNode()
-    : indices(0)
+    : indices(0) 
 {
     type = TYPE_LANDSCAPE;
     heightmapPath = String("");
