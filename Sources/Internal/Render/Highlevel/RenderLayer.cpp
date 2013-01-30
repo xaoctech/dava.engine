@@ -29,15 +29,16 @@
 =====================================================================================*/
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
+#include "Base/Radix/Radix.h"
 
 namespace DAVA
 {
 RenderLayer::RenderLayer(const char * _name)
     : name(_name)
+    , flags(0)
 {
-    
+    flags = SORT_ENABLED | SORT_BY_MATERIAL;
 }
     
 RenderLayer::~RenderLayer()
@@ -50,6 +51,7 @@ void RenderLayer::AddRenderBatch(RenderBatch * batch)
 {
     renderBatchArray.push_back(batch);
     batch->SetRemoveIndex(this, renderBatchArray.size() - 1);
+    flags |= SORT_REQUIRED;
 }
 
 void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
@@ -60,12 +62,44 @@ void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
     renderBatchArray.pop_back();
     batch->SetRemoveIndex(0, -1);
 }
-    
+
 void RenderLayer::Update()
 {
-
+    // Need sort
+    if ((flags & SORT_THIS_FRAME) == SORT_THIS_FRAME)
+    {
+        if (flags & SORT_BY_MATERIAL)
+        {
+//            RenderBatch * renderBatchArrayPtr = renderBatchArray.front();
+//            uint32 size = renderBatchArray.size();
+//            RadixSort(renderBatchArrayPtr, 0, size, 24);
+//         
+//            
+//            
+//            
+//            for (uint32 k = 0; k < size; ++k)
+//            {
+//                renderBatchArray[k]->SetRemoveIndex(this, k);
+//            }
+//            flags &= ~SORT_REQUIRED;
+        }
+        
+        if (flags & SORT_BY_DISTANCE)
+        {
+            
+            
+        }
+    }
+    
+    
+    
 }
     
+uint32 RenderLayer::GetRenderBatchCount()
+{
+    return (uint32)renderBatchArray.size();
+}
+
 void RenderLayer::Draw(Camera * camera)
 {
     Update();

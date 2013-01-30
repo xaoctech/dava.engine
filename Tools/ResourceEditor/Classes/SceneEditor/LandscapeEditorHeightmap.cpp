@@ -484,14 +484,12 @@ void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &rect)
 {
-// RETURN TO THIS CODE LATER
-//    LandscapeEditorPropertyControl *propsControl = 
-//    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
-//    
-//    propsControl->SetDelegate(this);
-//    
-//    return propsControl;
-	return NULL;
+    LandscapeEditorPropertyControl *propsControl = 
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
+    
+    propsControl->SetDelegate(this);
+    
+    return propsControl;
 }
 
 

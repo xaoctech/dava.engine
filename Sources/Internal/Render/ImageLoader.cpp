@@ -155,12 +155,12 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         bool read = LibPVRHelper::ReadFile(file, imageSet);
         if(!read)
         {
-            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename());
+            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().c_str());
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
-        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename(), loadTime);
+        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
         return imageSet;
     }
     return Vector<Image *>();

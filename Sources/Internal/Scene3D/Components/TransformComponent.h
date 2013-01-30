@@ -27,7 +27,7 @@ public:
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
 private:
 	Matrix4 localMatrix;

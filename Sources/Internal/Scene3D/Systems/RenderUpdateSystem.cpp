@@ -45,9 +45,10 @@
 
 namespace DAVA
 {
-RenderUpdateSystem::RenderUpdateSystem()
+RenderUpdateSystem::RenderUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-    Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
 RenderUpdateSystem::~RenderUpdateSystem()
@@ -82,32 +83,31 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
     }
     
     entityObjectMap.Insert(entity, renderObject);
-    RenderSystem::Instance()->RenderPermanent(renderObject);
+	GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
 }
 
 void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
     RenderObject * renderObject = entityObjectMap.Value(entity);
-    if (!renderObject)return;
+    if (!renderObject)
+	{
+		return;
+	}
     
     LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
     if (node)
     {
         node = 0;
     }
+    GetScene()->GetRenderSystem()->RemoveFromRender(renderObject);
 
-	
-    RenderSystem::Instance()->RemoveFromRender(renderObject);
-
-	//renderObject->Release();
-	//this ruins objects deletion
 	entityObjectMap.Remove(entity);
 }
     
 void RenderUpdateSystem::Process()
 {
     float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-    RenderSystem::Instance()->Update(timeElapsed);
+    GetScene()->GetRenderSystem()->Update(timeElapsed);
 }
     
 };

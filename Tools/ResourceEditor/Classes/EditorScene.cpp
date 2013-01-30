@@ -81,9 +81,9 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		if (bulletComponent == 0 && curr->IsLodMain(0))
 		{
 			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-			bulletComponent->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform())));
+			bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
 		}
-		else if(bulletComponent->GetBulletObject())
+		else if(bulletComponent && bulletComponent->GetBulletObject())
 		{
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
@@ -297,9 +297,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-
-
-LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
+LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
 	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
 	if (renderComponent)
@@ -312,14 +310,14 @@ LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandScape(child);
+		LandscapeNode * result = GetLandscape(child);
 		if (result)
 			return result;
     }
 	return 0;
 }
 
-SceneNode* EditorScene::GetLandScapeNode(SceneNode *node)
+SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
 	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
 	if (renderComponent)
@@ -332,7 +330,7 @@ SceneNode* EditorScene::GetLandScapeNode(SceneNode *node)
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
-		SceneNode * result = GetLandScapeNode(child);
+		SceneNode * result = GetLandscapeNode(child);
 		if (result)
 			return result;
     }

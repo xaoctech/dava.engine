@@ -5,8 +5,9 @@
 namespace DAVA
 {
 
-BaseProcessSystem::BaseProcessSystem(uint32 componentId)
-:	processingComponentId(componentId)
+BaseProcessSystem::BaseProcessSystem(uint32 componentId, Scene * scene)
+:	SceneSystem(scene),
+	processingComponentId(componentId)
 {
 
 }

@@ -95,7 +95,6 @@ SceneNode::~SceneNode()
 //    }
     DVASSERT(scene == 0);
     
-    RemoveAllChildren();
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -107,8 +106,6 @@ SceneNode::~SceneNode()
 	}
 
 //  Logger::Debug("~SceneNode: %p", this);
-
-	//TODO: delete entity?
 }
     
 void SceneNode::AddComponent(Component * component)
@@ -177,7 +174,10 @@ void SceneNode::SetScene(Scene * _scene)
         return;
     }
     // Сheck 
-    if (scene)scene->UnregisterNode(this);
+    if (scene)
+	{
+		scene->UnregisterNode(this);
+	}
     scene = _scene;
     if (scene)scene->RegisterNode(this);
     
@@ -565,8 +565,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		if(components[k])
 		{
 			SafeDelete(dstNode->components[k]);
-			dstNode->AddComponent(components[k]->Clone());
-			dstNode->components[k]->SetEntity(dstNode);
+			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
 	}
 
@@ -582,28 +581,19 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->tag = tag;
     dstNode->flags = flags;
 
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
-
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
-
-//    Logger::Debug("Node %s clonned", name.c_str());
     
     dstNode->nodeAnimations = nodeAnimations;
     
-    
-//    Logger::Debug("Children +++++++++++++++++++++++++++++++");
     std::vector<SceneNode*>::iterator it = children.begin();
-    
-    const std::vector<SceneNode*>::iterator & childsEnd = children.end();
-    for(; it != childsEnd; it++)
-    {
-        SceneNode *n = (*it)->Clone();
-        dstNode->AddNode(n);
-        n->Release();
-    }
-//    Logger::Debug("Children -------------------------------");
+	const std::vector<SceneNode*>::iterator & childsEnd = children.end();
+	for(; it != childsEnd; it++)
+	{
+		SceneNode *n = (*it)->Clone();
+		dstNode->AddNode(n);
+		n->Release();
+	}
     
     return dstNode;
 }
@@ -808,6 +798,15 @@ bool SceneNode::GetSolid()
 
 void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    {
+        if(components[k])
+        {
+            components[k]->GetDataNodes(dataNodes);
+        }
+    }
+
+    
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)
     {
@@ -931,6 +930,8 @@ int32 SceneNode::Release()
 {
 	if(1 == referenceCount)
 	{
+		RemoveAllChildren();
+
 		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
 		AddFlag(SceneNode::NODE_DELETED);
 		SetScene(0);

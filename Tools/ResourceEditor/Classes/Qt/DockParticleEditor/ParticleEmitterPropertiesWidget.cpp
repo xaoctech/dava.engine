@@ -2,6 +2,7 @@
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
 #include <QLabel>
+#include <QLineEdit>
 #include <QEvent>
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
@@ -9,6 +10,11 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 {
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
+
+	emitterYamlPath = new QLineEdit(this);
+	emitterYamlPath->setReadOnly(true);
+	mainLayout->addWidget(emitterYamlPath);
+	connect(emitterYamlPath, SIGNAL(textChanged(const QString&)), this, SLOT(OnEmitterYamlPathChanged(const QString&)));
 
 	QHBoxLayout* emitterTypeHBox = new QHBoxLayout();
 	emitterTypeHBox->addWidget(new QLabel("type"));
@@ -51,7 +57,8 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	Q_FOREACH( QAbstractSpinBox * sp, findChildren<QAbstractSpinBox*>() ) {
         sp->installEventFilter( this );
     }
-	
+	emitterYamlPath->installEventFilter(this);
+
 	blockSignals = false;
 }
 
@@ -127,6 +134,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 
+	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
 	emitterType->setCurrentIndex(emitter->type);
 
 	emitterEmissionAngle->Init(0.f, emitterLifeTime, updateMinimize);
@@ -160,6 +168,11 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterLife->setValue(emitterLifeTime);
 
 	blockSignals = false;
+}
+
+void ParticleEmitterPropertiesWidget::OnEmitterYamlPathChanged(const QString& newPath)
+{
+	UpdateTooltip();
 }
 
 void ParticleEmitterPropertiesWidget::RestoreVisualState(KeyedArchive* visualStateProps)
@@ -215,5 +228,25 @@ bool ParticleEmitterPropertiesWidget::eventFilter(QObject * o, QEvent * e)
         e->ignore();
         return true;
     }
+
+	if (e->type() == QEvent::Resize && qobject_cast<QLineEdit*>(o))
+	{
+		UpdateTooltip();
+		return true;
+	}
+
     return QWidget::eventFilter(o, e);
+}
+
+void ParticleEmitterPropertiesWidget::UpdateTooltip()
+{
+	QFontMetrics fm = emitterYamlPath->fontMetrics();
+	if (fm.width(emitterYamlPath->text()) >= emitterYamlPath->width())
+	{
+		emitterYamlPath->setToolTip(emitterYamlPath->text());
+	}
+	else
+	{
+		emitterYamlPath->setToolTip("");
+	}
 }

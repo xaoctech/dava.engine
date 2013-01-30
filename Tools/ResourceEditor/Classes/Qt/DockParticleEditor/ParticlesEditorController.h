@@ -79,6 +79,9 @@ public:
 	// Sprites packer entry point.
 	void PackSprites();
 
+	// Refresh the selected node (called if something is changed outside).
+	void RefreshSelectedNode();
+
 signals:
 	void EffectSelected(SceneNode* effectNode);
     void EmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode);
@@ -111,6 +114,9 @@ protected:
 	// Common function to move layer between emitters.
 	bool PerformMoveBetweenEmitters(EmitterParticleEditorNode* oldEmitterNode, EmitterParticleEditorNode* newEmitterNode,
 									LayerParticleEditorNode* layerToMove,LayerParticleEditorNode* layerToInsertAbove);
+
+	// Cleanup the selected node in case it is one to be deleted.
+	void CleanupSelectedNodeIfDeleting(BaseParticleEditorNode* nodeToBeDeleted);
 
     // Particle Effects registered in the system.
     typedef Map<SceneNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;

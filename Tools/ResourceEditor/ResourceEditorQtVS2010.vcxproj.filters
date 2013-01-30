@@ -187,6 +187,15 @@
     <Filter Include="QtGenerated\DockSceneGraph">
       <UniqueIdentifier>{0409349a-926f-4e41-b1da-54caf4d02363}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
+      <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtProperyData">
+      <UniqueIdentifier>{bfc840f0-c9af-4eff-b92c-fdb04eb56529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
+      <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1047,6 +1056,9 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
@@ -1456,16 +1468,22 @@
       <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
-      <Filter>QtGenerated</Filter>
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
-      <Filter>QtGenerated</Filter>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
-      <Filter>QtGenerated</Filter>
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
-      <Filter>Sources\Qt\Main</Filter>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2336,6 +2354,9 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\GUIState.h">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\mainwindow.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
@@ -2583,13 +2604,10 @@
       <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
-      <Filter>QtGenerated</Filter>
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GUIState.h">
-      <Filter>Sources\Qt\Main</Filter>
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

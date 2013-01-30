@@ -15,7 +15,7 @@ public:
 
 	BulletComponent();
 	virtual ~BulletComponent();
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void SetBulletObject(BaseObject * bulletObject);
 	BaseObject * GetBulletObject();

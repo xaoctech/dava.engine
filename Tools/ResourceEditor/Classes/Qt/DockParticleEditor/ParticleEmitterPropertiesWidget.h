@@ -31,12 +31,17 @@ signals:
 	
 public slots:
 	void OnValueChanged();
+	void OnEmitterYamlPathChanged(const QString& newPath);
+
+protected:
+	void UpdateTooltip();
 
 private:
 	QVBoxLayout* mainLayout;
 
 	ParticleEmitter* emitter;
 
+	QLineEdit* emitterYamlPath;
 	QComboBox* emitterType;
 	TimeLineWidget* emitterEmissionAngle;
 	TimeLineWidget* emitterEmissionRange;

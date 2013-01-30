@@ -37,6 +37,10 @@
 #include "Base/BaseMath.h"
 #include "Render/Material.h"
 
+#include "Render/3D/PolygonGroup.h"
+#include "Render/RenderDataObject.h"
+#include "Render/Highlevel/RenderObject.h"
+
 namespace DAVA
 {
 
@@ -53,10 +57,7 @@ public:
     uint32 primitiveType;
 };
 */
-//class Material;
-class PolygonGroup;
 class RenderLayer;
-class RenderDataObject;
 class Camera;
 class RenderObject;
 class RenderBatch;
@@ -90,7 +91,8 @@ public:
     
     void SetMaterial(Material * _material);
     inline Material * GetMaterial();
-
+    inline InstanceMaterialState * GetMaterialInstance();
+    
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
     
@@ -105,17 +107,20 @@ public:
     
     const AABBox3 & GetBoundingBox() const;
 
-	virtual RenderBatch * Clone();
+	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     Material * material;                    // Should be replaced to NMaterial
+    InstanceMaterialState * materialInstance; // Should be replaced by NMaterialInstance
 	RenderObject * renderObject;
     
     uint32 startIndex;
     uint32 indexCount;
-    ePrimitiveType type;
+    
+//    ePrimitiveType type; //TODO: waiting for enums at introspection
+    uint32 type;
     
     RenderLayer * ownerLayer;
     uint32 removeIndex;
@@ -125,8 +130,21 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
+        MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(material, "Material", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
+//        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+
+        MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
+        MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        MEMBER(ownerLayer, "Owner Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY) 
+        MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE)
+                         
+        MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
         MEMBER(material, "Material", INTROSPECTION_EDITOR)
-        MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+        MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)
     );
 };
 
@@ -143,6 +161,11 @@ inline RenderDataObject * RenderBatch::GetRenderDataObject()
 inline Material * RenderBatch::GetMaterial()
 {
     return material;
+}
+    
+inline InstanceMaterialState * RenderBatch::GetMaterialInstance()
+{
+    return materialInstance;
 }
 
 inline RenderObject * RenderBatch::GetRenderObject()

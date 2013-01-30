@@ -63,10 +63,18 @@ public:
 		Vector<int32> indexes;
 		int32 layer;
 		bool isDummy;
+        
+        INTROSPECTION(LodData,
+            COLLECTION(nodes, "Nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            COLLECTION(indexes, "Indexes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+            MEMBER(layer, "Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            MEMBER(isDummy, "isDummy", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        );
 	};
 
 	LodComponent();
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	static float32 GetDefaultDistance(int32 layer);
 	void SetCurrentLod(LodData *newLod);
@@ -77,6 +85,8 @@ public:
 	inline float32 GetLodLayerFar(int32 layerNum);
 	inline float32 GetLodLayerNearSquare(int32 layerNum);
 	inline float32 GetLodLayerFarSquare(int32 layerNum);
+
+	void GetLodData(List<LodData*> &retLodLayers);
 
 	LodData *currentLod;
 	List<LodData> lodLayers;
@@ -94,11 +104,44 @@ public:
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
+
+        COLLECTION(lodLayers, "Lod Layers", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
         COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
+    
+    
+    
+//    SceneNode::Save(archive, sceneFile);
+//    archive->SetInt32("lodCount", (int32)lodLayers.size());
+//    
+//    int32 lodIdx = 0;
+//    const List<LodData>::const_iterator &end = lodLayers.end();
+//    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+//    {
+//        LodData & ld = *it;
+//        archive->SetInt32(Format("lod%d_layer", lodIdx), (int32)ld.layer);
+//        size_t size = ld.nodes.size();
+//        archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
+//        for (size_t idx = 0; idx < size; ++idx)
+//        {
+//            for (int32 i = 0; i < (int32)children.size(); i++)
+//            {
+//                if(children[i] == ld.nodes[idx])
+//                {
+//                    archive->SetInt32(Format("l%d_%d_ni", lodIdx, idx), i);
+//                    break;
+//                }
+//            }
+//        }
+//        
+//        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
+//        lodIdx++;
+//    }
+
 };
 
 int32 LodComponent::GetLodLayersCount()
