@@ -29,7 +29,7 @@ protected:
 	void LoadFromYaml(const String& yamlPath);
 
 private:
-	ParticleEmitter * emitter;
+	ParticleEmitter3D * emitter;
 	String yamlPath;
 };
 
