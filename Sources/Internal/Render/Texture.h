@@ -36,7 +36,6 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
-#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -259,8 +258,7 @@ public:							// properties for fast access
 	
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
-//	String		relativePathname;
-	FilePath    relativePathname;
+	String		relativePathname;
 
 	String		debugInfo;
 	uint32		width;			// texture width 
@@ -330,8 +328,7 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 }
 inline const String & Texture::GetPathname() const
 {
-//	return relativePathname;
-	return relativePathname.GetSourcePath();
+	return relativePathname;
 }
 
 };

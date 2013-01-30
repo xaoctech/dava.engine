@@ -49,10 +49,10 @@ FilePath::FilePath(const FilePath &path)
     relativeFolder = path.relativeFolder;
 }
     
-FilePath::FilePath(const String &sourcePath)
-{
-	InitFromPathname(sourcePath);
-}
+//FilePath::FilePath(const String &sourcePath)
+//{
+//	InitFromPathname(sourcePath);
+//}
     
 FilePath::~FilePath()
 {
@@ -124,18 +124,18 @@ FilePath& FilePath::operator=(const FilePath &path)
     return *this;
 }
     
-FilePath& FilePath::operator=(const String &pathname)
-{
-	this->InitFromPathname(pathname);
-
-    return *this;
-}
-
-    
-FilePath::operator String()
-{
-    return GetSourcePath();
-}
+//FilePath& FilePath::operator=(const String &pathname)
+//{
+//	this->InitFromPathname(pathname);
+//
+//    return *this;
+//}
+//
+//    
+//FilePath::operator String()
+//{
+//    return GetSourcePath();
+//}
 
 const String & FilePath::GetSourcePath() const
 {

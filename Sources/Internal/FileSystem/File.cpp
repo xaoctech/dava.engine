@@ -124,7 +124,6 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 
 	File * fileInstance = new File();
 	fileInstance->filename = filename;
-//	fileInstance->filename.InitFromPathname(filename);
 	fileInstance->size = size;
 	fileInstance->file = file;
 	return fileInstance;
@@ -132,8 +131,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 
 const String File::GetFilename()
 {
-//	return filename.c_str();
-	return filename.GetSourcePath();
+	return filename;
 }
 
 const String File::GetPathname()
