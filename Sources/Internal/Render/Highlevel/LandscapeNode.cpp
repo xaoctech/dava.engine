@@ -56,6 +56,8 @@ REGISTER_CLASS(LandscapeNode);
 LandscapeNode::LandscapeNode()
     : indices(0)
 {
+    textureNames.resize(TEXTURE_COUNT);
+    
     type = TYPE_LANDSCAPE;
     heightmapPath = String("");
     
@@ -582,12 +584,14 @@ const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     SafeRelease(textures[level]);
-    textureNames[level] = String("");
+//    textureNames[level] = String("");
+    textureNames[level].InitFromAbsolutePath(String(""));
     
     Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {
-        textureNames[level] = textureName;
+//        textureNames[level] = textureName;
+        textureNames[level].InitFromAbsolutePath(textureName);
     }
     textures[level] = texture;
     
@@ -615,14 +619,16 @@ Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textu
 void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {
     SafeRelease(textures[level]);
-	textureNames[level] = String("");
+//	textureNames[level] = String("");
+    textureNames[level].InitFromAbsolutePath(String(""));
 
 	textures[level] = SafeRetain(texture);
     if(textures[level])
     {
         if(!textures[level]->isRenderTarget)
         {
-            textureNames[level] = textures[level]->GetPathname();
+//            textureNames[level] = textures[level]->GetPathname();
+            textureNames[level].InitFromAbsolutePath(textures[level]->GetPathname());
         }
     }
 }
@@ -1364,11 +1370,13 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         if(TEXTURE_DETAIL == k) continue;
 
-        String path = textureNames[k];
-        String relPath  = sceneFile->AbsoluteToRelative(path);
+//        String path = textureNames[k];
+//        String relPath  = sceneFile->AbsoluteToRelative(path);
+        
+        String relPath  = textureNames[k].GetRelativePath(sceneFile->GetScenePath());
         
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
+            Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePath().c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
@@ -1428,13 +1436,15 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel level)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
-    return textureNames[level];
+//    return textureNames[level];
+    return textureNames[level].GetAbsolutePath();
 }
     
 void LandscapeNode::SetTextureName(eTextureLevel level, const String &newTextureName)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
-    textureNames[level] = newTextureName;
+//    textureNames[level] = newTextureName;
+    textureNames[level].InitFromAbsolutePath(newTextureName);
 }
 
 
@@ -1598,7 +1608,8 @@ String LandscapeNode::SaveFullTiledTexture()
         }
         else 
         {
-            pathToSave = textureNames[TEXTURE_TILE_FULL];
+//            pathToSave = textureNames[TEXTURE_TILE_FULL];
+            pathToSave = textureNames[TEXTURE_TILE_FULL].GetAbsolutePath();
         }
     }
     
@@ -1608,7 +1619,8 @@ String LandscapeNode::SaveFullTiledTexture()
     
 void LandscapeNode::UpdateFullTiledTexture()
 {
-    if(0 == textureNames[TEXTURE_TILE_FULL].length())
+//    if(0 == textureNames[TEXTURE_TILE_FULL].length())
+    if(!textureNames[TEXTURE_TILE_FULL].Initalized())
     {
 		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();

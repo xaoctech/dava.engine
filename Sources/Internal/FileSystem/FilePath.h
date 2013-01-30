@@ -49,7 +49,7 @@ public:
 	virtual ~FilePath();
 
     
-    void InitFromPathname(const String &sourcePath);
+//    void InitFromPathname(const String &sourcePath);
     void InitFromAbsolutePath(const String &absolutePath);
     void InitFromRelativePath(const String &relativePath);
     void InitFromRelativePath(const String &relativePath, const String &folder);
@@ -64,8 +64,8 @@ public:
 
 //	operator String();
 
-    const String & GetSourcePath() const;
-    const String GetAbsolutePath() const;
+//    const String & GetSourcePath() const;
+    const String & GetAbsolutePath() const;
     const String GetRelativePath() const;
     const String GetRelativePath(const String &folder) const;
     
