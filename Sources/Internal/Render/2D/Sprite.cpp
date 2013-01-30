@@ -599,12 +599,15 @@ Texture* Sprite::GetTexture()
 
 Texture* Sprite::GetTexture(int32 frameNumber)
 {
-	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
-	return textures[frameTextureIndex[frame]];
+//	DVASSERT(frameNumber > -1 && frameNumber < frameCount);
+    frame = Clamp(frame, 0, frameCount - 1);
+	return textures[frameTextureIndex[frameNumber]];
 }
 	
 float32 *Sprite::GetTextureVerts(int32 frame)
 {
+//	DVASSERT(frame > -1 && frame < frameCount);
+    frame = Clamp(frame, 0, frameCount - 1);
     return texCoords[frame];
 }
     
