@@ -19,9 +19,19 @@ public:
 
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
+    
+    /**
+     \brief This function should be implemented in each node that have data nodes inside it.
+     */
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+    
 private:
     RenderObject * renderObject;
     
+	void InsterDataNode(DataNode *node, Set<DataNode*> & dataNodes);
+
+
 public:
     INTROSPECTION_EXTEND(RenderComponent, Component,
         MEMBER(renderObject, "renderObject", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
