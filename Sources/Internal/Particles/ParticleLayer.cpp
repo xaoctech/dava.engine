@@ -789,7 +789,10 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 			frameEnd = frameNode->Get(1)->AsInt();
 		}
 	}
-	
+
+	// Yuri Coder, 2013/01/31. After all the data is loaded, check the Frame Overlife timelines and
+	// synchronize them with the maximum available frames in the sprite. See also DF-573.
+	UpdateFrameTimeline();
 }
 
 void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
