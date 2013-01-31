@@ -73,10 +73,7 @@ bool RulerTool::EnableTool(EditorScene *scene)
     editorScene = SafeRetain(scene);
     if(scene)
     {
-        Vector<LandscapeNode *>landscapes;
-        scene->GetChildNodes(landscapes);
-        
-        if(0 < landscapes.size())
+		if (EditorScene::GetLandscape(scene))
         {
             SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             landscapesController = SafeRetain(activeScene->GetLandscapesController());
@@ -90,7 +87,6 @@ bool RulerTool::EnableTool(EditorScene *scene)
             
             heightmapNode = new HeightmapNode(editorScene, rulerToolLandscape);
             editorScene->AddNode(heightmapNode);
-            
         }
     }
     
@@ -99,8 +95,11 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
-	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-	activeScene->ResetLandsacpeSelection();
+	if(SceneDataManager::Instance())
+	{
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		activeScene->ResetLandsacpeSelection();
+	}
 
     if(landscapesController)
     {

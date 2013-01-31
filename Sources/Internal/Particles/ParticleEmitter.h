@@ -37,6 +37,9 @@
 #include "Base/RefPtr.h"
 #include "Particles/ParticlePropertyLine.h"
 #include "Animation/Animation.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/IRenderUpdatable.h"
+#include "Particles/ParticleLayer.h"
 
 namespace DAVA 
 {
@@ -45,7 +48,7 @@ namespace DAVA
  */
 	
 class Particle;
-class ParticleLayer;
+//class ParticleLayer;
 	
 /**
 	\ingroup particlesystem
@@ -75,7 +78,7 @@ class ParticleLayer;
 	emitAtPoints - this number means that particles will be generated evenly on circle. If it's not defined particles will be generated randomly.
 	life - emitter life in seconds. When accumulated time in ParticleEmitter::Update exceeds this value, emitter restarts and delete all previous particles. 
  */
-class ParticleEmitter : public AnimatedObject
+class ParticleEmitter : public RenderObject, public IRenderUpdatable
 {
 public:
 	enum eType
@@ -210,7 +213,10 @@ public:
 		
 		\returns absolutelly identical object with same properties
 	 */
-	ParticleEmitter * Clone();
+	//cloned in ParticleEmitterComponent::Clone
+	//ParticleEmitter * Clone();
+
+	virtual RenderObject * Clone();
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -244,7 +250,7 @@ public:
 		If you using ParticleEmitter directly you should call this function to draw emitter.
 		Instead of use it directly check ParticleEmitterObject class, that allow you to use ParticleEmitters inside GameObject hierarchy.
 	 */
-	void Draw();
+	virtual void RenderUpdate(float32 timeElapsed);
 
 	/**
 	 \brief Enable/disable autorestart.
@@ -303,6 +309,7 @@ public:
     inline bool GetIs3D();
 
 	const String & GetConfigPath() { return configPath; }
+	void Cleanup(bool needCleanupLayers = true);
 
 	void UpdateEmptyLayerNames();
 	void UpdateLayerNameIfEmpty(ParticleLayer* layer, int32 index);
@@ -312,6 +319,8 @@ public:
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
     String GetEmitterTypeName();
+
+	void CleanupLayers();
 
 	String configPath;
 	
@@ -344,6 +353,40 @@ public:
 	// RefPtr< PropertyLine<float32> > number;
 	
 	friend class ParticleLayer;
+    
+public:
+    
+    INTROSPECTION_EXTEND(ParticleEmitter, RenderObject,
+                         NULL
+//        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(configPath, "Config Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        COLLECTION(layers, "Layers", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(angle, "Angle", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                     
+//        MEMBER(lifeTime, "Life Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(repeatCount, "Repeat Count", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(time, "Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(emitPointsCount, "Emit Points Count", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(isAutorestart, "Is Auto Restart", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(particlesFollow, "Particles Follow", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(is3D, "Is 3D", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+////        MEMBER(emissionVector, "Emission Vector", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(rotationMatrix, "Rotation Matrix", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(emissionAngle, "Emission Angle", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(emissionRange, "Emission Range", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(radius, "Radius", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(colorOverLife, "Color Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+////        MEMBER(size, "Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+////        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(currentColor, "Current Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 inline void ParticleEmitter::SetPosition(const Vector2 &_position)

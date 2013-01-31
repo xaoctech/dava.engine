@@ -24,6 +24,7 @@ public:
     
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform);
 	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, UserNode *_userNode, const Matrix4 &pWorldTransform);
+	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
 	void UpdateCollisionObject(void);
@@ -47,8 +48,9 @@ protected:
 
 	void CreateLightObject(float32 radius);
 	void CreateBoxObject();
+	void CreateFromEntity();
 
-	
+	SceneNode * entity;
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
 	btCollisionObject *collisionObject;

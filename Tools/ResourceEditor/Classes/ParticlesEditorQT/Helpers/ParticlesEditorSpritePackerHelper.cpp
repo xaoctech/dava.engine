@@ -37,27 +37,36 @@ void ParticlesEditorSpritePackerHelper::UpdateParticleSprites()
 
 void ParticlesEditorSpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 {
-	List<ParticleEffectNode*> particleEffects;
+	List<SceneNode*> particleEffects;
 	sceneData->GetAllParticleEffects(particleEffects);
 
-	for(auto it = particleEffects.begin(); it != particleEffects.end(); ++it)
+	for (auto it = particleEffects.begin(); it != particleEffects.end(); ++it)
 	{
-		ParticleEffectNode* curNode = (*it);
-		curNode->Stop();
+		SceneNode* curNode = (*it);
+	    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(curNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+		
+		if (!effectComponent)
+		{
+			continue;
+		}
 
-		// All the children of the Particle Effect Node are currently Emitters.
+		effectComponent->Stop();
+
+		// All the children of this Scene Node must have Emitter components.
 		int32 emittersCount = curNode->GetChildrenCount();
 		for (int32 i = 0; i < emittersCount; i ++)
 		{
-			ParticleEmitterNode* emitterNode = dynamic_cast<ParticleEmitterNode*>(curNode->GetChild(i));
-			if (!emitterNode || !emitterNode->GetEmitter())
+			SceneNode* childNode = curNode->GetChild(i);
+			ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(childNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+
+			if (!emitterComponent || !emitterComponent->GetParticleEmitter())
 			{
 				continue;
 			}
 			
-			emitterNode->GetEmitter()->ReloadLayerSprites();
+			emitterComponent->GetParticleEmitter()->ReloadLayerSprites();
 		}
 
-		curNode->Start();
+		effectComponent->Start();
 	}
 }

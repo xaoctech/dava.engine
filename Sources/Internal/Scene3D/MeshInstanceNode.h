@@ -31,6 +31,8 @@
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
 #include "Scene3D/SceneNode.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA 
 {
@@ -43,21 +45,34 @@ class PolygonGroup;
 class MeshInstanceNode;
 class LightNode;
 class InstanceMaterialState;
-    
-class PolygonGroupWithMaterial : public BaseObject
+class NMaterial;
+class NMaterialInstance;
+
+class PolygonGroupWithMaterial : public RenderBatch
 {
 public:
-    PolygonGroupWithMaterial(StaticMesh * mesh, int32 polygroupIndex, Material * material);
+    PolygonGroupWithMaterial();
     virtual ~PolygonGroupWithMaterial();
+    
+    void Setup(StaticMesh * mesh, int32 polygroupIndex, Material * material, TransformComponent * transform);
+    virtual void Draw();
+    virtual uint64 GetSortID();
+
     
     StaticMesh * GetMesh();
     int32 GetPolygroupIndex();
     PolygonGroup * GetPolygonGroup();
     Material * GetMaterial();
-
-	Material * material;
+    NMaterial * GetNMaterial();
+    NMaterialInstance * GetNMaterialInstance();
     
+    //Component * Clone();
 private:
+	Material * material;
+    NMaterial * nMaterial;
+    NMaterialInstance * nMaterialInstance;
+    TransformComponent *  transform;
+    
     StaticMesh * mesh;
     int32 polygroupIndex;
     
@@ -82,8 +97,13 @@ public:
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
 
     virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
+    virtual void Draw();
+    virtual uint64 GetSortID();
+    
+    uint32 GetRenderBatchCount();
+    RenderBatch * GetRenderBatch(uint32 batchIndex);
+
+
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible();
 	

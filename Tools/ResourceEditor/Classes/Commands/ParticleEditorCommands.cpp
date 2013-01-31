@@ -20,6 +20,8 @@
 #include <QFileDialog>
 #include <QString>
 
+#include "Scene3D/Components/ParticleEffectComponent.h"
+
 using namespace DAVA;
 
 CommandOpenParticleEditorConfig::CommandOpenParticleEditorConfig()
@@ -353,14 +355,14 @@ void CommandStartStopParticleEffect::Execute()
     {
         return;
     }
-    
+    ParticleEffectComponent* effectComponent = effectNode->GetParticleEffectComponent();
     if (this->isStart)
     {
-        effectNode->GetRootNode()->Start();
+        effectComponent->Start();
     }
     else
     {
-        effectNode->GetRootNode()->Stop();
+        effectComponent->Stop();
     }
 }
 
@@ -377,8 +379,10 @@ void CommandRestartParticleEffect::Execute()
     {
         return;
     }
-
-    effectNode->GetRootNode()->Restart();
+    
+	ParticleEffectComponent * effectComponent = effectNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+    effectComponent->Restart();
 }
 
 CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer() :
@@ -396,7 +400,9 @@ void CommandAddParticleEmitterLayer::Execute()
         return;
     }
 
-	emitterNode->GetRootNode()->Stop();
+	ParticleEffectComponent * effectComponent = emitterNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+    effectComponent->Stop();
 	
     // Lets select this node when the tree will be rebuilt.
     LayerParticleEditorNode* layerNode = ParticlesEditorController::Instance()->AddParticleLayerToNode(emitterNode);
@@ -405,7 +411,7 @@ void CommandAddParticleEmitterLayer::Execute()
         layerNode->SetMarkedToSelection(true);
     }
 
-	emitterNode->GetRootNode()->Restart();
+	effectComponent->Restart();
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -429,12 +435,19 @@ void CommandRemoveParticleEmitterLayer::Execute()
     // Mark the "parent" Emitter Node to selection.
     layerNode->GetEmitterEditorNode()->SetMarkedToSelection(true);
 
-	ParticleEffectNode* rootNode = layerNode->GetRootNode();
-	if (rootNode)
-		rootNode->Stop();
+	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
+
+	if (effectComponent)
+	{
+		effectComponent->Stop();
+	}
+
     ParticlesEditorController::Instance()->RemoveParticleLayerNode(layerNode);
-	if (rootNode)
-		rootNode->Restart();
+
+	if (effectComponent)
+	{
+		effectComponent->Restart();
+	}
 	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -480,13 +493,15 @@ void CommandAddParticleEmitterForce::Execute()
         return;
     }
 
-	layerNode->GetRootNode()->Stop();
+	ParticleEffectComponent * effectComponent = layerNode->GetParticleEffectComponent();
+	DVASSERT(effectComponent);
+	effectComponent->Stop();
     ForceParticleEditorNode* forceNode = ParticlesEditorController::Instance()->AddParticleForceToNode(layerNode);
     if (forceNode)
     {
         forceNode->SetMarkedToSelection(true);
     }
-	layerNode->GetRootNode()->Restart();
+	effectComponent->Restart();
 	
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -510,12 +525,19 @@ void CommandRemoveParticleEmitterForce::Execute()
     // Mark the "parent" Layer Node to selection.
     forceNode->GetLayerEditorNode()->SetMarkedToSelection(true);
 
-	ParticleEffectNode* rootNode = forceNode->GetRootNode();
-	if (rootNode)
-		rootNode->Stop();
+	
+	ParticleEffectComponent * effectComponent = forceNode->GetParticleEffectComponent();
+	if (effectComponent)
+	{
+		effectComponent->Stop();
+	}
+
     ParticlesEditorController::Instance()->RemoveParticleForceNode(forceNode);
-	if (rootNode)
-		rootNode->Restart();
+
+	if (effectComponent)
+	{
+		effectComponent->Restart();
+	}
 
     // Update the scene graph.
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
@@ -536,6 +558,7 @@ void CommandLoadParticleEmitterFromYaml::Execute()
     }
     
     QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
+	Logger::Debug("Project path: %s", projectPath.toStdString().c_str());
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Particle Emitter Yaml file"),
                                                     projectPath, QString("YAML File (*.yaml)"));
 	if (filePath.isEmpty())
@@ -545,7 +568,14 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 
     // In case this emitter already has Editor Nodes - remove them before loading.
     ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
-    emitterNode->GetEmitterNode()->LoadFromYaml(filePath.toStdString());
+    ParticleEmitterComponent* emitterComponent = emitterNode->GetParticleEmitterComponent();
+
+    if(!emitterComponent || !emitterComponent->GetParticleEmitter())
+    {
+    	return;
+    }
+
+    emitterComponent->LoadFromYaml(filePath.toStdString());
 
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
@@ -565,8 +595,13 @@ void CommandSaveParticleEmitterToYaml::Execute()
         return;
     }
 
-    String yamlPath = emitterNode->GetEmitterNode()->GetYamlPath();
+    ParticleEmitterComponent* component = emitterNode->GetParticleEmitterComponent();
+    if (!component || !component->GetParticleEmitter())
+    {
+        return;
+    }
 
+	String yamlPath = component->GetYamlPath();
     if (this->forceAskFilename || yamlPath.empty() )
     {
         QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
@@ -581,6 +616,6 @@ void CommandSaveParticleEmitterToYaml::Execute()
         yamlPath = filePath.toStdString();
     }
 
-    emitterNode->GetEmitterNode()->SaveToYaml(yamlPath);
+    component->SaveToYaml(yamlPath);
 }
 

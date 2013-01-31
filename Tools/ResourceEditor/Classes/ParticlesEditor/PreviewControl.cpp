@@ -75,8 +75,8 @@ void PreviewControl::Update(float32 timeElapsed)
 void PreviewControl::Draw(const DAVA::UIGeometricData &geometricData)
 {
     UIControl::Draw(geometricData);
-    if(emitter)
-    {
-        emitter->Draw();
-    }
+    //if(emitter)
+    //{
+    //    emitter->Draw();
+    //}
 }

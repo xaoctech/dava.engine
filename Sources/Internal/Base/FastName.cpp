@@ -5,6 +5,7 @@
 */
 
 #include "FastName.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -59,6 +60,7 @@ FastName::FastName(const char *name)
 }
 
 FastName::FastName(const FastName &_name)
+    : index(-1)
 {
 	RemRef(index);
 	index = _name.index;
@@ -68,6 +70,16 @@ FastName::FastName(const FastName &_name)
 FastName::~FastName()
 {
 	RemRef(index);
+}
+
+const char* FastName::c_str() const
+{
+	if(index > 0)
+	{
+        return FastNameDB::Instance()->namesTable[index];
+	}
+    
+	return NULL;
 }
 
 FastName& FastName::operator=(const FastName &_name)
@@ -90,14 +102,7 @@ bool FastName::operator!=(const FastName &_name) const
 
 const char* FastName::operator*() const
 {
-	const char *str = NULL;
-
-	if(index > 0)
-	{
-		str = FastNameDB::Instance()->namesTable[index];
-	}
-
-	return str;
+    return c_str();
 }
 
 int FastName::Index() const

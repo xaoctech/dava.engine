@@ -27,6 +27,8 @@
 #include "../Qt/Main/QtUtils.h"
 #include "FileSystem/FileSystem.h"
 
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 {
@@ -452,7 +454,7 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
     }
 }
 
-void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
+void SceneEditorScreenMain::EditParticleEmitter(SceneNode * emitter)
 {
 	//BodyItem *iBody = FindCurrentBody();
 	if (!particlesEditor->GetParent())
@@ -460,8 +462,14 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 		SafeRelease(particlesEditor);
 		particlesEditor = new ParticlesEditorControl();
 
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+		    return;
+		}
+
 		particlesEditor->SetNode(emitter);
-		particlesEditor->SetEmitter(emitter->GetEmitter());
+		particlesEditor->SetEmitter(emitterComponent->GetParticleEmitter());
 		AddControl(particlesEditor);
 	}
 }

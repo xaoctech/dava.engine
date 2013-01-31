@@ -142,8 +142,6 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionLandscape,
                                        ui->actionLight,
                                        ui->actionServiceNode,
-                                       ui->actionBox,
-                                       ui->actionSphere,
                                        ui->actionCamera,
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,
@@ -387,7 +385,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 		strVer += " | ";
 	}
 
-	this->setWindowTitle(strVer + path);
+	this->setWindowTitle(strVer + QString("Project - ") + path);
 	UpdateParticleSprites();
 }
 

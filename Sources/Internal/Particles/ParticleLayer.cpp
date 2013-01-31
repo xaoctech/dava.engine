@@ -46,6 +46,9 @@ ParticleLayer::ParticleLayer()
 	, emitter(0)
 	, sprite(0)
 {
+	renderBatch = new ParticleLayerBatch();
+	renderBatch->SetParticleLayer(this);
+
 	life = 0;
 	lifeVariation = 0;
 
@@ -96,6 +99,7 @@ ParticleLayer::ParticleLayer()
 
 ParticleLayer::~ParticleLayer()
 {
+	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	head = 0;
 	// dynamic cache automatically delete all particles
@@ -579,7 +583,7 @@ void ParticleLayer::ProcessParticle(Particle * particle)
             particle->forcesOverLife[i] = forcesOverLife[i]->GetValue(t);
 }
 
-void ParticleLayer::Draw()
+void ParticleLayer::Draw(Camera * camera)
 {
 	if (additive)
 	{
@@ -890,6 +894,11 @@ Particle * ParticleLayer::GetHeadParticle()
 const String & ParticleLayer::GetRelativeSpriteName()
 {
 	return relativeSpriteName;
+}
+
+RenderBatch * ParticleLayer::GetRenderBatch()
+{
+	return renderBatch;
 }
 
 void ParticleLayer::ReloadSprite()

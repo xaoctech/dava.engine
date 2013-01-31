@@ -367,9 +367,6 @@ void LodNode::Update(float32 timeElapsed)
 	{
 		lastLodUpdateFrame = RECHECK_LOD_EVERY_FRAME + 1;
 	}
-    
-    SceneNode::Update(timeElapsed);
-    
 }
 
 	

@@ -12,8 +12,6 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
     enum ePropertyControlIDs
     {
         EPCID_LIGHT,
-        EPCID_CUBE,
-        EPCID_SPHERE,
         EPCID_CAMERA,
         EPCID_LANDSCAPE,
         EPCID_MESH,

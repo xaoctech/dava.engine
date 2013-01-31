@@ -61,7 +61,7 @@ public:
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
 
-	void GetAllParticleEffects(DAVA::List<DAVA::ParticleEffectNode*> & particleEffects);
+	void GetAllParticleEffects(DAVA::List<DAVA::SceneNode*> & particleEffects);
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
@@ -83,8 +83,7 @@ protected:
 
     void ReleaseScene();
 
-	void FindAllSpriteRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::Sprite*> & sprites);
-	void FindAllParticleEffectsRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::ParticleEffectNode*> & particleEffects);
+	void FindAllParticleEffectsRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::SceneNode*> & particleEffects);
 
 protected slots:
     void SceneNodeSelectedInGraph(DAVA::SceneNode *node);

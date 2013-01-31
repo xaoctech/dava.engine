@@ -2,10 +2,11 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 #include "ControlsFactory.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 #include "../Qt/Main/QtUtils.h"
 #include "SceneValidator.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -24,8 +25,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
-	DVASSERT(landscape);
+	LandscapeNode *landscape = GetLandscape();
+	if (!landscape)
+		return;
 
     propertyList->AddSection("property.landscape.landscape", GetHeaderState("property.landscape.landscape", true));
     
@@ -37,7 +39,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     if((emptyBox.min != bbox.min) && (emptyBox.max != bbox.max))
     {
         AABBox3 transformedBox;
-        bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+        bbox.GetTransformedBox(*landscape->GetWorldTransformPtr(), transformedBox);
         size = transformedBox.max - transformedBox.min;
     }
     propertyList->SetFloatPropertyValue("property.landscape.size", size.x);
@@ -66,7 +68,10 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 
     propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
-    bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
+    
+    // RETURN TO THIS CODE LATER
+    // bool showGrid =  (0 != (landscape->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_GRID));
+    bool showGrid = false;
     propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
 
@@ -98,7 +103,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 void LandscapePropertyControl::AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level)
 {
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+	LandscapeNode *landscape = GetLandscape();
+	if (!landscape)
+		return;
     Texture * t = landscape->GetTexture(level);
     
     propertyList->AddFilepathProperty(key, filter, true, PropertyList::PROPERTY_IS_EDITABLE);
@@ -117,56 +124,71 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 {
     if("property.landscape.size" == forKey || "property.landscape.height" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        
-        Vector3 size(
-                     propertyList->GetFloatPropertyValue("property.landscape.size"),
-                     propertyList->GetFloatPropertyValue("property.landscape.size"),
-                     propertyList->GetFloatPropertyValue("property.landscape.height"));
-        AABBox3 bbox;
-        bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
-        bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
-        
-        Set<String> errorsLog;
-        String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-        if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.length())
-        {
-            landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+		{
+			Vector3 size(
+						 propertyList->GetFloatPropertyValue("property.landscape.size"),
+						 propertyList->GetFloatPropertyValue("property.landscape.size"),
+						 propertyList->GetFloatPropertyValue("property.landscape.height"));
+			AABBox3 bbox;
+			bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
+			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
+			
+			Set<String> errorsLog;
+			String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
+			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.length())
+			{
+				landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
+			}
         }
     }
     if ("property.landscape.texture0.tilex" == forKey || "property.landscape.texture0.tiley" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture0.tilex"),
-                       propertyList->GetFloatPropertyValue("property.landscape.texture0.tiley"));
-        landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE0, tiling);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+		{
+			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture0.tilex"),
+						   propertyList->GetFloatPropertyValue("property.landscape.texture0.tiley"));
+			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE0, tiling);
+		}
     }
     if ("property.landscape.texture1.tilex" == forKey || "property.landscape.texture1.tiley" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture1.tilex"),
-                       propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
-        landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE1, tiling);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+		{
+			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture1.tilex"),
+						   propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
+			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE1, tiling);
+		}
     }
 	if ("property.landscape.texture2.tilex" == forKey || "property.landscape.texture2.tiley" == forKey)
 	{
-		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture2.tilex"),
-			propertyList->GetFloatPropertyValue("property.landscape.texture2.tiley"));
-		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE2, tiling);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+		{
+			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture2.tilex"),
+				propertyList->GetFloatPropertyValue("property.landscape.texture2.tiley"));
+			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE2, tiling);
+		}
 	}
 	if ("property.landscape.texture3.tilex" == forKey || "property.landscape.texture3.tiley" == forKey)
 	{
-		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture3.tilex"),
-			propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
-		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+		{
+			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture3.tilex"),
+				propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
+			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
+		}
 	}
     
     if ("property.material.dencity" == forKey)
     {
-		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        landscape->SetFogDensity(newValue);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+			landscape->SetFogDensity(newValue);
     }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
@@ -191,7 +213,10 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 		bool isValid = SceneValidator::Instance()->ValidateHeightmapPathname(newValue, errorsLog);
 		if(isValid)
 		{
-			LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+			LandscapeNode *landscape = GetLandscape();
+			if (!landscape)
+				return;
+
 			Vector3 size(
 				propertyList->GetFloatPropertyValue("property.landscape.size"),
 				propertyList->GetFloatPropertyValue("property.landscape.size"),
@@ -260,7 +285,10 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 
 void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)
 {
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+	LandscapeNode *landscape = GetLandscape();
+	if (!landscape)
+		return;
+
     landscape->SetTexture(level, texturePathname);
     SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
 
@@ -277,7 +305,10 @@ void LandscapePropertyControl::OnComboIndexChanged(
 {
     if("property.landscape.tilemode" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+
         landscape->SetTiledShaderMode((LandscapeNode::eTiledShaderMode)newItemIndex);
     }
         
@@ -288,20 +319,24 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
 {
     if("property.landscape.showgrid" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        
-        if(newValue)
-        {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
-        }
-        else 
-        {
-            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
-        }
+        // RETURN TO THIS CODE LATER
+//        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+//        
+//        if(newValue)
+//        {
+//            landscape->SetDebugFlags(landscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
+//        else 
+//        {
+//            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
     }
     else if (String("property.material.fogenabled") == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+
         landscape->SetFog(newValue);
     }
 
@@ -312,7 +347,9 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
 {
     if("property.material.fogcolor" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
         landscape->SetFogColor(newColor);
     }
     
@@ -322,7 +359,10 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
 
 void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+	LandscapeNode *landscape = GetLandscape();
+	if (!landscape)
+		return;
+
     String texPathname = landscape->SaveFullTiledTexture();
     String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
     
@@ -342,11 +382,21 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
 
 void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+	LandscapeNode *landscape = GetLandscape();
+	if (!landscape)
+		return;
+
     Heightmap * heightmap = landscape->GetHeightmap();
     String heightmapPath = landscape->GetHeightmapPathname();
     heightmapPath = FileSystem::ReplaceExtension(heightmapPath, ".png");
     heightmap->SaveToImage(heightmapPath);
 }
 
+LandscapeNode* LandscapePropertyControl::GetLandscape() const
+{
+	RenderComponent* component = cast_if_equal<RenderComponent*>(currentSceneNode->GetComponent(Component::RENDER_COMPONENT));
+	LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (component->GetRenderObject());
+	DVASSERT(landscape);
+	return landscape;
+}
 

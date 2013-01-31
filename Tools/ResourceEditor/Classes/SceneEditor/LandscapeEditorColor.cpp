@@ -371,16 +371,12 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
-    
+    LandscapeEditorPropertyControl *propsControl =
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
     propsControl->SetDelegate(this);
-
     LandscapeEditorSettingsChanged(propsControl->Settings());
     return propsControl;
 }
-
-
 
 void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
 {
@@ -420,7 +416,7 @@ void LandscapeEditorColor::RecreateHeightmapNode()
 
 bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start tile mask editor. Remove EditorLandscapeNode from scene"));

@@ -60,8 +60,26 @@ public:
     void SetLight(int32 lightIndex, LightNode * lightNode);
     LightNode * GetLight(int32 lightIndex);
     
+    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
+    
 private:
+    Texture * lightmapTexture;
+    String lightmapName;
+    Vector2 uvOffset;
+    Vector2 uvScale;
+    
     LightNode * lightNodes[LIGHT_NODE_MAX_COUNT];
+    
+    friend class Material;
+public:
+    INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
+                         //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
+                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
+                         MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
+                         MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
+                         );
 };
     
     
@@ -92,6 +110,25 @@ public:
         // MATERIAL_VERTEX_LIGHTING,       // flag
         // MATERIAL_NORMAL_MAPPED,         // flag
         MATERIAL_TYPES_COUNT
+    };
+    
+    
+    /*
+        Plan of supported materials:
+            Default per vertex lighting material
+            Default per pixel lighting material
+            Default deferred lighting material
+     */
+    
+    enum eMaterialGeneratorInput
+    {
+        MATERIAL_INPUT_DIFFUSE = (1 << 1),
+        MATERIAL_INPUT_SPECULAR = (1 << 2),
+        MATERIAL_INPUT_SPECULAR_POWER = (1 << 3),
+        MATERIAL_INPUT_NORMAL = (1 << 4),
+        MATERIAL_INPUT_OPACITY = (1 << 5),
+        MATERIAL_INPUT_OPACITY_MASK = (1 << 6),
+        MATERIAL_INPUT_EMISSIVE = (1 << 7),
     };
     
     static const char8 * GetTypeName(eType type);
@@ -156,7 +193,7 @@ public:
         Function should be used if you want to render something with this material.
      */
     //void BindMaterial();
-	void PrepareRenderState();
+	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
     /**
@@ -166,7 +203,8 @@ public:
     //void UnbindMaterial();
     
     
-    eType   type;
+//    eType   type; //TODO: waiting for enums at introspection
+    uint32 type;
 
 	Vector4 reflective;
 	float32	reflectivity;
@@ -192,9 +230,9 @@ public:
     
     //void SetTextureSlotName(uint32 index, const String & string);
 
-    uint32 GetTextureSlotCount();
-    uint32 GetTextureSlotName(uint32 index);
-    uint32 GetTextureSlotIndexByName(const String & string);
+    uint32 GetTextureSlotCount() const;
+    const String & GetTextureSlotName(uint32 index) const;
+    uint32 GetTextureSlotIndexByName(const String & string) const;
     
     
     void SetTexture(eTextureLevel level, Texture * texture);
@@ -221,12 +259,15 @@ private:
     Texture * textures[TEXTURE_COUNT];
     String names[TEXTURE_COUNT];
     String textureSlotNames[TEXTURE_COUNT];
+    uint32 textureSlotCount;
     
     Vector2 uvOffset;
 	Vector2 uvScale;
 
-	eBlendMode blendSrc;
-	eBlendMode blendDst;
+//	eBlendMode blendSrc; //TODO: waiting for enums at introspection
+//	eBlendMode blendDst; //TODO: waiting for enums at introspection
+	uint32 blendSrc;
+	uint32 blendDst;
 
 
     void RebuildShader();
@@ -278,6 +319,35 @@ private:
     
     
     static UberShader * uberShader;
+    
+public:
+    
+    INTROSPECTION_EXTEND(Material, DataNode,
+        MEMBER(isOpaque, "Is Opaque", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(setupLightmapSize, "Setup Lightmap Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(shininess, "Shininess", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(emissiveColor, "Emissive Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(isWireframe, "Is Wire Frame", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 Texture * Material::GetTexture(eTextureLevel level) const
@@ -320,11 +390,11 @@ inline void Material::SetBlendDest(eBlendMode _blendDest)
 }
 inline eBlendMode Material::GetBlendSrc() const
 {
-    return blendSrc;
+    return (eBlendMode)blendSrc;
 }
 inline eBlendMode Material::GetBlendDest() const
 {
-    return blendDst;
+    return (eBlendMode)blendDst;
 }
 
 };

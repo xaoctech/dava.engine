@@ -33,6 +33,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
+#include "FileSystem/FilePath.h"
+
 #if defined(__DAVAENGINE_ANDROID__)
 	#include "zip/zip.h"
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -94,13 +96,16 @@ public:
 		\brief Get this file name
 		\returns filename of this file 
 	 */
-	virtual	const char8 * GetFilename();
+//	virtual	const char8 * GetFilename();
+	virtual	const String GetFilename();
+
 	
 	/**
 		\brief Get this file full pathname
 		\returns filename of this file 
 	 */
-	virtual const char8 * GetPathname();
+//	virtual const char8 * GetPathname();
+	virtual	const String GetPathname();
 	
 	/** 
 		\brief Write [dataSize] bytes to this file from [pointerToData]
@@ -111,12 +116,13 @@ public:
 	virtual uint32 Write(const void * sourceBuffer, uint32 dataSize);
 
 	/** 
-		\brief Write string
-		write null-terminated string from current position in file
-		\param[in] string - string data loaded to this variable
+		\brief Write string.
+		write null-terminated string from current position in file.
+		\param[in] string string data loaded to this variable/
+        \param[in] shouldNullBeWritten indicates does it require to save null terminator.
 		\return true if success otherwise false
 	 */
-	virtual bool WriteString(const String & string);
+	virtual bool WriteString(const String & string, bool shouldNullBeWritten = true);
 
 	/**
      \brief Write string
@@ -158,6 +164,7 @@ public:
 		\returns actual length of the string that was read
 	 */
 	virtual uint32 ReadString(char8 * destinationBuffer, uint32 destinationBufferSize);
+    uint32 ReadString(String & destinationString);
 	
 	/** 
 		\brief Get current file position
@@ -187,7 +194,8 @@ private:
 	FILE	*	file;
 	uint32		size;
 protected:
-	String	filename;
+//	String	filename;
+	FilePath filename;
 };
 };
 

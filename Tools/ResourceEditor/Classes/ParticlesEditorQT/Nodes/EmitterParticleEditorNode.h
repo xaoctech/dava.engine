@@ -10,7 +10,6 @@
 #define __ResourceEditorQt__EmitterParticleEditorNode__
 
 #include "EmitterContainerNode.h"
-#include "Scene3D/ParticleEmitterNode.h"
 
 namespace DAVA {
     
@@ -18,7 +17,7 @@ namespace DAVA {
 class EmitterParticleEditorNode : public EmitterContainerNode
 {
 public:
-    EmitterParticleEditorNode(ParticleEffectNode* rootNode, ParticleEmitterNode* emitter,
+    EmitterParticleEditorNode(SceneNode* rootNode, SceneNode* emitter,
                               const QString& nodeName);
     
     // Get the layers count.

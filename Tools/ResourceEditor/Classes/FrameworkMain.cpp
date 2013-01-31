@@ -122,8 +122,59 @@ void ProcessRecourcePacker()
 }
 
 
+/*
+    Is it possible, to store size before vector, seems doable and cache friendly, because to tranverse vector firstly you 
+    need to read size.
+ */
+template<class T>
+class CacheFriendlyVector
+{
+public:
+    uint8 * data;
+};
+
+
+
+class EntityX
+{
+//    Vector<Component*> fastAccessArray;
+//    Vector<Component*> allComponents;
+    Component ** fastAccessArray;
+    Component ** allComponents;
+    EntityX ** children;
+};
+
+
+class EntitySTL
+{
+    CacheFriendlyVector<Component*> fastAccessArray;
+    CacheFriendlyVector<Component*> allComponents;
+    CacheFriendlyVector<EntitySTL*> children;
+};
+
+/*
+    => 24 bytes for each entity. (8 * 3 = 24 = 64bit system) (12bytes on 32 bit system)
+    =>
+    
+    Action update transform: (тут не может не быть cache misses)
+ 
+    Entity * entity = GetEntity(); // cache miss
+    TransformComponent * tc = entity->fastTransforms[COMPONENT_TRANSFORM]; // cache miss
+    tc->UpdateLocalTransform(transform); // cache miss
+ 
+ 
+    TransformSystem:
+    for each object go to his children and add them, for them do the same, linearly
+ 
+ */
+
+
+
 void FrameworkDidLaunched()
 {
+    uint32 size = sizeof(EntityX);
+    uint32 size2 = sizeof(EntitySTL);
+    
 //	EntityTest();
 
     new CommandLineTool();

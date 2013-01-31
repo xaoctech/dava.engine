@@ -41,8 +41,7 @@ LandscapeEditorVisibilityCheckTool::LandscapeEditorVisibilityCheckTool(Landscape
 	isCursorTransparent = false;
 
 	areaCursorTexture = cursorTexture;
-	pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
-	pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	pointCursorTexture = NULL;
 }
 
 LandscapeEditorVisibilityCheckTool::~LandscapeEditorVisibilityCheckTool()
@@ -120,12 +119,12 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		{
 			case VCT_STATE_SET_POINT:
 				cursorTexture = pointCursorTexture;
-				scale = VISIBILITY_POINT_CURSOR_SCALE;
+				scale = VISIBILITY_POINT_CURSOR_SCALE *2;
 				break;
 				
 			case VCT_STATE_SET_AREA:
 				cursorTexture = areaCursorTexture;
-				scale = (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
+				scale = 2 * (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
 				break;
 
 			default:
@@ -137,7 +136,7 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaledSize, scaledSize) / 2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaledSize);
 	}
@@ -203,7 +202,7 @@ bool LandscapeEditorVisibilityCheckTool::SetPointInputAction(int32 phase)
 	
 	if(phase == UIEvent::PHASE_ENDED)
 	{
-		visibilityPoint = landscapePoint * 2;
+		visibilityPoint = landscapePoint;
 
 		Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
 		if(landRect.PointInside(visibilityPoint))
@@ -232,7 +231,7 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 		if(isVisibilityPointSet)
 		{
 			Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
-			Vector2 visibilityAreaCenter(landscapePoint * 2);
+			Vector2 visibilityAreaCenter(landscapePoint);
 			
 			if(landRect.PointInside(visibilityAreaCenter))
 			{
@@ -344,7 +343,7 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
 
 	
-	// get soource point in propper coords system
+	// get source point in propper coords system
 	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
 	
 	sourcePoint.z = spectatorCoords.z;
@@ -489,6 +488,10 @@ bool LandscapeEditorVisibilityCheckTool::CheckIsInCircle(Vector2 circleCentre, f
 
 void LandscapeEditorVisibilityCheckTool::HideAction()
 {
+	if(!IsActive())
+	{
+		return;
+	}
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
@@ -503,11 +506,16 @@ void LandscapeEditorVisibilityCheckTool::HideAction()
 
 void LandscapeEditorVisibilityCheckTool::ShowAction()
 {
+	if(pointCursorTexture == NULL)
+	{
+		pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
+		pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	}
 	SetState(VCT_STATE_NORMAL);
 
 	PrepareConfig();
 
-    landscapeSize = settings->maskSize;
+    landscapeSize = landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 
@@ -667,16 +675,11 @@ void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToF
 
 NodesPropertyControl *LandscapeEditorVisibilityCheckTool::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
-
+    LandscapeEditorPropertyControl *propsControl =
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-
     propsControl->SetDelegate(this);
-
     LandscapeEditorSettingsChanged(propsControl->Settings());
-
-
     return propsControl;
 }
 
@@ -705,7 +708,7 @@ void LandscapeEditorVisibilityCheckTool::RecreateHeightmapNode()
 
 bool LandscapeEditorVisibilityCheckTool::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene"));
@@ -752,4 +755,13 @@ void LandscapeEditorVisibilityCheckTool::CopyImageRectToImage(Image* imageFrom, 
 
 		memcpy(imageToRow, imageFromRow, fromWidth * pixelSize);
 	}
+}
+
+void LandscapeEditorVisibilityCheckTool::ClearSceneResources()
+{
+	LandscapeEditorBase::ClearSceneResources();
+	SafeRelease(visibilityAreaSprite);
+	SafeRelease(pointCursorTexture);
+	visibilityPoint.x = 0;
+	visibilityPoint.y = 0;
 }

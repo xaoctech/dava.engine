@@ -553,8 +553,7 @@ void EmitterLayerWidget::OnValueChanged()
 						 (float32)alignToMotionSpin->value(),
 						 (float32)startTimeSpin->value(),
 						 (float32)endTimeSpin->value());
-	
-	if (CommandsManager::Instance())
+
 	CommandsManager::Instance()->Execute(updateLayerCmd);
 	SafeRelease(updateLayerCmd);
 	
