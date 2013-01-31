@@ -31,8 +31,8 @@ signals:
 	void ChangeVisible(bool visible);
 	
 protected slots:
-	void OnNodeSelected(ParticleEmitterNode* node);
-	void OnEffectNodeSelected(ParticleEffectNode* node);
+	void OnNodeSelected(SceneNode* node);
+	void OnEffectNodeSelected(SceneNode* node);
 	void OnUpdate();
 	
 protected:
@@ -70,8 +70,8 @@ private:
 	LINE_MAP lines;
 	
 	QPoint selectedPoint;
-	ParticleEmitterNode* emitterNode;
-	ParticleEffectNode* effectNode;
+	SceneNode* emitterNode;
+	SceneNode* effectNode;
 	
 	enum eGridStyle
 	{

@@ -697,6 +697,31 @@ void  FileSystem::SplitPath(const String & filePath, String & path, String & fil
 		filename = fullPath.substr(lastSlashPos + 1, fullPath.size() - lastSlashPos - 1);
 	}
 }
+    
+String FileSystem::ReadFileContents(const String & pathname)
+{
+    File * fp = File::Create(pathname, File::OPEN|File::READ);
+	if (!fp)
+	{
+		Logger::Error("Failed to open file: %s", pathname.c_str());
+		return 0;
+	}
+	uint32 fileSize = fp->GetSize();
+
+    String fileContents;
+    uint32 dataRead = fp->ReadString(fileContents);
+    
+	if (dataRead != fileSize)
+	{
+		Logger::Error("Failed to read data from file: %s", pathname.c_str());
+		return 0;
+	}
+    
+	SafeRelease(fp);
+    return fileContents;
+    
+}
+
 
 uint8 * FileSystem::ReadFileContents(const String & pathname, uint32 & fileSize)
 {

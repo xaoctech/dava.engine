@@ -35,11 +35,6 @@
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="margin">
-     <number>0</number>
-    </property>
-   </layout>
   </widget>
   <widget class="QDockWidget" name="dockSceneGraph">
    <property name="floating">
@@ -158,8 +153,51 @@
    </attribute>
    <widget class="QWidget" name="propertiesBody">
     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="PropertiesView" name="propertiesView" native="true"/>
+      <widget class="QFrame" name="frameProperties">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="PropertyEditor" name="propertyEditor">
+          <property name="editTriggers">
+           <set>QAbstractItemView::AllEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::NoSelection</enum>
+          </property>
+          <property name="indentation">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -291,11 +329,10 @@
     <addaction name="actionLandscape"/>
     <addaction name="actionLight"/>
     <addaction name="actionServiceNode"/>
-    <addaction name="actionBox"/>
-    <addaction name="actionSphere"/>
     <addaction name="actionCamera"/>
     <addaction name="actionImposter"/>
     <addaction name="actionParticleEmitter"/>
+    <addaction name="actionParticle_Emitter"/>
     <addaction name="actionUserNode"/>
     <addaction name="actionSwitchNode"/>
     <addaction name="actionParticleEffectNode"/>
@@ -512,16 +549,6 @@
     <string>Service Node</string>
    </property>
   </action>
-  <action name="actionBox">
-   <property name="text">
-    <string>Box</string>
-   </property>
-  </action>
-  <action name="actionSphere">
-   <property name="text">
-    <string>Sphere</string>
-   </property>
-  </action>
   <action name="actionCamera">
    <property name="text">
     <string>Camera</string>
@@ -673,6 +700,14 @@
     <string>Particle Effect Node</string>
    </property>
   </action>
+  <action name="actionParticle_Emitter">
+   <property name="text">
+    <string>Particle Emitter</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -693,12 +728,6 @@
    <header>DockLibrary/libraryview.h</header>
   </customwidget>
   <customwidget>
-   <class>PropertiesView</class>
-   <extends>QWidget</extends>
-   <header>DockProperties/PropertiesView.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>CustomColorsView</class>
    <extends>QWidget</extends>
    <header>DockCustomColors/CustomColorsView.h</header>
@@ -709,6 +738,11 @@
    <extends>QWidget</extends>
    <header>DockVisibilityTool/VisibilityToolView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PropertyEditor</class>
+   <extends>QTreeView</extends>
+   <header>DockProperties/PropertyEditor.h</header>
   </customwidget>
   <customwidget>
    <class>ParticleEditorWidget</class>

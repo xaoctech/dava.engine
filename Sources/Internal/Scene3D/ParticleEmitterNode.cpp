@@ -24,9 +24,9 @@ ParticleEmitterNode::~ParticleEmitterNode()
 
 void ParticleEmitterNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
 	if(emitter)
 	{
+		const Matrix4 & worldTransform = GetWorldTransform();
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
 		emitter->rotationMatrix = Matrix3(worldTransform);;
 		emitter->SetPosition(position);
@@ -55,17 +55,6 @@ void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 	SafeRelease(emitter);
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
-}
-
-void ParticleEmitterNode::SaveToYaml(const String& _yamlPath)
-{
-    yamlPath = _yamlPath;
-    emitter->SaveToYaml(yamlPath);
-}
-
-String ParticleEmitterNode::GetYamlPath()
-{
-	return yamlPath;
 }
 
 ParticleEmitter * ParticleEmitterNode::GetEmitter()
@@ -123,3 +112,4 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 }
 
 };
+

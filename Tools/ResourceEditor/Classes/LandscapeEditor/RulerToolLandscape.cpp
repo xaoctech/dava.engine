@@ -37,7 +37,8 @@ using namespace DAVA;
 RulerToolLandscape::RulerToolLandscape()
     : EditorLandscapeNode()
 {
-    SetName(String("Landscape_RulerTool"));
+    // RETURN TO THIS CODE LATER
+    //SetName(String("Landscape_RulerTool"));
 
     rulerSprite = Sprite::CreateAsRenderTarget((float32)TEXTURE_TILE_FULL_SIZE, (float32)TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
 //    rulerSprite->GetTexture()->GenerateMipmaps();

@@ -29,9 +29,9 @@ public:
     ~ParticleEditorWidget();
 	
 protected slots:
-	void OnEmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode);
-    void OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
-    void OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	void OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode);
+    void OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
+    void OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 	void OnUpdate();
 	void OnValueChanged();
 	void OnNodeDeselected(BaseParticleEditorNode* particleEditorNode);

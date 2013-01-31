@@ -1,37 +1,66 @@
 #include "Entity/Component.h"
-#include "Entity/EntityManager.h"
+#include "Scene3D/SceneNode.h"
+#include "Debug/DVAssert.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/BulletComponent.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/UpdatableComponent.h"
 
-namespace DAVA 
+namespace DAVA
 {
 
-Map<const char *, Component * > Component::cache;
-Map<uint64, Component*>  Component::componentsByIndex;
-
-Component * Component::GetComponentByIndex(uint64 index)
+Component * Component::CreateByType(uint32 componentType)
 {
-    Map<uint64, Component*>::iterator it = componentsByIndex.find(index);
-    if (it != componentsByIndex.end())
-    {
-        return it->second;
-    }
-    return 0;
+	switch(componentType)
+	{
+	case TRANSFORM_COMPONENT:
+		return new TransformComponent();
+	case RENDER_COMPONENT:
+		return new RenderComponent();
+	case DEBUG_RENDER_COMPONENT: 
+		return new DebugRenderComponent();
+	case LOD_COMPONENT:
+		return new LodComponent();
+	case PARTICLE_EMITTER_COMPONENT:
+		return new ParticleEmitterComponent();
+	case PARTICLE_EFFECT_COMPONENT:
+		return new ParticleEffectComponent();
+	case BULLET_COMPONENT:
+		return new BulletComponent();
+	case UPDATABLE_COMPONENT:
+		return new UpdatableComponent();
+	case ANIMATION_COMPONENT:
+	case COLLISION_COMPONENT:
+	case ACTION_COMPONENT:
+	case SCRIPT_COMPONENT:
+	case CAMERA_COMPONENT:
+	case LIGHT_COMPONENT:
+	default:
+		DVASSERT(0);
+		return 0;
+	}
+
 }
-    
-void Component::RegisterComponent(const char * componentName, Component * component)
+
+Component::Component()
+:	entity(0)
 {
-    cache[componentName] = component;
-}
-    
-Component * Component::GetComponent(const char * componentName)
-{
-    Map<const char *, Component * >::iterator res = cache.find(componentName);
-    if (res != cache.end())
-    {
-        return res->second;
-    }
-    return 0;
+
 }
 
-    
-};
+void Component::SetEntity(SceneNode * _entity)
+{
+	entity = _entity;
+}
 
+void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
+{
+    //Empty as default
+}
+
+
+}

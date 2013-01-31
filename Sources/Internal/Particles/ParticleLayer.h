@@ -34,6 +34,7 @@
 #include "Base/RefPtr.h"
 #include "Base/DynamicObjectCache.h"
 #include "Render/2D/Sprite.h"
+#include "Render/Highlevel/ParticleLayerBatch.h"
 
 #include "FileSystem/YamlParser.h"
 #include "Particles/Particle.h"
@@ -94,7 +95,7 @@ public:
 	/**
 		\brief This function draws layer properties and layer particles. 
 	 */
-	virtual void Draw();
+	virtual void Draw(Camera * camera);
 	
 	/** 
 		\brief Function to set emitter for layer. 
@@ -137,6 +138,8 @@ public:
     // Whether this layer is Long Layer?
     virtual bool IsLong() {return false;};
     
+	RenderBatch * GetRenderBatch();
+
 	// Reload the layer sprite, update the Frames timeline if needed.
 	void ReloadSprite();
 
@@ -172,6 +175,8 @@ protected:
 	// particle layer sprite
 	Sprite 			* sprite;
 	String			relativeSpriteName;
+
+	ParticleLayerBatch * renderBatch;
 
 public:
 	String			layerName;
@@ -226,6 +231,65 @@ public:
 	eType		type;
 
     bool isDisabled;
+    
+public:
+    
+    INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
+                         NULL
+//        MEMBER(particlesToGenerate, "Particles To Generate", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(layerTime, "Layer Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(relativeSpriteName, "Relative Sprite Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        MEMBER(renderBatch, "Render Batch", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(pivotPoint, "Pivot Point", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(life, "Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(lifeVariation, "Life Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        MEMBER(number, "Number", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(numberVariation, "Number Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(size, "Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(sizeVariation, "Size Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(sizeOverLife, "Size Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//                         
+//        MEMBER(velocity, "Velocity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(velocityVariation, "Velocity Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(velocityOverLife, "Velocity Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(forces, "Forces", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(forcesVariation, "Forces Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(forcesOverLife, "Forces Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(spin, "Spin", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(spinVariation, "Spin Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(spinOverLife, "Spin Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        MEMBER(motionRandom, "Motion Random", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(motionRandomVariation, "Motion Random Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(motionRandomOverLife, "Motion Random Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(bounce, "Bounce", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(bounceVariation, "Bounce Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(bounceOverLife, "Bounce Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(colorRandom, "Color Random", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(alphaOverLife, "Alpha Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(colorOverLife, "Color Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameOverLife, "Frame Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(alignToMotion, "Align To Motion", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(additive, "Additive", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(startTime, "Start Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(endTime, "End Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameStart, "Frame Start", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameEnd, "Frame End", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//      MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(isDisabled, "Is Disabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 inline int32 ParticleLayer::GetParticleCount()

@@ -141,8 +141,9 @@ void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
 		for (int32 i = 0; i < childrenToAddCount; i ++)
 		{
 			AddNodeToTree(graphItem, rootNode->GetChild(i), true);
-		}
 	}
+}
+
 }
 
 
@@ -286,7 +287,6 @@ void SceneGraphModel::SelectItem(GraphItem *item, bool needExpand)
         }
     }
 }
-
 
 DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
 {

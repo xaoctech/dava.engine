@@ -10,7 +10,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Main/QtUtils.h"
-
+#include "Scene3D/Components/DebugRenderComponent.h"
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
@@ -263,13 +263,13 @@ void SceneGraph::OnEnableDebugFlagsPressed(BaseObject *, void *, void *)
 {
     if (workingNode)
     {
-        if (workingNode->GetDebugFlags() & SceneNode::DEBUG_DRAW_ALL)
+        if (workingNode->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             workingNode->SetDebugFlags(0, true);
         }
         else
         {
-            workingNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL, true);
+            workingNode->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
         }
     }
 }

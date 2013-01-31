@@ -61,12 +61,6 @@
     <Filter Include="Internal\Platform">
       <UniqueIdentifier>{3dee422f-a3ac-43fb-a3ca-32d2b8ed05e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Platform\TemplateiOS">
-      <UniqueIdentifier>{f5d0f973-b101-49d7-83f5-444c3cebefb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\TemplateMacOS">
-      <UniqueIdentifier>{b69fca1f-b86a-415a-a523-a7bb307c59f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Platform\TemplateWin32">
       <UniqueIdentifier>{f21eeb05-df0b-4fd6-bdff-8d0c36593c3a}</UniqueIdentifier>
     </Filter>
@@ -109,20 +103,26 @@
     <Filter Include="Internal\Database">
       <UniqueIdentifier>{aacba949-a20d-4b44-821d-8170cd6d7aa2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Entity\Components">
-      <UniqueIdentifier>{a5ec0fc5-fc27-47e4-90f3-6665b4a190a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Platform\Qt">
       <UniqueIdentifier>{9ccf6d8e-2ffb-4645-862d-59b75598b00e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Internal\Platform\Qt\Win32">
       <UniqueIdentifier>{802c9b10-286b-4081-add3-d26ed34ac6d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Platform\Qt\MacOS">
-      <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
+    <Filter Include="Internal\Render\Material">
+      <UniqueIdentifier>{08283861-a6e9-4e98-88c8-2cfd8d75e035}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\DLC">
-      <UniqueIdentifier>{adb309fb-7c9c-456d-893e-6013acf3f10c}</UniqueIdentifier>
+    <Filter Include="Internal\Scene3D\Components">
+      <UniqueIdentifier>{1700d8b4-3d61-41d7-b54a-7dfd9c355a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Render\Highlevel">
+      <UniqueIdentifier>{1df931b9-f1ab-44cb-9e15-9d48af21bbe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Scene3D\Systems">
+      <UniqueIdentifier>{182b255d-1f50-474b-b265-7dcc2a0f0a55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Base\Radix">
+      <UniqueIdentifier>{43813d6b-dd92-4284-b1af-ec15e0904636}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -456,42 +456,6 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLView.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLViewController.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES1Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES2Renderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ESRenderer.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\HelperAppDelegate.h">
-      <Filter>Internal\Platform\TemplateiOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\AppDelegate.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\MainWindowController.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\OpenGLView.h">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -511,9 +475,6 @@
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Light.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
@@ -616,9 +577,6 @@
       <Filter>Internal\Scene2D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h">
@@ -891,9 +849,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h">
       <Filter>Internal\Render\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h">
       <Filter>Internal\Render\Effects</Filter>
     </ClInclude>
@@ -916,15 +871,6 @@
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h">
@@ -954,19 +900,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
@@ -1008,62 +942,11 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h">
       <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h">
-      <Filter>Internal\Entity\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h">
       <Filter>Internal\UI</Filter>
@@ -1088,15 +971,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <Filter>Internal\Platform\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
@@ -1164,17 +1038,194 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h">
+      <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\SceneSystem.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionBase.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\ScopedPtr.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionFlags.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
-      <Filter>Internal\DLC</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h">
-      <Filter>Internal\DLC</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h">
-      <Filter>Internal\DLC</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Radix\Radix.h">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h">
+      <Filter>Internal\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1406,12 +1457,6 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\TemplateMacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -1530,9 +1575,6 @@
       <Filter>Internal\Scene2D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp">
@@ -1778,9 +1820,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp">
       <Filter>Internal\Render\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp">
       <Filter>Internal\Render\Effects</Filter>
     </ClCompile>
@@ -1806,15 +1845,6 @@
       <Filter>Internal\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp">
@@ -1847,23 +1877,11 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp">
       <Filter>Internal\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp">
-      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
       <Filter>Internal\Debug</Filter>
@@ -1895,24 +1913,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
@@ -1927,18 +1927,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp">
       <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp">
-      <Filter>Internal\Entity\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp">
       <Filter>Internal\UI</Filter>
@@ -1957,12 +1945,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
@@ -2003,25 +1985,164 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp">
+      <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\SceneSystem.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp">
-      <Filter>Internal\DLC</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp">
-      <Filter>Internal\DLC</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp">
-      <Filter>Internal\DLC</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
-      <Filter>Internal\Platform\Qt\MacOS</Filter>
-    </None>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\Radix\Radix.cpp">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp">
+      <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,8 @@
 #include "ui_mainwindow.h"
 #include <QScrollBar>
 
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+
 ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	QScrollArea(parent)
 {
@@ -23,17 +25,17 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterPropertiesWidget = NULL;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)),
+			SIGNAL(EmitterSelected(SceneNode*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnEmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)));
+			SLOT(OnEmitterSelected(SceneNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnLayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)));
+			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
+			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)));
+			SLOT(OnForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
 			this,
@@ -52,7 +54,7 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(emitterPropertiesWidget);
 }
 
-void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -63,7 +65,12 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, B
 	}
 	
 	emit ChangeVisible(true);
-	ParticleEmitter* emitter = emitterNode->GetEmitter();
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (!emitterComponent)
+    {
+        return;
+    }
+	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 
@@ -86,7 +93,7 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, B
 	}
 }
 
-void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -97,7 +104,12 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 	}
 
 	emit ChangeVisible(true);
-	ParticleEmitter* emitter = emitterNode->GetEmitter();
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (!emitterComponent)
+    {
+        return;
+    }
+	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 
@@ -120,7 +132,7 @@ void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, Par
 	}
 }
 
-void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
 	DeleteOldWidget();
 	
@@ -131,7 +143,12 @@ void ParticleEditorWidget::OnForceSelected(ParticleEmitterNode* emitterNode, Par
 	}
 	
 	emit ChangeVisible(true);
-	ParticleEmitter* emitter = emitterNode->GetEmitter();
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (!emitterComponent)
+    {
+        return;
+    }
+	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 	

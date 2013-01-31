@@ -27,6 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#include "FileSystem/File.h"
 #include "FileSystem/VariantType.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/DynamicMemoryFile.h"
@@ -38,6 +39,9 @@
 #include "Math/Matrix4.h"
 #include "Utils/Utils.h"
 #include "Base/Meta.h"
+#include "Math/Color.h"
+#include "Base/FastName.h"
+#include "Math/AABBox3.h"
 
 namespace DAVA
 {
@@ -60,18 +64,22 @@ const String VariantType::TYPENAME_VECTOR4 = "Vector4";
 const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
 const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
 const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
+const String VariantType::TYPENAME_POINTER = "void *";
+const String VariantType::TYPENAME_COLOR   = "Color";
+const String VariantType::TYPENAME_FASTNAME= "FastName";
+const String VariantType::TYPENAME_AABBOX3 = "AABBox3";
     
 const VariantType::PairTypeName VariantType::variantNamesMap[] =
 {
     VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN,		NULL),
     VariantType::PairTypeName(VariantType::TYPE_BOOLEAN,       TYPENAME_BOOLEAN,		MetaInfo::Instance<bool>()),
     VariantType::PairTypeName(VariantType::TYPE_INT32,         TYPENAME_INT32,			MetaInfo::Instance<int32>()),
-    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT,			MetaInfo::Instance<float>()),
+    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT,			MetaInfo::Instance<float32>()),
     VariantType::PairTypeName(VariantType::TYPE_STRING,        TYPENAME_STRING,			MetaInfo::Instance<String>()),
     VariantType::PairTypeName(VariantType::TYPE_WIDE_STRING,   TYPENAME_WIDESTRING,		MetaInfo::Instance<WideString>()),
     VariantType::PairTypeName(VariantType::TYPE_BYTE_ARRAY,    TYPENAME_BYTE_ARRAY,		MetaInfo::Instance<Vector<uint8> >()),
     VariantType::PairTypeName(VariantType::TYPE_UINT32,        TYPENAME_UINT32,			MetaInfo::Instance<uint32>()),
-    VariantType::PairTypeName(VariantType::TYPE_KEYED_ARCHIVE, TYPENAME_KEYED_ARCHIVE,	MetaInfo::Instance<KeyedArchive>()),
+    VariantType::PairTypeName(VariantType::TYPE_KEYED_ARCHIVE, TYPENAME_KEYED_ARCHIVE,	MetaInfo::Instance<KeyedArchive *>()),
     VariantType::PairTypeName(VariantType::TYPE_INT64,         TYPENAME_INT64,			MetaInfo::Instance<int64>()),
     VariantType::PairTypeName(VariantType::TYPE_UINT64,        TYPENAME_UINT64,			MetaInfo::Instance<uint64>()),
     VariantType::PairTypeName(VariantType::TYPE_VECTOR2,       TYPENAME_VECTOR2,		MetaInfo::Instance<Vector2>()),
@@ -79,7 +87,11 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_VECTOR4,       TYPENAME_VECTOR4,		MetaInfo::Instance<Vector4>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
-    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>())
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
+	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>()),
+	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>()),
+	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>()),
+	VariantType::PairTypeName(VariantType::TYPE_AABBOX3,       TYPENAME_AABBOX3,        MetaInfo::Instance<AABBox3>())
 };
 
 VariantType::VariantType()
@@ -90,94 +102,7 @@ VariantType::VariantType()
 
 VariantType::VariantType(const VariantType &var) : pointerValue(NULL)
 {
-    type = var.type;
-	switch(type)
-	{
-		case TYPE_BOOLEAN:
-		{
-            boolValue = var.boolValue;
-		}
-            break;
-		case TYPE_INT32:
-		{
-            int32Value = var.int32Value;
-		}
-            break;	
-		case TYPE_UINT32:
-		{
-            uint32Value = var.uint32Value;
-		}
-            break;	
-		case TYPE_FLOAT:
-		{
-            floatValue = var.floatValue;
-		}
-            break;	
-		case TYPE_STRING:
-		{
-            stringValue = new String(var.AsString());
-		}
-            break;	
-		case TYPE_WIDE_STRING:
-		{ 
-            wideStringValue = new WideString(var.AsWideString());
-		}
-            break;
-		case TYPE_BYTE_ARRAY:
-		{
-            pointerValue = (void*)new Vector<uint8>(*((Vector<uint8>*)var.pointerValue));
-		}
-            break;
-        case TYPE_KEYED_ARCHIVE:
-		{
-            pointerValue = new KeyedArchive(*((KeyedArchive*)var.pointerValue));
-		}
-            break;
-		case TYPE_INT64:
-		{
-            int64Value = new int64(var.AsInt64());
-		}
-            break;
-        case TYPE_UINT64:
-		{
-            uint64Value = new uint64(var.AsUInt64());
-		}
-            break;
-        case TYPE_VECTOR2:
-		{
-            vector2Value = new Vector2(var.AsVector2());
-		}
-            break;
-        case TYPE_VECTOR3:
-		{
-            vector3Value = new Vector3(var.AsVector3());
-		}
-            break;
-        case TYPE_VECTOR4:
-		{
-            vector4Value = new Vector4(var.AsVector4());
-		}
-            break;
-        case TYPE_MATRIX2:
-		{
-            matrix2Value = new Matrix2(var.AsMatrix2());
-		}
-            break;
-        case TYPE_MATRIX3:
-		{
-            matrix3Value = new Matrix3(var.AsMatrix3());
-		}
-            break;
-        case TYPE_MATRIX4:
-		{
-            matrix4Value = new Matrix4(var.AsMatrix4());
-		}
-            break;
-		default:
-		{
-                //DVASSERT(0 && "Something went wrong with VariantType");
-		}
-	}
+	SetVariant(var);
 }
 
 VariantType::~VariantType()
@@ -295,6 +220,151 @@ void VariantType::SetMatrix4(const Matrix4 & value)
     type = TYPE_MATRIX4;
     matrix4Value = new Matrix4(value);
 }
+
+void VariantType::SetPointer(const void* const &value)
+{
+	ReleasePointer();
+	type = TYPE_POINTER;
+	pointerValue = value;
+}
+
+void VariantType::SetColor(const DAVA::Color &value)
+{
+    ReleasePointer();
+    type = TYPE_COLOR;
+    colorValue = new Color(value);
+}
+    
+void VariantType::SetFastName(const DAVA::FastName &value)
+{
+    ReleasePointer();
+    type = TYPE_FASTNAME;
+    
+    fastnameValue = new FastName(value);
+}
+    
+void VariantType::SetAABBox3(const DAVA::AABBox3 &value)
+{
+	ReleasePointer();
+	type = TYPE_AABBOX3;
+
+	aabbox3 = new AABBox3(value);
+}
+
+
+
+void VariantType::SetVariant(const VariantType& var)
+{
+	switch(var.type)
+	{
+	case TYPE_BOOLEAN:
+		{
+			SetBool(var.boolValue);
+		}
+		break;
+	case TYPE_INT32:
+		{
+			SetInt32(var.int32Value);
+		}
+		break;	
+	case TYPE_UINT32:
+		{
+			SetUInt32(var.uint32Value);
+		}
+		break;	
+	case TYPE_FLOAT:
+		{
+			SetFloat(var.floatValue);
+		}
+		break;	
+	case TYPE_STRING:
+		{
+			SetString(var.AsString());
+		}
+		break;	
+	case TYPE_WIDE_STRING:
+		{ 
+			SetWideString(var.AsWideString());
+		}
+		break;
+	case TYPE_BYTE_ARRAY:
+		{
+			Vector<uint8> *ar = (Vector<uint8>*) var.pointerValue;
+			SetByteArray(ar->data(), ar->size());
+		}
+		break;
+	case TYPE_KEYED_ARCHIVE:
+		{
+			SetKeyedArchive(var.AsKeyedArchive());
+		}
+		break;
+	case TYPE_INT64:
+		{
+			SetInt64(var.AsInt64());
+		}
+		break;
+	case TYPE_UINT64:
+		{
+			SetUInt64(var.AsUInt64());
+		}
+		break;
+	case TYPE_VECTOR2:
+		{
+			SetVector2(var.AsVector2());
+		}
+		break;
+	case TYPE_VECTOR3:
+		{
+			SetVector3(var.AsVector3());
+		}
+		break;
+	case TYPE_VECTOR4:
+		{
+			SetVector4(var.AsVector4());
+		}
+		break;
+	case TYPE_MATRIX2:
+		{
+			SetMatrix2(var.AsMatrix2());
+		}
+		break;
+	case TYPE_MATRIX3:
+		{
+			SetMatrix3(var.AsMatrix3());
+		}
+		break;
+	case TYPE_MATRIX4:
+		{
+			SetMatrix4(var.AsMatrix4());
+		}
+		break;
+	case  TYPE_POINTER:
+		{
+			SetPointer(var.AsPointer());
+		}
+		break;
+    case  TYPE_COLOR:
+		{
+			SetColor(var.AsColor());
+		}
+        break;
+    case TYPE_FASTNAME:
+        {
+            SetFastName(var.AsFastName());
+        }
+        break;
+	case TYPE_AABBOX3:
+		{
+			SetAABBox3(var.AsAABBox3());
+		}
+		break;
+
+	default:
+		{
+			//DVASSERT(0 && "Something went wrong with VariantType");
+		}
+	}
+}
     
 bool VariantType::AsBool() const
 {
@@ -397,7 +467,32 @@ const Matrix4 & VariantType::AsMatrix4() const
     DVASSERT(type == TYPE_MATRIX4);
     return *matrix4Value;
 }
+
+const void* const & VariantType::AsPointer() const
+{
+	DVASSERT(type == TYPE_POINTER);
+	return pointerValue;
+}
     
+const Color & VariantType::AsColor() const
+{
+    DVASSERT(type == TYPE_COLOR);
+    return *colorValue;
+}
+
+const FastName & VariantType::AsFastName() const
+{
+    DVASSERT(type == TYPE_FASTNAME);
+    return *fastnameValue;
+}
+
+const AABBox3 & VariantType::AsAABBox3() const
+{
+	DVASSERT(type == TYPE_AABBOX3);
+	return *aabbox3;
+}
+
+
 bool VariantType::Write(File * fp) const
 {
 	DVASSERT(type != TYPE_NONE)
@@ -521,6 +616,33 @@ bool VariantType::Write(File * fp) const
             if (written != sizeof(Matrix4))return false;
 		}
             break;
+	case TYPE_POINTER:
+		{
+			DVASSERT(0 && "Can't write pointer");
+		}
+		break;
+    case TYPE_COLOR:
+		{
+            written = fp->Write(colorValue->color, sizeof(float32) * 4);
+            if (written != sizeof(sizeof(float32) * 4))return false;
+		}
+        break;
+    case TYPE_FASTNAME:
+	    {
+			int32 len = strlen(fastnameValue->c_str());
+			written = fp->Write(&len, 4);
+			if (written != 4)return false;
+        
+			written = fp->Write(fastnameValue->c_str(), len);
+			if (written != len)return false;
+	    }
+        break;
+	case TYPE_AABBOX3:
+		{
+			written = fp->Write(aabbox3, sizeof(AABBox3));
+			if (written != sizeof(AABBox3))return false;
+		}
+		break;
             
 	}
 	return true;
@@ -675,6 +797,43 @@ bool VariantType::Read(File * fp)
             if (read != sizeof(Matrix4))return false;
 		}
             break;
+		case TYPE_POINTER:
+			{
+				DVASSERT(0 && "Can't read pointer");
+			}
+			break;
+        case TYPE_COLOR:
+			{
+				ReleasePointer();
+
+				colorValue = new Color;
+				read = fp->Read(colorValue->color, sizeof(float32) * 4);
+				if (read != sizeof(sizeof(float32) * 4))return false;
+			}
+            break;
+
+        case TYPE_FASTNAME:
+			{
+				int32 len = 0;
+				read = fp->Read(&len, 4);
+				if (read != 4)return false;
+			
+				char *buf = new char[len + 1];
+				read = fp->Read(buf, len);
+				buf[len] = 0;
+				fastnameValue = new FastName(buf);
+				delete [] buf;
+				if (read != len)return false;
+			}
+            break;
+
+		case TYPE_AABBOX3:
+			{
+				aabbox3 = new AABBox3;
+				read = fp->Read(aabbox3, sizeof(AABBox3));
+				if (read != sizeof(AABBox3))return false;
+			}
+			break;
 
 		default:
 		{
@@ -753,6 +912,21 @@ void VariantType::ReleasePointer()
                 delete wideStringValue;
             }
                 break;
+            case TYPE_COLOR:
+            {
+                delete colorValue;
+            }
+                break;
+            case TYPE_FASTNAME:
+            {
+                delete fastnameValue;
+            }
+			break;
+			case TYPE_AABBOX3:
+				{
+					delete aabbox3;
+				}
+				break;
         }
         
         // It is enough to set only pointerValue to NULL - all other pointers are in union, so
@@ -879,6 +1053,26 @@ bool VariantType::operator==(const VariantType& other) const
                 isEqual = ( AsMatrix4() == other.AsMatrix4());
             }
                 break;
+			case  TYPE_POINTER:
+				{
+					isEqual = (AsPointer() == other.AsPointer());
+				}
+				break;
+			case  TYPE_COLOR:
+            {
+                isEqual = (AsColor() == other.AsColor());
+            }
+				break;
+			case  TYPE_FASTNAME:
+            {
+                isEqual = (AsFastName() == other.AsFastName());
+            }
+				break;
+			case  TYPE_AABBOX3:
+				{
+					isEqual = (AsAABBox3() == other.AsAABBox3());
+				}
+				break;
                 
         }
     }
@@ -890,10 +1084,18 @@ bool VariantType::operator!=(const VariantType& other) const
     return (!(*this == other));
 }
 
+VariantType& VariantType::operator=(const VariantType& other)
+{
+	SetVariant(other);
+	return *this;
+}
+
 VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 {
 	VariantType v;
 	uint8 type = TYPE_NONE;
+
+	DVASSERT(NULL != meta);
 
 	for(int i = 0; i < TYPES_COUNT; ++i)
 	{
@@ -928,8 +1130,9 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 		break;
 	//case TYPE_BYTE_ARRAY:
 	//	break;
-	//case TYPE_KEYED_ARCHIVE:
-	//	break;
+	case TYPE_KEYED_ARCHIVE:
+		v.SetKeyedArchive(*((DAVA::KeyedArchive **) src));
+		break;
 	case TYPE_INT64:
 		v.SetInt64(*((DAVA::int64 *) src));
 		break;
@@ -954,6 +1157,18 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	case TYPE_MATRIX4:
 		v.SetMatrix4(*((DAVA::Matrix4 *) src));
 		break;
+	case TYPE_POINTER:
+		v.SetPointer(*((const void **) src));
+		break;
+    case TYPE_COLOR:
+        v.SetColor(*((DAVA::Color *) src));
+        break;
+    case TYPE_FASTNAME:
+        v.SetFastName(*((DAVA::FastName *) src));
+        break;
+	case TYPE_AABBOX3:
+		v.SetAABBox3(*((DAVA::AABBox3 *) src));
+		break;
 	default:
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
 	}
@@ -965,6 +1180,8 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 {
 	MetaInfo *valMeta = NULL;
 
+	DVASSERT(NULL != meta);
+
 	for(int i = 0; i < TYPES_COUNT; ++i)
 	{
 		if(variantNamesMap[i].variantType == val.type)
@@ -974,7 +1191,8 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 		}
 	}
 
-	DVASSERT(meta == valMeta);
+	DVASSERT(NULL != valMeta)
+	DVASSERT(meta == valMeta && "Destination type differ from source type");
 
 	switch(val.type)
 	{
@@ -996,10 +1214,24 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	case TYPE_UINT32:
 		*((uint32 *) dst) = val.AsUInt32();
 		break;
-		//case TYPE_BYTE_ARRAY:
-		//	break;
-		//case TYPE_KEYED_ARCHIVE:
-		//	break;
+	//case TYPE_BYTE_ARRAY:
+	//	break;
+	case TYPE_KEYED_ARCHIVE:
+		{
+			DAVA::KeyedArchive *dstArchive = *((DAVA::KeyedArchive **) dst);
+			if(NULL != dstArchive)
+			{
+				dstArchive->DeleteAllKeys();
+				Map<String, VariantType*> values = val.AsKeyedArchive()->GetArchieveData();
+				Map<String, VariantType*>::iterator i;
+
+				for(i = values.begin(); i != values.end(); ++i)
+				{
+					dstArchive->SetVariant(i->first, i->second);
+				}
+			}
+		}
+		break;
 	case TYPE_INT64:
 		*((DAVA::int64 *) dst) = val.AsInt64();
 		break;
@@ -1024,10 +1256,21 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 	case TYPE_MATRIX4:
 		*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
 		break;
+	case TYPE_POINTER:
+		*((const void **) dst) = val.AsPointer();
+		break;
+    case TYPE_COLOR:
+        *((DAVA::Color *) dst) = val.AsColor();
+        break;
+    case TYPE_FASTNAME:
+        *((DAVA::FastName *) dst) = val.AsFastName();
+        break;
+	case TYPE_AABBOX3:
+		*((DAVA::AABBox3 *) dst) = val.AsAABBox3();
+		break;
 	default:
 		DVASSERT(0 && "Don't know how to save data from such VariantType");
 	}
 }
-
 	
 };

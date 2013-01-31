@@ -72,6 +72,8 @@ public:
     virtual void OnToolSelected(LandscapeTool *newTool);
     virtual void OnShowGrid(bool show);
 
+	virtual void ClearSceneResources();
+
 protected:
 
     virtual void SaveTexture();

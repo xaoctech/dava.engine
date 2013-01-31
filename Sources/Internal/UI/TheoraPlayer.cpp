@@ -398,7 +398,7 @@ uint32 TheoraPlayer::binCeil(uint32 value)
 void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
-    YamlNode * fileNode = node->AsMap()["file"];
+    YamlNode * fileNode = node->Get("file");
     
 	if(fileNode)
         OpenFile(fileNode->AsString());

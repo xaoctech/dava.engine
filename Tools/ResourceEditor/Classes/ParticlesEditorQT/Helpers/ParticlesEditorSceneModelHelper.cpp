@@ -1,4 +1,4 @@
-	//
+//
 //  ParticlesEditorSceneModelHelper.cpp
 //  ResourceEditorQt
 //
@@ -11,6 +11,10 @@
 
 #include "Commands/SceneGraphCommands.h"
 #include "Commands/ParticleEditorCommands.h"
+
+#include "Entity/Component.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
 
@@ -100,30 +104,31 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
     // move the raw Emitter node to it.
-    ParticleEmitterNode* emitterNode = dynamic_cast<ParticleEmitterNode*>(rawNode);
-    if (!emitterNode)
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(rawNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (!emitterComponent)
     {
         return rawNode;
     }
 
-    SceneNode* curParentNode = emitterNode->GetParent();
-    ParticleEffectNode* effectParentNode = dynamic_cast<ParticleEffectNode*>(curParentNode);
-    
+	//ParticleEmitterNode* emitterNode = static_cast<ParticleEmitterNode*>(rawNode);
+	//emitterNode->SetEmitter(emitterComponent->GetParticleEmitter());
+    SceneNode* curParentNode = rawNode->GetParent();
+    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(curParentNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     // If the Emitter Node has parent, but its parent is not ParticleEffectNode, we need to
     // "adopt" this node by creating ParticleEffect node and attaching.
-    if (curParentNode && (effectParentNode == NULL))
+    if (curParentNode && (effectComponent == NULL))
     {
-        ParticleEffectNode* newParentNodeParticleEffect = new ParticleEffectNode();
-        curParentNode->AddNode(newParentNodeParticleEffect);
+		SceneNode* newParentNodeParticleEffect = CreateParticleEffectNode();
+		curParentNode->AddNode(newParentNodeParticleEffect);
 
         // Add the emitter node to the new Effect (this will also remove it from the scene).
-        newParentNodeParticleEffect->AddNode(emitterNode);
+        newParentNodeParticleEffect->AddNode(rawNode);
 
         // Register the Particle Editor structure for the new node.
         EffectParticleEditorNode* effectEditorNode =
-			ParticlesEditorController::Instance()->RegisterParticleEffectNode(newParentNodeParticleEffect);
+        ParticlesEditorController::Instance()->RegisterParticleEffectNode(newParentNodeParticleEffect);
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(newParentNodeParticleEffect,
-            emitterNode, QString::fromStdString(emitterNode->GetName()));
+            rawNode, QString::fromStdString(rawNode->GetName()));
         effectEditorNode->AddChildNode(emitterEditorNode);
 
         return newParentNodeParticleEffect;
@@ -133,20 +138,30 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     return rawNode;
 }
 
+SceneNode* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
+{
+	SceneNode * newParentNodeParticleEffect = new SceneNode();
+	newParentNodeParticleEffect->SetName("Particle effect");
+	ParticleEffectComponent * newEffectComponent = new ParticleEffectComponent();
+	newParentNodeParticleEffect->AddComponent(newEffectComponent);
+
+	return newParentNodeParticleEffect;
+}
+
 bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node)
 {
-    ParticleEffectNode* effectNode = dynamic_cast<ParticleEffectNode*>(node);
-    if (effectNode == NULL)
+    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effectComponent == NULL)
     {
         // Not ours - process as-is.
         return false;
     }
 
-    EffectParticleEditorNode* effectEditorNode = ParticlesEditorController::Instance()->GetRootForParticleEffectNode(effectNode);
+    EffectParticleEditorNode* effectEditorNode = ParticlesEditorController::Instance()->GetRootForParticleEffectNode(node);
     if (!effectEditorNode)
     {
         // Possible while loading projects - register the node in this case.
-        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(effectNode);
+        effectEditorNode = ParticlesEditorController::Instance()->RegisterParticleEffectNode(node);
     }
     
     if (graphItem->GetExtraUserData() == NULL)
@@ -194,7 +209,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
 	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
     if (effectEditorNode)
     {
-		ParticleEffectNode* effectRootNode = node->GetRootNode();
+		SceneNode* effectRootNode = node->GetRootNode();
         SynchronizeEffectParticleEditorNode(effectEditorNode, effectRootNode);
     }
 
@@ -211,8 +226,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
     }
 }
 
-void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node,
-																	 ParticleEffectNode* effectRootNode)
+void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode)
 {
     if (!node || !effectRootNode)
     {
@@ -229,14 +243,15 @@ void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(Effect
         for (int32 i = 0; i < emittersCountInEffect; i ++)
         {
             // Create the new Emitter and add it to the tree.
-            ParticleEmitterNode* emitterSceneNode = dynamic_cast<ParticleEmitterNode*>(effectRootNode->GetChild(i));
-            if (!emitterSceneNode)
-            {
-                continue;
-            }
+			ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(effectRootNode->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+			if (!emitterComponent)
+			{
+			    continue;
+			}
+
  
-            EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, emitterSceneNode,
-                                                                                         QString::fromStdString(emitterSceneNode->GetName()));
+            EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, effectRootNode->GetChild(i),
+                                                                                         QString::fromStdString(effectRootNode->GetChild(i)->GetName()));
             node->AddChildNode(emitterEditorNode);
         }
     }
@@ -249,13 +264,13 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         return;
     }
 
-    ParticleEmitterNode* emitterNode = node->GetEmitterNode();
-    if (!emitterNode)
+    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
+    if (!emitterComponent)
     {
         return;
     }
     
-    ParticleEmitter* emitter = emitterNode->GetEmitter();
+    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -283,13 +298,13 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         return;
     }
     
-    ParticleEmitterNode* emitterNode = node->GetEmitterNode();
-    if (!emitterNode)
+    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
+    if (!emitterComponent)
     {
         return;
     }
     
-    ParticleEmitter* emitter = emitterNode->GetEmitter();
+    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -320,7 +335,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
 
 bool ParticlesEditorSceneModelHelper::NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const
 {
-    ExtraUserData* extraUserData = GetExtraUserData(index);
+    ExtraUserData* extraUserData = GetExtraUserDataByModelIndex(index);
     if (!extraUserData)
     {
         return true;
@@ -345,7 +360,7 @@ bool ParticlesEditorSceneModelHelper::NeedDisplaySceneEditorPopupMenuItems(const
     return true;
 }
 
-ExtraUserData* ParticlesEditorSceneModelHelper::GetExtraUserData(const QModelIndex& modelIndex) const
+ExtraUserData* ParticlesEditorSceneModelHelper::GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const
 {
     if (!modelIndex.isValid())
     {
@@ -373,7 +388,7 @@ ExtraUserData* ParticlesEditorSceneModelHelper::GetExtraUserData(GraphItem* item
 
 void ParticlesEditorSceneModelHelper::AddPopupMenuItems(QMenu& menu, const QModelIndex &index) const
 {
-    ExtraUserData* extraUserData = GetExtraUserData(index);
+    ExtraUserData* extraUserData = GetExtraUserDataByModelIndex(index);
     if (!extraUserData)
     {
         return;

@@ -7,15 +7,19 @@
 //
 
 #include "BaseParticleEditorNode.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "FileSystem/KeyedArchive.h"
 using namespace DAVA;
 
-BaseParticleEditorNode::BaseParticleEditorNode(ParticleEffectNode* rootNode) :
+BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
     ExtraUserData()
 {
+	Component *effectComponent = rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
+	DVASSERT(effectComponent);
+
     this->isMarkedForSelection = false;
     this->rootNode = rootNode;
-	SetParentNode(NULL);
+    SetParentNode(NULL);
 
 	extraData = new KeyedArchive();
 }
@@ -49,6 +53,13 @@ void BaseParticleEditorNode::AddChildNode(BaseParticleEditorNode* childNode)
     
 	childNode->SetParentNode(this);
     this->childNodes.push_back(childNode);
+}
+
+ParticleEffectComponent* BaseParticleEditorNode::GetParticleEffectComponent() const
+{
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+	return effectComponent;
 }
 
 void BaseParticleEditorNode::AddChildNodeAbove(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove)

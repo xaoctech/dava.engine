@@ -36,14 +36,28 @@
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
 ParticleEmitter::ParticleEmitter()
 {
+	Cleanup(false);
+}
+
+ParticleEmitter::~ParticleEmitter()
+{
+	CleanupLayers();
+}
+
+void ParticleEmitter::Cleanup(bool needCleanupLayers)
+{
 	type = EMITTER_POINT;
-    emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionVector.Set(NULL);
+	emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
+	emissionAngle.Set(NULL);
 	emissionAngle = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(0.0f));
+	emissionRange.Set(NULL);
 	emissionRange = RefPtr<PropertyLineValue<float32> >(new PropertyLineValue<float32>(360.0f));
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
@@ -60,46 +74,59 @@ ParticleEmitter::ParticleEmitter()
 	isAutorestart = true;
 	particlesFollow = false;
     is3D = false;
+
+	// Also cleanup layers, if needed.
+	if (needCleanupLayers)
+	{
+		CleanupLayers();
+	}
 }
 
-ParticleEmitter::~ParticleEmitter()
+void ParticleEmitter::CleanupLayers()
 {
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
 		SafeRelease(*it);
-	}	
+	}
+
 	layers.clear();
 }
-	
-ParticleEmitter * ParticleEmitter::Clone()
+
+//ParticleEmitter * ParticleEmitter::Clone()
+//{
+//	ParticleEmitter * emitter = new ParticleEmitter();
+//	for (int32 k = 0; k < (int32)layers.size(); ++k)
+//	{
+//		ParticleLayer * newLayer = layers[k]->Clone();
+//		newLayer->SetEmitter(emitter);
+//		emitter->layers.push_back(newLayer);
+//	}
+//    emitter->emissionVector = emissionVector;
+//	if (emissionAngle)
+//		emitter->emissionAngle = emissionAngle->Clone();
+//	if (emissionRange)
+//		emitter->emissionRange = emissionRange->Clone();
+//	if(colorOverLife)
+//		emitter->colorOverLife = colorOverLife->Clone();
+//	if (radius)
+//		emitter->radius = radius->Clone();
+//    if (size)
+//        emitter->size = size->Clone();
+//	
+//	emitter->type = type;
+//	emitter->lifeTime = lifeTime;
+//	emitter->emitPointsCount = emitPointsCount;
+//	emitter->isPaused = isPaused;
+//	emitter->isAutorestart = isAutorestart;
+//	emitter->particlesFollow = particlesFollow;
+//	return emitter;
+//}
+
+RenderObject * ParticleEmitter::Clone()
 {
-	ParticleEmitter * emitter = new ParticleEmitter();
-	for (int32 k = 0; k < (int32)layers.size(); ++k)
-	{
-		ParticleLayer * newLayer = layers[k]->Clone();
-		newLayer->SetEmitter(emitter);
-		emitter->layers.push_back(newLayer);
-	}
-    emitter->emissionVector = emissionVector;
-	if (emissionAngle)
-		emitter->emissionAngle = emissionAngle->Clone();
-	if (emissionRange)
-		emitter->emissionRange = emissionRange->Clone();
-	if(colorOverLife)
-		emitter->colorOverLife = colorOverLife->Clone();
-	if (radius)
-		emitter->radius = radius->Clone();
-    if (size)
-        emitter->size = size->Clone();
-	
-	emitter->type = type;
-	emitter->lifeTime = lifeTime;
-	emitter->emitPointsCount = emitPointsCount;
-	emitter->isPaused = isPaused;
-	emitter->isAutorestart = isAutorestart;
-	emitter->particlesFollow = particlesFollow;
-	return emitter;
+	//should not clone as RenderObject
+	return 0;
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
@@ -109,8 +136,8 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer)
 		layers.push_back(layer);
 		layer->Retain();
 		layer->SetEmitter(this);
-		UpdateLayerNameIfEmpty(layer, layers.size() - 1);
-	}
+		AddRenderBatch(layer->GetRenderBatch());
+	}	
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
@@ -121,14 +148,14 @@ void ParticleEmitter::AddLayer(ParticleLayer * layer, ParticleLayer * layerToMov
 		MoveLayer(layer, layerToMoveAbove);
 	}
 }
-
+	
 void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 {
 	if (!layer)
 	{
 		return;
 	}
-	
+
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
 	if (layerIter != this->layers.end())
 	{
@@ -137,7 +164,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 		SafeRelease(layer);
 	}
 }
-
+	
 void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
 {
 	Vector<DAVA::ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
@@ -148,7 +175,7 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 	{
 		return;
 	}
-
+		
 	layers.erase(layerIter);
 
 	// Look for the position again - an iterator might be changed.
@@ -220,10 +247,12 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	}
 }
 
-void ParticleEmitter::Draw()
+void ParticleEmitter::RenderUpdate(float32 timeElapsed)
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
+
+	Camera * camera = Scene::GetActiveScene()->GetRenderSystem()->GetCamera();
 
 	if(is3D)
 	{
@@ -231,7 +260,7 @@ void ParticleEmitter::Draw()
 		for(it = layers.begin(); it != layers.end(); ++it)
 		{
 			if(!(*it)->isDisabled)
-				(*it)->Draw();
+				(*it)->Draw(camera);
 		}
 	}
 	else
@@ -246,7 +275,7 @@ void ParticleEmitter::Draw()
 		for(it = layers.begin(); it != layers.end(); ++it)
 		{
 			if(!(*it)->isDisabled)
-				(*it)->Draw();
+				(*it)->Draw(camera);
 		}
 
 		if(particlesFollow)

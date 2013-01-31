@@ -7,8 +7,7 @@
 #ifndef __DAVAENGINE_FAST_NAME__
 #define __DAVAENGINE_FAST_NAME__
 
-#include "HashMap.h"
-#include "Debug/DVAssert.h"
+#include "Base/HashMap.h"
 #include "Base/StaticSingleton.h"
 
 namespace DAVA
@@ -47,6 +46,7 @@ public:
 	FastName(const FastName &_name);
 	~FastName();
 
+	const char* c_str() const;
 	const char* operator*() const;
 	FastName& operator=(const FastName &_name);
 	bool operator==(const FastName &_name) const;

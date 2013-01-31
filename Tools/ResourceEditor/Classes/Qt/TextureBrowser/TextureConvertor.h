@@ -19,13 +19,13 @@ public:
 	TextureConvertor();
 	~TextureConvertor();
 
+	static QImage fromDavaImage(DAVA::Image *image);
+
 	void loadOriginal(const DAVA::TextureDescriptor *descriptor);
 	void getPVR(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 	void getDXT(const DAVA::TextureDescriptor *descriptor, bool forceConver = false);
 
 	bool checkAndCompressAll(bool forceConvertAll);
-	
-	static QImage fromDavaImage(DAVA::Image *image);
 
 signals:
 	void readyOriginal(const DAVA::TextureDescriptor *descriptor, const QImage &image);

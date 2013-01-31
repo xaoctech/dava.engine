@@ -70,7 +70,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
         Vector3 nodePos = pos + 10 * direction;
         nodePos.z = 0;
         
-        LandscapeNode * ls = scene->GetLandScape(scene);
+        LandscapeNode * ls = scene->GetLandscape(scene);
         if(ls)
         {
             Vector3 result;
@@ -217,7 +217,7 @@ void SceneDataManager::AddReferenceScene(const String &scenePathname)
 		Vector3 nodePos = pos + 10 * direction;
 		nodePos.z = 0;
 		
-		LandscapeNode * ls = scene->GetLandScape(scene);
+		LandscapeNode * ls = scene->GetLandscape(scene);
 		if(ls)
 		{
 			Vector3 result;
@@ -657,8 +657,9 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
 		//Create texture from descriptor pathname and real image file
-		workingTexture = Texture::CreateFromFile(descriptor->pathname);
-		RestoreTexture(descriptor->pathname, workingTexture);
+        String pathname = descriptor->pathname.GetSourcePath();
+		workingTexture = Texture::CreateFromFile(pathname);
+		RestoreTexture(pathname, workingTexture);
 
 		DVASSERT_MSG(1 < workingTexture->GetRetainCount(), "Can be more than 1");
 		workingTexture->Release();

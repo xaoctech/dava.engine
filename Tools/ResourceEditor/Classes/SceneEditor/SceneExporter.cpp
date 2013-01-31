@@ -156,15 +156,16 @@ void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
         }
 		else
 		{
-			LightNode * light = dynamic_cast<LightNode*>(node);
-			if(light)
-			{
-				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-				if(!isDynamic)
-				{
-					node->GetParent()->RemoveNode(node);
-				}
-			}
+            // LIGHT
+//			LightNode * light = dynamic_cast<LightNode*>(node);
+//			if(light)
+//			{
+//				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+//				if(!isDynamic)
+//				{
+//					node->GetParent()->RemoveNode(node);
+//				}
+//			}
 		}
     }
 }

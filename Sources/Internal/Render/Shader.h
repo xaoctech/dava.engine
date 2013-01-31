@@ -63,7 +63,29 @@ public:
 		UNIFORM_PROJECTION_MATRIX,
         UNIFORM_NORMAL_MATRIX, 
         UNIFORM_COLOR,
+        UNIFORM_GLOBAL_TIME,
         UNIFORM_COUNT,
+    };
+    
+    enum eUniformType
+    {
+        UT_FLOAT = GL_FLOAT,
+        UT_FLOAT_VEC2 = GL_FLOAT_VEC2,
+        UT_FLOAT_VEC3 = GL_FLOAT_VEC3,
+        UT_FLOAT_VEC4 = GL_FLOAT_VEC4,
+        UT_INT = GL_INT,
+        UT_INT_VEC2 = GL_INT_VEC2,
+        UT_INT_VEC3 = GL_INT_VEC3,
+        UT_INT_VEC4 = GL_INT_VEC4,
+        UT_BOOL = GL_BOOL,
+        UT_BOOL_VEC2 = GL_BOOL_VEC2,
+        UT_BOOL_VEC3 = GL_BOOL_VEC3,
+        UT_BOOL_VEC4 = GL_BOOL_VEC4,
+        UT_FLOAT_MAT2 = GL_FLOAT_MAT2,
+        UT_FLOAT_MAT3 = GL_FLOAT_MAT3,
+        UT_FLOAT_MAT4 = GL_FLOAT_MAT4,
+        UT_SAMPLER_2D = GL_SAMPLER_2D,
+        UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
     };
 
     Shader();
@@ -72,28 +94,49 @@ public:
     Shader * Clone();
     
     // virtual void SetActiveShader(const String & string);
-    virtual void SetDefines(const String & defines);
+    void SetDefines(const String & defines);
+    void SetVertexShaderDefines(const String & defines);
+    void SetFragmentShaderDefines(const String & defines);
+    
     // comma ';' sepated define list
-    virtual void SetDefineList(const String & enableDefinesList);
+    void SetDefineList(const String & enableDefinesList);
     
-    virtual bool LoadFromYaml(const String & pathname);
-    virtual bool Recompile();
-    virtual Shader * RecompileNewInstance(const String & combination);
+    bool LoadFromYaml(const String & pathname);
+    bool Load(const String & vertexShaderPath, const String & fragmentShaderPath);
     
-    virtual void Bind();
+    bool Recompile();
+    Shader * RecompileNewInstance(const String & combination);
+    
+    void Bind();
     static void Unbind();
-    virtual int32 FindUniformLocationByName(const FastName & name);
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
     int32 GetAttributeCount();
     
+    int32 GetUniformCount();
+    eUniformType GetUniformType(int32 index);
+    static int32 GetUniformTypeSize(eUniformType type);
+    static const char * GetUniformTypeSLName(eUniformType type);
+    const char * GetUniformName(int32 index);
+    int32 GetUniformArraySize(int32 index);
+
+    int32 GetUniformLocation(int32 index);
+    int32 FindUniformLocationByName(const FastName & name);
+    
+    
+    
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
+    void SetUniformValue(int32 uniformLocation, int32 count, int32 * value);
+    void SetUniformValue(int32 uniformLocation, int32 count, float32 * value);
     void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);
 
+    
+    void Dump();
+    
     /**
         This function return vertex format required by shader
      */
@@ -122,13 +165,26 @@ private:
     GLint activeUniforms;
     
     
-    eUniform *uniformIDs;
-    FastName *uniformNames;
-    GLint *uniformLocations;
+//    eUniform *uniformIDs;
+//    String * uniformNames;
+//    GLint * uniformLocations;
+//    GLint * uniformSizes;
+//    eUniformType * uniformTypes;
+    
+    
+    struct Uniform
+    {
+        eUniform        id;
+        FastName        name;
+        GLint           location;
+        GLint           size;
+        eUniformType    type;
+    };
+    Uniform * uniforms;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     
-    GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources);    
+    GLint CompileShader(GLuint *shader, GLenum type, GLint count, const GLchar * sources, const String & defines);
     GLint LinkProgram(GLuint prog);
     void DeleteShaders();
 
@@ -136,7 +192,8 @@ private:
     int32 GetAttributeIndexByName(const FastName &name);
     
     static GLuint activeProgram;
-    String defines;
+    String vertexShaderDefines;
+    String fragmentShaderDefines;
     
     Data * vertexShaderData;
     Data * fragmentShaderData;

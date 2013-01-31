@@ -40,6 +40,7 @@ protected:
 //    void SaveChannels();
 //    void LoadChannels();
 
+	LandscapeNode* GetLandscape() const;
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__

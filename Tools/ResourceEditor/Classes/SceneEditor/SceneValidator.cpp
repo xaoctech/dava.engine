@@ -184,7 +184,8 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
             SceneNode * parent = sceneNode->GetParent();
             if (parent)
             {
-                emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+                // TODO: Uncomment this!!! Or check that this code is not required anymore.
+                // emptyNodesForDeletion.insert(SafeRetain(sceneNode));
             }
         }
     }

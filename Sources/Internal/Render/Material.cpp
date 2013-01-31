@@ -38,7 +38,7 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Render/TextureDescriptor.h"
 
 namespace DAVA 
@@ -49,12 +49,14 @@ InstanceMaterialState::InstanceMaterialState()
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
         lightNodes[k] = 0;
+    lightmapTexture = 0;
 }
 
 InstanceMaterialState::~InstanceMaterialState()
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
         SafeRelease(lightNodes[k]);
+    SafeRelease(lightmapTexture);
 }
 
 void InstanceMaterialState::SetLight(int32 lightIndex, LightNode * lightNode)
@@ -68,8 +70,21 @@ LightNode * InstanceMaterialState::GetLight(int32 lightIndex)
     return lightNodes[lightIndex]; 
 }
 
+void InstanceMaterialState::SetLightmap(Texture * _lightMapTexture, const String & _lightmapName)
+{
+    lightmapTexture = SafeRetain(_lightMapTexture);
+    lightmapName = _lightmapName;
+}
+
+void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Vector2 _uvScale)
+{
+    uvOffset = _uvOffset;
+    uvScale = _uvScale;
+}
+
     
 REGISTER_CLASS(Material);
+    
     
 UberShader * Material::uberShader = 0;
     
@@ -118,14 +133,14 @@ Material::Material()
     ,   isOpaque(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
-	,	setupLightmapSize(1)
+	,	setupLightmapSize(32)
     ,   isFogEnabled(false)
     ,   fogDensity(0.006f)
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
 	,	isAlphablend(false)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
-	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
+	,	renderStateBlock()
     ,   isWireframe(false)
 {
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
@@ -143,7 +158,7 @@ Material::Material()
         
         
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
-        uberShader->CompileShaderCombination("MATERIAL_DECAL");
+        //uberShader->CompileShaderCombination("MATERIAL_DECAL");
         //uberShader->CompileShaderCombination("MATERIAL_DETAIL");
         //
         //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
@@ -336,17 +351,39 @@ void Material::RebuildShader()
         uniformFogColor = shader->FindUniformLocationByName("fogColor");
     }
     
-    RetrieveTextureSlotNames();
+    //RetrieveTextureSlotNames();
 }
     
 void Material::RetrieveTextureSlotNames()
 {
     // 
     //shader->F
-    
-    
+    textureSlotCount = 0;
+    for (int32  k = 0; k < shader->GetUniformCount(); ++k)
+    {
+        if (shader->GetUniformType(k) == Shader::UT_SAMPLER_2D)
+        {
+            textureSlotNames[textureSlotCount] = shader->GetUniformName(k);
+            textureSlotCount++;
+        }
+    }
 }
     
+uint32 Material::GetTextureSlotCount() const
+{
+    return textureSlotCount;
+}
+    
+const String & Material::GetTextureSlotName(uint32 index) const
+{
+    return textureSlotNames[index];
+}
+    
+uint32 Material::GetTextureSlotIndexByName(const String & string) const
+{
+    return -1;
+}
+
 void Material::SetType(eType _type)
 {
     type = _type;
@@ -536,14 +573,30 @@ const Color & Material::GetFogColor() const
     return fogColor;
 }
 
-void Material::PrepareRenderState()
+void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 {
+    if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
+	{
+        if (!instanceMaterialState->lightmapTexture)
+        {
+            SetSetupLightmap(true);
+        }else
+        {
+            SetSetupLightmap(false);
+            renderStateBlock.SetTexture(instanceMaterialState->lightmapTexture, 1);
+        }
+    }else if (MATERIAL_UNLIT_TEXTURE_DECAL == type)
+    {
+        renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
+    }
+    
 	renderStateBlock.shader = shader;
 
 	if (textures[Material::TEXTURE_DIFFUSE])
 	{
 		renderStateBlock.SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
 	}
+
 
 	if(MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == type || MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == type || MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == type)
 	{
@@ -554,10 +607,10 @@ void Material::PrepareRenderState()
 	}
 	else
 	{
-		if (textures[Material::TEXTURE_DECAL])
-		{
-			renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
-		}
+//		if (textures[Material::TEXTURE_DECAL])
+//		{
+//			renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
+//		}
 	}
 
 	if (isOpaque || isTwoSided)
@@ -576,7 +629,7 @@ void Material::PrepareRenderState()
 		//Dizz: temporary solution
 		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
 
-		renderStateBlock.SetBlendMode(blendSrc, blendDst);
+		renderStateBlock.SetBlendMode((eBlendMode)blendSrc, (eBlendMode)blendDst);
 	}
 	else
 	{
@@ -599,17 +652,14 @@ void Material::PrepareRenderState()
 	RenderManager::Instance()->AttachRenderData();
 
 
-	if (textures[Material::TEXTURE_DECAL])
-	{
-		if(uniformTexture0 != -1)
-		{
-			shader->SetUniformValue(uniformTexture0, 0);
-		}
-		if(uniformTexture1 != -1)
-		{
-			shader->SetUniformValue(uniformTexture1, 1);
-		}
-	}
+    if(uniformTexture0 != -1)
+    {
+        shader->SetUniformValue(uniformTexture0, 0);
+    }
+    if(uniformTexture1 != -1)
+    {
+        shader->SetUniformValue(uniformTexture1, 1);
+    }
 
 	if(isSetupLightmap)
 	{
@@ -619,13 +669,14 @@ void Material::PrepareRenderState()
 			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
 		}
 	}
+    
 
 	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
 		if (uniformUvOffset != -1)
-			shader->SetUniformValue(uniformUvOffset, uvOffset);
+			shader->SetUniformValue(uniformUvOffset, instanceMaterialState->uvOffset);
 		if (uniformUvScale != -1)
-			shader->SetUniformValue(uniformUvScale, uvScale);
+			shader->SetUniformValue(uniformUvScale, instanceMaterialState->uvScale);
 	}
 
 	if (isFogEnabled)
@@ -635,6 +686,48 @@ void Material::PrepareRenderState()
 		if (uniformFogColor != -1)
 			shader->SetUniformValue(uniformFogColor, fogColor);
 	}
+    
+    if (instanceMaterialState)
+    {
+        Camera * camera = scene->GetCurrentCamera();
+        LightNode * lightNode0 = instanceMaterialState->GetLight(0);
+        if (lightNode0 && camera)
+        {
+            if (uniformLightPosition0 != -1)
+            {
+                const Matrix4 & matrix = camera->GetMatrix();
+                Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+                
+                shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
+            }
+            if (uniformMaterialLightAmbientColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
+            }
+            if (uniformMaterialLightDiffuseColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+            }
+            if (uniformMaterialLightSpecularColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+            }
+            if (uniformMaterialSpecularShininess != -1)
+            {
+                shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+            }
+            
+            if (uniformLightIntensity0 != -1)
+            {
+                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+            }
+            if (uniformLightAttenuationQ != -1)
+            {
+                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
+            }
+        }
+    }
+
 }
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
@@ -675,48 +768,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		oldDst = RenderManager::Instance()->GetDestBlend();
 	}
 
-	PrepareRenderState();
-
-    if (instanceMaterialState)
-    {
-        Camera * camera = scene->GetCurrentCamera();
-        LightNode * lightNode0 = instanceMaterialState->GetLight(0);
-        if (lightNode0 && camera)
-        {
-            if (uniformLightPosition0 != -1)
-            {
-                const Matrix4 & matrix = camera->GetMatrix();
-                Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
-                
-                shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace); 
-            }
-            if (uniformMaterialLightAmbientColor != -1)
-            {
-                shader->SetUniformValue(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
-            }
-            if (uniformMaterialLightDiffuseColor != -1)
-            {
-                shader->SetUniformValue(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
-            }
-            if (uniformMaterialLightSpecularColor != -1)
-            {
-                shader->SetUniformValue(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
-            }
-            if (uniformMaterialSpecularShininess != -1)
-            {
-                shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
-            }
-            
-            if (uniformLightIntensity0 != -1)
-            {
-                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
-            }
-            if (uniformLightAttenuationQ != -1)
-            {
-                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
-            }
-        }
-    }
+	PrepareRenderState(instanceMaterialState);
 
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)

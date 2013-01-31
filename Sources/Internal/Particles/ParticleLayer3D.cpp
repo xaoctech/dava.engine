@@ -3,7 +3,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
@@ -41,6 +41,7 @@ void ParticleLayer3D::Draw(Camera * camera)
             rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
             break;
     }
+
     Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
     
 	Vector3 _up(mv._01, mv._11, mv._21);
@@ -138,16 +139,16 @@ void ParticleLayer3D::Draw(Camera * camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
+	renderBatch->SetTotalCount(totalCount);
 	if(totalCount > 0)
 	{			
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
-	
-		RenderManager::Instance()->SetRenderData(renderData);
- 		material->PrepareRenderState();
 
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+		
+		renderBatch->SetMaterial(material);
+		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 

@@ -82,7 +82,7 @@ YamlNode::YamlNode(eType _type)
 
 YamlNode::~YamlNode()
 {
-	for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
+	for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
 	{
 		YamlNode * object = t->second;
 		SafeRelease(object);
@@ -115,7 +115,7 @@ void YamlNode::Print(int32 identation)
 	}else if (type == TYPE_MAP)
 	{
 		printf("{");
-		for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
+		for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t)
 		{
 			printf("key(%s, %d): ", t->first.c_str(), t->second->mapIndex);
 			t->second->Print(identation + 1);
@@ -174,7 +174,7 @@ void YamlNode::PrintToFile(DAVA::File* file, uint32 identationDepth)
 		delete[] spacesBuffer;
 
         file->WriteNonTerminatedString("\r\n" + spaces );
-        for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t )
+        for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != objectMap.end(); ++t )
         {
 
             String strToFile( t->first + ": ");
@@ -332,9 +332,9 @@ VariantType YamlNode::AsVariantType()
 {
     VariantType retValue;
     
-    Map<String, YamlNode*> & mapFromNode = AsMap();
+    MultiMap<String, YamlNode*> & mapFromNode = AsMap();
         
-    for(Map<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
+    for(MultiMap<String, YamlNode*>::iterator it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
         String innerTypeName = it->first;
         
@@ -471,7 +471,7 @@ Vector<YamlNode*> & YamlNode::AsVector()
 	return objectArray;
 }
 
-Map<String, YamlNode*> & YamlNode::AsMap()
+MultiMap<String, YamlNode*> & YamlNode::AsMap()
 {
 	return objectMap;
 }
@@ -502,8 +502,8 @@ const String &	YamlNode::GetItemKeyName(int32 index)
 {
 	if (type == TYPE_MAP)
 	{
-		Map<String, YamlNode*>::const_iterator end = objectMap.end();
-		for (Map<String, YamlNode*>::iterator t = objectMap.begin(); t != end; ++t)
+		MultiMap<String, YamlNode*>::const_iterator end = objectMap.end();
+		for (MultiMap<String, YamlNode*>::iterator t = objectMap.begin(); t != end; ++t)
 		{	
 			YamlNode * n = t->second;
 			if (n->mapIndex == index)return t->first;
@@ -516,7 +516,7 @@ YamlNode * YamlNode::Get(const String & name)
 {
 	if (type == TYPE_MAP)
 	{
-		Map<String, YamlNode*>::iterator t;
+		MultiMap<String, YamlNode*>::iterator t;
 		if ((t = objectMap.find(name)) != objectMap.end())
 		{
 			return t->second;
@@ -532,7 +532,7 @@ void YamlNode::Set(const String& name, bool value)
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         String strValue = (value == true) ? "true" : "false";
         stringNode->Set(name, strValue);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*>(name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -550,7 +550,7 @@ void YamlNode::Set(const String& name, int32 value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*>(name,stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -568,7 +568,7 @@ void YamlNode::Set(const String& name, float32 value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -591,7 +591,7 @@ void YamlNode::Set(const String& name, const String& value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -608,7 +608,7 @@ void YamlNode::Set(const String& name, const Vector2& value)
     {
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -625,7 +625,7 @@ void YamlNode::Set(const String& name, const Vector3& value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -643,7 +643,7 @@ void YamlNode::Set(const String& name, const Vector4& value)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -657,7 +657,7 @@ void YamlNode::Set(const String& name, const Vector4& value)
 void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
 {
     DVASSERT(this->type == TYPE_MAP);
-    objectMap[name] = node;
+    objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
 
 void  YamlNode::AddNodeToArray(YamlNode* node)
@@ -731,8 +731,8 @@ void  YamlNode::AddValueToArray(const String& value)
     
 void YamlNode::RemoveNodeFromMap(const String & name)
 {
-    Map<String, YamlNode*>::iterator t;
-    if ((t = objectMap.find(name)) != objectMap.end())
+    MultiMap<String, YamlNode*>::iterator t = objectMap.find(name);
+    if (t != objectMap.end())
     {
         objectMap.erase(t);
     }
@@ -748,7 +748,7 @@ void  YamlNode::InitFromVariantType(VariantType* varType)
     //create value node
     YamlNode* valueNode = new YamlNode(YamlNode::TYPE_STRING);
     valueNode->FillContentAccordingToVariantTypeValue(varType);
-    objectMap[variantName]=valueNode;
+    objectMap.insert(std::pair<String, YamlNode*>(variantName, valueNode));
 }
     
 void YamlNode::Set(const String& name, VariantType* varType)
@@ -758,7 +758,7 @@ void YamlNode::Set(const String& name, VariantType* varType)
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, varType);
-        objectMap[name] = stringNode;
+        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
     }
     else if (type == TYPE_STRING)
     {
@@ -851,7 +851,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
                 YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
                 
                 arrayElementNodeValue->InitFromVariantType(it->second);
-                arrayElementNode->objectMap[it->first] = arrayElementNodeValue;
+                arrayElementNode->objectMap.insert(std::pair<String, YamlNode*>(it->first, arrayElementNodeValue));
                 
                 objectArray.push_back(arrayElementNode);
             }
@@ -1002,12 +1002,12 @@ void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
         YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
 
         arrayElementNodeValue->InitFromVariantType(it->second);
-        arrayElementNode->objectMap[it->first] = arrayElementNodeValue;
+        arrayElementNode->objectMap.insert(std::pair<String, YamlNode*>(it->first, arrayElementNodeValue));
         
         arrayContentNode->objectArray.push_back(arrayElementNode);
     }
     
-    objectMap[VariantType::TYPENAME_KEYED_ARCHIVE] = arrayContentNode;
+    objectMap.insert(std::pair<String, YamlNode*>(VariantType::TYPENAME_KEYED_ARCHIVE, arrayContentNode));
      
 }
     
@@ -1118,13 +1118,13 @@ bool YamlParser::Parse(const String & pathName)
 						if (mapKey == 0)mapKey = node;
 						else
 						{
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							topContainer->objectArray.push_back(SafeRetain(node)); // duplicate in array
 							SafeRelease(mapKey);
 						}
@@ -1175,13 +1175,13 @@ bool YamlParser::Parse(const String & pathName)
 //							String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
 //							printf("put to map: %s\n", s.c_str());
 							
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							topContainer->objectArray.push_back(SafeRetain(node));
 							SafeRelease(mapKey);
 						}
@@ -1220,13 +1220,13 @@ bool YamlParser::Parse(const String & pathName)
 							//String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
 //							printf("put to map: %s\n", s.c_str());
 
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							node->stringValue = mapKey->stringValue;
 							node->nwStringValue = mapKey->nwStringValue;
 							topContainer->objectArray.push_back(SafeRetain(node));
@@ -1294,7 +1294,7 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
         {
             // Take only the children of root node.
             DVASSERT(rootNode->GetType() == YamlNode::TYPE_MAP);
-            Map<String, YamlNode*> & childrenList = rootNode->AsMap();
+            MultiMap<String, YamlNode*> & childrenList = rootNode->AsMap();
             
             const Vector<YamlNodeKeyValuePair>& orderedRootLevelItems = OrderMapYamlNode(childrenList);
             for (Vector<YamlNodeKeyValuePair>::const_iterator iter = orderedRootLevelItems.begin();
@@ -1331,11 +1331,11 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
     return saveSucceeded;
 }
 
-Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const Map<String, YamlNode*>& mapNodes)
+Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes)
 {
     // Order the map nodes by the "Relative Depth".
     Vector<YamlNodeKeyValuePair> sortedChildren;
-    for (Map<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+    for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
     {
         // Only the nodes of type Map are expected here.
         if (t->second->GetType() != YamlNode::TYPE_MAP)
@@ -1518,10 +1518,10 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
 
             // Firstly build the list of the non-map nodes to save them, then recursively go through
             // map nodes.
-            Map<String, YamlNode*> nonMapNodes;
-            Map<String, YamlNode*> mapNodes;
+            MultiMap<String, YamlNode*> nonMapNodes;
+            MultiMap<String, YamlNode*> mapNodes;
             
-            for (Map<String, YamlNode*>::iterator t = currentNode->AsMap().begin(); t != currentNode->AsMap().end(); ++t)
+            for (MultiMap<String, YamlNode*>::iterator t = currentNode->AsMap().begin(); t != currentNode->AsMap().end(); ++t)
             {
                 YamlNode* childNode = t->second;
                 if (childNode->GetType() == YamlNode::TYPE_MAP)
@@ -1536,7 +1536,7 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
             
             // Process local values...
             depth ++;
-            for (Map<String, YamlNode*>::iterator t = nonMapNodes.begin(); t != nonMapNodes.end(); ++t)
+            for (MultiMap<String, YamlNode*>::iterator t = nonMapNodes.begin(); t != nonMapNodes.end(); ++t)
             {
                 SaveNodeRecursive(fileToSave, t->first, t->second, depth);
             }

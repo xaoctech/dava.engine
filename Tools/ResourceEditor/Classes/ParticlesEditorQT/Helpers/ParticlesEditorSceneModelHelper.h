@@ -76,11 +76,12 @@ protected:
     // Do the checks needed and return ExtraUserData from model index. or from the item.
     ExtraUserData* GetExtraUserData(const QModelIndex& modelIndex) const;
 	ExtraUserData* GetExtraUserData(GraphItem* item) const;
+	ExtraUserData* GetExtraUserDataByModelIndex(const QModelIndex& modelIndex) const;
     
     // Synchronization of the whole Particle Editor Tree and different types of Nodes.
     void SynchronizeParticleEditorTree(BaseParticleEditorNode* node);
 
-    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, ParticleEffectNode* effectRootNode);
+    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
 
@@ -89,8 +90,9 @@ protected:
 
 	// Whether this move is forbidden?
 	bool IsMoveItemToParentForbidden(GraphItem* movedItem, GraphItem* newParentItem);
+
+	SceneNode* CreateParticleEffectNode();
 };
-	
 }
 
 #endif /* defined(__ResourceEditorQt__ParticlesEditorSceneModelHelper__) */

@@ -37,6 +37,8 @@
 
 //#define TEXTURE_SPLICING_ENABLED
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA
 {
 
@@ -149,7 +151,7 @@ public:
     File *textureFile;
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
-    String pathname;
+    FilePath pathname;
 };
     
 };

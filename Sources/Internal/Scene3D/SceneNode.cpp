@@ -38,8 +38,14 @@
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
-#include "Entity/Entity.h"
-#include "iostream"
+#include "Scene3D/Systems/TransformSystem.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/DeleteSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 namespace DAVA
 {
@@ -58,16 +64,18 @@ SceneNode::SceneNode()
 	, entity(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
-
-	localTransform.Identity();
-	worldTransform.Identity();
+    componentFlags = 0;
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+        components[k] = 0;
+    
     defaultLocalTransform.Identity();
 	//animation = 0;
-    debugFlags = DEBUG_DRAW_NONE;
+    //debugFlags = DEBUG_DRAW_NONE;
     flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
-	userData = 0;
     
     customProperties = new KeyedArchive();
+
+	AddComponent(new TransformComponent());
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.SceneNode.Update", "SceneNode update time");
 //    Stats::Instance()->RegisterEvent("Scene.Draw.SceneNode.Draw", "SceneNode draw time");
@@ -85,19 +93,89 @@ SceneNode::~SceneNode()
 //    }
     DVASSERT(scene == 0);
     
-    RemoveAllChildren();
-	SafeRelease(userData);
-
     SafeRelease(customProperties);
-//  Logger::Debug("~SceneNode: %p", this);
 
-	//TODO: delete entity?
+	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+	{
+		if(components[i])
+		{
+			RemoveComponent(components[i]);
+		}
+	}
+
+//  Logger::Debug("~SceneNode: %p", this);
 }
+    
+void SceneNode::AddComponent(Component * component)
+{
+	component->SetEntity(this);
+
+    SafeDelete(components[component->GetType()]);
+    components[component->GetType()] = component;
+    if (scene)
+        scene->AddComponent(this, component);
+    // SHOULD BE DONE AFTER scene->AddComponent
+    componentFlags |= 1 << component->GetType();
+}
+
+void SceneNode::RemoveComponent(Component * component)
+{
+	component->SetEntity(0);
+
+    components[component->GetType()] = 0;
+    if (scene)
+        scene->RemoveComponent(this, component);
+    // SHOULD BE DONE AFTER scene->RemoveComponent
+    componentFlags &= ~(1 << component->GetType());
+	delete(component);
+}
+    
+void SceneNode::RemoveComponent(uint32 componentType)
+{
+    if (components[componentType])
+        RemoveComponent(components[componentType]);
+}
+
+    
+Component * SceneNode::GetComponent(uint32 componentType)
+{
+    return components[componentType];
+}
+
+Component * SceneNode::GetOrCreateComponent(uint32 componentType)
+{
+	Component * ret = components[componentType];
+	if(!ret)
+	{
+		components[componentType] = Component::CreateByType(componentType);
+		ret = components[componentType];
+	}
+
+	return ret;
+}
+    
+uint32 SceneNode::GetComponentCount()
+{
+    uint32 count = 0;
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+        if (componentFlags >> k)
+            count++;
+    return count;
+}
+
+
 
 void SceneNode::SetScene(Scene * _scene)
 {
+    if (scene == _scene)
+    {
+        return;
+    }
     // Сheck 
-    if (scene)scene->UnregisterNode(this);
+    if (scene)
+	{
+		scene->UnregisterNode(this);
+	}
     scene = _scene;
     if (scene)scene->RegisterNode(this);
     
@@ -117,6 +195,7 @@ Scene * SceneNode::GetScene()
 void SceneNode::SetParent(SceneNode * node)
 {
 	parent = node;
+	((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetParent(parent);
 }
 
 void SceneNode::AddNode(SceneNode * node)
@@ -129,8 +208,8 @@ void SceneNode::AddNode(SceneNode * node)
         {
             node->parent->RemoveNode(node);
         }
-        node->SetParent(this);
         node->SetScene(GetScene());
+        node->SetParent(this);
     }
 }
     
@@ -195,7 +274,19 @@ int32 SceneNode::GetChildrenCount()
 {
     return (int32)children.size();
 }
+int32 SceneNode::GetChildrenCountRecursive()
+{
+    int32 result = 0;
+    result += (int32)children.size();
+    for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
+	{
+        SceneNode *node = *t;
+        result += node->GetChildrenCountRecursive();
+    }
+    return result;
+}
 
+    
 void SceneNode::RemoveAllChildren()
 {
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
@@ -276,23 +367,21 @@ void SceneNode::RestoreOriginalTransforms()
 void SceneNode::BakeTransforms()
 {
     uint32 size = (uint32)children.size();
-    if (size > 0) // propagate matrices
+    if(size == 1) // propagate matrices
     {
         for (uint32 c = 0; c < size; ++c)
         {
-            children[c]->SetLocalTransform(children[c]->GetLocalTransform() * localTransform);
+            children[c]->SetLocalTransform(children[c]->GetLocalTransform() * GetLocalTransform());
             children[c]->SetDefaultLocalTransform(children[c]->GetDefaultLocalTransform() * defaultLocalTransform);
         }
         SetLocalTransform(Matrix4::IDENTITY);
         AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
-        
-        //worldTransform = Matrix4
-        Update(0.0f);
-        for (uint32 c = 0; c < size; ++c)
-        {
-            children[c]->BakeTransforms();
-        }
     }
+
+	for(uint32 c = 0; c < size; ++c)
+	{
+		children[c]->BakeTransforms();
+	}
 }
 
 void SceneNode::PropagateBoolProperty(String name, bool value)
@@ -314,6 +403,7 @@ void SceneNode::PropagateBoolProperty(String name, bool value)
 	
 void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 {
+	const Matrix4 & localTransform = GetLocalTransform();
 	key.time = 0.0f;
 	key.translation.x = localTransform._30;
 	key.translation.y = localTransform._31;
@@ -323,116 +413,80 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 }
 
     
-void SceneNode::Update(float32 timeElapsed)
-{
-    //Stats::Instance()->BeginTimeMeasure("Scene.Update.SceneNode.Update", this);
-
-//    if (!(flags & NODE_UPDATABLE))return;
-
-    inUpdate = true;
-	// TODO - move node update to render because any of objects can change params of other objects
-	if (nodeAnimations.size() != 0)
-	{
-		Quaternion blendedRotation;
-		Vector3 blendedTranslation;
-		float32 accumWeight = 0.0f;
-		std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
-		for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
-		{
-			SceneNodeAnimation * animation = *it;
-			SceneNodeAnimationKey & key = animation->Intepolate(animation->GetCurrentTime());
-			if (accumWeight == 0.0f)
-			{
-				blendedTranslation = key.translation;
-				blendedRotation = key.rotation;
-				accumWeight = animation->weight;
-			}else
-			{
-				float32 factor = animation->weight / (accumWeight + animation->weight);
-				accumWeight += accumWeight;
-				blendedTranslation.Lerp(blendedTranslation, key.translation, factor);
-				blendedRotation.Slerp(blendedRotation, key.rotation, factor);
-			}
-			//key.GetMatrix(localTransform);
-		}
-		Matrix4 localTransformTrans;
-		Matrix4 localTransformRot;
-		Matrix4 localTransformFinal;
-		localTransformTrans.CreateTranslation(blendedTranslation);
-		localTransformRot = blendedRotation.GetMatrix();
-		
-		localTransform = localTransformRot * localTransformTrans;
-		
-//		if (nodeAnimations.size() != 1)
+//void SceneNode::Update(float32 timeElapsed)
+//{
+//    //Stats::Instance()->BeginTimeMeasure("Scene.Update.SceneNode.Update", this);
+//
+////    if (!(flags & NODE_UPDATABLE))return;
+//
+//    inUpdate = true;
+//	// TODO - move node update to render because any of objects can change params of other objects
+//	if (nodeAnimations.size() != 0)
+//	{
+//		Quaternion blendedRotation;
+//		Vector3 blendedTranslation;
+//		float32 accumWeight = 0.0f;
+//		std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
+//		for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
 //		{
-//			printf("-- blended node: %s\n", name.c_str());
-//			std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
-//			for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
+//			SceneNodeAnimation * animation = *it;
+//			SceneNodeAnimationKey & key = animation->Intepolate(animation->GetCurrentTime());
+//			if (accumWeight == 0.0f)
 //			{
-//				SceneNodeAnimation * animation = *it;
-//				printf(">>> blend: %s wei: %f inDelay: %f\n", animation->GetParent()->name.c_str(), animation->weight, animation->delayTime);
+//				blendedTranslation = key.translation;
+//				blendedRotation = key.rotation;
+//				accumWeight = animation->weight;
+//			}else
+//			{
+//				float32 factor = animation->weight / (accumWeight + animation->weight);
+//				accumWeight += accumWeight;
+//				blendedTranslation.Lerp(blendedTranslation, key.translation, factor);
+//				blendedRotation.Slerp(blendedRotation, key.rotation, factor);
 //			}
+//			//key.GetMatrix(localTransform);
 //		}
-	}
-	
-	UpdateTransform();
-	uint32 size = (uint32)children.size();
-	for (uint32 c = 0; c < size; ++c)
-	{
-		children[c]->Update(timeElapsed);
-	}
-
-	//printf("- node: %s tr: %f %f %f\n", name.c_str(), localTransform.data[12], localTransform.data[13], localTransform.data[14]); 
-	
-	
-	inUpdate = false;
-
-    if (!removedCache.empty()) 
-    {
-        for (std::deque<SceneNode*>::iterator t = removedCache.begin(); t != removedCache.end(); ++t)
-        {
-            RemoveNode(*t);
-        }
-        removedCache.clear();
-    }
-    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
-}
-
-void SceneNode::UpdateTransformNow()
-{
-	UpdateTransform();
-	uint32 size = (uint32)children.size();
-	for (uint32 c = 0; c < size; ++c)
-	{
-		children[c]->UpdateTransformNow();
-	}
-}
-
-void SceneNode::UpdateTransform()
-{
-	//if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
-	{
-		if (parent)
-		{
-			if (flags & NODE_LOCAL_MATRIX_IDENTITY)
-				worldTransform = parent->worldTransform;
-			else
-				worldTransform = localTransform * parent->worldTransform;
-		}
-		else
-		{
-			worldTransform = localTransform;
-		}
-
-		// need propagate changes to child nodes
-		flags |= NODE_WORLD_MATRIX_ACTUAL;
-		uint32 size = (uint32)children.size();
-		for (uint32 c = 0; c < size; ++c)
-		{
-			children[c]->InvalidateLocalTransform();
-		}
-	}
-}
+//		Matrix4 localTransformTrans;
+//		Matrix4 localTransformRot;
+//		Matrix4 localTransformFinal;
+//		localTransformTrans.CreateTranslation(blendedTranslation);
+//		localTransformRot = blendedRotation.GetMatrix();
+//		
+//		localTransform = localTransformRot * localTransformTrans;
+//		
+////		if (nodeAnimations.size() != 1)
+////		{
+////			printf("-- blended node: %s\n", name.c_str());
+////			std::deque<SceneNodeAnimation*>::const_iterator end = nodeAnimations.end();
+////			for (std::deque<SceneNodeAnimation*>::iterator it = nodeAnimations.begin(); it != end; ++it)
+////			{
+////				SceneNodeAnimation * animation = *it;
+////				printf(">>> blend: %s wei: %f inDelay: %f\n", animation->GetParent()->name.c_str(), animation->weight, animation->delayTime);
+////			}
+////		}
+//	}
+//	
+//	UpdateTransform();
+//	uint32 size = (uint32)children.size();
+//	for (uint32 c = 0; c < size; ++c)
+//	{
+//		children[c]->Update(timeElapsed);
+//	}
+//
+//	//printf("- node: %s tr: %f %f %f\n", name.c_str(), localTransform.data[12], localTransform.data[13], localTransform.data[14]); 
+//	
+//	
+//	inUpdate = false;
+//
+//    if (!removedCache.empty()) 
+//    {
+//        for (std::deque<SceneNode*>::iterator t = removedCache.begin(); t != removedCache.end(); ++t)
+//        {
+//            RemoveNode(*t);
+//        }
+//        removedCache.clear();
+//    }
+//    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
+//}
 
 void SceneNode::Draw()
 {
@@ -447,7 +501,7 @@ void SceneNode::Draw()
     if (scene)
         scene->nodeCounter++;
 
-	
+#if 0
 	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
 	{
 //		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
@@ -480,6 +534,7 @@ void SceneNode::Draw()
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+#endif
 
 	
 	//Stats::Instance()->EndTimeMeasure("Scene.Draw.SceneNode.Draw", this);
@@ -492,16 +547,6 @@ void SceneNode::SceneDidLoaded()
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
 		(*it)->SceneDidLoaded();
 }
-
-Matrix4 SceneNode::AccamulateLocalTransform(SceneNode *fromParent)
-{
-    if (fromParent == this) 
-    {
-        return localTransform;
-    }
-    return localTransform * parent->AccamulateLocalTransform(fromParent);
-}
-
     
 SceneNode* SceneNode::Clone(SceneNode *dstNode)
 {
@@ -512,39 +557,60 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
-    dstNode->localTransform = localTransform;
-    dstNode->worldTransform = worldTransform;
+    //uint32 size = components.size();
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT;++k)
+	{
+		if(components[k])
+		{
+			SafeDelete(dstNode->components[k]);
+			dstNode->AddComponent(components[k]->Clone(dstNode));
+		}
+	}
+
+	//custom ParticleEmitter copying
+	RenderComponent * rc = (RenderComponent *)dstNode->GetComponent(Component::RENDER_COMPONENT);
+	ParticleEmitterComponent * pe = (ParticleEmitterComponent *)dstNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT);
+	if(rc && pe)
+	{
+		rc->SetRenderObject(pe->GetParticleEmitter());
+	}
+    
     dstNode->name = name;
     dstNode->tag = tag;
-    dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
-
-//    Logger::Debug("Node %s clonned", name.c_str());
     
     dstNode->nodeAnimations = nodeAnimations;
     
-    
-//    Logger::Debug("Children +++++++++++++++++++++++++++++++");
     std::vector<SceneNode*>::iterator it = children.begin();
-    
-    const std::vector<SceneNode*>::iterator & childsEnd = children.end();
-    for(; it != childsEnd; it++)
-    {
-        SceneNode *n = (*it)->Clone();
-        dstNode->AddNode(n);
-        n->Release();
-    }
-//    Logger::Debug("Children -------------------------------");
+	const std::vector<SceneNode*>::iterator & childsEnd = children.end();
+	for(; it != childsEnd; it++)
+	{
+		SceneNode *n = (*it)->Clone();
+		dstNode->AddNode(n);
+		n->Release();
+	}
     
     return dstNode;
 }
 
 void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
 {
-    debugFlags = _debugFlags;
+    if (_debugFlags != 0)
+    {
+        if (GetComponent(Component::DEBUG_RENDER_COMPONENT) == 0)
+        {
+            AddComponent(new DebugRenderComponent());
+        }
+        DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
+        debugComponent->SetDebugFlags(_debugFlags);
+    }else
+    {
+        RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+    }
+    
     if (isRecursive)
     {
         std::vector<SceneNode*>::iterator it = children.begin();
@@ -555,6 +621,19 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
             n->SetDebugFlags(_debugFlags, isRecursive);
         }
     }
+}
+
+uint32 SceneNode::GetDebugFlags() const
+{
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+	if(debugComponent)
+	{
+		return debugComponent->GetDebugFlags();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void SceneNode::SetName(const String & _name)
@@ -606,6 +685,16 @@ bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &o
 AABBox3 SceneNode::GetWTMaximumBoundingBoxSlow()
 {
     AABBox3 retBBox;
+    
+    RenderComponent * renderComponent = static_cast<RenderComponent*>(GetComponent(Component::RENDER_COMPONENT));
+    TransformComponent * transformComponent = static_cast<TransformComponent*>(GetComponent(Component::TRANSFORM_COMPONENT));
+    if (renderComponent && transformComponent)
+    {
+        AABBox3 wtBox;
+        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldTransform(), wtBox);
+        retBBox.AddAABBox(wtBox);
+    }
+    
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
@@ -641,7 +730,7 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
-    archive->SetByteArrayAsType("localTransform", localTransform);
+    archive->SetByteArrayAsType("localTransform", GetLocalTransform());
     archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
     
     archive->SetUInt32("flags", flags);
@@ -661,12 +750,15 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         
     name = archive->GetString("name", "");
     tag = archive->GetInt32("tag", 0);
-    localTransform = archive->GetByteArrayAsType("localTransform", localTransform);
+
+	flags = archive->GetUInt32("flags", NODE_VISIBLE);
+	flags |= NODE_UPDATABLE;
+
+    const Matrix4 & localTransform = archive->GetByteArrayAsType("localTransform", GetLocalTransform());
+	SetLocalTransform(localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
-    flags = archive->GetUInt32("flags", NODE_VISIBLE);
-    flags |= NODE_UPDATABLE;
-    InvalidateLocalTransform();
+    /// InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);
     
     SafeRelease(customProperties);
@@ -704,6 +796,15 @@ bool SceneNode::GetSolid()
 
 void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    {
+        if(components[k])
+        {
+            components[k]->GetDataNodes(dataNodes);
+        }
+    }
+
+    
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)
     {
@@ -802,6 +903,100 @@ void SceneNode::SetFog_Kostil(float32 density, const Color &color)
         materials[i]->SetFogColor(color);
     }
 }
+
+Matrix4 & SceneNode::ModifyLocalTransform()
+{
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->ModifyLocalTransform();
+}
+
+void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
+{
+    ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
+}
+
+const Matrix4 & SceneNode::GetLocalTransform()
+{
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetLocalTransform();
+}
+
+const Matrix4 & SceneNode::GetWorldTransform()
+{
+	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
+}
+
+int32 SceneNode::Release()
+{
+	if(1 == referenceCount)
+	{
+		RemoveAllChildren();
+
+		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
+		AddFlag(SceneNode::NODE_DELETED);
+		SetScene(0);
+		return referenceCount;
+	}
+	else
+	{
+		return BaseObject::Release();
+	}
+}
+
+void SceneNode::SetVisible(bool isVisible)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isVisible) 
+	{
+		AddFlag(NODE_VISIBLE);
+		
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_VISIBLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
+	}
+
+
+}
+
+void SceneNode::SetUpdatable(bool isUpdatable)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isUpdatable) 
+	{
+		AddFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE);
+		}
+	}
+	else 
+	{
+		RemoveFlag(NODE_UPDATABLE);
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
+		}
+	}
+}
+
+Matrix4 SceneNode::AccamulateLocalTransform(SceneNode * fromParent)
+{
+	if (fromParent == this) 
+	{
+		return GetLocalTransform();
+	}
+	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
+}
+
+
+
 
 
 };

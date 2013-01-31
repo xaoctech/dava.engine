@@ -37,7 +37,11 @@ public:
     void UpdateForcesIndices();
 	
 	// Update the Emitter Editor node.
-	void UpdateEmitterEditorNode(EmitterParticleEditorNode* newNode) {this->emitterEditorNode = newNode;};
+	void UpdateEmitterEditorNode(EmitterParticleEditorNode* newNode)
+	{
+		this->emitter = newNode->GetEmitterNode();
+		this->emitterEditorNode = newNode;
+	};
 
 protected:
     EmitterParticleEditorNode* emitterEditorNode;

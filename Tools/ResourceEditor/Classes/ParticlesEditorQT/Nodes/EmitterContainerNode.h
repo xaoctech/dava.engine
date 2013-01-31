@@ -10,23 +10,25 @@
 #define __ResourceEditorQt__ParticleEditorEmitterContainerNode__
 
 #include "BaseParticleEditorNode.h"
-#include "Scene3D/ParticleEmitterNode.h"
 
 namespace DAVA {
-    
+
+class ParticleEmitterComponent;
+
 // Base node for all emitter-contained Particle Editor nodes.
 class EmitterContainerNode : public BaseParticleEditorNode
 {
 public:
-    EmitterContainerNode(ParticleEffectNode* rootNode, ParticleEmitterNode* emitter,
+    EmitterContainerNode(SceneNode* rootNode, SceneNode* emitter,
                                   const QString& nodeName);
     virtual ~EmitterContainerNode();
         
-    ParticleEmitterNode* GetEmitterNode() const {return emitter;};
-    void UpdateEmitter(ParticleEmitterNode* emitterNode) {this->emitter = emitterNode;};
+    SceneNode* GetEmitterNode() const {return emitter;};
+
+    ParticleEmitterComponent * GetParticleEmitterComponent() const; 
 
 protected:
-    ParticleEmitterNode* emitter;
+    SceneNode* emitter;
 };
     
 };

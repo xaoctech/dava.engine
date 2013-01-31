@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
+#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 #include "ParticlesEditorController.h"
 
@@ -40,22 +41,22 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)),
+			SIGNAL(EmitterSelected(SceneNode*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
+			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnNodeSelected(ParticleEmitterNode*)));
+			SLOT(OnNodeSelected(SceneNode*)));
 
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(ParticleEffectNode*)),
+			SIGNAL(EffectSelected(SceneNode*)),
 			this,
-			SLOT(OnEffectNodeSelected(ParticleEffectNode*)));
+			SLOT(OnEffectNodeSelected(SceneNode*)));
 	
 	Init(0, 0);
 	
@@ -67,7 +68,7 @@ ParticleTimeLineWidget::~ParticleTimeLineWidget()
 	
 }
 
-void ParticleTimeLineWidget::OnNodeSelected(ParticleEmitterNode* node)
+void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
 {
 	emitterNode = node;
 	effectNode = NULL;
@@ -77,7 +78,12 @@ void ParticleTimeLineWidget::OnNodeSelected(ParticleEmitterNode* node)
 	ParticleEmitter* emitter = NULL;
 	if (node)
 	{
-		emitter = node->GetEmitter();
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+		    return ;
+		}
+		emitter = emitterComponent->GetParticleEmitter();
 		if (emitter)
 			maxTime = emitter->GetLifeTime();
 	}
@@ -107,7 +113,7 @@ void ParticleTimeLineWidget::OnNodeSelected(ParticleEmitterNode* node)
 	}
 }
 
-void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
+void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 {
 	emitterNode = NULL;
 	effectNode = node;
@@ -119,10 +125,15 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
 		int32 count = node->GetChildrenCount();
 		for (int32 i = 0; i < count; ++i)
 		{
-			ParticleEmitterNode* emitterNode = dynamic_cast<ParticleEmitterNode*>(node->GetChild(i));
+			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(i));
 			if (emitterNode)
 			{
-				ParticleEmitter* emitter = emitterNode->GetEmitter();
+				ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+				if (!emitterComponent)
+				{
+					continue;
+				}
+				ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 				if (emitter)
 					maxTime = Max(maxTime, emitter->GetLifeTime());
 			}
@@ -136,10 +147,15 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(ParticleEffectNode* node)
 		int32 iLines = 0;
 		for (int32 iEmitter = 0; iEmitter < count; ++iEmitter)
 		{
-			ParticleEmitterNode* emitterNode = dynamic_cast<ParticleEmitterNode*>(node->GetChild(iEmitter));
+			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(iEmitter));
 			if (emitterNode)
 			{
-				ParticleEmitter* emitter = emitterNode->GetEmitter();
+				ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+				if (!emitterComponent)
+				{
+					continue;
+				}
+				ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 				if (emitter)
 				{
 					const Vector<ParticleLayer*> & layers = emitter->GetLayers();

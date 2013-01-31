@@ -14,21 +14,8 @@ EditorLightNode::~EditorLightNode()
 
 }
 
-LightNode * EditorLightNode::CreateSceneAndEditorLight() 
-{
-	LightNode * ret = new LightNode();
-	ret->SetSolid(true);
-	EditorLightNode * child = new EditorLightNode();
-	child->SetName("editor.light");
-	ret->AddNode(child);
-
-	SafeRelease(child);
-	return ret;
-}
-
 void EditorLightNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
 	LightNode * parent = (LightNode*)GetParent();
 	if(type != parent->GetType())
 	{

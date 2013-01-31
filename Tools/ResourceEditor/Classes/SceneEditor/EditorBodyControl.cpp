@@ -20,7 +20,7 @@
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
-#include "EntitiesGraph.h"
+//#include "EntitiesGraph.h"
 
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
@@ -256,7 +256,7 @@ void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 	if(node)
 	{
 		Vector3 result;
-		LandscapeNode * ls = scene->GetLandScape(scene);
+		LandscapeNode * ls = scene->GetLandscape(scene);
 		if (ls)
 		{
 			const Matrix4 & itemWT = node->GetWorldTransform();
@@ -1027,11 +1027,13 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-    LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
-    scene->SetSelection(landscape);
-	SelectNodeAtTree(NULL);
-    SelectNodeAtTree(landscape);
-    
+	SceneNode* sceneNode = EditorScene::GetLandscapeNode(scene);
+	if (sceneNode)
+	{
+		scene->SetSelection(sceneNode);
+		SelectNodeAtTree(NULL);
+		SelectNodeAtTree(sceneNode);
+	}
     landscapeToolsSelection->Show();
 }
 
@@ -1074,6 +1076,11 @@ NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
 
 void EditorBodyControl::SetScene(EditorScene *newScene)
 {
+	if(landscapeRulerTool)
+    {
+        landscapeRulerTool->DisableTool();
+        SafeRelease(landscapeRulerTool);
+    }
     SafeRelease(scene);
     scene = SafeRetain(newScene);
     
@@ -1086,6 +1093,41 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     }
     
     modificationPanel->SetScene(scene);
+
+	if(landscapeEditorColor)
+	{
+		if(ColorIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_COLOR_MAP);
+		}
+		landscapeEditorColor->ClearSceneResources();
+	}
+	if(landscapeEditorHeightmap)
+	{
+		if(HightMapIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_HEIGHTMAP);
+		}
+		landscapeEditorHeightmap->ClearSceneResources();
+	}
+	if(landscapeEditorCustomColors)
+	{
+		if(CustomColorIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS);
+		}
+		landscapeEditorCustomColors->ClearSceneResources();
+	}
+	if(landscapeEditorVisibilityTool)
+	{
+		if(VisibilityToolIsActive())
+		{
+			ToggleLandscapeEditor(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL);
+		}
+		landscapeEditorVisibilityTool->ClearSceneResources();
+	}
+
+
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)
@@ -1174,6 +1216,46 @@ bool EditorBodyControl::RulerToolTriggered()
 bool EditorBodyControl::RulerToolIsActive()
 {
     return (NULL != landscapeRulerTool);
+}
+
+bool EditorBodyControl::CustomColorIsActive()
+{
+	if (NULL != landscapeEditorCustomColors)
+	{
+		return landscapeEditorCustomColors->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::VisibilityToolIsActive()
+{
+	if (NULL != landscapeEditorVisibilityTool)
+	{
+		return landscapeEditorVisibilityTool->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::ColorIsActive()
+{
+	if (NULL != landscapeEditorColor)
+	{
+		return landscapeEditorColor->IsActive();
+	}
+
+	return false;
+}
+
+bool EditorBodyControl::HightMapIsActive()
+{
+	if (NULL != landscapeEditorHeightmap)
+	{
+		return landscapeEditorHeightmap->IsActive();
+	}
+
+	return false;
 }
 
 void EditorBodyControl::VisibilityToolSetPoint()

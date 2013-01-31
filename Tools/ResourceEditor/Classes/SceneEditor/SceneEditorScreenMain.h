@@ -91,7 +91,7 @@ public:
 
     void EditMaterial(Material *material);
 
-	void EditParticleEmitter(ParticleEmitterNode * emitter);
+	void EditParticleEmitter(SceneNode * emitter);
     
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
