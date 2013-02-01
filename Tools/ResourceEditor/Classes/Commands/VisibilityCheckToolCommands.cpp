@@ -3,6 +3,7 @@
 #include "../Qt/Main/GUIState.h"
 #include "../Qt/Main/QtUtils.h"
 #include <QFileDialog>
+#include "EditorBodyControl.h"
 
 CommandToggleVisibilityTool::CommandToggleVisibilityTool()
 :	Command(COMMAND_WITHOUT_UNDO_EFFECT)
@@ -86,4 +87,88 @@ void CommandChangeAreaSizeVisibilityTool::Execute()
 	{
 		screen->VisibilityToolSetAreaSize(size);
 	}
+}
+
+
+CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint)
+:	Command(COMMAND_UNDO_REDO),
+	point(newVisibilityPoint)
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->StorePointState(&oldPoint, &oldPointIsSet, &oldImage);
+}
+
+CommandPlacePointVisibilityTool::~CommandPlacePointVisibilityTool()
+{
+	SafeRelease(oldImage);
+}
+
+void CommandPlacePointVisibilityTool::Execute()
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->SetVisibilityPoint(point);
+}
+
+void CommandPlacePointVisibilityTool::Cancel()
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->RestorePointState(oldPoint, oldPointIsSet, oldImage);
+}
+
+LandscapeEditorVisibilityCheckTool* CommandPlacePointVisibilityTool::GetEditor()
+{
+	LandscapeEditorVisibilityCheckTool* editor = NULL;
+
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(screen)
+	{
+		editor = dynamic_cast<LandscapeEditorVisibilityCheckTool*>(screen->FindCurrentBody()->bodyControl->GetLandscapeEditor(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL));
+	}
+
+	return editor;
+}
+
+CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize)
+:	Command(COMMAND_UNDO_REDO),
+	point(areaPoint),
+	size(areaSize)
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->StoreAreaState(&oldImage);
+}
+
+CommandPlaceAreaVisibilityTool::~CommandPlaceAreaVisibilityTool()
+{
+	SafeRelease(oldImage);
+}
+
+void CommandPlaceAreaVisibilityTool::Execute()
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->SetVisibilityArea(point, size);
+}
+
+void CommandPlaceAreaVisibilityTool::Cancel()
+{
+	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
+	if (editor)
+		editor->RestoreAreaState(oldImage);
+}
+
+LandscapeEditorVisibilityCheckTool* CommandPlaceAreaVisibilityTool::GetEditor()
+{
+	LandscapeEditorVisibilityCheckTool* editor = NULL;
+
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(screen)
+	{
+		editor = dynamic_cast<LandscapeEditorVisibilityCheckTool*>(screen->FindCurrentBody()->bodyControl->GetLandscapeEditor(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL));
+	}
+
+	return editor;
 }

@@ -977,23 +977,9 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
     if(RulerToolIsActive())
         return false;
-    
-    LandscapeEditorBase *requestedEditor = NULL;
-    if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
-    {
-        requestedEditor = landscapeEditorColor;
-    }
-    else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
-    {
-        requestedEditor = landscapeEditorHeightmap;
-    } else if(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS == landscapeEditorMode)
-    {
-        requestedEditor = landscapeEditorCustomColors;
-    } else if(SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL == landscapeEditorMode)
-	{
-		requestedEditor = landscapeEditorVisibilityTool;
-	}
-    
+
+    LandscapeEditorBase *requestedEditor = GetLandscapeEditor(landscapeEditorMode);
+
     if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
         return false;
     
@@ -1018,6 +1004,35 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
         }
     }
     return true;
+}
+
+LandscapeEditorBase* EditorBodyControl::GetLandscapeEditor(int32 landscapeEditorMode)
+{
+	LandscapeEditorBase* editor = NULL;
+	switch ((SceneEditorScreenMain::eLandscapeEditorModeIDS)landscapeEditorMode)
+	{
+		case SceneEditorScreenMain::ELEMID_COLOR_MAP:
+			editor = landscapeEditorColor;
+			break;
+
+		case SceneEditorScreenMain::ELEMID_CUSTOM_COLORS:
+			editor = landscapeEditorCustomColors;
+			break;
+
+		case SceneEditorScreenMain::ELEMID_HEIGHTMAP:
+			editor = landscapeEditorHeightmap;
+			break;
+
+		case SceneEditorScreenMain::ELEMID_VISIBILITY_CHECK_TOOL:
+			editor = landscapeEditorVisibilityTool;
+			break;
+
+		default:
+			editor = NULL;
+			break;
+	}
+
+	return editor;
 }
 
 void EditorBodyControl::LandscapeEditorStarted()

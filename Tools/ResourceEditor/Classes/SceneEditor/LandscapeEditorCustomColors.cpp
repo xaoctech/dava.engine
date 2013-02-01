@@ -6,7 +6,6 @@
 #include "EditorScene.h"
 #include "EditorConfig.h"
 
-#include "UNDOManager.h"
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
@@ -47,6 +46,8 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 
 	radius = 64;
 	UpdateCircleTexture(false);
+
+	command = NULL;
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
@@ -289,6 +290,10 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_BEGAN:
         {
             editingIsEnabled = true;
+
+			DVASSERT(command == NULL);
+			command = new CommandDrawCustomColors();
+
             break;
         }
             
@@ -297,11 +302,19 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             if(editingIsEnabled && !intersects)
             {
                 editingIsEnabled = false;
-				UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
+
+				if (command)
+				{
+					CommandsManager::Instance()->Execute(command);
+					SafeRelease(command);
+				}
             }
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
+
+				DVASSERT(command == NULL);
+				command = new CommandDrawCustomColors();
             }
             break;
         }
@@ -309,7 +322,12 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_ENDED:
         {
             editingIsEnabled = false;
-			UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
+
+			if (command)
+			{
+				CommandsManager::Instance()->Execute(command);
+				SafeRelease(command);
+			}
             break;
         }
             
@@ -319,6 +337,29 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
     
     UpdateCircleTexture(false);
 	wasTileMaskToolUpdate = true;
+}
+
+void LandscapeEditorCustomColors::StoreState(DAVA::Image **image)
+{
+	*image = colorSprite->GetTexture()->CreateImageFromMemory();
+}
+
+void LandscapeEditorCustomColors::RestoreState(DAVA::Image *image)
+{
+	Texture* texture = Texture::CreateTextFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+	SafeRelease(colorSprite);
+	colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
+
+	RenderManager::Instance()->SetRenderTarget(colorSprite);
+	sprite->Draw();
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	SafeRelease(sprite);
+	SafeRelease(texture);
+
+	PerformLandscapeDraw();
 }
 
 void LandscapeEditorCustomColors::HideAction()
@@ -368,10 +409,6 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	PerformLandscapeDraw();
 
-	//
-	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_COLORIZE);
-	UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
-    
     savedHeightmap = SafeRetain(workingLandscape->GetHeightmap());
     editedHeightmap = new EditorHeightmap(savedHeightmap);
     workingLandscape->SetHeightmap(editedHeightmap);
@@ -381,56 +418,12 @@ void LandscapeEditorCustomColors::ShowAction()
 
 void LandscapeEditorCustomColors::UndoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
-    if(UNDOAction::ACTION_COLORIZE == type)
-    {
-        Texture *tex = UNDOManager::Instance()->UndoColorize();
-
-		SafeRelease(colorSprite);
-		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
-		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
-
-		RenderManager::Instance()->SetRenderTarget(colorSprite);
-	
-		restSprite->Draw();
-		
-		SafeRelease(restSprite);
-
-		RenderManager::Instance()->RestoreRenderTarget();
-
-		PerformLandscapeDraw();
-
-		SafeRelease(tex);
-    }
+	CommandsManager::Instance()->Undo();
 }
 
 void LandscapeEditorCustomColors::RedoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
-    if(UNDOAction::ACTION_COLORIZE == type)
-    {
-//        Image::EnableAlphaPremultiplication(false);
-        
-        Texture *tex = UNDOManager::Instance()->RedoColorize();
-        
-//        Image::EnableAlphaPremultiplication(true);
-
-		SafeRelease(colorSprite);
-		colorSprite = Sprite::CreateAsRenderTarget(texSurf->width, texSurf->height, FORMAT_RGBA8888);
-		Sprite* restSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
-
-		RenderManager::Instance()->SetRenderTarget(colorSprite);
-	
-		restSprite->Draw();
-		
-		SafeRelease(restSprite);
-
-		RenderManager::Instance()->RestoreRenderTarget();
-
-		PerformLandscapeDraw();
-
-		SafeRelease(tex);
-    }
+	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
@@ -472,7 +465,10 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 												   false);
 
 		if(colorSprite != 0)
-			UNDOManager::Instance()->SaveColorize(colorSprite->GetTexture());
+		{
+			DVASSERT(command == NULL);
+			command = new CommandDrawCustomColors();
+		}
 
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
@@ -488,6 +484,12 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 		for_each(images.begin(), images.end(), SafeRelease<Image>);
 
 		StoreSaveFileName(pathToFile);
+
+		if (command)
+		{
+			CommandsManager::Instance()->Execute(command);
+			SafeRelease(command);
+		}
 	}
 }
 
@@ -614,12 +616,13 @@ String LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String&
 
 void LandscapeEditorCustomColors::SaveTexture()
 {
-	if(UNDOAction::ACTION_COLORIZE == UNDOManager::Instance()->GetLastUNDOAction())
-    {
+//	TODO: fix it later
+//	if(UNDOAction::ACTION_COLORIZE == UNDOManager::Instance()->GetLastUNDOAction())
+//    {
 		Command * saveCommand = new CommandSaveTextureCustomColors;
 		CommandsManager::Instance()->Execute(saveCommand);
 		SafeRelease(saveCommand);
-	}
+//	}
 	Close();
 }
 

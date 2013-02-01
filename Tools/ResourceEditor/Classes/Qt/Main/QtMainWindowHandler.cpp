@@ -13,6 +13,8 @@
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/VisibilityCheckToolCommands.h"
+#include "../Commands/TilemapEditorCommands.h"
+#include "../Commands/HeightmapEditorCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
