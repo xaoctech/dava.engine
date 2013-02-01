@@ -270,6 +270,11 @@ void QtMainWindow::SetupDockWidgets()
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
+	
+	connect(ui->cbShowDAEFiles, SIGNAL(stateChanged(int)), this, SLOT(LibraryFileTypesChanged()));
+	connect(ui->cbShowSC2Files, SIGNAL(stateChanged(int)), this, SLOT(LibraryFileTypesChanged()));
+	
+	connect(this, SIGNAL(LibraryFileTypesChanged(bool, bool)), ui->libraryView, SLOT(LibraryFileTypesChanged(bool, bool)));
 }
 
 void QtMainWindow::ChangeParticleDockVisible(bool visible)
@@ -389,6 +394,7 @@ void QtMainWindow::ProjectOpened(const QString &path)
 
 	this->setWindowTitle(strVer + path);
 	UpdateParticleSprites();
+	UpdateLibraryFileTypes();
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
@@ -432,3 +438,19 @@ void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int job
 		convertWaitDialog->setLabelText(curPath);
 	}
 }
+
+void QtMainWindow::LibraryFileTypesChanged()
+{
+	UpdateLibraryFileTypes();
+}
+
+void QtMainWindow::UpdateLibraryFileTypes()
+{
+	UpdateLibraryFileTypes(ui->cbShowDAEFiles->isChecked(), ui->cbShowSC2Files->isChecked());
+}
+
+void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
+{
+	emit LibraryFileTypesChanged(showDAEFiles, showSC2Files);
+}
+
