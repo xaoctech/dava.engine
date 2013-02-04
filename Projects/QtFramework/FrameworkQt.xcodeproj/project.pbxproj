@@ -276,6 +276,8 @@
 		5CFB116B15AE0685008F64BB /* libvorbis_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116815AE0685008F64BB /* libvorbis_macos.a */; };
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
 		5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116D15AE0696008F64BB /* libtheora_macos.a */; };
+		8492305416BFDD4100B28B3B /* DVAssertMessage.mm in Build Sources */ = {isa = PBXBuildFile; fileRef = 8492305116BFDD4100B28B3B /* DVAssertMessage.mm */; };
+		8492305716BFDEB500B28B3B /* AppKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 8492305616BFDEB500B28B3B /* AppKit.framework */; };
 		CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */; };
 		E84779BC16690254004CD20A /* FastName.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B216690254004CD20A /* FastName.cpp */; };
 		E84779BD16690254004CD20A /* FixedSizePoolAllocator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779B516690254004CD20A /* FixedSizePoolAllocator.cpp */; };
@@ -865,6 +867,9 @@
 		5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile_macos.a; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		5CFB116D15AE0696008F64BB /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = "<group>"; };
+		8492305016BFDD4100B28B3B /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
+		8492305116BFDD4100B28B3B /* DVAssertMessage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessage.mm; sourceTree = "<group>"; };
+		8492305616BFDEB500B28B3B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = ParticleLayerLong.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
@@ -921,6 +926,7 @@
 				5CFB116315AE065D008F64BB /* libxml_macos.a in Frameworks & Libraries */,
 				5CFB116415AE065D008F64BB /* libyaml_macos.a in Frameworks & Libraries */,
 				5CFB115C15AE0638008F64BB /* libfreetype_macos.a in Frameworks & Libraries */,
+				8492305716BFDEB500B28B3B /* AppKit.framework in Frameworks & Libraries */,
 				5CFB115215AE05FE008F64BB /* OpenAL.framework in Frameworks & Libraries */,
 				5CFB115015AE05F8008F64BB /* ApplicationServices.framework in Frameworks & Libraries */,
 				5CFB114E15AE05F2008F64BB /* Cocoa.framework in Frameworks & Libraries */,
@@ -934,10 +940,9 @@
 		05596AB53D8D521C69802C27 /* FrameworkQt */ = {
 			isa = PBXGroup;
 			children = (
-				4910CC2A167B7E6600CF948A /* libdxt_macos.a */,
-				5C5D971E15B022930058B43A /* Internal */,
 				5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */,
 				5CFB116D15AE0696008F64BB /* libtheora_macos.a */,
+				4910CC2A167B7E6600CF948A /* libdxt_macos.a */,
 				E879FCE5161DD6F00038D271 /* libPVRTexLib.a */,
 				5CFB116715AE0685008F64BB /* libogg_macos.a */,
 				5CFB116815AE0685008F64BB /* libvorbis_macos.a */,
@@ -949,11 +954,13 @@
 				5CFB116015AE065D008F64BB /* libyaml_macos.a */,
 				5CFB115B15AE0638008F64BB /* libfreetype_macos.a */,
 				5CFB115915AE062C008F64BB /* libcurl_iOS_mac.a */,
+				8492305616BFDEB500B28B3B /* AppKit.framework */,
 				5CFB115115AE05FE008F64BB /* OpenAL.framework */,
 				5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */,
 				5CFB114D15AE05F2008F64BB /* Cocoa.framework */,
 				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
 				5CFB113D15AE0100008F64BB /* Products */,
+				5C5D971E15B022930058B43A /* Internal */,
 			);
 			name = FrameworkQt;
 			sourceTree = "<group>";
@@ -1246,6 +1253,8 @@
 		5C5D978615B0230D0058B43A /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				8492305016BFDD4100B28B3B /* DVAssertMessage.h */,
+				8492305116BFDD4100B28B3B /* DVAssertMessage.mm */,
 				5C5D978715B0230D0058B43A /* Backtrace.cpp */,
 				5C5D978815B0230D0058B43A /* Backtrace.h */,
 				5C5D978915B0230D0058B43A /* DVAssert.h */,
@@ -2146,6 +2155,7 @@
 				E85D657D16A890BD0071039D /* UpdatableSystem.cpp in Build Sources */,
 				E85D658116A890EA0071039D /* UpdatableComponent.cpp in Build Sources */,
 				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
+				8492305416BFDD4100B28B3B /* DVAssertMessage.mm in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2188,6 +2198,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/System/Library/Frameworks/AppKit.framework/Headers\n/System/Library/Frameworks/AppKit.framework\n/System/Library/Frameworks/AppKit.framework/Headers",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
@@ -2233,6 +2244,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/System/Library/Frameworks/AppKit.framework/Headers\n/System/Library/Frameworks/AppKit.framework\n",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2262,6 +2274,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/System/Library/Frameworks/AppKit.framework/Headers\n/System/Library/Frameworks/AppKit.framework\n",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2297,6 +2310,7 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/System/Library/Frameworks/AppKit.framework/Headers\n/System/Library/Frameworks/AppKit.framework\n/System/Library/Frameworks/AppKit.framework/Headers",
 				);
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
