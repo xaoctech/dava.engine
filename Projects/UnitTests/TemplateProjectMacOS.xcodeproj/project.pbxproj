@@ -16,6 +16,7 @@
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */; };
 		E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */; };
 		E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */; };
 		E87BB1E4162D5CCB001A5448 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */; };
@@ -37,6 +38,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E81F2AEC16BFA49100C4545E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
 		FE93072A12C28C1100A33E69 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
@@ -79,6 +87,8 @@
 		5CF2253E157E555D00DF5395 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseScreen.cpp; path = Classes/BaseScreen.cpp; sourceTree = "<group>"; };
 		5CF2253F157E555D00DF5395 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseScreen.h; path = Classes/BaseScreen.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompilerTest.cpp; path = Classes/MaterialCompilerTest.cpp; sourceTree = "<group>"; };
+		E81F2AEF16BFA4A600C4545E /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompilerTest.h; path = Classes/MaterialCompilerTest.h; sourceTree = "<group>"; };
 		E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveTest.cpp; path = Classes/KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		E83604EE163FEB4C0061A636 /* KeyedArchiveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyedArchiveTest.h; path = Classes/KeyedArchiveTest.h; sourceTree = "<group>"; };
 		E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveYamlTest.cpp; path = Classes/KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
@@ -219,6 +229,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E81F2AEA16BFA49100C4545E /* MaterialCompilerTest */,
 				E8EF77FE1669248300DA7BD2 /* CloneTest */,
 				E83604EC163FEB370061A636 /* KeyedArchiveTest */,
 				49C432051675E35E000EA877 /* DXTTests */,
@@ -261,6 +272,15 @@
 				5CDC24FD156CC72400742348 /* TestTemplate.h */,
 			);
 			name = TestSuite;
+			sourceTree = "<group>";
+		};
+		E81F2AEA16BFA49100C4545E /* MaterialCompilerTest */ = {
+			isa = PBXGroup;
+			children = (
+				E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */,
+				E81F2AEF16BFA4A600C4545E /* MaterialCompilerTest.h */,
+			);
+			name = MaterialCompilerTest;
 			sourceTree = "<group>";
 		};
 		E83604EC163FEB370061A636 /* KeyedArchiveTest */ = {
@@ -312,6 +332,7 @@
 			isa = PBXGroup;
 			children = (
 				FE98931811638F3C00500198 /* libFramework.a */,
+				E81F2AED16BFA49100C4545E /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -401,6 +422,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		E81F2AED16BFA49100C4545E /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = E81F2AEC16BFA49100C4545E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FE98931811638F3C00500198 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -463,6 +491,7 @@
 				E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */,
 				E8EF78011669249000DA7BD2 /* CloneTest.cpp in Sources */,
 				49C432081675E370000EA877 /* DXTTest.cpp in Sources */,
+				E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -54,7 +54,7 @@ void MaterialCompilerTest::BasicLoadTest(PerfFuncData * data)
     MaterialGraph * graph = new MaterialGraph();
     graph->LoadFromFile("~res:/Materials/landscape.material");
     
-    compiler->Compile(graph, 4, 0);
+//    compiler->Compile(graph, 4, 0);
     
     SafeRelease(graph);
     SafeRelease(compiler);
