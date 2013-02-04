@@ -76,7 +76,6 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
     if(!workingLandscape)
     {
-        DVASSERT(0);//to del
         ShowErrorDialog(String("No landscape at level."));
         return false;
     }
