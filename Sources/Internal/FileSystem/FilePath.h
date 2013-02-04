@@ -69,6 +69,8 @@ public:
     const String GetRelativePath() const;
     const String GetRelativePath(const String &folder) const;
     
+    const String GetExtension() const;
+    
     const bool Initalized() const;
     
 protected:
