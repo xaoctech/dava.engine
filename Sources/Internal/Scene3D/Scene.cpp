@@ -47,13 +47,13 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
-#include "Scene3D/ShadowRect.h"
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderSystem.h"
 
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Systems/TransformSystem.h"
@@ -65,6 +65,8 @@
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdatableSystem.h"
 #include "Scene3D/Systems/DeleteSystem.h"
+#include "Scene3D/Systems/LightUpdateSystem.h"
+#include "Scene3D/Systems/SwitchSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -86,7 +88,6 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
-	,	shadowRect(0)
 	,	imposterManager(0)
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
@@ -113,29 +114,36 @@ void Scene::CreateComponents()
 
 void Scene::CreateSystems()
 {
+	renderSystem = new RenderSystem();
 	eventSystem = new EventSystem();
 	deleteSystem = new DeleteSystem();
 
-    transformSystem = new TransformSystem();
+    transformSystem = new TransformSystem(this);
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
 
-    renderUpdateSystem = new RenderUpdateSystem();
+    renderUpdateSystem = new RenderUpdateSystem(this);
     AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
 
-	lodSystem = new LodSystem();
+	lodSystem = new LodSystem(this);
 	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
 
-    debugRenderSystem = new DebugRenderSystem();
+    debugRenderSystem = new DebugRenderSystem(this);
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
 
-	particleEmitterSystem = new ParticleEmitterSystem();
+	particleEmitterSystem = new ParticleEmitterSystem(this);
 	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
 
-	particleEffectSystem = new ParticleEffectSystem();
+	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 
-	updatableSystem = new UpdatableSystem();
+	updatableSystem = new UpdatableSystem(this);
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
+    
+    lightUpdateSystem = new LightUpdateSystem(this);
+    AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
+
+	switchSystem = new SwitchSystem(this);
+	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
 }
 
 Scene::~Scene()
@@ -167,7 +175,6 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
-	SafeRelease(shadowRect);
 	SafeRelease(bvHierarchy);
 
     transformSystem = 0;
@@ -180,6 +187,7 @@ Scene::~Scene()
 
 	SafeDelete(eventSystem);
 	SafeDelete(deleteSystem);
+	SafeDelete(renderSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -597,6 +605,8 @@ void Scene::Update(float timeElapsed)
 	lodSystem->SetCamera(currentCamera);
 	lodSystem->Process();
 
+	switchSystem->Process();
+
 	particleEffectSystem->Process();
 	particleEmitterSystem->Process();
     
@@ -636,7 +646,7 @@ void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
 
-    
+    SetActiveScene(this);
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -668,20 +678,6 @@ void Scene::Draw()
         currentCamera->Set();
     }
     
-	//if(bvHierarchy)
-    //    bvHierarchy->Cull();
-	//VisibilityAABBoxSystem::Run(this);
-
-	//entityManager->Dump();
-    
-//    uint32 size = (uint32)drawArray.size();
-//    for (uint32 k = 0; k < size; ++k)
-//    {
-//        drawArray[k]->Draw();
-//    }
-    
-    RenderSystem * renderSystem = RenderSystem::Instance();
-    
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
@@ -698,57 +694,7 @@ void Scene::Draw()
 		imposterManager->Draw();
 	}
     
-	//LandscapeGeometrySystem::Run(this);
-	//MeshInstanceDrawSystem::Run(this);
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW) && shadowVolumes.size() > 0)
-	{
-		if(!shadowRect)
-		{
-			shadowRect = ShadowRect::Create();
-		}
-
-		//2nd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
-
-		RenderManager::Instance()->ClearStencilBuffer(0);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
-		
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
-		RenderManager::State()->SetStencilRef(1);
-		RenderManager::State()->SetStencilMask(0xFFFFFFFF);
-
-		RenderManager::State()->SetStencilPass(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT, STENCILOP_DECR_WRAP);
-
-		RenderManager::State()->SetStencilPass(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_BACK, STENCILOP_INCR_WRAP);
-		
-		RenderManager::Instance()->FlushState();
-		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
-		for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
-		{
-			(*it)->DrawShadow();
-		}
-
-		//3rd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
-		
-		RenderManager::State()->SetStencilRef(0);
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
-		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		shadowRect->Draw();
-	}
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
@@ -966,6 +912,11 @@ Scene * Scene::GetActiveScene()
 EventSystem * Scene::GetEventSystem()
 {
 	return eventSystem;
+}
+
+RenderSystem * Scene::GetRenderSystem()
+{
+	return renderSystem;
 }
 
 /*void Scene::Save(KeyedArchive * archive)

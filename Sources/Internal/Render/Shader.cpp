@@ -161,7 +161,12 @@ int32 Shader::GetUniformTypeSize(eUniformType type)
             return 4;
         case UT_SAMPLER_CUBE:
             return 4;
+
+		default:
+			break;
     };
+
+	return 0;
 }
     
     
@@ -203,7 +208,12 @@ const char * Shader::GetUniformTypeSLName(eUniformType type)
             return "sampler2D";
         case UT_SAMPLER_CUBE:
             return "samplerCube";
+
+		default:
+			break;
     };
+
+	return "";
 }
 
     

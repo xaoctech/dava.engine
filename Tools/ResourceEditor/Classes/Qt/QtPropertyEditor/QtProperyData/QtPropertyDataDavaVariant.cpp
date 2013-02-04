@@ -24,7 +24,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
     case DAVA::VariantType::TYPE_MATRIX2:
     case DAVA::VariantType::TYPE_MATRIX3:
     case DAVA::VariantType::TYPE_MATRIX4:
-    case DAVA::VariantType::TYPE_AABBOX3:
+	case DAVA::VariantType::TYPE_AABBOX3:
         SetFlags(FLAG_IS_NOT_EDITABLE);
         break;
             
@@ -338,7 +338,7 @@ void QtPropertyDataDavaVariant::ChildsSetFromMe()
 //			ChildGet("A")->SetValue(color.a);
 		}
         break;
-        case DAVA::VariantType::TYPE_AABBOX3:
+	case DAVA::VariantType::TYPE_AABBOX3:
         {
             DAVA::AABBox3 box = curVariantValue.AsAABBox3();
             
@@ -516,8 +516,9 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-	return QColorFromColor(color);
+	return ColorToQColor(color);
 }
+
 
 QVariant QtPropertyDataDavaVariant::FromAABBox3(const DAVA::AABBox3 &aabbox)
 {
@@ -603,7 +604,7 @@ void QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-        curVariantValue.SetColor(ColorFromQColor(colorLineEdit->GetColor()));
+        curVariantValue.SetColor(QColorToColor(colorLineEdit->GetColor()));
     }
 }
 
@@ -612,7 +613,7 @@ void QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
     {
 		QtColorLineEdit *colorLineEdit = (QtColorLineEdit *) editor;
-		colorLineEdit->SetColor(QColorFromColor(curVariantValue.AsColor()));
+		colorLineEdit->SetColor(ColorToQColor(curVariantValue.AsColor()));
     }
 }
 
@@ -621,7 +622,7 @@ QIcon QtPropertyDataDavaVariant::GetIcon()
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 	{
 		QPixmap pix(16,16);
-		pix.fill(QColorFromColor(curVariantValue.AsColor()));
+		pix.fill(ColorToQColor(curVariantValue.AsColor()));
 
 		return QIcon(pix);
 	}

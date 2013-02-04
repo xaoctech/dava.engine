@@ -11,13 +11,7 @@
 #include "FileSystem/File.h"
 #include "Platform/Thread.h"
 
-#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-#include "curl64/curl.h"
-#else
 #include "curl/curl.h"
-#endif
-
-
 
 namespace DAVA
 {

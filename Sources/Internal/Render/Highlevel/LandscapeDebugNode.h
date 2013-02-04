@@ -83,6 +83,13 @@ protected:
     Vector<LandscapeVertex> debugVertices;
     Vector<uint32> debugIndices;
     RenderDataObject * debugRenderDataObject;
+    
+public:
+    
+    INTROSPECTION_EXTEND(LandscapeDebugNode, LandscapeNode,
+        NULL
+    );
+    
 };
 
     

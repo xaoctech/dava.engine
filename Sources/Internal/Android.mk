@@ -50,7 +50,8 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Systems/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Sound/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/*.cpp) \
-                     $(wildcard $(LOCAL_PATH)/Utils/*.cpp))
+                     $(wildcard $(LOCAL_PATH)/Utils/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
 # set build flags
 LOCAL_CFLAGS := -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
@@ -69,6 +70,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
 LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 
 # set exported used libs

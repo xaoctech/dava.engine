@@ -3,15 +3,21 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Material.h"
 #include "Render/RenderManager.h"
+#include "Particles/ParticleLayer.h"
 
 namespace DAVA
 {
 
 
 ParticleLayerBatch::ParticleLayerBatch()
-:	totalCount(0)
+:	totalCount(0),
+	particleLayer(0)
 {
 
+}
+
+ParticleLayerBatch::~ParticleLayerBatch()
+{
 }
 
 
@@ -30,7 +36,8 @@ void ParticleLayerBatch::Draw(Camera * camera)
 
 	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-	
+
+	particleLayer->Draw(camera);
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
 	material->PrepareRenderState();
@@ -49,6 +56,13 @@ RenderBatch * ParticleLayerBatch::Clone()
 
 	return rb;
 }
+
+void ParticleLayerBatch::SetParticleLayer(ParticleLayer * _particleLayer)
+{
+	particleLayer = _particleLayer;
+}
+
+
 
 
 

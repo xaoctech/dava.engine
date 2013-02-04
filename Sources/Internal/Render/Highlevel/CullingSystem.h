@@ -47,7 +47,7 @@ class Camera;
 class CullingSystem : public SceneSystem
 {
 public:
-    CullingSystem();
+    CullingSystem(Scene * scene);
     virtual ~CullingSystem();
     
     virtual void AddEntity(SceneNode * entity);

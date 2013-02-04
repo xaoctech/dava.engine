@@ -57,6 +57,10 @@ void Component::SetEntity(SceneNode * _entity)
 	entity = _entity;
 }
 
+void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
+{
+    //Empty as default
+}
 
 
 }

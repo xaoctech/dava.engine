@@ -52,8 +52,6 @@ void TextureDescriptor::Compression::Clear()
     
 TextureDescriptor::TextureDescriptor()
 {
-    pathname = String("");
-    
     InitializeValues();
 }
 

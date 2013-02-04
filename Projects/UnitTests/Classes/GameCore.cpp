@@ -35,17 +35,17 @@
 #include "Config.h"
 #include "BaseScreen.h"
 #include "SampleTest.h"
-//#include "EntityTest.h"
+#include "EntityTest.h"
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
 #include "SoundTest.h"
 #include "SplitTest.h"
-//#include "MaterialCompilerTest.h"
+#include "MaterialCompilerTest.h"
 #include "PVRTest.h"
 #include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
-//#include "CloneTest.h"
-#include "InputTest.h"
+#include "CloneTest.h"
+#include "DLCSystemTests.h"
 
 using namespace DAVA;
 
@@ -71,23 +71,23 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new InputTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
 //    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
-//    new MaterialCompilerTest();
-//    new CloneTest();
+    new MaterialCompilerTest();
+    new CloneTest();
     new PVRTest();
 	new DXTTest();
-//	new EntityTest();
+	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
 	new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
+	new DLCTest();
     
     errors.reserve(TestCount());
 
@@ -238,7 +238,6 @@ void GameCore::ProcessTests()
     if(currentScreen && currentScreen->ReadyForTests())
     {
         bool ret = currentScreen->RunTest(currentTestIndex);
-		ret = false;
         if(ret)
         {
             ++currentTestIndex;

@@ -53,6 +53,7 @@ void Mesh::AddPolygonGroup(PolygonGroup * polygonGroup, Material * material)
     batch->SetIndexCount(polygonGroup->GetIndexCount());
     AddRenderBatch(batch);
     
+	batch->Release();
     //polygonGroups.push_back(polygonGroup);
 }
     

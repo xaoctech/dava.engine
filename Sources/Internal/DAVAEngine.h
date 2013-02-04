@@ -39,6 +39,9 @@
 #include "Base/BaseMath.h"
 #include "Utils/StringFormat.h"
 
+#include "DLC/DLCSystem.h"
+#include "DLC/DLCUnpacker.h"
+#include "DLC/FileDownloader.h"
 
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"
@@ -216,6 +219,7 @@
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
@@ -226,6 +230,8 @@
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
+#include "Scene3D/Systems/LodSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
 //Components
 #include "Scene3D/Components/BulletComponent.h"

@@ -115,6 +115,8 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	{
 		file = fopen(filename.c_str(),"ab");
 		if (!file)return NULL;
+		fseek(file, 0, SEEK_END);
+		size = ftell(file);
 	}
 	else 
 	{
@@ -129,12 +131,12 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	return fileInstance;
 }
 
-const char8 * File::GetFilename()
+const String File::GetFilename()
 {
-	return filename.c_str();
+	return filename;
 }
 
-const char8 * File::GetPathname()
+const String File::GetPathname()
 {
 	Logger::Debug("[AnsiFile::GetPathname] not implemented; allways return NULL;");
 	return 0;

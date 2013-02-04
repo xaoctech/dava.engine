@@ -40,7 +40,8 @@
 namespace DAVA
 {
 
-CullingSystem::CullingSystem()
+CullingSystem::CullingSystem(Scene * scene)
+:	SceneSystem(scene)
 {
 }
 
