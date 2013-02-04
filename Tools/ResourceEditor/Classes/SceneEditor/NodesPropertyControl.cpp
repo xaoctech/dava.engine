@@ -831,9 +831,9 @@ void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
     if(currentSceneNode)
     {
-		SafeRetain(currentSceneNode);
+		currentSceneNode->Retain();
         ReadFrom(currentSceneNode);
-		SafeRelease(currentSceneNode);
+        currentSceneNode->Release();
     }
 }
 

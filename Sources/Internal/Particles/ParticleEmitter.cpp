@@ -36,6 +36,7 @@
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -91,7 +92,7 @@ void ParticleEmitter::CleanupLayers()
 
 	layers.clear();
 }
-	
+
 //ParticleEmitter * ParticleEmitter::Clone()
 //{
 //	ParticleEmitter * emitter = new ParticleEmitter();
@@ -251,7 +252,7 @@ void ParticleEmitter::RenderUpdate(float32 timeElapsed)
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
 
-	Camera * camera = RenderSystem::Instance()->GetCamera();
+	Camera * camera = Scene::GetActiveScene()->GetRenderSystem()->GetCamera();
 
 	if(is3D)
 	{

@@ -41,6 +41,7 @@ void ParticleLayer3D::Draw(Camera * camera)
             rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
             break;
     }
+
     Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
     
 	Vector3 _up(mv._01, mv._11, mv._21);

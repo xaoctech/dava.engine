@@ -32,6 +32,8 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/RenderSystem.h"
+
 
 namespace DAVA 
 {
@@ -45,7 +47,7 @@ LightNode::LightNode()
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
     specularColor(1.0f, 1.0f, 1.0f, 1.0f),
     intensity(300.0f),
-	isDynamic(true)
+	flags(IS_DYNAMIC | CAST_SHADOW)
 {
 }
     
@@ -98,28 +100,19 @@ BaseObject * LightNode::Clone(BaseObject *dstNode)
     
     return dstNode;
 }
-// LIGHT
-//void LightNode::Update(float32 timeElapsed)
-//{
-//    bool needUpdateVars = false;
-//    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
-//    {
-//        needUpdateVars = true;
-//        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
-//    }
-//    
-//    if (needUpdateVars)
-//    {
-//        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
-//        Matrix3 rotationPart(GetWorldTransform());
-//        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
-//        direction.Normalize();
-//    }
-//}
+
+void LightNode::SetPositionDirectionFromMatrix(const Matrix4 & worldTransform)
+{
+    position = Vector3(0.0f, 0.0f, 0.0f) * worldTransform;
+    direction = MultiplyVectorMat3x3(Vector3(0.0, -1.0f, 0.0f), worldTransform);
+    direction.Normalize();
+    
+    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
+}
 
 LightNode::eType LightNode::GetType() const
 {
-    return type;
+    return (eType)type;
 }
 const Vector3 & LightNode::GetPosition() const
 {
@@ -210,12 +203,28 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 bool LightNode::IsDynamic()
 {
-	return isDynamic;
+	return (flags & IS_DYNAMIC) != 0;
 }
 
 void LightNode::SetDynamic(bool _isDynamic)
 {
-	isDynamic = _isDynamic;
+	flags |= IS_DYNAMIC;
 }
 
+void LightNode::AddFlag(uint32 flag)
+{
+    flags |= flag;
+}
+void LightNode::RemoveFlag(uint32 flag)
+{
+    flags &= ~flag;
+}
+    
+uint32 LightNode::GetFlags()
+{
+    return flags;
+}
+
+    
+    
 };

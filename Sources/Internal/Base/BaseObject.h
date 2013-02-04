@@ -164,7 +164,8 @@ protected:
 	int32 referenceCount;
 
 public:
-	INTROSPECTION(BaseObject, NULL);
+		INTROSPECTION(BaseObject,
+		MEMBER(referenceCount, "referenceCount", INTROSPECTION_EDITOR))
 };
 
 

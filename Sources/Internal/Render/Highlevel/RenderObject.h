@@ -35,6 +35,7 @@
 #include "Animation/AnimatedObject.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -109,33 +110,40 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
     
-    inline eType GetType() { return type; }
+    inline eType GetType() { return (eType)type; }
 
 	virtual RenderObject * Clone();
 
+    void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+    
 protected:
-    eType type;
+//    eType type; //TODO: waiting for enums at introspection
+    uint32 type;
+
     uint32 flags;
     uint32 debugFlags;
     uint32 removeIndex;
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
-
+    String ownerDebugInfo;
 //    Sphere bsphere;
     
     Vector<RenderBatch*> renderBatchArray;
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
-//         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-         MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-         MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-         MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-         COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(debugFlags, "Debug Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(removeIndex, "Remove index", INTROSPECTION_SERIALIZABLE)
+        MEMBER(bbox, "Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(worldBBox, "World Box", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(worldTransform, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                 
+        COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
@@ -173,7 +181,7 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
-    RenderSystem::Instance()->MarkForUpdate(this);
+    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const

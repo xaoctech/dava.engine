@@ -173,7 +173,7 @@ void LandscapeDebugNode::DrawLandscape()
     
 void LandscapeDebugNode::SetHeightmapPath(const String &path)
 {
-    heightmapPath = path;
+    heightmapPath.InitFromAbsolutePath(path);
 }
   
     

@@ -56,12 +56,7 @@ void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
 }
-/*
-String ParticleEmitterNode::GetYamlPath()
-{
-	return yamlPath;
-}
-*/
+
 ParticleEmitter * ParticleEmitterNode::GetEmitter()
 {
 	return emitter;
@@ -117,3 +112,4 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 }
 
 };
+

@@ -348,20 +348,6 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 						break;
 					}
 
-				case DVKEY_BACKSPACE:
-					{
-						bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
-						if(cmdIsPressed)
-						{
-							sceneGraph->RemoveWorkingNode();
-
-                        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-							activeScene->SelectNode(NULL);
-							activeScene->RebuildSceneGraph();
-						}
-						break;
-					}
-
 				case DVKEY_C:
 					newCamera = scene->GetCamera(2);
 					break;
@@ -396,6 +382,14 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 					scene->SetClipCamera(scene->GetCamera(0));
 				}
 			}
+            else if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL) && (event->tid == DVKEY_BACKSPACE))
+            {
+                sceneGraph->RemoveWorkingNode();
+                
+                SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+                activeScene->SelectNode(NULL);
+                activeScene->RebuildSceneGraph();
+            }
         }
 	}
 	
@@ -1157,7 +1151,12 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
     UIControl::SetSize(newSize);
 
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    scene3dView->SetSize(newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET));
+    Vector2 viewSize = newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET);
+    
+    viewSize.dx = Max(1.f, viewSize.dx);
+    viewSize.dy = Max(1.f, viewSize.dy);
+    
+    scene3dView->SetSize(viewSize);
     
     sceneGraph->SetSize(newSize);
     
