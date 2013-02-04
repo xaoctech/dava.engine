@@ -609,7 +609,6 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
@@ -835,6 +834,11 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.mm">
+      <FileType>Document</FileType>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

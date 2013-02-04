@@ -2104,7 +2104,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.mm">
       <Filter>Internal\Debug</Filter>
     </ClCompile>
   </ItemGroup>
