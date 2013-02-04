@@ -79,6 +79,12 @@ private:
 	};
 
 	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
+    
+public:
+    
+    INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
+        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 }

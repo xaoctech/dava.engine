@@ -394,7 +394,7 @@ protected:
     int32 flashQueueCounter;
     
 //    eTiledShaderMode tiledShaderMode;
-    uint8 tiledShaderMode;
+    uint32 tiledShaderMode;
     
     int32 nearLodIndex;
     int32 farLodIndex;
