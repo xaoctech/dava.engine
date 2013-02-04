@@ -284,7 +284,6 @@
 		5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */; };
 		5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
-		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
 		5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B315B45FC200DA83EB /* libbz2.dylib */; };
 		5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABB15B893E4007CA99A /* Command.cpp */; };
@@ -405,20 +404,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C7F465215B449450038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5CFB113C15AE0100008F64BB;
-			remoteInfo = FrameworkQt;
-		};
-		5C7F49F415B44ECD0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 6832C0D4EDF3F8DB86EB0EE1;
-			remoteInfo = FrameworkQt;
-		};
 		5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
@@ -511,7 +496,6 @@
 		5C190C9515AEC58B005731F8 /* ResourceEditorQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ResourceEditorQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
 		5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchNodePropertyControl.cpp; path = Classes/SceneEditor/SwitchNodePropertyControl.cpp; sourceTree = "<group>"; };
 		5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
 		5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandReloadTextures.cpp; path = Classes/Commands/CommandReloadTextures.cpp; sourceTree = "<group>"; };
@@ -1254,7 +1238,6 @@
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
-				5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
 				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
@@ -1277,7 +1260,6 @@
 				5CCC10B115B45FBB00DA83EB /* libz.dylib */,
 				5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */,
 				5C7F49F615B44EE50038AF3A /* icon.icns */,
-				5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */,
 				5C190CA015AEC704005731F8 /* Info.plist */,
 				5C190C9E15AEC6F9005731F8 /* Data */,
 				E89DFD2F163ED2A900B51706 /* DataQt */,
@@ -1919,14 +1901,6 @@
 				5C574E3715C9463C0015537A /* vectormath_aos.h */,
 			);
 			path = sse;
-			sourceTree = "<group>";
-		};
-		5C7F464F15B449450038AF3A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5C7F465315B449450038AF3A /* libFrameworkQt.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		5C7F465415B44AC30038AF3A /* ParticlesEditor */ = {
@@ -2665,7 +2639,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				5C7F49F515B44ECD0038AF3A /* PBXTargetDependency */,
 			);
 			name = ResourceEditorQt;
 			productName = ResourceEditorQt;
@@ -2695,10 +2668,6 @@
 					ProductGroup = 5C7F49F915B44F6D0038AF3A /* Products */;
 					ProjectRef = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
 				},
-				{
-					ProductGroup = 5C7F464F15B449450038AF3A /* Products */;
-					ProjectRef = 5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -2708,13 +2677,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		5C7F465315B449450038AF3A /* libFrameworkQt.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFrameworkQt.a;
-			remoteRef = 5C7F465215B449450038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -3145,14 +3107,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		5C7F49F515B44ECD0038AF3A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FrameworkQt;
-			targetProxy = 5C7F49F415B44ECD0038AF3A /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4B72B24813252891014BCF61 /* Debug */ = {

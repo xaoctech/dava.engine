@@ -1,8 +1,8 @@
 #include "EntityTest.h"
 
-IMPLEMENT_COMPONENT(TestVisibilityAABBoxComponent);
-IMPLEMENT_COMPONENT(TestVisibilityBSphereComponent);
-IMPLEMENT_COMPONENT(TestDrawMeshComponent);
+//IMPLEMENT_COMPONENT(TestVisibilityAABBoxComponent);
+//IMPLEMENT_COMPONENT(TestVisibilityBSphereComponent);
+//IMPLEMENT_COMPONENT(TestDrawMeshComponent);
 
 
 int32 testResults[16];
@@ -14,7 +14,7 @@ public:
 
 	void Run()
 	{
-		TemplatePool<AABBox3> * boxes = manager->GetLinkedTemplatePools<AABBox3>("meshAABox");
+		/*TemplatePool<AABBox3> * boxes = manager->GetLinkedTemplatePools<AABBox3>("meshAABox");
 		while(boxes)
 		{
 			EntityFamily * family = boxes->GetEntityFamily();
@@ -33,7 +33,7 @@ public:
 			}
 
 			boxes = boxes->next;
-		}
+		}*/
 	}
 };
 
@@ -44,7 +44,7 @@ public:
 
 	void Run()
 	{
-		TemplatePool<Sphere> * spheres = manager->GetLinkedTemplatePools<Sphere>("meshBSphere");
+		/*TemplatePool<Sphere> * spheres = manager->GetLinkedTemplatePools<Sphere>("meshBSphere");
 		while(spheres)
 		{
 			EntityFamily * family = spheres->GetEntityFamily();
@@ -63,7 +63,7 @@ public:
 			}
 
 			spheres = spheres->next;
-		}
+		}*/
 	}
 };
 
@@ -74,7 +74,7 @@ public:
 
 	void Run()
 	{
-		TemplatePool<uint32> * visibilityFlags = manager->GetLinkedTemplatePools<uint32>("meshVisibilityFlag");
+		/*TemplatePool<uint32> * visibilityFlags = manager->GetLinkedTemplatePools<uint32>("meshVisibilityFlag");
 
 		int32 * result = testResults;
 		while(visibilityFlags)
@@ -90,7 +90,7 @@ public:
 			}
 
 			visibilityFlags = visibilityFlags->next;
-		}
+		}*/
 	}
 
 };
@@ -113,7 +113,7 @@ void EntityTest::UnloadResources()
 
 void EntityTest::DummyComponents(PerfFuncData * data)
 {
-	TestVisibilityAABBoxComponent::Create();
+	/*TestVisibilityAABBoxComponent::Create();
 	TestVisibilityBSphereComponent::Create();
 	TestDrawMeshComponent::Create();
 
@@ -313,5 +313,5 @@ void EntityTest::DummyComponents(PerfFuncData * data)
 	TEST_VERIFY(*(entity15->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
 	manager->Dump();
 
-	SafeRelease(manager);
+	SafeRelease(manager);*/
 }

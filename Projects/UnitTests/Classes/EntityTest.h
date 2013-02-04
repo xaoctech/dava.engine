@@ -6,7 +6,7 @@ using namespace DAVA;
 
 #include "TestTemplate.h"
 
-DECLARE_COMPONENT(TestVisibilityAABBoxComponent);  
+/*DECLARE_COMPONENT(TestVisibilityAABBoxComponent);
 
 void TestVisibilityAABBoxComponent::Register()
 {   
@@ -26,7 +26,7 @@ void TestDrawMeshComponent::Register()
 {
 	RegisterData<uint32>("meshVisibilityFlag");
 	RegisterData<Matrix4>("worldTransform");
-}
+}*/
 
 class EntityTest : public TestTemplate<EntityTest>
 {

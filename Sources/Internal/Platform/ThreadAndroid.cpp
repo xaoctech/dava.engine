@@ -2,8 +2,8 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Platform/Android/CorePlatformAndroid.h"
-#include "Platform/Android/EGLRenderer.h"
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+//#include "Platform/Android/EGLRenderer.h"
 
 namespace DAVA
 {
@@ -20,7 +20,7 @@ void * PthreadMain (void * param)
 
 	Thread * t = (Thread*)param;
 
-    ThreadContext *context = NULL;
+    /*ThreadContext *context = NULL;
     CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 
 	if(t->needCopyContext)
@@ -40,7 +40,7 @@ void * PthreadMain (void * param)
 	}
 
 	t->state = Thread::STATE_ENDED;
-	t->Release();
+	t->Release();*/
 
 	pthread_exit(0);
 }
