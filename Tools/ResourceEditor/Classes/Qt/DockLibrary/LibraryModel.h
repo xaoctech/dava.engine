@@ -30,10 +30,11 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
 	
 protected:
-	QColor GetColorForExtension(const QString& extension) const;
+	QVariant GetColorForExtension(const QString& extension, const ExtensionToColorMap* colorMap,
+								const QModelIndex &index, int role) const;
 
 private:
-	static ExtensionToColorMap extensionToColorMap[];
+	static ExtensionToColorMap extensionToBackgroundColorMap[];
 };
 
 #endif // __GRAPH_MODEL_H__
