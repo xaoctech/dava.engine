@@ -6,14 +6,14 @@
 
 using namespace DAVA;
 
-// If you need to specify different colors for different files extensions.
+// If you need to specify different color backgrounds for different files extensions,
 // expand this list.
-ExtensionToColorMap LibraryModel::extensionToColorMap[] =
+ExtensionToColorMap LibraryModel::extensionToBackgroundColorMap[] =
 {
-	{"sc2", QColor(158, 0, 0) },
-	{"dae", QColor(222, 239, 254) }
+	{"dae", QColor(222, 239, 254) },
+	{ NULL, Qt::black }
 };
-
+	
 LibraryModel::LibraryModel(QObject *parent)
     :   QFileSystemModel(parent)
 {
@@ -31,16 +31,21 @@ void LibraryModel::SetLibraryPath(const QString &path)
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && (Qt::TextColorRole == role))
+    if(!index.isValid())
+	{
+		return QFileSystemModel::data(index, role);
+	}
+
+	if ((Qt::BackgroundColorRole == role))
     {
         QFileInfo info = fileInfo(index);
         
         if(info.isFile())
         {
-			return GetColorForExtension(info.suffix());
+			return GetColorForExtension(info.suffix(), extensionToBackgroundColorMap, index, role);
         }
     }
-    
+
     return QFileSystemModel::data(index, role);
 }
 
@@ -70,16 +75,18 @@ void LibraryModel::SetFileNameFilters(bool showDAEFiles, bool showSC2Files)
 	}
 }
 
-QColor LibraryModel::GetColorForExtension(const QString& extension) const
+QVariant LibraryModel::GetColorForExtension(const QString& extension, const ExtensionToColorMap* colorMap, const QModelIndex &index, int role) const
 {
-	int32 extensionsCount = sizeof(extensionToColorMap) / sizeof(*extensionToColorMap);
-	for (int32 i = 0; i < extensionsCount; i ++)
+	int pos = 0;
+	while (colorMap[pos].extension != NULL)
 	{
-		if (extensionToColorMap[i].extension.compare(extension,  Qt::CaseInsensitive) == 0)
+		if (colorMap[pos].extension.compare(extension,  Qt::CaseInsensitive) == 0)
 		{
-			return extensionToColorMap[i].color;
+			return colorMap[pos].color;
 		}
+		
+		pos ++;
 	}
-	
-	return QColor(Qt::black);
+
+    return QFileSystemModel::data(index, role);
 }
