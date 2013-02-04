@@ -29,7 +29,7 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
 	MessageBox(HWND_DESKTOP,s2ws(str).c_str(),L"Assert",MB_OK | MB_ICONEXCLAMATION);
 	
 	va_end(vl);
-	
+	return;
 #elif defined(__DAVAENGINE_MACOS__)
 
 #endif
