@@ -1029,6 +1029,7 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = "./**";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv7 armv7s i386";
 			};
 			name = Debug;
 		};
@@ -1037,6 +1038,7 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = "./**";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv7 armv7s i386";
 			};
 			name = Release;
 		};
