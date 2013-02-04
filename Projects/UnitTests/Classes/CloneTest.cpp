@@ -52,7 +52,7 @@ template <class Node>
 bool CloneNode()
 {
     Node *srcNode = new Node();
-    srcNode->SetName("Tested Node");
+    //srcNode->SetName("Tested Node");
     
     Node *dstNullNode = dynamic_cast<Node *>(srcNode->Clone());
     
@@ -61,7 +61,7 @@ bool CloneNode()
     
 	if(dstNode && dstNullNode)
 	{
-		bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
+		bool compareResult = false;//(dstNode->GetName() == dstNullNode->GetName());
 		SafeRelease(srcNode);
 		SafeRelease(dstNode);
 		SafeRelease(dstNullNode);
@@ -109,12 +109,12 @@ bool CloneDifferentNodes()
     DestNode *dstNullNode = dynamic_cast<DestNode *>(srcNode->Clone());
     
     DestNode *dstNode = NULL;
-    dstNode = dynamic_cast<DestNode *>(srcNode->Clone(dstNode));
+    dstNode = NULL;//dynamic_cast<DestNode *>(srcNode->Clone(dstNode));
     
     
     if(dstNode && dstNullNode)
     {
-        bool compareResult = (dstNode->GetName() == dstNullNode->GetName());
+        bool compareResult = false;//(dstNode->GetName() == dstNullNode->GetName());
         SafeRelease(srcNode);
         SafeRelease(dstNode);
         SafeRelease(dstNullNode);

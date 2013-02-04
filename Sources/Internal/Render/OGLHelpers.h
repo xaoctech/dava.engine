@@ -33,7 +33,7 @@
 #define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
 #include <signal.h>
-#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+#define OGLDebugBreak()// { kill( getpid(), SIGINT ) ; }
 #else
 #define OGLDebugBreak()
 #endif

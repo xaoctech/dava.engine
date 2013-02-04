@@ -47,7 +47,7 @@
 #include <sys/stat.h>
 #include <Shlobj.h>
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Android/CorePlatformAndroid.h"
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
