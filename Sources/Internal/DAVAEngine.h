@@ -39,6 +39,9 @@
 #include "Base/BaseMath.h"
 #include "Utils/StringFormat.h"
 
+#include "DLC/DLCSystem.h"
+#include "DLC/DLCUnpacker.h"
+#include "DLC/FileDownloader.h"
 
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"

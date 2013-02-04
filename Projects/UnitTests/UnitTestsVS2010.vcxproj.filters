@@ -18,6 +18,7 @@
     <ClCompile Include="Win32Specific\main.cpp" />
     <ClCompile Include="Classes\CloneTest.cpp" />
     <ClCompile Include="Classes\DXTTest.cpp" />
+    <ClCompile Include="Classes\DLCSystemTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -37,5 +38,6 @@
     <ClInclude Include="Classes\TextureUtils.h" />
     <ClInclude Include="Classes\CloneTest.h" />
     <ClInclude Include="Classes\DXTTest.h" />
+    <ClInclude Include="Classes\DLCSystemTests.h" />
   </ItemGroup>
 </Project>
