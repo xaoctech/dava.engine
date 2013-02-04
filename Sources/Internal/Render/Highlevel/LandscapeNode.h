@@ -379,7 +379,8 @@ protected:
     bool BuildHeightmap();
     void BuildLandscape();
     Heightmap *heightmap;
-    String heightmapPath;
+//    String heightmapPath;
+    FilePath heightmapPath;
     
 //     static const float32 TEXTURE_TILE_FULL_SIZE = 2048;
 	static const uint32 TEXTURE_TILE_FULL_SIZE = 2048;
@@ -409,7 +410,8 @@ public:
     
     INTROSPECTION_EXTEND(LandscapeNode, RenderObject,
         MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
+        COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         
         MEMBER(tiledShaderMode, "Tiled Shader Mode", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(bbox, "bbox", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 

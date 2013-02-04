@@ -170,5 +170,11 @@ const bool FilePath::Initalized() const
     return (!sourcePathname.empty());
 }
 
+const String FilePath::GetExtension() const
+{
+    String ext = FileSystem::Instance()->GetExtension(absolutePathname);
+    return ext;
+}
+
     
 }

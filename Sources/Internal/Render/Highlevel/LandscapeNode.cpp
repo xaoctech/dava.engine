@@ -59,7 +59,6 @@ LandscapeNode::LandscapeNode()
     textureNames.resize(TEXTURE_COUNT);
     
     type = TYPE_LANDSCAPE;
-    heightmapPath = String("");
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
         textures[t] = 0;
@@ -249,7 +248,8 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPat
     ReleaseAllRDOQuads();
     SafeDeleteArray(indices); //TODO: need here or no?
     
-	heightmapPath = heightmapPathname;
+//	heightmapPath = heightmapPathname;
+	heightmapPath.InitFromAbsolutePath(heightmapPathname);
 	bbox = _box;
 
     InitShaders(); // init new shaders according to the selected rendering mode
@@ -260,10 +260,10 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPat
 bool LandscapeNode::BuildHeightmap()
 {
     bool retValue = false;
-    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    String extension = heightmapPath.GetExtension();
     if(".png" == extension)
     {
-        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath);
+        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetAbsolutePath());
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -282,7 +282,7 @@ bool LandscapeNode::BuildHeightmap()
     }
     else if(Heightmap::FileExtension() == extension)
     {
-        retValue = heightmap->Load(heightmapPath);
+        retValue = heightmap->Load(heightmapPath.GetAbsolutePath());
     }
     else 
     {
@@ -1346,7 +1346,7 @@ void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vec
 
 const String & LandscapeNode::GetHeightmapPathname()
 {
-    return heightmapPath;
+    return heightmapPath.GetAbsolutePath();
 }
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -1354,15 +1354,16 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     //SceneNode::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
-    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
-    if(Heightmap::FileExtension() != extension)
+    if(Heightmap::FileExtension() != heightmapPath.GetExtension())
     {
-        heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
-        heightmap->Save(heightmapPath);
+        String heightPath = FileSystem::Instance()->ReplaceExtension(heightmapPath.GetAbsolutePath(), Heightmap::FileExtension());
+        heightmapPath.SetAbsolutePath(heightPath);
+        heightmap->Save(heightmapPath.GetAbsolutePath());
     }
     //
     
-    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
+//    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
+    archive->SetString("hmap", heightmapPath.GetRelativePath(sceneFile->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
     archive->SetByteArrayAsType("bbox", bbox);
