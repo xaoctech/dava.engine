@@ -44,6 +44,7 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Render/3D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/Effects/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/Highlevel/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Render/Material/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene2D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/Components/*.cpp) \

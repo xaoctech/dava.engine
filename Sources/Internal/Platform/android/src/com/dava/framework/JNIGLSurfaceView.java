@@ -71,13 +71,6 @@ public class JNIGLSurfaceView extends GLSurfaceView
 	}
     
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
-    	super.onSizeChanged(w, h, oldw, oldh);
-    	mRenderer.SetWindowSize(w, h);
-    };
-    
-    @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event)
     {
 //    	queueEvent(new Runnable() 
