@@ -3044,7 +3044,7 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 			file->WriteLine("    isLong: true");
 		}
 		
-		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
+		//file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
 
 		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
 		file->WriteLine(Format("    pivotPoint: [%.1f, %.1f]", emitter->GetLayers()[i]->pivotPoint.x-(sprite->GetWidth()/2.0f), emitter->GetLayers()[i]->pivotPoint.y-(sprite->GetHeight()/2.0f)));

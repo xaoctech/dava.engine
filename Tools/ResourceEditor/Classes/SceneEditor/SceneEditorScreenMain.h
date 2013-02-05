@@ -143,7 +143,7 @@ private:
     
     void OnSelectBody(BaseObject * owner, void * userData, void * callerData);
     void OnCloseBody(BaseObject * owner, void * userData, void * callerData);
-    
+	void ActivateBodyItem(BodyItem* activeItem, bool forceResetSelection);
 
     //create node dialog
     CreateNodesDialog *nodeDialog;

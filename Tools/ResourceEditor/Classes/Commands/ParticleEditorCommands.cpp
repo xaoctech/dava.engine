@@ -242,7 +242,7 @@ void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
 	layer->isDisabled = isDisabled;
-	layer->additive = additive;
+	layer->SetAdditive(additive);
 	layer->life = life;
 	layer->lifeVariation = lifeVariation;
 	layer->number = number;
@@ -576,6 +576,13 @@ void CommandLoadParticleEmitterFromYaml::Execute()
     }
 
     emitterComponent->LoadFromYaml(filePath.toStdString());
+
+	// Perform the validation of the Yaml file loaded.
+	String validationMessage;
+	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(emitterComponent, validationMessage) == false)
+	{
+		ShowErrorDialog(validationMessage);
+	}
 
     QtMainWindowHandler::Instance()->RefreshSceneGraph();
 }
