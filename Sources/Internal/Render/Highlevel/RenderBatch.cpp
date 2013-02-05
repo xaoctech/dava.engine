@@ -139,6 +139,7 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->indexCount = indexCount;
 	rb->type = type;
 
+	rb->aabbox = aabbox;
 // TODO: Understand what this code means.
 // 
 //	rb->ownerLayer = ownerLayer;
