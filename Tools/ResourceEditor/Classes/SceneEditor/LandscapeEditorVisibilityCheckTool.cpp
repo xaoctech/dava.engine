@@ -722,8 +722,8 @@ Rect2i LandscapeEditorVisibilityCheckTool::FitRectToImage(DAVA::Image *image, co
 {
 	Point2i rectPos(Max(rect.x, 0),
 					Max(rect.y, 0));
-	Point2i rectBottomRight(Min(rect.x + rect.dx, image->GetWidth()),
-							Min(rect.y + rect.dy, image->GetHeight()));
+	Point2i rectBottomRight(Min(rect.x + rect.dx, (int32)image->GetWidth()),
+							Min(rect.y + rect.dy, (int32)image->GetHeight()));
 	Point2i rectSize = rectBottomRight - rectPos;
 
 	Rect2i newRect;
