@@ -57,18 +57,29 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 
 void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
 {
-    const IntrospectionInfo *currentInfo = info;
-    while(NULL != currentInfo)
-    {
-        //if(info->MembersCount())
+	if(NULL != info)
+	{
+		bool hasMembers = false;
+		const IntrospectionInfo *currentInfo = info;
+
+		// check if there are any memebers
+		while (NULL != currentInfo)
+		{
+			if(currentInfo->MembersCount() > 0)
+			{
+				hasMembers = true;
+				break;
+			}
+			currentInfo = currentInfo->BaseInfo();
+		}
+
+        //if(hasMembers)
         {
             QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo));
             
             prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
             prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
         }
-        
-        currentInfo = currentInfo->BaseInfo();
     }
 }
 
