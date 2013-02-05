@@ -1213,6 +1213,8 @@
 		E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
 		E898A2BF16BD265400732C04 /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		E898A2C016BD265400732C04 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
+		E8CC1BF716C109F1009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
+		E8CC1BF816C109F1009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE444430114E77EC00F5EFD6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
@@ -1863,6 +1865,7 @@
 		E8989D9816BD24E500732C04 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E8989D9916BD24E500732C04 /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
 		E898A2C416BD265400732C04 /* libFrameworkQt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkQt.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		FE44442F114E77EC00F5EFD6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
@@ -2051,6 +2054,7 @@
 				E8989AED16BD24E400732C04 /* Hash.h */,
 				E8989AEE16BD24E400732C04 /* HashMap.h */,
 				E8989AEF16BD24E400732C04 /* Introspection.h */,
+				E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */,
 				E8989AF016BD24E400732C04 /* IntrospectionBase.h */,
 				E8989AF116BD24E400732C04 /* IntrospectionCollection.h */,
 				E8989AF216BD24E400732C04 /* IntrospectionFlags.h */,
@@ -3890,6 +3894,7 @@
 				E898A04C16BD24E500732C04 /* UTF8Utils.cpp in Sources */,
 				E898A04E16BD24E500732C04 /* Utils.cpp in Sources */,
 				E898A05016BD24E500732C04 /* UtilsMacOS.mm in Sources */,
+				E8CC1BF716C109F1009B49BF /* IntrospectionBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4168,6 +4173,7 @@
 				E898A2AD16BD265400732C04 /* UTF8Utils.cpp in Sources */,
 				E898A2AE16BD265400732C04 /* Utils.cpp in Sources */,
 				E898A2AF16BD265400732C04 /* UtilsMacOS.mm in Sources */,
+				E8CC1BF816C109F1009B49BF /* IntrospectionBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

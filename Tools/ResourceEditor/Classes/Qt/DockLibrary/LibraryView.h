@@ -49,6 +49,7 @@ public:
 public slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed(const QString &path);
+	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
 
 protected slots:
 	void ModelRootPathChanged(const QString & newPath);
