@@ -102,6 +102,8 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::RenderPermanent(RenderObject * renderObject)
 {
+    DVASSERT(renderObject->GetRemoveIndex() == -1);
+    
     renderObject->Retain();
     renderObjectArray.push_back(renderObject);
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
@@ -118,6 +120,8 @@ void RenderSystem::RenderPermanent(RenderObject * renderObject)
 
 void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 {
+    DVASSERT(renderObject->GetRemoveIndex() != -1);
+
 	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
 	for (uint32 k = 0; k < renderBatchCount; ++k)
 	{

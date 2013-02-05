@@ -56,7 +56,7 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
     DVASSERT(size == 1);
     
     RenderLayer * shadowVolumesLayer = renderLayers[0];
-    Vector<LightNode*> & lights = renderSystem->GetLights();
+    //Vector<LightNode*> & lights = renderSystem->GetLights();
     uint32 renderBatchCount = shadowVolumesLayer->GetRenderBatchCount();
     
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW)
