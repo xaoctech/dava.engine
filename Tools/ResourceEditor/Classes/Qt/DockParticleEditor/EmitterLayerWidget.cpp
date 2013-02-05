@@ -201,7 +201,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	enableCheckBox->setChecked(!layer->isDisabled);
-	additiveCheckBox->setChecked(layer->additive);
+	additiveCheckBox->setChecked(layer->GetAdditive());
 
 	//LAYER_SPRITE = 0,
 	sprite = layer->GetSprite();

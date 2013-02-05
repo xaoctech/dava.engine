@@ -11,7 +11,7 @@
 #include "../EditorScene.h"
 
 #include "../LandscapeEditor/EditorLandscapeNode.h"
-
+#include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 SceneValidator::SceneValidator()
 {
@@ -45,7 +45,8 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
         ValidateLodNodes(scene, errorsLog);
-        
+		ValidateParticleEmitterNodes(scene, errorsLog);
+
         for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
             SceneNode * node = *it;
@@ -454,6 +455,40 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
             }
         }
     }
+}
+
+void SceneValidator::ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog)
+{
+    Vector<ParticleEmitterComponent *> particleEmitterComponents;
+    EnumerateParticleEmitterComponents(scene, particleEmitterComponents);
+
+	for(int32 index = 0; index < (int32)particleEmitterComponents.size(); ++index)
+    {
+		ParticleEmitterComponent* component = particleEmitterComponents[index];
+		String validationMsg;
+		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(component, validationMsg))
+		{
+			errorsLog.insert(validationMsg);
+		}
+	}
+}
+
+void SceneValidator::EnumerateParticleEmitterComponents(SceneNode* rootNode, Vector<ParticleEmitterComponent*>& components)
+{
+	// Check the parent...
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>
+		(rootNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	if (emitterComponent && emitterComponent->GetParticleEmitter())
+	{
+		components.push_back(emitterComponent);
+	}
+
+	// ...and repeat for all children.
+	int32 childrenCount = rootNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		EnumerateParticleEmitterComponents(rootNode->GetChild(i), components);
+	}
 }
 
 String SceneValidator::SetPathForChecking(const String &pathname)
