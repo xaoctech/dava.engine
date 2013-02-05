@@ -89,6 +89,7 @@ public:
             node = node->parent;
             if (node->pointer == 0)break;
         }
+        return 0;
     }
 };
 
