@@ -30,6 +30,10 @@ public:
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
+	// Get the persistent data for Model Index, needed for save/restore
+	// SceneGraphModel expanded state.
+	void* GetPersistentDataForModelIndex(const QModelIndex &modelIndex);
+
    const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -68,7 +72,7 @@ protected:
     
     DAVA::ParticlesEditorSceneModelHelper particlesEditorSceneModelHelper;
     
-    // Selectted Scene Graph item for Particle Editor.
+    // Selected Scene Graph item for Particle Editor.
     SceneGraphItem* selectedGraphItemForParticleEditor;
 };
 
