@@ -132,12 +132,12 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->type = type;
 
 	rb->ownerLayer = ownerLayer;
+	rb->aabbox = aabbox;
+
 	if(ownerLayer)
 	{
 		ownerLayer->AddRenderBatch(rb);
 	}
-
-	rb->aabbox = aabbox;
 
 	return rb;
 }

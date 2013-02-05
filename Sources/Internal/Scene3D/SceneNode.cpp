@@ -147,8 +147,8 @@ Component * SceneNode::GetOrCreateComponent(uint32 componentType)
 	Component * ret = components[componentType];
 	if(!ret)
 	{
-		components[componentType] = Component::CreateByType(componentType);
-		ret = components[componentType];
+		ret = Component::CreateByType(componentType);
+		AddComponent(ret);
 	}
 
 	return ret;
@@ -961,8 +961,6 @@ void SceneNode::SetVisible(bool isVisible)
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
 	}
-
-
 }
 
 void SceneNode::SetUpdatable(bool isUpdatable)
