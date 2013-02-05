@@ -63,6 +63,10 @@ public:
 	 */
 	void Dump();
 
+	void SetArchiveId(uint64 id);
+
+	uint64 GetArchiveId();
+
 	/**
 		\brief Function to check if key is available in this archive.
 		\param[in] key string key
@@ -429,6 +433,7 @@ public:
 // 	bool SaveToYaml(const String & pathName);
     
 private:
+	uint64 archiveId;
 	Map<String, VariantType*> objectMap;
 };
     

@@ -2,8 +2,8 @@
 #define __QT_PROPERTY_DATA_H__
 
 #include <QStyledItemDelegate>
+#include <QHash>
 #include <QIcon>
-#include <QMap>
 
 class QtPropertyData
 {
@@ -38,12 +38,14 @@ public:
 
 	void ChildAdd(const QString &key, QtPropertyData *data);
 	void ChildAdd(const QString &key, const QVariant &value);
+	int ChildCount();
 	QtPropertyData* ChildGet(const QString &key);
+	QPair<QString, QtPropertyData*> ChildGet(int i);
     
 protected:
 	void ParentUpdate();
 
-	QMapIterator<QString, QtPropertyData*> ChildIterator();
+	//QHashIterator<QString, QtPropertyData*> ChildIterator();
 
 protected:
 	bool childrenItemsCreated;
@@ -75,7 +77,8 @@ private:
 	int curFlags;
 
 	QtPropertyData *parent;
-	QMap<QString, QtPropertyData *> children;
+	QHash<QString, QtPropertyData *> children;
+	QHash<QString, int> childrenOrder;
 };
 
 #endif // __QT_PROPERTY_DATA_H__
