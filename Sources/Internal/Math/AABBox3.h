@@ -166,8 +166,19 @@ inline void AABBox3::AddPoint(const Vector3 & pt)
 	
 inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 {
-	AddPoint(bbox.min);
-	AddPoint(bbox.max);
+	if (bbox.min.x < min.x)
+		min.x = bbox.min.x;
+	if (bbox.min.y < min.y)
+		min.y = bbox.min.y;
+	if (bbox.min.z < min.z)
+		min.z = bbox.min.z;
+
+	if (bbox.max.x > max.x)
+		max.x = bbox.max.x;
+	if (bbox.max.y > max.y)
+		max.y = bbox.max.y;
+	if (bbox.max.z > max.z)
+		max.z = bbox.max.z;
 }
 
 //! \brief check if bounding box intersect other bounding box
@@ -175,6 +186,7 @@ inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 //! \return true if intersect, false otherwise
 inline bool AABBox3::IsIntersect(const AABBox3 & box)
 {
+	DVASSERT(0);
 	// TODO: implement this function
 	return false;
 };	
