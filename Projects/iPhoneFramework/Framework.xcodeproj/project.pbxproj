@@ -620,6 +620,7 @@
 		E8B3CD3216B9326E002BD35F /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA7B16B9326E002BD35F /* Utils.cpp */; };
 		E8B3CD3316B9326E002BD35F /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA7C16B9326E002BD35F /* Utils.h */; };
 		E8B3CD3416B9326E002BD35F /* UtilsMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA7D16B9326E002BD35F /* UtilsMacOS.mm */; };
+		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
@@ -1257,6 +1258,7 @@
 		E8B3CA7B16B9326E002BD35F /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
 		E8B3CA7C16B9326E002BD35F /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E8B3CA7D16B9326E002BD35F /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
+		E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1399,6 +1401,7 @@
 				E8B3C7D116B9326D002BD35F /* Hash.h */,
 				E8B3C7D216B9326D002BD35F /* HashMap.h */,
 				E8B3C7D316B9326D002BD35F /* Introspection.h */,
+				E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */,
 				E8B3C7D416B9326D002BD35F /* IntrospectionBase.h */,
 				E8B3C7D516B9326D002BD35F /* IntrospectionCollection.h */,
 				E8B3C7D616B9326D002BD35F /* IntrospectionFlags.h */,
@@ -2891,6 +2894,7 @@
 				E8B3CD3016B9326E002BD35F /* UTF8Utils.cpp in Sources */,
 				E8B3CD3216B9326E002BD35F /* Utils.cpp in Sources */,
 				E8B3CD3416B9326E002BD35F /* UtilsMacOS.mm in Sources */,
+				E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
