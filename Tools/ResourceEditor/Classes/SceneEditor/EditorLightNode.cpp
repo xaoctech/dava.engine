@@ -4,7 +4,7 @@ REGISTER_CLASS(EditorLightNode);
 
 EditorLightNode::EditorLightNode()
 :	SceneNode(),
-	type(LightNode::TYPE_COUNT)
+	type(Light::TYPE_COUNT)
 {
 
 }
@@ -16,7 +16,7 @@ EditorLightNode::~EditorLightNode()
 
 void EditorLightNode::Update(float32 timeElapsed)
 {
-	LightNode * parent = (LightNode*)GetParent();
+	Light * parent = (Light*)GetParent();
 	if(type != parent->GetType())
 	{
 		RemoveAllChildren();
@@ -37,13 +37,13 @@ DAVA::String EditorLightNode::GetSceneFile()
 {
 	switch(type)
 	{
-	case LightNode::TYPE_SKY:
+	case Light::TYPE_SKY:
 		return "~res:/3d/lights/skylight/skylight.sc2";
 		break;
-	case LightNode::TYPE_DIRECTIONAL:
+	case Light::TYPE_DIRECTIONAL:
 		return "~res:/3d/lights/directlight/directlight.sc2";
 		break;
-	case LightNode::TYPE_POINT:
+	case Light::TYPE_POINT:
 		return "~res:/3d/lights/pointlight/pointlight.sc2";
 		break;
 	default:
