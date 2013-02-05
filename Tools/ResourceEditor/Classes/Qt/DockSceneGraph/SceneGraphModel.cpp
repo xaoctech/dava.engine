@@ -6,6 +6,8 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
+#include "SceneGraphModelStateHelper.h"
+
 #include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
@@ -149,6 +151,9 @@ void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
 
 void SceneGraphModel::Rebuild()
 {
+	SceneGraphModelStateHelper stateHelper(this->attachedTreeView, this);
+	stateHelper.SaveTreeViewState();
+
     SafeRelease(rootItem);
 	rootItem = new SceneGraphItem();
 	rootItem->SetUserData(scene);
@@ -164,9 +169,10 @@ void SceneGraphModel::Rebuild()
         }
     }
     
-//    emit dataChanged(QModelIndex(), QModelIndex());
     this->reset();
 
+	stateHelper.RestoreTreeViewState();
+	
     if (HandleParticleEditorSelection())
     {
         // Custom node is selected and needs to be processed separately.
@@ -478,4 +484,23 @@ void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 		QModelIndex refreshIndex = createIndex(itemToRefresh->Row(), 0, itemToRefresh);
 		dataChanged(refreshIndex, refreshIndex);
 	}
+}
+
+void* SceneGraphModel::GetPersistentDataForModelIndex(const QModelIndex &modelIndex)
+{
+	// Firstly verify whether this index belongs to Particle Editor.
+	void* persistentData = particlesEditorSceneModelHelper.GetPersistentDataForModelIndex(modelIndex);
+	if (persistentData)
+	{
+		return persistentData;
+	}
+
+	// Then check for the generic model index.
+	GraphItem *item = static_cast<GraphItem*>(modelIndex.internalPointer());
+	if (item && item->GetUserData())
+	{
+		return item->GetUserData();
+	}
+
+	return NULL;
 }
