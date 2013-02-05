@@ -6,14 +6,18 @@
 
 using namespace DAVA;
 
+// If you need to specify different color backgrounds for different files extensions,
+// expand this list.
+ExtensionToColorMap LibraryModel::extensionToBackgroundColorMap[] =
+{
+	{"dae", QColor(222, 239, 254) },
+	{ NULL, Qt::black }
+};
+	
 LibraryModel::LibraryModel(QObject *parent)
     :   QFileSystemModel(parent)
 {
-    QStringList nameFilters;
-    nameFilters << QString("*.sc2");
-    nameFilters << QString("*.dae");
-
-    setNameFilters(nameFilters);
+	SetFileNameFilters(true, true);
     setNameFilterDisables(false);
 }
 
@@ -27,19 +31,62 @@ void LibraryModel::SetLibraryPath(const QString &path)
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && (Qt::TextColorRole == role))
+    if(!index.isValid())
+	{
+		return QFileSystemModel::data(index, role);
+	}
+
+	if ((Qt::BackgroundColorRole == role))
     {
         QFileInfo info = fileInfo(index);
         
         if(info.isFile())
         {
-            if(0 == CompareCaseInsensitive(".sc2", info.suffix().toStdString()))
-            {
-                return QColor(158, 0, 0);
-            }
-            return QColor(Qt::black);
+			return GetColorForExtension(info.suffix(), extensionToBackgroundColorMap, index, role);
         }
     }
-    
+
+    return QFileSystemModel::data(index, role);
+}
+
+void LibraryModel::SetFileNameFilters(bool showDAEFiles, bool showSC2Files)
+{
+	QStringList nameFilters;
+	if (showDAEFiles)
+	{
+	    nameFilters << QString("*.dae");
+	}
+	if (showSC2Files)
+	{
+		nameFilters << QString("*.sc2");
+	}
+
+	QDir::Filters filterForNoneSelected = QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Dirs | QDir::Drives;
+	if (nameFilters.empty())
+	{
+		// Show directories only in case nothing is selected.
+		this->setFilter(filterForNoneSelected);
+	}
+	else
+	{
+		// Show directories and files in case file tyoes are selected.
+		this->setFilter(filterForNoneSelected | QDir::Files);
+		setNameFilters(nameFilters);
+	}
+}
+
+QVariant LibraryModel::GetColorForExtension(const QString& extension, const ExtensionToColorMap* colorMap, const QModelIndex &index, int role) const
+{
+	int pos = 0;
+	while (colorMap[pos].extension != NULL)
+	{
+		if (colorMap[pos].extension.compare(extension,  Qt::CaseInsensitive) == 0)
+		{
+			return colorMap[pos].color;
+		}
+		
+		pos ++;
+	}
+
     return QFileSystemModel::data(index, role);
 }

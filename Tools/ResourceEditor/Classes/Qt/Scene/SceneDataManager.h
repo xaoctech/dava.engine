@@ -42,6 +42,7 @@ public:
 	void ReloadScene(const String &scenePathname);
 
 	DAVA::SceneNode*	SceneGetSelectedNode(SceneData *scene);
+	DAVA::SceneNode*	SceneGetRootNode(SceneData *scene);
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
