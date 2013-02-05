@@ -599,3 +599,15 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemForParticlesLayer(G
 	// Nothing is found...
 	return NULL;
 }
+
+void* ParticlesEditorSceneModelHelper::GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const
+{
+	ExtraUserData* extraData = GetExtraUserData(modelIndex);
+	if (!extraData)
+	{
+		// Not ours..
+		return NULL;
+	}
+	
+	return extraData;
+}

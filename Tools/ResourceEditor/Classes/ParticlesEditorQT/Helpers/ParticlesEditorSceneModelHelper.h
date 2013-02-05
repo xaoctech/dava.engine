@@ -62,6 +62,9 @@ public:
 
 	// Get the Scene Graph item which contains the appropriate Particles Editor objects.
 	SceneGraphItem* GetGraphItemForParticlesLayer(GraphItem* rootItem, DAVA::ParticleLayer* layer);
+	
+	// Get the persistent pointer to the Particle Editor element.
+	void* GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const;
 
 protected:
 	// Add the action to QT menu.
