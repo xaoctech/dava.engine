@@ -23,6 +23,8 @@
 		1735C441169DE73B001E0468 /* QSceneGraphTreeView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C43C169DE73B001E0468 /* QSceneGraphTreeView_moc.cpp */; };
 		1735C442169DE73B001E0468 /* SceneGraphItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C43D169DE73B001E0468 /* SceneGraphItem_moc.cpp */; };
 		1735C443169DE73B001E0468 /* SceneGraphModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1735C43E169DE73B001E0468 /* SceneGraphModel_moc.cpp */; };
+		1739791E16C1702B003B4CD0 /* SceneGraphModelStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1739791C16C1702B003B4CD0 /* SceneGraphModelStateHelper.cpp */; };
+		1739792116C17037003B4CD0 /* QTreeViewStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1739791F16C17037003B4CD0 /* QTreeViewStateHelper.cpp */; };
 		17E3492916AD545E00568D16 /* PropertyEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E3492716AD545E00568D16 /* PropertyEditor.cpp */; };
 		17E3492B16AD547300568D16 /* PropertyEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E3492A16AD547300568D16 /* PropertyEditor_moc.cpp */; };
 		17E3493C16AD595900568D16 /* QtPropertyData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E3492D16AD595900568D16 /* QtPropertyData.cpp */; };
@@ -453,6 +455,10 @@
 		1735C43C169DE73B001E0468 /* QSceneGraphTreeView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QSceneGraphTreeView_moc.cpp; path = _GeneratedQt/DockSceneGraph/QSceneGraphTreeView_moc.cpp; sourceTree = "<group>"; };
 		1735C43D169DE73B001E0468 /* SceneGraphItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphItem_moc.cpp; path = _GeneratedQt/DockSceneGraph/SceneGraphItem_moc.cpp; sourceTree = "<group>"; };
 		1735C43E169DE73B001E0468 /* SceneGraphModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphModel_moc.cpp; path = _GeneratedQt/DockSceneGraph/SceneGraphModel_moc.cpp; sourceTree = "<group>"; };
+		1739791C16C1702B003B4CD0 /* SceneGraphModelStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphModelStateHelper.cpp; path = Classes/Qt/DockSceneGraph/SceneGraphModelStateHelper.cpp; sourceTree = "<group>"; };
+		1739791D16C1702B003B4CD0 /* SceneGraphModelStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphModelStateHelper.h; path = Classes/Qt/DockSceneGraph/SceneGraphModelStateHelper.h; sourceTree = "<group>"; };
+		1739791F16C17037003B4CD0 /* QTreeViewStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QTreeViewStateHelper.cpp; sourceTree = "<group>"; };
+		1739792016C17037003B4CD0 /* QTreeViewStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QTreeViewStateHelper.h; sourceTree = "<group>"; };
 		17E3492716AD545E00568D16 /* PropertyEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyEditor.cpp; path = Classes/Qt/DockProperties/PropertyEditor.cpp; sourceTree = "<group>"; };
 		17E3492816AD545E00568D16 /* PropertyEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyEditor.h; path = Classes/Qt/DockProperties/PropertyEditor.h; sourceTree = "<group>"; };
 		17E3492A16AD547300568D16 /* PropertyEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditor_moc.cpp; sourceTree = "<group>"; };
@@ -1309,6 +1315,8 @@
 		1735C429169DE64A001E0468 /* DockSceneGraph */ = {
 			isa = PBXGroup;
 			children = (
+				1739791C16C1702B003B4CD0 /* SceneGraphModelStateHelper.cpp */,
+				1739791D16C1702B003B4CD0 /* SceneGraphModelStateHelper.h */,
 				1735C42A169DE665001E0468 /* GraphItem.cpp */,
 				1735C42B169DE665001E0468 /* GraphItem.h */,
 				1735C42C169DE665001E0468 /* GraphModel.cpp */,
@@ -2474,6 +2482,8 @@
 		E8C9B3EC16679E3100810605 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				1739791F16C17037003B4CD0 /* QTreeViewStateHelper.cpp */,
+				1739792016C17037003B4CD0 /* QTreeViewStateHelper.h */,
 				C18521CD16831FBE003D4A6F /* ExtraUserData.cpp */,
 				C18521CE16831FBE003D4A6F /* ExtraUserData.h */,
 				E8C9B3ED16679E3100810605 /* davaglwidget.cpp */,
@@ -3140,6 +3150,8 @@
 				1717E6B216B0209A00BF0532 /* QtPropertyDataIntoCollection.cpp in Build Sources */,
 				1717E6E016B0259400BF0532 /* QtColorLineEdit.cpp in Build Sources */,
 				1717E6E316B026C000BF0532 /* QtColorLineEdit_moc.cpp in Build Sources */,
+				1739791E16C1702B003B4CD0 /* SceneGraphModelStateHelper.cpp in Build Sources */,
+				1739792116C17037003B4CD0 /* QTreeViewStateHelper.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

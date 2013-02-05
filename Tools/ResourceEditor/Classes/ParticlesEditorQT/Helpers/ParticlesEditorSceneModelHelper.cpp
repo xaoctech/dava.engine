@@ -617,7 +617,7 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemForParticlesLayer(G
 
 void* ParticlesEditorSceneModelHelper::GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const
 {
-	ExtraUserData* extraData = GetExtraUserData(modelIndex);
+	ExtraUserData* extraData = GetExtraUserDataByModelIndex(modelIndex);
 	if (!extraData)
 	{
 		// Not ours..
