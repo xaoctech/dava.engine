@@ -46,6 +46,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -179,7 +180,13 @@ void SceneNode::SetScene(Scene * _scene)
 		scene->UnregisterNode(this);
 	}
     scene = _scene;
-    if (scene)scene->RegisterNode(this);
+    if (scene)
+	{
+		scene->RegisterNode(this);
+		GlobalEventSystem::Instance()->PerformAllEventsFromCache(this);
+	}
+
+	
     
     const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
@@ -579,7 +586,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     
     dstNode->name = name;
     dstNode->tag = tag;
-    dstNode->flags = flags;
+    //dstNode->flags = flags;
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
@@ -931,16 +938,10 @@ int32 SceneNode::Release()
 	if(1 == referenceCount)
 	{
 		RemoveAllChildren();
-
-		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
-		AddFlag(SceneNode::NODE_DELETED);
 		SetScene(0);
-		return referenceCount;
 	}
-	else
-	{
-		return BaseObject::Release();
-	}
+
+	return BaseObject::Release();
 }
 
 void SceneNode::SetVisible(bool isVisible)

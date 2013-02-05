@@ -18,18 +18,8 @@ void GlobalEventSystem::Event(SceneNode * entity, Component * component, uint32 
         }
     }
     
-    
-    Map<Component*, List<uint32> >::iterator it = eventsCache.find(component);
-    if (it == eventsCache.end())
-    {
-        List<uint32> & list = it->second;
-        list.push_back(event);
-    }
-    else
-    {
-        List<uint32> & list = eventsCache[component];
-        list.push_back(event);
-    }
+	List<uint32> & list = eventsCache[component];
+	list.push_back(event);
 }
     
 void GlobalEventSystem::PerformAllEventsFromCache(SceneNode * entity)
@@ -45,17 +35,16 @@ void GlobalEventSystem::PerformAllEventsFromCache(SceneNode * entity)
 void GlobalEventSystem::PerformAllEventsFromCache(Component * component)
 {
     Map<Component*, List<uint32> >::iterator it = eventsCache.find(component);
-    if (it == eventsCache.end())
+    if (it != eventsCache.end())
     {
         List<uint32> & list = it->second;
         
-        for (List<uint32>::iterator it = list.begin(); it != list.end();  ++it)
+        for (List<uint32>::iterator listIt = list.begin(); listIt != list.end();  ++listIt)
         {
-            component->GetEntity()->GetScene()->ImmediateEvent(component->GetEntity(), component->GetType(), *it);
+            component->GetEntity()->GetScene()->ImmediateEvent(component->GetEntity(), component->GetType(), *listIt);
         }
         
         eventsCache.erase(it);
-        return;
     }
 }
 

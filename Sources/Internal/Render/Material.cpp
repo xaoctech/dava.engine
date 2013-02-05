@@ -59,13 +59,13 @@ InstanceMaterialState::~InstanceMaterialState()
     SafeRelease(lightmapTexture);
 }
 
-void InstanceMaterialState::SetLight(int32 lightIndex, LightNode * lightNode)
+void InstanceMaterialState::SetLight(int32 lightIndex, Light * lightNode)
 { 
     SafeRelease(lightNodes[lightIndex]);
     lightNodes[lightIndex] = SafeRetain(lightNode); 
 }
 
-LightNode * InstanceMaterialState::GetLight(int32 lightIndex) 
+Light * InstanceMaterialState::GetLight(int32 lightIndex) 
 { 
     return lightNodes[lightIndex]; 
 }
@@ -721,7 +721,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
     if (instanceMaterialState)
     {
         Camera * camera = scene->GetCurrentCamera();
-        LightNode * lightNode0 = instanceMaterialState->GetLight(0);
+        Light * lightNode0 = instanceMaterialState->GetLight(0);
         if (lightNode0 && camera)
         {
             if (uniformLightPosition0 != -1)

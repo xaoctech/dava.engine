@@ -193,7 +193,7 @@ Scene::~Scene()
 void Scene::RegisterNode(SceneNode * node)
 {
     //Logger::Debug("Register node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
     {
         lights.insert(light);
@@ -266,7 +266,7 @@ void Scene::UnregisterNode(SceneNode * node)
     
     //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
 
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
         lights.erase(light);
 
@@ -822,11 +822,11 @@ void Scene::UpdateLights()
     
 }
     
-LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 position)
+Light * Scene::GetNearestDynamicLight(Light::eType type, Vector3 position)
 {
     switch(type)
     {
-        case LightNode::TYPE_DIRECTIONAL:
+        case Light::TYPE_DIRECTIONAL:
             
             break;
             
@@ -835,13 +835,13 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
     };
     
 	float32 squareMinDistance = 10000000.0f;
-	LightNode * nearestLight = 0;
+	Light * nearestLight = 0;
 
-	Set<LightNode*> & lights = GetLights();
-	const Set<LightNode*>::iterator & endIt = lights.end();
-	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
+	Set<Light*> & lights = GetLights();
+	const Set<Light*>::iterator & endIt = lights.end();
+	for (Set<Light*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
-		LightNode * node = *it;
+		Light * node = *it;
 		if(node->IsDynamic())
 		{
 			const Vector3 & lightPosition = node->GetPosition();
@@ -858,7 +858,7 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	return nearestLight;
 }
 
-Set<LightNode*> & Scene::GetLights()
+Set<Light*> & Scene::GetLights()
 {
     return lights;
 }
