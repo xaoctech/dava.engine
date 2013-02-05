@@ -45,7 +45,7 @@ class UberShader;
 class Shader;
 class Texture;    
 class SceneFileV2;
-class LightNode;
+class Light;
 class PolygonGroup;
 class RenderDataObject;
     
@@ -59,8 +59,8 @@ public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
     
-    void SetLight(int32 lightIndex, LightNode * lightNode);
-    LightNode * GetLight(int32 lightIndex);
+    void SetLight(int32 lightIndex, Light * lightNode);
+    Light * GetLight(int32 lightIndex);
     
     void SetLightmap(Texture * texture, const String & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
@@ -71,7 +71,7 @@ private:
     Vector2 uvOffset;
     Vector2 uvScale;
     
-    LightNode * lightNodes[LIGHT_NODE_MAX_COUNT];
+    Light * lightNodes[LIGHT_NODE_MAX_COUNT];
     
     friend class Material;
 public:

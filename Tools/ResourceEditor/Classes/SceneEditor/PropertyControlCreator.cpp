@@ -33,7 +33,7 @@ PropertyControlCreator::~PropertyControlCreator()
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties)
 {
-	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
+	Light * light = dynamic_cast<Light *>(sceneNode);
 	if(light)
 	{
         return CreateControlForNode(EPCID_LIGHT, rect, createNodeProperties);
