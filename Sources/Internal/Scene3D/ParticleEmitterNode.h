@@ -3,6 +3,7 @@
 
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleEmitter3D.h"
 
 namespace DAVA
 {
@@ -29,7 +30,7 @@ protected:
 	void LoadFromYaml(const String& yamlPath);
 
 private:
-	ParticleEmitter * emitter;
+	ParticleEmitter3D * emitter;
 	String yamlPath;
 };
 

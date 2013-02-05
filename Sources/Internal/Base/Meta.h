@@ -14,6 +14,8 @@ namespace DAVA
 	// Класс мета-информации типов.
 	struct MetaInfo
 	{
+		typedef const IntrospectionInfo* (*IntrospectionInfoFnPtr)(void *);
+
 		// MetaInfo::Instance<Т>() - возвращает постоянный для типа Т указатель на мета-информацию.
 		template <typename MetaT>
 		static MetaInfo *Instance()
@@ -79,6 +81,16 @@ namespace DAVA
 			return introspection;
 		}
 
+		// Получение интроспекции для данного обекта
+		// В случае отсутствия интроспекции функциия вернет NULL
+		// 
+		// ВАЖНО: Если тип входящего объекта не соответствует типу данной мета-информации,
+		// то результат выполнения данной функции НЕПРЕДСКАЗУЕМ
+		inline const IntrospectionInfo* GetIntrospection(void *object) const
+		{
+			return introspectionFnPtr(object);
+		}
+
 	protected:
 		// Единожды установить в текущей мета-информации T указатель на интроспекцию 
 		// заданного типа IntrospectionT (IntrospectionT == T всегда)
@@ -102,6 +114,9 @@ namespace DAVA
 				// PointerTraits<T>::result - вернет true, если тип Т является указателем, а
 				// PointerTraits<IntrospectionT>::PointeeType - вернет тип указателя 
                 introspection = DAVA::GetIntrospection<typename Select<PointerTraits<IntrospectionT>::result, typename PointerTraits<IntrospectionT>::PointeeType, IntrospectionT>::Result>();
+
+				// Получение указателя на функцию извлечения интроспекции из объекта
+				introspectionFnPtr = &DAVA::GetIntrospectionByObject<typename Select<PointerTraits<IntrospectionT>::result, typename PointerTraits<IntrospectionT>::PointeeType, IntrospectionT>::Result>;
             }
         }
 
@@ -110,6 +125,7 @@ namespace DAVA
 			: type_name(_type_name)
 			, type_size(_type_size)
             , introspection(NULL)
+			, introspectionFnPtr(NULL)
             , introspectionOneTimeSet(false)
 			, isPointer(is_pointer)
 		{ }
@@ -117,6 +133,7 @@ namespace DAVA
 		const int type_size;
 		const char *type_name;
         const IntrospectionInfo *introspection;
+		IntrospectionInfoFnPtr introspectionFnPtr;
         
         bool introspectionOneTimeSet;
 		bool isPointer;

@@ -50,3 +50,20 @@ void ParticlesEditorSceneDataHelper::RemoveSceneNode(SceneNode *node) const
         ParticlesEditorController::Instance()->RemoveParticleEmitterNode(node);
     }
 }
+
+bool ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(ParticleEmitterComponent* component, String& validationMsg)
+{
+	if (!component || !component->GetParticleEmitter())
+	{
+		return true;
+	}
+	
+	if (component->GetParticleEmitter()->Is3DFlagCorrect())
+	{
+		return true;
+	}
+	
+	validationMsg = Format("\"3d\" flag value is wrong for Particle Emitter Configuration file %s. Please verify whether you are using the correct configuration file.",
+						   component->GetParticleEmitter()->GetConfigPath().c_str());
+	return false;
+}

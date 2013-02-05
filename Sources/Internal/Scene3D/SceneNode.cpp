@@ -65,6 +65,8 @@ SceneNode::SceneNode()
 {
 //    Logger::Debug("SceneNode: %p", this);
     componentFlags = 0;
+
+	components.resize(Component::COMPONENT_COUNT);
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
         components[k] = 0;
     

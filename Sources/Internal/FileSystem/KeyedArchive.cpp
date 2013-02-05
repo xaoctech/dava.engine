@@ -38,10 +38,12 @@ namespace DAVA
 {
 	
 KeyedArchive::KeyedArchive()
+	: archiveId(0)
 {
 }
     
 KeyedArchive::KeyedArchive(const KeyedArchive &arc)
+	: archiveId(arc.archiveId)
 {
     const Map<String, VariantType*> &customMap = arc.GetArchieveData();
     for (Map<String, VariantType*>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
@@ -53,6 +55,16 @@ KeyedArchive::KeyedArchive(const KeyedArchive &arc)
 KeyedArchive::~KeyedArchive()
 {
     DeleteAllKeys();
+}
+
+void KeyedArchive::SetArchiveId(uint64 id)
+{
+	archiveId = id;
+}
+
+uint64 KeyedArchive::GetArchiveId()
+{
+	return archiveId;
 }
 
 bool KeyedArchive::Load(const String & pathName)
