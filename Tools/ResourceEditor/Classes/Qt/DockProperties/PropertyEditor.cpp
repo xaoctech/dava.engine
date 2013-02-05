@@ -171,7 +171,8 @@ DAVA::KeyedArchive* PropertyEditor::SerializeIntrospection(void *object, const D
 				}
 				else
 				{
-					ret->SetVariant(member->Name(), &(member->Value(object)));
+                    VariantType value = member->Value(object);
+					ret->SetVariant(member->Name(), &value);
 				}
 			}
 			else
