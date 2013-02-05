@@ -368,6 +368,7 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -376,6 +377,7 @@
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
+    <ClCompile Include="Classes\Qt\Main\QTreeViewStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
@@ -837,6 +839,7 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
@@ -844,6 +847,7 @@
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h" />
+    <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
     <ClInclude Include="Classes\Qt\Main\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialBrowser.h" />

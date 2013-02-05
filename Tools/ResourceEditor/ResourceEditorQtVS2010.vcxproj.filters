@@ -1443,6 +1443,12 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\QTreeViewStateHelper.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2611,6 +2617,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
+      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
