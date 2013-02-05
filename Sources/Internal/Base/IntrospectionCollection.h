@@ -22,7 +22,7 @@ namespace DAVA
 			return DAVA::MetaInfo::Instance<CollectionT >();
 		}
 
-		DAVA::MetaInfo* ValueType() const
+		DAVA::MetaInfo* ItemType() const
 		{
 			return DAVA::MetaInfo::Instance<T>();
 		}
@@ -121,6 +121,18 @@ namespace DAVA
 			}
 
 			return p;
+		}
+
+		void* ItemData(Iterator i) const
+		{
+			if(ItemType()->IsPointer())
+			{
+				return *((void **) ItemPointer(i));
+			}
+			else
+			{
+				return ItemPointer(i);
+			}
 		}
 
 		const IntrospectionCollectionBase* Collection() const

@@ -19,6 +19,7 @@ QtPropertyEditor::~QtPropertyEditor()
 
 QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
 {
+	setSortingEnabled(false);
 	return curModel->AppendProperty(name, data, parent);
 }
 
@@ -39,5 +40,9 @@ void QtPropertyEditor::Expand(QtPropertyItem *item)
 
 void QtPropertyEditor::ItemClicked(const QModelIndex &index)
 {
-	edit(index);
+	QStandardItem *item = curModel->itemFromIndex(index);
+	if(NULL != item && item->isEditable() && item->isEnabled())
+	{
+		edit(index);
+	}
 }
