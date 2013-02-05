@@ -22,6 +22,7 @@
     <ClInclude Include="Classes\HashMapTest.h" />
     <ClInclude Include="Classes\KeyedArchiveTest.h" />
     <ClInclude Include="Classes\KeyedArchiveYamlTest.h" />
+    <ClInclude Include="Classes\MaterialCompilerTest.h" />
     <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
     <ClInclude Include="Classes\PVRTest.h" />
     <ClInclude Include="Classes\SampleTest.h" />
@@ -41,6 +42,7 @@
     <ClCompile Include="Classes\HashMapTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp" />
+    <ClCompile Include="Classes\MaterialCompilerTest.cpp" />
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
     <ClCompile Include="Classes\PVRTest.cpp" />
     <ClCompile Include="Classes\SampleTest.cpp" />
