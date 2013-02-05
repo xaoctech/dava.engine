@@ -25,7 +25,14 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetNode(DAVA::SceneNode *node)
 {
-	static bool sss = false;
+#if 0
+	TestIntro *intro = new TestIntro();
+	AppendIntrospectionInfo(intro, intro->GetTypeInfo());
+	SaveIntospection(intro, intro->GetTypeInfo());
+
+	Test(node);
+	return;
+#endif
 
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
@@ -33,16 +40,9 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
 	RemovePropertyAll();
 	if(NULL != curNode)
 	{
-		if(!sss)
-		{
-			curNode->GetCustomProperties()->SetBool("111", true);
-			curNode->GetCustomProperties()->SetArchive("subArchive", DAVA::Core::Instance()->GetOptions());
-			sss = true;
-		}
-
         AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
-        
-        for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+
+		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
         {
             Component *component = curNode->GetComponent(i);
             if(component)
@@ -52,25 +52,34 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
         }
 	}
 
-	Test();
-
 	expandToDepth(0);
 }
 
 void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
 {
-    const IntrospectionInfo *currentInfo = info;
-    while(NULL != currentInfo)
-    {
-        //if(info->MembersCount())
+	if(NULL != info)
+	{
+		bool hasMembers = false;
+		const IntrospectionInfo *currentInfo = info;
+
+		// check if there are any memebers
+		while (NULL != currentInfo)
+		{
+			if(currentInfo->MembersCount() > 0)
+			{
+				hasMembers = true;
+				break;
+			}
+			currentInfo = currentInfo->BaseInfo();
+		}
+
+        //if(hasMembers)
         {
             QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo));
             
             prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
             prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
         }
-        
-        currentInfo = currentInfo->BaseInfo();
     }
 }
 
@@ -99,43 +108,234 @@ void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *no
 }
 
 
-void PropertyEditor::Test()
+void PropertyEditor::Test(DAVA::BaseObject *object)
 {
-	std::vector<int> vec;
-	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
+	SceneData *sd = SceneDataManager::Instance()->SceneGetActive();
+	DAVA::SceneNode *rootNode = SceneDataManager::Instance()->SceneGetRootNode(sd);
 
-	DAVA::VariantType v;
-	v.SetColor(DAVA::Color(1.0, 0.5, 0, 1.0));
-	AppendProperty("test color", new QtPropertyDataDavaVariant(v));
-
-	//IntrospectionCollection<std::vector, int> col(vec);
-	/*
-
-	DAVA::IntrospectionCollectionBase *b = DAVA::CreateIntrospectionCollection(vec);
-	printf("Collection type: %s\n", b->CollectionType()->GetTypeName());
-	printf("Value type: %s\n", b->ValueType()->GetTypeName());
-
-	if(b->Size() > 0)
+	if(NULL != rootNode)
 	{
-		void *i = b->Begin();
+		AppendIntrospectionInfo(rootNode, rootNode->GetTypeInfo());
+		SaveIntospection(rootNode, rootNode->GetTypeInfo());
+	}
+}
+
+void PropertyEditor::SaveIntospection(void *object, const DAVA::IntrospectionInfo *info)
+{
+	char tmp[128];
+	DAVA::KeyedArchive *retArch = new DAVA::KeyedArchive();
+	DAVA::KeyedArchive *tmpArch;
+
+	DAVA::Map<void *, const DAVA::IntrospectionInfo *> objectsList;
+	DAVA::Map<void *, const DAVA::IntrospectionInfo *>::iterator i;
+
+	SearchIntrospection(object, info, &objectsList);
+
+	tmpArch = SerializeIntrospection(object, info);
+	sprintf(tmp, "%ld %s", tmpArch->GetArchiveId(), info->Name());
+	retArch->SetArchive(tmp, tmpArch);
+	tmpArch->Release();
+
+	for (i = objectsList.begin(); i != objectsList.end(); ++i)
+	{
+		tmpArch = SerializeIntrospection(i->first, i->second);
+		sprintf(tmp, "%ld %s", tmpArch->GetArchiveId(), i->second->Name());
+		retArch->SetArchive(tmp, tmpArch);
+		tmpArch->Release();
+	}
+
+	DumpKeyedArchive(retArch);
+	printf("\n\n");
+	retArch->Release();
+}
+
+DAVA::KeyedArchive* PropertyEditor::SerializeIntrospection(void *object, const DAVA::IntrospectionInfo *info)
+{
+	DAVA::KeyedArchive* ret = new DAVA::KeyedArchive();
+
+	ret->SetArchiveId((DAVA::uint64) object);
+	while(NULL != info && NULL != object)
+	{
+		for (int i = 0; i < info->MembersCount(); ++i)
+		{
+			const DAVA::IntrospectionMember *member = info->Member(i);
+			if(!member->Type()->IsPointer())
+			{
+				if(member->Type()->GetIntrospection())
+				{
+					ret->SetArchive(member->Name(), SerializeIntrospection(member->Data(object), member->Type()->GetIntrospection()));
+				}
+				else if(NULL != member->Collection())
+				{
+					ret->SetArchive(member->Name(), SerializeCollection(member->Data(object), member->Collection()));
+				}
+				else
+				{
+					ret->SetVariant(member->Name(), &(member->Value(object)));
+				}
+			}
+			else
+			{
+				DAVA::uint64 ptr = (DAVA::uint64) member->Data(object);
+				ret->SetUInt64(member->Name(), ptr);
+			}
+		}
+
+		info = info->BaseInfo();
+	}
+
+	return ret;
+}
+
+DAVA::KeyedArchive* PropertyEditor::SerializeCollection(void *object, const DAVA::IntrospectionCollectionBase *collection)
+{
+	DAVA::KeyedArchive* ret = new DAVA::KeyedArchive();
+
+	ret->SetArchiveId((DAVA::uint64) object);
+	if(NULL != collection && NULL != object)
+	{
+		char tmpName[10];
+		int j = 0;
+		DAVA::IntrospectionCollectionBase::Iterator i = collection->Begin(object);
+
 		while(NULL != i)
 		{
-			b->ValueType();
-			int *p = (int *) b->ItemPointer(i);
-			if(NULL != p)
+			sprintf(tmpName, "%d", j++);
+
+			if(!collection->ItemType()->IsPointer())
 			{
-				printf("%d\n", *p);
+				// collection with introspection object
+				if(NULL != collection->ItemType()->GetIntrospection())
+				{
+					ret->SetArchive(tmpName, SerializeIntrospection(collection->ItemData(i), collection->ItemType()->GetIntrospection()));
+				}
+				// collection with any other type
+				else
+				{
+					// ret->SetVariant(tmpName, collection->It)
+					// TODO:
+					// ...
+					// 
+					// 
+
+					printf("Don't know how to serialize\n");
+				}
 			}
-			i = b->Next(i);
+			else
+			{
+				DAVA::uint64 ptr = (DAVA::uint64) collection->ItemData(i);
+				ret->SetUInt64(tmpName, ptr);
+			}
+
+			i = collection->Next(i);
 		}
 	}
-	*/
 
-	//aaaGetObjectsToContainer(vec);
+	return ret;
+}
 
+void PropertyEditor::SearchIntrospection(void *object, const DAVA::IntrospectionInfo *info, DAVA::Map<void *, const DAVA::IntrospectionInfo *> *result)
+{
+	if(NULL != info && NULL != object && NULL != result)
+	{
+		(*result)[object] = info;
 
-	//DAVA::MetaInfo* info = DAVA::MetaInfo::Instance< DAVA::Vector<int> >();
-	//printf("%s\n", info->GetTypeName());
+		while(NULL != info && NULL != object)
+		{
+			for (int i = 0; i < info->MembersCount(); ++i)
+			{
+				const DAVA::IntrospectionMember *member = info->Member(i);
+				if(NULL != member->Type()->GetIntrospection() &&
+					member->Type()->IsPointer())
+				{
+					SearchIntrospection(member->Data(object), member->Type()->GetIntrospection(), result);
+				}
+				else if(NULL != member->Collection())
+				{
+					const IntrospectionCollectionBase* collection = member->Collection();
+					void* collectionObject = member->Data(object);
+
+					if(NULL != collection->ItemType()->GetIntrospection() &&
+						collection->ItemType()->IsPointer())
+					{
+						DAVA::IntrospectionCollectionBase::Iterator ci = collection->Begin(collectionObject);
+						while(NULL != ci)
+						{
+							SearchIntrospection(collection->ItemData(ci), collection->ItemType()->GetIntrospection(), result);
+							ci = collection->Next(ci);
+						}
+					}
+				}
+			}
+
+			info = info->BaseInfo();
+		}
+	}
+}
+
+void PropertyEditor::DumpKeyedArchive(DAVA::KeyedArchive *archive, int level)
+{
+	for (int j = 0; j < level; j++) { printf("  "); }
+	printf("| ");
+	printf("Archive %lu\n", archive->GetArchiveId());
+
+	Map<String, VariantType*> map = archive->GetArchieveData();
+	Map<String, VariantType*>::iterator i = map.begin();
+	for(i; i != map.end(); ++i)
+	{
+		bool need_line_end = true;
+
+		for (int j = 0; j < (level + 1); j++) { printf("  "); }
+		printf("| ");
+
+		printf("%s", i->first.c_str());
+		for (int j = 0; j < (35 - (int) strlen(i->first.c_str()) - level * 2); j++) { printf(" ", i->first.c_str()); }
+		printf(" : ");
+
+		switch(i->second->GetType())
+		{
+		case VariantType::TYPE_KEYED_ARCHIVE:
+			printf("is KeyedArchive\n");
+			DumpKeyedArchive(i->second->AsKeyedArchive(), level + 2);
+			need_line_end = false;
+			break;
+		case VariantType::TYPE_STRING:
+			printf("%s", i->second->AsString().c_str());
+			break;	
+		case VariantType::TYPE_WIDE_STRING:
+			printf("%s", i->second->AsWideString().c_str());
+			break;
+			/*
+		case VariantType::TYPE_BOOLEAN:
+			break;
+		case VariantType::TYPE_INT32:
+			break;	
+		case VariantType::TYPE_UINT32:
+			break;	
+		case VariantType::TYPE_FLOAT:
+			break;	
+			*/
+		case VariantType::TYPE_INT64:
+			printf("%ld", i->second->AsInt64());
+			break;
+		case VariantType::TYPE_UINT64:
+			printf("%lu", i->second->AsUInt64());
+			break;
+		default:
+			const MetaInfo* varMeta = i->second->Meta();
+			if(NULL != varMeta)
+			{
+				printf("%s", varMeta->GetTypeName());
+			}
+			else
+			{
+				printf("unknown");
+			}
+		}
+
+		if(need_line_end) printf("\n");
+	}
+
+	for (int j = 0; j < level; j++) { printf("  "); }
+	printf("| ---\n");
 }

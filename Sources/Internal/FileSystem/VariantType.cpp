@@ -1090,6 +1090,16 @@ VariantType& VariantType::operator=(const VariantType& other)
 	return *this;
 }
 
+const MetaInfo* VariantType::Meta()
+{
+	if(type >= 0 && type < TYPES_COUNT)
+	{
+		return variantNamesMap[type].variantMeta;
+	}
+	else
+		return NULL;
+}
+
 VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 {
 	VariantType v;
@@ -1170,6 +1180,11 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 		v.SetAABBox3(*((DAVA::AABBox3 *) src));
 		break;
 	default:
+		printf("MetaType: %s, size %d, is pointer %d, introspection %p\n", meta->GetTypeName(), meta->GetSize(), meta->IsPointer(), meta->GetIntrospection());
+		if(NULL != meta->GetIntrospection())
+		{
+			printf("Introspection: %s\n", meta->GetIntrospection()->Name());
+		}
 		DVASSERT(0 && "Don't know how to load data for such VariantType");
 	}
 

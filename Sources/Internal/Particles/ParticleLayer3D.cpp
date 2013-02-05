@@ -155,17 +155,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
 {
 	ParticleLayer::LoadFromYaml(configPath, node);
-
-	if(additive)
-	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE);
-	}
-	else
-	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
-	}
+	SetAdditive(additive);
 }
 
 ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
@@ -183,6 +173,21 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 Material * ParticleLayer3D::GetMaterial()
 {
 	return material;
+}
+	
+void ParticleLayer3D::SetAdditive(bool additive)
+{
+	ParticleLayer::SetAdditive(additive);
+	if(additive)
+	{
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE);
+	}
+	else
+	{
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+	}
 }
 
 };
