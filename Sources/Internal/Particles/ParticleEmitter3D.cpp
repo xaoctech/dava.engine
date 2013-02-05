@@ -30,14 +30,13 @@ void ParticleEmitter3D::AddLayer(ParticleLayer * layer, ParticleLayer * layerToM
 	}
 }
 
-void ParticleEmitter3D::RenderUpdate(float32 timeElapsed)
+void ParticleEmitter3D::RenderUpdate(Camera *camera, float32 timeElapsed)
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
 
-    Camera * camera = Scene::GetActiveScene()->GetRenderSystem()->GetCamera();
 	Draw(camera);
-
+    
 	RenderManager::Instance()->SetBlendMode(srcMode, destMode);
 }
 

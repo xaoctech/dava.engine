@@ -250,7 +250,7 @@ public:
 		If you using ParticleEmitter directly you should call this function to draw emitter.
 		Instead of use it directly check ParticleEmitterObject class, that allow you to use ParticleEmitters inside GameObject hierarchy.
 	 */
-	virtual void RenderUpdate(float32 timeElapsed);
+	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
 
 	/**
 	 \brief Enable/disable autorestart.

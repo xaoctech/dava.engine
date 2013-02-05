@@ -247,12 +247,10 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	}
 }
 
-void ParticleEmitter::RenderUpdate(float32 timeElapsed)
+void ParticleEmitter::RenderUpdate(Camera *camera, float32 timeElapsed)
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
-
-	Camera * camera = Scene::GetActiveScene()->GetRenderSystem()->GetCamera();
 
 	// Yuri Coder, 2013/01/30. ParticleEmitter class can be now only 2D.
 	if(particlesFollow)
