@@ -25,7 +25,6 @@ static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::
 
 void ParticleLayerBatch::Draw(Camera * camera)
 {
-	if(!totalCount)return;
 	if(!renderObject)return;
 	Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
 	if (!worldTransformPtr)return;
@@ -38,6 +37,7 @@ void ParticleLayerBatch::Draw(Camera * camera)
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
 	particleLayer->Draw(camera);
+	if(!totalCount)return;
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);
 	material->PrepareRenderState();
