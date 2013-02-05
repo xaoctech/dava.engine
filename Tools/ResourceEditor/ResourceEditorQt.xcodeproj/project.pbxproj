@@ -396,7 +396,7 @@
 		E838D8D516B00AAB006F1721 /* QtPropertyItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8CE16B00AAB006F1721 /* QtPropertyItemDelegate.cpp */; };
 		E838D8D616B00AAB006F1721 /* QtPropertyModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8D016B00AAB006F1721 /* QtPropertyModel.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
-		E898A2D516BD284200732C04 /* libFramework copy.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E898A2D416BD27B600732C04 /* libFramework copy.a */; };
+		E898A2D516BD284200732C04 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E898A2D416BD27B600732C04 /* libFrameworkQt.a */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
@@ -1262,7 +1262,7 @@
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
-				E898A2D516BD284200732C04 /* libFramework copy.a in Frameworks & Libraries */,
+				E898A2D516BD284200732C04 /* libFrameworkQt.a in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
 				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
@@ -2560,7 +2560,7 @@
 			isa = PBXGroup;
 			children = (
 				E898A2D216BD27B600732C04 /* libFramework.a */,
-				E898A2D416BD27B600732C04 /* libFramework copy.a */,
+				E898A2D416BD27B600732C04 /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2752,10 +2752,10 @@
 			remoteRef = E898A2D116BD27B600732C04 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E898A2D416BD27B600732C04 /* libFramework copy.a */ = {
+		E898A2D416BD27B600732C04 /* libFrameworkQt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libFramework copy.a";
+			path = libFrameworkQt.a;
 			remoteRef = E898A2D316BD27B600732C04 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

@@ -61,7 +61,7 @@ public:
     void RemoveRenderBatch(RenderBatch * batch);
     uint32 GetRenderBatchCount();
     
-    void Update();
+    void Update(Camera * camera);
     virtual void Draw(Camera * camera);
 private:
     FastName name;
@@ -71,6 +71,13 @@ private:
     uint32 flags;
     //RenderBatchArray * renderBatchArray;
     
+    struct RenderBatchSortItem
+    {
+        pointer_size sortingKey;
+        RenderBatch * renderBatch;
+    };
+    Vector<RenderBatchSortItem> sortArray;
+    static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
 public:
     
     INTROSPECTION(RenderLayer,
