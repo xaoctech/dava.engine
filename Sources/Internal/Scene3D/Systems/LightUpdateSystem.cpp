@@ -61,7 +61,9 @@ void LightUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     {
         // Update new transform pointer, and mark that transform is changed
         Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
-        ((LightComponent*)entity->GetComponent(Component::LIGHT_COMPONENT))->GetLightObject()->SetPositionDirectionFromMatrix(*worldTransformPointer);
+		Light * light = ((LightComponent*)entity->GetComponent(Component::LIGHT_COMPONENT))->GetLightObject();
+        light->SetPositionDirectionFromMatrix(*worldTransformPointer);
+		entity->GetScene()->renderSystem->MarkForUpdate(light);
     }
     
     //if (event == EventSystem::ACTIVE_CAMERA_CHANGED)
@@ -73,7 +75,7 @@ void LightUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     
 void LightUpdateSystem::AddEntity(SceneNode * entity)
 {
-    LightNode * lightObject = ((LightComponent*)entity->GetComponent(Component::LIGHT_COMPONENT))->GetLightObject();
+    Light * lightObject = ((LightComponent*)entity->GetComponent(Component::LIGHT_COMPONENT))->GetLightObject();
     if (!lightObject)return;
 
     entityObjectMap.Insert(entity, lightObject);
@@ -82,7 +84,7 @@ void LightUpdateSystem::AddEntity(SceneNode * entity)
 
 void LightUpdateSystem::RemoveEntity(SceneNode * entity)
 {
-    LightNode * lightObject = entityObjectMap.Value(entity);
+    Light * lightObject = entityObjectMap.Value(entity);
     if (!lightObject)
 	{
 		return;

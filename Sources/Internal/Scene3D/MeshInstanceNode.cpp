@@ -807,12 +807,12 @@ void MeshInstanceNode::BakeTransforms()
 void MeshInstanceNode::UpdateLights()
 {
     Vector3 meshPosition = Vector3() * GetWorldTransform();
-    LightNode * nearestLight = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, meshPosition);
+    Light * nearestLight = scene->GetNearestDynamicLight(Light::TYPE_COUNT, meshPosition);
 
     RegisterNearestLight(nearestLight);
 }
 
-void MeshInstanceNode::RegisterNearestLight(LightNode * node)
+void MeshInstanceNode::RegisterNearestLight(Light * node)
 {
     materialState->SetLight(0, node);
 }

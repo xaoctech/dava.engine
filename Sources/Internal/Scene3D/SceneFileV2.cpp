@@ -292,10 +292,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         
     SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
-	rootNode->SetScene(_scene);
+	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
-        LoadHierarchy(_scene, rootNode, file, 1);
+        LoadHierarchy(0, rootNode, file, 1);
     }
     
     OptimizeScene(rootNode);
@@ -569,7 +569,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
         
-        LightNode * light = new LightNode();
+        Light * light = new Light();
         light->Load(archive, this);
         light->SetDynamic(isDynamic);
         
@@ -769,7 +769,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         
         //
         SceneNode * parent = oldMeshInstanceNode->GetParent();
-        for (uint32 k = 0; k < parent->GetChildrenCount(); ++k)
+        for (int32 k = 0; k < parent->GetChildrenCount(); ++k)
         {
             ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
             if (oldShadowVolumeNode)
@@ -845,7 +845,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 			parent->RemoveNode(lod);
 		}
 
-		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
+		//GlobalEventSystem::Instance()->Event(newNode, )
+		//newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
 		newNode->Release();
 		return true;
 	}

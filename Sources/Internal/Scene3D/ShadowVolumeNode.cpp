@@ -71,7 +71,7 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	RenderManager::Instance()->AttachRenderData();
 
 	Vector3 position = Vector3() * GetWorldTransform();
-	LightNode * light = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, position);
+	Light * light = scene->GetNearestDynamicLight(Light::TYPE_COUNT, position);
 	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
 	if (light && uniformLightPosition0 != -1)
 	{

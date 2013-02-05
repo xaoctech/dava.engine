@@ -39,7 +39,8 @@
 namespace DAVA 
 {
 class SceneFileV2;
-class LightNode : public BaseObject
+
+class Light : public BaseObject
 {
 public:
     enum eType
@@ -58,8 +59,8 @@ public:
         CAST_SHADOW = 1 << 1,
     };
     
-    LightNode();
-    virtual ~LightNode();
+    Light();
+    virtual ~Light();
     
     virtual BaseObject * Clone(BaseObject * dstNode = NULL);
 
@@ -91,6 +92,8 @@ public:
     void AddFlag(uint32 flag);
     void RemoveFlag(uint32 flag);
     uint32 GetFlags();
+
+	//void SetRenderSystem
     
 protected:
     Vector3 position;
@@ -108,7 +111,7 @@ protected:
     
 public:
     
-    INTROSPECTION_EXTEND(LightNode, BaseObject,
+    INTROSPECTION_EXTEND(Light, BaseObject,
         MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          

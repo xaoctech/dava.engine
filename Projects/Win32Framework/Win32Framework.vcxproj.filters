@@ -1227,6 +1227,12 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h">
       <Filter>Internal\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2146,6 +2152,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp">
       <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

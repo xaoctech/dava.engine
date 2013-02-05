@@ -122,7 +122,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
             
             //sceneNode = //EditorLightNode::CreateSceneAndEditorLight();
             sceneNode = new SceneNode();
-            sceneNode->AddComponent(new LightComponent(ScopedPtr<LightNode>(new LightNode)));
+            sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
             sceneNode->SetName("Light");
             break;
         }
