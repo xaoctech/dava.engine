@@ -372,6 +372,18 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	return node;
 }
 
+DAVA::SceneNode* SceneDataManager::SceneGetRootNode(SceneData *scene)
+{
+	DAVA::SceneNode *node = NULL;
+
+	if(NULL != scene)
+	{
+		node = scene->GetScene();
+	}
+
+	return node;
+}
+
 void SceneDataManager::SceneShowPreview(const DAVA::String &path)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());

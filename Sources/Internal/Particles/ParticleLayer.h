@@ -142,6 +142,9 @@ public:
 
 	// Reload the layer sprite, update the Frames timeline if needed.
 	void ReloadSprite();
+	
+	virtual void SetAdditive(bool additive);
+	bool GetAdditive() const {return additive;};
 
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
@@ -178,6 +181,8 @@ protected:
 
 	ParticleLayerBatch * renderBatch;
 
+	bool		additive;
+	
 public:
 	String			layerName;
 	Vector2			pivotPoint;
@@ -223,7 +228,6 @@ public:
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
 	float32		alignToMotion;
-	bool		additive;
 	float32		startTime;
 	float32		endTime;
 	int32		frameStart;

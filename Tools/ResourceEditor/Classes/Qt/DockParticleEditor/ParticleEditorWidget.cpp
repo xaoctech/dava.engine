@@ -56,6 +56,20 @@ void ParticleEditorWidget::DeleteOldWidget()
 
 void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode)
 {
+	ParticleEmitter* emitter = NULL;
+	if (emitterNode)
+	{
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+			return;
+		}
+		emitter = emitterComponent->GetParticleEmitter();
+		if (emitterPropertiesWidget &&
+			emitterPropertiesWidget->GetEmitter() == emitter)
+			return;
+	}
+	
 	DeleteOldWidget();
 	
 	if (!emitterNode)
@@ -65,12 +79,6 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	}
 	
 	emit ChangeVisible(true);
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!emitterComponent)
-    {
-        return;
-    }
-	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 
@@ -95,6 +103,21 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 
 void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
 {
+	ParticleEmitter* emitter = NULL;
+	if (emitterNode)
+	{
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+			return;
+		}
+		emitter = emitterComponent->GetParticleEmitter();
+		if (emitterLayerWidget &&
+			emitterLayerWidget->GetLayer() == layer &&
+			emitterLayerWidget->GetEmitter() == emitter)
+			return;
+	}
+
 	DeleteOldWidget();
 	
 	if (!emitterNode || !layer)
@@ -104,12 +127,6 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 	}
 
 	emit ChangeVisible(true);
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!emitterComponent)
-    {
-        return;
-    }
-	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 
@@ -134,6 +151,22 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 
 void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
+	ParticleEmitter* emitter = NULL;
+	if (emitterNode)
+	{
+		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		if (!emitterComponent)
+		{
+			return;
+		}
+		emitter = emitterComponent->GetParticleEmitter();
+		if (layerForceWidget &&
+			layerForceWidget->GetLayer() == layer &&
+			layerForceWidget->GetForceIndex() == forceIndex &&
+			layerForceWidget->GetEmitter() == emitter)
+			return;
+	}
+
 	DeleteOldWidget();
 	
 	if (!emitterNode || !layer)
@@ -143,12 +176,6 @@ void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer
 	}
 	
 	emit ChangeVisible(true);
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!emitterComponent)
-    {
-        return;
-    }
-	ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
 	if (!emitter)
 		return;
 	
