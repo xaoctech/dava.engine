@@ -108,7 +108,10 @@ const FastName & RenderBatch::GetOwnerLayerName()
     
     if (material)
     {
-        if (material->GetOpaque())return translucentLayer;
+        if(material->GetOpaque() || material->GetAlphablend())
+		{
+			return translucentLayer;
+		}
     }
     
     return opaqueLayer;

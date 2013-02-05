@@ -606,20 +606,25 @@ const Color & Material::GetFogColor() const
 
 void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 {
+
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
         if (!instanceMaterialState->lightmapTexture)
         {
             SetSetupLightmap(true);
-        }else
+        }
+		else
         {
             SetSetupLightmap(false);
             renderStateBlock.SetTexture(instanceMaterialState->lightmapTexture, 1);
         }
-    }else if (MATERIAL_UNLIT_TEXTURE_DECAL == type)
+    }
+	else if (MATERIAL_UNLIT_TEXTURE_DECAL == type || MATERIAL_UNLIT_TEXTURE_DETAIL == type)
     {
         renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
     }
+
+
     
 	renderStateBlock.shader = shader;
 
