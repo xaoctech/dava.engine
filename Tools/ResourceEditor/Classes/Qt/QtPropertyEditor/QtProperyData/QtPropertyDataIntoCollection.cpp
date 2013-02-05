@@ -23,6 +23,13 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 					QtPropertyData *childData = new QtPropertyDataIntrospection(itemObject, itemInfo);
 					ChildAdd(QString::number(index), childData);
 				}
+				else
+				{
+					QString s;
+					QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", itemObject));
+					childData->SetFlags(FLAG_IS_DISABLED);
+					ChildAdd(QString::number(index), childData);
+				}
 			}
 			else
 			{

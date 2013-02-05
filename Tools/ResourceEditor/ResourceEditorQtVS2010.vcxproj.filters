@@ -190,9 +190,6 @@
     <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtProperyData">
-      <UniqueIdentifier>{bfc840f0-c9af-4eff-b92c-fdb04eb56529}</UniqueIdentifier>
-    </Filter>
     <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
     </Filter>
@@ -1469,15 +1466,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor\QtPropertyWidgets</Filter>
