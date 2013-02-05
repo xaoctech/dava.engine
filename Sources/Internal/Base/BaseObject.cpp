@@ -52,7 +52,8 @@ void BaseObject::Save(KeyedArchive * archive)
     
 //    SaveIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
-    
+
+/*
 void BaseObject::SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
 {
     String keyPrefix = key;
@@ -152,8 +153,7 @@ void * BaseObject::GetMemberObject(const IntrospectionMember *member, void * obj
 
     return member->Pointer(object);
 }
-
-
+*/
 
 BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
 {
@@ -173,7 +173,8 @@ void BaseObject::Load(KeyedArchive * archive)
 {
 //    LoadIntrospection(GetClassName(), archive, GetIntrospection(this), this);
 }
- 
+
+/*
 void BaseObject::LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void *object)
 {
     String keyPrefix = key;
@@ -271,7 +272,8 @@ void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const
         Logger::Error("[BaseObject::LoadCollection] Need resize collection");
     }
 }
-    
+*/
+
 };
 
 
