@@ -318,9 +318,11 @@ public:
     eDeviceFamily GetDeviceFamily();
     
     void EnableReloadResourceOnResize(bool enable);
+	
+protected:
+	int32 screenOrientation;
 
 private:
-	int32 screenOrientation;
 	float32 screenWidth;
 	float32 screenHeight;
 	

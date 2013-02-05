@@ -71,15 +71,9 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 
 		nativeResize(width, height);
 
-		GLES20.glViewport(0, 0, w, h);
+		//GLES20.glViewport(0, 0, w, h);
 
 		Log.w(JNIConst.LOG_TAG, "_________onSurfaceChanged__DONE___");
-	}
-	
-	public void SetWindowSize(int w, int h)
-	{
-		width = w;
-		height = h;
 	}
 
 	public boolean isFirstDraw = true;

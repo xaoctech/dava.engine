@@ -60,6 +60,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         // initialize GL VIEW
         //mGLView = new JNIGLSurfaceView(this);
         mGLView = GetSurfaceView();
+        assert(mGLView != null);
         mGLView.setFocusableInTouchMode(true);
         mGLView.setClickable(true);
         mGLView.setFocusable(true);

@@ -95,7 +95,7 @@ namespace DAVA
 
 	void CorePlatformAndroid::ResizeView(int32 w, int32 h)
 	{
-//		if(oldWidth != w || oldHeight != h)
+		if(oldWidth != w || oldHeight != h)
 		{
 			oldWidth = w;
 			oldHeight = h;
@@ -105,17 +105,18 @@ namespace DAVA
 
 			UpdateScreenMode();
 		}
-
 	}
 
 	void CorePlatformAndroid::UpdateScreenMode()
 	{
+		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] start");
 		UIControlSystem::Instance()->SetInputScreenAreaSize(windowedMode.width, windowedMode.height);
 		Core::Instance()->SetPhysicalScreenSize(windowedMode.width, windowedMode.height);
 
 		RenderManager::Instance()->InitFBSize(windowedMode.width, windowedMode.height);
-//        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
+        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
 
+		Logger::Debug("[CorePlatformAndroid::] w = %d, h = %d", windowedMode.width, windowedMode.height);
 		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] done");
 	}
 
@@ -153,27 +154,14 @@ namespace DAVA
 
 			Logger::Debug("[CorePlatformAndroid::] before create renderer");
 			RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
-			RenderManager::Instance()->Init(0, 0);
 
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
 
 			FrameworkDidLaunched();
-
-			KeyedArchive * options = Core::GetOptions();
-
-			if (options)
-			{
-				windowedMode.width = options->GetInt32("width");
-				windowedMode.height = options->GetInt32("height");
-				windowedMode.bpp = options->GetInt32("bpp");
-			}
-
-			Logger::Debug("[CorePlatformAndroid::] w = %d, h = %d", windowedMode.width, windowedMode.height);
+			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL we on Android
 
 			RenderManager::Instance()->SetFPS(60);
-
-			UpdateScreenMode();
 
 			//////////////////////////////////////////////////////////////////////////
 			Core::Instance()->SystemAppStarted();
