@@ -2144,5 +2144,8 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp">
       <Filter>Internal\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp">
+      <Filter>Internal\Base</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

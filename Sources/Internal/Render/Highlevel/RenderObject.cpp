@@ -86,8 +86,8 @@ RenderObject * RenderObject::Clone()
 	ro->type = type;
 	ro->flags = flags;
 	ro->debugFlags = debugFlags;
-	ro->bbox = bbox;
-	ro->worldBBox = worldBBox;
+	//ro->bbox = bbox;
+	//ro->worldBBox = worldBBox;
 
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)

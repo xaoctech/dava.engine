@@ -65,6 +65,8 @@ SceneNode::SceneNode()
 {
 //    Logger::Debug("SceneNode: %p", this);
     componentFlags = 0;
+
+	components.resize(Component::COMPONENT_COUNT);
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
         components[k] = 0;
     
@@ -147,8 +149,8 @@ Component * SceneNode::GetOrCreateComponent(uint32 componentType)
 	Component * ret = components[componentType];
 	if(!ret)
 	{
-		components[componentType] = Component::CreateByType(componentType);
-		ret = components[componentType];
+		ret = Component::CreateByType(componentType);
+		AddComponent(ret);
 	}
 
 	return ret;
@@ -961,8 +963,6 @@ void SceneNode::SetVisible(bool isVisible)
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
 	}
-
-
 }
 
 void SceneNode::SetUpdatable(bool isUpdatable)

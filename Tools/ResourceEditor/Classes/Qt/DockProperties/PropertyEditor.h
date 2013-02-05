@@ -6,6 +6,76 @@
 
 class DAVA::SceneNode;
 
+class TestBase
+{
+public:
+	int in;
+
+	INTROSPECTION(TestBase,
+		MEMBER(in, "Test in", 0)
+		);
+};
+
+class TestBaseChild : public TestBase
+{
+public:
+	int ccc;
+
+	INTROSPECTION_EXTEND(TestBaseChild, TestBase, 
+		MEMBER(ccc, "ccc", 0)
+		);
+};
+
+class TestIntro
+{
+public:
+	TestIntro()
+	{
+		child1 = new TestBaseChild();
+		child1->in = 111;
+		((TestBaseChild *) child1)->ccc = 222;
+
+		const DAVA::IntrospectionInfo* i1 = DAVA::GetIntrospection(child1);
+		const DAVA::IntrospectionInfo* i2 = DAVA::GetIntrospectionByObject<TestBase>(child1);
+		const DAVA::IntrospectionInfo* i3 = DAVA::MetaInfo::Instance<TestBase>()->GetIntrospection();
+		const DAVA::IntrospectionInfo* i4 = DAVA::MetaInfo::Instance<TestBase>()->GetIntrospection(child1);
+
+		for(int i = 0; i < 10; ++i)
+		{
+			TestBaseChild *tt = NULL;
+
+			if(i & 0x1)
+			{
+				tt = new TestBaseChild();
+				tt->ccc = i * 5;
+				tt->in = i * 10;
+			}
+
+			v.push_back(tt);
+		}
+	}
+
+	int a;
+	int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	TestBase *child1;
+	DAVA::Vector<TestBase *> v;
+
+	INTROSPECTION(TestIntro,
+		MEMBER(e, "Test e", 0)
+		MEMBER(f, "Test f", 0)
+		MEMBER(a, "Test a", 0)
+		MEMBER(b, "Test b", 0)
+		MEMBER(c, "Test c", 0)
+		MEMBER(d, "Test d", 0)
+		MEMBER(child1, "child1", 0)
+		COLLECTION(v, "Test collection v", 0)
+		);
+};
+
 class PropertyEditor : public QtPropertyEditor
 {
 	Q_OBJECT
@@ -15,7 +85,16 @@ public:
 	~PropertyEditor();
 
 	void SetNode(DAVA::SceneNode *node);
-	void Test();
+	void Test(DAVA::BaseObject *object);
+
+
+	void SaveIntospection(void *object, const DAVA::IntrospectionInfo *info);
+
+	DAVA::KeyedArchive* SerializeIntrospection(void *object, const DAVA::IntrospectionInfo *info);
+	DAVA::KeyedArchive* SerializeCollection(void *object, const DAVA::IntrospectionCollectionBase *collection);
+
+	void SearchIntrospection(void *object, const DAVA::IntrospectionInfo *info, DAVA::Map<void *, const DAVA::IntrospectionInfo *> *result);
+	void DumpKeyedArchive(DAVA::KeyedArchive *archive, int level = 0);
 
 protected:
     void AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
@@ -30,123 +109,4 @@ protected:
 	DAVA::SceneNode *curNode;
 };
 
-#if 0
-template<template <typename, typename> class C, typename T, typename A>
-class IntrospectionCollection : public IntrospectionCollectionBase
-{
-public:
-	IntrospectionCollection(C<T, A>& _collection)
-		: collection(&_collection)
-	{ }
-
-	DAVA::MetaInfo* CollectionType()
-	{
-		return DAVA::MetaInfo::Instance<C<T, A> >();
-	}
-
-	DAVA::MetaInfo* ValueType()
-	{
-		return DAVA::MetaInfo::Instance<T>();
-	}
-
-	int Size()
-	{
-		return collection->size();
-	}
-
-	void* Begin()
-	{
-		void* i = NULL;
-
-		C<T, A>::iterator begin = collection->begin();
-		C<T, A>::iterator end = collection->end();
-
-		if(begin != end)
-		{
-			CollectionPos *pos = new CollectionPos();
-			pos->curPos = begin;
-			pos->endPos = end;
-
-			i = (void*) pos;
-		}
-
-		return i;
-	}
-
-	void* Next(void* i)
-	{
-		CollectionPos* pos = (CollectionPos *) i;
-
-		if(NULL != pos)
-		{
-			pos->curPos++;
-
-			if(pos->curPos == pos->endPos)
-			{
-				delete pos;
-				i = NULL;
-			}
-		}
-
-		return i;
-	}
-
-	void Finish(void* i)
-	{
-		CollectionPos* pos = (CollectionPos *) i;
-		if(NULL != pos)
-		{
-			delete pos;
-		}
-	}
-
-	void GetValue(void* i, void *dst)
-	{
-		CollectionPos* pos = (CollectionPos *) i;
-		if(NULL != pos)
-		{
-			T *dstT = (T*) dst;
-			*dstT = *(pos->curPos);
-		}
-	}
-
-	void SetValue(void* i, void *src)
-	{
-		CollectionPos* pos = (CollectionPos *) i;
-		if(NULL != pos)
-		{
-			T *srcT = (T*) src;
-			*(pos->curPos) = *srcT;
-		}
-	}
-
-	void* Pointer(void *i)
-	{
-		void *p = NULL;
-		CollectionPos* pos = (CollectionPos *) i;
-
-		if(NULL != pos)
-		{
-			p = &(*(pos->curPos));
-		}
-
-		return p;
-	}
-
-protected:
-	struct CollectionPos
-	{
-		typename C<T, A>::iterator curPos;
-		typename C<T, A>::iterator endPos;
-	};
-
-	C<T, A> *collection;
-};
-
-template<template <typename, typename> class Container, class T, class A>
-static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T, A> &t)
-{
-	return new IntrospectionCollection<Container, T, A>(t);
-}
-#endif
 #endif // __QT_PROPERTY_WIDGET_H__

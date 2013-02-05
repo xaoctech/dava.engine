@@ -318,7 +318,7 @@ void RenderSystem::Update(float32 timeElapsed)
     uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        objectsForUpdate[i]->RenderUpdate(timeElapsed);
+        objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
 }
 

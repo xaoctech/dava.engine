@@ -102,11 +102,12 @@ public:
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);
+	void EnumerateParticleEmitterComponents(SceneNode* rootNode, Vector<ParticleEmitterComponent*>& components);
     
     void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
-
+	void ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog);
     
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
