@@ -55,7 +55,7 @@ void Heightmap::ReleaseData()
     size = 0;
 }
     
-bool Heightmap::BuildFromImage(DAVA::Image *image)
+bool Heightmap::BuildFromImage(const DAVA::Image *image)
 {
     DVASSERT(image);
     if(size != image->width)
@@ -127,12 +127,12 @@ uint16 * Heightmap::Data()
     return data;
 }
 
-int32 Heightmap::Size()
+int32 Heightmap::Size() const
 {
     return size;
 }
     
-int32 Heightmap::GetTileSize()
+int32 Heightmap::GetTileSize() const
 {
     return tileSize;
 }
@@ -167,7 +167,7 @@ void Heightmap::Save(const String &filePathname)
     if(size && tileSize)
     {
         int32 blockCount = (size-1) / (tileSize - 1);
-        for(int iRow = 0; iRow < blockCount; ++iRow)
+        for(int32 iRow = 0; iRow < blockCount; ++iRow)
         {
             for(int32 iCol = 0; iCol < blockCount; ++iCol)
             {
@@ -215,7 +215,7 @@ bool Heightmap::Load(const String &filePathname)
     if(size && tileSize)
     {
         int32 blockCount = (size-1) / (tileSize - 1);
-        for(int iRow = 0; iRow < blockCount; ++iRow)
+        for(int32 iRow = 0; iRow < blockCount; ++iRow)
         {
             for(int32 iCol = 0; iCol < blockCount; ++iCol)
             {
