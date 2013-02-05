@@ -100,7 +100,7 @@ public:
 	inline bool IsInside(const AABBox3 & testBox) const;
 	
 	//! \brief get center
-	inline Vector3 GetCenter();
+	inline Vector3 GetCenter() const;
 
 	//! \brief copy operator of bounding box class
 	inline AABBox3 & operator =(const AABBox3 & _bbox);
@@ -254,7 +254,7 @@ inline AABBox3 & AABBox3::operator =(const AABBox3 & _bbox)
 }
 
 //! \brief get center
-inline Vector3 AABBox3::GetCenter()
+inline Vector3 AABBox3::GetCenter() const
 {
 	return (min + max) / 2.0f;
 }

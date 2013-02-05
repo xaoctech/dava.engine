@@ -123,7 +123,7 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
 
     for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
-        Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
+        //Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         const String & uniformName = shader->GetUniformName(uniformIndex);
         //Logger::Debug("Find uniform: %s", uniformName.c_str());
         

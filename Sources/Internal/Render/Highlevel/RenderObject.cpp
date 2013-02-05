@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -61,7 +62,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
         
     }
     
-    bbox.AddAABBox(batch->GetBoundingBox());
+    const AABBox3 & boundingBox = batch->GetBoundingBox();
+//    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
+//             boundingBox.min.y != AABBOX_INFINITY &&
+//             boundingBox.min.z != AABBOX_INFINITY);
+    
+    bbox.AddAABBox(boundingBox);
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)

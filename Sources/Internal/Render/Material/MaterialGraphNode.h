@@ -104,7 +104,7 @@ public:
     void SetType(const String & type);
     eType GetType() { return type; };
     
-    eNodeUsage SetUsage(eNodeUsage _usage) { usage = _usage; };
+    void SetUsage(eNodeUsage _usage) { usage = _usage; };
     eNodeUsage GetUsage() const { return usage; };
     
     void MergeConnectionModifiers(const String & usedByOtherNode);
