@@ -68,54 +68,6 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 	return JNI_VERSION_1_4;
 }
 
-
-bool CreateDocumentsPath(JNIEnv* env, jstring path)
-{
-	bool ret = false;
-
-	const char* utfString = env->GetStringUTFChars(path, NULL);
-	if (utfString)
-	{
-		strcpy(documentsFolderPath, utfString);
-		env->ReleaseStringUTFChars(path, utfString);
-
-		strcpy(folderDocuments, documentsFolderPath);
-		strcat(folderDocuments, "/Documents");
-
-		DIR *folder = opendir(folderDocuments);
-		if(folder)
-		{
-			ret = true;
-		}
-		else
-		{
-// 				S_IRGRP - Read permission for the file's group.
-// 				S_IROTH - Read permission for users other than the file owner.
-// 				S_IRUSR - Read permission for the file owner.
-// 				S_IRWXG - Read, write, and search or execute permission for the file's group. S_IRWXG is the bitwise inclusive-OR of S_IRGRP, S_IWGRP, and S_IXGRP.
-// 				S_IRWXO - Read, write, and search or execute permission for users other than the file owner. S_IRWXO is the bitwise inclusive-OR of S_IROTH, S_IWOTH, and S_IXOTH.
-// 				S_IRWXU - Read, write, and search, or execute, for the file owner; S_IRWXG is the bitwise inclusive-OR of S_IRUSR, S_IWUSR, and S_IXUSR.
-// 				S_ISGID - Privilege to set group ID (GID) for execution. When this file is run through an exec function, the effective group ID of the process is set to the group ID of the file. The process then has the same authority as the file owner, rather than the authority of the actual invoker.
-// 				S_ISUID - Privilege to set the user ID (UID) for execution. When this file is run through an exec function, the effective user ID of the process is set to the owner of the file. The process then has the same authority as the file owner, rather than the authority of the actual invoker.
-// 				S_ISVTX - Indicates shared text. Keep loaded as an executable file in storage.
-// 				S_IWGRP - Write permission for the file's group.
-// 				S_IWOTH - Write permission for users other than the file owner.
-// 				S_IWUSR - Write permission for the file owner.
-// 				S_IXGRP - Search permission (for a directory) or execute permission (for a file) for the file's group.
-// 				S_IXOTH - Search permission for a directory, or execute permission for a file, for users other than the file owner.
-// 				S_IXUSR - Search permission (for a directory) or execute permission (for a file) for the file owne
-			int retMake = mkdir(folderDocuments, S_IRWXG|S_IRWXO|S_IRWXU );//S_IRWXU|S_IRGRP|S_IXGRP);
-			ret = (0 == retMake);
-		}
-	}
-	else
-	{
-		LOGE("[CreateDocumentsPath] Can't create utf-string from path");
-	}
-
-	return ret;
-}
-
 bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString)
 {
 	bool ret = false;
@@ -135,10 +87,6 @@ bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString)
 
 	return ret;
 }
-
-
-
-
 
 void InitApplication(JNIEnv * env)
 {
@@ -194,7 +142,7 @@ void Java_com_dava_framework_JNIApplication_OnCreateApplication(JNIEnv* env, job
 	bool retCreateLogTag = CreateStringFromJni(env, logTag, androidLogTag);
 //	LOGI("___ OnCreateApplication __ %d", classthis);
 
-	bool retCreatedDocuments = CreateDocumentsPath(env, path);
+	bool retCreatedDocuments = CreateStringFromJni(env, path, documentsFolderPath);
 	bool retCreatedAssets = CreateStringFromJni(env, apppath, assetsFolderPath);
 	bool retCreatePackageName = CreateStringFromJni(env, packageName, androidPackageName);
 
@@ -212,6 +160,7 @@ void Java_com_dava_framework_JNIApplication_OnConfigurationChanged(JNIEnv * env,
 //		DAVA::Logger::Info("__ CONFIGURATION CHANGED ___  %p", env);
 	}
 }
+
 void Java_com_dava_framework_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis)
 {
 	if(core)

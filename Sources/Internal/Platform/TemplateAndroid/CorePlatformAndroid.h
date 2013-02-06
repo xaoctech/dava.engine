@@ -69,9 +69,7 @@ public:
 	AAssetManager * GetAssetManager();
 	void SetAssetManager(AAssetManager * mngr);
 
-
-    const char8 * GetInternalStoragePathname() const {return "";};
-    const char8 * GetExternalStoragePathname() const {return "";};
+	const String& GetExternalStoragePathname() const {return externalStorage;};
 	
 private:
 
@@ -91,13 +89,15 @@ private:
 
 	bool foreground;
 
-    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
-    
+	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+
 	Vector<DAVA::UIEvent> totalTouches;
 	int32 touchPhase;
 
 	AndroidSystemDelegate *androidDelegate;
 	AAssetManager * assetMngr;
+
+	String externalStorage;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

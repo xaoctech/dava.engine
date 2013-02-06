@@ -10,9 +10,7 @@ import android.util.Log;
 
 public class JNIApplication extends Application
 {
-	private static int errorState = 0;
-
-	private native void OnCreateApplication(String filePath, String appPath, String logTag, String packageName); 
+	private native void OnCreateApplication(String documentPath, String appPath, String logTag, String packageName); 
 	private native void OnConfigurationChanged(); 
 	private native void OnLowMemory(); 
 	private native void OnTerminate(); 
@@ -22,60 +20,39 @@ public class JNIApplication extends Application
 	public void onCreate()
 	{
 		super.onCreate();
-        Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
+		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
-        if(0 == errorState)
-        {
-        	java.io.File dataDir = getFilesDir(); 
-            Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] external files dir is %s", dataDir.toString())); 
-            
-            try
-            {
-                String []strs = getAssets().list("Data");
-                int count = strs.length;
-                for(int i = 0; i < count; ++i)
-                {
-                    Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] AL[%d]:  %s", i, strs[i])); 
-                }
-            }
-            catch(Exception e)
-            {
-                Log.e(JNIConst.LOG_TAG, "[Application::onCreate] Exc: " + e.getMessage()); 
-            }
-            
-    		String apkFilePath = null;
-    		ApplicationInfo appInfo = null;
-    		PackageManager packMgmr = getPackageManager();
-    		try 
-    		{
-    			appInfo = packMgmr.getApplicationInfo(JNIConst.PACKAGE_NAME, 0);
-    		} 
-    		catch (NameNotFoundException e) 
-    		{
-    			e.printStackTrace();
-    			throw new RuntimeException("Unable to locate assets, aborting...");
-    		}
-    		apkFilePath = appInfo.sourceDir; 
-            
-            Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", apkFilePath)); 
-        	OnCreateApplication(dataDir.toString(), apkFilePath, JNIConst.LOG_TAG, JNIConst.PACKAGE_NAME);
-        	
-        	SetAssetManager(getAssets());
-        }
-        else
-        {
-        	//Error
-        }
-        Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
+		String docDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
+		
+		String apkFilePath = null;
+		ApplicationInfo appInfo = null;
+		PackageManager packMgmr = getPackageManager();
+		try 
+		{
+			appInfo = packMgmr.getApplicationInfo(JNIConst.PACKAGE_NAME, 0);
+		} 
+		catch (NameNotFoundException e) 
+		{
+			e.printStackTrace();
+			throw new RuntimeException("Unable to locate assets, aborting...");
+		}
+		apkFilePath = appInfo.sourceDir;
+		
+		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", apkFilePath)); 
+		OnCreateApplication(docDir, apkFilePath, JNIConst.LOG_TAG, JNIConst.PACKAGE_NAME);
+		
+		SetAssetManager(getAssets());
+
+		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
 	}
 	
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
 	{
-    	Log.w(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged]")); 
+		Log.w(JNIConst.LOG_TAG, String.format("[Application::onConfigurationChanged]")); 
 
-    	super.onConfigurationChanged(newConfig);
+		super.onConfigurationChanged(newConfig);
 
 		OnConfigurationChanged();
 	}
@@ -83,9 +60,9 @@ public class JNIApplication extends Application
 	@Override
 	public void onLowMemory()
 	{
-    	Log.w(JNIConst.LOG_TAG, String.format("[Application::onLowMemory]")); 
+		Log.w(JNIConst.LOG_TAG, String.format("[Application::onLowMemory]")); 
 
-    	OnLowMemory();
+		OnLowMemory();
 
 		super.onLowMemory(); 
 	}
