@@ -28,6 +28,7 @@ class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
 class LandscapeEditorCustomColors;
 class LandscapeEditorVisibilityCheckTool;
+class Command;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -130,7 +131,10 @@ public:
 	void VisibilityToolSetAreaSize(uint32 size);
 
     void ProcessIsSolidChanging();
-    
+
+	void RemoveNode(SceneNode* node);
+	void SelectNode(SceneNode* node);
+
 protected:
 
     void InitControls();
@@ -223,6 +227,9 @@ protected:
     ePropertyShowState propertyShowState;
     
     RulerTool *landscapeRulerTool;
+
+	SceneNode* modifiedNode;
+	Matrix4 transformBeforeModification;
 };
 
 

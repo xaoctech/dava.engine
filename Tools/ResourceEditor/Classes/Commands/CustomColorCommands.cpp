@@ -131,7 +131,10 @@ void CommandDrawCustomColors::Execute()
 {
 	LandscapeEditorCustomColors* editor = GetEditor();
 	if (editor == NULL)
+	{
+		SetState(STATE_INVALID);
 		return;
+	}
 
 	if (redoImage == NULL)
 	{

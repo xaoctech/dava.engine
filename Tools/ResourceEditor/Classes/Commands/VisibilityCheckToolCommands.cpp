@@ -109,6 +109,8 @@ void CommandPlacePointVisibilityTool::Execute()
 	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
 	if (editor)
 		editor->SetVisibilityPoint(point);
+	else
+		SetState(STATE_INVALID);
 }
 
 void CommandPlacePointVisibilityTool::Cancel()
@@ -151,6 +153,8 @@ void CommandPlaceAreaVisibilityTool::Execute()
 	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
 	if (editor)
 		editor->SetVisibilityArea(point, size);
+	else
+		SetState(STATE_INVALID);
 }
 
 void CommandPlaceAreaVisibilityTool::Cancel()

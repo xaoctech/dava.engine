@@ -53,7 +53,10 @@ void CommandDrawHeightmap::Execute()
 {
 	LandscapeEditorHeightmap* editor = GetEditor();
 	if (editor == NULL)
+	{
+		SetState(STATE_INVALID);
 		return;
+	}
 
 	Heightmap* heightmap;
 	editor->GetHeightmap(&heightmap);

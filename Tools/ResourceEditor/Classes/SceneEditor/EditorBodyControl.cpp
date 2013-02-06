@@ -29,6 +29,9 @@
 
 #include "../SceneEditor/EditorConfig.h"
 
+#include "../Commands/CommandsManager.h"
+#include "../Commands/EditorBodyControlCommands.h"
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
@@ -253,24 +256,13 @@ void EditorBodyControl::PlaceOnLandscape()
 
 void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 {
-	if(node)
+	LandscapeNode * ls = scene->GetLandscape(scene);
+	if (ls && node)
 	{
-		Vector3 result;
-		LandscapeNode * ls = scene->GetLandscape(scene);
-		if (ls)
-		{
-			const Matrix4 & itemWT = node->GetWorldTransform();
-			Vector3 p = Vector3(0,0,0) * itemWT;
-			bool res = ls->PlacePoint(p, result);
-			if (res)
-			{
-				Vector3 offs = result - p;
-				Matrix4 invItem;
-				Matrix4 mod;
-				mod.CreateTranslation(offs);
-				node->SetLocalTransform(node->GetLocalTransform() * mod);
-			}						
-		}
+		CommandPlaceOnLandscape* command;
+		command = new CommandPlaceOnLandscape(node, ls);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
 	}
 }
 
@@ -396,6 +388,21 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 					scene->SetClipCamera(scene->GetCamera(0));
 				}
 			}
+			else
+			{
+				//TODO: remove this code. Undo/Redo should be application-wide hotkeys
+				if(UIEvent::PHASE_KEYCHAR == event->phase)
+				{
+					if(DVKEY_Z == event->tid && IsKeyModificatorPressed(DVKEY_CTRL))
+					{
+						CommandsManager::Instance()->Undo();
+					}
+					if(DVKEY_Z == event->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
+					{
+						CommandsManager::Instance()->Redo();
+					}
+				}
+			}
         }
 	}
 	
@@ -414,6 +421,12 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			isDrag = false;
 			inTouch = true;
 			touchStart = event->point;
+
+			if (selection)
+			{
+				modifiedNode = selection;
+				transformBeforeModification = selection->GetLocalTransform();
+			}
 		}
 		else if (event->phase == UIEvent::PHASE_DRAG)
 		{
@@ -425,18 +438,19 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 					isDrag = true;
 					if (selection && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 					{//copy object
-						SceneNode * clone = 0;
-						clone = selection->Clone(clone);
-						selection->GetParent()->AddNode(clone);
-						scene->SetSelection(clone);
+						CommandCloneObject* command = new CommandCloneObject(selection, this);
+						CommandsManager::Instance()->Execute(command);
+						SafeRelease(command);
+
 						selection = scene->GetProxy();
-                        SelectNodeAtTree(selection);
+						modifiedNode = scene->GetProxy();
+						transformBeforeModification = modifiedNode->GetLocalTransform();
 					}
-					
+
 					if (selection)
 					{
 						scene->SetBulletUpdate(selection, false);
-						
+
 						inTouch = true;
 						touchStart = event->point;
 						
@@ -479,13 +493,20 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
+				CommandTransformObject* command = new CommandTransformObject(modifiedNode,
+																			 transformBeforeModification,
+																			 modifiedNode->GetLocalTransform());
+				CommandsManager::Instance()->Execute(command);
+
                 if(modificationPanel->IsLandscapeRelative())
                 {
                     PlaceOnLandscape();
                 }
-                
+
 				if (selection)
+				{
 					scene->SetBulletUpdate(selection, true);
+				}
 			}
 			else
 			{
@@ -1292,4 +1313,15 @@ void EditorBodyControl::VisibilityToolSetArea()
 void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
 {
 	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
+}
+
+void EditorBodyControl::RemoveNode(SceneNode *node)
+{
+	scene->RemoveNode(node);
+}
+
+void EditorBodyControl::SelectNode(SceneNode *node)
+{
+	scene->SetSelection(node);
+	SelectNodeAtTree(node);
 }

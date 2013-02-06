@@ -29,6 +29,9 @@
 
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 
+#include "../Commands/SceneEditorScreenMainCommands.h"
+#include "CommandsManager.h"
+
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 {
@@ -293,8 +296,9 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-        BodyItem *iBody = FindCurrentBody();
-        iBody->bodyControl->AddNode(nodeDialog->GetSceneNode());
+		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
     }
 }
 
