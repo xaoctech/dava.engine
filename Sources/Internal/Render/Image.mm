@@ -1,5 +1,7 @@
 #import "Image.h"
 
+#ifdef __DAVAENGINE_IPHONE__
+
 #import <Foundation/Foundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <UIKit/UIKit.h>
@@ -9,7 +11,6 @@
 namespace DAVA
 {
     
-#ifdef __DAVAENGINE_IPHONE__
     
 void Image::SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback)
 {
@@ -46,6 +47,8 @@ void Image::SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback)
     [library release];
 }
 
-#endif
 
 }
+
+#endif //__DAVAENGINE_IPHONE_
+

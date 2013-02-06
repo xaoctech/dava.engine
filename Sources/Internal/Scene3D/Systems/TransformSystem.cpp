@@ -4,15 +4,16 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
 
-TransformSystem::TransformSystem()
+TransformSystem::TransformSystem(Scene * scene)
+:	SceneSystem(scene)
 {
-	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
-	Scene::GetActiveScene()->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::LOCAL_TRANSFORM_CHANGED);
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 TransformSystem::~TransformSystem()
@@ -56,7 +57,7 @@ void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 		if(transform->parentMatrix)
 		{
 			transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
-            Scene::GetActiveScene()->ImmediateEvent(entity, Component::TRANSFORM_COMPONENT, EventSystem::WORLD_TRANSFORM_CHANGED);
+            GlobalEventSystem::Instance()->Event(entity, transform, EventSystem::WORLD_TRANSFORM_CHANGED);
 		}
 	}
 
@@ -105,7 +106,7 @@ void TransformSystem::HierahicAddToUpdate(SceneNode * entity)
 	{
 		entity->AddFlag(SceneNode::TRANSFORM_DIRTY);
 		SceneNode * parent = entity->GetParent();
-		if(parent && parent->GetParent())
+		if(parent)
 		{
 			HierahicAddToUpdate(entity->GetParent());
 		}
@@ -116,4 +117,20 @@ void TransformSystem::HierahicAddToUpdate(SceneNode * entity)
 		}
 	}
 }
+
+void TransformSystem::RemoveEntity(SceneNode * entity)
+{
+	//TODO: use hashmap
+	uint32 size = updatableEntities.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		if(updatableEntities[i] == entity)
+		{
+			updatableEntities[i] = updatableEntities[size-1];
+			updatableEntities.pop_back();
+			return;
+		}
+	}
+}
+
 };

@@ -44,8 +44,9 @@ class RenderObject;
 class RenderBatch;
 class SceneNode;
 class Camera;
+class Light;
     
-class RenderSystem : public StaticSingleton<RenderSystem>
+class RenderSystem
 {
 public:
     RenderSystem();
@@ -83,7 +84,7 @@ public:
     void Render();
     
     void MarkForUpdate(RenderObject * renderObject);
-    
+    void MarkForUpdate(Light * lightNode);
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
@@ -91,9 +92,18 @@ public:
     void RegisterForUpdate(IRenderUpdatable * renderObject);
     void UnregisterFromUpdate(IRenderUpdatable * renderObject);
     
+    
+    void AddLight(Light * light);
+    void RemoveLight(Light * light);
+    Vector<Light*> & GetLights();
+
+    
 private:
     void ProcessClipping();
+    void FindNearestLights();
+    void FindNearestLights(RenderObject * renderObject);
     void AddRenderObject(RenderObject * renderObject);
+    
     void RemoveRenderObject(RenderObject * renderObject);
     void AddRenderBatch(RenderBatch * renderBatch);
     void RemoveRenderBatch(RenderBatch * renderBatch);
@@ -103,6 +113,7 @@ private:
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
     List<RenderObject*> markedObjects;
+    List<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;
     
@@ -110,12 +121,16 @@ private:
     FastNameMap<RenderLayer*> renderLayersMap;
     
     Vector<RenderObject*> renderObjectArray;
+    Vector<Light*> lights;
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     
     //HashMap<SceneNode*, RenderObject *> entityObjectMap;
     Camera * camera;
     //Vector<RenderObject*> forRemove;
+    
+    
+    friend class RenderPass;
 };
     
 } // ns

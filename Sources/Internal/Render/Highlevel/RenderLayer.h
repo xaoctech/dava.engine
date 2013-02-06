@@ -46,17 +46,38 @@ public:
     RenderLayer(const char * name);
     virtual ~RenderLayer();
     
+    enum
+    {
+        SORT_ENABLED = 1 << 0,
+        SORT_BY_MATERIAL = 1 << 1,
+        SORT_BY_DISTANCE = 1 << 2,
+        
+        SORT_REQUIRED = 1 << 3,
+    };
+    
+    static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
+    
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
+    uint32 GetRenderBatchCount();
     
-    void Update();
-    void Draw(Camera * camera);
+    void Update(Camera * camera);
+    virtual void Draw(Camera * camera);
 private:
     FastName name;
     Vector<RenderBatch*> renderBatchArray;
+    //Vector<
     uint32 index;
+    uint32 flags;
     //RenderBatchArray * renderBatchArray;
     
+    struct RenderBatchSortItem
+    {
+        pointer_size sortingKey;
+        RenderBatch * renderBatch;
+    };
+    Vector<RenderBatchSortItem> sortArray;
+    static bool MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b);
 public:
     
     INTROSPECTION(RenderLayer,

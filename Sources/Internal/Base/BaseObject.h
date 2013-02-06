@@ -59,7 +59,7 @@ namespace DAVA
   */
 
 class IntrospectionInfo;
-class   KeyedArchive;
+class KeyedArchive;
 	
 class	BaseObject
 {
@@ -143,7 +143,7 @@ public:
     
     static BaseObject * DummyGet() { return 0; };
 protected:
-    
+    /*
     void SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
     void SaveCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
     
@@ -151,11 +151,12 @@ protected:
     void LoadCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
 
     void * GetMemberObject(const IntrospectionMember *member, void * object) const;
+	*/
     
 	
 	BaseObject(const BaseObject & b)
-	{
-	}
+	{ }
+
 	BaseObject & operator = (const BaseObject & b)
 	{
 		return *this;
@@ -164,7 +165,8 @@ protected:
 	int32 referenceCount;
 
 public:
-	INTROSPECTION(BaseObject, NULL);
+		INTROSPECTION(BaseObject,
+		MEMBER(referenceCount, "referenceCount", INTROSPECTION_EDITOR))
 };
 
 

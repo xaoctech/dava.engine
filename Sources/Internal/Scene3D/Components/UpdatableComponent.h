@@ -15,13 +15,13 @@ public:
 	virtual ~IUpdatable() {};
 };
 
-class IUpdatableBeforeTransform : public IUpdatable
+class IUpdatableBeforeTransform : public virtual IUpdatable
 {
 public:
 	virtual void UpdateBeforeTransform(float32 timeElapsed) = 0;
 };
 
-class IUpdatableAfterTransform : public IUpdatable
+class IUpdatableAfterTransform : public virtual IUpdatable
 {
 public:
 	virtual void UpdateAfterTransform(float32 timeElapsed) = 0;
@@ -41,7 +41,7 @@ public:
 	};
 
 	UpdatableComponent();
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void SetUpdatableObject(IUpdatable * updatableObject);
 	IUpdatable * GetUpdatableObject();
@@ -51,7 +51,8 @@ private:
     
 public:
     INTROSPECTION_EXTEND(UpdatableComponent, Component,
-                         NULL);
+        MEMBER(updatableObject, "Updatable Object", INTROSPECTION_SERIALIZABLE)
+    );
 
 };
 

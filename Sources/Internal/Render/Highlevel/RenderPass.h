@@ -49,9 +49,9 @@ public:
     void AddRenderLayer(RenderLayer * layer);
     void RemoveRenderLayer(RenderLayer * layer);
     
-    void Draw(Camera * camera);
+    virtual void Draw(Camera * camera);
     
-private:
+protected:
     Vector<RenderLayer*> renderLayers;
     FastName name;
     

@@ -33,12 +33,11 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
 
-class LandscapeNode;
-    
     
 // Temporary solution. Later will be populated by logic
 class LandscapeChunk : public RenderBatch
@@ -50,6 +49,12 @@ public:
     virtual void Draw(Camera * camera);
 private:
     LandscapeNode * landscape;
+    
+public:
+    
+    INTROSPECTION_EXTEND(LandscapeChunk, RenderBatch,
+        MEMBER(landscape, "landscape", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
     
     

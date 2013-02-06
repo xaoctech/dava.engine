@@ -29,7 +29,7 @@ public:
     virtual ~DebugRenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(DEBUG_RENDER_COMPONENT);
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
     void SetDebugFlags(uint32 debugFlags);
     uint32 GetDebugFlags();

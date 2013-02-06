@@ -30,28 +30,28 @@ void ParticleEmitter3D::AddLayer(ParticleLayer * layer, ParticleLayer * layerToM
 	}
 }
 
-void ParticleEmitter3D::RenderUpdate(float32 timeElapsed)
+void ParticleEmitter3D::RenderUpdate(Camera *camera, float32 timeElapsed)
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
 
-	Camera * camera = RenderSystem::Instance()->GetCamera();
 	Draw(camera);
-
+    
 	RenderManager::Instance()->SetBlendMode(srcMode, destMode);
 }
 
 void ParticleEmitter3D::Draw(Camera * camera)
 {
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		ParticleLayer3D * layer = (ParticleLayer3D*)(*it);
-		if(!layer->isDisabled)
-		{
-			layer->Draw(camera);
-		}
-	}
+	//Dizz: now layer->Draw is called from ParticleLayerBatch
+	//Vector<ParticleLayer*>::iterator it;
+	//for(it = layers.begin(); it != layers.end(); ++it)
+	//{
+	//	ParticleLayer3D * layer = (ParticleLayer3D*)(*it);
+	//	if(!layer->isDisabled)
+	//	{
+	//		layer->Draw(camera);
+	//	}
+	//}
 }
 
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)

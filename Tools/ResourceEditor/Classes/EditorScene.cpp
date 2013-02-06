@@ -81,9 +81,9 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		if (bulletComponent == 0 && curr->IsLodMain(0))
 		{
 			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-			bulletComponent->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform())));
+			bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
 		}
-		else if(bulletComponent->GetBulletObject())
+		else if(bulletComponent && bulletComponent->GetBulletObject())
 		{
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}

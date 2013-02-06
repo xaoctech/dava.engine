@@ -23,55 +23,70 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
-#define	__DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__
 
-#include "Base/BaseTypes.h"
+#ifndef __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+#define __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
+
+#include "Render/3D/PolygonGroup.h"
+#include "Render/Shader.h"
+#include "Render/3D/EdgeAdjacency.h"
 #include "Render/Highlevel/RenderBatch.h"
 
 namespace DAVA
 {
 
-//class RenderBatch;
-class RenderBatchArray
+class PolygonGroup;
+class Light;
+    
+class ShadowVolume : public RenderBatch
 {
 public:
-    RenderBatchArray();
-    virtual ~RenderBatchArray();
-    
-    void AddRenderBatch(RenderBatch * batch);
-    void RemoveRenderBatch(RenderBatch * batch);
-    
-    void Update();
+	ShadowVolume();
+	virtual ~ShadowVolume();
 
-    inline uint32 GetCount();
-    inline RenderBatch * GetBatch(uint32 index);
+    virtual void Draw(Camera * camera);
+
+    virtual const FastName & GetOwnerLayerName();
+
+	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
+    void SetPolygonGroup(PolygonGroup * polygonGroup);
+    PolygonGroup * GetPolygonGroup();
     
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
+
 private:
-    Vector<RenderBatch*> finalArray;
+	Shader * shader;
+
+	//shadow mesh generation
+	PolygonGroup * shadowPolygonGroup;
+
+	struct EdgeMapping
+	{
+		int32 oldEdge[2];
+		int32 newEdge[2][2];
+
+	public:
+		EdgeMapping()
+		{
+			Memset(oldEdge, -1, sizeof(oldEdge));
+			Memset(newEdge, -1, sizeof(newEdge));
+		}
+	};
+
+	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
     
 public:
     
-    INTROSPECTION(RenderBatchArray,
-        COLLECTION(finalArray, "Final Array", INTROSPECTION_EDITOR)
+    INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
+        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
-inline uint32 RenderBatchArray::GetCount()
-{
-    return (uint32)finalArray.size();
 }
 
-inline RenderBatch * RenderBatchArray::GetBatch(uint32 index)
-{
-    return finalArray[index];
-}
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_ARRAY_H__ */
-
+#endif //__DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__

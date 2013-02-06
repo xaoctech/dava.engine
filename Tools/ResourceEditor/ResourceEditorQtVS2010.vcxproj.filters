@@ -190,9 +190,6 @@
     <Filter Include="Sources\Qt\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{3556acf1-92d6-4fa7-9fcd-2fe2c548fcd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="QtGenerated\QtPropertyEditor\QtProperyData">
-      <UniqueIdentifier>{bfc840f0-c9af-4eff-b92c-fdb04eb56529}</UniqueIdentifier>
-    </Filter>
     <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
     </Filter>
@@ -360,6 +357,48 @@
     <ClCompile Include="Classes\VertexOctTree.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
@@ -496,6 +535,9 @@
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\BeastProxy.h">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LightmapAtlasingData.h">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Constants.h">
@@ -1425,29 +1467,11 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtProperyData</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\QTreeViewStateHelper.cpp">
-      <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2387,48 +2411,6 @@
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h">
       <Filter>Sources\Qt\DockVisibilityTool</Filter>
     </ClInclude>
@@ -2615,17 +2597,47 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
-      <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
-      <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
+      <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>

@@ -41,6 +41,7 @@ namespace DAVA
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
+    ,   sortingKey(0)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -49,6 +50,7 @@ RenderBatch::RenderBatch()
     indexCount = 0;
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
+    materialInstance = new InstanceMaterialState();
 }
     
 RenderBatch::~RenderBatch()
@@ -56,21 +58,25 @@ RenderBatch::~RenderBatch()
 	SafeRelease(dataSource);
 	SafeRelease(renderDataObject);
 	SafeRelease(material);
+    SafeRelease(materialInstance);
 }
     
 void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	SafeRelease(dataSource);
     dataSource = SafeRetain(_polygonGroup);
 	aabbox = dataSource->GetBoundingBox();
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
 {
+	SafeRelease(renderDataObject);
     renderDataObject = SafeRetain(_renderDataObject);
 }
 
 void RenderBatch::SetMaterial(Material * _material)
 {
+	SafeRelease(material);
     material = SafeRetain(_material);
 }
 
@@ -80,7 +86,10 @@ void RenderBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;
     Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
-    if (!worldTransformPtr)return;
+    if (!worldTransformPtr)
+    {
+        return;
+    }
     
     uint32 flags = renderObject->GetFlags();
     if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
@@ -88,14 +97,24 @@ void RenderBatch::Draw(Camera * camera)
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-    material->Draw(dataSource, 0);
+    material->Draw(dataSource,  materialInstance);
 }
     
     
 const FastName & RenderBatch::GetOwnerLayerName()
 {
-    static FastName fn("OpaqueRenderLayer");
-    return fn;
+    static FastName opaqueLayer("OpaqueRenderLayer");
+    static FastName translucentLayer("TransclucentRenderLayer");
+    
+    if (material)
+    {
+        if(material->GetOpaque() || material->GetAlphablend())
+		{
+			return translucentLayer;
+		}
+    }
+    
+    return opaqueLayer;
 }
 
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
@@ -108,25 +127,29 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
     return aabbox;
 }
 
-RenderBatch * RenderBatch::Clone()
+RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 {
-	RenderBatch * rb = new RenderBatch();
+    RenderBatch * rb = destination;
+    if (!rb)
+        rb = new RenderBatch();
 
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	rb->material = SafeRetain(material);
+    rb->materialInstance = SafeRetain(materialInstance);
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;
 	rb->type = type;
 
-	rb->ownerLayer = ownerLayer;
-	if(ownerLayer)
-	{
-		ownerLayer->AddRenderBatch(rb);
-	}
-
 	rb->aabbox = aabbox;
+// TODO: Understand what this code means.
+// 
+//	rb->ownerLayer = ownerLayer;
+//	if(ownerLayer)
+//	{
+//		ownerLayer->AddRenderBatch(rb);
+//	}
 
 	return rb;
 }

@@ -11,7 +11,7 @@ class Component;
 class ParticleEmitterSystem : public BaseProcessSystem
 {
 public:
-	ParticleEmitterSystem();
+	ParticleEmitterSystem(Scene * scene);
 	virtual void Process();
 };
 

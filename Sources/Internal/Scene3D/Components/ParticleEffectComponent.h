@@ -17,7 +17,7 @@ public:
 
 	ParticleEffectComponent();
 
-	virtual Component * Clone();
+	virtual Component * Clone(SceneNode * toEntity);
 
 	void Start();
 
@@ -78,11 +78,10 @@ private:
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-                         NULL
-//		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(stopWhenEmpty, "stopWhenEmpty", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-////        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//        MEMBER(effectDuration, "effectDuration", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", INTROSPECTION_SERIALIZABLE)
+        MEMBER(stopWhenEmpty, "stopWhenEmpty", INTROSPECTION_SERIALIZABLE)
+//        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE)
+        MEMBER(effectDuration, "effectDuration", INTROSPECTION_SERIALIZABLE)
     );
 };
 

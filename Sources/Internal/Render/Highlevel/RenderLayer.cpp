@@ -29,15 +29,16 @@
 =====================================================================================*/
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
+#include "Base/Radix/Radix.h"
 
 namespace DAVA
 {
 RenderLayer::RenderLayer(const char * _name)
     : name(_name)
+    , flags(0)
 {
-    
+    flags = SORT_ENABLED | SORT_BY_MATERIAL;
 }
     
 RenderLayer::~RenderLayer()
@@ -50,6 +51,7 @@ void RenderLayer::AddRenderBatch(RenderBatch * batch)
 {
     renderBatchArray.push_back(batch);
     batch->SetRemoveIndex(this, renderBatchArray.size() - 1);
+    flags |= SORT_REQUIRED;
 }
 
 void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
@@ -61,19 +63,92 @@ void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
     batch->SetRemoveIndex(0, -1);
 }
     
-void RenderLayer::Update()
+bool RenderLayer::MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b)
 {
+    return a.sortingKey < b.sortingKey;
+}
 
+void RenderLayer::Update(Camera * camera)
+{
+    // Need sort
+    if ((flags & SORT_THIS_FRAME) == SORT_THIS_FRAME)
+    {
+        uint32 renderBatchCount = (uint32)renderBatchArray.size();
+        sortArray.resize(renderBatchCount);
+        if (flags & SORT_BY_MATERIAL)
+        {
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                RenderBatch * batch = renderBatchArray[k];;
+                item.renderBatch = batch;
+                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() << 4) | batch->GetSortingKey();
+            }
+            
+            std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                renderBatchArray[k] = item.renderBatch;
+                item.renderBatch->SetRemoveIndex(this, k);
+            }
+        }
+        
+        if (flags & SORT_BY_DISTANCE)
+        {
+            Vector3 cameraPosition = camera->GetPosition();
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                RenderBatch * batch = renderBatchArray[k];;
+                item.renderBatch = batch;
+
+                item.sortingKey = 0;
+                if (batch)
+                {
+                    RenderObject * renderObject = batch->GetRenderObject();
+                    Vector3 position = renderObject->GetBoundingBox().GetCenter();
+                    float32 distance = (position - cameraPosition).Length();
+                    
+                    item.sortingKey = ((uint32)distance) << 4 | batch->GetSortingKey();
+                }
+            }
+            
+            std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                renderBatchArray[k] = item.renderBatch;
+                item.renderBatch->SetRemoveIndex(this, k);
+            }
+            
+            flags |= SORT_REQUIRED;
+        }
+    }
+    
+    
+    
 }
     
+uint32 RenderLayer::GetRenderBatchCount()
+{
+    return (uint32)renderBatchArray.size();
+}
+
 void RenderLayer::Draw(Camera * camera)
 {
-    Update();
+    Update(camera);
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
         renderBatchArray[k]->Draw(camera);
     }
+#if 0
+    Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
+#endif
 }
 
 };
