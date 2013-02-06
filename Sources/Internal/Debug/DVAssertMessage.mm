@@ -8,6 +8,7 @@ using namespace DAVA;
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "UIAlertView.h"
 #import "UIAlertView_Modal.h"
+#include "UI/UIScreenManager.h"
 #endif
 
 #if defined(__DAVAENGINE_WIN32__)
@@ -55,7 +56,11 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
 #elif defined(__DAVAENGINE_IPHONE__)
     NSString * formatString = [NSString stringWithUTF8String:text];
     NSString *contents = [[NSString alloc] initWithFormat:formatString arguments:vl];
-    
+
+	// Yuri Coder, 2013/02/06. This method is specific for iOS-implementation only,
+	// it blocks drawing to avoid deadlocks. See EAGLView.mm file for details.
+   	UIScreenManager::Instance()->BlockDrawing();
+
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Assert" message:contents delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [alert showModal];
     [alert release];
