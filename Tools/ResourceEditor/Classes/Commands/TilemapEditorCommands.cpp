@@ -45,7 +45,10 @@ void CommandDrawTilemap::Execute()
 {
 	LandscapeEditorColor* editor = GetEditor();
 	if (editor == NULL)
+	{
+		SetState(STATE_INVALID);
 		return;
+	}
 
 	if (redoImage == NULL)
 	{

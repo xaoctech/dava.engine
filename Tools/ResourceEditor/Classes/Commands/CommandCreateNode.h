@@ -11,7 +11,6 @@ public:
     
 protected:
     virtual void Execute();
-    virtual void Cancel();
 
 protected:
     ResourceEditor::eNodeType nodeType;
