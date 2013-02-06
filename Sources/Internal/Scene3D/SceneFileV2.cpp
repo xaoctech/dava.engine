@@ -692,14 +692,24 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
             {
                 SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
+				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
                 
                 Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
                 parent->RemoveNode(currentNode);
                 parent->AddNode(childNode);
                 
                 childNode->SetName(currentName);
+				//merge custom properties
+				KeyedArchive * newProperties = childNode->GetCustomProperties();
+				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+				{
+					newProperties->SetVariant(it->first, it->second);
+				}
                 removedNodeCount++;
                 SafeRelease(childNode);
+				SafeRelease(currentProperties);
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);
