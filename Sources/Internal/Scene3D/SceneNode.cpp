@@ -46,6 +46,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -65,6 +66,8 @@ SceneNode::SceneNode()
 {
 //    Logger::Debug("SceneNode: %p", this);
     componentFlags = 0;
+
+	components.resize(Component::COMPONENT_COUNT);
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
         components[k] = 0;
     
@@ -93,7 +96,6 @@ SceneNode::~SceneNode()
 //    }
     DVASSERT(scene == 0);
     
-    RemoveAllChildren();
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -105,8 +107,6 @@ SceneNode::~SceneNode()
 	}
 
 //  Logger::Debug("~SceneNode: %p", this);
-
-	//TODO: delete entity?
 }
     
 void SceneNode::AddComponent(Component * component)
@@ -150,8 +150,8 @@ Component * SceneNode::GetOrCreateComponent(uint32 componentType)
 	Component * ret = components[componentType];
 	if(!ret)
 	{
-		components[componentType] = Component::CreateByType(componentType);
-		ret = components[componentType];
+		ret = Component::CreateByType(componentType);
+		AddComponent(ret);
 	}
 
 	return ret;
@@ -175,9 +175,18 @@ void SceneNode::SetScene(Scene * _scene)
         return;
     }
     // Сheck 
-    if (scene)scene->UnregisterNode(this);
+    if (scene)
+	{
+		scene->UnregisterNode(this);
+	}
     scene = _scene;
-    if (scene)scene->RegisterNode(this);
+    if (scene)
+	{
+		scene->RegisterNode(this);
+		GlobalEventSystem::Instance()->PerformAllEventsFromCache(this);
+	}
+
+	
     
     const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
@@ -563,8 +572,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 		if(components[k])
 		{
 			SafeDelete(dstNode->components[k]);
-			dstNode->AddComponent(components[k]->Clone());
-			dstNode->components[k]->SetEntity(dstNode);
+			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
 	}
 
@@ -578,30 +586,21 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     
     dstNode->name = name;
     dstNode->tag = tag;
-    dstNode->flags = flags;
-
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	//dstNode->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
+    //dstNode->flags = flags;
 
     SafeRelease(dstNode->customProperties);
     dstNode->customProperties = new KeyedArchive(*customProperties);
-
-//    Logger::Debug("Node %s clonned", name.c_str());
     
     dstNode->nodeAnimations = nodeAnimations;
     
-    
-//    Logger::Debug("Children +++++++++++++++++++++++++++++++");
     std::vector<SceneNode*>::iterator it = children.begin();
-    
-    const std::vector<SceneNode*>::iterator & childsEnd = children.end();
-    for(; it != childsEnd; it++)
-    {
-        SceneNode *n = (*it)->Clone();
-        dstNode->AddNode(n);
-        n->Release();
-    }
-//    Logger::Debug("Children -------------------------------");
+	const std::vector<SceneNode*>::iterator & childsEnd = children.end();
+	for(; it != childsEnd; it++)
+	{
+		SceneNode *n = (*it)->Clone();
+		dstNode->AddNode(n);
+		n->Release();
+	}
     
     return dstNode;
 }
@@ -806,6 +805,15 @@ bool SceneNode::GetSolid()
 
 void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
+    for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+    {
+        if(components[k])
+        {
+            components[k]->GetDataNodes(dataNodes);
+        }
+    }
+
+    
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)
     {
@@ -929,15 +937,11 @@ int32 SceneNode::Release()
 {
 	if(1 == referenceCount)
 	{
-		Scene::GetActiveScene()->deleteSystem->MarkNodeAsDeleted(this);
-		AddFlag(SceneNode::NODE_DELETED);
+		RemoveAllChildren();
 		SetScene(0);
-		return referenceCount;
 	}
-	else
-	{
-		return BaseObject::Release();
-	}
+
+	return BaseObject::Release();
 }
 
 void SceneNode::SetVisible(bool isVisible)
@@ -960,8 +964,6 @@ void SceneNode::SetVisible(bool isVisible)
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
 	}
-
-
 }
 
 void SceneNode::SetUpdatable(bool isUpdatable)

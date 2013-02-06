@@ -27,7 +27,7 @@ public:
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
 private:
 	Matrix4 localMatrix;
@@ -44,6 +44,7 @@ public:
     INTROSPECTION_EXTEND(TransformComponent, Component,
         MEMBER(localMatrix, "Local Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
         MEMBER(worldMatrix, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
+        MEMBER(parentMatrix, "Parent Matrix", INTROSPECTION_SERIALIZABLE)
     );
 };
 

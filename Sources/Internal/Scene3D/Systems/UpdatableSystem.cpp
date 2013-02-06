@@ -6,7 +6,8 @@
 namespace DAVA
 {
 
-UpdatableSystem::UpdatableSystem()
+UpdatableSystem::UpdatableSystem(Scene * scene)
+:	SceneSystem(scene)
 {
 
 }
@@ -15,18 +16,20 @@ void UpdatableSystem::AddEntity(SceneNode * entity)
 {
 	UpdatableComponent * component = (UpdatableComponent*)entity->GetComponent(Component::UPDATABLE_COMPONENT);
 	IUpdatable * object = component->GetUpdatableObject();
-	DVASSERT(object);
 
-	IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
-	if(updateBeforeTransform)
+	if(object)
 	{
-		updatesBeforeTransform.push_back(updateBeforeTransform);
-	}
+		IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
+		if(updateBeforeTransform)
+		{
+			updatesBeforeTransform.push_back(updateBeforeTransform);
+		}
 
-	IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
-	if(updateAfterTransform)
-	{
-		updatesAfterTransform.push_back(updateAfterTransform);
+		IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
+		if(updateAfterTransform)
+		{
+			updatesAfterTransform.push_back(updateAfterTransform);
+		}
 	}
 }
 

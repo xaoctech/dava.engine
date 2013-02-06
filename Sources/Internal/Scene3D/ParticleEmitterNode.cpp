@@ -42,6 +42,8 @@ void ParticleEmitterNode::Draw()
 		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 
+//		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
+//		emitter3D->Draw(scene->GetCurrentCamera());
 		emitter->Draw(scene->GetCurrentCamera());
 
 		RenderManager::Instance()->SetBlendMode(sblend, dblend);
@@ -55,12 +57,7 @@ void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
 }
-/*
-String ParticleEmitterNode::GetYamlPath()
-{
-	return yamlPath;
-}
-*/
+
 ParticleEmitter * ParticleEmitterNode::GetEmitter()
 {
 	return emitter;
@@ -116,3 +113,4 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 }
 
 };
+

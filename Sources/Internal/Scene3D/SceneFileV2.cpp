@@ -36,6 +36,7 @@
 #include "Scene3D/PathManip.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
+#include "Scene3D/SwitchNode.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Mesh.h"
 
@@ -53,12 +54,15 @@
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/ShadowVolumeNode.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
 #include "Base/TemplateHelpers.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/ShadowVolume.h"
 
 namespace DAVA
 {
@@ -288,10 +292,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         
     SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
-	rootNode->SetScene(_scene);
+	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
-        LoadHierarchy(_scene, rootNode, file, 1);
+        LoadHierarchy(0, rootNode, file, 1);
     }
     
     OptimizeScene(rootNode);
@@ -517,7 +521,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     SceneNode * node = 0;
     
     bool skipNode = false;
-
+    bool removeChildren = false;
     
     
     
@@ -555,7 +559,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         SafeRelease(cameraObject);
         skipNode = true;
-    }else if (name == "LightNode")
+    }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
     {
         node = new SceneNode();
         baseObject = node;
@@ -563,14 +567,18 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->SetScene(scene);
         node->Load(archive, this);
         
-        LightNode * light = new LightNode();
+        bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+        
+        Light * light = new Light();
         light->Load(archive, this);
+        light->SetDynamic(isDynamic);
         
         node->AddComponent(new LightComponent(light));
         parent->AddNode(node);
         
         SafeRelease(light);
         skipNode = true;
+        removeChildren = true;
     }else
     {
         baseObject = ObjectFactory::Instance()->New(name);
@@ -608,6 +616,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			LoadHierarchy(scene, node, file, level + 1);
 		}
+        if (removeChildren)
+            node->RemoveAllChildren();
+
         SafeRelease(node);
     }
     
@@ -665,6 +676,15 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 
     if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
     {
+        if (currentNode->GetComponentCount() == 1)
+        {
+            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
+            if (!isTransfrom)
+                return false;
+        }
+        else if (currentNode->GetComponentCount() >= 2)
+            return false;
+        
         if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
         {
             SceneNode * parent  = currentNode->GetParent();
@@ -689,16 +709,32 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 }
 
     
-bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
+bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 {
-    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(*node);
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(node);
     if (oldMeshInstanceNode)
     {
+        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+
+        for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
+        {
+            PolygonGroupWithMaterial * group = polygroups[k];
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+                {
+                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+        }
         SceneNode * newMeshInstanceNode = new SceneNode();
         oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
-        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone());
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode));
         
-        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+        //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
         
         Mesh * mesh = new Mesh();
         
@@ -706,13 +742,55 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
             mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
+            
+            
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+//                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+//                {
+//                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+//                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+            
+            if (oldMeshInstanceNode->GetLightmapCount() > 0)
+            {
+                RenderBatch * batch = mesh->GetRenderBatch(k);
+                batch->GetMaterialInstance()->SetLightmap(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap,
+                                                          oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmapName);
+                batch->GetMaterialInstance()->SetUVOffsetScale(oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset,
+                                                               oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
+            }
         }
+        
+        mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
+        
+        //
+        SceneNode * parent = oldMeshInstanceNode->GetParent();
+        for (int32 k = 0; k < parent->GetChildrenCount(); ++k)
+        {
+            ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
+            if (oldShadowVolumeNode)
+            {
+                ShadowVolume * newShadowVolume = new ShadowVolume();
+                newShadowVolume->SetPolygonGroup(oldShadowVolumeNode->GetPolygonGroup());
+                mesh->AddRenderBatch(newShadowVolume);
+                
+                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                
+                parent->RemoveNode(oldShadowVolumeNode);
+            }
+        }
+        
+        
+        
         
         RenderComponent * renderComponent = new RenderComponent;
         renderComponent->SetRenderObject(mesh);
         newMeshInstanceNode->AddComponent(renderComponent);
         
-        SceneNode * parent = oldMeshInstanceNode->GetParent();
 		if(parent)
 		{
 			parent->AddNode(newMeshInstanceNode);
@@ -723,22 +801,16 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			DVASSERT(0 && "How we appeared here");
 		}
 		newMeshInstanceNode->Release();
+		mesh->Release();
         return true;
     }
 
-	LodNode * lod = dynamic_cast<LodNode*>(*node);
+	LodNode * lod = dynamic_cast<LodNode*>(node);
 	if(lod)
 	{
 		SceneNode * newNode = new SceneNode();
 		lod->SceneNode::Clone(newNode);
 		SceneNode * parent = lod->GetParent();
-
-		DVASSERT(parent);
-		if(parent)
-		{
-			parent->AddNode(newNode);
-			parent->RemoveNode(lod);
-		}
 
 		newNode->AddComponent(new LodComponent());
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
@@ -766,24 +838,25 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 			lc->lodLayers.push_back(newLodDataItem);
 		}
 
-		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(lod);
+		}
+
+		//GlobalEventSystem::Instance()->Event(newNode, )
+		//newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
 		newNode->Release();
 		return true;
 	}
 
-	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(*node);
+	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
 	if(particleEmitterNode)
 	{
 		SceneNode * newNode = new SceneNode();
 		particleEmitterNode->SceneNode::Clone(newNode);
 		SceneNode * parent = particleEmitterNode->GetParent();
-
-		DVASSERT(parent);
-		if(parent)
-		{
-			parent->AddNode(newNode);
-			parent->RemoveNode(particleEmitterNode);
-		}
 
 		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
 		ParticleEmitterComponent * particleComponent = new ParticleEmitterComponent();
@@ -793,12 +866,19 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		RenderComponent * renderComponent = new RenderComponent;
 		renderComponent->SetRenderObject(emitter);
 		
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(particleEmitterNode);
+		}
+
 		newNode->AddComponent(renderComponent);
 		newNode->Release();
 		return true;
 	}
 
-	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(*node);
+	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(node);
 	if(particleEffectNode)
 	{
 		SceneNode * newNode = new SceneNode();
@@ -818,22 +898,52 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode ** node)
 		return true;
 	}
 
+	SwitchNode * sw = dynamic_cast<SwitchNode*>(node);
+	if(sw)
+	{
+		SceneNode * newNode = new SceneNode();
+		sw->Clone(newNode);
+
+		SwitchComponent * swConponent = new SwitchComponent();
+		newNode->AddComponent(swConponent);
+		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
+
+		SceneNode * parent = sw->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->AddNode(newNode);
+			parent->RemoveNode(sw);
+		}
+		sw->SetSwitchIndex(0);
+
+		newNode->Release();
+		return true;
+	}
+
 	return false;
-}
+} 
+    
+
 
 void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
 {
 	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
 	{
 		SceneNode * childNode = currentNode->GetChild(c);
-		bool wasReplace = ReplaceNodeAfterLoad(&childNode);
 		ReplaceOldNodes(childNode);
+        /**
+            Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
+            was deep in hierarchy first.
+         */
+		bool wasReplace = ReplaceNodeAfterLoad(childNode);
 		if(wasReplace)
 		{
 			c--;
 		}
 	}
 }
+
     
 void SceneFileV2::OptimizeScene(SceneNode * rootNode)
 {
@@ -841,9 +951,9 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
     
-	//MERGE: commented
-    //RemoveEmptySceneNodes(rootNode);
-    //RemoveEmptyHierarchy(rootNode);
+    //MERGE: commented
+    RemoveEmptySceneNodes(rootNode);
+    RemoveEmptyHierarchy(rootNode);
 	ReplaceOldNodes(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)

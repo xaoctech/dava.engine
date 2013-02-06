@@ -16,12 +16,13 @@ class Transform;
 class TransformSystem : public SceneSystem
 {
 public:
-	TransformSystem();
+	TransformSystem(Scene * scene);
 	~TransformSystem();
 
     Transform * CreateTransform();
 
 	virtual void ImmediateEvent(SceneNode * entity, uint32 event);
+	virtual void RemoveEntity(SceneNode * entity);
 
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);

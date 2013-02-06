@@ -12,7 +12,7 @@ class Camera;
 class DebugRenderSystem : public SceneSystem
 {
 public:
-	DebugRenderSystem();
+	DebugRenderSystem(Scene * scene);
     ~DebugRenderSystem();
 
 	virtual void Process();

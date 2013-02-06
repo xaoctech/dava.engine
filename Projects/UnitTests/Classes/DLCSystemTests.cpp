@@ -10,8 +10,19 @@
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/File.h"
 
+#ifdef __DAVAENGINE_WIN32__
+#include "Windows.h"
+#define sleep(x) Sleep((x) * 1000)
+#endif
+
 namespace DAVA
 {
+
+DLCSystemTests::DLCSystemTests()
+:	isFinished(false),
+	needNextTest(false)
+{
+}
 
 void DLCSystemTests::StartTests()
 {
@@ -28,7 +39,9 @@ void DLCSystemTests::Test1()
 
     state = TEST_1;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     DLCSystem::Instance()->AddDelegate(this);
@@ -44,7 +57,9 @@ void DLCSystemTests::Test2()
 {
     state = TEST_2;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     // Delete one file
@@ -59,7 +74,9 @@ void DLCSystemTests::Test3()
 {
     state = TEST_3;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     // Delete one file
@@ -78,7 +95,9 @@ void DLCSystemTests::Test4()
 {
     state = TEST_4;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     //
@@ -90,7 +109,9 @@ void DLCSystemTests::Test5()
 {
     state = TEST_5;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     //
@@ -102,7 +123,9 @@ void DLCSystemTests::Test6()
 {
     state = TEST_6;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     // Delete one file
@@ -121,7 +144,9 @@ void DLCSystemTests::Test7()
 {
     state = TEST_7;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     //
@@ -133,7 +158,9 @@ void DLCSystemTests::Test8()
 {
     state = TEST_8;
     isSucsess = true;
-    
+
+	Logger::Debug(" TEST %d Started", state + 1);
+
     new DLCSystem();
     
     //
@@ -164,7 +191,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_2:
@@ -183,7 +211,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_3:
@@ -203,7 +232,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_4:
@@ -222,7 +252,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_5:
@@ -244,7 +275,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             {
                 Logger::Debug("  INIT FALSE 3");
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_7:
@@ -263,7 +295,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         case TEST_8:
@@ -286,7 +319,8 @@ void DLCSystemTests::InitCompleted(DLCStatusCode withStatus)
             else
             {
                 isSucsess = false;
-                NextTest();
+				needNextTest = true;
+//                NextTest();
             }
             break;
         default:
@@ -361,11 +395,14 @@ void DLCSystemTests::DLCCompleted(DLCStatusCode withStatus, uint16 index)
 //--------------------
 void DLCSystemTests::AllDLCCompleted()
 {
-    NextTest();
+//    NextTest();
+	needNextTest = true;
 }
 
 void DLCSystemTests::NextTest()
 {
+	needNextTest = false;
+
     delete DLCSystem::Instance();
 
     switch ( state )
@@ -400,6 +437,8 @@ void DLCSystemTests::NextTest()
             break;
         case TEST_8:
             Logger::Debug( " TEST 8 = %s", (isSucsess) ? "Success" : "Fail" );
+			isFinished = true;
+
 //            FileSystem::Instance()->DeleteDirectory( FileSystem::Instance()->SystemPathForFrameworkPath( std::string( "~doc:/downloads/" ) ) );
             break;
         default:
@@ -414,8 +453,38 @@ void DLCSystemTests::NextTest()
 };// End DAVA
 
 
+DLCTest::DLCTest()
+:	TestTemplate<DLCTest>("DLCTest"),
+	isStarted(false)
+{
+	RegisterFunction(this, &DLCTest::DLCTestFunction, "DLCTestFunction", NULL);
+}
 
+void DLCTest::LoadResources()
+{
+	tests = new DLCSystemTests();
+}
 
+void DLCTest::UnloadResources()
+{
+	delete tests;
+}
 
+void DLCTest::DLCTestFunction(TestTemplate<DLCTest>::PerfFuncData *data)
+{
+	if (!isStarted)
+	{
+		isStarted = true;
+		tests->StartTests();
+	}
 
+	if (!tests->IsFinished())
+	{
+		if (tests->IsNeedNextTest())
+		{
+			tests->NextTest();
+		}
 
+		RegisterFunction(this, &DLCTest::DLCTestFunction, "DLCTestFunction", NULL);
+	}
+}

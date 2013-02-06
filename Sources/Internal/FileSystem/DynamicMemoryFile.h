@@ -74,13 +74,15 @@ namespace DAVA
 		 \brief Get this file name
 		 \returns filename of this file 
 		 */
-		virtual	const char8 * GetFilename();
+//		virtual	const char8 * GetFilename();
+		virtual	const String GetFilename();
 		
 		/**
 		 \brief Get this file full pathname
 		 \returns filename of this file 
 		 */
-		virtual const char8 * GetPathname();
+//		virtual const char8 * GetPathname();
+		virtual	const String GetPathname();
 		
 		/** 
 		 \brief Write [dataSize] bytes to this file from [pointerToData]

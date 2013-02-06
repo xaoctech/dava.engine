@@ -12,8 +12,9 @@
 namespace DAVA
 {
 
-DebugRenderSystem::DebugRenderSystem()
-    : camera(0)
+DebugRenderSystem::DebugRenderSystem(Scene * scene)
+:	SceneSystem(scene),
+	camera(0)
 {
 }
     
@@ -30,8 +31,8 @@ void DebugRenderSystem::Process()
         SceneNode * entity = entities[i];
         
         DebugRenderComponent * debugRenderComponent = cast_if_equal<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
-        TransformComponent * transformComponent = cast_if_equal<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
-        RenderComponent * renderComponent = cast_if_equal<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
+        //TransformComponent * transformComponent = cast_if_equal<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
+        //RenderComponent * renderComponent = cast_if_equal<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
         
         Matrix4 worldTransform = /*(*transformComponent->GetWorldTransform()) * */camera->GetMatrix();
         RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
@@ -163,7 +164,7 @@ void DebugRenderSystem::AddEntity(SceneNode * entity)
 {
 	entities.push_back(entity);
 
-    DebugRenderComponent * debugRenderComponent = static_cast<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    //DebugRenderComponent * debugRenderComponent = static_cast<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
     RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
     if (renderComponent)
     {
@@ -173,7 +174,7 @@ void DebugRenderSystem::AddEntity(SceneNode * entity)
 
 void DebugRenderSystem::RemoveEntity(SceneNode * entity)
 {
-    DebugRenderComponent * debugRenderComponent = static_cast<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
+    //DebugRenderComponent * debugRenderComponent = static_cast<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
     RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));
     if (renderComponent)
     {

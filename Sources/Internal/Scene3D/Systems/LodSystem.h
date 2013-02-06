@@ -12,7 +12,7 @@ class Camera;
 class LodSystem : public SceneSystem
 {
 public:
-	LodSystem();
+	LodSystem(Scene * scene);
 
 	virtual void Process();
 	virtual void AddEntity(SceneNode * entity);
@@ -20,14 +20,16 @@ public:
 
 	virtual void SetCamera(Camera * camera);
 
+	void UpdateEntityAfterLoad(SceneNode * entity);
+
 private:
 	//partial update per frame
-	static const int32 UPDATE_PART_PER_FRAME = 3;
+	static const int32 UPDATE_PART_PER_FRAME = 1;
 	Vector<int32> partialUpdateIndices;
 	int32 currentPartialUpdateIndex;
 	void UpdatePartialUpdateIndices();
 
-	void UpdateEntityAfterLoad(SceneNode * entity);
+	
 	Vector<SceneNode*> entities;
 
 	void UpdateLod(SceneNode * entity);

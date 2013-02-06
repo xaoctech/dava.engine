@@ -47,7 +47,8 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Scene3D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Sound/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/*.cpp) \
-                     $(wildcard $(LOCAL_PATH)/Utils/*.cpp))
+                     $(wildcard $(LOCAL_PATH)/Utils/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
 
 
@@ -68,6 +69,7 @@ LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
 LOCAL_LDLIBS += -fuse-ld=gold -fno-exceptions
 
 # set exported used libs

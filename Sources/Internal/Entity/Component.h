@@ -36,6 +36,7 @@
 namespace DAVA 
 {
     
+class DataNode;
 class SceneNode;
 class Component
 {
@@ -46,6 +47,7 @@ public:
         RENDER_COMPONENT,
         DEBUG_RENDER_COMPONENT, 
 		LOD_COMPONENT,
+		SWITCH_COMPONENT,
         CAMERA_COMPONENT,
         LIGHT_COMPONENT,
 		PARTICLE_EMITTER_COMPONENT,
@@ -66,9 +68,21 @@ public:
     
     virtual ~Component() {};
     virtual uint32 GetType() = 0;
-    virtual Component * Clone() = 0;
+    virtual Component * Clone(SceneNode * toEntity) = 0;
 
 	virtual void SetEntity(SceneNode * entity);
+    
+    /**
+         \brief This function should be implemented in each node that have data nodes inside it.
+     */
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+    /**
+         \brief Function to get data nodes of requested type to specific container you provide.
+     */
+    template<template <typename> class Container, class T>
+	void GetDataNodes(Container<T> & container);
+
+    SceneNode * GetEntity() { return entity; };
 protected:
     SceneNode * entity;
 
@@ -80,5 +94,27 @@ public:
     
 #define IMPLEMENT_COMPONENT_TYPE(TYPE) virtual uint32 GetType() { return TYPE; }; 
 
+    
+template<template <typename> class Container, class T>
+void Component::GetDataNodes(Container<T> & container)
+{
+    container.clear();
+    
+    Set<DataNode*> objects;
+    GetDataNodes(objects);
+    
+    Set<DataNode*>::const_iterator end = objects.end();
+    for (Set<DataNode*>::iterator t = objects.begin(); t != end; ++t)
+    {
+        DataNode* obj = *t;
+        
+        T res = dynamic_cast<T> (obj);
+        if (res)
+            container.push_back(res);
+    }	
+}
+
+    
+    
 };
 #endif //__DAVAENGINE_SCENE3D_COMPONENT_H__

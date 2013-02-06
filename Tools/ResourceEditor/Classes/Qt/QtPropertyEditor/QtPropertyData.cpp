@@ -13,7 +13,7 @@ QtPropertyData::QtPropertyData(const QVariant &value)
 
 QtPropertyData::~QtPropertyData() 
 {
-	QMapIterator<QString, QtPropertyData*> i = QMapIterator<QString, QtPropertyData*>(children);
+	QHashIterator<QString, QtPropertyData*> i = QHashIterator<QString, QtPropertyData*>(children);
 	while(i.hasNext())
 	{
 		i.next();
@@ -96,9 +96,11 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 {
 	if(NULL != data && !key.isEmpty())
 	{
+		int sz = children.size();
 		if(!children.contains(key))
 		{
 			children.insert(key, data);
+			childrenOrder.insert(key, sz);
 		}
 		else
 		{
@@ -112,6 +114,24 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 
 		data->parent = this;
 	}
+}
+
+int QtPropertyData::ChildCount()
+{
+	return children.size();
+}
+
+QPair<QString, QtPropertyData*> QtPropertyData::ChildGet(int i)
+{
+	QPair<QString, QtPropertyData*> p("", NULL);
+
+	if(i >= 0 && i < children.size())
+	{
+		p.first = childrenOrder.key(i);
+		p.second = children[p.first];
+	}
+
+	return p;
 }
 
 void QtPropertyData::ChildAdd(const QString &key, const QVariant &value)
@@ -129,11 +149,6 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 	}
 
 	return data;
-}
-
-QMapIterator<QString, QtPropertyData*> QtPropertyData::ChildIterator()
-{
-	return QMapIterator<QString, QtPropertyData*>(children);
 }
 
 QVariant QtPropertyData::GetValueInternal()

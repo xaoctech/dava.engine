@@ -17,7 +17,7 @@ public:
 
     IMPLEMENT_COMPONENT_TYPE(CAMERA_COMPONENT);
 
-    virtual Component * Clone();
+    virtual Component * Clone(SceneNode * toEntity);
 
     void SetCamera(Camera * _camera);
     

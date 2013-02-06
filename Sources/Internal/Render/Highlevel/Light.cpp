@@ -32,65 +32,67 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/RenderSystem.h"
+
 
 namespace DAVA 
 {
     
-REGISTER_CLASS(LightNode);
+REGISTER_CLASS(Light);
 
-LightNode::LightNode()
+Light::Light()
 :	BaseObject(),
 	type(TYPE_DIRECTIONAL),
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
     specularColor(1.0f, 1.0f, 1.0f, 1.0f),
     intensity(300.0f),
-	isDynamic(true)
+	flags(IS_DYNAMIC | CAST_SHADOW)
 {
 }
     
-LightNode::~LightNode()
+Light::~Light()
 {
     
 }
     
-void LightNode::SetType(DAVA::LightNode::eType _type)
+void Light::SetType(DAVA::Light::eType _type)
 {
     type = _type;
 }
     
-void LightNode::SetAmbientColor(const Color & _color)
+void Light::SetAmbientColor(const Color & _color)
 {
     ambientColor = _color;
 }
 
-void LightNode::SetDiffuseColor(const Color & _color)
+void Light::SetDiffuseColor(const Color & _color)
 {
     diffuseColor = _color;
 }
 
-void LightNode::SetSpecularColor(const Color & _color)
+void Light::SetSpecularColor(const Color & _color)
 {
     specularColor = _color;
 }
 
-void LightNode::SetIntensity(float32 _intensity)
+void Light::SetIntensity(float32 _intensity)
 {
     intensity = _intensity;
 }
 
     
-BaseObject * LightNode::Clone(BaseObject *dstNode)
+BaseObject * Light::Clone(BaseObject *dstNode)
 {
     if(!dstNode)
     {
-		DVASSERT_MSG(IsPointerToExactClass<LightNode>(this), "Can clone only LightNode");
-        dstNode = new LightNode();
+		DVASSERT_MSG(IsPointerToExactClass<Light>(this), "Can clone only LightNode");
+        dstNode = new Light();
     }
     
     //BaseObject::Clone(dstNode);
     
-    LightNode *lightNode = (LightNode *)dstNode;
+    Light *lightNode = (Light *)dstNode;
     lightNode->type = type;
     lightNode->ambientColor = ambientColor;
     lightNode->diffuseColor = diffuseColor;
@@ -98,60 +100,49 @@ BaseObject * LightNode::Clone(BaseObject *dstNode)
     
     return dstNode;
 }
-// LIGHT
-//void LightNode::Update(float32 timeElapsed)
-//{
-//    bool needUpdateVars = false;
-//    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
-//    {
-//        needUpdateVars = true;
-//        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
-//    }
-//    
-//    if (needUpdateVars)
-//    {
-//        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
-//        Matrix3 rotationPart(GetWorldTransform());
-//        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
-//        direction.Normalize();
-//    }
-//}
 
-LightNode::eType LightNode::GetType() const
+void Light::SetPositionDirectionFromMatrix(const Matrix4 & worldTransform)
 {
-    return type;
+    position = Vector3(0.0f, 0.0f, 0.0f) * worldTransform;
+    direction = MultiplyVectorMat3x3(Vector3(0.0, -1.0f, 0.0f), worldTransform);
+    direction.Normalize();
 }
-const Vector3 & LightNode::GetPosition() const
+
+Light::eType Light::GetType() const
+{
+    return (eType)type;
+}
+const Vector3 & Light::GetPosition() const
 {
     return position; 
 }
 
-const Vector3 & LightNode::GetDirection() const
+const Vector3 & Light::GetDirection() const
 {
     return direction;
 }
    
-const Color & LightNode::GetAmbientColor() const
+const Color & Light::GetAmbientColor() const
 {
     return ambientColor;
 }
     
-const Color & LightNode::GetDiffuseColor() const
+const Color & Light::GetDiffuseColor() const
 {
     return diffuseColor;
 }
     
-const Color & LightNode::GetSpecularColor() const
+const Color & Light::GetSpecularColor() const
 {
     return specularColor;
 }
     
-float32 LightNode::GetIntensity() const
+float32 Light::GetIntensity() const
 {
     return intensity;
 }
 
-void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Light::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	BaseObject::Save(archive);
 	
@@ -175,7 +166,7 @@ void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 }
 
-void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Light::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     BaseObject::Load(archive);
 
@@ -208,14 +199,30 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 //    SceneNode::Draw();
 //}
 
-bool LightNode::IsDynamic()
+bool Light::IsDynamic()
 {
-	return isDynamic;
+	return (flags & IS_DYNAMIC) != 0;
 }
 
-void LightNode::SetDynamic(bool _isDynamic)
+void Light::SetDynamic(bool _isDynamic)
 {
-	isDynamic = _isDynamic;
+	flags |= IS_DYNAMIC;
 }
 
+void Light::AddFlag(uint32 flag)
+{
+    flags |= flag;
+}
+void Light::RemoveFlag(uint32 flag)
+{
+    flags &= ~flag;
+}
+    
+uint32 Light::GetFlags()
+{
+    return flags;
+}
+
+    
+    
 };

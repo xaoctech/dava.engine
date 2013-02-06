@@ -39,6 +39,8 @@
 #include "Render/Highlevel/LandscapeCursor.h"
 #include "Render/Highlevel/RenderObject.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA
 {
 
@@ -330,7 +332,8 @@ protected:
     
     uint16 * indices;
     Texture * textures[TEXTURE_COUNT];
-    String textureNames[TEXTURE_COUNT];
+//    String textureNames[TEXTURE_COUNT];
+    Vector<FilePath> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //
@@ -376,7 +379,8 @@ protected:
     bool BuildHeightmap();
     void BuildLandscape();
     Heightmap *heightmap;
-    String heightmapPath;
+//    String heightmapPath;
+    FilePath heightmapPath;
     
 //     static const float32 TEXTURE_TILE_FULL_SIZE = 2048;
 	static const uint32 TEXTURE_TILE_FULL_SIZE = 2048;
@@ -390,7 +394,8 @@ protected:
     
     int32 flashQueueCounter;
     
-    eTiledShaderMode tiledShaderMode;
+//    eTiledShaderMode tiledShaderMode;
+    uint32 tiledShaderMode;
     
     int32 nearLodIndex;
     int32 farLodIndex;
@@ -399,12 +404,27 @@ protected:
     bool    isFogEnabled;
     float32 fogDensity;
     Color   fogColor;
+    
+    
+public:
+    
+    INTROSPECTION_EXTEND(LandscapeNode, RenderObject,
+        MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         
+        MEMBER(tiledShaderMode, "Tiled Shader Mode", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(bbox, "bbox", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+        MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
     
 inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
 {
-    return tiledShaderMode;
+    return (eTiledShaderMode)tiledShaderMode;
 }
     
 };

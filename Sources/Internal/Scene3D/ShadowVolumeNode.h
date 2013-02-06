@@ -55,6 +55,7 @@ public:
 
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
+    PolygonGroup * GetPolygonGroup() { return shadowPolygonGroup; };
 private:
 	Shader * shader;
 

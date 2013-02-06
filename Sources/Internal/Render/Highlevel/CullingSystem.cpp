@@ -40,7 +40,8 @@
 namespace DAVA
 {
 
-CullingSystem::CullingSystem()
+CullingSystem::CullingSystem(Scene * scene)
+:	SceneSystem(scene)
 {
 }
 
@@ -80,7 +81,7 @@ void CullingSystem::Process()
 {
     int32 objectsCulled = 0;
     
-    Frustum * frustum = camera->GetFrustum();
+    //Frustum * frustum = camera->GetFrustum();
 
     uint32 size = renderObjectArray.size();
     for (uint32 pos = 0; pos < size; ++pos)

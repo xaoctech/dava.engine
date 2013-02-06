@@ -5,8 +5,8 @@
 
 namespace DAVA
 {
-	// Класс представляет расширение базового класса IntrospectionMember и описывает члена интроспекции, как коллекцию
-	// Поддерживаемые коллекци - контейнеры с одним шаблонным параметром: Vector, List, Set
+	// РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЂР°СЃС€РёСЂРµРЅРёРµ Р±Р°Р·РѕРІРѕРіРѕ РєР»Р°СЃСЃР° IntrospectionMember Рё РѕРїРёСЃС‹РІР°РµС‚ С‡Р»РµРЅР° РёРЅС‚СЂРѕСЃРїРµРєС†РёРё, РєР°Рє РєРѕР»Р»РµРєС†РёСЋ
+	// РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ РєРѕР»Р»РµРєС†Рё - РєРѕРЅС‚РµР№РЅРµСЂС‹ СЃ РѕРґРЅРёРј С€Р°Р±Р»РѕРЅРЅС‹Рј РїР°СЂР°РјРµС‚СЂРѕРј: Vector, List, Set
 	template<template <typename> class C, typename T>
 	class IntrospectionCollection : public IntrospectionCollectionBase
 	{
@@ -22,7 +22,7 @@ namespace DAVA
 			return DAVA::MetaInfo::Instance<CollectionT >();
 		}
 
-		DAVA::MetaInfo* ValueType() const
+		DAVA::MetaInfo* ItemType() const
 		{
 			return DAVA::MetaInfo::Instance<T>();
 		}
@@ -123,6 +123,18 @@ namespace DAVA
 			return p;
 		}
 
+		void* ItemData(Iterator i) const
+		{
+			if(ItemType()->IsPointer())
+			{
+				return *((void **) ItemPointer(i));
+			}
+			else
+			{
+				return ItemPointer(i);
+			}
+		}
+
 		const IntrospectionCollectionBase* Collection() const
 		{
 			return this;
@@ -136,7 +148,7 @@ namespace DAVA
 		};
 	};
 
-	// Функция создает IntrospectionCollection, типы выводятся автоматически
+	// Р¤СѓРЅРєС†РёСЏ СЃРѕР·РґР°РµС‚ IntrospectionCollection, С‚РёРїС‹ РІС‹РІРѕРґСЏС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё
 	template<template <typename> class Container, class T>
 	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{

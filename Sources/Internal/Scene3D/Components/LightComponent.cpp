@@ -3,7 +3,7 @@
 namespace DAVA 
 {
 
-LightComponent::LightComponent(LightNode * _light)
+LightComponent::LightComponent(Light * _light)
 {
     light = SafeRetain(_light);
 }
@@ -13,21 +13,22 @@ LightComponent::~LightComponent()
     SafeRelease(light);
 }
     
-void LightComponent::SetLightObject(LightNode * _light)
+void LightComponent::SetLightObject(Light * _light)
 {
 	SafeRelease(light);
     light = SafeRetain(_light);
 }
     
-LightNode * LightComponent::GetLightObject()
+Light * LightComponent::GetLightObject()
 {
     return light;
 }
     
-Component * LightComponent::Clone()
+Component * LightComponent::Clone(SceneNode * toEntity)
 {
     LightComponent * component = new LightComponent();
-    component->light = (LightNode*)light->Clone();
+	component->SetEntity(toEntity);
+    component->light = (Light*)light->Clone();
     return component;
 }
 

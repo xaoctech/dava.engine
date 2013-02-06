@@ -53,7 +53,7 @@ class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
-class LightNode;
+class Light;
 class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
@@ -63,6 +63,7 @@ class EntityManager;
 class BVHierarchy;
 class Component;
 class SceneSystem;
+class RenderSystem;
 class RenderUpdateSystem;
 class TransformSystem;
 class LodSystem;
@@ -72,6 +73,8 @@ class ParticleEmitterSystem;
 class ParticleEffectSystem;
 class UpdatableSystem;
 class DeleteSystem;
+class LightUpdateSystem;
+class SwitchSystem;
     
 /**
     \ingroup scene3d
@@ -112,7 +115,9 @@ public:
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
 	DeleteSystem * deleteSystem;
-    
+    LightUpdateSystem * lightUpdateSystem;
+	SwitchSystem * switchSystem;
+	RenderSystem * renderSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -229,8 +234,8 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
-    Set<LightNode*> & GetLights();
-	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
+    Set<Light*> & GetLights();
+	Light * GetNearestDynamicLight(Light::eType type, Vector3 position);
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
@@ -248,6 +253,7 @@ public:
 	static Scene * GetActiveScene();
 
 	EventSystem * GetEventSystem();
+	RenderSystem * GetRenderSystem();
     
 protected:	
     
@@ -275,8 +281,7 @@ protected:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
-    Set<LightNode*> lights;
-	ShadowRect * shadowRect;
+    Set<Light*> lights;
 
 	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;

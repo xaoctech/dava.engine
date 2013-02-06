@@ -180,6 +180,7 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     }
     displayingLandscape->SetRenderer(landscapeRenderer);
 	
+	//TODO: remove SetWorldTransformPtr
 	displayingLandscape->SetWorldTransformPtr(landscape->GetWorldTransformPtr());
 	SceneNode* lanscapeNode = EditorScene::GetLandscapeNode(scene);
 	

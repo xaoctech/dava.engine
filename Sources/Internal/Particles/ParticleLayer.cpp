@@ -47,6 +47,7 @@ ParticleLayer::ParticleLayer()
 	, sprite(0)
 {
 	renderBatch = new ParticleLayerBatch();
+	renderBatch->SetParticleLayer(this);
 
 	life = 0;
 	lifeVariation = 0;

@@ -372,6 +372,18 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	return node;
 }
 
+DAVA::SceneNode* SceneDataManager::SceneGetRootNode(SceneData *scene)
+{
+	DAVA::SceneNode *node = NULL;
+
+	if(NULL != scene)
+	{
+		node = scene->GetScene();
+	}
+
+	return node;
+}
+
 void SceneDataManager::SceneShowPreview(const DAVA::String &path)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
@@ -657,8 +669,9 @@ DAVA::Texture * SceneDataManager::TextureReload(const TextureDescriptor *descrip
 	if(workingTexture == Texture::GetPinkPlaceholder())
 	{
 		//Create texture from descriptor pathname and real image file
-		workingTexture = Texture::CreateFromFile(descriptor->pathname);
-		RestoreTexture(descriptor->pathname, workingTexture);
+        String pathname = descriptor->pathname;
+		workingTexture = Texture::CreateFromFile(pathname);
+		RestoreTexture(pathname, workingTexture);
 
 		DVASSERT_MSG(1 < workingTexture->GetRetainCount(), "Can be more than 1");
 		workingTexture->Release();

@@ -39,7 +39,8 @@
 namespace DAVA 
 {
 class SceneFileV2;
-class LightNode : public BaseObject
+
+class Light : public BaseObject
 {
 public:
     enum eType
@@ -52,8 +53,14 @@ public:
 		TYPE_COUNT
     };
     
-    LightNode();
-    virtual ~LightNode();
+    enum
+    {
+        IS_DYNAMIC = 1 << 0,
+        CAST_SHADOW = 1 << 1,
+    };
+    
+    Light();
+    virtual ~Light();
     
     virtual BaseObject * Clone(BaseObject * dstNode = NULL);
 
@@ -72,6 +79,8 @@ public:
     const Vector3 & GetPosition() const;
     const Vector3 & GetDirection() const;
     
+    void SetPositionDirectionFromMatrix(const Matrix4 & worldTransform);
+
     //virtual void Update(float32 timeElapsed);
     //virtual void Draw();
     
@@ -80,29 +89,39 @@ public:
 
 	bool IsDynamic();
 	void SetDynamic(bool isDynamic);
+    void AddFlag(uint32 flag);
+    void RemoveFlag(uint32 flag);
+    uint32 GetFlags();
+
+	//void SetRenderSystem
     
 protected:
     Vector3 position;
     Vector3 direction;
-    eType type;
+    
+//    eType type; //TODO: waiting for enums at introspection
+    uint32 type;
+    
     Color ambientColor;
     Color diffuseColor;
     Color specularColor;
     float32 intensity;
 
-	bool isDynamic;
+	uint32 flags;
     
 public:
     
-    INTROSPECTION_EXTEND(LightNode, BaseObject,
+    INTROSPECTION_EXTEND(Light, BaseObject,
         MEMBER(position, "Position", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(direction, "Direction", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-//    MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+        MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
         MEMBER(ambientColor, "Ambient Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(diffuseColor, "Diffuse Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(specularColor, "Specular Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(intensity, "Intensity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(isDynamic, "Is Dynamic", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

@@ -19,7 +19,7 @@ public:
 	virtual bool Is3DFlagCorrect();
 
 	void Draw(Camera * camera);
-	virtual void RenderUpdate(float32 timeElapsed);
+	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
 
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.

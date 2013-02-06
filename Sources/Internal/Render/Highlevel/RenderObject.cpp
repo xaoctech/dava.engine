@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -46,6 +47,7 @@ RenderObject::~RenderObject()
 	uint32 size = renderBatchArray.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
+		DVASSERT(renderBatchArray[i]->GetOwnerLayer() == 0);
 		renderBatchArray[i]->Release();
 	}
 }
@@ -60,7 +62,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
         
     }
     
-    bbox.AddAABBox(batch->GetBoundingBox());
+    const AABBox3 & boundingBox = batch->GetBoundingBox();
+//    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
+//             boundingBox.min.y != AABBOX_INFINITY &&
+//             boundingBox.min.z != AABBOX_INFINITY);
+    
+    bbox.AddAABBox(boundingBox);
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
@@ -85,15 +92,15 @@ RenderObject * RenderObject::Clone()
 	ro->type = type;
 	ro->flags = flags;
 	ro->debugFlags = debugFlags;
-	ro->bbox = bbox;
-	ro->worldBBox = worldBBox;
+	//ro->bbox = bbox;
+	//ro->worldBBox = worldBBox;
 
-	uint32 size = renderBatchArray.size();
+	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		ro->renderBatchArray.push_back(renderBatchArray[i]->Clone());
-		ro->renderBatchArray[i]->SetRenderObject(ro);
+		ro->AddRenderBatch(GetRenderBatch(i)->Clone());
 	}
+    ro->ownerDebugInfo = ownerDebugInfo;
 
 	return ro;
 }

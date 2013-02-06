@@ -154,7 +154,8 @@ struct Matrix4
 };
 
 inline Vector3 operator * (const Vector3 & _v, const Matrix4 & _m);
-
+// Function to perform matrix multiplication without creation of Matrix3
+inline Vector3 MultiplyVectorMat3x3(const Vector3 & _v, const Matrix4 & _m);
 
 // Implementation of matrix4
 
@@ -434,6 +435,16 @@ inline Vector4 operator * (const Vector4 & _v, const Matrix4 & _m)
 	res.w = _v.x * _m._03 + _v.y * _m._13 + _v.z * _m._23 + _m._33;
 	
 	return res;
+}
+
+inline Vector3 MultiplyVectorMat3x3(const Vector3 & _v, const Matrix4 & _m)
+{
+    Vector3 res;
+	res.x = _v.x * _m._00 + _v.y * _m._10 + _v.z * _m._20;
+	res.y = _v.x * _m._01 + _v.y * _m._11 + _v.z * _m._21;
+	res.z = _v.x * _m._02 + _v.y * _m._12 + _v.z * _m._22;
+    return res;
+
 }
 
 
