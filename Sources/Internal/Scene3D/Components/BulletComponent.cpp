@@ -12,6 +12,7 @@ BulletComponent::BulletComponent()
 
 BulletComponent::~BulletComponent()
 {
+	SafeRelease(bulletObject);
 }
 
 Component * BulletComponent::Clone(SceneNode * toEntity)
@@ -24,7 +25,9 @@ Component * BulletComponent::Clone(SceneNode * toEntity)
 
 void BulletComponent::SetBulletObject(BaseObject * _bulletObject)
 {
-	bulletObject = _bulletObject;
+	SafeRelease(bulletObject);
+
+	bulletObject = SafeRetain(_bulletObject);
 }
 
 BaseObject * BulletComponent::GetBulletObject()
