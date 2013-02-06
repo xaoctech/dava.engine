@@ -126,6 +126,8 @@ namespace DAVA
 
 		Core::CreateSingletons();
 
+		externalStorage = docPath;
+
 		Logger::SetTag(logTag);
 //		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] docpath = %s", docPath);
 //		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] assets = %s", assets);
