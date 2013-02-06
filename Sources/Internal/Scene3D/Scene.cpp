@@ -607,8 +607,8 @@ void Scene::Update(float timeElapsed)
 
 	switchSystem->Process();
 
-	particleEffectSystem->Process();
 	particleEmitterSystem->Process();
+	particleEffectSystem->Process();
     
 //	entityManager->Flush();
 
