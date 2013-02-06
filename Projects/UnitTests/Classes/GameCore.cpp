@@ -46,6 +46,7 @@
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
+#include "InputTest.h"
 
 using namespace DAVA;
 
@@ -71,6 +72,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new InputTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();

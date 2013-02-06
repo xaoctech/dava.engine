@@ -64,3 +64,10 @@ void InputTest::TestFunction(PerfFuncData * data)
 {
 	return;
 }
+
+bool InputTest::RunTest(int32 testNum)
+{
+	TestTemplate<InputTest>::RunTest(testNum);
+	return false;
+}
+

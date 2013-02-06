@@ -367,7 +367,7 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 	{
 		if(androidDelegate)
 		{
-			androidDelegate->SetBuffers(1, 1);
+			androidDelegate->SetBuffers(0, 0);
 		}
 
 		core->RenderRecreated();

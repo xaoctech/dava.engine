@@ -263,7 +263,7 @@ bool LandscapeNode::BuildHeightmap()
     String extension = heightmapPath.GetExtension();
     if(".png" == extension)
     {
-        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetAbsolutePath());
+        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetSourcePath());
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -282,7 +282,7 @@ bool LandscapeNode::BuildHeightmap()
     }
     else if(Heightmap::FileExtension() == extension)
     {
-        retValue = heightmap->Load(heightmapPath.GetAbsolutePath());
+        retValue = heightmap->Load(heightmapPath.GetSourcePath());
     }
     else 
     {

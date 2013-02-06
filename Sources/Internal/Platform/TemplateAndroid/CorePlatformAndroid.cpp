@@ -159,7 +159,7 @@ namespace DAVA
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
 
 			FrameworkDidLaunched();
-			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL we on Android
+			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
 
 			RenderManager::Instance()->SetFPS(60);
 

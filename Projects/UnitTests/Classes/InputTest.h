@@ -21,6 +21,7 @@ public:
 
 	virtual void LoadResources();
 	virtual void UnloadResources();
+	virtual bool RunTest(int32 testNum);
 	
 	void TestFunction(PerfFuncData * data);
 	
