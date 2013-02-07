@@ -13,6 +13,14 @@
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
 		022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */; };
 		022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */; };
+		17EACFC516C4029300F6D3D2 /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFBF16C4029300F6D3D2 /* DLCSystem.cpp */; };
+		17EACFC616C4029300F6D3D2 /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 17EACFC016C4029300F6D3D2 /* DLCSystem.h */; };
+		17EACFC716C4029300F6D3D2 /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFC116C4029300F6D3D2 /* DLCUnpacker.cpp */; };
+		17EACFC816C4029300F6D3D2 /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 17EACFC216C4029300F6D3D2 /* DLCUnpacker.h */; };
+		17EACFC916C4029300F6D3D2 /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFC316C4029300F6D3D2 /* FileDownloader.cpp */; };
+		17EACFCA16C4029300F6D3D2 /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17EACFC416C4029300F6D3D2 /* FileDownloader.h */; };
+		17EACFCD16C402BB00F6D3D2 /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EACFCB16C402BB00F6D3D2 /* libcurl_ios.a */; };
+		17EACFCE16C402BB00F6D3D2 /* libdxt_ios_simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EACFCC16C402BB00F6D3D2 /* libdxt_ios_simulator.a */; };
 		475D59561300236500A18EC7 /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59501300236500A18EC7 /* Box2DGameObject.cpp */; };
 		475D59571300236500A18EC7 /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D59511300236500A18EC7 /* Box2DGameObject.h */; };
 		475D59581300236500A18EC7 /* Box2DHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59521300236500A18EC7 /* Box2DHelper.cpp */; };
@@ -586,6 +594,14 @@
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
 		022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TheoraPlayer.h; sourceTree = "<group>"; };
+		17EACFBF16C4029300F6D3D2 /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystem.cpp; path = DLC/DLCSystem.cpp; sourceTree = "<group>"; };
+		17EACFC016C4029300F6D3D2 /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystem.h; path = DLC/DLCSystem.h; sourceTree = "<group>"; };
+		17EACFC116C4029300F6D3D2 /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCUnpacker.cpp; path = DLC/DLCUnpacker.cpp; sourceTree = "<group>"; };
+		17EACFC216C4029300F6D3D2 /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCUnpacker.h; path = DLC/DLCUnpacker.h; sourceTree = "<group>"; };
+		17EACFC316C4029300F6D3D2 /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = DLC/FileDownloader.cpp; sourceTree = "<group>"; };
+		17EACFC416C4029300F6D3D2 /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = DLC/FileDownloader.h; sourceTree = "<group>"; };
+		17EACFCB16C402BB00F6D3D2 /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
+		17EACFCC16C402BB00F6D3D2 /* libdxt_ios_simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios_simulator.a; path = ../../Libs/libs/libdxt_ios_simulator.a; sourceTree = "<group>"; };
 		475D59501300236500A18EC7 /* Box2DGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DGameObject.cpp; sourceTree = "<group>"; };
 		475D59511300236500A18EC7 /* Box2DGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DGameObject.h; sourceTree = "<group>"; };
 		475D59521300236500A18EC7 /* Box2DHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DHelper.cpp; sourceTree = "<group>"; };
@@ -1143,6 +1159,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17EACFCD16C402BB00F6D3D2 /* libcurl_ios.a in Frameworks */,
+				17EACFCE16C402BB00F6D3D2 /* libdxt_ios_simulator.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
 				0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */,
@@ -1171,6 +1189,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				17EACFCB16C402BB00F6D3D2 /* libcurl_ios.a */,
+				17EACFCC16C402BB00F6D3D2 /* libdxt_ios_simulator.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
 				0224B7481598B40100CDEF9E /* libogg_ios.a */,
@@ -1197,6 +1217,19 @@
 				EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		17EACFBD16C4028500F6D3D2 /* DLC */ = {
+			isa = PBXGroup;
+			children = (
+				17EACFBF16C4029300F6D3D2 /* DLCSystem.cpp */,
+				17EACFC016C4029300F6D3D2 /* DLCSystem.h */,
+				17EACFC116C4029300F6D3D2 /* DLCUnpacker.cpp */,
+				17EACFC216C4029300F6D3D2 /* DLCUnpacker.h */,
+				17EACFC316C4029300F6D3D2 /* FileDownloader.cpp */,
+				17EACFC416C4029300F6D3D2 /* FileDownloader.h */,
+			);
+			name = DLC;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -1318,6 +1351,7 @@
 		FECFB32D12E5904400C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				17EACFBD16C4028500F6D3D2 /* DLC */,
 				C7EFBC6C158B4D1A00BF42E0 /* Entity */,
 				C7E895CD157FA00C00B0E00A /* Autotesting */,
 				FECFB32E12E5904400C71562 /* Animation */,
@@ -2271,6 +2305,9 @@
 				E89ECC9B1663AA2700D17C41 /* Meta.h in Headers */,
 				E8C6B12616692EF7001EBE09 /* ParticleEffectNode.h in Headers */,
 				49E7A1E816835EC400F63EFE /* LibDxtHelper.h in Headers */,
+				17EACFC616C4029300F6D3D2 /* DLCSystem.h in Headers */,
+				17EACFC816C4029300F6D3D2 /* DLCUnpacker.h in Headers */,
+				17EACFCA16C4029300F6D3D2 /* FileDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2595,6 +2632,9 @@
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
 				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
 				49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */,
+				17EACFC516C4029300F6D3D2 /* DLCSystem.cpp in Sources */,
+				17EACFC716C4029300F6D3D2 /* DLCUnpacker.cpp in Sources */,
+				17EACFC916C4029300F6D3D2 /* FileDownloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
