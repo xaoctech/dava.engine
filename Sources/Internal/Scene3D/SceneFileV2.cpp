@@ -694,9 +694,9 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
                 String currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
                 
-                Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+				parent->InsertBeforeNode(childNode, currentNode);
                 parent->RemoveNode(currentNode);
-                parent->AddNode(childNode);
                 
                 childNode->SetName(currentName);
 				//merge custom properties
@@ -803,7 +803,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         
 		if(parent)
 		{
-			parent->AddNode(newMeshInstanceNode);
+			parent->InsertBeforeNode(newMeshInstanceNode, oldMeshInstanceNode);
 			parent->RemoveNode(oldMeshInstanceNode);
 		}
 		else
@@ -851,7 +851,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, lod);
 			parent->RemoveNode(lod);
 		}
 
@@ -879,7 +879,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEmitterNode);
 			parent->RemoveNode(particleEmitterNode);
 		}
 
@@ -898,7 +898,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEffectNode);
 			parent->RemoveNode(particleEffectNode);
 		}
 
@@ -922,7 +922,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, sw);
 			parent->RemoveNode(sw);
 		}
 		sw->SetSwitchIndex(0);
