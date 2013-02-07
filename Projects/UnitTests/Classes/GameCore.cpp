@@ -44,6 +44,7 @@
 #include "DXTTest.h"
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
+#include "DLCSystemTests.h"
 
 using namespace DAVA;
 
@@ -78,7 +79,8 @@ void GameCore::OnAppStarted()
 	new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
-    
+	new DLCTest();
+   
     errors.reserve(TestCount());
 
     RunTests();

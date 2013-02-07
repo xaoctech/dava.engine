@@ -7,7 +7,7 @@
 //
 
 #include "DLCUnpacker.h"
-#include "zlib.h"
+#include "libpng/zlib.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/File.h"
 #include "FileSystem/KeyedArchive.h"
