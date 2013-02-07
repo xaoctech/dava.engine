@@ -50,7 +50,7 @@ void UpdatableSystem::RemoveEntity(SceneNode * entity)
 				{
 					updatesBeforeTransform[i] = updatesBeforeTransform[size-1];
 					updatesBeforeTransform.pop_back();
-					return;
+					break;
 				}
 			}
 		}
@@ -65,7 +65,7 @@ void UpdatableSystem::RemoveEntity(SceneNode * entity)
 				{
 					updatesAfterTransform[i] = updatesAfterTransform[size-1];
 					updatesAfterTransform.pop_back();
-					return;
+					break;
 				}
 			}
 		}
