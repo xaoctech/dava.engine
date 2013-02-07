@@ -232,8 +232,6 @@ public:
 
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-
-	virtual int32 Release();
 	
     // Do not use variables 
     std::deque<SceneNodeAnimation *> nodeAnimations;
