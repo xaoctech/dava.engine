@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
+		17EACFAF16C3FF5900F6D3D2 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */; };
 		49C432081675E370000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432061675E370000EA877 /* DXTTest.cpp */; };
 		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
@@ -58,6 +59,8 @@
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
+		17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
@@ -153,6 +156,15 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		17EACFAC16C3FF3600F6D3D2 /* DLCTest */ = {
+			isa = PBXGroup;
+			children = (
+				17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */,
+				17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */,
+			);
+			name = DLCTest;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +231,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				17EACFAC16C3FF3600F6D3D2 /* DLCTest */,
 				E8EF77FE1669248300DA7BD2 /* CloneTest */,
 				E83604EC163FEB370061A636 /* KeyedArchiveTest */,
 				49C432051675E35E000EA877 /* DXTTests */,
@@ -463,6 +476,7 @@
 				E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */,
 				E8EF78011669249000DA7BD2 /* CloneTest.cpp in Sources */,
 				49C432081675E370000EA877 /* DXTTest.cpp in Sources */,
+				17EACFAF16C3FF5900F6D3D2 /* DLCSystemTests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

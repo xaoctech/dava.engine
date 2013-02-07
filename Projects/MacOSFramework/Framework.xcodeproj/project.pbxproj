@@ -10,9 +10,9 @@
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
 		0224B70415989FD900CDEF9E /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0224B70215989FD900CDEF9E /* TheoraPlayer.cpp */; };
 		0224B70515989FD900CDEF9E /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0224B70315989FD900CDEF9E /* TheoraPlayer.h */; };
-		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
 		17A436481664E9DE00A15BDB /* ParticleEffectNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */; };
 		17A436491664E9DE00A15BDB /* ParticleEffectNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A436471664E9DE00A15BDB /* ParticleEffectNode.h */; };
+		17EACFAB16C3FF0E00F6D3D2 /* libcurl_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EACFAA16C3FF0E00F6D3D2 /* libcurl_macos.a */; };
 		4730931113A7E08200C28765 /* UIHierarchyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4730930F13A7E08200C28765 /* UIHierarchyNode.h */; };
 		4730931213A7E08200C28765 /* UIHierarchyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4730931013A7E08200C28765 /* UIHierarchyNode.cpp */; };
 		473DB5B0139E87C3007F2498 /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 473DB5AE139E87C3007F2498 /* UIScrollBar.h */; };
@@ -82,8 +82,6 @@
 		5CEA312D1535A325008E35F5 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEA312B1535A325008E35F5 /* Heightmap.h */; };
 		5CF666A6155D43C70067072D /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF6669E155D43C70067072D /* DLCSystem.cpp */; };
 		5CF666A7155D43C70067072D /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6669F155D43C70067072D /* DLCSystem.h */; };
-		5CF666A8155D43C70067072D /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A0155D43C70067072D /* DLCSystemTests.cpp */; };
-		5CF666A9155D43C70067072D /* DLCSystemTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A1155D43C70067072D /* DLCSystemTests.h */; };
 		5CF666AA155D43C70067072D /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A2155D43C70067072D /* DLCUnpacker.cpp */; };
 		5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A3155D43C70067072D /* DLCUnpacker.h */; };
 		5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A4155D43C70067072D /* FileDownloader.cpp */; };
@@ -616,9 +614,9 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		17A436461664E9DE00A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A436471664E9DE00A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
+		17EACFAA16C3FF0E00F6D3D2 /* libcurl_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_macos.a; path = ../../Libs/libs/libcurl_macos.a; sourceTree = "<group>"; };
 		3239C08413E301A7002CBBF2 /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
 		3239C08513E301A7002CBBF2 /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
@@ -692,8 +690,6 @@
 		5CEA312B1535A325008E35F5 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		5CF6669E155D43C70067072D /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystem.cpp; path = DLC/DLCSystem.cpp; sourceTree = "<group>"; };
 		5CF6669F155D43C70067072D /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystem.h; path = DLC/DLCSystem.h; sourceTree = "<group>"; };
-		5CF666A0155D43C70067072D /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = DLC/DLCSystemTests.cpp; sourceTree = "<group>"; };
-		5CF666A1155D43C70067072D /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = DLC/DLCSystemTests.h; sourceTree = "<group>"; };
 		5CF666A2155D43C70067072D /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCUnpacker.cpp; path = DLC/DLCUnpacker.cpp; sourceTree = "<group>"; };
 		5CF666A3155D43C70067072D /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCUnpacker.h; path = DLC/DLCUnpacker.h; sourceTree = "<group>"; };
 		5CF666A4155D43C70067072D /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = DLC/FileDownloader.cpp; sourceTree = "<group>"; };
@@ -1213,6 +1209,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17EACFAB16C3FF0E00F6D3D2 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
 				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
 				0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */,
@@ -1228,7 +1225,6 @@
 				FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */,
 				FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */,
 				EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */,
-				16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1246,6 +1242,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				17EACFAA16C3FF0E00F6D3D2 /* libcurl_macos.a */,
 				4910CBF5167B73EC00CF948A /* libdxt_macos.a */,
 				E82366CD16148EF9007B40D0 /* libPVRTexLib.a */,
 				0224B6FF15989F7400CDEF9E /* libtheora_macos.a */,
@@ -1254,7 +1251,6 @@
 				5C42C98314E3AFA400EB3F53 /* libxml_macos.a */,
 				5C6BF78214C85A2A009297F7 /* libz.dylib */,
 				5C77AB7C14C7509D00E92D28 /* libpng_macos.a */,
-				16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */,
 				FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */,
 				FECFABB612E58B7800C71562 /* External */,
 				FECFC0A512E87E3000C71562 /* Internal */,
@@ -1314,8 +1310,6 @@
 			children = (
 				5CF6669E155D43C70067072D /* DLCSystem.cpp */,
 				5CF6669F155D43C70067072D /* DLCSystem.h */,
-				5CF666A0155D43C70067072D /* DLCSystemTests.cpp */,
-				5CF666A1155D43C70067072D /* DLCSystemTests.h */,
 				5CF666A2155D43C70067072D /* DLCUnpacker.cpp */,
 				5CF666A3155D43C70067072D /* DLCUnpacker.h */,
 				5CF666A4155D43C70067072D /* FileDownloader.cpp */,
@@ -2367,7 +2361,6 @@
 				FE5E165A153B641E0047FAC5 /* BVNode.h in Headers */,
 				5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */,
 				5CF666A7155D43C70067072D /* DLCSystem.h in Headers */,
-				5CF666A9155D43C70067072D /* DLCSystemTests.h in Headers */,
 				5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */,
 				5CF666AD155D43C70067072D /* FileDownloader.h in Headers */,
 				5CF6FF281563A8260070C3DB /* RectPacker.h in Headers */,
@@ -2719,7 +2712,6 @@
 				FE5E1659153B641E0047FAC5 /* BVNode.cpp in Sources */,
 				5CE063F2154A69630029DF36 /* ImposterManager.cpp in Sources */,
 				5CF666A6155D43C70067072D /* DLCSystem.cpp in Sources */,
-				5CF666A8155D43C70067072D /* DLCSystemTests.cpp in Sources */,
 				5CF666AA155D43C70067072D /* DLCUnpacker.cpp in Sources */,
 				5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */,
 				5CF6FF271563A8260070C3DB /* RectPacker.cpp in Sources */,
