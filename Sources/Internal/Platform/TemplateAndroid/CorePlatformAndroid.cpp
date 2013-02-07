@@ -297,14 +297,17 @@ namespace DAVA
 
 		return newTouch;
 	}
+
 	AAssetManager * CorePlatformAndroid::GetAssetManager()
 	{
 		return assetMngr;
 	}
+
 	void CorePlatformAndroid::SetAssetManager(AAssetManager * mngr)
 	{
 		assetMngr = mngr;
 	}
+
 	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
 	{
 //		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());

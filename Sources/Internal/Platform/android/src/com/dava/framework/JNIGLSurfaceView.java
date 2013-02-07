@@ -5,6 +5,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -106,7 +107,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 
     public boolean onTouchEvent(final MotionEvent event) 
     {
-    	queueEvent(new Runnable()
+    	/*queueEvent(new Runnable()
     	{
     		public void run() 
     		{
@@ -114,6 +115,8 @@ public class JNIGLSurfaceView extends GLSurfaceView
     			int actionIndex = event.getActionIndex();
     			int pointerCount = event.getPointerCount();
 				long time = event.getEventTime();
+				
+				
 
     			ReallocateTouches(pointerCount);
     			if(MotionEvent.ACTION_CANCEL == action)
@@ -154,7 +157,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     			
     			RemoveFinishedTouches();
     		}
-    	});
+    	});*/
     	
         return true;
     }
