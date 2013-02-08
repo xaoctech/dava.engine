@@ -4,6 +4,7 @@
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QColorDialog>
+#include <QPainter>
 #include <QLineEdit>
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
@@ -622,7 +623,11 @@ QIcon QtPropertyDataDavaVariant::GetIcon()
 	if(curVariantValue.type == DAVA::VariantType::TYPE_COLOR)
 	{
 		QPixmap pix(16,16);
-		pix.fill(ColorToQColor(curVariantValue.AsColor()));
+		QPainter p(&pix);
+
+		p.setPen(QColor(0, 0, 0));
+		p.setBrush(QBrush(ColorToQColor(curVariantValue.AsColor())));
+		p.drawRect(QRect(0,0,15,15));
 
 		return QIcon(pix);
 	}

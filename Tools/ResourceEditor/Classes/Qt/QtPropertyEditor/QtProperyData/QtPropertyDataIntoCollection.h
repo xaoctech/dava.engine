@@ -7,12 +7,12 @@
 class QtPropertyDataIntroCollection : public QtPropertyData
 {
 public:
-	QtPropertyDataIntroCollection(void *_object, const DAVA::IntrospectionCollectionBase *_collection);
+	QtPropertyDataIntroCollection(void *_object, const DAVA::IntrospectionCollection *_collection);
 	virtual ~QtPropertyDataIntroCollection();
 
 protected:
 	void *object;
-	const DAVA::IntrospectionCollectionBase *collection;
+	const DAVA::IntrospectionCollection *collection;
 
 	//QMap<QtPropertyDataDavaVariant*, int> childVariantIndexes;
 
