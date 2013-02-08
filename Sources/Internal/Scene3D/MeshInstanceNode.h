@@ -43,7 +43,7 @@ class Texture;
 class SceneFileV2;
 class PolygonGroup;
 class MeshInstanceNode;
-class LightNode;
+class Light;
 class InstanceMaterialState;
 class NMaterial;
 class NMaterialInstance;
@@ -181,7 +181,7 @@ public:
         \brief Register nearest node to this MeshInstanceNode.
         MeshInstance can have own criteria of detection on which light nodes are interesting for this particular mesh and which are not.
      */
-    virtual void RegisterNearestLight(LightNode * node);
+    virtual void RegisterNearestLight(Light * node);
 
 	Vector<PolygonGroupWithMaterial*> polygroups;
 	InstanceMaterialState * materialState;
@@ -192,7 +192,7 @@ protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
     
     
-    Vector<LightNode*> nearestLights;
+    Vector<Light*> nearestLights;
     
     
 	AABBox3 bbox;

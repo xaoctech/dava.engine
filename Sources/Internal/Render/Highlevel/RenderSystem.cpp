@@ -102,6 +102,8 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::RenderPermanent(RenderObject * renderObject)
 {
+    DVASSERT(renderObject->GetRemoveIndex() == -1);
+    
     renderObject->Retain();
     renderObjectArray.push_back(renderObject);
     renderObject->SetRemoveIndex((uint32)(renderObjectArray.size() - 1));
@@ -118,6 +120,8 @@ void RenderSystem::RenderPermanent(RenderObject * renderObject)
 
 void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 {
+    DVASSERT(renderObject->GetRemoveIndex() != -1);
+
 	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
 	for (uint32 k = 0; k < renderBatchCount; ++k)
 	{
@@ -231,7 +235,7 @@ void RenderSystem::MarkForUpdate(RenderObject * renderObject)
     markedObjects.push_back(renderObject);
 }
   
-void RenderSystem::MarkForUpdate(LightNode * lightNode)
+void RenderSystem::MarkForUpdate(Light * lightNode)
 {
     movedLights.push_back(lightNode);
 }
@@ -257,14 +261,14 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
     
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
-    LightNode * nearestLight = 0;
+    Light * nearestLight = 0;
     float32 squareMinDistance = 10000000.0f;
     Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
     
     uint32 size = lights.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        LightNode * light = lights[k];
+        Light * light = lights[k];
         
         if (!light->IsDynamic())continue;
         
@@ -295,18 +299,18 @@ void RenderSystem::FindNearestLights()
     }
 }
     
-void RenderSystem::AddLight(LightNode * light)
+void RenderSystem::AddLight(Light * light)
 {
     lights.push_back(SafeRetain(light));
     FindNearestLights();
 }
     
-void RenderSystem::RemoveLight(LightNode * light)
+void RenderSystem::RemoveLight(Light * light)
 {
     lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
 }
 
-Vector<LightNode*> & RenderSystem::GetLights()
+Vector<Light*> & RenderSystem::GetLights()
 {
     return lights;
 }

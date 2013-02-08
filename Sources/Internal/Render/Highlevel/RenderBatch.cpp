@@ -43,6 +43,7 @@ REGISTER_CLASS(RenderBatch)
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
+    ,   sortingKey(0)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -104,8 +105,18 @@ void RenderBatch::Draw(Camera * camera)
     
 const FastName & RenderBatch::GetOwnerLayerName()
 {
-    static FastName fn("OpaqueRenderLayer");
-    return fn;
+    static FastName opaqueLayer("OpaqueRenderLayer");
+    static FastName translucentLayer("TransclucentRenderLayer");
+    
+    if (material)
+    {
+        if(material->GetOpaque() || material->GetAlphablend())
+		{
+			return translucentLayer;
+		}
+    }
+    
+    return opaqueLayer;
 }
 
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
@@ -133,13 +144,14 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->indexCount = indexCount;
 	rb->type = type;
 
-	rb->ownerLayer = ownerLayer;
-	if(ownerLayer)
-	{
-		ownerLayer->AddRenderBatch(rb);
-	}
-
 	rb->aabbox = aabbox;
+// TODO: Understand what this code means.
+// 
+//	rb->ownerLayer = ownerLayer;
+//	if(ownerLayer)
+//	{
+//		ownerLayer->AddRenderBatch(rb);
+//	}
 
 	return rb;
 }

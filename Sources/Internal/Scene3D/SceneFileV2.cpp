@@ -292,10 +292,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         
     SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
-	rootNode->SetScene(_scene);
+	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
-        LoadHierarchy(_scene, rootNode, file, 1);
+        LoadHierarchy(0, rootNode, file, 1);
     }
     
     OptimizeScene(rootNode);
@@ -569,7 +569,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         
         bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
         
-        LightNode * light = new LightNode();
+        Light * light = new Light();
         light->Load(archive, this);
         light->SetDynamic(isDynamic);
         
@@ -692,14 +692,24 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
             {
                 SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
+				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
                 
-                Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+				parent->InsertBeforeNode(childNode, currentNode);
                 parent->RemoveNode(currentNode);
-                parent->AddNode(childNode);
                 
                 childNode->SetName(currentName);
+				//merge custom properties
+				KeyedArchive * newProperties = childNode->GetCustomProperties();
+				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+				{
+					newProperties->SetVariant(it->first, it->second);
+				}
                 removedNodeCount++;
                 SafeRelease(childNode);
+				SafeRelease(currentProperties);
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);
@@ -769,7 +779,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         
         //
         SceneNode * parent = oldMeshInstanceNode->GetParent();
-        for (uint32 k = 0; k < parent->GetChildrenCount(); ++k)
+        for (int32 k = 0; k < parent->GetChildrenCount(); ++k)
         {
             ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
             if (oldShadowVolumeNode)
@@ -793,7 +803,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         
 		if(parent)
 		{
-			parent->AddNode(newMeshInstanceNode);
+			parent->InsertBeforeNode(newMeshInstanceNode, oldMeshInstanceNode);
 			parent->RemoveNode(oldMeshInstanceNode);
 		}
 		else
@@ -841,11 +851,12 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, lod);
 			parent->RemoveNode(lod);
 		}
 
-		newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
+		//GlobalEventSystem::Instance()->Event(newNode, )
+		//newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
 		newNode->Release();
 		return true;
 	}
@@ -868,7 +879,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEmitterNode);
 			parent->RemoveNode(particleEmitterNode);
 		}
 
@@ -887,7 +898,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEffectNode);
 			parent->RemoveNode(particleEffectNode);
 		}
 
@@ -911,7 +922,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, sw);
 			parent->RemoveNode(sw);
 		}
 		sw->SetSwitchIndex(0);

@@ -10,6 +10,10 @@
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
 		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
+		509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
+		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
+		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
@@ -1213,6 +1217,8 @@
 		E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
 		E898A2BF16BD265400732C04 /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		E898A2C016BD265400732C04 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
+		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
+		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE444430114E77EC00F5EFD6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE44442F114E77EC00F5EFD6 /* OpenAL.framework */; };
@@ -1254,6 +1260,8 @@
 		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
+		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		5C50EA1915761947005ABED7 /* libmongodb_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_macos.a; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1863,6 +1871,7 @@
 		E8989D9816BD24E500732C04 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E8989D9916BD24E500732C04 /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
 		E898A2C416BD265400732C04 /* libFrameworkQt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkQt.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		FE44442F114E77EC00F5EFD6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
@@ -2051,6 +2060,7 @@
 				E8989AED16BD24E400732C04 /* Hash.h */,
 				E8989AEE16BD24E400732C04 /* HashMap.h */,
 				E8989AEF16BD24E400732C04 /* Introspection.h */,
+				E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */,
 				E8989AF016BD24E400732C04 /* IntrospectionBase.h */,
 				E8989AF116BD24E400732C04 /* IntrospectionCollection.h */,
 				E8989AF216BD24E400732C04 /* IntrospectionFlags.h */,
@@ -2582,6 +2592,8 @@
 		E8989CBF16BD24E500732C04 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				E8989CC816BD24E500732C04 /* Components */,
+				E8989D1916BD24E500732C04 /* Systems */,
 				E8989CC016BD24E500732C04 /* BillboardNode.cpp */,
 				E8989CC116BD24E500732C04 /* BillboardNode.h */,
 				E8989CC216BD24E500732C04 /* BoneNode.cpp */,
@@ -2590,7 +2602,6 @@
 				E8989CC516BD24E500732C04 /* BVHierarchy.h */,
 				E8989CC616BD24E500732C04 /* BVNode.cpp */,
 				E8989CC716BD24E500732C04 /* BVNode.h */,
-				E8989CC816BD24E500732C04 /* Components */,
 				E8989CDF16BD24E500732C04 /* DataNode.cpp */,
 				E8989CE016BD24E500732C04 /* DataNode.h */,
 				E8989CE116BD24E500732C04 /* Drawable.h */,
@@ -2649,7 +2660,6 @@
 				E8989D1616BD24E500732C04 /* StateNode.h */,
 				E8989D1716BD24E500732C04 /* SwitchNode.cpp */,
 				E8989D1816BD24E500732C04 /* SwitchNode.h */,
-				E8989D1916BD24E500732C04 /* Systems */,
 				E8989D3216BD24E500732C04 /* UserNode.cpp */,
 				E8989D3316BD24E500732C04 /* UserNode.h */,
 			);
@@ -2688,6 +2698,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */,
+				50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */,
 				E8989D1A16BD24E500732C04 /* BaseProcessSystem.cpp */,
 				E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */,
 				E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */,
@@ -3201,6 +3213,7 @@
 				E898A04B16BD24E500732C04 /* StringFormat.h in Headers */,
 				E898A04D16BD24E500732C04 /* UTF8Utils.h in Headers */,
 				E898A04F16BD24E500732C04 /* Utils.h in Headers */,
+				50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3527,6 +3540,7 @@
 				E898A19716BD265400732C04 /* StringFormat.h in Headers */,
 				E898A19816BD265400732C04 /* UTF8Utils.h in Headers */,
 				E898A19916BD265400732C04 /* Utils.h in Headers */,
+				50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3890,6 +3904,8 @@
 				E898A04C16BD24E500732C04 /* UTF8Utils.cpp in Sources */,
 				E898A04E16BD24E500732C04 /* Utils.cpp in Sources */,
 				E898A05016BD24E500732C04 /* UtilsMacOS.mm in Sources */,
+				509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */,
+				E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4168,6 +4184,8 @@
 				E898A2AD16BD265400732C04 /* UTF8Utils.cpp in Sources */,
 				E898A2AE16BD265400732C04 /* Utils.cpp in Sources */,
 				E898A2AF16BD265400732C04 /* UtilsMacOS.mm in Sources */,
+				509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */,
+				E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

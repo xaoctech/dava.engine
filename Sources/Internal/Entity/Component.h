@@ -82,7 +82,7 @@ public:
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
 
-    
+    SceneNode * GetEntity() { return entity; };
 protected:
     SceneNode * entity;
 
