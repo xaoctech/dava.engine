@@ -220,6 +220,7 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/SpriteObject.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"

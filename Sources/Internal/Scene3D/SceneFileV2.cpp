@@ -64,6 +64,10 @@
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/ShadowVolume.h"
 
+#include "Scene3D/SpriteNode.h"
+#include "Render/Highlevel/SpriteObject.h"
+
+
 namespace DAVA
 {
     
@@ -930,6 +934,33 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		newNode->Release();
 		return true;
 	}
+
+	SpriteNode * spr = dynamic_cast<SpriteNode*>(node);
+	if(spr)
+	{
+		SceneNode * newNode = new SceneNode();
+		spr->Clone(newNode);
+
+		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
+		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
+
+		newNode->AddComponent(new RenderComponent(spriteObject));
+		newNode->AddComponent(new TransformComponent());
+
+
+		SceneNode * parent = spr->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, spr);
+			parent->RemoveNode(spr);
+		}
+
+		spriteObject->Release();
+		newNode->Release();
+		return true;
+	}
+
 
 	return false;
 } 

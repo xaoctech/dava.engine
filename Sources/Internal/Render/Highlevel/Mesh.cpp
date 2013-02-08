@@ -67,6 +67,17 @@ PolygonGroup * Mesh::GetPolygonGroup(uint32 index)
     return renderBatchArray[index]->GetPolygonGroup();
 }
 
+RenderObject * Mesh::Clone( RenderObject *newObject )
+{
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<Mesh>(this), "Can clone only Mesh");
+		newObject = new Mesh();
+	}
+
+	return RenderObject::Clone(newObject);
+}
+
 
 
 
