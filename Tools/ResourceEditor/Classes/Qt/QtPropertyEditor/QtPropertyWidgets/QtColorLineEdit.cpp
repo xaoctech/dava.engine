@@ -51,7 +51,7 @@ void QtColorLineEdit::ToolButtonClicked()
 {
 	removeEventFilter((QObject *) deleg);
 
-    QColor c = QColorDialog::getColor(GetColor(), NULL, "Select color", QColorDialog::ShowAlphaChannel);
+    QColor c = QColorDialog::getColor(GetColor(), this, "Select color", QColorDialog::ShowAlphaChannel);
 	if(c.isValid())
 	{
 		SetColor(c);

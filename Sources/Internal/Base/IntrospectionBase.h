@@ -7,7 +7,7 @@
 namespace DAVA
 {
 	class IntrospectionInfo;
-	class IntrospectionCollectionBase;
+	class IntrospectionCollection;
 	class KeyedArchive;
 	struct MetaInfo;
 
@@ -64,7 +64,7 @@ namespace DAVA
 		virtual void SetValue(void *object, const VariantType &val) const;
 
 		// Возвращает данные члена интроспекции в виде коллекции
-		virtual const IntrospectionCollectionBase* Collection() const;
+		virtual const IntrospectionCollection* Collection() const;
 
 		const int Flags() const;
 
@@ -77,18 +77,19 @@ namespace DAVA
 	};
 
 	// Базовое представление члена интроспекции, являющегося коллекцией
-	class IntrospectionCollectionBase : public IntrospectionMember
+	class IntrospectionCollection : public IntrospectionMember
 	{
 	public:
 		typedef void* Iterator;
 
-		IntrospectionCollectionBase(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
 			: IntrospectionMember(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		virtual MetaInfo* CollectionType() const = 0;
 		virtual MetaInfo* ItemType() const = 0;
 		virtual int Size(void *object) const = 0;
+		virtual void Resize(void *object, int newSize) const = 0;
 		virtual Iterator Begin(void *object) const = 0;
 		virtual Iterator Next(Iterator i) const = 0;
 		virtual void Finish(Iterator i) const = 0;
@@ -96,6 +97,8 @@ namespace DAVA
 		virtual void ItemValueSet(Iterator i, void *itemSrc) = 0;
 		virtual void* ItemPointer(Iterator i) const = 0;
 		virtual void* ItemData(Iterator i) const = 0;
+		//virtual Iterator ItemAdd(void *object) = 0;
+		//virtual void ItemRem(Iterator i) = 0;
 	};
 
 	// Вспомогательный класс для определения содержит ли указанный шаблонный тип интроспекцию
