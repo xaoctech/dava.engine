@@ -60,13 +60,13 @@ InstanceMaterialState::~InstanceMaterialState()
     SafeRelease(lightmapTexture);
 }
 
-void InstanceMaterialState::SetLight(int32 lightIndex, LightNode * lightNode)
+void InstanceMaterialState::SetLight(int32 lightIndex, Light * lightNode)
 { 
     SafeRelease(lightNodes[lightIndex]);
     lightNodes[lightIndex] = SafeRetain(lightNode); 
 }
 
-LightNode * InstanceMaterialState::GetLight(int32 lightIndex) 
+Light * InstanceMaterialState::GetLight(int32 lightIndex) 
 { 
     return lightNodes[lightIndex]; 
 }
@@ -607,20 +607,25 @@ const Color & Material::GetFogColor() const
 
 void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 {
+
     if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
         if (!instanceMaterialState->lightmapTexture)
         {
             SetSetupLightmap(true);
-        }else
+        }
+		else
         {
             SetSetupLightmap(false);
             renderStateBlock.SetTexture(instanceMaterialState->lightmapTexture, 1);
         }
-    }else if (MATERIAL_UNLIT_TEXTURE_DECAL == type)
+    }
+	else if (MATERIAL_UNLIT_TEXTURE_DECAL == type || MATERIAL_UNLIT_TEXTURE_DETAIL == type)
     {
         renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
     }
+
+
     
 	renderStateBlock.shader = shader;
 
@@ -722,7 +727,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
     if (instanceMaterialState)
     {
         Camera * camera = scene->GetCurrentCamera();
-        LightNode * lightNode0 = instanceMaterialState->GetLight(0);
+        Light * lightNode0 = instanceMaterialState->GetLight(0);
         if (lightNode0 && camera)
         {
             if (uniformLightPosition0 != -1)

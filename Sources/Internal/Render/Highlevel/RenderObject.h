@@ -181,7 +181,6 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
-    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const

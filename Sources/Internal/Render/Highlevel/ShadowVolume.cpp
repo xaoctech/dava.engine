@@ -57,6 +57,7 @@ ShadowVolume::~ShadowVolume()
 //	scene->AddDrawTimeShadowVolume(this);
 //}
 
+static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE;
     
 void ShadowVolume::Draw(Camera * camera)
 {
@@ -67,12 +68,12 @@ void ShadowVolume::Draw(Camera * camera)
         return;
     }
 
-//    uint32 flags = renderObject->GetFlags();
-//    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
-//        return;
+    uint32 flags = renderObject->GetFlags();
+    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+        return;
     
-    LightNode * light = GetMaterialInstance()->GetLight(0);
-    if((!light) || (!(light->GetFlags() & LightNode::CAST_SHADOW)))
+    Light * light = GetMaterialInstance()->GetLight(0);
+    if((!light) || (!(light->GetFlags() & Light::CAST_SHADOW)))
 	{
 		return;
 	}

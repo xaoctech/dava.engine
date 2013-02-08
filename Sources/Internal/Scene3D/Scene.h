@@ -53,7 +53,7 @@ class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
-class LightNode;
+class Light;
 class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
@@ -234,8 +234,8 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
-    Set<LightNode*> & GetLights();
-	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
+    Set<Light*> & GetLights();
+	Light * GetNearestDynamicLight(Light::eType type, Vector3 position);
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
@@ -281,7 +281,7 @@ protected:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
-    Set<LightNode*> lights;
+    Set<Light*> lights;
 
 	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;

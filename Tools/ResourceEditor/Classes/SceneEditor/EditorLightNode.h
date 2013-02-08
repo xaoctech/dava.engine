@@ -17,7 +17,7 @@ public:
 
 private:
 
-	LightNode::eType type;
+	Light::eType type;
 
 	String GetSceneFile();
 };
