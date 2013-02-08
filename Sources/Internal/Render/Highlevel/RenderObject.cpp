@@ -31,6 +31,9 @@
 
 namespace DAVA
 {
+
+REGISTER_CLASS(RenderObject)
+
 RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
     ,   flags(VISIBLE)
