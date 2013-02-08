@@ -179,7 +179,6 @@ void Test::MoveToNextPoint()
 {
     ++nextRectNum;
 
-    Logger::Debug("Test::MoveToNextPoint()");
     if(nextRectNum < rectSequence.size())
     {
         Rect nextRect = rectSequence[nextRectNum];
