@@ -62,8 +62,8 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
    	UIScreenManager::Instance()->BlockDrawing();
 
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Assert" message:contents delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-    [alert showModal];
-    [alert release];
+    
+    [alert performSelectorOnMainThread:@selector(showModal) withObject:nil waitUntilDone:YES];
     
 #endif
     va_end(vl);
