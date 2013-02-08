@@ -29,6 +29,7 @@ class LandscapeToolsSelection;
 class LandscapeEditorCustomColors;
 class LandscapeEditorVisibilityCheckTool;
 class Command;
+class ArrowsNode;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -90,6 +91,8 @@ public:
     
     //ModificationsPanelDelegate
     virtual void OnPlaceOnLandscape();
+	void RestoreOriginalTransform();
+	void ApplyTransform(float32 x, float32 y, float32 z);
 
     //GraphBaseDelegate
     virtual bool LandscapeEditorActive();
@@ -134,6 +137,11 @@ public:
 
 	void RemoveNode(SceneNode* node);
 	void SelectNode(SceneNode* node);
+
+	ResourceEditor::eModificationActions GetModificationMode();
+	void SetModificationMode(ResourceEditor::eModificationActions mode);
+	bool IsLandscapeRelative();
+	void SetLandscapeRelative(bool isLandscapeRelative);
 
 protected:
 
@@ -208,7 +216,14 @@ protected:
     SceneInfoControl *sceneInfoControl;
 
 	void PackLightmaps();
-    
+
+	//modification options
+	ResourceEditor::eModificationActions modificationMode;
+	bool landscapeRelative;
+	ArrowsNode* GetArrowsNode(bool createIfNotExist);
+	void UpdateArrowsNode(SceneNode* node);
+	bool InModificationMode();
+
     //Landscape Editor
     bool savedModificatioMode;
     void CreateLandscapeEditor();
