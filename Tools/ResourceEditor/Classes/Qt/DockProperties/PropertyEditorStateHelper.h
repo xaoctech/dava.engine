@@ -15,6 +15,7 @@
 class PropertyEditorStateHelper : public DAVA::QTreeViewStateHelper<QString>
 {
 public:
+	virtual void SaveTreeViewState(bool needCleanupStorage);
 	PropertyEditorStateHelper(QTreeView* treeView, QtPropertyModel* model);
 	
 protected:
@@ -22,6 +23,9 @@ protected:
 	
 private:
 	QtPropertyModel* model;
+
+	// Auxiliary map to store Full Paths to the items were already calculated.
+	DAVA::Map<QStandardItem*, QString> fullPathsCache;
 };
 
 #endif /* defined(__PROPERTY_EDITOR_STATE_HELPER__H__) */

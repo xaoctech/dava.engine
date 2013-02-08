@@ -373,6 +373,7 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.cpp" />
@@ -387,7 +388,6 @@
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
-    <ClCompile Include="Classes\Qt\Main\QTreeViewStateHelper.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialBrowser.cpp" />
@@ -842,6 +842,7 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h" />

@@ -25,7 +25,7 @@ public:
 		this->treeView = treeView;
 	}
 
-	void SaveTreeViewState(bool needCleanupStorage = true)
+	virtual void SaveTreeViewState(bool needCleanupStorage = true)
 	{
 		if (!treeView || !treeView->model())
 		{
@@ -35,7 +35,7 @@ public:
 		SaveTreeViewState(internalStorage, needCleanupStorage);
 	}
 
-	void RestoreTreeViewState()
+	virtual void RestoreTreeViewState()
 	{
 		if (!treeView || !treeView->model())
 		{
