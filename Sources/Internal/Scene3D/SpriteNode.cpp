@@ -310,7 +310,21 @@ void SpriteNode::Draw()
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 }
-    
+
+Sprite * SpriteNode::GetSprite() const
+{
+	return sprite;
+}
+
+const Vector2 & SpriteNode::GetScale() const
+{
+	return sprScale;
+}
+
+const Vector2 & SpriteNode::GetPivot() const
+{
+	return sprPivot;
+}
     
 
 };

@@ -25,59 +25,50 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Alexey 'Hottych' Prosin
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_SPRITE_OBJECT_H__
+#define __DAVAENGINE_SPRITE_OBJECT_H__
 
-#ifndef __SPRITE_NODE_H__
-#define __SPRITE_NODE_H__
-
-#include "Scene3D/SceneNode.h"
-#include "Render/RenderDataObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA 
 {
-class Sprite;
-    
-/**
-    \ingroup 
-    \brief 
- */
-class SpriteNode : public SceneNode
+
+class SpriteObject: public RenderObject
 {
 public:
-    
-    SpriteNode(const String &pathToSprite, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0f, 1.0f)
-               , const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
-    SpriteNode(Sprite *spr, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0f, 1.0f)
-               , const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
-    ~SpriteNode();
-    
-    enum eType
+
+	SpriteObject(const String &pathToSprite, int32 frame = 0
+				, const Vector2 &reqScale = Vector2(1.0f, 1.0f)
+				, const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
+	SpriteObject(Sprite *spr, int32 frame = 0
+				, const Vector2 &reqScale = Vector2(1.0f, 1.0f)
+				, const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
+
+	virtual ~SpriteObject();
+	
+	enum eSpriteType
     {
-        TYPE_OBJECT = 0,            //! draw sprite without any transformations. Set by default.
-        TYPE_BILLBOARD,             //! normal billboard when billboard is always parallel to the camera projection plane. It computed by multiplication of worldMatrix of node to [R]^-1 matrix of camera
-        TYPE_BILLBOARD_TO_CAMERA,   //! billboard is facing to camera point
+        SPRITE_OBJECT = 0,            //! draw sprite without any transformations. Set by default.
+        SPRITE_BILLBOARD,             //! normal billboard when billboard is always parallel to the camera projection plane. It computed by multiplication of worldMatrix of node to [R]^-1 matrix of camera
+        SPRITE_BILLBOARD_TO_CAMERA,   //! billboard is facing to camera point
     };
     
     /**
         \brief Set type of coordinates modification for the given sprite node
         \param[in] type type you want to set
      */
-    void SetType(eType type);
+    void SetSpriteType(eSpriteType type);
     /**
         \brief Get type of coordinates modification for the given sprite node
         \returns type that was set to this sprite node
      */
-    eType GetType();
+    eSpriteType GetSpriteType() const;
     
-    /**
-        \brief Overriden draw function that draws sprite
-     */
-    virtual void	Draw();
-    
-    /**
+	/**
         \brief Change sprite frame for this sprite node 
         \param[in] newFrame frame you want to set
      */
@@ -87,28 +78,45 @@ public:
         \brief Get frame for this sprite node
         \returns frame index that was set for this node last time
      */
-    int32 GetFrame();
+    int32 GetFrame() const;
 
+		
 	Sprite * GetSprite() const;
+	
 	const Vector2& GetScale() const;
 	const Vector2& GetPivot() const;
 
 
+	virtual RenderObject * Clone(RenderObject *newObject);
+
 protected:
-    
-    void CreateMeshFromSprite(int32 frameToGen);
-    Vector<float32> verts;
-    Vector<float32> textures;
-    
-    Sprite *sprite;
-    Vector2 sprScale;
-    Vector2 sprPivot;
-    int32 frame;
-    
-    RenderDataObject *renderData;
-    
-    eType type;
-};
+
+	void CreateMeshFromSprite(int32 frameToGen);
+
+
+	void Init(Sprite *spr, int32 _frame, const Vector2 &reqScale, const Vector2 &pivotPoint);
+	void SetupRenderBatch();
+
+	Sprite *sprite;
+	Vector2 sprScale;
+	Vector2 sprPivot;
+	int32 frame;
+
+	eSpriteType spriteType;
+
+
+	Vector<float32> verts;
+	Vector<float32> textures;
+
+
+public:
+
+	INTROSPECTION_EXTEND(SpriteObject, RenderObject, 
+		NULL
+	);
 };
 
-#endif
+
+};
+
+#endif // __DAVAENGINE_SPRITE_OBJECT_H__

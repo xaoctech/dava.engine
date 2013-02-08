@@ -60,6 +60,9 @@ public:
     virtual void BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox);
     virtual void UpdateFullTiledTexture();
 
+	virtual DAVA::RenderObject * Clone(DAVA::RenderObject *newObject);
+
+
 protected:
     
     void DrawFullTiledTexture(DAVA::Texture *renderTarget, const DAVA::Rect &drawRect);
