@@ -258,7 +258,6 @@ void EditorBodyControl::PlaceOnLandscape()
 	if (selection && InModificationMode())
 	{
         PlaceOnLandscape(selection);
-		UpdateArrowsNode(selection);
 	}
 }
 
@@ -442,7 +441,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				Vector2 d = event->point - touchStart;
 				
-				if (selection)
+				if (selection && d.Length() > 5 && InModificationMode())
 				{
 					ArrowsNode* arrowsNode = GetArrowsNode(false);
 					if (arrowsNode && arrowsNode->GetModAxis() != ArrowsNode::AXIS_NONE)
@@ -459,25 +458,28 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 							transformBeforeModification = modifiedNode->GetLocalTransform();
 						}
 
-						scene->SetBulletUpdate(selection, false);
+						if (selection)
+						{
+							scene->SetBulletUpdate(selection, false);
 
-						inTouch = true;
-						touchStart = event->point;
+							inTouch = true;
+							touchStart = event->point;
 						
-						startTransform = selection->GetLocalTransform();
+							startTransform = selection->GetLocalTransform();
 						
-						InitMoving(event->point);
+							InitMoving(event->point);
 						
-						translate1.CreateTranslation(-rotationCenter);
-						translate2.CreateTranslation(rotationCenter);
+							translate1.CreateTranslation(-rotationCenter);
+							translate2.CreateTranslation(rotationCenter);
 						
-						//calculate koefficient for moving
-						Camera * cam = scene->GetCurrentCamera();
-						const Vector3 & camPos = cam->GetPosition();
-						const Matrix4 & wt = selection->GetWorldTransform();
-						Vector3 objPos = Vector3(0,0,0) * wt;
-						Vector3 dir = objPos - camPos;
-						moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
+							//calculate koefficient for moving
+							Camera * cam = scene->GetCurrentCamera();
+							const Vector3 & camPos = cam->GetPosition();
+							const Matrix4 & wt = selection->GetWorldTransform();
+							Vector3 objPos = Vector3(0,0,0) * wt;
+							Vector3 dir = objPos - camPos;
+							moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
+						}
 					}
 				}
 			}
@@ -490,7 +492,6 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
                     {
                         PrepareModMatrix(event->point);
                         selection->SetLocalTransform(currTransform);
-						UpdateArrowsNode(selection);
                         if(currentGraph)
                         {
                             currentGraph->UpdateMatricesForCurrentNode();
@@ -508,6 +509,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 																			 transformBeforeModification,
 																			 modifiedNode->GetLocalTransform());
 				CommandsManager::Instance()->Execute(command);
+				SafeRelease(command);
 
                 if (IsLandscapeRelative())
                 {
@@ -709,12 +711,23 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	{
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
 
-		ArrowsNode* arrowsNode = GetArrowsNode(false);
+		ArrowsNode* arrowsNode = GetArrowsNode(true);
 		Camera* curCam = scene->GetCurrentCamera();
 		if (arrowsNode && curCam)
 		{
+			UpdateArrowsNode(selection);
 			Vector3 camPos = curCam->GetPosition();
 			arrowsNode->UpdateSize(camPos);
+		}
+	}
+	else
+	{
+		ArrowsNode* arrowsNode = GetArrowsNode(false);
+		if (arrowsNode)
+		{
+			arrowsNode->SetVisible(false);
+			SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+			activeScene->RemoveSceneNode(arrowsNode);
 		}
 	}
 	
@@ -1176,21 +1189,6 @@ void EditorBodyControl::SetCameraController(CameraController *newCameraControlle
 void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
 {
     sceneGraph->SelectNode(node);
-
-	if (node)
-	{
-		UpdateArrowsNode(node);
-	}
-	else
-	{
-		ArrowsNode* arrowsNode = GetArrowsNode(false);
-		if (arrowsNode)
-		{
-			arrowsNode->SetVisible(false);
-			SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-			activeScene->RemoveSceneNode(arrowsNode);
-		}
-	}
 }
 
 void EditorBodyControl::OnReloadRootNodesQt()
@@ -1408,12 +1406,10 @@ void EditorBodyControl::RestoreOriginalTransform()
 	if (!InModificationMode())
 		return;
 
-    SceneNode *selectedNode = scene->GetSelection();
-    if(selectedNode)
-	{
-		selectedNode->RestoreOriginalTransforms();
-		UpdateArrowsNode(selectedNode);
-	}
+	SceneNode* selection = scene->GetProxy();
+	CommandRestoreOriginalTransform* command = new CommandRestoreOriginalTransform(selection);
+	CommandsManager::Instance()->Execute(command);
+	SafeRelease(command);
 }
 
 void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
@@ -1421,7 +1417,7 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 	if (!InModificationMode())
 		return;
 
-    SceneNode *selectedNode = scene->GetSelection();
+    SceneNode *selectedNode = scene->GetProxy();
     if(selectedNode)
 	{
 		Matrix4 modification;
@@ -1453,11 +1449,17 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 			default:
 				break;
 		}
-		selectedNode->SetLocalTransform(selectedNode->GetLocalTransform() * modification);
+
+		Matrix4 originalTransform = selectedNode->GetLocalTransform();
+		CommandTransformObject* command = new CommandTransformObject(selectedNode,
+																	 originalTransform,
+																	 originalTransform * modification);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
 
 		if (IsLandscapeRelative())
 		{
 			PlaceOnLandscape(selectedNode);
 		}
-		UpdateArrowsNode(selectedNode);
 	}
+}
