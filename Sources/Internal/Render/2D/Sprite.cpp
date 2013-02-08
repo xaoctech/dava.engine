@@ -620,27 +620,27 @@ float32 *Sprite::GetTextureVerts(int32 frame)
     return texCoords[frame];
 }
     
-int32 Sprite::GetFrameCount()
+int32 Sprite::GetFrameCount() const
 {
 	return frameCount;	
 }
 	
-float32 Sprite::GetWidth()
+float32 Sprite::GetWidth() const
 {
 	return size.dx;
 }
 	
-float32 Sprite::GetHeight()
+float32 Sprite::GetHeight() const
 {
 	return size.dy;
 }
 	
-const Vector2 &Sprite::GetSize()
+const Vector2 &Sprite::GetSize() const
 {
 	return size;
 }
 	
-const Vector2 &Sprite::GetDefaultPivotPoint()
+const Vector2 &Sprite::GetDefaultPivotPoint() const
 {
 	return defaultPivotPoint;
 }
@@ -1483,7 +1483,7 @@ void Sprite::ConvertToVirtualSize()
     texCoords[0][7] *= resourceToVirtualFactor;
 }
 
-const String & Sprite::GetRelativePathname()
+const String & Sprite::GetRelativePathname() const
 {
 	return relativePathname;
 }
