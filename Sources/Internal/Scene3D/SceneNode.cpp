@@ -44,7 +44,6 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
