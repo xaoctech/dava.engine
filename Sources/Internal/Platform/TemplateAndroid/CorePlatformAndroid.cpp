@@ -292,8 +292,11 @@ namespace DAVA
 		newTouch.tid = id;
 		newTouch.physPoint.x = x;
 		newTouch.physPoint.y = y;
+		newTouch.point.x = x;
+		newTouch.point.y = y;
 		newTouch.phase = phase;
 		newTouch.tapCount = 1;
+		newTouch.timestamp = time;
 
 		return newTouch;
 	}

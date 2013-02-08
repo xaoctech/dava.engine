@@ -3,6 +3,7 @@ package com.dava.framework;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.InputEvent;
@@ -12,12 +13,6 @@ import android.view.MotionEvent;
 public class JNIGLSurfaceView extends GLSurfaceView 
 {
 	private JNIRenderer mRenderer = null;
-
-    private static final int TOUCH_SIZE_DELTA = 10;
-    
-    private Touch []touches = null;
-    private int touchesCount = 0;
-    
 
     private native void nativeOnTouch(int action, int id, float x, float y, long time);
     private native void nativeOnKeyUp(int keyCode);
@@ -38,10 +33,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 
     private void Init()
     {
-    	touchesCount = 0;
-        AllocateTouches(TOUCH_SIZE_DELTA);
-     
-        this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+    	this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         
 //        setPreserveEGLContextOnPause(true);
         setEGLContextFactory(new JNIContextFactory());
@@ -87,7 +79,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
     @Override
     public boolean onKeyUp(final int keyCode, final KeyEvent event)
     {
-    	queueEvent(new Runnable() 
+    	/*queueEvent(new Runnable() 
     	{
     		public void run() 
     		{
@@ -99,193 +91,67 @@ public class JNIGLSurfaceView extends GLSurfaceView
     				nativeOnKeyUp(keyChar);
     			}
     		}
-    	});	
+    	});	*/
 
     	return super.onKeyUp(keyCode, event);
     }
     
+    class InputRunnable implements Runnable
+    {
+    	class InputEvent
+    	{
+    		int id;
+    		float x;
+    		float y;
+    		
+    		InputEvent(int id, float x, float y)
+    		{
+    			this.id = id;
+    			this.x = x;
+    			this.y = y;
+    		}
+    	}
+    	
+    	InputEvent[] events;
+		long time;
+		int action;
+    	
+    	public InputRunnable(final MotionEvent event)
+    	{
+    		time = event.getEventTime();
+    		action = event.getActionMasked();
+    		if (action == MotionEvent.ACTION_MOVE)
+    		{
+    			int pointerCount = event.getPointerCount();
+    			events = new InputEvent[pointerCount];
+    			for (int i = 0; i < pointerCount; ++i)
+    			{
+    				events[i] = new InputEvent(event.getPointerId(i), event.getX(i), event.getY(i));
+    			}
+    		}
+    		else
+    		{
+    			int actionIdx = event.getActionIndex();
+    			assert(actionIdx <= event.getPointerCount());
+    			events = new InputEvent[1];
+    			events[0] = new InputEvent(event.getPointerId(actionIdx), event.getX(actionIdx), event.getY(actionIdx));
+    		}
+    	}
+
+		@Override
+		public void run() {
+			int size = events.length;
+			for (int i = 0; i < size; ++i)
+			{
+				nativeOnTouch(action, events[i].id, events[i].x, events[i].y, time);
+			}
+		}
+    	
+    }
 
     public boolean onTouchEvent(final MotionEvent event) 
     {
-    	/*queueEvent(new Runnable()
-    	{
-    		public void run() 
-    		{
-    			int action = event.getActionMasked();
-    			int actionIndex = event.getActionIndex();
-    			int pointerCount = event.getPointerCount();
-				long time = event.getEventTime();
-				
-				
-
-    			ReallocateTouches(pointerCount);
-    			if(MotionEvent.ACTION_CANCEL == action)
-    			{
-					Log.i(JNIConst.LOG_TAG, "MotionEvent.ACTION_CANCEL: pointerCount = " + pointerCount);
-    			}
-    			
-    			for(int iPointer = 0; iPointer < pointerCount; ++iPointer)
-    			{
-    				int id = event.getPointerId(iPointer);
-    				Touch touch = FindTouchById(id);
-    				if(null == touch)
-    				{
-    					touch = AddTouch(id);
-    				}
-    				
-    				if(		(MotionEvent.ACTION_POINTER_DOWN == action) 
-    					|| 	(MotionEvent.ACTION_POINTER_UP == action))
-    				{
-        				if(actionIndex == iPointer)
-        				{
-            				touch.action = action;
-        				}
-    				}
-    				else
-    				{
-        				touch.action = action;
-    				}
-    				touch.x = event.getX(iPointer);
-    				touch.y = event.getY(iPointer);
-    			}
-    			
-				for(int iTouch = 0; iTouch < touchesCount; ++iTouch)
-    			{
-    				nativeOnTouch(	touches[iTouch].action, touches[iTouch].id, 
-									touches[iTouch].x, touches[iTouch].y, time);
-    			}
-    			
-    			RemoveFinishedTouches();
-    		}
-    	});*/
-    	
+    	queueEvent(new InputRunnable(event));
         return true;
-    }
-    
-    protected void RemoveFinishedTouches()
-    {
-    	int newTouchCount = 0;
-
-    	//reassing order
-		for(int iTouch = 0; iTouch < touchesCount; ++iTouch)
-		{
-			if(		(MotionEvent.ACTION_UP == touches[iTouch].action)
-				|| 	(MotionEvent.ACTION_POINTER_UP == touches[iTouch].action)
-				|| 	(MotionEvent.ACTION_CANCEL == touches[iTouch].action))
-			{
-				touches[iTouch].Clear();
-			}
-			else
-			{
-				if(newTouchCount != iTouch)
-				{
-					touches[newTouchCount].Copy(touches[iTouch]);
-				}
-				++newTouchCount;
-			}
-		}
-
-		touchesCount = newTouchCount;
-		
-		//clear tail
-		for(int iTouch = touchesCount; iTouch < touches.length; ++iTouch)
-		{
-			touches[iTouch].Clear();
-		}
-    }
-    
-    protected Touch AddTouch(int id)
-    {
-    	if(touches.length < touchesCount)
-    	{
-    		ReallocateTouches(touches.length + TOUCH_SIZE_DELTA);
-    	}
-
-    	Touch newTouch = touches[touchesCount];
-    	newTouch.id = id; 
-    	++touchesCount;
-    	
-    	return newTouch;
-    }
-    
-    protected Touch FindTouchById(int id)
-    {
-    	Touch foundTouch = null;
-		for(int iTouch = 0; iTouch < touchesCount; ++iTouch)
-		{
-			if(touches[iTouch].id == id)
-			{
-				foundTouch = touches[iTouch];
-				break;
-			}
-		}
-		
-		return foundTouch;
-    }
-    
-    protected void ReallocateTouches(int requestedCount)
-    {
-    	if(touches.length < requestedCount)
-    	{
-    		Touch []newTouches = new Touch[requestedCount];
-        	if(null != newTouches)
-        	{
-        		int iTouch = 0;
-        		//allocate & copy old touches
-            	for(; iTouch < touches.length; ++iTouch)
-            	{
-            		newTouches[iTouch] = new Touch();
-        			newTouches[iTouch].Copy(touches[iTouch]);
-            	}
-
-            	//allocate new touches
-            	for(; iTouch < requestedCount; ++iTouch)
-            	{
-            		newTouches[iTouch] = new Touch();
-            	}
-            	touches = newTouches;
-        	}
-    	}
-    }
-
-    protected void AllocateTouches(int requestedCount)
-    {
-    	touches = new Touch[requestedCount];
-
-    	//allocate new touches
-    	for(int iTouch = 0; iTouch < requestedCount; ++iTouch)
-    	{
-    		touches[iTouch] = new Touch();
-    	}
-    }
-
-    protected class Touch
-    {
-    	private static final int INVALID_POINTER_ID = -1;
-    	public static final int INVALID_ACTION_ID = -1;
-    	
-    	protected int id = INVALID_POINTER_ID;
-    	protected float x = 0.f;
-    	protected float y = 0.f;
-    	protected int action = INVALID_ACTION_ID;
-    	
-    	void Copy(Touch inTouch)
-    	{
-    		if(null != inTouch)
-    		{
-        		id = inTouch.id;
-        		action = inTouch.action;
-        		x = inTouch.x;
-        		y = inTouch.y;
-    		}
-    	}
-    	
-    	void Clear()
-    	{
-    		id = INVALID_POINTER_ID;
-    		x = 0.f;
-    		y = 0.f;
-    		action = INVALID_ACTION_ID;
-    	}
     }
 }
