@@ -17,7 +17,7 @@
 using namespace DAVA;
 
 // Save/Restore helper for QSceneGraphTreeView.
-class SceneGraphModelStateHelper : public DAVA::QTreeViewStateHelper
+class SceneGraphModelStateHelper : public DAVA::QTreeViewStateHelper<void*>
 {
 public:
 	SceneGraphModelStateHelper(QTreeView* treeView, SceneGraphModel* model);
