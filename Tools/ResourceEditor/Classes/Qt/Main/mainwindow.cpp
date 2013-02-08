@@ -23,6 +23,8 @@
 #include <QApplication>
 #include <QPixmap>
 
+#include "ModificationWidget.h"
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -187,6 +189,22 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionReloadAsDXT, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsDXT()));
     actionHandler->RegisterTextureFormatActions(FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
 
+	//Modifications Options
+	connect(ui->menuModifications, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuModificationsWillShow()));
+	connect(ui->actionModifySelect, SIGNAL(triggered()), actionHandler, SLOT(ModificationSelect()));
+	connect(ui->actionModifyMove, SIGNAL(triggered()), actionHandler, SLOT(ModificationMove()));
+	connect(ui->actionModifyRotate, SIGNAL(triggered()), actionHandler, SLOT(ModificationRotate()));
+	connect(ui->actionModifyScale, SIGNAL(triggered()), actionHandler, SLOT(ModificationScale()));
+	connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationPlaceOnLand()));
+	connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationSnapToLand()));
+	actionHandler->RegisterModificationActions(ResourceEditor::MODIFY_COUNT,
+											   ui->actionModifySelect,
+											   ui->actionModifyMove,
+											   ui->actionModifyRotate,
+											   ui->actionModifyScale,
+											   ui->actionModifyPlaceOnLandscape,
+											   ui->actionModifySnapToLandscape);
+
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
  
@@ -232,6 +250,46 @@ void QtMainWindow::SetupToolBar()
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
     ui->mainToolBar->addSeparator();
+	
+	//modification options
+	SetupModificationToolBar();
+}
+
+void QtMainWindow::SetupModificationToolBar()
+{
+	DecorateWithIcon(ui->actionModifySelect, QString::fromUtf8(":/QtIcons/modify_select.png"));
+	DecorateWithIcon(ui->actionModifyMove, QString::fromUtf8(":/QtIcons/modify_move.png"));
+	DecorateWithIcon(ui->actionModifyRotate, QString::fromUtf8(":/QtIcons/modify_rotate.png"));
+	DecorateWithIcon(ui->actionModifyScale, QString::fromUtf8(":/QtIcons/modify_scale.png"));
+	DecorateWithIcon(ui->actionModifyPlaceOnLandscape, QString::fromUtf8(":/QtIcons/modify_placeonland.png"));
+	DecorateWithIcon(ui->actionModifySnapToLandscape, QString::fromUtf8(":/QtIcons/modify_snaptoland.png"));
+
+	ui->modificationToolBar->addAction(ui->actionModifySelect);
+	ui->modificationToolBar->addSeparator();
+	ui->modificationToolBar->addAction(ui->actionModifyMove);
+	ui->modificationToolBar->addAction(ui->actionModifyRotate);
+	ui->modificationToolBar->addAction(ui->actionModifyScale);
+	ui->modificationToolBar->addSeparator();
+	ui->modificationToolBar->addAction(ui->actionModifyPlaceOnLandscape);
+	ui->modificationToolBar->addAction(ui->actionModifySnapToLandscape);
+	ui->modificationToolBar->addSeparator();
+
+	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+
+	ModificationWidget* modificationWidget = new ModificationWidget(this);
+	ui->modificationToolBar->addWidget(modificationWidget);
+	connect(modificationWidget, SIGNAL(ApplyModification(double, double, double)),
+			handler, SLOT(OnApplyModification(double, double, double)));
+
+	QAction* resetAction = new QAction(tr("Restore Original Transformation"), ui->modificationToolBar);
+	DecorateWithIcon(resetAction, QString::fromUtf8(":/QtIcons/modify_reset.png"));
+
+	ui->modificationToolBar->addAction(resetAction);
+	connect(resetAction, SIGNAL(triggered()), handler, SLOT(OnResetModification()));
+
+	ui->modificationToolBar->addSeparator();
+
+	ui->actionModifySelect->setChecked(true);
 }
 
 void QtMainWindow::OpenLastProject()

@@ -32,6 +32,10 @@
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
 
+#include "ArrowsNode.h"
+
+#define ARROWS_NODE_NAME "editor.arrows-node"
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
@@ -65,6 +69,9 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 
 	mainCam = 0;
 	debugCam = 0;
+	
+	modificationMode = ResourceEditor::MODIFY_NONE;
+	landscapeRelative = false;
     
     propertyShowState = EPSS_ONSCREEN;
 
@@ -248,9 +255,10 @@ void EditorBodyControl::ReleaseModificationPanel()
 void EditorBodyControl::PlaceOnLandscape()
 {
 	SceneNode * selection = scene->GetProxy();
-	if (selection && modificationPanel->IsModificationMode())
+	if (selection && InModificationMode())
 	{
         PlaceOnLandscape(selection);
+		UpdateArrowsNode(selection);
 	}
 }
 
@@ -433,22 +441,24 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			if (!isDrag)
 			{
 				Vector2 d = event->point - touchStart;
-				if (d.Length() > 5 && modificationPanel->IsModificationMode())
+				
+				if (selection)
 				{
-					isDrag = true;
-					if (selection && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
-					{//copy object
-						CommandCloneObject* command = new CommandCloneObject(selection, this);
-						CommandsManager::Instance()->Execute(command);
-						SafeRelease(command);
-
-						selection = scene->GetProxy();
-						modifiedNode = scene->GetProxy();
-						transformBeforeModification = modifiedNode->GetLocalTransform();
-					}
-
-					if (selection)
+					ArrowsNode* arrowsNode = GetArrowsNode(false);
+					if (arrowsNode && arrowsNode->GetModAxis() != ArrowsNode::AXIS_NONE)
 					{
+						isDrag = true;
+						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+						{//copy object
+							CommandCloneObject* command = new CommandCloneObject(selection, this);
+							CommandsManager::Instance()->Execute(command);
+							SafeRelease(command);
+
+							selection = scene->GetProxy();
+							modifiedNode = scene->GetProxy();
+							transformBeforeModification = modifiedNode->GetLocalTransform();
+						}
+
 						scene->SetBulletUpdate(selection, false);
 
 						inTouch = true;
@@ -473,13 +483,14 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			}
 			else
 			{
-				if (selection && modificationPanel->IsModificationMode())
+				if (selection && InModificationMode())
 				{
                     LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
                     if(!landscape)
                     {
                         PrepareModMatrix(event->point);
                         selection->SetLocalTransform(currTransform);
+						UpdateArrowsNode(selection);
                         if(currentGraph)
                         {
                             currentGraph->UpdateMatricesForCurrentNode();
@@ -498,7 +509,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 																			 modifiedNode->GetLocalTransform());
 				CommandsManager::Instance()->Execute(command);
 
-                if(modificationPanel->IsLandscapeRelative())
+                if (IsLandscapeRelative())
                 {
                     PlaceOnLandscape();
                 }
@@ -536,6 +547,16 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
             cameraController->Input(event);
         }
 	}
+
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
+	if (arrowsNode && arrowsNode->IsVisible() && !inTouch)
+	{
+		Vector3 from, dir;
+		GetCursorVectors(&from, &dir, event->point);
+		Vector3 to = from + dir * 1000.0f;
+		arrowsNode->ProcessMouse(event, from, dir);
+	}
+	
     return true;
 }
 
@@ -544,18 +565,20 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 void EditorBodyControl::InitMoving(const Vector2 & point)
 {
 	//init planeNormal
-	switch (modificationPanel->GetModAxis()) 
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
+	if (!arrowsNode) return;
+	switch (arrowsNode->GetModAxis())
 	{
-		case ModificationsPanel::AXIS_X:
-		case ModificationsPanel::AXIS_Y:
-		case ModificationsPanel::AXIS_XY:
+		case ArrowsNode::AXIS_X:
+		case ArrowsNode::AXIS_Y:
+		case ArrowsNode::AXIS_XY:
 			planeNormal = Vector3(0,0,1);
 			break;
-		case ModificationsPanel::AXIS_Z:
-		case ModificationsPanel::AXIS_YZ:
+		case ArrowsNode::AXIS_Z:
+		case ArrowsNode::AXIS_YZ:
 			planeNormal = Vector3(1,0,0);
 			break;
-		case ModificationsPanel::AXIS_XZ:
+		case ArrowsNode::AXIS_XZ:
 			planeNormal = Vector3(0,1,0);
 			break;
 		default:
@@ -589,8 +612,12 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 	
 	Matrix4 modification;
 	modification.Identity();
-	
-	if (modificationPanel->GetModState() == ModificationsPanel::MOD_MOVE)
+
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
+	if (!arrowsNode)
+		return;
+
+	if (GetModificationMode() == ResourceEditor::MODIFY_MOVE)
 	{
 		Vector3 from, dir;
 		GetCursorVectors(&from, &dir, point);
@@ -600,52 +627,56 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 		
 		if (result)
 		{
-			switch (modificationPanel->GetModAxis()) 
+			
+			if (arrowsNode)
 			{
-				case ModificationsPanel::AXIS_X:
-					currPoint.y = startDragPoint.y;
-					currPoint.z = startDragPoint.z;
-					break;
-				case ModificationsPanel::AXIS_Y:
-					currPoint.x = startDragPoint.x;
-					currPoint.z = startDragPoint.z;
-					break;
-				case ModificationsPanel::AXIS_Z:
-					currPoint.x = startDragPoint.x;
-					currPoint.y = startDragPoint.y;
-					break;
+				switch (arrowsNode->GetModAxis())
+				{
+					case ArrowsNode::AXIS_X:
+						currPoint.y = startDragPoint.y;
+						currPoint.z = startDragPoint.z;
+						break;
+					case ArrowsNode::AXIS_Y:
+						currPoint.x = startDragPoint.x;
+						currPoint.z = startDragPoint.z;
+						break;
+					case ArrowsNode::AXIS_Z:
+						currPoint.x = startDragPoint.x;
+						currPoint.y = startDragPoint.y;
+						break;
                     
-                default:
-                    break;
+					default:
+						break;
+				}
+				modification.CreateTranslation(currPoint - startDragPoint);
 			}
-			modification.CreateTranslation(currPoint - startDragPoint);
 		}
 	}
-	else if (modificationPanel->GetModState() == ModificationsPanel::MOD_ROTATE)
+	else if (GetModificationMode() == ResourceEditor::MODIFY_ROTATE)
 	{
 		Matrix4 d;
-		switch (modificationPanel->GetModAxis()) 
+		switch (arrowsNode->GetModAxis())
 		{
-			case ModificationsPanel::AXIS_X:
-			case ModificationsPanel::AXIS_Y:
-				modification.CreateRotation(vect[modificationPanel->GetModAxis()], winy / 100.0f);
+			case ArrowsNode::AXIS_X:
+			case ArrowsNode::AXIS_Y:
+				modification.CreateRotation(vect[arrowsNode->GetModAxis()], winy / 100.0f);
 				break;
-			case ModificationsPanel::AXIS_Z:
-				modification.CreateRotation(vect[modificationPanel->GetModAxis()], winx / 100.0f);
+			case ArrowsNode::AXIS_Z:
+				modification.CreateRotation(vect[arrowsNode->GetModAxis()], winx / 100.0f);
 				break;
-			case ModificationsPanel::AXIS_XY:
-				modification.CreateRotation(vect[ModificationsPanel::AXIS_X], winx / 100.0f);
-				d.CreateRotation(vect[ModificationsPanel::AXIS_Y], winy / 100.0f);
+			case ArrowsNode::AXIS_XY:
+				modification.CreateRotation(vect[ArrowsNode::AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[ArrowsNode::AXIS_Y], winy / 100.0f);
 				modification *= d;
 				break;
-			case ModificationsPanel::AXIS_YZ:
-				modification.CreateRotation(vect[ModificationsPanel::AXIS_Y], winx / 100.0f);
-				d.CreateRotation(vect[ModificationsPanel::AXIS_Z], winy / 100.0f);
+			case ArrowsNode::AXIS_YZ:
+				modification.CreateRotation(vect[ArrowsNode::AXIS_Y], winx / 100.0f);
+				d.CreateRotation(vect[ArrowsNode::AXIS_Z], winy / 100.0f);
 				modification *= d;
 				break;
-			case ModificationsPanel::AXIS_XZ:
-				modification.CreateRotation(vect[ModificationsPanel::AXIS_X], winx / 100.0f);
-				d.CreateRotation(vect[ModificationsPanel::AXIS_Z], winy / 100.0f);
+			case ArrowsNode::AXIS_XZ:
+				modification.CreateRotation(vect[ArrowsNode::AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[ArrowsNode::AXIS_Z], winy / 100.0f);
 				modification *= d;
 				break;
 			default:
@@ -654,7 +685,7 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 		modification = (translate1 * modification) * translate2;
 		
 	}
-	else if (modificationPanel->GetModState() == ModificationsPanel::MOD_SCALE)
+	else if (GetModificationMode() == ResourceEditor::MODIFY_SCALE)
 	{
 		float kf = winx / 100.0f;
 		if (kf < -1.0)
@@ -669,54 +700,6 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
-	SceneNode * selection = scene->GetProxy();
-	if (selection && modificationPanel->IsModificationMode())
-	{
-		const Rect & rect = scene3dView->GetLastViewportRect();
-		Camera * cam = scene->GetCurrentCamera(); 
-		Vector2 start = cam->GetOnScreenPosition(rotationCenter, rect);
-		Vector2 end;
-	
-		const Vector3 & vc = cam->GetPosition();
-		float32 kf = ((vc - rotationCenter).Length() - cam->GetZNear()) * 0.2f;
-		
-		for(int32 i = 0; i < 3; ++i)
-		{
-			if (modificationPanel->GetModAxis() == i
-				|| (i == ModificationsPanel::AXIS_X && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XZ)) 
-				|| (i == ModificationsPanel::AXIS_Y && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)) 
-				|| (i == ModificationsPanel::AXIS_Z && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XZ || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)))
-			{
-				RenderManager::Instance()->SetColor(0, 1.0f, 0, 1.0f);					
-			}
-			else 
-			{
-				RenderManager::Instance()->SetColor(1.0f, 0, 0, 1.0f);	
-			}
-
-			Vector3 v = rotationCenter + vect[i] * kf;
-			end = cam->GetOnScreenPosition(v, rect);
-			RenderHelper::Instance()->DrawLine(start, end);
-
-		
-			if (i == ModificationsPanel::AXIS_X 
-				|| (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_Y)
-				|| (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)
-				)
-			{
-				axisSign[i] = (start.x > end.x) ? -1.0f: 1.0f;
-			}
-			else if (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY)
-			{
-				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;				
-			}
-			else if (i == ModificationsPanel::AXIS_Z)
-			{
-				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;
-			}
-		}
-		RenderManager::Instance()->ResetColor();
-	}
 }
 
 void EditorBodyControl::Update(float32 timeElapsed)
@@ -725,6 +708,14 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	if (selection)
 	{
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
+
+		ArrowsNode* arrowsNode = GetArrowsNode(false);
+		Camera* curCam = scene->GetCurrentCamera();
+		if (arrowsNode && curCam)
+		{
+			Vector3 camPos = curCam->GetPosition();
+			arrowsNode->UpdateSize(camPos);
+		}
 	}
 	
     if(cameraController)
@@ -1077,6 +1068,10 @@ void EditorBodyControl::LandscapeEditorStarted()
 		SelectNodeAtTree(sceneNode);
 	}
     landscapeToolsSelection->Show();
+
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
+	if (arrowsNode)
+		arrowsNode->SetVisible(false);
 }
 
 void EditorBodyControl::LandscapeEditorFinished()
@@ -1181,6 +1176,21 @@ void EditorBodyControl::SetCameraController(CameraController *newCameraControlle
 void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
 {
     sceneGraph->SelectNode(node);
+
+	if (node)
+	{
+		UpdateArrowsNode(node);
+	}
+	else
+	{
+		ArrowsNode* arrowsNode = GetArrowsNode(false);
+		if (arrowsNode)
+		{
+			arrowsNode->SetVisible(false);
+			SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+			activeScene->RemoveSceneNode(arrowsNode);
+		}
+	}
 }
 
 void EditorBodyControl::OnReloadRootNodesQt()
@@ -1325,3 +1335,129 @@ void EditorBodyControl::SelectNode(SceneNode *node)
 	scene->SetSelection(node);
 	SelectNodeAtTree(node);
 }
+
+ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
+{
+	DVASSERT(scene);
+
+	ArrowsNode* arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+	if (!arrowsNode && createIfNotExist)
+	{
+		arrowsNode = new ArrowsNode();
+		arrowsNode->SetName(ARROWS_NODE_NAME);
+		AddNode(arrowsNode);
+		SafeRelease(arrowsNode);
+
+		arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+	}
+
+	return arrowsNode;
+}
+
+void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
+{
+	ArrowsNode* arrowsNode = GetArrowsNode(true);
+	if (node && arrowsNode)
+	{
+		if (node == arrowsNode)
+		{
+			arrowsNode->SetVisible(false);
+			return;
+		}
+
+		Matrix4 nodeWT = node->GetLocalTransform();
+		arrowsNode->SetPosition(nodeWT.GetTranslationVector());
+		arrowsNode->SetVisible(true);
+		arrowsNode->SetActive(InModificationMode());
+	}
+}
+
+bool EditorBodyControl::InModificationMode()
+{
+	return GetModificationMode() != ResourceEditor::MODIFY_NONE;
+}
+
+ResourceEditor::eModificationActions EditorBodyControl::GetModificationMode()
+{
+	return modificationMode;
+}
+
+void EditorBodyControl::SetModificationMode(ResourceEditor::eModificationActions mode)
+{
+	modificationMode = mode;
+
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
+	if (arrowsNode)
+	{
+		arrowsNode->SetActive(InModificationMode());
+	}
+}
+
+bool EditorBodyControl::IsLandscapeRelative()
+{
+	return landscapeRelative;
+}
+
+void EditorBodyControl::SetLandscapeRelative(bool isLandscapeRelative)
+{
+	landscapeRelative = isLandscapeRelative;
+}
+
+void EditorBodyControl::RestoreOriginalTransform()
+{
+	if (!InModificationMode())
+		return;
+
+    SceneNode *selectedNode = scene->GetSelection();
+    if(selectedNode)
+	{
+		selectedNode->RestoreOriginalTransforms();
+		UpdateArrowsNode(selectedNode);
+	}
+}
+
+void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
+{
+	if (!InModificationMode())
+		return;
+
+    SceneNode *selectedNode = scene->GetSelection();
+    if(selectedNode)
+	{
+		Matrix4 modification;
+		modification.Identity();
+
+		Matrix4 t1, t2;
+		t1.CreateTranslation(-selectedNode->GetWorldTransform().GetTranslationVector());
+		t2.CreateTranslation(selectedNode->GetWorldTransform().GetTranslationVector());
+
+		switch (GetModificationMode())
+		{
+			case ResourceEditor::MODIFY_MOVE:
+				modification.CreateTranslation(Vector3(x, y, z));
+				break;
+
+			case ResourceEditor::MODIFY_ROTATE:
+				modification.CreateRotation(Vector3(1, 0, 0), DegToRad(x));
+				modification *= Matrix4::MakeRotation(Vector3(0, 1, 0), DegToRad(y));
+				modification *= Matrix4::MakeRotation(Vector3(0, 0, 1), DegToRad(z));
+
+				modification = (t1 * modification) * t2;
+				break;
+
+			case ResourceEditor::MODIFY_SCALE:
+				modification.CreateScale(Vector3(1, 1, 1) + Vector3(x + y + z, x + y + z, x + y + z) / 100.f);
+				modification = (t1 * modification) * t2;
+				break;
+
+			default:
+				break;
+		}
+		selectedNode->SetLocalTransform(selectedNode->GetLocalTransform() * modification);
+
+		if (IsLandscapeRelative())
+		{
+			PlaceOnLandscape(selectedNode);
+		}
+		UpdateArrowsNode(selectedNode);
+	}
