@@ -1476,11 +1476,11 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\QTreeViewStateHelper.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
+      <Filter>Sources\Qt\DockProperties</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2614,6 +2614,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
+      <Filter>Sources\Qt\DockProperties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
