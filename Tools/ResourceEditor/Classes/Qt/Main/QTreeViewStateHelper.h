@@ -32,7 +32,7 @@ public:
 			return;
 		}
 		
-		SaveTreeViewState(internalStorage, needCleanupStorage);
+		SaveTreeViewState(expandedItems, needCleanupStorage);
 	}
 
 	virtual void RestoreTreeViewState()
@@ -42,11 +42,11 @@ public:
 			return;
 		}
 		
-		RestoreTreeViewStateRecursive(treeView, QModelIndex(), internalStorage);
+		RestoreTreeViewStateRecursive(treeView, QModelIndex(), expandedItems);
 	}
 
 	// Extended versions - save/restore Tree View state to external storage.
-	void SaveTreeViewState(Map<T, bool>& storage, bool needCleanupStorage)
+	void SaveTreeViewState(Set<T>& storage, bool needCleanupStorage)
 	{
 		if (!treeView || !treeView->model())
 		{
@@ -61,7 +61,7 @@ public:
 		SaveTreeViewStateRecursive(treeView, QModelIndex(), storage);
 	}
 
-	void RestoreTreeViewState(Map<T, bool>& storage)
+	void RestoreTreeViewState(Set<T>& storage)
 	{
 		if (!treeView || !treeView->model())
 		{
@@ -78,12 +78,12 @@ public:
 
 	bool IsTreeStateStorageEmpty()
 	{
-		return this->internalStorage.empty();
+		return this->expandedItems.empty();
 	}
 	
 	void CleanupTreeStateStorage()
 	{
-		this->internalStorage.cleanup();
+		this->expandedItems.cleanup();
 	}
 
 protected:
@@ -91,7 +91,7 @@ protected:
 	virtual T GetPersistentDataForModelIndex(const QModelIndex &modelIndex) = 0;
 
 	void SaveTreeViewStateRecursive(const QTreeView* treeView, const QModelIndex &parent,
-									Map<T, bool>& storage)
+									Set<T>& storage)
 	{
 		QAbstractItemModel* model = treeView->model();
 		int rowCount = model->rowCount(parent);
@@ -103,20 +103,27 @@ protected:
 			{
 				continue;
 			}
-			
+
+			// Store only expanded items to reduce the memory footprint.
 			T persistentData = GetPersistentDataForModelIndex(idx);
 			if (persistentData != NULL)
 			{
-				bool isExpanded = treeView->isExpanded(idx);
-				storage[persistentData] = isExpanded;
+				if (treeView->isExpanded(idx))
+				{
+					expandedItems.insert(persistentData);
+				}
+				else
+				{
+					expandedItems.erase(persistentData);
+				}
 			}
-			
+
 			SaveTreeViewStateRecursive(treeView, idx, storage);
 		}
 	}
 
 	void RestoreTreeViewStateRecursive(QTreeView* treeView, const QModelIndex &parent,
-									   Map<T, bool>& storage)
+									   Set<T>& storage)
 	{
 		QAbstractItemModel* model = treeView->model();
 		int rowCount = model->rowCount(parent);
@@ -135,13 +142,10 @@ protected:
 				continue;
 			}
 			
-			typename Map<T, bool>::iterator iter = storage.find(persistentData);
-			if (iter != storage.end())
-			{
-				bool isExpanded = iter->second;
-				treeView->setExpanded(idx, isExpanded);
-			}
-			
+			// Only expanded items are stored, so if item isn't in the list - it is collapsed.
+			typename Set<T>::iterator iter = storage.find(persistentData);
+			treeView->setExpanded(idx, (iter != storage.end()) );
+
 			RestoreTreeViewStateRecursive(treeView, idx, storage);
 		}
 	}
@@ -150,8 +154,8 @@ private:
 	// QTreeView to attach to.
 	QTreeView* treeView;
 
-	// Collapsed items.
-	Map<T, bool> internalStorage;
+	// Expanded items.
+	Set<T> expandedItems;
 };
 
 };
