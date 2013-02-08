@@ -6,6 +6,25 @@
 
 using namespace DAVA;
 
+class ArrowsNode;
+
+class ArrowsRenderObject: public RenderObject
+{
+public:
+	ArrowsRenderObject(ArrowsNode* node);
+};
+
+class ArrowsRenderBatch: public RenderBatch
+{
+public:
+	ArrowsRenderBatch(ArrowsNode* node);
+
+	virtual void Draw(Camera * camera);
+
+protected:
+	ArrowsNode* node;
+};
+
 class ArrowsNode: public SceneNode
 {
 public:

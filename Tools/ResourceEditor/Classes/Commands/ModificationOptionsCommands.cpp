@@ -4,7 +4,7 @@
 #include "../SceneEditor/EditorSettings.h"
 
 ModificationPlaceOnLandCommand::ModificationPlaceOnLandCommand()
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
 {
 }
 
@@ -17,7 +17,7 @@ void ModificationPlaceOnLandCommand::Execute()
 }
 
 ModificationApplyCommand::ModificationApplyCommand(float32 x, float32 y, float32 z)
-:	Command(COMMAND_UNDO_REDO),
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT),
 	x(x),
 	y(y),
 	z(z)
@@ -33,7 +33,7 @@ void ModificationApplyCommand::Execute()
 }
 
 ModificationResetCommand::ModificationResetCommand()
-:	Command(COMMAND_UNDO_REDO)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
 {
 }
 

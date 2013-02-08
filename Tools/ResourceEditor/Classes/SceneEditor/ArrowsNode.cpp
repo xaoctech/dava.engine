@@ -30,6 +30,10 @@ ArrowsNode::ArrowsNode():
 	axisSweep = new btAxisSweep3(btVector3(-1000, -1000, -1000),
 								 btVector3( 1000,  1000,  1000));
 	collisionWorld = new btCollisionWorld(collisionDispatcher, axisSweep, collisionConfiguration);
+
+	RenderComponent* renderComponent = new RenderComponent();
+	renderComponent->SetRenderObject(new ArrowsRenderObject(this));
+	AddComponent(renderComponent);
 }
 
 ArrowsNode::~ArrowsNode()
@@ -383,4 +387,27 @@ void ArrowsNode::UpdateSize(const Vector3& camPos)
 	const float32 baseDist = 50.f;
 
 	scaleFactor = Max(1.0f, distance / baseDist);
+}
+
+
+ArrowsRenderObject::ArrowsRenderObject(ArrowsNode* node)
+{
+	AddRenderBatch(new ArrowsRenderBatch(node));
+}
+
+
+ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
+:	node(node)
+{
+}
+
+void ArrowsRenderBatch::Draw(DAVA::Camera *camera)
+{
+	Matrix4 oldMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+
+	if (node)
+		node->Draw();
+
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, oldMatrix);
 }

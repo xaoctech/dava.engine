@@ -108,3 +108,60 @@ void CommandPlaceOnLandscape::Cancel()
 		node->SetLocalTransform(undoTransform);
 	}
 }
+
+
+CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::SceneNode* node)
+:	Command(COMMAND_UNDO_REDO)
+,	node(node)
+{
+	if (node)
+	{
+		StoreCurrentTransform(node);
+	}
+}
+
+void CommandRestoreOriginalTransform::Execute()
+{
+	if (node)
+	{
+		node->RestoreOriginalTransforms();
+	}
+	else
+		SetState(STATE_INVALID);
+}
+
+void CommandRestoreOriginalTransform::Cancel()
+{
+	if (node)
+	{
+		RestoreTransform(node);
+	}
+}
+
+void CommandRestoreOriginalTransform::StoreCurrentTransform(DAVA::SceneNode *node)
+{
+	if (node)
+	{
+		undoTransforms[node] = node->GetLocalTransform();
+
+		for (uint32 i = 0; i < node->GetChildrenCount(); ++i)
+			StoreCurrentTransform(node->GetChild(i));
+	}
+}
+
+void CommandRestoreOriginalTransform::RestoreTransform(DAVA::SceneNode *node)
+{
+	if (node)
+	{
+		Map<SceneNode*, Matrix4>::iterator it = undoTransforms.find(node);
+		if (it != undoTransforms.end())
+		{
+			node->SetLocalTransform((*it).second);
+		}
+
+		for (uint32 i = 0; i < node->GetChildrenCount(); ++i)
+		{
+			RestoreTransform(node->GetChild(i));
+		}
+	}
+}

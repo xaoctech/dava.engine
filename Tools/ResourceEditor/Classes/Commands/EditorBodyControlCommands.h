@@ -52,4 +52,20 @@ protected:
 	virtual void Cancel();
 };
 
+class CommandRestoreOriginalTransform: public Command
+{
+public:
+	CommandRestoreOriginalTransform(DAVA::SceneNode* node);
+
+protected:
+	DAVA::Map<DAVA::SceneNode*, DAVA::Matrix4> undoTransforms;
+	DAVA::SceneNode* node;
+
+	virtual void Execute();
+	virtual void Cancel();
+
+	void StoreCurrentTransform(DAVA::SceneNode* node);
+	void RestoreTransform(DAVA::SceneNode* node);
+};
+
 #endif /* defined(__RESOURCEEDITORQT__EDITORBODYCONTROLCOMMANDS__) */
