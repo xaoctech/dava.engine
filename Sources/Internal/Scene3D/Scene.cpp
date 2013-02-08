@@ -64,7 +64,6 @@
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdatableSystem.h"
-#include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
 
@@ -116,7 +115,6 @@ void Scene::CreateSystems()
 {
 	renderSystem = new RenderSystem();
 	eventSystem = new EventSystem();
-	deleteSystem = new DeleteSystem();
 
     transformSystem = new TransformSystem(this);
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
@@ -186,7 +184,6 @@ Scene::~Scene()
     systems.clear();
 
 	SafeDelete(eventSystem);
-	SafeDelete(deleteSystem);
 	SafeDelete(renderSystem);
 }
 
@@ -635,8 +632,6 @@ void Scene::Update(float timeElapsed)
 	{
 		imposterManager->Update(timeElapsed);
 	}
-
-	deleteSystem->Process();
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
     Stats::Instance()->EndTimeMeasure("Scene.Update", this);
