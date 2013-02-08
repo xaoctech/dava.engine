@@ -53,6 +53,9 @@ public:
     uint32 GetPolygonGroupCount();
     PolygonGroup * GetPolygonGroup(uint32 index);
     
+	virtual RenderObject * Clone(RenderObject *newObject);
+
+
 protected:
     //Vector<PolygonGroup*> polygonGroups;
 };
