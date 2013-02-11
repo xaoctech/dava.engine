@@ -488,10 +488,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA8888 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						c = data[y * image->width + x];
 						line[x] = (c & 0xFF00FF00) | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
@@ -508,10 +508,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA5551 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -538,10 +538,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA4444 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -568,10 +568,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA565 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -598,10 +598,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA565 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						c = data[y * image->width + x];
 						line[x] = ((0xff << 24) | (c << 16) | (c << 8) | c);
