@@ -25,6 +25,7 @@
 #include "uitextfieldpropertygridwidget.h"
 #include "backgroundpropertygridwidget.h"
 #include "sliderpropertygridwidget.h"
+#include "alignspropertygridwidget.h"
 
 namespace DAVA {
     
@@ -55,12 +56,10 @@ private:
     FlagsPropertyGridWidget* flagsWidget;
     StatePropertyGridWidget* stateWidget;
     TextPropertyGridWidget* textWidget;
-
     UITextFieldPropertyGridWidget* uiTextFieldWidget;
-
     BackGroundPropertyGridWidget* backgroundWidget;
-	
 	SliderPropertyGridWidget* sliderWidget;
+	AlignsPropertyGridWidget* alignWidget;
     
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;

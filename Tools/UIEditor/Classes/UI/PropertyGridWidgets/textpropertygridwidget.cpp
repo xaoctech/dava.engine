@@ -26,13 +26,8 @@ TextPropertyGridWidget::TextPropertyGridWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
-	// Install event filter for all spinboxes on this Widget
-	// We should block mouse wheel event for spinboxes which don't have focus
-	Q_FOREACH( QSpinBox *spinBoxWidget, findChildren<QSpinBox*>() )
-	{
-        spinBoxWidget->installEventFilter( this );
-        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
+	
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 TextPropertyGridWidget::~TextPropertyGridWidget()

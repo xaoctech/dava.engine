@@ -105,21 +105,24 @@ protected:
     void UpdateWidgetWithPropertyValue(const PROPERTYGRIDWIDGETSITER& iter);
 
     void UpdateLineEditWidgetWithPropertyValue(QLineEdit* lineEditWidget, const QMetaProperty& curProperty);
-    void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+    //void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
     void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
     void UpdateColorButtonWidgetWithPropertyValue(QColorButton* colorButtonWidget, const QMetaProperty& curProperty);
 
     // Override this method to get a notification about properties changed from external source.
     virtual void OnPropertiesChangedFromExternalSource() {};
 	
-	//Double spinbox are used in slider widget - so we should track them separately
+	// For aligns property widget we need it's own update method
+	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+	 
+	// Double spinbox are used in slider widget - so we should track them separately
 	virtual void UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
 
     // Comboboxes are processed separately - depending on their content. That's why these methods are
     // virtual.
     virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
     
-    //PushButton are processed separately - depending on their content
+    // PushButton are processed separately - depending on their content
     virtual void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty& curProperty);
 
     // Process the Combobox Value Changed.
@@ -151,6 +154,11 @@ protected:
     // Whether the property is dirty for current UI Control State and for particular state?
     bool IsActiveStatePropertyDirty(const QString& propertyName) const;
     bool IsPropertyDirty(const QString& propertyName, UIControl::eControlState state) const;
+	
+	// Get int value for property
+	int GetPropertyIntValue(const QString& propertyName);
+	// Get boolean property value by name
+	bool GetPropertyBooleanValue(const QString& propertyName) const;
 
     // Update the widget palette.
     void UpdateWidgetPalette(QWidget* widget, const QString& propertyName);
@@ -162,6 +170,7 @@ protected:
     virtual const QPalette& GetWidgetPaletteForDirtyProperty() const;
     virtual const QPalette& GetWidgetPaletteForClearProperty() const;
 	
+	virtual void InstallEventFiltersForWidgets(QWidget *widget);
 	// Event filter to block wheel events for comboboxes and spinbox
 	virtual bool eventFilter(QObject *obj, QEvent *event);
 

@@ -768,6 +768,26 @@ bool BasePropertyGridWidget::IsWidgetBoundToProperty(QWidget* widget, const QStr
     return (iter->second.getProperty().name() == propertyName);
 }
 
+int BasePropertyGridWidget::GetPropertyIntValue(const QString &propertyName)
+{
+	if (activeMetadata == NULL)
+    {
+        return 0;
+    }
+
+	return PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, propertyName);
+}
+
+bool BasePropertyGridWidget::GetPropertyBooleanValue(const QString& propertyName) const
+{
+	if (activeMetadata == NULL)
+    {
+        return false;
+    }
+
+	return PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, propertyName);	
+}
+
 bool BasePropertyGridWidget::IsActiveStatePropertyDirty(const QString& propertyName) const
 {
     if (activeMetadata == NULL)
@@ -828,6 +848,34 @@ const QPalette& BasePropertyGridWidget::GetWidgetPaletteForDirtyProperty() const
 const QPalette& BasePropertyGridWidget::GetWidgetPaletteForClearProperty() const
 {
     return this->clearPropertyPalette;
+}
+
+void BasePropertyGridWidget::InstallEventFiltersForWidgets(QWidget *widget)
+{
+	if (!widget)
+		return;
+		
+	// Install event filter for all spinboxes on this Widget
+	// We should block mouse wheel event for spinboxes which don't have focus
+	Q_FOREACH( QAbstractSpinBox *spinBoxWidget, widget->findChildren<QAbstractSpinBox*>() )
+	{
+        spinBoxWidget->installEventFilter( this );
+        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+	// Install event filter for all comboboxes on this Widget
+	// We should block mouse wheel event for comboboxes which don't have focus
+	Q_FOREACH( QComboBox *comboBoxWidget, widget->findChildren<QComboBox*>() )
+	{
+        comboBoxWidget->installEventFilter( this );
+        comboBoxWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+	// Install event filter for all sliders on this Widget
+	// We should block mouse wheel event for sliders which don't have focus
+	Q_FOREACH( QSlider *sliderWidget, widget->findChildren<QSlider*>() )
+	{
+        sliderWidget->installEventFilter( this );
+        sliderWidget->setFocusPolicy( Qt::StrongFocus );
+    }
 }
 
 bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)

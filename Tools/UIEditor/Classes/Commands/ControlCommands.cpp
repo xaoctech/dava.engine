@@ -60,6 +60,9 @@ ControlResizeCommand::ControlResizeCommand(HierarchyTreeNode::HIERARCHYTREENODEI
 void ControlResizeCommand::Execute()
 {
 	ApplyResize(originalRect, newRect);
+	
+	// Notify the Grid some properties were changed.
+    CommandsController::Instance()->EmitUpdatePropertyValues();
 }
 
 void ControlResizeCommand::Rollback()

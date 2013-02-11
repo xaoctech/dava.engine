@@ -59,7 +59,8 @@ SOURCES += \
     Classes/Metadata/UITextFieldMetadata.cpp \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
-    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.cpp
+    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.cpp \
+    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.cpp
 
 HEADERS  += \
         Classes/AppScreens.h \
@@ -105,7 +106,8 @@ HEADERS  += \
     Classes/UI/StateComboBoxItemDelegate.h \
     Classes/Metadata/UITextFieldMetadata.h \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.h \
-    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.h
+    Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.h \
+    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.h
 
 FORMS    += \
         UI/mainwindow.ui \
@@ -141,7 +143,8 @@ FORMS    += \
     UI/PropertyGridWidgets/backgroundpropertygridwidget.ui \
     UI/Dialogs/localizationeditordialog.ui \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.ui \
-    UI/PropertyGridWidgets/sliderpropertygridwidget.ui
+    UI/PropertyGridWidgets/sliderpropertygridwidget.ui \
+    UI/PropertyGridWidgets/alignspropertygridwidget.ui
 
 
 #debug dependent

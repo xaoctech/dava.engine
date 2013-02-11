@@ -79,6 +79,8 @@ compilers: \
 	$(COMP_DIR)ui_statepropertygridwidget.h \
 	$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
 	$(COMP_DIR)ui_sliderpropertygridwidget.h \
+	$(COMP_DIR)moc_alignspropertygridwidget.cpp \
+	$(COMP_DIR)ui_alignspropertygridwidget.h \
 	$(COMP_DIR)moc_backgroundpropertygridwidget.cpp \
 	$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 	$(COMP_DIR)moc_uitextfieldpropertygridwidget.cpp \
@@ -129,6 +131,7 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_textpropertygridwidget.cpp \
 	$(COMP_DIR)moc_statepropertygridwidget.cpp \
 	$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
+	$(COMP_DIR)moc_alignspropertygridwidget.cpp \
 	$(COMP_DIR)moc_platformpropertygridwidget.cpp \
 	$(COMP_DIR)moc_screenpropertygridwidget.cpp \
 	$(COMP_DIR)moc_textpropertygridwidget.cpp \
@@ -173,6 +176,7 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_textpropertygridwidget.cpp \
 		$(COMP_DIR)moc_statepropertygridwidget.cpp \
 		$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
+		$(COMP_DIR)moc_alignspropertygridwidget.cpp \
 		$(COMP_DIR)moc_platformpropertygridwidget.cpp \
 		$(COMP_DIR)moc_screenpropertygridwidget.cpp \
 		$(COMP_DIR)moc_textpropertygridwidget.cpp \
@@ -275,6 +279,9 @@ $(COMP_DIR)moc_statepropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/
 $(COMP_DIR)moc_sliderpropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/sliderpropertygridwidget.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/sliderpropertygridwidget.h -o $(COMP_DIR)moc_sliderpropertygridwidget.cpp
 
+$(COMP_DIR)moc_alignspropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/alignspropertygridwidget.h 
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/alignspropertygridwidget.h -o $(COMP_DIR)moc_alignspropertygridwidget.cpp
+
 $(COMP_DIR)moc_backgroundpropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/backgroundpropertygridwidget.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/backgroundpropertygridwidget.h -o $(COMP_DIR)moc_backgroundpropertygridwidget.cpp
 
@@ -332,6 +339,7 @@ compiler_uic_make_all: \
 	$(COMP_DIR)ui_propertygridcontainerwidget.h \
 	$(COMP_DIR)ui_textpropertygridwidget.h \
 	$(COMP_DIR)ui_sliderpropertygridwidget.h \
+	$(COMP_DIR)ui_alignspropertygridwidget.h \
 	$(COMP_DIR)ui_statepropertygridwidget.h \
 	$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 	$(COMP_DIR)ui_uitextfieldpropertygridwidget.h \
@@ -355,6 +363,7 @@ compiler_uic_clean:
 		$(COMP_DIR)ui_propertygridcontainerwidget.h \
 		$(COMP_DIR)ui_textpropertygridwidget.h \
 		$(COMP_DIR)ui_sliderpropertygridwidget.h \
+		$(COMP_DIR)ui_alignspropertygridwidget.h \
 		$(COMP_DIR)ui_statepropertygridwidget.h \
 		$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 		$(COMP_DIR)ui_uitextfieldpropertygridwidget.h \
@@ -404,6 +413,9 @@ $(COMP_DIR)ui_statepropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/stateprop
 
 $(COMP_DIR)ui_sliderpropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/sliderpropertygridwidget.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/sliderpropertygridwidget.ui -o $(COMP_DIR)ui_sliderpropertygridwidget.h
+
+$(COMP_DIR)ui_alignspropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/alignspropertygridwidget.ui
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/alignspropertygridwidget.ui -o $(COMP_DIR)ui_alignspropertygridwidget.h
 
 $(COMP_DIR)ui_backgroundpropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/backgroundpropertygridwidget.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/backgroundpropertygridwidget.ui -o $(COMP_DIR)ui_backgroundpropertygridwidget.h
