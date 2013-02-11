@@ -1047,7 +1047,7 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
             tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
 
         if (uniformFogColor != -1)
-            tileMaskShader->SetUniformValue(uniformFogColor, fogColor);
+            tileMaskShader->SetUniformColor3(uniformFogColor, fogColor);
         if (uniformFogDensity != -1)
             tileMaskShader->SetUniformValue(uniformFogDensity, fogDensity);
     }
@@ -1061,7 +1061,7 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
         RenderManager::Instance()->FlushState();
         
         if (uniformFogColorFT != -1)
-            tileMaskShader->SetUniformValue(uniformFogColorFT, fogColor);
+            tileMaskShader->SetUniformColor3(uniformFogColorFT, fogColor);
         if (uniformFogDensityFT != -1)
             tileMaskShader->SetUniformValue(uniformFogDensityFT, fogDensity);
     }
