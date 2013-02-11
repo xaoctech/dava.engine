@@ -33,6 +33,14 @@
 
 namespace DAVA 
 {
+ForceData::ForceData(float32 forceValue, const Vector3& forceDirection, float32 forceOverlife,
+					 bool forceOverlifeEnabled)
+{
+	this->value = forceValue;
+	this->direction = forceDirection;
+	this->overlife = forceOverlife;
+	this->overlifeEnabled = forceOverlifeEnabled;
+}
 
 Particle::Particle()
 {
@@ -44,6 +52,27 @@ Particle::~Particle()
     
 }
 
+void Particle::AddForce(float32 value, const Vector3& direction, float32 overlife,
+			  bool overlifeEnabled)
+{
+	this->forces.push_back(ForceData(value, direction, overlife, overlifeEnabled));
+}
+
+void Particle::UpdateForceOverlife(int32 index, float32 overlife)
+{
+	if (index <= (int32)this->forces.size())
+	{
+		this->forces[index].overlife = overlife;
+		this->forces[index].overlifeEnabled = true;
+	}
+}
+	
+void Particle::CleanupForces()
+{
+	this->forces.clear();
+}
+
+	
 bool Particle::Update(float32 timeElapsed)
 {
 	life += timeElapsed;
@@ -54,31 +83,20 @@ bool Particle::Update(float32 timeElapsed)
 
 	position += direction * speed * timeElapsed * velocityOverLife;
 	angle += spin * timeElapsed * spinOverLife;
-    int32 n = (int32)forcesDirections.size();
-	if(n > 0)
+	
+	int32 forcesCount = (int32)forces.size();
+	if(forcesCount > 0)
 	{
 		Vector3 velocity = direction*speed;
-		for(int i = 0; i < n; i++)
+		for(int i = 0; i < forcesCount; i++)
 		{
-//            Vector3 add(0, 0, 0);
-//            
-//            if(i < forcesDirections.size())
-//            {
-//                add = forcesDirections[i];
-//            }
-//            
-//            if(i < forcesValues.size())
-//            {
-//                add *= forcesValues[i];
-//            }
-//            
-//            if(i < forcesOverLife.size())
-//            {
-//                add *= forcesOverLife[i];
-//            }
-//
-//			velocity += (add * timeElapsed);
-			velocity += forcesDirections[i] * forcesValues[i] * forcesOverLife[i] * timeElapsed;
+			Vector3 newVelocity = forces[i].direction * forces[i].value;
+			if (forces[i].overlifeEnabled)
+			{
+				newVelocity *= forces[i].overlife;
+			}
+
+			velocity += (newVelocity  * timeElapsed);
 		}
 		float32 invSqrt = InvSqrtFast(velocity.SquareLength());
 		speed = 1.f/invSqrt;
