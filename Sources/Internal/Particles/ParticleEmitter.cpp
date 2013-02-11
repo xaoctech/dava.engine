@@ -123,7 +123,7 @@ void ParticleEmitter::CleanupLayers()
 //	return emitter;
 //}
 
-RenderObject * ParticleEmitter::Clone()
+RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 {
 	//should not clone as RenderObject
 	return 0;

@@ -94,8 +94,10 @@ SceneNode::~SceneNode()
 //        scene->UnregisterNode(this);
 //        scene = 0;
 //    }
-    DVASSERT(scene == 0);
-    
+
+	RemoveAllChildren();
+	SetScene(0);
+
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -933,17 +935,6 @@ const Matrix4 & SceneNode::GetWorldTransform()
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }
 
-int32 SceneNode::Release()
-{
-	if(1 == referenceCount)
-	{
-		RemoveAllChildren();
-		SetScene(0);
-	}
-
-	return BaseObject::Release();
-}
-
 void SceneNode::SetVisible(bool isVisible)
 {
 	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
@@ -963,6 +954,12 @@ void SceneNode::SetVisible(bool isVisible)
 		{
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isVisible);
 	}
 }
 
@@ -984,6 +981,12 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 		{
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetUpdatable(isUpdatable);
 	}
 }
 

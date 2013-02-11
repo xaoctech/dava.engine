@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {

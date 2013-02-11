@@ -32,6 +32,9 @@
 
 namespace DAVA
 {
+
+REGISTER_CLASS(RenderObject)
+
 RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
     ,   flags(VISIBLE)
@@ -85,24 +88,28 @@ RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
     return renderBatchArray[batchIndex];
 }
 
-RenderObject * RenderObject::Clone()
+RenderObject * RenderObject::Clone(RenderObject *newObject)
 {
-	RenderObject * ro = new RenderObject();
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<RenderObject>(this), "Can clone only RenderObject");
+		newObject = new RenderObject();
+	}
 
-	ro->type = type;
-	ro->flags = flags;
-	ro->debugFlags = debugFlags;
+	newObject->type = type;
+	newObject->flags = flags;
+	newObject->debugFlags = debugFlags;
 	//ro->bbox = bbox;
 	//ro->worldBBox = worldBBox;
 
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		ro->AddRenderBatch(GetRenderBatch(i)->Clone());
+		newObject->AddRenderBatch(GetRenderBatch(i)->Clone());
 	}
-    ro->ownerDebugInfo = ownerDebugInfo;
+    newObject->ownerDebugInfo = ownerDebugInfo;
 
-	return ro;
+	return newObject;
 }
 
 

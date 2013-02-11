@@ -607,8 +607,8 @@ void Scene::Update(float timeElapsed)
 
 	switchSystem->Process();
 
-	particleEffectSystem->Process();
 	particleEmitterSystem->Process();
+	particleEffectSystem->Process();
     
 //	entityManager->Flush();
 
@@ -686,8 +686,6 @@ void Scene::Draw()
     debugRenderSystem->Process();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-    
-    //SceneNode::Draw();
     
     if(imposterManager)
 	{

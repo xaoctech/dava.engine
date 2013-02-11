@@ -42,7 +42,7 @@ void TransformSystem::Process()
 
 	if(passedNodes)
 	{
-		Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
+		//Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
 	}
 }
 
