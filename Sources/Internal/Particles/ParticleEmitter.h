@@ -216,7 +216,7 @@ public:
 	//cloned in ParticleEmitterComponent::Clone
 	//ParticleEmitter * Clone();
 
-	virtual RenderObject * Clone();
+	virtual RenderObject * Clone(RenderObject *newObject);
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.

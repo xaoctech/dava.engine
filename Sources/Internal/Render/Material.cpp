@@ -44,7 +44,8 @@
 
 namespace DAVA 
 {
-    
+
+REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
 {

@@ -50,7 +50,7 @@ void IntrospectionMember::SetValue(void *object, const VariantType &val) const
 	VariantType::SaveData(Pointer(object), type, val);
 }
 
-const IntrospectionCollectionBase* IntrospectionMember::Collection() const
+const IntrospectionCollection* IntrospectionMember::Collection() const
 {
 	return NULL;
 }
