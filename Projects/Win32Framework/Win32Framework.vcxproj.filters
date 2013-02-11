@@ -124,6 +124,9 @@
     <Filter Include="Internal\Base\Radix">
       <UniqueIdentifier>{43813d6b-dd92-4284-b1af-ec15e0904636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\DLC">
+      <UniqueIdentifier>{8b6654bd-b8b7-4415-97cd-58c934760ce1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1224,9 +1227,6 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h">
       <Filter>Internal\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h" />
-    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1235,6 +1235,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
+      <Filter>Internal\DLC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2153,9 +2162,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2164,6 +2170,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp">
+      <Filter>Internal\DLC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

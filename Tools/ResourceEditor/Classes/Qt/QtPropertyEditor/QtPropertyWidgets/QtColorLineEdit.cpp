@@ -17,7 +17,7 @@ QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 	toolButton->setText("...");
 
 	QRegExpValidator *validator = new QRegExpValidator();
-	validator->setRegExp(QRegExp("#[A-F0-9]{6}", Qt::CaseInsensitive));
+	validator->setRegExp(QRegExp("#[A-F0-9]{8}", Qt::CaseInsensitive));
 
 	setValidator(validator);
 	//setInputMask("\\#NNNNNN");
@@ -33,8 +33,9 @@ QtColorLineEdit::QtColorLineEdit(QWidget * parent)
 
 void QtColorLineEdit::SetColor(const QColor &color)
 {
+	QString s;
 	curColor = color;
-	setText(curColor.name());
+	setText(s.sprintf("#%02x%02x%02x%02x", curColor.red(), curColor.green(), curColor.blue(), curColor.alpha()));
 }
 
 QColor QtColorLineEdit::GetColor() const
@@ -67,5 +68,9 @@ void QtColorLineEdit::ToolButtonClicked()
 
 void QtColorLineEdit::EditFinished()
 {
-	curColor = QColor(text());
+	int r = 0, g = 0, b = 0, a = 255;
+	if(4 == sscanf(text().toStdString().c_str(), "#%02x%02x%02x%02x", &r, &g, &b, &a))
+	{
+		curColor = QColor(r, g, b, a);
+	}
 }

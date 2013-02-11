@@ -45,10 +45,10 @@ RenderLayer::~RenderLayer()
 {
     
 }
-    
 
 void RenderLayer::AddRenderBatch(RenderBatch * batch)
 {
+    DVASSERT(batch->GetRemoveIndex() == -1)
     renderBatchArray.push_back(batch);
     batch->SetRemoveIndex(this, renderBatchArray.size() - 1);
     flags |= SORT_REQUIRED;
@@ -56,6 +56,7 @@ void RenderLayer::AddRenderBatch(RenderBatch * batch)
 
 void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
 {
+    DVASSERT(batch->GetRemoveIndex() != -1)
 	uint32 oldIndex = batch->GetRemoveIndex();
     renderBatchArray[oldIndex] = renderBatchArray[renderBatchArray.size() - 1];
 	renderBatchArray[oldIndex]->SetRemoveIndex(this, oldIndex);

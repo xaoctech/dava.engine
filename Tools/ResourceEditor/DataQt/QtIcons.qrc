@@ -1,5 +1,12 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/modify_select.png</file>
+    <file>QtIcons/modify_reset.png</file>
+    <file>QtIcons/modify_move.png</file>
+    <file>QtIcons/modify_rotate.png</file>
+    <file>QtIcons/modify_placeonland.png</file>
+    <file>QtIcons/modify_snaptoland.png</file>
+    <file>QtIcons/modify_scale.png</file>
     <file>QtImages/tree-doc.png</file>
     <file>QtImages/tree-folder.png</file>
     <file>QtImages/tree-folder-opened.png</file>

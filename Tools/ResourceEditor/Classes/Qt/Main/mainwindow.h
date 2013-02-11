@@ -27,6 +27,7 @@ private:
 
     void SetupMainMenu();
 	void SetupToolBar();
+	void SetupModificationToolBar();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
 	void SetupVisibilityToolDock();
