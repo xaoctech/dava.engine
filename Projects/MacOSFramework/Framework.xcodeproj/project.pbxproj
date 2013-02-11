@@ -500,8 +500,6 @@
 		E8989FD516BD24E500732C04 /* BaseProcessSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */; };
 		E8989FD616BD24E500732C04 /* DebugRenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */; };
 		E8989FD716BD24E500732C04 /* DebugRenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1D16BD24E500732C04 /* DebugRenderSystem.h */; };
-		E8989FD816BD24E500732C04 /* DeleteSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1E16BD24E500732C04 /* DeleteSystem.cpp */; };
-		E8989FD916BD24E500732C04 /* DeleteSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1F16BD24E500732C04 /* DeleteSystem.h */; };
 		E8989FDA16BD24E500732C04 /* EventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2016BD24E500732C04 /* EventSystem.cpp */; };
 		E8989FDB16BD24E500732C04 /* EventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2116BD24E500732C04 /* EventSystem.h */; };
 		E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2216BD24E500732C04 /* LightUpdateSystem.cpp */; };
@@ -873,7 +871,6 @@
 		E898A15F16BD265400732C04 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1816BD24E500732C04 /* SwitchNode.h */; };
 		E898A16016BD265400732C04 /* BaseProcessSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */; };
 		E898A16116BD265400732C04 /* DebugRenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1D16BD24E500732C04 /* DebugRenderSystem.h */; };
-		E898A16216BD265400732C04 /* DeleteSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D1F16BD24E500732C04 /* DeleteSystem.h */; };
 		E898A16316BD265400732C04 /* EventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2116BD24E500732C04 /* EventSystem.h */; };
 		E898A16416BD265400732C04 /* LightUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2316BD24E500732C04 /* LightUpdateSystem.h */; };
 		E898A16516BD265400732C04 /* LodSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989D2516BD24E500732C04 /* LodSystem.h */; };
@@ -1146,7 +1143,6 @@
 		E898A27716BD265400732C04 /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1716BD24E500732C04 /* SwitchNode.cpp */; };
 		E898A27816BD265400732C04 /* BaseProcessSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1A16BD24E500732C04 /* BaseProcessSystem.cpp */; };
 		E898A27916BD265400732C04 /* DebugRenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */; };
-		E898A27A16BD265400732C04 /* DeleteSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D1E16BD24E500732C04 /* DeleteSystem.cpp */; };
 		E898A27B16BD265400732C04 /* EventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2016BD24E500732C04 /* EventSystem.cpp */; };
 		E898A27C16BD265400732C04 /* LightUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2216BD24E500732C04 /* LightUpdateSystem.cpp */; };
 		E898A27D16BD265400732C04 /* LodSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D2416BD24E500732C04 /* LodSystem.cpp */; };
@@ -1766,8 +1762,6 @@
 		E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseProcessSystem.h; sourceTree = "<group>"; };
 		E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderSystem.cpp; sourceTree = "<group>"; };
 		E8989D1D16BD24E500732C04 /* DebugRenderSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugRenderSystem.h; sourceTree = "<group>"; };
-		E8989D1E16BD24E500732C04 /* DeleteSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteSystem.cpp; sourceTree = "<group>"; };
-		E8989D1F16BD24E500732C04 /* DeleteSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteSystem.h; sourceTree = "<group>"; };
 		E8989D2016BD24E500732C04 /* EventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventSystem.cpp; sourceTree = "<group>"; };
 		E8989D2116BD24E500732C04 /* EventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventSystem.h; sourceTree = "<group>"; };
 		E8989D2216BD24E500732C04 /* LightUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightUpdateSystem.cpp; sourceTree = "<group>"; };
@@ -2718,8 +2712,6 @@
 				E8989D1B16BD24E500732C04 /* BaseProcessSystem.h */,
 				E8989D1C16BD24E500732C04 /* DebugRenderSystem.cpp */,
 				E8989D1D16BD24E500732C04 /* DebugRenderSystem.h */,
-				E8989D1E16BD24E500732C04 /* DeleteSystem.cpp */,
-				E8989D1F16BD24E500732C04 /* DeleteSystem.h */,
 				E8989D2016BD24E500732C04 /* EventSystem.cpp */,
 				E8989D2116BD24E500732C04 /* EventSystem.h */,
 				E8989D2216BD24E500732C04 /* LightUpdateSystem.cpp */,
@@ -3171,7 +3163,6 @@
 				E8989FD316BD24E500732C04 /* SwitchNode.h in Headers */,
 				E8989FD516BD24E500732C04 /* BaseProcessSystem.h in Headers */,
 				E8989FD716BD24E500732C04 /* DebugRenderSystem.h in Headers */,
-				E8989FD916BD24E500732C04 /* DeleteSystem.h in Headers */,
 				E8989FDB16BD24E500732C04 /* EventSystem.h in Headers */,
 				E8989FDD16BD24E500732C04 /* LightUpdateSystem.h in Headers */,
 				E8989FDF16BD24E500732C04 /* LodSystem.h in Headers */,
@@ -3500,7 +3491,6 @@
 				E898A15F16BD265400732C04 /* SwitchNode.h in Headers */,
 				E898A16016BD265400732C04 /* BaseProcessSystem.h in Headers */,
 				E898A16116BD265400732C04 /* DebugRenderSystem.h in Headers */,
-				E898A16216BD265400732C04 /* DeleteSystem.h in Headers */,
 				E898A16316BD265400732C04 /* EventSystem.h in Headers */,
 				E898A16416BD265400732C04 /* LightUpdateSystem.h in Headers */,
 				E898A16516BD265400732C04 /* LodSystem.h in Headers */,
@@ -3868,7 +3858,6 @@
 				E8989FD216BD24E500732C04 /* SwitchNode.cpp in Sources */,
 				E8989FD416BD24E500732C04 /* BaseProcessSystem.cpp in Sources */,
 				E8989FD616BD24E500732C04 /* DebugRenderSystem.cpp in Sources */,
-				E8989FD816BD24E500732C04 /* DeleteSystem.cpp in Sources */,
 				E8989FDA16BD24E500732C04 /* EventSystem.cpp in Sources */,
 				E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */,
 				E8989FDE16BD24E500732C04 /* LodSystem.cpp in Sources */,
@@ -4150,7 +4139,6 @@
 				E898A27716BD265400732C04 /* SwitchNode.cpp in Sources */,
 				E898A27816BD265400732C04 /* BaseProcessSystem.cpp in Sources */,
 				E898A27916BD265400732C04 /* DebugRenderSystem.cpp in Sources */,
-				E898A27A16BD265400732C04 /* DeleteSystem.cpp in Sources */,
 				E898A27B16BD265400732C04 /* EventSystem.cpp in Sources */,
 				E898A27C16BD265400732C04 /* LightUpdateSystem.cpp in Sources */,
 				E898A27D16BD265400732C04 /* LodSystem.cpp in Sources */,
