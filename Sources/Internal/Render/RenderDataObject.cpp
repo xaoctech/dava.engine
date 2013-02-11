@@ -132,7 +132,7 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
     return stream;
 }
 
-uint32 RenderDataObject::GetResultFormat()
+uint32 RenderDataObject::GetResultFormat() const
 {
     return resultVertexFormat;
 }

@@ -67,9 +67,9 @@ public:
     virtual ~RenderDataObject();
     
     RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
-    uint32 GetResultFormat();
+    uint32 GetResultFormat() const;
 
-    uint32 GetStreamCount() { return (uint32)streamArray.size(); };
+    uint32 GetStreamCount() const { return (uint32)streamArray.size(); };
     RenderDataStream * GetStream(uint32 index) { return streamArray[index]; }
     /*
         We think that render data object can pack data automatically. 
@@ -88,7 +88,7 @@ public:
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
     void BuildIndexBuffer();
-    uint32 GetIndexBufferID() { return indexBuffer; };
+    uint32 GetIndexBufferID() const { return indexBuffer; };
 
     
 private:
