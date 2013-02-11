@@ -508,8 +508,6 @@
 		E8B3CCB916B9326E002BD35F /* BaseProcessSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */; };
 		E8B3CCBA16B9326E002BD35F /* DebugRenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */; };
 		E8B3CCBB16B9326E002BD35F /* DebugRenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */; };
-		E8B3CCBC16B9326E002BD35F /* DeleteSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */; };
-		E8B3CCBD16B9326E002BD35F /* DeleteSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0316B9326E002BD35F /* DeleteSystem.h */; };
 		E8B3CCBE16B9326E002BD35F /* EventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0416B9326E002BD35F /* EventSystem.cpp */; };
 		E8B3CCBF16B9326E002BD35F /* EventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0516B9326E002BD35F /* EventSystem.h */; };
 		E8B3CCC016B9326E002BD35F /* LightUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0616B9326E002BD35F /* LightUpdateSystem.cpp */; };
@@ -1152,8 +1150,6 @@
 		E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseProcessSystem.h; sourceTree = "<group>"; };
 		E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderSystem.cpp; sourceTree = "<group>"; };
 		E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugRenderSystem.h; sourceTree = "<group>"; };
-		E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteSystem.cpp; sourceTree = "<group>"; };
-		E8B3CA0316B9326E002BD35F /* DeleteSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteSystem.h; sourceTree = "<group>"; };
 		E8B3CA0416B9326E002BD35F /* EventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventSystem.cpp; sourceTree = "<group>"; };
 		E8B3CA0516B9326E002BD35F /* EventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventSystem.h; sourceTree = "<group>"; };
 		E8B3CA0616B9326E002BD35F /* LightUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightUpdateSystem.cpp; sourceTree = "<group>"; };
@@ -2039,8 +2035,6 @@
 				E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */,
 				E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */,
 				E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */,
-				E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */,
-				E8B3CA0316B9326E002BD35F /* DeleteSystem.h */,
 				E8B3CA0416B9326E002BD35F /* EventSystem.cpp */,
 				E8B3CA0516B9326E002BD35F /* EventSystem.h */,
 				E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */,
@@ -2504,7 +2498,6 @@
 				E8B3CCB716B9326E002BD35F /* SwitchNode.h in Headers */,
 				E8B3CCB916B9326E002BD35F /* BaseProcessSystem.h in Headers */,
 				E8B3CCBB16B9326E002BD35F /* DebugRenderSystem.h in Headers */,
-				E8B3CCBD16B9326E002BD35F /* DeleteSystem.h in Headers */,
 				E8B3CCBF16B9326E002BD35F /* EventSystem.h in Headers */,
 				E8B3CCC116B9326E002BD35F /* LightUpdateSystem.h in Headers */,
 				E8B3CCC316B9326E002BD35F /* LodSystem.h in Headers */,
@@ -2858,7 +2851,6 @@
 				E8B3CCB616B9326E002BD35F /* SwitchNode.cpp in Sources */,
 				E8B3CCB816B9326E002BD35F /* BaseProcessSystem.cpp in Sources */,
 				E8B3CCBA16B9326E002BD35F /* DebugRenderSystem.cpp in Sources */,
-				E8B3CCBC16B9326E002BD35F /* DeleteSystem.cpp in Sources */,
 				E8B3CCBE16B9326E002BD35F /* EventSystem.cpp in Sources */,
 				E8B3CCC016B9326E002BD35F /* LightUpdateSystem.cpp in Sources */,
 				E8B3CCC216B9326E002BD35F /* LodSystem.cpp in Sources */,
