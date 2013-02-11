@@ -94,8 +94,7 @@
 #endif  //__DAVAENGINE_DEBUG__
 
 
-#ifndef __DAVAENGINE_DEBUG__  
-	#ifndef ENABLE_ASSERT_MESSAGE
+#if !defined(__DAVAENGINE_DEBUG__) && !defined(ENABLE_ASSERT_MESSAGE)
 
 	// no assert functions in release builds
 	#define DVASSERT(expr)
@@ -103,7 +102,7 @@
 	#define DVWARNING(expr, msg)
 
 	#define DVVERIFY(expr) (expr)
-	#endif
+
 #else
 
 #define DVASSERT(expr)\
