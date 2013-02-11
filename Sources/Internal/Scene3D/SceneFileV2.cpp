@@ -916,7 +916,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	if(sw)
 	{
 		SceneNode * newNode = new SceneNode();
-		sw->Clone(newNode);
+		sw->SceneNode::Clone(newNode);
 
 		SwitchComponent * swConponent = new SwitchComponent();
 		newNode->AddComponent(swConponent);
@@ -929,7 +929,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 			parent->InsertBeforeNode(newNode, sw);
 			parent->RemoveNode(sw);
 		}
-		sw->SetSwitchIndex(0);
 
 		newNode->Release();
 		return true;
