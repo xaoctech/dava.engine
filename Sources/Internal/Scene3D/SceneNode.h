@@ -156,6 +156,7 @@ public:
 	void SetVisible(bool isVisible);
 	inline bool GetVisible();
 	void SetLodVisible(bool isLodVisible);
+	void SetSwitchVisible(bool isSwitchVisible);
 	inline SceneNode * GetParent();
 	void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);
@@ -348,15 +349,12 @@ protected:
 	Scene * scene;
 	SceneNode * parent;
 	Vector<SceneNode*> children;
-	Deque<SceneNode*> removedCache;
-    bool inUpdate;
 
 	String	name;
 	int32	tag;
 
     uint32 flags;
 
-	Matrix4 worldTransform;
     KeyedArchive *customProperties;
     
 private:
@@ -367,7 +365,6 @@ private:
 public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
 		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		MEMBER(worldTransform, "World transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)

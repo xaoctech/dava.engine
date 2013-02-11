@@ -59,7 +59,6 @@ const char* SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 SceneNode::SceneNode()
 	: scene(0)
 	, parent(0)
-    , inUpdate(false)
     , tag(0)
 	, entity(0)
 {
@@ -252,11 +251,7 @@ void SceneNode::RemoveNode(SceneNode * node)
     {
         return;
     }
-    if (inUpdate) 
-    {
-        removedCache.push_back(node);
-        return;
-    }
+
     const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
 	{
@@ -984,6 +979,31 @@ void SceneNode::SetLodVisible(bool isLodVisible)
 	for(int32 i = 0; i < count; ++i)
 	{
 		GetChild(i)->SetVisible(isLodVisible);
+	}
+}
+
+void SceneNode::SetSwitchVisible(bool isSwitchVisible)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isSwitchVisible) 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE_SWITCH);
+		}
+	}
+	else 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE_SWITCH);
+		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isSwitchVisible);
 	}
 }
 
