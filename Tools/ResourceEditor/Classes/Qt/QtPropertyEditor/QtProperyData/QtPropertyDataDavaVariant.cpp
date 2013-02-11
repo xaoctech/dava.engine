@@ -517,7 +517,12 @@ QVariant QtPropertyDataDavaVariant::FromMatrix2(const DAVA::Matrix2 &matrix)
 
 QVariant QtPropertyDataDavaVariant::FromColor(const DAVA::Color &color)
 {
-	return ColorToQColor(color);
+	QVariant v;
+	QColor c = ColorToQColor(color);
+
+	v = QString().sprintf("#%02x%02x%02x%02x", c.red(), c.green(), c.blue(), c.alpha());
+
+	return v;
 }
 
 

@@ -88,7 +88,8 @@ protected:
 
 public:
 	INTROSPECTION(Component, 
-		NULL);
+		MEMBER(entity, "entity", INTROSPECTION_SERIALIZABLE)
+		);
 };
 
     
