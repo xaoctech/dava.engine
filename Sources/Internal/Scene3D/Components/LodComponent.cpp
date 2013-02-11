@@ -125,14 +125,14 @@ void LodComponent::SetCurrentLod(LodData *newLod)
 			int32 size = currentLod->nodes.size();
 			for (int i = 0; i < size; i++) 
 			{
-				currentLod->nodes[i]->SetUpdatable(false);
+				currentLod->nodes[i]->SetLodVisible(false);
 			}
 		}
 		currentLod = newLod;
 		int32 size = currentLod->nodes.size();
 		for (int i = 0; i < size; i++) 
 		{
-			currentLod->nodes[i]->SetUpdatable(true);
+			currentLod->nodes[i]->SetLodVisible(true);
 		}
 	}
 }

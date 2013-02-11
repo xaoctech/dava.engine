@@ -962,6 +962,31 @@ void SceneNode::SetVisible(bool isVisible)
 	}
 }
 
+void SceneNode::SetLodVisible(bool isLodVisible)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isLodVisible) 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE_LOD);
+		}
+	}
+	else 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE_LOD);
+		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isLodVisible);
+	}
+}
+
 void SceneNode::SetUpdatable(bool isUpdatable)
 {
 	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
