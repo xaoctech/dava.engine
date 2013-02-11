@@ -16,9 +16,6 @@ SpriteRenderBatch::~SpriteRenderBatch()
 {
 }
 
-
-static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
-
 void SpriteRenderBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;
@@ -29,7 +26,7 @@ void SpriteRenderBatch::Draw(Camera * camera)
 	}
 
 	uint32 flags = renderObject->GetFlags();
-	if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+	if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
 		return;
 
 

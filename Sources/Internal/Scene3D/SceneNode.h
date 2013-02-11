@@ -155,6 +155,7 @@ public:
 	// properties
 	void SetVisible(bool isVisible);
 	inline bool GetVisible();
+	void SetLodVisible(bool isLodVisible);
 	inline SceneNode * GetParent();
 	void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);

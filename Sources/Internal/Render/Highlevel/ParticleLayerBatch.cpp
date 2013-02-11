@@ -20,9 +20,6 @@ ParticleLayerBatch::~ParticleLayerBatch()
 {
 }
 
-
-static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
-
 void ParticleLayerBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;
@@ -30,7 +27,7 @@ void ParticleLayerBatch::Draw(Camera * camera)
 	if (!worldTransformPtr)return;
 
 	uint32 flags = renderObject->GetFlags();
-	if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+	if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
 		return;
 
 	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();

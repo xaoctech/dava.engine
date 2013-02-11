@@ -80,8 +80,11 @@ public:
 	{
 		VISIBLE = 1 << 0,
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
+		VISIBLE_LOD = 1 << 2,
         TRANSFORM_UPDATED = 1 << 15,
 	};
+
+	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD;
 
     RenderObject();
     virtual ~RenderObject();
