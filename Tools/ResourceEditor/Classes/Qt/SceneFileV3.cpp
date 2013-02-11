@@ -115,8 +115,15 @@ DAVA::KeyedArchive* SceneFileV3::SerializeIntrospection(void *object, const DAVA
 			}
 			else
 			{
-				DAVA::uint64 ptr = (DAVA::uint64) memberData;
-				ret->SetUInt64(member->Name(), ptr);
+				if(member->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive *>())
+				{
+					ret->SetArchive(member->Name(), member->Value(object).AsKeyedArchive());
+				}
+				else
+				{
+					DAVA::uint64 ptr = (DAVA::uint64) memberData;
+					ret->SetUInt64(member->Name(), ptr);
+				}
 			}
 		}
 
@@ -429,12 +436,20 @@ void SceneFileV3::DeserializeIntrospection(void *object, const DAVA::Introspecti
 					}
 					else
 					{
-						void **ptr = (void **) member->Pointer(object);
-						DAVA::uint64 id = archive->GetUInt64(member->Name(), 0);	
-						//printf("link: %llu\n", id);
-						if(0 != id)
+						if(member->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive *>())
 						{
-							(*structure)[ptr] = id;
+							DAVA::VariantType v = *(archive->GetVariant(member->Name()));
+							member->SetValue(object, v);
+						}
+						else
+						{
+							void **ptr = (void **) member->Pointer(object);
+							DAVA::uint64 id = archive->GetUInt64(member->Name(), 0);	
+							printf("link: %llu\n", id);
+							if(0 != id)
+							{
+								(*structure)[ptr] = id;
+							}
 						}
 					}
 				}
@@ -502,7 +517,7 @@ void SceneFileV3::DeserializeCollection(void *object, const DAVA::IntrospectionC
 				// remember pointer on pointer for future load
 				void **ptr = (void **) collection->ItemPointer(j);
 				DAVA::uint64 id = variantIndexes[index]->AsUInt64();
-				//printf("link: %llu\n", id);
+				printf("link: %llu\n", id);
 				if(0 != id)
 				{
 					(*structure)[ptr] = id;
