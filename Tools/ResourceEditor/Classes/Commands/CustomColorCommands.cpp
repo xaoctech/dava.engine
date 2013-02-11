@@ -4,6 +4,7 @@
 #include "../Qt/Main/QtUtils.h"
 #include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
+#include "../SceneEditor/EditorBodyControl.h"
 
 CommandToggleCustomColors::CommandToggleCustomColors()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
@@ -108,4 +109,59 @@ void CommandChangeColorCustomColors::Execute()
     {
 		screen->CustomColorsSetColor(colorIndex);
     }
+}
+
+CommandDrawCustomColors::CommandDrawCustomColors()
+:	Command(COMMAND_UNDO_REDO)
+{
+	redoImage = NULL;
+
+	LandscapeEditorCustomColors* editor = GetEditor();
+	if (editor)
+		editor->StoreState(&undoImage);
+}
+
+CommandDrawCustomColors::~CommandDrawCustomColors()
+{
+	SafeRelease(undoImage);
+	SafeRelease(redoImage);
+}
+
+void CommandDrawCustomColors::Execute()
+{
+	LandscapeEditorCustomColors* editor = GetEditor();
+	if (editor == NULL)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+
+	if (redoImage == NULL)
+	{
+		editor->StoreState(&redoImage);
+	}
+	else
+	{
+		editor->RestoreState(redoImage);
+	}
+}
+
+void CommandDrawCustomColors::Cancel()
+{
+	LandscapeEditorCustomColors* editor = GetEditor();
+	if (editor)
+		editor->RestoreState(undoImage);
+}
+
+LandscapeEditorCustomColors* CommandDrawCustomColors::GetEditor()
+{
+	LandscapeEditorCustomColors* editor = NULL;
+
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(screen)
+	{
+		editor = dynamic_cast<LandscapeEditorCustomColors*>(screen->FindCurrentBody()->bodyControl->GetLandscapeEditor(SceneEditorScreenMain::ELEMID_CUSTOM_COLORS));
+	}
+
+	return editor;
 }
