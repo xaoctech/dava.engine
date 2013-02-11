@@ -254,7 +254,6 @@
 		5CFB116215AE065D008F64BB /* libpng_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB115E15AE065D008F64BB /* libpng_macos.a */; };
 		5CFB116315AE065D008F64BB /* libxml_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB115F15AE065D008F64BB /* libxml_macos.a */; };
 		5CFB116415AE065D008F64BB /* libyaml_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116015AE065D008F64BB /* libyaml_macos.a */; };
-		5CFB116615AE066E008F64BB /* libcurl_ios_mac.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116515AE066E008F64BB /* libcurl_ios_mac.a */; };
 		5CFB116A15AE0685008F64BB /* libogg_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116715AE0685008F64BB /* libogg_macos.a */; };
 		5CFB116B15AE0685008F64BB /* libvorbis_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116815AE0685008F64BB /* libvorbis_macos.a */; };
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
@@ -267,6 +266,7 @@
 		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
+		E8ED2F7F16C5049F00A37D1F /* libcurl_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8ED2F7E16C5049F00A37D1F /* libcurl_macos.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -800,7 +800,6 @@
 		5CFB114D15AE05F2008F64BB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		5CFB115115AE05FE008F64BB /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
-		5CFB115915AE062C008F64BB /* libcurl_iOS_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_iOS_mac.a; path = ../../Libs/curl/libcurl_iOS_mac.a; sourceTree = "<group>"; };
 		5CFB115B15AE0638008F64BB /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		5CFB115D15AE065D008F64BB /* libmongodb_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_macos.a; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		5CFB115E15AE065D008F64BB /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
@@ -836,6 +835,7 @@
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
+		E8ED2F7E16C5049F00A37D1F /* libcurl_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_macos.a; path = ../../Libs/libs/libcurl_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -843,6 +843,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8ED2F7F16C5049F00A37D1F /* libcurl_macos.a in Frameworks & Libraries */,
 				4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */,
 				E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */,
 				5C5D9AA115B0272B0058B43A /* libBox2D_MacOS.a in Frameworks & Libraries */,
@@ -850,7 +851,6 @@
 				5CFB116A15AE0685008F64BB /* libogg_macos.a in Frameworks & Libraries */,
 				5CFB116B15AE0685008F64BB /* libvorbis_macos.a in Frameworks & Libraries */,
 				5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */,
-				5CFB116615AE066E008F64BB /* libcurl_ios_mac.a in Frameworks & Libraries */,
 				5CFB116115AE065D008F64BB /* libmongodb_macos.a in Frameworks & Libraries */,
 				5CFB116215AE065D008F64BB /* libpng_macos.a in Frameworks & Libraries */,
 				5CFB116315AE065D008F64BB /* libxml_macos.a in Frameworks & Libraries */,
@@ -869,6 +869,7 @@
 		05596AB53D8D521C69802C27 /* FrameworkQt */ = {
 			isa = PBXGroup;
 			children = (
+				E8ED2F7E16C5049F00A37D1F /* libcurl_macos.a */,
 				4910CC2A167B7E6600CF948A /* libdxt_macos.a */,
 				5C5D971E15B022930058B43A /* Internal */,
 				5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */,
@@ -883,7 +884,6 @@
 				5CFB115F15AE065D008F64BB /* libxml_macos.a */,
 				5CFB116015AE065D008F64BB /* libyaml_macos.a */,
 				5CFB115B15AE0638008F64BB /* libfreetype_macos.a */,
-				5CFB115915AE062C008F64BB /* libcurl_iOS_mac.a */,
 				5CFB115115AE05FE008F64BB /* OpenAL.framework */,
 				5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */,
 				5CFB114D15AE05F2008F64BB /* Cocoa.framework */,

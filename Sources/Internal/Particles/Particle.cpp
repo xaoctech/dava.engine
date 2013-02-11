@@ -60,6 +60,24 @@ bool Particle::Update(float32 timeElapsed)
 		Vector3 velocity = direction*speed;
 		for(int i = 0; i < n; i++)
 		{
+//            Vector3 add(0, 0, 0);
+//            
+//            if(i < forcesDirections.size())
+//            {
+//                add = forcesDirections[i];
+//            }
+//            
+//            if(i < forcesValues.size())
+//            {
+//                add *= forcesValues[i];
+//            }
+//            
+//            if(i < forcesOverLife.size())
+//            {
+//                add *= forcesOverLife[i];
+//            }
+//
+//			velocity += (add * timeElapsed);
 			velocity += forcesDirections[i] * forcesValues[i] * forcesOverLife[i] * timeElapsed;
 		}
 		float32 invSqrt = InvSqrtFast(velocity.SquareLength());
