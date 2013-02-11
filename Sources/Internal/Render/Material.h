@@ -159,6 +159,13 @@ public:
 	void SetAlphablend(bool isAlphablend);
 	bool GetAlphablend();
     
+    // TODO: remove const reference
+    void EnableFlatColor(const bool & isEnabled);
+    const bool & IsFlatColorEnabled();
+    
+    void SetFlatColor(const Color & color);
+    const Color & GetFlatColor();
+    
     void SetWireframe(bool isWireframe);
     bool GetWireframe();
     
@@ -189,6 +196,13 @@ public:
 	void SetSetupLightmap(bool isSetupLightmap);
 	bool GetSetupLightmap();
 	void SetSetupLightmapSize(int32 setupLightmapSize);
+    
+    
+    void EnableTextureShift(const bool & isEnabled);
+    const bool & IsTextureShiftEnabled();
+
+    void SetTextureShift(const Vector2 & speed);
+    const Vector2 & GetTextureShift();
 
     /**
         \brief Bind material to render system.
@@ -292,8 +306,14 @@ private:
     bool    isFogEnabled;
     float32 fogDensity;
     Color   fogColor;
+    
 
 	bool isAlphablend;
+    bool isFlatColorEnabled;
+    Color flatColor;
+    
+    bool isTexture0ShiftEnabled;
+    Vector2 texture0Shift;
     
     bool isWireframe;
     
@@ -312,6 +332,8 @@ private:
 	int32 uniformUvScale;
     int32 uniformFogDensity;
     int32 uniformFogColor;
+    int32 uniformFlatColor;
+    int32 uniformTexture0Shift;
 
 	RenderStateBlock renderStateBlock;
     
@@ -343,6 +365,14 @@ public:
         MEMBER(fogColor, "Fog Color", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        
+        PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+         PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+                         
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 

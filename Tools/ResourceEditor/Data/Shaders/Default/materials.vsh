@@ -7,6 +7,8 @@ precision highp float;
 #define mediump
 #endif
 
+//#define TEXTURE0_SHIFT_ENABLED
+
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
@@ -87,6 +89,11 @@ varying lowp float varLightmapSize;
 #if defined(VERTEX_COLOR)
 varying lowp vec4 varVertexColor;
 #endif
+
+#if defined(TEXTURE0_SHIFT_ENABLED)
+uniform mediump vec2 texture0Shift;
+#endif 
+
 
 void main()
 {
@@ -181,6 +188,11 @@ void main()
 #endif
 
 	varTexCoord0 = inTexCoord0;
+	
+#if defined(TEXTURE0_SHIFT_ENABLED)
+	varTexCoord0 += texture0Shift;
+#endif
+		
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 	
 	#if defined(SETUP_LIGHTMAP)
