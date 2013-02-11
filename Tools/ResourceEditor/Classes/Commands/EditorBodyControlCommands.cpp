@@ -144,7 +144,7 @@ void CommandRestoreOriginalTransform::StoreCurrentTransform(DAVA::SceneNode *nod
 	{
 		undoTransforms[node] = node->GetLocalTransform();
 
-		for (uint32 i = 0; i < node->GetChildrenCount(); ++i)
+		for (int32 i = 0; i < node->GetChildrenCount(); ++i)
 			StoreCurrentTransform(node->GetChild(i));
 	}
 }
@@ -159,7 +159,7 @@ void CommandRestoreOriginalTransform::RestoreTransform(DAVA::SceneNode *node)
 			node->SetLocalTransform((*it).second);
 		}
 
-		for (uint32 i = 0; i < node->GetChildrenCount(); ++i)
+		for (int32 i = 0; i < node->GetChildrenCount(); ++i)
 		{
 			RestoreTransform(node->GetChild(i));
 		}
