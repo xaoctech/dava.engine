@@ -35,6 +35,18 @@
 
 namespace DAVA 
 {
+// Hepler class to store Force-specific data.
+class ForceData
+{
+public:
+	ForceData(float32 forceValue, const Vector3& forceDirection, float32 forceOverlife,
+			  bool forceOverlifeEnabled);
+
+	float32 value;
+	Vector3 direction;
+	float32 overlife;
+	bool overlifeEnabled;
+};
 
 class Sprite;
 class Particle
@@ -68,12 +80,22 @@ public:
 	float32 velocityOverLife;
 	float32 spinOverLife;
 
-	Vector<Vector3> forcesDirections;
-	Vector<float32> forcesValues;
-	Vector<float32> forcesOverLife;
+	// Add the new force,
+	void AddForce(float32 value, const Vector3& direction, float32 overlife, bool overlifeEnabled);
+	
+	// Update the Force Overlife value.
+	void UpdateForceOverlife(int32 index, float32 overlife);
+
+	// Cleanup the existing forces.
+	void CleanupForces();
+
 	int32	frame;
 	
 	friend class ParticleEmitter;
+	
+protected:
+	// Forces attached to Particle.
+	Vector<ForceData> forces;
 };
 
 // Implementation

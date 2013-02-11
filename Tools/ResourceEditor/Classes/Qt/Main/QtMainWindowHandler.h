@@ -121,9 +121,6 @@ public slots:
     void ReloadTexturesFromFileSystem();
 
 	//particles editor
-	void OpenParticleEditorConfig();
-	void SaveParticleEditorConfig();
-	void OpenParticleEditorSprite();
 	void CreateParticleEmitterNode();
 	
 signals:

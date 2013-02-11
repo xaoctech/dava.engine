@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		179BEB7516C92A2900FF57A3 /* ParticleForce.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 179BEB7316C92A2900FF57A3 /* ParticleForce.cpp */; };
 		17A4368F1664FD5300A15BDB /* ParticleEffectNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */; };
 		4910CC2B167B7E6600CF948A /* libdxt_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 4910CC2A167B7E6600CF948A /* libdxt_macos.a */; };
 		49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49E7A1BF16835A2800F63EFE /* LibDxtHelper.cpp */; };
@@ -287,6 +288,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		179BEB7316C92A2900FF57A3 /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
+		179BEB7416C92A2900FF57A3 /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17A4368D1664FD5300A15BDB /* ParticleEffectNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectNode.cpp; sourceTree = "<group>"; };
 		17A4368E1664FD5300A15BDB /* ParticleEffectNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectNode.h; sourceTree = "<group>"; };
 		4910CC2A167B7E6600CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -1249,6 +1252,8 @@
 				5C5D983115B0230D0058B43A /* ParticlePropertyLine.h */,
 				5C5D983215B0230D0058B43A /* ParticleSystem.cpp */,
 				5C5D983315B0230D0058B43A /* ParticleSystem.h */,
+				179BEB7316C92A2900FF57A3 /* ParticleForce.cpp */,
+				179BEB7416C92A2900FF57A3 /* ParticleForce.h */,
 			);
 			name = Particles;
 			path = ../../Sources/Internal/Particles;
@@ -1984,6 +1989,7 @@
 				E84779BC16690254004CD20A /* FastName.cpp in Build Sources */,
 				E84779BD16690254004CD20A /* FixedSizePoolAllocator.cpp in Build Sources */,
 				49E7A1C116835A2800F63EFE /* LibDxtHelper.cpp in Build Sources */,
+				179BEB7516C92A2900FF57A3 /* ParticleForce.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

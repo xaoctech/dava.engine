@@ -13,6 +13,8 @@
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
 		022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */; };
 		022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */; };
+		1789223F16C939100085681A /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789223D16C939100085681A /* ParticleForce.cpp */; };
+		1789224016C939100085681A /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1789223E16C939100085681A /* ParticleForce.h */; };
 		17EACFC516C4029300F6D3D2 /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFBF16C4029300F6D3D2 /* DLCSystem.cpp */; };
 		17EACFC616C4029300F6D3D2 /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 17EACFC016C4029300F6D3D2 /* DLCSystem.h */; };
 		17EACFC716C4029300F6D3D2 /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17EACFC116C4029300F6D3D2 /* DLCUnpacker.cpp */; };
@@ -594,6 +596,8 @@
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
 		022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TheoraPlayer.h; sourceTree = "<group>"; };
+		1789223D16C939100085681A /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
+		1789223E16C939100085681A /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17EACFBF16C4029300F6D3D2 /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystem.cpp; path = DLC/DLCSystem.cpp; sourceTree = "<group>"; };
 		17EACFC016C4029300F6D3D2 /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystem.h; path = DLC/DLCSystem.h; sourceTree = "<group>"; };
 		17EACFC116C4029300F6D3D2 /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCUnpacker.cpp; path = DLC/DLCUnpacker.cpp; sourceTree = "<group>"; };
@@ -1617,6 +1621,8 @@
 		FECFB3BB12E5904400C71562 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				1789223D16C939100085681A /* ParticleForce.cpp */,
+				1789223E16C939100085681A /* ParticleForce.h */,
 				E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */,
 				E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */,
 				5CD7155F15AC3B6300D08E8E /* ParticleEmitter3D.cpp */,
@@ -2308,6 +2314,7 @@
 				17EACFC616C4029300F6D3D2 /* DLCSystem.h in Headers */,
 				17EACFC816C4029300F6D3D2 /* DLCUnpacker.h in Headers */,
 				17EACFCA16C4029300F6D3D2 /* FileDownloader.h in Headers */,
+				1789224016C939100085681A /* ParticleForce.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2635,6 +2642,7 @@
 				17EACFC516C4029300F6D3D2 /* DLCSystem.cpp in Sources */,
 				17EACFC716C4029300F6D3D2 /* DLCUnpacker.cpp in Sources */,
 				17EACFC916C4029300F6D3D2 /* FileDownloader.cpp in Sources */,
+				1789223F16C939100085681A /* ParticleForce.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

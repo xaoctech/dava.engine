@@ -6,37 +6,6 @@
 
 using namespace DAVA;
 
-class CommandOpenParticleEditorConfig: public Command
-{
-public:	
-	CommandOpenParticleEditorConfig();
-
-protected:	
-
-	virtual void Execute();
-};
-
-class CommandSaveParticleEditorConfig: public Command
-{
-public:	
-	CommandSaveParticleEditorConfig();
-
-protected:	
-
-	virtual void Execute();
-};
-
-class CommandOpenParticleEditorSprite: public Command
-{
-public:	
-	CommandOpenParticleEditorSprite();
-
-protected:	
-
-	virtual void Execute();
-};
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
