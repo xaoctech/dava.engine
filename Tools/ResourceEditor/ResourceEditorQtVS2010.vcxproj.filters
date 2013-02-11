@@ -1446,7 +1446,13 @@
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands\FileCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
@@ -1455,13 +1461,22 @@
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands\ModificationOptionsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
@@ -1472,6 +1487,15 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp">
       <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp">
+      <Filter>QtGenerated\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
+      <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2573,9 +2597,6 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
-      <Filter>Sources\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\Command.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
@@ -2594,7 +2615,13 @@
     <ClInclude Include="Classes\Commands\CustomColorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Commands\FileCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
@@ -2603,7 +2630,13 @@
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands\ModificationOptionsCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\SceneEditorScreenMainCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
@@ -2612,11 +2645,23 @@
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands\TilemapEditorCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Commands\ToolsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ViewCommands.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\ModificationWidget.h">
+      <Filter>Sources\Qt\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

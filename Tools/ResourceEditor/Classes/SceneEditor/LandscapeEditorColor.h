@@ -8,6 +8,7 @@
 
 using namespace DAVA;
 
+class CommandDrawTilemap;
 class EditorHeightmap;
 class LandscapeEditorColor
     :   public LandscapeEditorBase
@@ -31,7 +32,10 @@ public:
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
     virtual void TextureWillChanged(const String &forKey);
     virtual void TextureDidChanged(const String &forKey);
-    
+
+	void StoreState(Image** image);
+	void RestoreState(Image* image);
+
 protected:
 
     virtual void InputAction(int32 phase, bool intersects);
@@ -71,6 +75,8 @@ protected:
     
 	Shader * tileMaskEditorShader;
     bool editingIsEnabled;
+
+	CommandDrawTilemap* command;
 };
 
 

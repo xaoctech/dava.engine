@@ -5,13 +5,15 @@
 #include "PropertyControlCreator.h"
 #include "EditorScene.h"
 
-#include "UNDOManager.h"
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
 #include "../Qt/Main/QtUtils.h"
+
+#include "../Commands/CommandsManager.h"
+#include "../Commands/TilemapEditorCommands.h"
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -39,6 +41,8 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     toolsPanel = new LandscapeToolsPanelColor(this, toolsRect);
 
     editingIsEnabled = false;
+
+	command = NULL;
 }
 
 LandscapeEditorColor::~LandscapeEditorColor()
@@ -87,8 +91,8 @@ void LandscapeEditorColor::CreateMaskTexture()
     
     CreateMaskFromTexture(savedTexture);
     
-    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
-    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+//    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
+//    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
 }
 
 void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
@@ -235,6 +239,10 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_BEGAN:
         {
             editingIsEnabled = true;
+
+			DVASSERT(command == NULL);
+			command = new CommandDrawTilemap();
+
             break;
         }
             
@@ -243,11 +251,19 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
             if(editingIsEnabled && !intersects)
             {
                 editingIsEnabled = false;
-                UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+
+				if (command)
+				{
+					CommandsManager::Instance()->Execute(command);
+					SafeRelease(command);
+				}
             }
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
+
+				DVASSERT(command == NULL);
+				command = new CommandDrawTilemap();
             }
             break;
         }
@@ -255,7 +271,13 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_ENDED:
         {
             editingIsEnabled = false;
-            UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+
+			if (command)
+			{
+				CommandsManager::Instance()->Execute(command);
+				SafeRelease(command);
+			}
+
             break;
         }
             
@@ -289,6 +311,27 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
     }
 }
 
+void LandscapeEditorColor::StoreState(Image **image)
+{
+	*image = maskSprite->GetTexture()->CreateImageFromMemory();
+}
+
+void LandscapeEditorColor::RestoreState(Image *image)
+{
+	if (image)
+	{
+        Texture *texture = Texture::CreateTextFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+
+        //TODO: is code usefull?
+        texture->GenerateMipmaps();
+        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        //ENDOFTODO
+
+        CreateMaskFromTexture(texture);
+		//TODO: SafeRelease(texture)?
+    }
+}
+
 void LandscapeEditorColor::HideAction()
 {
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, savedTexture);
@@ -318,34 +361,12 @@ void LandscapeEditorColor::ShowAction()
 
 void LandscapeEditorColor::UndoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
-    if(UNDOAction::ACTION_TILEMASK == type)
-    {
-        Texture *tex = UNDOManager::Instance()->UndoTilemask();
-
-        //TODO: is code usefull?
-        tex->GenerateMipmaps();
-        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-        //ENDOFTODO
-        
-        CreateMaskFromTexture(tex);
-    }
+	CommandsManager::Instance()->Undo();
 }
 
 void LandscapeEditorColor::RedoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
-    if(UNDOAction::ACTION_TILEMASK == type)
-    {
-        Texture *tex = UNDOManager::Instance()->RedoTilemask();
-
-        //TODO: is code usefull?
-        tex->GenerateMipmaps();
-        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-        //ENDOFTODO
-
-        CreateMaskFromTexture(tex);
-    }
+	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)

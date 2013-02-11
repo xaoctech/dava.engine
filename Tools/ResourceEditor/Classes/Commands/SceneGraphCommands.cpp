@@ -121,29 +121,43 @@ void CommandLockAtObject::Execute()
 CommandRemoveSceneNode::CommandRemoveSceneNode()
     :   Command(Command::COMMAND_UNDO_REDO)
     ,   activeScene(NULL)
+	,	undoNode(NULL)
 {
 }
 
+CommandRemoveSceneNode::~CommandRemoveSceneNode()
+{
+	SafeRelease(undoNode);
+}
 
 void CommandRemoveSceneNode::Execute()
 {
-    activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
-    if(node)
-    {
-        //TODO: save scene state here
-        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-        activeScene->RemoveSceneNode(node);
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
+	if (!undoNode)
+	{
+		activeScene = SceneDataManager::Instance()->SceneGetActive();
+		SceneNode *node = activeScene->GetSelectedNode();
+		if (!node)
+		{
+			SetState(STATE_INVALID);
+			return;
+		}
+
+		undoNode = SafeRetain(node);
+	}
+
+	activeScene->RemoveSceneNode(undoNode);
 }
 
 void CommandRemoveSceneNode::Cancel()
 {
-    //TODO: restore saved state if active scene is same as saved
+	if (undoNode)
+	{
+		if (activeScene == SceneDataManager::Instance()->SceneGetActive())
+		{
+			activeScene->AddSceneNode(undoNode);
+			activeScene->SelectNode(undoNode);
+		}
+	}
 }
 
 
