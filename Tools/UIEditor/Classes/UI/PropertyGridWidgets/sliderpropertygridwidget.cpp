@@ -23,27 +23,7 @@ SliderPropertyGridWidget::SliderPropertyGridWidget(QWidget *parent) :
     SetPropertyBlockName(SLIDER_PROPERTY_BLOCK_NAME);
 	ConnectToSignals();
 	
-	// Install event filter for all spinboxes on this Widget
-	// We should block mouse wheel event for spinboxes which don't have focus
-	Q_FOREACH( QAbstractSpinBox *spinBoxWidget, findChildren<QAbstractSpinBox*>() )
-	{
-        spinBoxWidget->installEventFilter( this );
-        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
-	// Install event filter for all comboboxes on this Widget
-	// We should block mouse wheel event for comboboxes which don't have focus
-	Q_FOREACH( QComboBox *comboBoxWidget, findChildren<QComboBox*>() )
-	{
-        comboBoxWidget->installEventFilter( this );
-        comboBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
-	// Install event filter for all sliders on this Widget
-	// We should block mouse wheel event for sliders which don't have focus
-	Q_FOREACH( QSlider *sliderWidget, findChildren<QSlider*>() )
-	{
-        sliderWidget->installEventFilter( this );
-        sliderWidget->setFocusPolicy( Qt::StrongFocus );
-    }
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 SliderPropertyGridWidget::~SliderPropertyGridWidget()

@@ -30,7 +30,7 @@ namespace PropertyNames
     static const char* TEXT_PROPERTY_NAME = "Text";
     static const char* TEXT_COLOR_PROPERTY_NAME = "TextColor";
 	
-	//Slider properties
+	// Slider properties
 	static const char* SLIDER_VALUE_PROPERTY_NAME = "SliderValue";
 	static const char* SLIDER_MIN_VALUE_PROPERTY_NAME = "SliderMinValue";
 	static const char* SLIDER_MAX_VALUE_PROPERTY_NAME = "SliderMaxValue";
@@ -42,6 +42,20 @@ namespace PropertyNames
 	static const char* SLIDER_MAX_SPRITE_PROPERTY_NAME = "SliderMaxSprite";
 	static const char* SLIDER_MAX_SPRITE_FRAME_PROPERTY_NAME = "SliderMaxSpriteFrame";
 	static const char* SLIDER_MAX_DRAW_TYPE_PROPERTY_NAME = "SliderMaxDrawType";
+	
+	// Align properties
+	static const char* LEFT_ALIGN = "LeftAlign";
+	static const char* LEFT_ALIGN_ENABLED = "LeftAlignEnabled";
+	static const char* HCENTER_ALIGN = "HCenterAlign";
+	static const char* HCENTER_ALIGN_ENABLED = "HCenterAlignEnabled";
+	static const char* RIGHT_ALIGN = "RightAlign";
+	static const char* RIGHT_ALIGN_ENABLED = "RightAlignEnabled";
+	static const char* TOP_ALIGN = "TopAlign";
+	static const char* TOP_ALIGN_ENABLED = "TopAlignEnabled";
+	static const char* VCENTER_ALIGN = "VCenterAlign";
+	static const char* VCENTER_ALIGN_ENABLED = "VCenterAlignEnabled";
+	static const char* BOTTOM_ALIGN = "BottomAlign";
+	static const char* BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
 }
 };
 

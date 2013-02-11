@@ -27,20 +27,7 @@ BackGroundPropertyGridWidget::BackGroundPropertyGridWidget(QWidget *parent) :
 
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
 	
-	// Install event filter for all spinboxes on this Widget
-	// We should block mouse wheel event for spinboxes which don't have focus
-	Q_FOREACH( QSpinBox *spinBoxWidget, findChildren<QSpinBox*>() )
-	{
-        spinBoxWidget->installEventFilter( this );
-        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
-	// Install event filter for all comboboxes on this Widget
-	// We should block mouse wheel event for comboboxes which don't have focus
-	Q_FOREACH( QComboBox *comboBoxWidget, findChildren<QComboBox*>() )
-	{
-        comboBoxWidget->installEventFilter( this );
-        comboBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 BackGroundPropertyGridWidget::~BackGroundPropertyGridWidget()

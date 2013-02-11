@@ -1,5 +1,9 @@
 #include "rectpropertygridwidget.h"
 #include "ui_rectpropertygridwidget.h"
+#include "PropertiesGridController.h"
+#include "PropertyNames.h"
+
+using namespace PropertyNames;
 
 static const QString RECT_PROPERTY_BLOCK_NAME = "Rect";
 
@@ -9,13 +13,8 @@ RectPropertyGridWidget::RectPropertyGridWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     SetPropertyBlockName(RECT_PROPERTY_BLOCK_NAME);
-	// Install event filter for all spinboxes on this Widget
-	// We should block mouse wheel event for spinboxes which don't have focus
-	Q_FOREACH( QSpinBox *spinBoxWidget, findChildren<QSpinBox*>() )
-	{
-        spinBoxWidget->installEventFilter( this );
-        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
-    }
+	// This event filter will prevent mouse wheel event when hovered control is not yet selected
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 RectPropertyGridWidget::~RectPropertyGridWidget()
@@ -44,6 +43,9 @@ void RectPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     RegisterSpinBoxWidgetForProperty(propertiesMap, "PivotY", ui->pivotYSpinBox);
 
     RegisterSpinBoxWidgetForProperty(propertiesMap, "Angle", ui->angleSpinBox);
+	
+	UpdateHorizontalWidgetsState();
+	UpdateVerticalWidgetsState();
 }
 
 void RectPropertyGridWidget::Cleanup()
@@ -69,4 +71,57 @@ void RectPropertyGridWidget::OnPropertiesChangedFromExternalSource()
     {
         UpdateWidgetWithPropertyValue(iter);
     }
+}
+
+void RectPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
+{
+	//If one of the align option state is changed we should check it and disable/enable appropriate Relative postion or size spinbox(es)
+    BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
+	
+	if (propertyName == LEFT_ALIGN_ENABLED || propertyName == RIGHT_ALIGN_ENABLED || propertyName == HCENTER_ALIGN_ENABLED)
+	{
+		UpdateHorizontalWidgetsState();
+	}
+
+	if (propertyName == TOP_ALIGN_ENABLED || propertyName == BOTTOM_ALIGN_ENABLED || propertyName == VCENTER_ALIGN_ENABLED)
+	{
+		UpdateVerticalWidgetsState();
+	}
+}
+
+void RectPropertyGridWidget::UpdateHorizontalWidgetsState()
+{
+	// Get horizontal align properties values
+	bool leftAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(LEFT_ALIGN_ENABLED);
+	bool hcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(HCENTER_ALIGN_ENABLED);
+	bool rightAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(RIGHT_ALIGN_ENABLED);
+		
+	// Change relative X position spinbox state according to align properties
+	bool disableRelativeX = leftAlignEnabled || hcenterAlignEnabled || rightAlignEnabled;
+	ui->relativeXSpinBox->setDisabled(disableRelativeX);
+		
+	// Change size X spinbox state according to align properties
+	bool disableSizeX = IsTwoAlignsEnabled(leftAlignEnabled, hcenterAlignEnabled, rightAlignEnabled);
+	ui->sizeXSpinBox->setDisabled(disableSizeX);
+}
+
+void RectPropertyGridWidget::UpdateVerticalWidgetsState()
+{
+	// Get vertical align properties values
+	bool topAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(TOP_ALIGN_ENABLED);
+	bool vcenterAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(VCENTER_ALIGN_ENABLED);
+	bool bottomAlignEnabled = BasePropertyGridWidget::GetPropertyBooleanValue(BOTTOM_ALIGN_ENABLED);
+		
+	// Change relative Y position spinbox state according to align properties
+	bool disableRelativeY = topAlignEnabled || vcenterAlignEnabled || bottomAlignEnabled;
+	ui->relativeYSpinBox->setDisabled(disableRelativeY);
+		
+	// Change size Y spinbox state according to align properties
+	bool disableSizeY = IsTwoAlignsEnabled(topAlignEnabled, vcenterAlignEnabled, bottomAlignEnabled);
+	ui->sizeYSpinBox->setDisabled(disableSizeY);
+}
+
+bool RectPropertyGridWidget::IsTwoAlignsEnabled(bool first, bool center, bool second)
+{
+	return ((first && center) || (center && second) || (first && second));
 }
