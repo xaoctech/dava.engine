@@ -390,6 +390,8 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
@@ -723,6 +725,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp" />

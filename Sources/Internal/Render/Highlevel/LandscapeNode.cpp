@@ -1697,5 +1697,17 @@ LandscapeCursor * LandscapeNode::GetCursor()
 {
     return cursor;
 }
-    
+
+RenderObject * LandscapeNode::Clone( RenderObject *newObject )
+{
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<LandscapeNode>(this), "Can clone only LandscapeNode");
+		newObject = new LandscapeNode();
+	}
+
+	return RenderObject::Clone(newObject);
+}
+
+
 };

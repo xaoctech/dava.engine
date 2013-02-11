@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
-		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
 		509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
@@ -1216,7 +1215,15 @@
 		E898A2BD16BD265400732C04 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
 		E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
 		E898A2BF16BD265400732C04 /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
-		E898A2C016BD265400732C04 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
+		E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E89CE91116C549D2006BEFF4 /* libcurl_macos.a */; };
+		E89CE91716C549F9006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */; };
+		E89CE91816C549F9006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */; };
+		E89CE91916C549F9006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91416C549F9006BEFF4 /* SpriteObject.h */; };
+		E89CE91A16C549F9006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91416C549F9006BEFF4 /* SpriteObject.h */; };
+		E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */; };
+		E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */; };
+		E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
+		E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
@@ -1257,7 +1264,6 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
@@ -1871,6 +1877,11 @@
 		E8989D9816BD24E500732C04 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		E8989D9916BD24E500732C04 /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
 		E898A2C416BD265400732C04 /* libFrameworkQt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkQt.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E89CE91116C549D2006BEFF4 /* libcurl_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_macos.a; path = ../../Libs/libs/libcurl_macos.a; sourceTree = "<group>"; };
+		E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteObject.cpp; sourceTree = "<group>"; };
+		E89CE91416C549F9006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
+		E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
+		E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteRenderBatch.h; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -1886,6 +1897,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */,
 				4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */,
 				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
 				0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */,
@@ -1901,7 +1913,6 @@
 				FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */,
 				FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */,
 				EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */,
-				16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1924,7 +1935,6 @@
 				E898A2BD16BD265400732C04 /* libvorbis_macos.a in Frameworks */,
 				E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */,
 				E898A2BF16BD265400732C04 /* libfreetype_macos.a in Frameworks */,
-				E898A2C016BD265400732C04 /* libcurl_ios_mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1943,6 +1953,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				E89CE91116C549D2006BEFF4 /* libcurl_macos.a */,
 				4910CBF5167B73EC00CF948A /* libdxt_macos.a */,
 				E82366CD16148EF9007B40D0 /* libPVRTexLib.a */,
 				0224B6FF15989F7400CDEF9E /* libtheora_macos.a */,
@@ -1951,7 +1962,6 @@
 				5C42C98314E3AFA400EB3F53 /* libxml_macos.a */,
 				5C6BF78214C85A2A009297F7 /* libz.dylib */,
 				5C77AB7C14C7509D00E92D28 /* libpng_macos.a */,
-				16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */,
 				FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */,
 				FECFABB612E58B7800C71562 /* External */,
 				FECFC0A512E87E3000C71562 /* Internal */,
@@ -2544,6 +2554,10 @@
 				E8989C6316BD24E400732C04 /* ShadowVolume.h */,
 				E8989C6416BD24E400732C04 /* ShadowVolumeRenderPass.cpp */,
 				E8989C6516BD24E400732C04 /* ShadowVolumeRenderPass.h */,
+				E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */,
+				E89CE91416C549F9006BEFF4 /* SpriteObject.h */,
+				E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */,
+				E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */,
 			);
 			path = Highlevel;
 			sourceTree = "<group>";
@@ -3214,6 +3228,8 @@
 				E898A04D16BD24E500732C04 /* UTF8Utils.h in Headers */,
 				E898A04F16BD24E500732C04 /* Utils.h in Headers */,
 				50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
+				E89CE91916C549F9006BEFF4 /* SpriteObject.h in Headers */,
+				E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3541,6 +3557,8 @@
 				E898A19816BD265400732C04 /* UTF8Utils.h in Headers */,
 				E898A19916BD265400732C04 /* Utils.h in Headers */,
 				50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
+				E89CE91A16C549F9006BEFF4 /* SpriteObject.h in Headers */,
+				E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3906,6 +3924,8 @@
 				E898A05016BD24E500732C04 /* UtilsMacOS.mm in Sources */,
 				509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */,
 				E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */,
+				E89CE91716C549F9006BEFF4 /* SpriteObject.cpp in Sources */,
+				E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4186,6 +4206,8 @@
 				E898A2AF16BD265400732C04 /* UtilsMacOS.mm in Sources */,
 				509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */,
 				E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */,
+				E89CE91816C549F9006BEFF4 /* SpriteObject.cpp in Sources */,
+				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

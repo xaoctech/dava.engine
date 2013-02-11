@@ -1233,6 +1233,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2158,6 +2164,12 @@
     <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

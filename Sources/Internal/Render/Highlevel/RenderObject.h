@@ -73,6 +73,7 @@ public:
         TYPE_SKINNED_MESH,      // Animated mesh for skinned animations
         TYPE_LANDSCAPE,         // Landscape object
         TYPE_CUSTOM_DRAW,       // Custom drawn object
+		TYPE_SPRITE,			// Sprite Node
     };
     
 	enum eFlags
@@ -112,7 +113,7 @@ public:
     
     inline eType GetType() { return (eType)type; }
 
-	virtual RenderObject * Clone();
+	virtual RenderObject * Clone(RenderObject *newObject);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     
