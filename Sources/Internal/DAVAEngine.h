@@ -245,6 +245,7 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 // Application core 
 #include "Core/Core.h"

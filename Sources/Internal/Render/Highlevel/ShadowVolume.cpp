@@ -57,7 +57,7 @@ ShadowVolume::~ShadowVolume()
 //	scene->AddDrawTimeShadowVolume(this);
 //}
 
-static const uint32 SHADOW_VOLUME_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD;
+static const uint32 SHADOW_VOLUME_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
     
 void ShadowVolume::Draw(Camera * camera)
 {

@@ -37,7 +37,7 @@ REGISTER_CLASS(RenderObject)
 
 RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
-    ,   flags(VISIBLE | VISIBLE_LOD)
+    ,   flags(VISIBLE | VISIBLE_LOD | VISIBLE_SWITCH)
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
