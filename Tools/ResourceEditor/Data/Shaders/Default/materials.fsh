@@ -10,6 +10,8 @@ precision highp float;
 //#define MATERIAL_TEXTURE
 //#define VERTEX_COLOR
 //#define ALPHABLEND
+//#define FLATCOLOR
+//#define VERTEX_FOG
 
 // DECLARATIONS
 uniform sampler2D texture0;
@@ -55,6 +57,10 @@ varying lowp float varLightmapSize;
 
 #if defined(VERTEX_COLOR)
 varying lowp vec4 varVertexColor;
+#endif
+
+#if defined(FLATCOLOR)
+uniform lowp vec4 flatColor;
 #endif
 
 void main()
@@ -156,5 +162,9 @@ void main()
 	gl_FragColor = vec4(color, textureColor0.a);
 #else
     gl_FragColor = vec4(color, 1.0);
+#endif
+    
+#if defined(FLATCOLOR)
+    gl_FragColor *= flatColor;
 #endif
 }
