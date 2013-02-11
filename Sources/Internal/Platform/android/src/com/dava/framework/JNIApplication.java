@@ -10,6 +10,8 @@ import android.util.Log;
 
 public class JNIApplication extends Application
 {
+	static JNIApplication app;
+	
 	private native void OnCreateApplication(String documentPath, String appPath, String logTag, String packageName); 
 	private native void OnConfigurationChanged(); 
 	private native void OnLowMemory(); 
@@ -19,6 +21,7 @@ public class JNIApplication extends Application
 	@Override
 	public void onCreate()
 	{
+		app = this;
 		super.onCreate();
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
@@ -79,6 +82,11 @@ public class JNIApplication extends Application
  */
 
 		super.onTerminate();
+	}
+	
+	public static JNIApplication GetApplication()
+	{
+		return app;
 	}
 }
 

@@ -22,6 +22,8 @@ InputTest::InputTest() :
 
 void InputTest::LoadResources()
 {
+	DVASSERT_MSG(false, "asdfasdfasdfasdfasdf");
+	
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
