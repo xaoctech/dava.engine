@@ -1169,16 +1169,17 @@ private:
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
 	
-	int32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
-	int32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
+	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
+	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
 	
-	int32 GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child);
-	int32 GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child);
+	float32 GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child);
+	float32 GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child);
 	
-	int32 GetRelativeX(UIControl *parent, int32 align);
-	int32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
-	int32 GetRelativeY(UIControl *parent, int32 align);
-	int32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 GetRelativeX(UIControl *parent, int32 align);
+	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 GetRelativeY(UIControl *parent, int32 align);
+	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 Round(float32 value);
 };
 };
 
