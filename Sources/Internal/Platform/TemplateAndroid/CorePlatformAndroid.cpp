@@ -20,6 +20,17 @@ extern void FrameworkWillTerminate();
 
 namespace DAVA
 {
+	AndroidSystemDelegate::AndroidSystemDelegate(JavaVM *vm)
+	{
+		Logger::Debug("AndroidSystemDelegate::AndroidSystemDelegate()");
+
+		this->vm = vm;
+		environment = NULL;
+		if (vm->GetEnv((void**)&environment, JNI_VERSION_1_4) != JNI_OK)
+		{
+			Logger::Debug("Failed to get the environment using GetEnv()");
+		}
+	}
 
 	Core::eDeviceFamily Core::GetDeviceFamily()
 	{
@@ -363,6 +374,11 @@ namespace DAVA
 		}
 
 		return false;
+	}
+
+	AndroidSystemDelegate* CorePlatformAndroid::GetAndroidSystemDelegate() const
+	{
+		return androidDelegate;
 	}
 }
 #endif // #if defined(__DAVAENGINE_ANDROID__)

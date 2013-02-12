@@ -6,8 +6,6 @@
 
 class AndroidDelegate: public DAVA::AndroidSystemDelegate
 {
-	JNIEnv* environment;
-
 	jobject classApplication;
 	jobject classActivity;
 
@@ -24,7 +22,7 @@ class AndroidDelegate: public DAVA::AndroidSystemDelegate
 
 public:
 
-	AndroidDelegate(JNIEnv* env);
+	AndroidDelegate(JavaVM *vm);
 
 	void SetApplication(jobject app, char *packageName);
 	void SetActivity(jobject activity);

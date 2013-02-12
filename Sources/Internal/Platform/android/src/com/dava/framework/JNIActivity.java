@@ -35,9 +35,12 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     
     public abstract JNIGLSurfaceView GetSurfaceView();
     
+    private static JNIActivity activity = null;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
+    	activity = this;
         super.onCreate(savedInstanceState);
         
         if(null != savedInstanceState)
@@ -260,6 +263,7 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 //			keyboardShowed = true;
 //		}
 	}
+	
 	public void HideKeyboard()
 	{
 //		if(keyboardShowed)
@@ -268,5 +272,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 //			im.hideSoftInputFromWindow(mGLView.getWindowToken(), 0);
 //			keyboardShowed = false;
 //		}
+	}
+	
+	public static Activity GetActivity()
+	{
+		return activity;
 	}
 }
