@@ -219,6 +219,19 @@ private:
 	float32 endTime;
 };
 
+class CommandUpdateParticleLayerEnabled: public Command
+{
+public:
+	CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled);
+
+protected:
+    virtual void Execute();
+	
+private:
+	ParticleLayer* layer;
+	bool isEnabled;
+};
+
 class CommandUpdateParticleLayerForce: public Command
 {
 public:
