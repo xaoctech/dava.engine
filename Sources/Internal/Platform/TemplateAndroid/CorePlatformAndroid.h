@@ -24,12 +24,20 @@ namespace DAVA
 class AndroidSystemDelegate
 {
 public:
+	AndroidSystemDelegate(JavaVM *vm);
+
 	virtual void ShowKeyboard() = 0;
 	virtual void HideKeyboard() = 0;
 	virtual bool DownloadHttpFile(const String & url, const String & documentsPathname) = 0;
     
     virtual GLint RenderBuffer() = 0;
 	virtual GLint FrameBuffer() = 0;
+
+	JNIEnv* GetEnvironment() const {return environment;};
+	JavaVM* GetVM() const {return vm;};
+protected:
+	JNIEnv* environment;
+	JavaVM* vm;
 };
 
 
@@ -71,6 +79,8 @@ public:
 
 	const String& GetExternalStoragePathname() const {return externalStorage;};
 	
+	AndroidSystemDelegate* GetAndroidSystemDelegate() const;
+
 private:
 
 	void QuitAction();

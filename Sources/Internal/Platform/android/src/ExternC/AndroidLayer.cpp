@@ -17,13 +17,14 @@
 #include "Input/AccelerometerAndroid.h"
 #include "AndroidDelegate.h"
 
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, androidLogTag, __VA_ARGS__)
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, androidLogTag, __VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, androidLogTag, __VA_ARGS__)
-
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "davaFrameworkLog", __VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "davaFrameworkLog", __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
 
 extern "C"
 {
+	jint JNI_OnLoad(JavaVM *vm, void *reserved);
+
 	//JNIApplication
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_OnCreateApplication(JNIEnv* env, jobject classthis, jstring path, jstring apppath, jstring logTag, jstring packageName);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis);
@@ -65,6 +66,7 @@ AndroidDelegate *androidDelegate;
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
+	androidDelegate = new AndroidDelegate(vm);
 	return JNI_VERSION_1_4;
 }
 
@@ -105,7 +107,7 @@ void InitApplication(JNIEnv * env)
 		core = new DAVA::CorePlatformAndroid();
 		if(core)
 		{
-			androidDelegate = new AndroidDelegate(env);
+			//androidDelegate = new AndroidDelegate(env);
 			core->CreateAndroidWindow(documentsFolderPath, assetsFolderPath, androidLogTag, androidDelegate);
 		}
 		else

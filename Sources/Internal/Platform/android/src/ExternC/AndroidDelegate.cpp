@@ -1,9 +1,9 @@
 #include "AndroidDelegate.h"
 #include "FileSystem/Logger.h"
 
-AndroidDelegate::AndroidDelegate(JNIEnv* env)
+AndroidDelegate::AndroidDelegate(JavaVM *vm) :
+	AndroidSystemDelegate(vm)
 {
-	environment = env;
 	classActivity = NULL;
 	classApplication = NULL;
     
