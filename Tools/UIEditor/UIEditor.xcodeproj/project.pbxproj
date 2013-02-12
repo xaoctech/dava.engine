@@ -276,6 +276,7 @@
 		17E897C9162EE92C00A2A946 /* propertygridcontainerwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = propertygridcontainerwidget.h; path = PropertyGridWidgets/propertygridcontainerwidget.h; sourceTree = "<group>"; };
 		17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetadataFactory.cpp; path = Metadata/MetadataFactory.cpp; sourceTree = "<group>"; };
 		17E897F2162FEB3600A2A946 /* MetadataFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetadataFactory.h; path = Metadata/MetadataFactory.h; sourceTree = "<group>"; };
+		17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_alignspropertygridwidget.h; sourceTree = "<group>"; };
 		17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeNodeExtraData.cpp; path = Models/HierarchyTreeNodeExtraData.cpp; sourceTree = "<group>"; };
 		17F6F49D1647B234003FFA0E /* HierarchyTreeNodeExtraData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeNodeExtraData.h; path = Models/HierarchyTreeNodeExtraData.h; sourceTree = "<group>"; };
 		17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIControlStateHelper.cpp; path = Helpers/UIControlStateHelper.cpp; sourceTree = "<group>"; };
@@ -732,6 +733,7 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
+				17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */,
 				74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */,
 				748EF23F16AE97EF00AC647E /* qrc_icons.cpp */,
 				7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */,
