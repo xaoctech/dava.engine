@@ -25,20 +25,25 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 		helperDXTFormats.push_back("None", DAVA::FORMAT_INVALID);
 		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888), DAVA::FORMAT_RGBA8888);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA5551), DAVA::FORMAT_RGBA5551);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA4444), DAVA::FORMAT_RGBA4444);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGB565), DAVA::FORMAT_RGB565);
-		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_A8), DAVA::FORMAT_A8);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1), DAVA::FORMAT_DXT1);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1NM), DAVA::FORMAT_DXT1NM);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT1A), DAVA::FORMAT_DXT1A);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT3), DAVA::FORMAT_DXT3);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5), DAVA::FORMAT_DXT5);
+		helperDXTFormats.push_back(DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_DXT5NM), DAVA::FORMAT_DXT5NM);
 
 		helperWrapModes.push_back("Clamp", DAVA::Texture::WRAP_CLAMP_TO_EDGE);
 		helperWrapModes.push_back("Repeat", DAVA::Texture::WRAP_REPEAT);
 
 		helperMinGLModes.push_back("Nearest", DAVA::Texture::FILTER_NEAREST);
 		helperMinGLModes.push_back("Linear", DAVA::Texture::FILTER_LINEAR);
-		helperMinGLModes.push_back("Nearest, Mipmap Nearest", DAVA::Texture::FILTER_NEAREST_MIPMAP_NEAREST);
-		helperMinGLModes.push_back("Linear, Mipmap Nearest", DAVA::Texture::FILTER_LINEAR_MIPMAP_NEAREST);
-		helperMinGLModes.push_back("Nearest, Mipmap Linear", DAVA::Texture::FILTER_NEAREST_MIPMAP_LINEAR);
-		helperMinGLModes.push_back("Linear, Mipmap Linear", DAVA::Texture::FILTER_LINEAR_MIPMAP_LINEAR);
+
+		helperMinGLModesWithMipmap.push_back("Nearest", DAVA::Texture::FILTER_NEAREST);
+		helperMinGLModesWithMipmap.push_back("Linear", DAVA::Texture::FILTER_LINEAR);
+		helperMinGLModesWithMipmap.push_back("Nearest, Mipmap Nearest", DAVA::Texture::FILTER_NEAREST_MIPMAP_NEAREST);
+		helperMinGLModesWithMipmap.push_back("Linear, Mipmap Nearest", DAVA::Texture::FILTER_LINEAR_MIPMAP_NEAREST);
+		helperMinGLModesWithMipmap.push_back("Nearest, Mipmap Linear", DAVA::Texture::FILTER_NEAREST_MIPMAP_LINEAR);
+		helperMinGLModesWithMipmap.push_back("Linear, Mipmap Linear", DAVA::Texture::FILTER_LINEAR_MIPMAP_LINEAR);
 
 		helperMagGLModes.push_back("Nearest", DAVA::Texture::FILTER_NEAREST);
 		helperMagGLModes.push_back("Linear", DAVA::Texture::FILTER_LINEAR);
@@ -179,7 +184,9 @@ void TextureProperties::setTexture(DAVA::Texture *texture, DAVA::TextureDescript
 			propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
 
 			// min gl filter
-			propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+			MinFilterCustomSetup();
+
+			// mag lg filter
 			propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
 
 		}
@@ -289,6 +296,9 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		else if(property == boolGenerateMipMaps)
 		{
 			curTextureDescriptor->generateMipMaps = (int) propertiesBool->value(boolGenerateMipMaps);
+			MinFilterCustomSetup();
+
+			type = TYPE_COMMON_MIPMAP;
 		}
 		else if(property == enumWrapModeS)
 		{
@@ -300,7 +310,14 @@ void TextureProperties::propertyChanged(QtProperty * property)
 		}
 		else if(property == enumMinGL)
 		{
-			curTextureDescriptor->minFilter = helperMinGLModes.value(enumMinGL->valueText());
+			if(curTextureDescriptor->generateMipMaps)
+			{
+				curTextureDescriptor->minFilter = helperMinGLModesWithMipmap.value(enumMinGL->valueText());
+			}
+			else
+			{
+				curTextureDescriptor->minFilter = helperMinGLModes.value(enumMinGL->valueText());
+			}
 		}
 		else if(property == enumMagGL)
 		{
@@ -366,4 +383,27 @@ void TextureProperties::resetCommonProp()
 		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
 		propertiesEnum->setValue(enumMagGL, helperMagGLModes.indexV(curTextureDescriptor->magFilter));
 	}
+}
+
+void TextureProperties::MinFilterCustomSetup()
+{
+	reactOnPropertyChange = false;
+
+	if(curTextureDescriptor->generateMipMaps)
+	{
+		propertiesEnum->setEnumNames(enumMinGL, helperMinGLModesWithMipmap.keyList());
+		propertiesEnum->setValue(enumMinGL, helperMinGLModesWithMipmap.indexV(curTextureDescriptor->minFilter));
+	}
+	else
+	{
+		if(-1 == helperMinGLModes.indexV(curTextureDescriptor->minFilter))
+		{
+			curTextureDescriptor->minFilter =  DAVA::Texture::FILTER_LINEAR;
+		}
+
+		propertiesEnum->setEnumNames(enumMinGL, helperMinGLModes.keyList());
+		propertiesEnum->setValue(enumMinGL, helperMinGLModes.indexV(curTextureDescriptor->minFilter));
+	}
+
+	reactOnPropertyChange = true;
 }

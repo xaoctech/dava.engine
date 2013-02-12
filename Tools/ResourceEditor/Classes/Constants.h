@@ -4,22 +4,11 @@
 namespace ResourceEditor 
 {
 
-enum eExportFormat
-{
-    FORMAT_PNG = 0,
-    FORMAT_PVR,
-    FORMAT_DXT,
-    
-    FORMAT_COUNT
-};
-    
 enum eNodeType
 {
     NODE_LANDSCAPE  = 0,
     NODE_LIGHT,
     NODE_SERVICE_NODE,
-    NODE_BOX,
-    NODE_SPHERE,
     NODE_CAMERA,
     NODE_IMPOSTER,
     NODE_PARTICLE_EMITTER,
@@ -56,6 +45,18 @@ enum eHideableWidgets
 	HIDEBLEWIDGET_VISIBILITYCHECKTOOL,
     
     HIDABLEWIDGET_COUNT
+};
+	
+enum eModificationActions
+{
+	MODIFY_NONE = 0,
+	MODIFY_MOVE,
+	MODIFY_ROTATE,
+	MODIFY_SCALE,
+	MODIFY_PLACE_ON_LAND,
+	MODIFY_SNAP_TO_LAND,
+
+	MODIFY_COUNT
 };
     
     

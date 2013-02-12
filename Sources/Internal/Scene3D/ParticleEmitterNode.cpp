@@ -24,9 +24,9 @@ ParticleEmitterNode::~ParticleEmitterNode()
 
 void ParticleEmitterNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
 	if(emitter)
 	{
+		const Matrix4 & worldTransform = GetWorldTransform();
 		Vector3 position = Vector3(worldTransform._30, worldTransform._31, worldTransform._32);
 		emitter->rotationMatrix = Matrix3(worldTransform);;
 		emitter->SetPosition(position);
@@ -42,24 +42,20 @@ void ParticleEmitterNode::Draw()
 		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 
-		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
-		emitter3D->Draw(scene->GetCurrentCamera());
+//		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
+//		emitter3D->Draw(scene->GetCurrentCamera());
+		emitter->Draw(scene->GetCurrentCamera());
 
 		RenderManager::Instance()->SetBlendMode(sblend, dblend);
 	}
 }
 
-void ParticleEmitterNode::LoadFromYaml(String _yamlPath)
+void ParticleEmitterNode::LoadFromYaml(const String& _yamlPath)
 {
 	yamlPath = _yamlPath;
 	SafeRelease(emitter);
 	emitter = new ParticleEmitter3D();
 	emitter->LoadFromYaml(yamlPath);
-}
-
-String ParticleEmitterNode::GetYamlPath()
-{
-	return yamlPath;
 }
 
 ParticleEmitter * ParticleEmitterNode::GetEmitter()
@@ -117,3 +113,4 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 }
 
 };
+

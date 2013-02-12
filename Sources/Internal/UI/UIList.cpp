@@ -636,6 +636,33 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	InitAfterYaml();
 }
     
+YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+	//Temp variable
+	String stringValue;
+    
+	//Control Type
+	node->Set("type", "UIList");
+	//Orientation
+	eListOrientation orient = this->GetOrientation();
+	switch(orient)
+	{
+		case ORIENTATION_VERTICAL:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+		case ORIENTATION_HORIZONTAL:
+			stringValue = "ORIENTATION_HORIZONTAL";
+			break;
+		default:
+			stringValue = "ORIENTATION_VERTICAL";
+			break;
+	}
+	node->Set("orientation", stringValue);
+    
+	return node;
+}
+
 float32 UIList::VisibleAreaSize(UIScrollBar *forScrollBar)
 {
     return scroll->GetViewSize();

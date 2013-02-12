@@ -32,9 +32,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObjectChecker.h"
+#include "Base/Introspection.h"
 #include "Debug/DVAssert.h"
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 #include "Render/RenderBase.h"
 #include <typeinfo>
 
@@ -56,7 +58,8 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
-class   KeyedArchive;
+class IntrospectionInfo;
+class KeyedArchive;
 	
 class	BaseObject
 {
@@ -140,16 +143,30 @@ public:
     
     static BaseObject * DummyGet() { return 0; };
 protected:
+    /*
+    void SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void SaveCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
+    
+    void LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void LoadCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
+
+    void * GetMemberObject(const IntrospectionMember *member, void * object) const;
+	*/
+    
 	
 	BaseObject(const BaseObject & b)
-	{
-	}
+	{ }
+
 	BaseObject & operator = (const BaseObject & b)
 	{
 		return *this;
 	}
 	
 	int32 referenceCount;
+
+public:
+		INTROSPECTION(BaseObject,
+		MEMBER(referenceCount, "referenceCount", INTROSPECTION_EDITOR))
 };
 
 

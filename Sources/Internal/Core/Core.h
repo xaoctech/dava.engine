@@ -37,6 +37,10 @@
 #include "Core/DisplayMode.h"
 #include "FileSystem/KeyedArchive.h"
 
+#if defined(__DAVAENGINE_ANDROID__)
+#include "Platform/Android/AndroidSpecifics.h"
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
 /**
 	\defgroup core Core
 	Application entry point and place where you can find all information about platform indepedent and platform dependent initialization and 
@@ -48,6 +52,8 @@ namespace DAVA
 	
 #if defined(__DAVAENGINE_WIN32__)
 	typedef HINSTANCE AppHandle;
+#elif defined(__DAVAENGINE_ANDROID__)
+    typedef struct android_app* AppHandle;
 #else
 	typedef uint32 AppHandle;
 #endif 

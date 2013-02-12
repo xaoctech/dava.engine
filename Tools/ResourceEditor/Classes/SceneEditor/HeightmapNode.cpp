@@ -1,9 +1,9 @@
 #include "HeightmapNode.h"
 #include "../bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "../EditorScene.h"
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
-#include "Scene3D/LandscapeCursor.h"
+#include "Render/Highlevel/LandscapeCursor.h"
 
 HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     :   SceneNode()
@@ -21,7 +21,9 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     //Get LandSize;
     Vector3 landSize;
     AABBox3 transformedBox;
-    land->GetBoundingBox().GetTransformedBox(land->GetWorldTransform(), transformedBox);
+    Matrix4 * worldTransformPtr = land->GetWorldTransformPtr();
+    
+    land->GetBoundingBox().GetTransformedBox(*worldTransformPtr, transformedBox);
     landSize = transformedBox.max - transformedBox.min;
     
     heightmap = land->GetHeightmap();
@@ -115,7 +117,7 @@ void HeightmapNode::SetValueToMap(int16 x, int16 y, float32 height, const AABBox
 void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
 {
     AABBox3 transformedBox;
-    land->GetBoundingBox().GetTransformedBox(land->GetWorldTransform(), transformedBox);
+    land->GetBoundingBox().GetTransformedBox(*land->GetWorldTransformPtr(), transformedBox);
     
     int32 x = (int32)rect.x;
     int32 y = (int32)rect.y;

@@ -6,7 +6,9 @@
 #include "Main/mainwindow.h"
 #include "Scene/SceneDataManager.h"
 #include "SceneEditor/PVRConverter.h"
+#include "SceneEditor/DXTConverter.h"
 #include "SceneEditor/SceneValidator.h"
+#include "Render/LibDxtHelper.h"
 
 #include "Platform/Qt/QtLayer.h"
 
@@ -222,7 +224,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 				item->descriptorCopy.Save();
 			}
 
-			std::vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
 			if(davaImages.size() > 0)
 			{
@@ -259,27 +261,46 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
     void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-    
-	// TODO:
-	// convert
-	// ...
+	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
+	{
+		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		DAVA::String outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		if(!outputPath.empty())
+		{
+			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
+			{
+				item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+				item->descriptorCopy.Save();
 
-	// debug -->
+				outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+			}
 
-	QRect r(0, 0, 200, 200);
-	convertedImage = QImage(r.size(), QImage::Format_ARGB32);
+			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
-	QFont font;
-	font.setPointSize(18);
+			if(davaImages.size() > 0)
+			{
+				DAVA::Image *davaImage = davaImages[0];
+				convertedImage = fromDavaImage(davaImage);
+			}
 
-	QPainter p(&convertedImage);
-	p.setBrush(QColor(0,255,0));
-	p.setPen(QColor(155, 0, 0));
-	p.setFont(font);
+			for_each(davaImages.begin(), davaImages.end(),  DAVA::SafeRelease< DAVA::Image>);
+		}
+	}
+	else
+	{
+		QRect r(0, 0, 200, 200);
+		convertedImage = QImage(r.size(), QImage::Format_ARGB32);
 
-	p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+		QFont font;
+		font.setPointSize(18);
 
-	// <--
+		QPainter p(&convertedImage);
+		p.setBrush(QColor(0,255,0));
+		p.setPen(QColor(155, 0, 0));
+		p.setFont(font);
+
+		p.drawText(r, "DXT isn't supported", QTextOption(Qt::AlignCenter));
+	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 	return convertedImage;
@@ -438,6 +459,25 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 
 		switch(image->format)
 		{
+		case DAVA::FORMAT_DXT1:
+		case DAVA::FORMAT_DXT1A:
+		case DAVA::FORMAT_DXT1NM:
+		case DAVA::FORMAT_DXT3:
+		case DAVA::FORMAT_DXT5:
+		case DAVA::FORMAT_DXT5NM:
+		{
+			Vector<Image* > vec;
+			LibDxtHelper::DecompressImageToRGBA(*image, vec, true);
+			if(vec.size() == 1)
+			{
+				qtImage = TextureConvertor::fromDavaImage(vec.front());
+			}
+			else
+			{
+				DAVA::Logger::Error("Error during conversion from DDS to QImage.");
+			}
+			break;
+		}
 		case DAVA::FORMAT_PVR4:
 		case DAVA::FORMAT_PVR2:
 		case DAVA::FORMAT_RGBA8888:
@@ -448,10 +488,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA8888 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						c = data[y * image->width + x];
 						line[x] = (c & 0xFF00FF00) | ((c & 0x00FF0000) >> 16) | ((c & 0x000000FF) << 16);
@@ -468,10 +508,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA5551 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -498,10 +538,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA4444 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -528,10 +568,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA565 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						DAVA::uint32 a;
 						DAVA::uint32 r;
@@ -558,10 +598,10 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 				qtImage = QImage(image->width, image->height, QImage::Format_ARGB32);
 
 				// convert DAVA:RGBA565 into Qt ARGB8888
-				for (int y = 0; y < image->height; y++) 
+				for (int y = 0; y < (int)image->height; y++) 
 				{
 					line = (QRgb *) qtImage.scanLine(y);
-					for (int x = 0; x < image->width; x++) 
+					for (int x = 0; x < (int)image->width; x++) 
 					{
 						c = data[y * image->width + x];
 						line[x] = ((0xff << 24) | (c << 16) | (c << 8) | c);

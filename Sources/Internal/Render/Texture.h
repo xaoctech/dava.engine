@@ -218,6 +218,7 @@ public:
 
     TextureDescriptor * CreateDescriptor() const;
 
+    void Reload();
     void ReloadAs(ImageFileFormat fileFormat);
 	void ReloadAs(ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 
@@ -258,6 +259,7 @@ public:							// properties for fast access
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
 	String		relativePathname;
+
 	String		debugInfo;
 	uint32		width;			// texture width 
 	uint32		height;			// texture height
@@ -295,7 +297,7 @@ private:
 
     bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
     bool CheckImageSize(const Vector<Image *> &imageSet);
-    
+    bool IsCompressedFormat(PixelFormat format);
     
 	static PixelFormat defaultRGBAFormat;
 	Texture();
@@ -314,6 +316,7 @@ private:
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     static ImageFileFormat defaultFileFormat;
+    ImageFileFormat loadedAsFile;
 };
     
 // Implementation of inline functions
@@ -325,7 +328,7 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 }
 inline const String & Texture::GetPathname() const
 {
-    return relativePathname;
+	return relativePathname;
 }
 
 };

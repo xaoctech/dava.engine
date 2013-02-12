@@ -10,6 +10,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
+#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 SceneValidator::SceneValidator()
 {
@@ -43,7 +45,8 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
         ValidateLodNodes(scene, errorsLog);
-        
+		ValidateParticleEmitterNodes(scene, errorsLog);
+
         for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
             SceneNode * node = *it;
@@ -182,7 +185,8 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
             SceneNode * parent = sceneNode->GetParent();
             if (parent)
             {
-                emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+                // TODO: Uncomment this!!! Or check that this code is not required anymore.
+                // emptyNodesForDeletion.insert(SafeRetain(sceneNode));
             }
         }
     }
@@ -239,6 +243,13 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
+ 
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    if(editorLandscape)
+    {
+        return;
+    }
+    
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
@@ -446,6 +457,40 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
     }
 }
 
+void SceneValidator::ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog)
+{
+    Vector<ParticleEmitterComponent *> particleEmitterComponents;
+    EnumerateParticleEmitterComponents(scene, particleEmitterComponents);
+
+	for(int32 index = 0; index < (int32)particleEmitterComponents.size(); ++index)
+    {
+		ParticleEmitterComponent* component = particleEmitterComponents[index];
+		String validationMsg;
+		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(component, validationMsg))
+		{
+			errorsLog.insert(validationMsg);
+		}
+	}
+}
+
+void SceneValidator::EnumerateParticleEmitterComponents(SceneNode* rootNode, Vector<ParticleEmitterComponent*>& components)
+{
+	// Check the parent...
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>
+		(rootNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	if (emitterComponent && emitterComponent->GetParticleEmitter())
+	{
+		components.push_back(emitterComponent);
+	}
+
+	// ...and repeat for all children.
+	int32 childrenCount = rootNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		EnumerateParticleEmitterComponents(rootNode->GetChild(i), components);
+	}
+}
+
 String SceneValidator::SetPathForChecking(const String &pathname)
 {
     String oldPath = pathForChecking;
@@ -537,19 +582,19 @@ bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, 
 
 void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
 {
-    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(forPathname);
-    if(!descriptor)
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
+    if(! FileSystem::Instance()->IsFile(descriptorPathname))
     {
 		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
-
-		descriptor = new TextureDescriptor();
+        
+		TextureDescriptor *descriptor = new TextureDescriptor();
 		descriptor->textureFileFormat = PNG_FILE;
         
         String descriptorPathname = TextureDescriptor::GetDescriptorPathname(forPathname);
 		descriptor->Save(descriptorPathname);
+
+        SafeRelease(descriptor);
     }
-    
-    SafeRelease(descriptor);
 }
 
 

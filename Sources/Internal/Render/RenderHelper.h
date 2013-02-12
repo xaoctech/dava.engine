@@ -179,7 +179,7 @@ public:
 	 \brief Draws 3D bounding box with corners
 	 \param box given bounding box
      */
-	void DrawCornerBox(AABBox3 bbox);
+	void DrawCornerBox(const AABBox3 & bbox);
 	
 	void DrawSphere(float32 r);
 

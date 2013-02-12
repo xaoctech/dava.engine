@@ -1,18 +1,18 @@
 #include "PropertyControlCreator.h"
 #include "NodesPropertyControl.h"
 #include "LightPropertyControl.h"
-#include "BoxPropertyControl.h"
-#include "SpherePropertyControl.h"
 #include "CameraPropertyControl.h"
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
 #include "MaterialPropertyControl.h"
 #include "LodNodePropertyControl.h"
 #include "EntityPropertyControl.h"
-#include "Entity/Entity.h"
 #include "ParticleEmitterPropertyControl.h"
 #include "SwitchNodePropertyControl.h"
 #include "ParticleEffectPropertyControl.h"
+#include "MeshInstancePropertyControl.h"
+
+#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -33,24 +33,12 @@ PropertyControlCreator::~PropertyControlCreator()
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties)
 {
-	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
+	Light * light = dynamic_cast<Light *>(sceneNode);
 	if(light)
 	{
         return CreateControlForNode(EPCID_LIGHT, rect, createNodeProperties);
 	}
     
-    CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
-    if(cube)
-    {
-        return CreateControlForNode(EPCID_CUBE, rect, createNodeProperties);
-    }
-
-    SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
-    if(sphere)
-    {
-        return CreateControlForNode(EPCID_SPHERE, rect, createNodeProperties);
-    }
-
     Camera *camera = dynamic_cast<Camera *> (sceneNode);
     if(camera)
     {
@@ -75,8 +63,8 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
         return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
     }
 
-	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode *>(sceneNode);
-	if(particleEmitterNode)
+	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(sceneNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    if (emitterComponent)
 	{
 		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
 	}
@@ -87,8 +75,8 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
 	}
 
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode*>(sceneNode);
-	if(particleEffect)
+	Component *effectComponent = sceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
+	if(effectComponent)
 	{
 		return CreateControlForNode(EPCID_PARTICLE_EFFECT, rect, createNodeProperties);
 	}
@@ -123,12 +111,6 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
         {
             case EPCID_LIGHT:
                 controls[controlID] = new LightPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_CUBE:
-                controls[controlID] = new BoxPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_SPHERE:
-                controls[controlID] = new SpherePropertyControl(rect, createNodeProperties);
                 break;
             case EPCID_CAMERA:
                 controls[controlID] = new CameraPropertyControl(rect, createNodeProperties);

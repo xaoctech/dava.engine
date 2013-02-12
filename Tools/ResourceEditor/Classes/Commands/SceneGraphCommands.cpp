@@ -4,6 +4,8 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 using namespace DAVA;
 
@@ -119,29 +121,43 @@ void CommandLockAtObject::Execute()
 CommandRemoveSceneNode::CommandRemoveSceneNode()
     :   Command(Command::COMMAND_UNDO_REDO)
     ,   activeScene(NULL)
+	,	undoNode(NULL)
 {
 }
 
+CommandRemoveSceneNode::~CommandRemoveSceneNode()
+{
+	SafeRelease(undoNode);
+}
 
 void CommandRemoveSceneNode::Execute()
 {
-    activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
-    if(node)
-    {
-        //TODO: save scene state here
-        SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-        activeScene->RemoveSceneNode(node);
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
+	if (!undoNode)
+	{
+		activeScene = SceneDataManager::Instance()->SceneGetActive();
+		SceneNode *node = activeScene->GetSelectedNode();
+		if (!node)
+		{
+			SetState(STATE_INVALID);
+			return;
+		}
+
+		undoNode = SafeRetain(node);
+	}
+
+	activeScene->RemoveSceneNode(undoNode);
 }
 
 void CommandRemoveSceneNode::Cancel()
 {
-    //TODO: restore saved state if active scene is same as saved
+	if (undoNode)
+	{
+		if (activeScene == SceneDataManager::Instance()->SceneGetActive())
+		{
+			activeScene->AddSceneNode(undoNode);
+			activeScene->SelectNode(undoNode);
+		}
+	}
 }
 
 
@@ -157,13 +173,13 @@ void CommandDebugFlags::Execute()
     SceneNode *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & SceneNode::DEBUG_DRAW_ALL)
+        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
         }
         else
         {
-            node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL, true);
+            node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
         }
     }
     else

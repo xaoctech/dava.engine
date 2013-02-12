@@ -4,6 +4,7 @@
 #include "Command.h"
 
 class SceneData;
+class DAVA::SceneNode;
 class CommandRemoveRootNodes: public Command
 {
 public:	
@@ -43,11 +44,13 @@ protected:
 
 class CommandRemoveSceneNode: public Command
 {
-public:	
+public:
 	CommandRemoveSceneNode();
+	virtual ~CommandRemoveSceneNode();
     
-protected:	
-    
+protected:
+	DAVA::SceneNode* undoNode;
+
     virtual void Execute();
     virtual void Cancel();
     
