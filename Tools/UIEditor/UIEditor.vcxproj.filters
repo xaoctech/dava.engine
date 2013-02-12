@@ -535,11 +535,20 @@
     <ClCompile Include="Classes\ResourcePacker\TexturePacker\TexturePacker.cpp">
       <Filter>Sources\ResourcePacker\TexturePacker</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\moc_alignspropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_alignspropertygridwidget.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_alignspropertygridwidget.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UISliderMetadata.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_sliderpropertygridwidget.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -901,6 +910,15 @@
     </CustomBuild>
     <CustomBuild Include="Classes\Metadata\UISliderMetadata.h">
       <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Data\icons.qrc">
+      <Filter>Resources</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
