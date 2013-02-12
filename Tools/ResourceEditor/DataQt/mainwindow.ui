@@ -35,11 +35,6 @@
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="margin">
-     <number>0</number>
-    </property>
-   </layout>
   </widget>
   <widget class="QDockWidget" name="dockSceneGraph">
    <property name="floating">
@@ -115,8 +110,8 @@
   <widget class="QDockWidget" name="dockLibrary">
    <property name="minimumSize">
     <size>
-     <width>150</width>
-     <height>128</height>
+     <width>214</width>
+     <height>144</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -133,6 +128,56 @@
      <property name="margin">
       <number>0</number>
      </property>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="cbShowDAEFiles">
+          <property name="text">
+           <string>Display .dae</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="cbShowSC2Files">
+          <property name="text">
+           <string>Display .sc2</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item>
       <widget class="LibraryView" name="libraryView">
        <property name="contextMenuPolicy">
@@ -158,8 +203,51 @@
    </attribute>
    <widget class="QWidget" name="propertiesBody">
     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="PropertiesView" name="propertiesView" native="true"/>
+      <widget class="QFrame" name="frameProperties">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="PropertyEditor" name="propertyEditor">
+          <property name="editTriggers">
+           <set>QAbstractItemView::AllEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::NoSelection</enum>
+          </property>
+          <property name="indentation">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -259,7 +347,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -291,11 +379,10 @@
     <addaction name="actionLandscape"/>
     <addaction name="actionLight"/>
     <addaction name="actionServiceNode"/>
-    <addaction name="actionBox"/>
-    <addaction name="actionSphere"/>
     <addaction name="actionCamera"/>
     <addaction name="actionImposter"/>
     <addaction name="actionParticleEmitter"/>
+    <addaction name="actionParticle_Emitter"/>
     <addaction name="actionUserNode"/>
     <addaction name="actionSwitchNode"/>
     <addaction name="actionParticleEffectNode"/>
@@ -355,12 +442,26 @@
     <addaction name="menuLandscape"/>
     <addaction name="menuTextureFromat"/>
    </widget>
+   <widget class="QMenu" name="menuModifications">
+    <property name="title">
+     <string>Modifications</string>
+    </property>
+    <addaction name="actionModifySelect"/>
+    <addaction name="separator"/>
+    <addaction name="actionModifyMove"/>
+    <addaction name="actionModifyRotate"/>
+    <addaction name="actionModifyScale"/>
+    <addaction name="separator"/>
+    <addaction name="actionModifyPlaceOnLandscape"/>
+    <addaction name="actionModifySnapToLandscape"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuTools"/>
    <addaction name="menuViewPort"/>
    <addaction name="menuViewOptions"/>
+   <addaction name="menuModifications"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockCustomColors">
@@ -375,118 +476,29 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="QPushButton" name="buttonCustomColorsEnable">
-       <property name="text">
-        <string>Enable Custom Colors</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboboxCustomColors">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame_3">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="lineWidth">
-        <number>0</number>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Brush
-size:</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSlider" name="sliderCustomColorBrushSize">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimum">
-           <number>10</number>
-          </property>
-          <property name="value">
-           <number>20</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonCustomColorsLoad">
-       <property name="text">
-        <string>Load Texture</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonCustomColorsSave">
-       <property name="text">
-        <string>Save Texture</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
+      <widget class="CustomColorsView" name="customColorsView" native="true"/>
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockParticleEditor">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Particle Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="ParticleEditorWidget" name="dockWidgetContents_3"/>
   </widget>
   <widget class="QDockWidget" name="dockVisibilityTool">
    <property name="sizePolicy">
@@ -503,121 +515,34 @@ size:</string>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="margin">
+      <number>0</number>
+     </property>
      <item>
-      <widget class="QPushButton" name="buttonVisibilityToolEnable">
-       <property name="text">
-        <string>Enable Visibility Check Tool</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonVisibilityToolSetPoint">
-       <property name="text">
-        <string>Set Visibility Point</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame_2">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="lineWidth">
-        <number>0</number>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="labelVisibilityToolAreaSize">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Visibility
-Area Size:</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSlider" name="sliderVisibilityToolAreaSize">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>128</number>
-          </property>
-          <property name="value">
-           <number>20</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonVisibilityToolSetArea">
-       <property name="text">
-        <string>Set Visibility Area</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonVisibilityToolSave">
-       <property name="text">
-        <string>Save Texture</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
+      <widget class="VisibilityToolView" name="visibilityToolView" native="true"/>
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockParticleEditorTimeLine">
+   <property name="windowTitle">
+    <string>Particle time line</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="ParticleTimeLineWidget" name="dockWidgetContents_2"/>
+  </widget>
+  <widget class="QToolBar" name="modificationToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -699,16 +624,6 @@ Area Size:</string>
     <string>Service Node</string>
    </property>
   </action>
-  <action name="actionBox">
-   <property name="text">
-    <string>Box</string>
-   </property>
-  </action>
-  <action name="actionSphere">
-   <property name="text">
-    <string>Sphere</string>
-   </property>
-  </action>
   <action name="actionCamera">
    <property name="text">
     <string>Camera</string>
@@ -787,6 +702,9 @@ Area Size:</string>
    <property name="text">
     <string>Particle Emitter</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionRestoreViews">
    <property name="text">
@@ -857,6 +775,65 @@ Area Size:</string>
     <string>Particle Effect Node</string>
    </property>
   </action>
+  <action name="actionParticle_Emitter">
+   <property name="text">
+    <string>Particle Emitter</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionModifyMove">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Move</string>
+   </property>
+  </action>
+  <action name="actionModifyRotate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionModifyScale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionModifyPlaceOnLandscape">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Place On Landscape</string>
+   </property>
+  </action>
+  <action name="actionModifySnapToLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Snap To Landscape</string>
+   </property>
+  </action>
+  <action name="actionModifySelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -869,7 +846,7 @@ Area Size:</string>
   <customwidget>
    <class>QSceneGraphTreeView</class>
    <extends>QTreeView</extends>
-   <header>QSceneGraphTreeView.h</header>
+   <header>DockSceneGraph/QSceneGraphTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>LibraryView</class>
@@ -877,9 +854,31 @@ Area Size:</string>
    <header>DockLibrary/libraryview.h</header>
   </customwidget>
   <customwidget>
-   <class>PropertiesView</class>
+   <class>CustomColorsView</class>
    <extends>QWidget</extends>
-   <header>DockProperties/PropertiesView.h</header>
+   <header>DockCustomColors/CustomColorsView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VisibilityToolView</class>
+   <extends>QWidget</extends>
+   <header>DockVisibilityTool/VisibilityToolView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PropertyEditor</class>
+   <extends>QTreeView</extends>
+   <header>DockProperties/PropertyEditor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ParticleEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particleeditorwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ParticleTimeLineWidget</class>
+   <extends>QWidget</extends>
+   <header>DockParticleEditor/particletimelinewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -6,7 +6,6 @@
 #include "EditorScene.h"
 #include "EditorConfig.h"
 
-#include "UNDOManager.h"
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
@@ -16,6 +15,9 @@
 
 #include "EditorBodyControl.h"
 #include "cmath"
+
+#include "../Commands/CommandsManager.h"
+#include "../Commands/VisibilityCheckToolCommands.h"
 
 #define VISIBILITY_POINT_CURSOR_SCALE 0.2f
 
@@ -41,8 +43,7 @@ LandscapeEditorVisibilityCheckTool::LandscapeEditorVisibilityCheckTool(Landscape
 	isCursorTransparent = false;
 
 	areaCursorTexture = cursorTexture;
-	pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
-	pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	pointCursorTexture = NULL;
 }
 
 LandscapeEditorVisibilityCheckTool::~LandscapeEditorVisibilityCheckTool()
@@ -120,12 +121,12 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		{
 			case VCT_STATE_SET_POINT:
 				cursorTexture = pointCursorTexture;
-				scale = VISIBILITY_POINT_CURSOR_SCALE;
+				scale = VISIBILITY_POINT_CURSOR_SCALE *2;
 				break;
 				
 			case VCT_STATE_SET_AREA:
 				cursorTexture = areaCursorTexture;
-				scale = (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
+				scale = 2 * (float32)visibilityAreaSize / areaCursorTexture->GetWidth();
 				break;
 
 			default:
@@ -137,7 +138,7 @@ void LandscapeEditorVisibilityCheckTool::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaledSize, scaledSize) / 2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaledSize);
 	}
@@ -203,24 +204,60 @@ bool LandscapeEditorVisibilityCheckTool::SetPointInputAction(int32 phase)
 	
 	if(phase == UIEvent::PHASE_ENDED)
 	{
-		visibilityPoint = landscapePoint * 2;
-
 		Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
-		if(landRect.PointInside(visibilityPoint))
+		if (landRect.PointInside(landscapePoint))
 		{
-			isVisibilityPointSet = true;
+			CommandPlacePointVisibilityTool* command = new CommandPlacePointVisibilityTool(landscapePoint);
+			CommandsManager::Instance()->Execute(command);
+			SafeRelease(command);
+
 			SetState(VCT_STATE_NORMAL);
-
-			Image* undoImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
-			RecreateVisibilityAreaSprite();
-
-			UNDOManager::Instance()->SaveVisibilityPoint(undoImage, isVisibilityPointSet, visibilityPoint);
-
-			res = true;
 		}
 	}
 	
 	return res;
+}
+
+void LandscapeEditorVisibilityCheckTool::StorePointState(Vector2* point, bool* pointIsSet, Image** image)
+{
+	*point = visibilityPoint;
+	*pointIsSet = isVisibilityPointSet;
+	*image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
+}
+
+void LandscapeEditorVisibilityCheckTool::RestorePointState(const DAVA::Vector2 &point, bool pointIsSet, DAVA::Image *image)
+{
+	visibilityPoint = point;
+	isVisibilityPointSet  = pointIsSet;
+
+	if (image)
+	{
+		Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(),false);
+		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		RecreateVisibilityAreaSprite();
+		RenderManager::Instance()->SetRenderTarget(visibilityAreaSprite);
+		sprite->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+
+		SafeRelease(sprite);
+		SafeRelease(texture);
+
+		PerformLandscapeDraw();
+	}
+}
+
+void LandscapeEditorVisibilityCheckTool::SetVisibilityPoint(const DAVA::Vector2 &point)
+{
+	Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
+	if (landRect.PointInside(visibilityPoint))
+	{
+		visibilityPoint = point;
+		isVisibilityPointSet = true;
+		RecreateVisibilityAreaSprite();
+
+		PerformLandscapeDraw();
+	}
 }
 
 bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
@@ -232,40 +269,13 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 		if(isVisibilityPointSet)
 		{
 			Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
-			Vector2 visibilityAreaCenter(landscapePoint * 2);
-			
+			Vector2 visibilityAreaCenter(landscapePoint);
+
 			if(landRect.PointInside(visibilityAreaCenter))
 			{
-				Vector3 point(visibilityPoint);
-				point.z = GetLandscapeHeightFromCursorPos(visibilityPoint);
-				point.z += visibilityPointHeight;
-
-				Rect2i rect;
-				rect.SetSize(Size2i(visibilityAreaSize * 2 + 10, visibilityAreaSize * 2 + 10));
-				int32 tmpX = (int32)visibilityAreaCenter.x;
-				int32 tmpY = (int32)visibilityAreaCenter.y;
-				rect.SetCenter(Point2i(tmpX, tmpY));
-
-				Image* undoTextureImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
-				rect = FitRectToImage(undoTextureImage, rect);
-
-				Image* undoImage = Image::Create(rect.dx, rect.dy, undoTextureImage->GetPixelFormat());
-				CopyImageRectToImage(undoTextureImage, rect, undoImage, Point2i(0, 0));
-
-				Vector<Vector3> resP;
-				PerformHightTest(point, visibilityAreaCenter, visibilityAreaSize, pointsDensity, areaPointHeights, &resP);
-				DrawVisibilityAreaPoints(resP);
-
-				Image* redoTextureImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
-				Image* redoImage = Image::Create(rect.dx, rect.dy, redoTextureImage->GetPixelFormat());
-				CopyImageRectToImage(redoTextureImage, rect, redoImage, Point2i(0, 0));
-
-				UNDOManager::Instance()->SaveVisibilityArea(undoImage, redoImage, rect.GetPosition(), isVisibilityPointSet, visibilityPoint);
-
-				SafeRelease(undoTextureImage);
-				SafeRelease(redoTextureImage);
-
-				res = true;
+				CommandPlaceAreaVisibilityTool* command = new CommandPlaceAreaVisibilityTool(landscapePoint, visibilityAreaSize);
+				CommandsManager::Instance()->Execute(command);
+				SafeRelease(command);
 			}
 		}
 		else
@@ -275,6 +285,50 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 	}
 	
 	return res;
+}
+
+void LandscapeEditorVisibilityCheckTool::StoreAreaState(Image** image)
+{
+	*image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
+}
+
+void LandscapeEditorVisibilityCheckTool::RestoreAreaState(Image* image)
+{
+	if (image)
+	{
+		Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(),false);
+		Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+
+		RecreateVisibilityAreaSprite();
+		RenderManager::Instance()->SetRenderTarget(visibilityAreaSprite);
+		sprite->Draw();
+		RenderManager::Instance()->RestoreRenderTarget();
+
+		SafeRelease(sprite);
+		SafeRelease(texture);
+
+		PerformLandscapeDraw();
+	}
+}
+
+void LandscapeEditorVisibilityCheckTool::SetVisibilityArea(const Vector2& visibilityAreaCenter, uint32 visibilityAreaSize)
+{
+	if (isVisibilityPointSet)
+	{
+		Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
+		if (landRect.PointInside(visibilityAreaCenter))
+		{
+			Vector3 point(visibilityPoint);
+			point.z = GetLandscapeHeightFromCursorPos(visibilityPoint);
+			point.z += visibilityPointHeight;
+
+			Vector<Vector3> resP;
+			PerformHightTest(point, visibilityAreaCenter, visibilityAreaSize, pointsDensity, areaPointHeights, &resP);
+			DrawVisibilityAreaPoints(resP);
+
+			PerformLandscapeDraw();
+		}
+	}
 }
 
 void LandscapeEditorVisibilityCheckTool::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> &points)
@@ -299,6 +353,7 @@ void LandscapeEditorVisibilityCheckTool::DrawVisibilityAreaPoints(const Vector<D
 		helper->DrawPoint(pos);
 	}
 
+	manager->ResetColor();
 	manager->RestoreRenderTarget();
 }
 
@@ -344,7 +399,7 @@ void LandscapeEditorVisibilityCheckTool::PerformHightTest(Vector3 spectatorCoord
 	Vector2 SpectatorCoords2D(spectatorCoords.x, spectatorCoords.y);
 
 	
-	// get soource point in propper coords system
+	// get source point in propper coords system
 	Vector3 sourcePoint(ConvertToLanscapeSystem(SpectatorCoords2D)) ;
 	
 	sourcePoint.z = spectatorCoords.z;
@@ -489,6 +544,10 @@ bool LandscapeEditorVisibilityCheckTool::CheckIsInCircle(Vector2 circleCentre, f
 
 void LandscapeEditorVisibilityCheckTool::HideAction()
 {
+	if(!IsActive())
+	{
+		return;
+	}
 	workingLandscape->CursorDisable();
 	
     workingLandscape->SetHeightmap(savedHeightmap);
@@ -503,11 +562,16 @@ void LandscapeEditorVisibilityCheckTool::HideAction()
 
 void LandscapeEditorVisibilityCheckTool::ShowAction()
 {
+	if(pointCursorTexture == NULL)
+	{
+		pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
+		pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+	}
 	SetState(VCT_STATE_NORMAL);
 
 	PrepareConfig();
 
-    landscapeSize = settings->maskSize;
+    landscapeSize = landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 
@@ -517,10 +581,10 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 	if(visibilityAreaSprite == 0)
 		RecreateVisibilityAreaSprite();
 
-	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_VISIBILITY_AREA);
-	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_VISIBILITY_POINT);
-
-	UNDOManager::Instance()->SaveVisibilityArea(0, 0, Point2i(0, 0), isVisibilityPointSet, visibilityPoint);
+//	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_VISIBILITY_AREA);
+//	UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_VISIBILITY_POINT);
+//
+//	UNDOManager::Instance()->SaveVisibilityArea(0, 0, Point2i(0, 0), isVisibilityPointSet, visibilityPoint);
 
 	SafeRelease(editedHeightmap);
 	SafeRelease(savedHeightmap);
@@ -536,92 +600,12 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 
 void LandscapeEditorVisibilityCheckTool::UndoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
-	if(UNDOAction::ACTION_VISIBILITY_AREA == type || UNDOAction::ACTION_VISIBILITY_POINT == type)
-    {
-		Image* undoImage;
-		Point2i imagePos;
-		bool pointSet;
-		Vector2 point;
-
-		UNDOManager::Instance()->UndoVisibility(&undoImage, &imagePos, &pointSet, &point);
-		
-		if(undoImage)
-		{
-			Rect2i rect(0, 0, undoImage->GetWidth(), undoImage->GetHeight());
-			Image* image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
-			CopyImageRectToImage(undoImage, rect, image, imagePos);
-
-			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
-			Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
-
-			RecreateVisibilityAreaSprite();
-			RenderManager::Instance()->SetRenderTarget(visibilityAreaSprite);
-			sprite->Draw();
-			RenderManager::Instance()->RestoreRenderTarget();
-			
-			SafeRelease(sprite);
-			SafeRelease(texture);
-			SafeRelease(image);
-		}
-
-		isVisibilityPointSet = pointSet;
-		visibilityPoint = point;
-
-		PerformLandscapeDraw();
-	}
+	CommandsManager::Instance()->Undo();
 }
 
 void LandscapeEditorVisibilityCheckTool::RedoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
-	if(UNDOAction::ACTION_VISIBILITY_AREA == type)
-    {
-		Image* redoImage;
-		Point2i imagePos;
-		bool pointSet;
-		Vector2 point;
-
-		UNDOManager::Instance()->RedoVisibility(&redoImage, &imagePos, &pointSet, &point);
-		
-		if(redoImage)
-		{
-			Rect2i rect(0, 0, redoImage->GetWidth(), redoImage->GetHeight());
-			Image* image = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
-			CopyImageRectToImage(redoImage, rect, image, imagePos);
-
-			Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(),false);
-			Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
-
-			RecreateVisibilityAreaSprite();
-			RenderManager::Instance()->SetRenderTarget(visibilityAreaSprite);
-			sprite->Draw();
-			RenderManager::Instance()->RestoreRenderTarget();
-			
-			SafeRelease(sprite);
-			SafeRelease(texture);
-			SafeRelease(image);
-		}
-
-		isVisibilityPointSet = pointSet;
-		visibilityPoint = point;
-
-		PerformLandscapeDraw();
-	}
-	else if(UNDOAction::ACTION_VISIBILITY_POINT == type)
-	{
-		Image* redoImage;
-		Point2i imagePos;
-		bool pointSet;
-		Vector2 point;
-
-		UNDOManager::Instance()->RedoVisibility(&redoImage, &imagePos, &pointSet, &point);
-
-		isVisibilityPointSet = pointSet;
-		visibilityPoint = point;
-		RecreateVisibilityAreaSprite();
-		PerformLandscapeDraw();
-	}
+	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToFile)
@@ -667,16 +651,11 @@ void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToF
 
 NodesPropertyControl *LandscapeEditorVisibilityCheckTool::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
-
+    LandscapeEditorPropertyControl *propsControl =
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-
     propsControl->SetDelegate(this);
-
     LandscapeEditorSettingsChanged(propsControl->Settings());
-
-
     return propsControl;
 }
 
@@ -705,7 +684,7 @@ void LandscapeEditorVisibilityCheckTool::RecreateHeightmapNode()
 
 bool LandscapeEditorVisibilityCheckTool::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
         ShowErrorDialog(String("Cannot start Visibility Check Tool. Remove EditorLandscapeNode from scene"));
@@ -719,8 +698,8 @@ Rect2i LandscapeEditorVisibilityCheckTool::FitRectToImage(DAVA::Image *image, co
 {
 	Point2i rectPos(Max(rect.x, 0),
 					Max(rect.y, 0));
-	Point2i rectBottomRight(Min(rect.x + rect.dx, image->GetWidth()),
-							Min(rect.y + rect.dy, image->GetHeight()));
+	Point2i rectBottomRight(Min((uint32)rect.x + (uint32)rect.dx, image->GetWidth()),
+							Min((uint32)rect.y + (uint32)rect.dy, image->GetHeight()));
 	Point2i rectSize = rectBottomRight - rectPos;
 
 	Rect2i newRect;
@@ -752,4 +731,13 @@ void LandscapeEditorVisibilityCheckTool::CopyImageRectToImage(Image* imageFrom, 
 
 		memcpy(imageToRow, imageFromRow, fromWidth * pixelSize);
 	}
+}
+
+void LandscapeEditorVisibilityCheckTool::ClearSceneResources()
+{
+	LandscapeEditorBase::ClearSceneResources();
+	SafeRelease(visibilityAreaSprite);
+	SafeRelease(pointCursorTexture);
+	visibilityPoint.x = 0;
+	visibilityPoint.y = 0;
 }

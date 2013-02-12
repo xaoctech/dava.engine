@@ -133,8 +133,15 @@ void ConfigDownloader::SetState(eDownloadState newState) {
 
 void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node *pNode) {
     for (YAML::Iterator iter = pNode->begin(); iter != pNode->end(); ++iter) {
-        const YAML::Node* name = &(iter.first());
+        const YAML::Node* nameNode = &(iter.first());
+        if (!nameNode)
+            continue;
+        QString name;
+        setString(name, nameNode);
         const YAML::Node& value = iter.second();
+        const YAML::Node* pApp = value.FindValue("app");
+        if (pApp)
+            setString(name, pApp);
         const YAML::Node* pVer = value.FindValue("ver");
         const YAML::Node* pUrl = value.FindValue("url");
         const YAML::Node* pRunPath = value.FindValue("runPath");
@@ -144,7 +151,7 @@ void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node
         const YAML::Node* pUninstallParams = value.FindValue("uninstallParams");
 
         AppConfig config;
-        if (name) setString(config.m_Name, name);
+        config.m_Name = name;
         if (pVer) setString(config.m_Url, pUrl);
         if (pUrl) setString(config.m_Version, pVer);
         if (pRunPath) setString(config.m_RunPath, pRunPath);
@@ -153,7 +160,7 @@ void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node
         if (pInstallParams) setString(config.m_InstallParams, pInstallParams);
         if (pUninstallParams) setString(config.m_UninstallParams, pUninstallParams);
 
-        appMap[config.m_Name] = config;
+        appMap[name][config.m_Version] = config;
     }
 }
 

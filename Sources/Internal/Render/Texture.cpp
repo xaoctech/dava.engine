@@ -134,6 +134,7 @@ Texture::Texture()
 ,	format(FORMAT_INVALID)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
+,   loadedAsFile(NOT_FILE)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -228,9 +229,11 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
 
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+	
+
     if(FORMAT_INVALID != format)
     {
-        if(FORMAT_PVR2 == format || FORMAT_PVR4 == format)
+        if(IsCompressedFormat(format))
         {
             RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, dataSize, _data));
         }
@@ -415,8 +418,10 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	
 void Texture::GenerateMipmaps()
 {
-    if((FORMAT_PVR2 == format) || (FORMAT_PVR4 == format))
-        return;
+	if(IsCompressedFormat(format))
+    {
+		return;
+	}
     
 	RenderManager::Instance()->LockNonMain();
     
@@ -510,8 +515,7 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
             return false;
         }
         
-        
-        
+
         RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
         GenerateID();
@@ -526,11 +530,11 @@ bool Texture::LoadFromImage(File *file, const TextureDescriptor *descriptor)
         format = imageSet[0]->format;
         
         bool needGenerateMipMaps = descriptor->GetGenerateMipMaps() && (1 == imageSet.size());
-        
+
         RenderManager::Instance()->LockNonMain();
         for(uint32 i = 0; i < (uint32)imageSet.size(); ++i)
         {
-            TexImage(i, imageSet[i]->width, imageSet[i]->height, imageSet[i]->data, imageSet[i]->dataSize);
+			TexImage(i, imageSet[i]->width, imageSet[i]->height, imageSet[i]->data, imageSet[i]->dataSize);
             SafeRelease(imageSet[i]);
         }
         
@@ -603,7 +607,21 @@ bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
     
     return true;
 }
-	
+
+bool Texture::IsCompressedFormat(PixelFormat format)
+{
+	bool retValue =  false;
+	if(FORMAT_INVALID != format)
+    {
+        if(	FORMAT_PVR2 == format || FORMAT_PVR4 == format  ||
+		   (format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) )
+        {
+            retValue = true;
+        }
+    }
+	return retValue;
+}
+
 void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
 {
     DVASSERT(false);
@@ -653,12 +671,31 @@ Texture * Texture::PureCreate(const String & pathName)
     else
     {
         texture = CreateFromImage(pathName, descriptor);
+        if(texture)
+        {
+            if(0 == CompareCaseInsensitive(extension, ".png"))
+            {
+                texture->loadedAsFile = PNG_FILE;
+            }
+            else if(0 == CompareCaseInsensitive(extension, ".pvr"))
+            {
+                texture->loadedAsFile = PVR_FILE;
+            }
+            else if(0 == CompareCaseInsensitive(extension, ".dds"))
+            {
+                texture->loadedAsFile = DXT_FILE;
+            }
+            else
+            {
+                texture->loadedAsFile = NOT_FILE;
+            }
+        }
     }
 
     if(texture)
     {
 		texture->relativePathname = descriptor->pathname;
-        textureMap[descriptor->pathname] = texture;
+        textureMap[texture->relativePathname] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -673,12 +710,20 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     if (texture)return texture;
     
     texture = CreateFromImage(descriptor->textureFile, descriptor);
+    if(texture)
+    {
+        texture->loadedAsFile = descriptor->textureFileFormat;
+    }
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
     texture = CreateFromImage(imagePathname, descriptor);
+    if(texture)
+    {
+        texture->loadedAsFile = formatForLoading;
+    }
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
@@ -693,6 +738,11 @@ TextureDescriptor * Texture::CreateDescriptor() const
     }
 
     return NULL;
+}
+    
+void Texture::Reload()
+{
+    ReloadAs(loadedAsFile);
 }
     
 void Texture::ReloadAs(ImageFileFormat fileFormat)
@@ -753,6 +803,10 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
         
         TexImage(0, width, height, data, dataSize);
         GeneratePixelesation();
+    }
+    else
+    {
+        loadedAsFile = fileFormat;
     }
     
     SafeRelease(file);
@@ -1282,14 +1336,47 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_A8, String("A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
     SetPixelDescription(FORMAT_A16, String("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
     
-#if defined (__DAVAENGINE_IPHONE__)
+#if defined (GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
-    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
-#else //#if defined (__DAVAENGINE_IPHONE__)
+#else
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, 0, 0, 0);
-    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+#endif
+
     
+#if defined (GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
+    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
+#else
+    SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
+	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
+	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
+	SetPixelDescription(FORMAT_DXT1A,   "DXT1a", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT1A,   "DXT1a", 4, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT3_EXT)
+	SetPixelDescription(FORMAT_DXT3,     "DXT3", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT3,     "DXT3", 8, 0, 0, 0);
+#endif
+
+#if defined (GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+	SetPixelDescription(FORMAT_DXT5,     "DXT5", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT);
+	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT);
+#else
+	SetPixelDescription(FORMAT_DXT5,     "DXT5", 8, 0, 0, 0);
+	SetPixelDescription(FORMAT_DXT5NM, "DXT5nm", 8, 0, 0, 0);
+#endif
+
     SetPixelDescription(FORMAT_RGBA16161616, String("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
     SetPixelDescription(FORMAT_RGBA32323232, String("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
 }

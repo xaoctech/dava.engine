@@ -13,6 +13,9 @@
 #include "../Commands/TextureOptionsCommands.h"
 #include "../Commands/CustomColorCommands.h"
 #include "../Commands/VisibilityCheckToolCommands.h"
+#include "../Commands/TilemapEditorCommands.h"
+#include "../Commands/HeightmapEditorCommands.h"
+#include "../Commands/ModificationOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -22,7 +25,9 @@
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
+#include "TextureBrowser/TextureBrowser.h"
 #include "Project/ProjectManager.h"
+#include "ModificationWidget.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -33,6 +38,8 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
+
+#include "Render/LibDxtHelper.h"
 
 using namespace DAVA;
 
@@ -49,6 +56,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -69,6 +77,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
+	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
 
     CommandsManager::Instance()->Release();
 }
@@ -123,17 +132,17 @@ void QtMainWindowHandler::SaveScene()
 
 void QtMainWindowHandler::ExportAsPNG()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
+    Execute(new CommandExport(PNG_FILE));
 }
 
 void QtMainWindowHandler::ExportAsPVR()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
+    Execute(new CommandExport(PVR_FILE));
 }
 
 void QtMainWindowHandler::ExportAsDXT()
 {
-    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+    Execute(new CommandExport(DXT_FILE));
 }
 
 void QtMainWindowHandler::SaveToFolderWithChilds()
@@ -339,6 +348,17 @@ void QtMainWindowHandler::RegisterTextureFormatActions(DAVA::int32 count, ...)
     va_end(vl);
 }
 
+void QtMainWindowHandler::RegisterModificationActions(DAVA::int32 count, ...)
+{
+	DVASSERT((count == ResourceEditor::MODIFY_COUNT) && "Wrong count of actions");
+	va_list vl;
+	va_start(vl, count);
+
+	RegisterActions(modificationActions, count, vl);
+
+	va_end(vl);
+}
+
 
 
 void QtMainWindowHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
@@ -420,6 +440,11 @@ void QtMainWindowHandler::SaveParticleEditorConfig()
 void QtMainWindowHandler::OpenParticleEditorSprite()
 {
 	Execute(new CommandOpenParticleEditorSprite());
+}
+
+void QtMainWindowHandler::CreateParticleEmitterNode()
+{
+    CreateNode(ResourceEditor::NODE_PARTICLE_EMITTER);
 }
 
 void QtMainWindowHandler::ToggleNotPassableTerrain()
@@ -636,4 +661,110 @@ void QtMainWindowHandler::SetAreaButtonStateVisibilityTool(bool state)
 	visibilityToolSetAreaButton->blockSignals(true);
 	visibilityToolSetAreaButton->setChecked(state);
 	visibilityToolSetAreaButton->blockSignals(b);
+}
+
+void QtMainWindowHandler::ModificationSelect()
+{
+	SetModificationMode(ResourceEditor::MODIFY_NONE);
+	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::ModificationMove()
+{
+	SetModificationMode(ResourceEditor::MODIFY_MOVE);
+	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::ModificationRotate()
+{
+	SetModificationMode(ResourceEditor::MODIFY_ROTATE);
+	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::ModificationScale()
+{
+	SetModificationMode(ResourceEditor::MODIFY_SCALE);
+	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::SetModificationMode(ResourceEditor::eModificationActions mode)
+{
+	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+	ResourceEditor::eModificationActions curModificationMode = bodyControl->GetModificationMode();
+
+	if (mode != curModificationMode)
+		bodyControl->SetModificationMode(mode);
+}
+
+void QtMainWindowHandler::ModificationPlaceOnLand()
+{
+	Execute(new ModificationPlaceOnLandCommand());
+}
+
+void QtMainWindowHandler::ModificationSnapToLand()
+{
+	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+
+	bool curSnapToLand = bodyControl->IsLandscapeRelative();
+	bodyControl->SetLandscapeRelative(!curSnapToLand);
+}
+
+void QtMainWindowHandler::UpdateModificationActions()
+{
+	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+	ResourceEditor::eModificationActions modificationMode = bodyControl->GetModificationMode();
+
+	modificationActions[ResourceEditor::MODIFY_NONE]->setChecked(false);
+	modificationActions[ResourceEditor::MODIFY_MOVE]->setChecked(false);
+	modificationActions[ResourceEditor::MODIFY_ROTATE]->setChecked(false);
+	modificationActions[ResourceEditor::MODIFY_SCALE]->setChecked(false);
+	modificationActions[ResourceEditor::MODIFY_SNAP_TO_LAND]->setChecked(false);
+	modificationActions[ResourceEditor::MODIFY_NONE]->setCheckable(true);
+	modificationActions[ResourceEditor::MODIFY_MOVE]->setCheckable(true);
+	modificationActions[ResourceEditor::MODIFY_ROTATE]->setCheckable(true);
+	modificationActions[ResourceEditor::MODIFY_SCALE]->setCheckable(true);
+	modificationActions[ResourceEditor::MODIFY_SNAP_TO_LAND]->setCheckable(true);
+
+	switch (modificationMode)
+	{
+		case ResourceEditor::MODIFY_MOVE:
+		case ResourceEditor::MODIFY_ROTATE:
+		case ResourceEditor::MODIFY_SCALE:
+			modificationActions[modificationMode]->setChecked(true);
+			modificationActions[ResourceEditor::MODIFY_PLACE_ON_LAND]->setEnabled(true);
+			modificationActions[ResourceEditor::MODIFY_SNAP_TO_LAND]->setEnabled(true);
+
+			if (bodyControl->IsLandscapeRelative())
+			{
+				modificationActions[ResourceEditor::MODIFY_SNAP_TO_LAND]->setChecked(true);
+			}
+			break;
+
+		case ResourceEditor::MODIFY_NONE:
+			modificationActions[modificationMode]->setChecked(true);
+
+		default:
+			modificationActions[ResourceEditor::MODIFY_PLACE_ON_LAND]->setEnabled(false);
+			modificationActions[ResourceEditor::MODIFY_SNAP_TO_LAND]->setEnabled(false);
+			break;
+	}
+}
+
+void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
+{
+	Execute(new ModificationApplyCommand(x, y, z));
+}
+
+void QtMainWindowHandler::OnResetModification()
+{
+	Execute(new ModificationResetCommand());
 }

@@ -13,7 +13,7 @@ class NodesPropertyDelegate
 {
 public:
     
-    virtual void NodesPropertyChanged() = 0;
+    virtual void NodesPropertyChanged(const String &forKey) = 0;
     
 };
 

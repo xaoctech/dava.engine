@@ -7,7 +7,7 @@ using namespace DAVA;
 
 
 CommandCreateNode::CommandCreateNode(ResourceEditor::eNodeType type)
-    :   Command(Command::COMMAND_UNDO_REDO)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
     ,   nodeType(type)
 {
 }
@@ -20,9 +20,4 @@ void CommandCreateNode::Execute()
     {
         screen->CreateNode(nodeType);
     }
-}
-
-void CommandCreateNode::Cancel()
-{
-    //TODO: write code after whole qt refactoring
 }

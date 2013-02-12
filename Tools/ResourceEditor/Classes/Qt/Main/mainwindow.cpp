@@ -18,15 +18,20 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/CommandLineTool.h"
+#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
 
 #include <QApplication>
 #include <QPixmap>
+
+#include "ModificationWidget.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 	, convertWaitDialog(NULL)
+	, oldDockSceneGraphMinSize(-1, -1)
+	, oldDockSceneGraphMaxSize(-1, -1)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -40,7 +45,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
 
     RegisterBasePointerTypes();
    
@@ -59,6 +63,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
+	
+	ui->dockParticleEditor->installEventFilter(this);
+	ChangeParticleDockVisible(false); //hide particle editor dock on start up
+	ui->dockParticleEditorTimeLine->hide();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -103,6 +111,8 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
+	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
+	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
@@ -112,12 +122,15 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
     ui->menuView->insertAction(actionSceneGraph, actionCustomColors);
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
+	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
+	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
+    
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool);
+                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool, actionParticleEditor);
 
 
     ui->dockDataGraph->hide();
@@ -131,8 +144,6 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionLandscape,
                                        ui->actionLight,
                                        ui->actionServiceNode,
-                                       ui->actionBox,
-                                       ui->actionSphere,
                                        ui->actionCamera,
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,
@@ -177,6 +188,22 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionReloadAsPVR, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPVR()));
     connect(ui->actionReloadAsDXT, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsDXT()));
     actionHandler->RegisterTextureFormatActions(FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
+
+	//Modifications Options
+	connect(ui->menuModifications, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuModificationsWillShow()));
+	connect(ui->actionModifySelect, SIGNAL(triggered()), actionHandler, SLOT(ModificationSelect()));
+	connect(ui->actionModifyMove, SIGNAL(triggered()), actionHandler, SLOT(ModificationMove()));
+	connect(ui->actionModifyRotate, SIGNAL(triggered()), actionHandler, SLOT(ModificationRotate()));
+	connect(ui->actionModifyScale, SIGNAL(triggered()), actionHandler, SLOT(ModificationScale()));
+	connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationPlaceOnLand()));
+	connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationSnapToLand()));
+	actionHandler->RegisterModificationActions(ResourceEditor::MODIFY_COUNT,
+											   ui->actionModifySelect,
+											   ui->actionModifyMove,
+											   ui->actionModifyRotate,
+											   ui->actionModifyScale,
+											   ui->actionModifyPlaceOnLandscape,
+											   ui->actionModifySnapToLandscape);
 
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
@@ -223,11 +250,51 @@ void QtMainWindow::SetupToolBar()
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
     ui->mainToolBar->addSeparator();
+	
+	//modification options
+	SetupModificationToolBar();
+}
+
+void QtMainWindow::SetupModificationToolBar()
+{
+	DecorateWithIcon(ui->actionModifySelect, QString::fromUtf8(":/QtIcons/modify_select.png"));
+	DecorateWithIcon(ui->actionModifyMove, QString::fromUtf8(":/QtIcons/modify_move.png"));
+	DecorateWithIcon(ui->actionModifyRotate, QString::fromUtf8(":/QtIcons/modify_rotate.png"));
+	DecorateWithIcon(ui->actionModifyScale, QString::fromUtf8(":/QtIcons/modify_scale.png"));
+	DecorateWithIcon(ui->actionModifyPlaceOnLandscape, QString::fromUtf8(":/QtIcons/modify_placeonland.png"));
+	DecorateWithIcon(ui->actionModifySnapToLandscape, QString::fromUtf8(":/QtIcons/modify_snaptoland.png"));
+
+	ui->modificationToolBar->addAction(ui->actionModifySelect);
+	ui->modificationToolBar->addSeparator();
+	ui->modificationToolBar->addAction(ui->actionModifyMove);
+	ui->modificationToolBar->addAction(ui->actionModifyRotate);
+	ui->modificationToolBar->addAction(ui->actionModifyScale);
+	ui->modificationToolBar->addSeparator();
+	ui->modificationToolBar->addAction(ui->actionModifyPlaceOnLandscape);
+	ui->modificationToolBar->addAction(ui->actionModifySnapToLandscape);
+	ui->modificationToolBar->addSeparator();
+
+	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+
+	ModificationWidget* modificationWidget = new ModificationWidget(this);
+	ui->modificationToolBar->addWidget(modificationWidget);
+	connect(modificationWidget, SIGNAL(ApplyModification(double, double, double)),
+			handler, SLOT(OnApplyModification(double, double, double)));
+
+	QAction* resetAction = new QAction(tr("Restore Original Transformation"), ui->modificationToolBar);
+	DecorateWithIcon(resetAction, QString::fromUtf8(":/QtIcons/modify_reset.png"));
+
+	ui->modificationToolBar->addAction(resetAction);
+	connect(resetAction, SIGNAL(triggered()), handler, SLOT(OnResetModification()));
+
+	ui->modificationToolBar->addSeparator();
+
+	ui->actionModifySelect->setChecked(true);
 }
 
 void QtMainWindow::OpenLastProject()
 {
-    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
 
@@ -253,85 +320,63 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-    
-    SetupCustomColorsDock();
-	SetupVisibilityToolDock();
 
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
+	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
+	connect(ui->dockParticleEditor->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditorTimeLine->widget(), SLOT(OnUpdate()));
+	
+	connect(ui->cbShowDAEFiles, SIGNAL(stateChanged(int)), this, SLOT(LibraryFileTypesChanged()));
+	connect(ui->cbShowSC2Files, SIGNAL(stateChanged(int)), this, SLOT(LibraryFileTypesChanged()));
+	
+	connect(this, SIGNAL(LibraryFileTypesChanged(bool, bool)), ui->libraryView, SLOT(LibraryFileTypesChanged(bool, bool)));
 }
 
-void QtMainWindow::SetupCustomColorsDock()
+void QtMainWindow::ChangeParticleDockVisible(bool visible)
 {
-    QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-    connect(ui->buttonCustomColorsEnable, SIGNAL(clicked()), handler, SLOT(ToggleCustomColors()));
+	if (ui->dockParticleEditor->isVisible() == visible)
+		return;
 
-	ui->buttonCustomColorsSave->blockSignals(true);
-	ui->sliderCustomColorBrushSize->blockSignals(true);
-	ui->comboboxCustomColors->blockSignals(true);
-
-    connect(ui->buttonCustomColorsSave, SIGNAL(clicked()), handler, SLOT(SaveTextureCustomColors()));
-    connect(ui->sliderCustomColorBrushSize, SIGNAL(valueChanged(int)), handler, SLOT(ChangeBrushSizeCustomColors(int)));
-    connect(ui->comboboxCustomColors, SIGNAL(currentIndexChanged(int)), handler, SLOT(ChangeColorCustomColors(int)));
-	connect(ui->buttonCustomColorsLoad, SIGNAL(clicked()), handler, SLOT(LoadTextureCustomColors()));
-
-	QtMainWindowHandler::Instance()->RegisterCustomColorsWidgets(
-		ui->buttonCustomColorsEnable,
-		ui->buttonCustomColorsSave,
-		ui->sliderCustomColorBrushSize,
-		ui->comboboxCustomColors,
-		ui->buttonCustomColorsLoad);
-    
-    QSize iconSize = ui->comboboxCustomColors->iconSize();
-    iconSize = iconSize.expandedTo(QSize(100, 0));
-    ui->comboboxCustomColors->setIconSize(iconSize);
-    
-    Vector<Color> customColors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
-	Vector<String> customColorsDescription = EditorConfig::Instance()->GetComboPropertyValues("LandscapeCustomColorsDescription");
-	bool isEveryColorHasDescription = customColors.size() == customColorsDescription.size() ? true : false;
-    for(size_t i = 0; i < customColors.size(); ++i)
-    {
-        QColor color = QColor::fromRgbF(customColors[i].r, customColors[i].g, customColors[i].b, customColors[i].a);
-        
-        QImage image(iconSize, QImage::Format_ARGB32);
-        image.fill(color);
-        
-        QPixmap pixmap(iconSize);
-        pixmap.convertFromImage(image, Qt::ColorOnly);
-        
-        QIcon icon(pixmap);
-		String description = isEveryColorHasDescription ? customColorsDescription[i] : "";
-        ui->comboboxCustomColors->addItem(icon, description.c_str());
-    }
-    handler->SetCustomColorsWidgetsState(false);
+	// ui magic :)
+	bool isNeedEmitSignal = false;
+	if (oldDockSceneGraphMaxSize.width() < 0)
+	{
+		oldDockSceneGraphMinSize = ui->dockSceneGraph->minimumSize();
+		oldDockSceneGraphMaxSize = ui->dockSceneGraph->maximumSize();
+		isNeedEmitSignal = true;
+	}
+	
+	int minWidthParticleDock = ui->dockParticleEditor->minimumWidth();
+	int maxWidthParticleDock = ui->dockParticleEditor->maximumWidth();
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setFixedWidth(ui->dockParticleEditor->width());
+	
+	ui->dockParticleEditor->setVisible(visible);
+	
+	ui->dockParticleEditor->setMinimumWidth(minWidthParticleDock);
+	ui->dockParticleEditor->setMaximumWidth(maxWidthParticleDock);
+	
+	ui->dockSceneGraph->setFixedWidth(ui->dockSceneGraph->width());
+	ui->dockParticleEditor->setVisible(visible);
+	
+	if (isNeedEmitSignal)
+		QTimer::singleShot(1, this, SLOT(returnToOldMaxMinSizesForDockSceneGraph()));
 }
 
-void QtMainWindow::SetupVisibilityToolDock()
+void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
 {
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+	ui->dockSceneGraph->setMinimumSize(oldDockSceneGraphMinSize);
+	ui->dockSceneGraph->setMaximumSize(oldDockSceneGraphMaxSize);
 	
-	connect(ui->buttonVisibilityToolEnable, SIGNAL(clicked()), handler, SLOT(ToggleVisibilityTool()));
+	oldDockSceneGraphMinSize = QSize(-1, -1);
+	oldDockSceneGraphMaxSize = QSize(-1, -1);
+}
 
-	ui->buttonVisibilityToolSave->blockSignals(true);
-	ui->buttonVisibilityToolSetArea->blockSignals(true);
-	ui->buttonVisibilityToolSetPoint->blockSignals(true);
-	ui->sliderVisibilityToolAreaSize->blockSignals(true);
-	
-	connect(ui->buttonVisibilityToolSave,		SIGNAL(clicked()),
-			handler,							SLOT(SaveTextureVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetArea,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityAreaVisibilityTool()));
-	connect(ui->buttonVisibilityToolSetPoint,	SIGNAL(clicked()),
-			handler,							SLOT(SetVisibilityPointVisibilityTool()));
-	connect(ui->sliderVisibilityToolAreaSize,	SIGNAL(valueChanged(int)),
-			handler,							SLOT(ChangleAreaSizeVisibilityTool(int)));
-	
-	handler->RegisterWidgetsVisibilityTool(ui->buttonVisibilityToolEnable,
-										   ui->buttonVisibilityToolSave,
-										   ui->buttonVisibilityToolSetPoint,
-										   ui->buttonVisibilityToolSetArea,
-										   ui->sliderVisibilityToolAreaSize);
-	
-	handler->SetWidgetsStateVisibilityTool(false);
+void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
+{
+	ui->dockParticleEditorTimeLine->setVisible(visible);
 }
 
 void QtMainWindow::MenuFileWillShow()
@@ -368,6 +413,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
 
 			TextureCheckConvetAndWait();
+			UpdateParticleSprites();
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -379,6 +425,15 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
+	else if (obj == ui->dockParticleEditor)
+	{
+		if (QEvent::Close == event->type())
+		{
+			event->ignore();
+			ChangeParticleDockVisible(false);
+			return true;
+		}
+	}
     
     return QMainWindow::eventFilter(obj, event);
 }
@@ -393,12 +448,14 @@ void QtMainWindow::ProjectOpened(const QString &path)
 		strVer += " | ";
 	}
 
-	this->setWindowTitle(strVer + path);
+	this->setWindowTitle(strVer + QString("Project - ") + path);
+	UpdateParticleSprites();
+	UpdateLibraryFileTypes();
 }
 
 void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
-	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && NULL == convertWaitDialog)
+	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread
@@ -418,6 +475,11 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 	}
 }
 
+void QtMainWindow::UpdateParticleSprites()
+{
+	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+}
+
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 {
 	convertWaitDialog = NULL;
@@ -432,3 +494,19 @@ void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int job
 		convertWaitDialog->setLabelText(curPath);
 	}
 }
+
+void QtMainWindow::LibraryFileTypesChanged()
+{
+	UpdateLibraryFileTypes();
+}
+
+void QtMainWindow::UpdateLibraryFileTypes()
+{
+	UpdateLibraryFileTypes(ui->cbShowDAEFiles->isChecked(), ui->cbShowSC2Files->isChecked());
+}
+
+void QtMainWindow::UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files)
+{
+	emit LibraryFileTypesChanged(showDAEFiles, showSC2Files);
+}
+

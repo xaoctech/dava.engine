@@ -318,7 +318,7 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isBGRA8888Supported = false;
     caps.isFloat16Supported = false;
     caps.isFloat32Supported = false;
-
+	caps.isDXTSupported = false;
     
 	//if (D3DCURSORCAPS_COLOR & deviceCaps.CursorCaps)
 	//	caps.isHardwareCursorSupported = true;

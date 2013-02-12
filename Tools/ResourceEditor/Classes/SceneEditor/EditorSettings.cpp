@@ -2,7 +2,7 @@
 
 #include "ControlsFactory.h"
 
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 
 EditorSettings::EditorSettings()
@@ -56,6 +56,11 @@ void EditorSettings::SetProjectPath(const String &projectPath)
 String EditorSettings::GetProjectPath()
 {
     return settings->GetString(String("ProjectPath"), String(""));
+}
+
+String EditorSettings::GetParticlesConfigsPath()
+{
+	return GetProjectPath() + "Data/Configs/Particles/";
 }
 
 float32 EditorSettings::GetCameraSpeed()

@@ -2354,8 +2354,9 @@ void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
 
 void ParticlesEditorControl::LoadFromYaml(const String &pathToFile)
 {
-	particleEmitterNode->LoadFromYaml(pathToFile);
-	SetEmitter(particleEmitterNode->GetEmitter());
+	//This code should not be used any more because of new particle editor structure.
+	//particleEmitterNode->LoadFromYaml(pathToFile);
+	//SetEmitter(particleEmitterNode->GetEmitter());
 }
 
 void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
@@ -3043,7 +3044,7 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 			file->WriteLine("    isLong: true");
 		}
 		
-		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
+		//file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
 
 		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
 		file->WriteLine(Format("    pivotPoint: [%.1f, %.1f]", emitter->GetLayers()[i]->pivotPoint.x-(sprite->GetWidth()/2.0f), emitter->GetLayers()[i]->pivotPoint.y-(sprite->GetHeight()/2.0f)));
@@ -3454,7 +3455,7 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 	propList->Refresh();
 }
 
-void ParticlesEditorControl::SetNode(ParticleEmitterNode * node)
+void ParticlesEditorControl::SetNode(SceneNode * node)
 {
 	SafeRelease(particleEmitterNode);
 	particleEmitterNode = SafeRetain(node);

@@ -45,8 +45,6 @@ void SwitchNode::Update(float32 timeElapsed)
 
 		oldSwitchIndex = newSwitchIndex;
 	}
-
-	SceneNode::Update(timeElapsed);
 }
 
 void SwitchNode::AddNode(SceneNode * node)

@@ -6,9 +6,11 @@
 #include "LandscapeToolsPanel.h"
 #include "LandscapeEditorPropertyControl.h"
 
+
 using namespace DAVA;
 
 class EditorHeightmap;
+class CommandDrawCustomColors;
 class LandscapeEditorCustomColors
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -38,6 +40,11 @@ public:
 	void SaveColorLayer(const String &pathName);
 	void LoadColorLayer(const String &pathName);
 	String GetCurrentSaveFileName();
+
+	void ClearSceneResources();
+
+	void StoreState(Image** image);
+	void RestoreState(Image* image);
 
 protected:
 
@@ -87,6 +94,9 @@ protected:
 	int32		radius;
 
 	bool		isCursorTransparent;
+	bool		isFogEnabled;
+
+	CommandDrawCustomColors* command;
 };
 
 

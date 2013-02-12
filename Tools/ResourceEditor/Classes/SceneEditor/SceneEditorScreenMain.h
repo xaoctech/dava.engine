@@ -91,7 +91,7 @@ public:
 
     void EditMaterial(Material *material);
 
-	void EditParticleEmitter(ParticleEmitterNode * emitter);
+	void EditParticleEmitter(SceneNode * emitter);
     
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
@@ -143,7 +143,7 @@ private:
     
     void OnSelectBody(BaseObject * owner, void * userData, void * callerData);
     void OnCloseBody(BaseObject * owner, void * userData, void * callerData);
-    
+	void ActivateBodyItem(BodyItem* activeItem, bool forceResetSelection);
 
     //create node dialog
     CreateNodesDialog *nodeDialog;
@@ -186,7 +186,7 @@ public: //For Qt integration
     void SaveSceneToFile(const String &pathToFile);
    
 
-    void ExportAs(ResourceEditor::eExportFormat format);
+    void ExportAs(ImageFileFormat format);
 
 	void SaveToFolder(const String & folder);
 	
