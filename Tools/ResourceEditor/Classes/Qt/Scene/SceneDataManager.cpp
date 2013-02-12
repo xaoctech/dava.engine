@@ -513,6 +513,8 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
     Vector<SceneNode *> nodes;
     forNode->GetChildNodes(nodes);
     
+    nodes.push_back(forNode);
+    
     for(int32 n = 0; n < (int32)nodes.size(); ++n)
     {
         RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
@@ -548,47 +550,6 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
             CollectLandscapeTextures(textures, land);
         }
     }
-    
-    
-    
-    
-//	//materials
-//	Vector<Material*> materials;
-//	EnumerateMaterials(forNode, materials);
-//	for(int32 m = 0; m < (int32)materials.size(); ++m)
-//	{
-//		for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-//		{
-//			CollectTexture(textures, materials[m]->GetTextureName((Material::eTextureLevel)t), materials[m]->GetTexture((Material::eTextureLevel)t));
-//		}
-//	}
-//
-//	//landscapes
-//	Vector<LandscapeNode *> landscapes;
-//	forNode->GetChildNodes(landscapes);
-//	LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(forNode);
-//	if(landscape)
-//	{
-//		landscapes.push_back(landscape);
-//	}
-//
-//	for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-//	{
-//		CollectLandscapeTextures(textures, landscapes[l]);
-//	}
-//
-//	//lightmaps
-//	Vector<MeshInstanceNode *> meshInstances;
-//	forNode->GetChildNodes(meshInstances);
-//	MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(forNode);
-//	if(mesh)
-//	{
-//		meshInstances.push_back(mesh);
-//	}
-//	for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-//	{
-//		CollectMeshTextures(textures, meshInstances[m]);
-//	}
 }
 
 void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
@@ -599,17 +560,6 @@ void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Te
 	}
 }
 
-void SceneDataManager::CollectMeshTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, MeshInstanceNode *forNode)
-{
-	for (int32 li = 0; li < forNode->GetLightmapCount(); ++li)
-	{
-		MeshInstanceNode::LightmapData * ld = forNode->GetLightmapDataForIndex(li);
-		if (ld)
-		{
-			CollectTexture(textures, ld->lightmapName, ld->lightmap);
-		}
-	}
-}
 
 
 void SceneDataManager::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)
