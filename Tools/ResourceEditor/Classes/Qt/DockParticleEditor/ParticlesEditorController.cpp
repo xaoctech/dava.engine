@@ -145,7 +145,7 @@ void ParticlesEditorController::EmitNodeWillBeDeselected()
 	emit NodeDeselected(this->selectedNode);
 }
 
-void ParticlesEditorController::EmitSelectedNodeChanged()
+void ParticlesEditorController::EmitSelectedNodeChanged(bool forceRefresh)
 {
     if (this->selectedNode == NULL)
     {
@@ -172,7 +172,7 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     LayerParticleEditorNode* layerEditorNode = dynamic_cast<LayerParticleEditorNode*>(this->selectedNode);
     if (layerEditorNode)
     {
-        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode);
+        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode, forceRefresh);
         return;
     }
     
@@ -572,11 +572,11 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	return true;
 }
 
-void ParticlesEditorController::RefreshSelectedNode()
+void ParticlesEditorController::RefreshSelectedNode(bool forceRefresh)
 {
 	if (this->selectedNode)
 	{
-		EmitSelectedNodeChanged();
+		EmitSelectedNodeChanged(forceRefresh);
 	}
 }
 

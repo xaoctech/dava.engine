@@ -763,6 +763,12 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		}
 	}
 
+	YamlNode * isDisabledNode = node->Get("isDisabled");
+	if (isDisabledNode)
+	{
+		isDisabled = isDisabledNode->AsBool();
+	}
+	
 	// Yuri Coder, 2013/01/31. After all the data is loaded, check the Frame Overlife timelines and
 	// synchronize them with the maximum available frames in the sprite. See also DF-573.
 	UpdateFrameTimeline();
@@ -833,6 +839,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
+
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);

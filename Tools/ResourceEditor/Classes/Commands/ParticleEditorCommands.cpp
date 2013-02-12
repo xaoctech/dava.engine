@@ -202,6 +202,22 @@ void CommandUpdateParticleLayerTime::Execute()
 	layer->endTime = endTime;
 }
 
+CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->layer = layer;
+	this->isEnabled = isEnabled;
+}
+
+void CommandUpdateParticleLayerEnabled::Execute()
+{
+	if (this->layer)
+	{
+		this->layer->isDisabled = !isEnabled;
+		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+	}
+}
+
 CommandUpdateParticleLayerForce::CommandUpdateParticleLayerForce(ParticleLayer* layer, uint32 forceId) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {

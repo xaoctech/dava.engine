@@ -27,9 +27,9 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnEmitterSelected(ParticleEmitterNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnLayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*)));
+			SLOT(OnLayerSelected(ParticleEmitterNode*, ParticleLayer*, BaseParticleEditorNode*, bool)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(ForceSelected(ParticleEmitterNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
@@ -91,12 +91,11 @@ void ParticleEditorWidget::OnEmitterSelected(ParticleEmitterNode* emitterNode, B
 	}
 }
 
-void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnLayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
 {
-	if (emitterNode &&
-		emitterLayerWidget &&
+	if (emitterNode && emitterLayerWidget &&
 		emitterLayerWidget->GetEmitter() == emitterNode->GetEmitter() &&
-		emitterLayerWidget->GetLayer() == layer)
+		emitterLayerWidget->GetLayer() == layer && !forceRefresh)
 		return;
 
 	DeleteOldWidget();

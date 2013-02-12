@@ -80,18 +80,18 @@ public:
 	void PackSprites();
 
 	// Refresh the selected node (called if something is changed outside).
-	void RefreshSelectedNode();
+	void RefreshSelectedNode(bool forceRefresh = false);
 
 signals:
 	void EffectSelected(ParticleEffectNode* effectNode);
     void EmitterSelected(ParticleEmitterNode* emitterNode, BaseParticleEditorNode* editorNode);
-	void LayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode);
+	void LayerSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
     void ForceSelected(ParticleEmitterNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 	void NodeDeselected(BaseParticleEditorNode* editorNode);
 
 protected:
     // Emit the selected node changed.
-    void EmitSelectedNodeChanged();
+    void EmitSelectedNodeChanged(bool forceRefresh = true);
 	void EmitNodeWillBeDeselected();
 
 	// Find the Emitter Editor node by the appropriate Scene Node.
