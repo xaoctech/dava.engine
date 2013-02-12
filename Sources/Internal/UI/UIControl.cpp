@@ -334,7 +334,7 @@ namespace DAVA
 		
 		// Change the relative position of control
 		Vector2 relativePosition = this->GetPosition(false);
-    	relativePosition.x = align;
+    	relativePosition.x = (float32)align;
    		this->SetPosition(relativePosition, false);
 		
 		// Change the size of control if other align option is set.
@@ -382,7 +382,7 @@ namespace DAVA
 		// Check if two align options selected simultaneously
 		if (this->GetLeftAlignEnabled())
 		{
-			relativePosition.x = leftAlign;
+			relativePosition.x = (float32)leftAlign;
 			controlSize.x = GetSizeX(parentControl, (-1)*align, leftAlign, true);
 		}
 		else if (this->GetRightAlignEnabled())
@@ -424,7 +424,7 @@ namespace DAVA
    	
 		if (this->GetLeftAlignEnabled())
 		{
-			relativePosition.x = leftAlign;
+			relativePosition.x = (float32)leftAlign;
     		controlSize.x = GetSizeX(parentControl, leftAlign, align);
 		}
 		else if (this->GetHCenterAlignEnabled())
@@ -459,7 +459,7 @@ namespace DAVA
 		
 		// Set relative position of control
 		Vector2 relativePosition = this->GetPosition(false);
-    	relativePosition.y = align;
+    	relativePosition.y = (float32)align;
     	this->SetPosition(relativePosition, false);	
 	
 		UIControl *parentControl = this->GetParent();
@@ -504,7 +504,7 @@ namespace DAVA
 		// Check if two align options selected simultaneously
 		if (this->GetTopAlignEnabled())
 		{
-			relativePosition.y = topAlign;
+			relativePosition.y = (float32)topAlign;
 			controlSize.y = GetSizeY(parentControl, (-1)*align, topAlign, true);
 		}
 		else if (this->GetBottomAlignEnabled())
@@ -547,7 +547,7 @@ namespace DAVA
    	
 		if (this->GetTopAlignEnabled())
 		{
-			relativePosition.y = topAlign;
+			relativePosition.y = (float32)topAlign;
     		controlSize.y = GetSizeY(parentControl, topAlign, align);
     		
 		}
@@ -2308,12 +2308,12 @@ namespace DAVA
 		// Set left align property
 		if (this->GetLeftAlignEnabled())
 		{
-			_leftAlign = this->GetPosition(false).x;
+			_leftAlign = (int32)this->GetPosition(false).x;
 		}
 		// Set top align property
 		if (this->GetTopAlignEnabled())
 		{
-			_topAlign = this->GetPosition(false).y;
+			_topAlign = (int32)this->GetPosition(false).y;
 		}		
 		
 		UIControl *parent = this->GetParent();
@@ -2323,43 +2323,43 @@ namespace DAVA
 		// Set right align property
 		if (this->GetRightAlignEnabled())
 		{
-			_rightAlign = parent->GetSize().x - this->GetPosition(false).x - this->GetSize().x;
+			_rightAlign = (int32)(parent->GetSize().x - this->GetPosition(false).x - this->GetSize().x);
 		}
 		// Set hcenter align property
 		if (this->GetHCenterAlignEnabled())
 		{
 			if (this->GetLeftAlignEnabled())
 			{
-				_hcenterAlign = this->GetPosition(false).x + this->GetSize().x - round(parent->GetSize().x / 2);
+				_hcenterAlign = (int32)(this->GetPosition(false).x + this->GetSize().x - Round(parent->GetSize().x / 2));
 			}
 			else if (this->GetRightAlignEnabled())
 			{
-				_hcenterAlign = this->GetPosition(false).x - round(parent->GetSize().x / 2);
+				_hcenterAlign = (int32)(this->GetPosition(false).x - Round(parent->GetSize().x / 2));
 			}
 			else
 			{
-				_hcenterAlign = this->GetPosition(false).x - round(parent->GetSize().x / 2) + round(this->GetSize().x / 2); ;
+				_hcenterAlign = (int32)(this->GetPosition(false).x - Round(parent->GetSize().x / 2) + Round(this->GetSize().x / 2));
 			}			
 		}
 		// Set bottom align property
 		if (this->GetBottomAlignEnabled())
 		{
-			_bottomAlign = parent->GetSize().y - this->GetPosition(false).y - this->GetSize().y;
+			_bottomAlign = (int32)(parent->GetSize().y - this->GetPosition(false).y - this->GetSize().y);
 		}
 		// Set Vcenter align property
 		if (this->GetVCenterAlignEnabled())
 		{
 			if (this->GetTopAlignEnabled())
 			{
-				_vcenterAlign = this->GetPosition(false).y + this->GetSize().y - round(parent->GetSize().y / 2);
+				_vcenterAlign = (int32)(this->GetPosition(false).y + this->GetSize().y - Round(parent->GetSize().y / 2));
 			}
 			else if (this->GetBottomAlignEnabled())
 			{
-				_vcenterAlign = this->GetPosition(false).y - round(parent->GetSize().y / 2);
+				_vcenterAlign = (int32)(this->GetPosition(false).y - Round(parent->GetSize().y / 2));
 			}
 			else 
 			{
-				_vcenterAlign = this->GetPosition(false).y - round(parent->GetSize().y / 2) + round(this->GetSize().y / 2); ;
+				_vcenterAlign = (int32)(this->GetPosition(false).y - Round(parent->GetSize().y / 2) + Round(this->GetSize().y / 2));
 			}			
 		}		
 	}
@@ -2398,87 +2398,92 @@ namespace DAVA
 		}
 	}
 	
-	int32 UIControl::GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize /* = FALSE*/)
+	float32 UIControl::GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize /* = FALSE*/)
 	{
 		if (!parent)
 			return 0;
 			
-		int32 parentSize = useHalfParentSize ? round(parent->GetSize().x / 2) : parent->GetSize().x;
-		int32 size = abs(parentSize - leftAlign - rightAlign);
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().x / 2) : parent->GetSize().x;
+		float32 size = abs(parentSize - leftAlign - rightAlign);
 
 		return size;
 	}
 	
-	int32 UIControl::GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize /* = FALSE*/)
+	float32 UIControl::GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize /* = FALSE*/)
 	{
 		if (!parent)
 			return 0;
 			
-		int32 parentSize = useHalfParentSize ? round(parent->GetSize().y / 2) : parent->GetSize().y;
-		int32 size = abs(parentSize - topAlign - bottomAlign);
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().y / 2) : parent->GetSize().y;
+		float32 size = abs(parentSize - topAlign - bottomAlign);
 		
 		return size;
 	}
 	
-	int32 UIControl::GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child)
+	float32 UIControl::GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child)
 	{
 		if (!parent || !child)
 			return 0;
 			
-		int32 position = round(parent->GetSize().x / 2) + centerAlign - round(child->GetSize().x / 2);
+		float32 position = Round(parent->GetSize().x / 2) + centerAlign - Round(child->GetSize().x / 2);
 		
 		return position;
 	}
 	
-	int32 UIControl::GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child)
+	float32 UIControl::GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child)
 	{
 		if (!parent || !child)
 			return 0;
 			
-		int32 position = round(parent->GetSize().y / 2) + centerAlign - round(child->GetSize().y / 2);
+		float32 position = Round(parent->GetSize().y / 2) + centerAlign - Round(child->GetSize().y / 2);
 		
 		return position;
 	}
 	
-	int32 UIControl::GetRelativeX(UIControl *parent, int32 align)
+	float32 UIControl::GetRelativeX(UIControl *parent, int32 align)
 	{
 		if (!parent)
-			return align;
+			return (float32)align;
 
-		int32 position = round(parent->GetSize().x / 2) + align;
+		float32 position = Round(parent->GetSize().x / 2) + align;
 		
 		return position;
 	}
 	
-	int32 UIControl::GetRelativeX(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
+	float32 UIControl::GetRelativeX(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
 	{
 		if (!parent || !child)
-			return align;
+			return (float32)align;
 			
-		int32 parentSize = useHalfParentSize ? round(parent->GetSize().x / 2) : parent->GetSize().x;
-		int32 position = parentSize - align - child->GetSize().x;
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().x / 2) : parent->GetSize().x;
+		float32 position = parentSize - align - child->GetSize().x;
 		
 		return position;
 	}
 	
-	int32 UIControl::GetRelativeY(UIControl *parent, int32 align)
+	float32 UIControl::GetRelativeY(UIControl *parent, int32 align)
 	{
 		if (!parent)
-			return align;
+			return (float32)align;
 	
-		int32 position = round(parent->GetSize().y / 2) + align;
+		float32 position = Round(parent->GetSize().y / 2) + align;
 		
 		return position;
 	}
 	
-	int32 UIControl::GetRelativeY(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
+	float32 UIControl::GetRelativeY(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
 	{
 		if (!parent || !child)
-			return align;
+			return (float32)align;
 			
-		int32 parentSize = useHalfParentSize ? round(parent->GetSize().y / 2) : parent->GetSize().y;
-		int32 position = parentSize - align - child->GetSize().y;
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().y / 2) : parent->GetSize().y;
+		float32 position = parentSize - align - child->GetSize().y;
 		
 		return position;
+	}
+
+	float32 UIControl::Round(float32 value)
+	{
+		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
 	}
 }
