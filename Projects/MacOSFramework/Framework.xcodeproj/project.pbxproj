@@ -17,6 +17,8 @@
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
+		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
+		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
@@ -428,8 +430,6 @@
 		E8989F8D16BD24E500732C04 /* LodComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD216BD24E500732C04 /* LodComponent.h */; };
 		E8989F8E16BD24E500732C04 /* ParticleEffectComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD316BD24E500732C04 /* ParticleEffectComponent.cpp */; };
 		E8989F8F16BD24E500732C04 /* ParticleEffectComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD416BD24E500732C04 /* ParticleEffectComponent.h */; };
-		E8989F9016BD24E500732C04 /* ParticleEmitterComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD516BD24E500732C04 /* ParticleEmitterComponent.cpp */; };
-		E8989F9116BD24E500732C04 /* ParticleEmitterComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD616BD24E500732C04 /* ParticleEmitterComponent.h */; };
 		E8989F9216BD24E500732C04 /* RenderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD716BD24E500732C04 /* RenderComponent.cpp */; };
 		E8989F9316BD24E500732C04 /* RenderComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD816BD24E500732C04 /* RenderComponent.h */; };
 		E8989F9416BD24E500732C04 /* SwitchComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD916BD24E500732C04 /* SwitchComponent.cpp */; };
@@ -834,7 +834,6 @@
 		E898A13A16BD265400732C04 /* LightComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD016BD24E500732C04 /* LightComponent.h */; };
 		E898A13B16BD265400732C04 /* LodComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD216BD24E500732C04 /* LodComponent.h */; };
 		E898A13C16BD265400732C04 /* ParticleEffectComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD416BD24E500732C04 /* ParticleEffectComponent.h */; };
-		E898A13D16BD265400732C04 /* ParticleEmitterComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD616BD24E500732C04 /* ParticleEmitterComponent.h */; };
 		E898A13E16BD265400732C04 /* RenderComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CD816BD24E500732C04 /* RenderComponent.h */; };
 		E898A13F16BD265400732C04 /* SwitchComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CDA16BD24E500732C04 /* SwitchComponent.h */; };
 		E898A14016BD265400732C04 /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989CDC16BD24E500732C04 /* TransformComponent.h */; };
@@ -1108,7 +1107,6 @@
 		E898A25416BD265400732C04 /* LightComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CCF16BD24E500732C04 /* LightComponent.cpp */; };
 		E898A25516BD265400732C04 /* LodComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD116BD24E500732C04 /* LodComponent.cpp */; };
 		E898A25616BD265400732C04 /* ParticleEffectComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD316BD24E500732C04 /* ParticleEffectComponent.cpp */; };
-		E898A25716BD265400732C04 /* ParticleEmitterComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD516BD24E500732C04 /* ParticleEmitterComponent.cpp */; };
 		E898A25816BD265400732C04 /* RenderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD716BD24E500732C04 /* RenderComponent.cpp */; };
 		E898A25916BD265400732C04 /* SwitchComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CD916BD24E500732C04 /* SwitchComponent.cpp */; };
 		E898A25A16BD265400732C04 /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989CDB16BD24E500732C04 /* TransformComponent.cpp */; };
@@ -1269,6 +1267,8 @@
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
+		CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
+		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
@@ -1690,8 +1690,6 @@
 		E8989CD216BD24E500732C04 /* LodComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodComponent.h; sourceTree = "<group>"; };
 		E8989CD316BD24E500732C04 /* ParticleEffectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectComponent.cpp; sourceTree = "<group>"; };
 		E8989CD416BD24E500732C04 /* ParticleEffectComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectComponent.h; sourceTree = "<group>"; };
-		E8989CD516BD24E500732C04 /* ParticleEmitterComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterComponent.cpp; sourceTree = "<group>"; };
-		E8989CD616BD24E500732C04 /* ParticleEmitterComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterComponent.h; sourceTree = "<group>"; };
 		E8989CD716BD24E500732C04 /* RenderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderComponent.cpp; sourceTree = "<group>"; };
 		E8989CD816BD24E500732C04 /* RenderComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderComponent.h; sourceTree = "<group>"; };
 		E8989CD916BD24E500732C04 /* SwitchComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchComponent.cpp; sourceTree = "<group>"; };
@@ -2677,6 +2675,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */,
+				CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */,
 				E8989CC916BD24E500732C04 /* BulletComponent.cpp */,
 				E8989CCA16BD24E500732C04 /* BulletComponent.h */,
 				E8989CCB16BD24E500732C04 /* CameraComponent.cpp */,
@@ -2689,8 +2689,6 @@
 				E8989CD216BD24E500732C04 /* LodComponent.h */,
 				E8989CD316BD24E500732C04 /* ParticleEffectComponent.cpp */,
 				E8989CD416BD24E500732C04 /* ParticleEffectComponent.h */,
-				E8989CD516BD24E500732C04 /* ParticleEmitterComponent.cpp */,
-				E8989CD616BD24E500732C04 /* ParticleEmitterComponent.h */,
 				E8989CD716BD24E500732C04 /* RenderComponent.cpp */,
 				E8989CD816BD24E500732C04 /* RenderComponent.h */,
 				E8989CD916BD24E500732C04 /* SwitchComponent.cpp */,
@@ -3126,7 +3124,6 @@
 				E8989F8B16BD24E500732C04 /* LightComponent.h in Headers */,
 				E8989F8D16BD24E500732C04 /* LodComponent.h in Headers */,
 				E8989F8F16BD24E500732C04 /* ParticleEffectComponent.h in Headers */,
-				E8989F9116BD24E500732C04 /* ParticleEmitterComponent.h in Headers */,
 				E8989F9316BD24E500732C04 /* RenderComponent.h in Headers */,
 				E8989F9516BD24E500732C04 /* SwitchComponent.h in Headers */,
 				E8989F9716BD24E500732C04 /* TransformComponent.h in Headers */,
@@ -3221,6 +3218,7 @@
 				50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
 				E89CE91916C549F9006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
+				CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3454,7 +3452,6 @@
 				E898A13A16BD265400732C04 /* LightComponent.h in Headers */,
 				E898A13B16BD265400732C04 /* LodComponent.h in Headers */,
 				E898A13C16BD265400732C04 /* ParticleEffectComponent.h in Headers */,
-				E898A13D16BD265400732C04 /* ParticleEmitterComponent.h in Headers */,
 				E898A13E16BD265400732C04 /* RenderComponent.h in Headers */,
 				E898A13F16BD265400732C04 /* SwitchComponent.h in Headers */,
 				E898A14016BD265400732C04 /* TransformComponent.h in Headers */,
@@ -3823,7 +3820,6 @@
 				E8989F8A16BD24E500732C04 /* LightComponent.cpp in Sources */,
 				E8989F8C16BD24E500732C04 /* LodComponent.cpp in Sources */,
 				E8989F8E16BD24E500732C04 /* ParticleEffectComponent.cpp in Sources */,
-				E8989F9016BD24E500732C04 /* ParticleEmitterComponent.cpp in Sources */,
 				E8989F9216BD24E500732C04 /* RenderComponent.cpp in Sources */,
 				E8989F9416BD24E500732C04 /* SwitchComponent.cpp in Sources */,
 				E8989F9616BD24E500732C04 /* TransformComponent.cpp in Sources */,
@@ -3915,6 +3911,7 @@
 				E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */,
 				E89CE91716C549F9006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
+				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4104,7 +4101,6 @@
 				E898A25416BD265400732C04 /* LightComponent.cpp in Sources */,
 				E898A25516BD265400732C04 /* LodComponent.cpp in Sources */,
 				E898A25616BD265400732C04 /* ParticleEffectComponent.cpp in Sources */,
-				E898A25716BD265400732C04 /* ParticleEmitterComponent.cpp in Sources */,
 				E898A25816BD265400732C04 /* RenderComponent.cpp in Sources */,
 				E898A25916BD265400732C04 /* SwitchComponent.cpp in Sources */,
 				E898A25A16BD265400732C04 /* TransformComponent.cpp in Sources */,
