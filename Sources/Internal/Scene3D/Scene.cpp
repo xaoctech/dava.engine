@@ -128,9 +128,6 @@ void Scene::CreateSystems()
     debugRenderSystem = new DebugRenderSystem(this);
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
 
-	particleEmitterSystem = new ParticleEmitterSystem(this);
-	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
-
 	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 
@@ -603,9 +600,6 @@ void Scene::Update(float timeElapsed)
 	lodSystem->Process();
 
 	switchSystem->Process();
-
-	particleEmitterSystem->Process();
-	particleEffectSystem->Process();
     
 //	entityManager->Flush();
 
@@ -676,6 +670,7 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
+	particleEffectSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();

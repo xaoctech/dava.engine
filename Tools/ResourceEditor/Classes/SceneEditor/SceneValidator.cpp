@@ -13,6 +13,8 @@
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 #include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
+#include "Scene3D/Components/ComponentHelpers.h"
+
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
@@ -459,35 +461,34 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
 
 void SceneValidator::ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog)
 {
-    Vector<ParticleEmitterComponent *> particleEmitterComponents;
-    EnumerateParticleEmitterComponents(scene, particleEmitterComponents);
+    Vector<ParticleEmitter*> particleEmitters;
+    EnumerateParticleEmitters(scene, particleEmitters);
 
-	for(int32 index = 0; index < (int32)particleEmitterComponents.size(); ++index)
+	for(int32 index = 0; index < (int32)particleEmitters.size(); ++index)
     {
-		ParticleEmitterComponent* component = particleEmitterComponents[index];
+		ParticleEmitter* emitter = particleEmitters[index];
 		String validationMsg;
-		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(component, validationMsg))
+		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
 		{
 			errorsLog.insert(validationMsg);
 		}
 	}
 }
 
-void SceneValidator::EnumerateParticleEmitterComponents(SceneNode* rootNode, Vector<ParticleEmitterComponent*>& components)
+void SceneValidator::EnumerateParticleEmitters(SceneNode* rootNode, Vector<ParticleEmitter*>& emitters)
 {
 	// Check the parent...
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>
-		(rootNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-	if (emitterComponent && emitterComponent->GetParticleEmitter())
+	ParticleEmitter * emitter = GetEmitter(rootNode);
+	if (emitter)
 	{
-		components.push_back(emitterComponent);
+		emitters.push_back(emitter);
 	}
 
 	// ...and repeat for all children.
 	int32 childrenCount = rootNode->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		EnumerateParticleEmitterComponents(rootNode->GetChild(i), components);
+		EnumerateParticleEmitters(rootNode->GetChild(i), emitters);
 	}
 }
 

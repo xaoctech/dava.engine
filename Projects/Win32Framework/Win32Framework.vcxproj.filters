@@ -1113,9 +1113,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1244,6 +1241,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
       <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2069,9 +2069,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2179,6 +2176,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp">
       <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
