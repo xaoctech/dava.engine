@@ -16,6 +16,7 @@
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
+#include "../Commands/EditCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -78,6 +79,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
+	ClearActions(ResourceEditor::EDIT_COUNT, editActions);
 
     CommandsManager::Instance()->Release();
 }
@@ -355,6 +357,17 @@ void QtMainWindowHandler::RegisterModificationActions(DAVA::int32 count, ...)
 	va_start(vl, count);
 
 	RegisterActions(modificationActions, count, vl);
+
+	va_end(vl);
+}
+
+void QtMainWindowHandler::RegisterEditActions(DAVA::int32 count, ...)
+{
+	DVASSERT((count == ResourceEditor::EDIT_COUNT) && "Wrong count of actions");
+	va_list vl;
+	va_start(vl, count);
+
+	RegisterActions(editActions, count, vl);
 
 	va_end(vl);
 }
@@ -767,4 +780,50 @@ void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 void QtMainWindowHandler::OnResetModification()
 {
 	Execute(new ModificationResetCommand());
+}
+
+void QtMainWindowHandler::UndoAction()
+{
+	Execute(new UndoCommand());
+	UpdateUndoActionsState();
+}
+
+void QtMainWindowHandler::RedoAction()
+{
+	Execute(new RedoCommand());
+	UpdateUndoActionsState();
+}
+
+void QtMainWindowHandler::UpdateUndoActionsState()
+{
+	CommandsManager* commandsManager = CommandsManager::Instance();
+
+	bool isEnabled;
+	String commandName;
+
+	isEnabled = false;
+	commandName = "";
+	if (commandsManager->GetUndoQueueLength())
+	{
+		isEnabled = true;
+		commandName = commandsManager->GetUndoCommandName();
+	}
+	QString str = tr("Undo");
+	if (isEnabled)
+		str += " " + tr(commandName.c_str());
+	editActions[ResourceEditor::EDIT_UNDO]->setText(str);
+	editActions[ResourceEditor::EDIT_UNDO]->setEnabled(isEnabled);
+
+	isEnabled = false;
+	commandName = "";
+	if (commandsManager->GetRedoQueueLength())
+	{
+		isEnabled = true;
+		commandName = commandsManager->GetRedoCommandName();
+	}
+	str = tr("Redo");
+	if (isEnabled)
+		str += " " + tr(commandName.c_str());
+	editActions[ResourceEditor::EDIT_REDO]->setText(str);
+	editActions[ResourceEditor::EDIT_REDO]->setEnabled(isEnabled);
 }

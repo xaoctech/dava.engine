@@ -28,6 +28,7 @@ void CommandTilemapEditor::Execute()
 CommandDrawTilemap::CommandDrawTilemap()
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Tilemap Draw";
 	redoImage = NULL;
 
 	LandscapeEditorColor* editor = GetEditor();

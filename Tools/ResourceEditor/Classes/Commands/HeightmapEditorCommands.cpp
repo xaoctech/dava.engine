@@ -32,14 +32,14 @@ void CommandHeightmapEditor::Execute()
 CommandDrawHeightmap::CommandDrawHeightmap()
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Heightmap Change";
 	redoFilename = "";
 
 	LandscapeEditorHeightmap* editor = GetEditor();
 	if (editor)
 	{
-		Heightmap* heightmap;
-		editor->GetHeightmap(&heightmap);
-		undoFilename = SaveHeightmap(heightmap, "_" + GetRandomString(10));
+		Heightmap* heightmap = editor->GetHeightmap();
+		undoFilename = SaveHeightmap(heightmap);
 	}
 }
 
@@ -58,12 +58,11 @@ void CommandDrawHeightmap::Execute()
 		return;
 	}
 
-	Heightmap* heightmap;
-	editor->GetHeightmap(&heightmap);
+	Heightmap* heightmap = editor->GetHeightmap();
 
 	if (redoFilename == "")
 	{
-		redoFilename = SaveHeightmap(heightmap, "_" + GetRandomString(10));
+		redoFilename = SaveHeightmap(heightmap);
 	}
 	else
 	{
@@ -78,8 +77,7 @@ void CommandDrawHeightmap::Cancel()
 	LandscapeEditorHeightmap* editor = GetEditor();
 	if (editor)
 	{
-		Heightmap* heightmap;
-		editor->GetHeightmap(&heightmap);
+		Heightmap* heightmap = editor->GetHeightmap();
 
 		heightmap->Load(undoFilename);
 		editor->UpdateHeightmap(heightmap);
@@ -111,7 +109,7 @@ String CommandDrawHeightmap::TimeString()
     return timeString;
 }
 
-String CommandDrawHeightmap::SaveHeightmap(Heightmap* heightmap, String suffix)
+String CommandDrawHeightmap::SaveHeightmap(Heightmap* heightmap)
 {
 	String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
 	String folderPathname = documentsPath + "History";
@@ -119,23 +117,38 @@ String CommandDrawHeightmap::SaveHeightmap(Heightmap* heightmap, String suffix)
 	folderPathname = folderPathname + "/Heightmap";
 	FileSystem::Instance()->CreateDirectory(folderPathname);
 
-	String filename = folderPathname + "/" + TimeString() + suffix + Heightmap::FileExtension();
+	FileList* fileList = new FileList(folderPathname);
+
+	bool validFileName = false;
+	String filename;
+	String time = TimeString();
+	uint32 num = 0;
+	do
+	{
+		filename = time;
+		if (num)
+		{
+			filename += Format(" (%d)", num);
+		}
+		filename += Heightmap::FileExtension();
+
+		uint32 i = 0;
+		for (; i < fileList->GetFileCount(); ++i)
+		{
+			if (fileList->GetFilename(i) == filename)
+			{
+				++num;
+				break;
+			}
+		}
+		if (i >= fileList->GetFileCount())
+			validFileName = true;
+	} while (!validFileName);
+
+	filename = folderPathname + "/" + filename;
 	heightmap->Save(filename);
 
+	SafeRelease(fileList);
+
 	return filename;
-}
-
-String CommandDrawHeightmap::GetRandomString(uint32 len)
-{
-	String res = "";
-	while (len--)
-	{
-		uint32 n = Random::Instance()->Rand(32);
-		if (n >= 10)
-			res += 'a' + n - 10;
-		else
-			res += '0' + n;
-	}
-
-	return res;
 }

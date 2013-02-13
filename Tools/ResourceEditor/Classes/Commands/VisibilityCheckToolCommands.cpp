@@ -94,6 +94,7 @@ CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& 
 :	Command(COMMAND_UNDO_REDO),
 	point(newVisibilityPoint)
 {
+	commandName = "Place Visibility Point";
 	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
 	if (editor)
 		editor->StorePointState(&oldPoint, &oldPointIsSet, &oldImage);
@@ -138,6 +139,7 @@ CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& ar
 	point(areaPoint),
 	size(areaSize)
 {
+	commandName = "Place Visibility Area";
 	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
 	if (editor)
 		editor->StoreAreaState(&oldImage);

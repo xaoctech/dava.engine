@@ -15,7 +15,12 @@ public:
     void Execute(Command *command);
     void Undo();
     void Redo();
-	
+
+	DAVA::int32 GetUndoQueueLength();
+	DAVA::int32 GetRedoQueueLength();
+
+	DAVA::String GetUndoCommandName();
+	DAVA::String GetRedoCommandName();
 private:
 
     void ClearQueue();
