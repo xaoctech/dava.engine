@@ -7,7 +7,6 @@
 //
 
 #include "ParticlesEditorController.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
@@ -211,12 +210,12 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitter
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectNode, emitterSceneNode,
                                                                                      QString::fromStdString(emitterSceneNode->GetName()));
 		
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterSceneNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		ParticleEmitter * emitter = GetEmitter(emitterSceneNode);
+		if (!emitter)
 		{
-		    return ;
+		    return;
 		}
-		emitterComponent->GetParticleEmitter()->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
+		emitter->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
 
         effectNode->AddNode(emitterSceneNode);
         effectEditorNode->AddChildNode(emitterEditorNode);
@@ -254,7 +253,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
         return NULL;
     }
     
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -299,7 +298,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
         return NULL;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -327,7 +326,7 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
         return;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -515,7 +514,7 @@ bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEdit
 	ParticleLayer* layerToMove = movedItemNode->GetLayer();
 	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
 
-	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitterComponent()->GetParticleEmitter();
+	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitter();
 	parentEmitter->MoveLayer(layerToMove, layerToMoveAbove);
 	
 	return true;
@@ -552,8 +551,8 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 														   LayerParticleEditorNode* layerNodeToMove,
 														   LayerParticleEditorNode* layerNodeToInsertAbove)
 {
-	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
-	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitter();
+	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitter();
 	if (!oldParentEmitter || !newParentEmitter)
 	{
 		return false;

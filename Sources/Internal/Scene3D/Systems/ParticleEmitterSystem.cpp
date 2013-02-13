@@ -1,28 +1,49 @@
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Platform/SystemTimer.h"
+#include "Base/TemplateHelpers.h"
 
 namespace DAVA
 {
 
-ParticleEmitterSystem::ParticleEmitterSystem(Scene * scene)
-:	BaseProcessSystem(Component::PARTICLE_EMITTER_COMPONENT, scene)
+
+void ParticleEmitterSystem::AddIfEmitter(RenderObject * maybeEmitter)
 {
-
-}
-
-void ParticleEmitterSystem::Process()
-{
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
-
-	uint32 size = components.size();
-	for(uint32 i = 0; i < size; ++i)
+	if(maybeEmitter->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(components[i]);
-		component->GetParticleEmitter()->Update(timeElapsed);
+		ParticleEmitter * emitter = static_cast<ParticleEmitter*>(maybeEmitter);
+		emitters.push_back(emitter);
 	}
 }
+
+void ParticleEmitterSystem::RemoveIfEmitter(RenderObject * maybeEmitter)
+{
+	if(maybeEmitter->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+	{
+		ParticleEmitter * emitter = static_cast<ParticleEmitter*>(maybeEmitter);
+		uint32 size = emitters.size();
+		for(uint32 i = 0; i < size; ++i)
+		{
+			if(emitters[i] == emitter)
+			{
+				emitters[i] = emitters[size-1];
+				emitters.pop_back();
+				return;
+			}
+		}
+		DVASSERT(0);
+	}
+}
+
+void ParticleEmitterSystem::Update(float32 timeElapsed)
+{
+	uint32 size = emitters.size();
+	for(uint32 i = 0; i < size; ++i)
+	{
+		emitters[i]->Update(timeElapsed);
+	}
+}
+
 
 
 
