@@ -57,20 +57,25 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
 {
     Vector<String> filesList;
     
+	String _pathToFile = (pathToFile);
+// Replace  backslash to simple slash for Windows
+#if defined(__DAVAENGINE_WIN32__)
+	std::replace(_pathToFile.begin(), _pathToFile.end(),'/','\\');
+#endif	 //#if defined(__DAVAENGINE_WIN32__)
+
     int32 count = GetLastOpenedCount();
+
     for(int32 i = 0; i < count; ++i)
     {
         String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
-        if(path == pathToFile)
+        if(path == _pathToFile)
         {
             return;
         }
-        
         filesList.push_back(path);
     }
-
     
-    filesList.insert(filesList.begin(), pathToFile);
+    filesList.insert(filesList.begin(), _pathToFile);
     count = 0;
     for(;(count < (int32)filesList.size()) && (count < RECENT_FILES_COUNT); ++count)
     {

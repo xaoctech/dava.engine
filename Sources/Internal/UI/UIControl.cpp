@@ -578,6 +578,13 @@ namespace DAVA
 		{
 			SetLeftAlign(_leftAlign);
 		}
+		else
+		{
+			if (GetHCenterAlignEnabled())
+			{
+				SetHCenterAlign(_hcenterAlign);
+			}
+		}
 	}
 
 	bool UIControl::GetLeftAlignEnabled()
@@ -606,6 +613,13 @@ namespace DAVA
 		{
 			SetRightAlign(_rightAlign);
 		}
+		else
+		{
+			if (GetHCenterAlignEnabled())
+			{
+				SetHCenterAlign(_hcenterAlign);
+			}
+		}
 	}
 
 	bool UIControl::GetRightAlignEnabled()
@@ -619,6 +633,13 @@ namespace DAVA
 		if(isEnabled)
 		{
 			SetTopAlign(_topAlign);
+		}
+		else
+		{
+			if (GetVCenterAlignEnabled())
+			{
+				SetVCenterAlign(_vcenterAlign);
+			}
 		}
 	}
 
@@ -647,6 +668,13 @@ namespace DAVA
 		if (isEnabled)
 		{
 			SetBottomAlign(_bottomAlign);
+		}
+		else
+		{
+			if (GetVCenterAlignEnabled())
+			{
+				SetVCenterAlign(_vcenterAlign);
+			}
 		}
 	}
 

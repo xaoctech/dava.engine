@@ -130,6 +130,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>textLineEdit</tabstop>
+  <tabstop>fontSelectButton</tabstop>
   <tabstop>fontSizeSpinBox</tabstop>
   <tabstop>textColorPushButton</tabstop>
  </tabstops>
