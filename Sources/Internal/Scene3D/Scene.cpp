@@ -79,8 +79,6 @@ namespace DAVA
 {
     
 REGISTER_CLASS(Scene);
-
-Scene * Scene::activeScene = 0;
     
 Scene::Scene()
 	:   SceneNode()
@@ -91,8 +89,6 @@ Scene::Scene()
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
-	SetActiveScene(this);
-
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
@@ -584,8 +580,6 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-	SetActiveScene(this);
-
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -635,7 +629,6 @@ void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
 
-    SetActiveScene(this);
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -885,16 +878,6 @@ const String & Scene::GetReferenceNodeSuffix()
 bool Scene::IsReferenceNodeSuffixChanged()
 {
 	return referenceNodeSuffixChanged;
-}
-
-void Scene::SetActiveScene(Scene * scene)
-{
-	activeScene = scene;
-}
-
-Scene * Scene::GetActiveScene()
-{
-	return activeScene;
 }
 
 EventSystem * Scene::GetEventSystem()
