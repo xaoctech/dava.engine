@@ -225,11 +225,12 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
 
 void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode, Set<String> &errorsLog)
 {
-    ParticleEmitterComponent *emitterComponent = static_cast<ParticleEmitterComponent *>(ownerNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if(!emitterComponent) return;
+	ParticleEmitter * emitter = GetEmitter(ownerNode);
+    if(!emitter) 
+		return;
 
     String validationMsg;
-    if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(emitterComponent, validationMsg))
+    if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
     {
         errorsLog.insert(validationMsg);
     }
