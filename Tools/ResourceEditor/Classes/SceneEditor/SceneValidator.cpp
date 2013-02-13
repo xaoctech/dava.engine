@@ -46,7 +46,6 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     if(scene) 
     {
         ValidateSceneNode(scene, errorsLog);
-		ValidateParticleEmitterNodes(scene, errorsLog);
 
         for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
@@ -201,7 +200,7 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
         if(LodNode::INVALID_DISTANCE == distance)
         {
             //TODO: why this function isn't realized for lodcomponent?
-//            lodComponent->SetLodLayerDistance(layer, LodComponent::GetDefaultDistance(layer));
+            lodComponent->SetLodLayerDistance(layer, LodComponent::GetDefaultDistance(layer));
             errorsLog.insert(Format("Node %s: lod distances weren't correct. Re-save.", ownerNode->GetName().c_str()));
         }
     }
@@ -476,39 +475,6 @@ bool SceneValidator::IsFBOTexture(Texture *texture)
 }
 
 
-
-void SceneValidator::ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog)
-{
-    Vector<ParticleEmitter*> particleEmitters;
-    EnumerateParticleEmitters(scene, particleEmitters);
-
-	for(int32 index = 0; index < (int32)particleEmitters.size(); ++index)
-    {
-		ParticleEmitter* emitter = particleEmitters[index];
-		String validationMsg;
-		if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
-		{
-			errorsLog.insert(validationMsg);
-		}
-	}
-}
-
-void SceneValidator::EnumerateParticleEmitters(SceneNode* rootNode, Vector<ParticleEmitter*>& emitters)
-{
-	// Check the parent...
-	ParticleEmitter * emitter = GetEmitter(rootNode);
-	if (emitter)
-	{
-		emitters.push_back(emitter);
-	}
-
-	// ...and repeat for all children.
-	int32 childrenCount = rootNode->GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		EnumerateParticleEmitters(rootNode->GetChild(i), emitters);
-	}
-}
 
 String SceneValidator::SetPathForChecking(const String &pathname)
 {
