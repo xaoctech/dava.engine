@@ -72,7 +72,7 @@ void EditorScene::Update(float32 timeElapsed)
 
 void EditorScene::CheckNodes(SceneNode * curr)
 {
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
+//	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	RenderComponent * renderComponent = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
 	BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
 	UserNode * userNode = dynamic_cast<UserNode *> (curr);	

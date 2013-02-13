@@ -21,6 +21,8 @@
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
+		E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
+		E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
 		E8989D9B16BD24E500732C04 /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989ABF16BD24E400732C04 /* AnimatedObject.h */; };
 		E8989D9C16BD24E500732C04 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989AC016BD24E400732C04 /* Animation.cpp */; };
@@ -3546,6 +3548,7 @@
 				50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */,
 				E89CE91A16C549F9006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
+				E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4192,6 +4195,7 @@
 				E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */,
 				E89CE91816C549F9006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
+				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

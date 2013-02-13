@@ -113,10 +113,8 @@ protected:
     
     
     int32 EnumerateSceneNodes(SceneNode *node);
-	void EnumerateParticleEmitters(SceneNode* rootNode, Vector<ParticleEmitter*>& emitters);
     
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
-	void ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog);
     
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
