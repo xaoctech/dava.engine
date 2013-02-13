@@ -246,9 +246,6 @@ public:
 	const String & GetReferenceNodeSuffix();
 	bool IsReferenceNodeSuffixChanged();
 
-	static void SetActiveScene(Scene * scene);
-	static Scene * GetActiveScene();
-
 	EventSystem * GetEventSystem();
 	RenderSystem * GetRenderSystem();
     
@@ -285,8 +282,6 @@ protected:
 
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
-
-	static Scene * activeScene;
     
     friend class SceneNode;
 };
