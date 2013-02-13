@@ -726,11 +726,6 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
         if(force.Get())
         {
             forces.push_back(force);
-
-            if(forceVariation.Get() == NULL)
-            {
-                forceVariation = force->Clone();
-            }
             forcesVariation.push_back(forceVariation);
 
             if(forceOverLife.Get() == NULL)
@@ -741,7 +736,6 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		}
 	}
 
-    DVASSERT(forces.size() == forcesOverLife.size());
     DVASSERT(forces.size() == forcesOverLife.size());
 	
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");	

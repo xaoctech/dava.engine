@@ -442,12 +442,26 @@
     <addaction name="menuLandscape"/>
     <addaction name="menuTextureFromat"/>
    </widget>
+   <widget class="QMenu" name="menuModifications">
+    <property name="title">
+     <string>Modifications</string>
+    </property>
+    <addaction name="actionModifySelect"/>
+    <addaction name="separator"/>
+    <addaction name="actionModifyMove"/>
+    <addaction name="actionModifyRotate"/>
+    <addaction name="actionModifyScale"/>
+    <addaction name="separator"/>
+    <addaction name="actionModifyPlaceOnLandscape"/>
+    <addaction name="actionModifySnapToLandscape"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuTools"/>
    <addaction name="menuViewPort"/>
    <addaction name="menuViewOptions"/>
+   <addaction name="menuModifications"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockCustomColors">
@@ -518,6 +532,17 @@
     <number>4</number>
    </attribute>
    <widget class="ParticleTimeLineWidget" name="dockWidgetContents_2"/>
+  </widget>
+  <widget class="QToolBar" name="modificationToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -756,6 +781,57 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionModifyMove">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Move</string>
+   </property>
+  </action>
+  <action name="actionModifyRotate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionModifyScale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionModifyPlaceOnLandscape">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Place On Landscape</string>
+   </property>
+  </action>
+  <action name="actionModifySnapToLandscape">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Snap To Landscape</string>
+   </property>
+  </action>
+  <action name="actionModifySelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select</string>
    </property>
   </action>
  </widget>

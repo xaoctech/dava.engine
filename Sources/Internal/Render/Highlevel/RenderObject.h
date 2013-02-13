@@ -73,14 +73,19 @@ public:
         TYPE_SKINNED_MESH,      // Animated mesh for skinned animations
         TYPE_LANDSCAPE,         // Landscape object
         TYPE_CUSTOM_DRAW,       // Custom drawn object
+		TYPE_SPRITE,			// Sprite Node
     };
     
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
+		VISIBLE_LOD = 1 << 2,
+		VISIBLE_SWITCH = 1 << 3,
         TRANSFORM_UPDATED = 1 << 15,
 	};
+
+	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH;
 
     RenderObject();
     virtual ~RenderObject();
@@ -112,7 +117,7 @@ public:
     
     inline eType GetType() { return (eType)type; }
 
-	virtual RenderObject * Clone();
+	virtual RenderObject * Clone(RenderObject *newObject);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     

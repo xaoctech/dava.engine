@@ -44,7 +44,6 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
@@ -60,7 +59,6 @@ const char* SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME = "editor.isSolid";
 SceneNode::SceneNode()
 	: scene(0)
 	, parent(0)
-    , inUpdate(false)
     , tag(0)
 	, entity(0)
 {
@@ -94,8 +92,10 @@ SceneNode::~SceneNode()
 //        scene->UnregisterNode(this);
 //        scene = 0;
 //    }
-    DVASSERT(scene == 0);
-    
+
+	RemoveAllChildren();
+	SetScene(0);
+
     SafeRelease(customProperties);
 
 	for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
@@ -251,11 +251,7 @@ void SceneNode::RemoveNode(SceneNode * node)
     {
         return;
     }
-    if (inUpdate) 
-    {
-        removedCache.push_back(node);
-        return;
-    }
+
     const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
 	{
@@ -933,17 +929,6 @@ const Matrix4 & SceneNode::GetWorldTransform()
 	return ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform();
 }
 
-int32 SceneNode::Release()
-{
-	if(1 == referenceCount)
-	{
-		RemoveAllChildren();
-		SetScene(0);
-	}
-
-	return BaseObject::Release();
-}
-
 void SceneNode::SetVisible(bool isVisible)
 {
 	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
@@ -963,6 +948,62 @@ void SceneNode::SetVisible(bool isVisible)
 		{
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isVisible);
+	}
+}
+
+void SceneNode::SetLodVisible(bool isLodVisible)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isLodVisible) 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE_LOD);
+		}
+	}
+	else 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE_LOD);
+		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isLodVisible);
+	}
+}
+
+void SceneNode::SetSwitchVisible(bool isSwitchVisible)
+{
+	RenderComponent * renderComponent = (RenderComponent *)GetComponent(Component::RENDER_COMPONENT);
+	if(isSwitchVisible) 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() | RenderObject::VISIBLE_SWITCH);
+		}
+	}
+	else 
+	{
+		if(renderComponent)
+		{
+			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE_SWITCH);
+		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetVisible(isSwitchVisible);
 	}
 }
 
@@ -984,6 +1025,12 @@ void SceneNode::SetUpdatable(bool isUpdatable)
 		{
 			renderComponent->GetRenderObject()->SetFlags(renderComponent->GetRenderObject()->GetFlags() & ~RenderObject::VISIBLE);
 		}
+	}
+
+	int32 count = GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		GetChild(i)->SetUpdatable(isUpdatable);
 	}
 }
 

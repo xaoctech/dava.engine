@@ -18,6 +18,10 @@
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
+		E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */; };
+		E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92716C54A36006BEFF4 /* SpriteObject.h */; };
+		E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */; };
+		E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92916C54A36006BEFF4 /* SpriteRenderBatch.h */; };
 		E8B3CA7E16B9326E002BD35F /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7A216B9326D002BD35F /* AnimatedObject.cpp */; };
 		E8B3CA7F16B9326E002BD35F /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7A316B9326D002BD35F /* AnimatedObject.h */; };
 		E8B3CA8016B9326E002BD35F /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7A416B9326D002BD35F /* Animation.cpp */; };
@@ -504,8 +508,6 @@
 		E8B3CCB916B9326E002BD35F /* BaseProcessSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */; };
 		E8B3CCBA16B9326E002BD35F /* DebugRenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */; };
 		E8B3CCBB16B9326E002BD35F /* DebugRenderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */; };
-		E8B3CCBC16B9326E002BD35F /* DeleteSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */; };
-		E8B3CCBD16B9326E002BD35F /* DeleteSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0316B9326E002BD35F /* DeleteSystem.h */; };
 		E8B3CCBE16B9326E002BD35F /* EventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0416B9326E002BD35F /* EventSystem.cpp */; };
 		E8B3CCBF16B9326E002BD35F /* EventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA0516B9326E002BD35F /* EventSystem.h */; };
 		E8B3CCC016B9326E002BD35F /* LightUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA0616B9326E002BD35F /* LightUpdateSystem.cpp */; };
@@ -658,6 +660,10 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
+		E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteObject.cpp; sourceTree = "<group>"; };
+		E89CE92716C54A36006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
+		E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
+		E89CE92916C54A36006BEFF4 /* SpriteRenderBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteRenderBatch.h; sourceTree = "<group>"; };
 		E8B3C7A216B9326D002BD35F /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		E8B3C7A316B9326D002BD35F /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		E8B3C7A416B9326D002BD35F /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -1144,8 +1150,6 @@
 		E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseProcessSystem.h; sourceTree = "<group>"; };
 		E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DebugRenderSystem.cpp; sourceTree = "<group>"; };
 		E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugRenderSystem.h; sourceTree = "<group>"; };
-		E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteSystem.cpp; sourceTree = "<group>"; };
-		E8B3CA0316B9326E002BD35F /* DeleteSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteSystem.h; sourceTree = "<group>"; };
 		E8B3CA0416B9326E002BD35F /* EventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventSystem.cpp; sourceTree = "<group>"; };
 		E8B3CA0516B9326E002BD35F /* EventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventSystem.h; sourceTree = "<group>"; };
 		E8B3CA0616B9326E002BD35F /* LightUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightUpdateSystem.cpp; sourceTree = "<group>"; };
@@ -1869,6 +1873,10 @@
 				E8B3C94716B9326E002BD35F /* ShadowVolume.h */,
 				E8B3C94816B9326E002BD35F /* ShadowVolumeRenderPass.cpp */,
 				E8B3C94916B9326E002BD35F /* ShadowVolumeRenderPass.h */,
+				E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */,
+				E89CE92716C54A36006BEFF4 /* SpriteObject.h */,
+				E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */,
+				E89CE92916C54A36006BEFF4 /* SpriteRenderBatch.h */,
 			);
 			path = Highlevel;
 			sourceTree = "<group>";
@@ -2027,8 +2035,6 @@
 				E8B3C9FF16B9326E002BD35F /* BaseProcessSystem.h */,
 				E8B3CA0016B9326E002BD35F /* DebugRenderSystem.cpp */,
 				E8B3CA0116B9326E002BD35F /* DebugRenderSystem.h */,
-				E8B3CA0216B9326E002BD35F /* DeleteSystem.cpp */,
-				E8B3CA0316B9326E002BD35F /* DeleteSystem.h */,
 				E8B3CA0416B9326E002BD35F /* EventSystem.cpp */,
 				E8B3CA0516B9326E002BD35F /* EventSystem.h */,
 				E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */,
@@ -2492,7 +2498,6 @@
 				E8B3CCB716B9326E002BD35F /* SwitchNode.h in Headers */,
 				E8B3CCB916B9326E002BD35F /* BaseProcessSystem.h in Headers */,
 				E8B3CCBB16B9326E002BD35F /* DebugRenderSystem.h in Headers */,
-				E8B3CCBD16B9326E002BD35F /* DeleteSystem.h in Headers */,
 				E8B3CCBF16B9326E002BD35F /* EventSystem.h in Headers */,
 				E8B3CCC116B9326E002BD35F /* LightUpdateSystem.h in Headers */,
 				E8B3CCC316B9326E002BD35F /* LodSystem.h in Headers */,
@@ -2552,6 +2557,8 @@
 				E8B3CD3116B9326E002BD35F /* UTF8Utils.h in Headers */,
 				E8B3CD3316B9326E002BD35F /* Utils.h in Headers */,
 				E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */,
+				E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */,
+				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2844,7 +2851,6 @@
 				E8B3CCB616B9326E002BD35F /* SwitchNode.cpp in Sources */,
 				E8B3CCB816B9326E002BD35F /* BaseProcessSystem.cpp in Sources */,
 				E8B3CCBA16B9326E002BD35F /* DebugRenderSystem.cpp in Sources */,
-				E8B3CCBC16B9326E002BD35F /* DeleteSystem.cpp in Sources */,
 				E8B3CCBE16B9326E002BD35F /* EventSystem.cpp in Sources */,
 				E8B3CCC016B9326E002BD35F /* LightUpdateSystem.cpp in Sources */,
 				E8B3CCC216B9326E002BD35F /* LodSystem.cpp in Sources */,
@@ -2903,6 +2909,8 @@
 				E8B3CD3416B9326E002BD35F /* UtilsMacOS.mm in Sources */,
 				E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */,
 				E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */,
+				E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */,
+				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

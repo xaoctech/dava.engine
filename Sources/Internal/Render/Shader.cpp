@@ -468,10 +468,16 @@ void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &vector.x));
 }
 
-void Shader::SetUniformValue(int32 uniformLocation, const Color & color)
+void Shader::SetUniformColor3(int32 uniformLocation, const Color & color)
 {
     DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &color.r));
+}
+
+void Shader::SetUniformColor4(int32 uniformLocation, const Color & color)
+{
+    DVASSERT(uniformLocation >= 0);
+    RENDER_VERIFY(glUniform4fv(uniformLocation, 1, &color.r));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector4 & vector)
@@ -499,7 +505,11 @@ int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
 void Shader::DeleteShaders()
 {
     RenderManager::Instance()->LockNonMain();
-
+    DVASSERT(vertexShader != 0);  
+    DVASSERT(fragmentShader != 0);
+    DVASSERT(program != 0);
+    
+    
     RENDER_VERIFY(glDetachShader(program, vertexShader));
     RENDER_VERIFY(glDetachShader(program, fragmentShader));
     RENDER_VERIFY(glDeleteShader(vertexShader));

@@ -64,6 +64,10 @@
 #include "Render/Highlevel/LandscapeNode.h"
 #include "Render/Highlevel/ShadowVolume.h"
 
+#include "Scene3D/SpriteNode.h"
+#include "Render/Highlevel/SpriteObject.h"
+
+
 namespace DAVA
 {
     
@@ -692,14 +696,24 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
             {
                 SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
+				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
                 
-                Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+				parent->InsertBeforeNode(childNode, currentNode);
                 parent->RemoveNode(currentNode);
-                parent->AddNode(childNode);
                 
                 childNode->SetName(currentName);
+				//merge custom properties
+				KeyedArchive * newProperties = childNode->GetCustomProperties();
+				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+				{
+					newProperties->SetVariant(it->first, it->second);
+				}
                 removedNodeCount++;
                 SafeRelease(childNode);
+				SafeRelease(currentProperties);
                 return true;
             }
             //RemoveEmptyHierarchy(childNode);
@@ -793,7 +807,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         
 		if(parent)
 		{
-			parent->AddNode(newMeshInstanceNode);
+			parent->InsertBeforeNode(newMeshInstanceNode, oldMeshInstanceNode);
 			parent->RemoveNode(oldMeshInstanceNode);
 		}
 		else
@@ -841,7 +855,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, lod);
 			parent->RemoveNode(lod);
 		}
 
@@ -869,7 +883,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEmitterNode);
 			parent->RemoveNode(particleEmitterNode);
 		}
 
@@ -888,7 +902,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, particleEffectNode);
 			parent->RemoveNode(particleEffectNode);
 		}
 
@@ -902,7 +916,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	if(sw)
 	{
 		SceneNode * newNode = new SceneNode();
-		sw->Clone(newNode);
+		sw->SceneNode::Clone(newNode);
 
 		SwitchComponent * swConponent = new SwitchComponent();
 		newNode->AddComponent(swConponent);
@@ -912,14 +926,40 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		DVASSERT(parent);
 		if(parent)
 		{
-			parent->AddNode(newNode);
+			parent->InsertBeforeNode(newNode, sw);
 			parent->RemoveNode(sw);
 		}
-		sw->SetSwitchIndex(0);
 
 		newNode->Release();
 		return true;
 	}
+
+	SpriteNode * spr = dynamic_cast<SpriteNode*>(node);
+	if(spr)
+	{
+		SceneNode * newNode = new SceneNode();
+		spr->Clone(newNode);
+
+		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
+		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
+
+		newNode->AddComponent(new RenderComponent(spriteObject));
+		newNode->AddComponent(new TransformComponent());
+
+
+		SceneNode * parent = spr->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, spr);
+			parent->RemoveNode(spr);
+		}
+
+		spriteObject->Release();
+		newNode->Release();
+		return true;
+	}
+
 
 	return false;
 } 
