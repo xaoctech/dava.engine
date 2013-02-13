@@ -620,7 +620,7 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
      uint32 flags;
 */
     
-void Camera::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Camera::Save(KeyedArchive * archive)
 {
     BaseObject::Save(archive);
     
@@ -647,7 +647,7 @@ void Camera::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
 }
 
-void Camera::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+void Camera::Load(KeyedArchive * archive)
 {
     BaseObject::Load(archive);
     
