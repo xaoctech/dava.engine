@@ -7,19 +7,17 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
-	//int j = 0;
 	while(NULL != _info && object)
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
 			const DAVA::IntrospectionMember *member = _info->Member(i);
-			if(member)
+			if(member && (member->Flags() & (DAVA::INTROSPECTION_EDITOR | DAVA::INTROSPECTION_EDITOR_READONLY)))
 			{
                 AddMember(member);
 			}
 		}
 
-		//j += _info->MembersCount();
 		_info = _info->BaseInfo();
 	}
 

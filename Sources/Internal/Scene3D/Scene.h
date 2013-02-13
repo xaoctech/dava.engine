@@ -72,7 +72,6 @@ class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
 class UpdatableSystem;
-class DeleteSystem;
 class LightUpdateSystem;
 class SwitchSystem;
     
@@ -114,7 +113,6 @@ public:
 	ParticleEmitterSystem * particleEmitterSystem;
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
-	DeleteSystem * deleteSystem;
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;

@@ -1096,8 +1096,8 @@ const MetaInfo* VariantType::Meta()
 	{
 		return variantNamesMap[type].variantMeta;
 	}
-	else
-		return NULL;
+
+	return NULL;
 }
 
 VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)

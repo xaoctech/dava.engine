@@ -88,6 +88,12 @@ public:
         \returns frame index that was set for this node last time
      */
     int32 GetFrame();
+
+	Sprite * GetSprite() const;
+	const Vector2& GetScale() const;
+	const Vector2& GetPivot() const;
+
+
 protected:
     
     void CreateMeshFromSprite(int32 frameToGen);

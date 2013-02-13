@@ -37,6 +37,8 @@
 
 namespace DAVA
 {
+
+REGISTER_CLASS(RenderBatch)
     
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
@@ -80,7 +82,6 @@ void RenderBatch::SetMaterial(Material * _material)
     material = SafeRetain(_material);
 }
 
-static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
     
 void RenderBatch::Draw(Camera * camera)
 {
@@ -92,7 +93,7 @@ void RenderBatch::Draw(Camera * camera)
     }
     
     uint32 flags = renderObject->GetFlags();
-    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+    if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
         return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();

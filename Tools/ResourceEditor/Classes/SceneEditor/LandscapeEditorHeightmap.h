@@ -12,6 +12,7 @@ class EditorScene;
 class EditorHeightmap;
 class EditorLandscapeNode;
 class LandscapesController;
+class CommandDrawHeightmap;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -35,6 +36,8 @@ public:
     virtual void TextureWillChanged(const String &forKey);
     virtual void TextureDidChanged(const String &forKey);
 
+	void GetHeightmap(Heightmap** heightmap);
+	void UpdateHeightmap(Heightmap* heightmap);
     
 protected:
 
@@ -80,6 +83,8 @@ protected:
     
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
+
+	CommandDrawHeightmap* command;
 };
 
 

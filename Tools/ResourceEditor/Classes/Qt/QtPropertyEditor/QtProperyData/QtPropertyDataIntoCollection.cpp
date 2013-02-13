@@ -2,7 +2,7 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
-QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::IntrospectionCollectionBase *_collection)
+QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, const DAVA::IntrospectionCollection *_collection)
 	: object(_object)
 	, collection(_collection)
 {
@@ -10,7 +10,7 @@ QtPropertyDataIntroCollection::QtPropertyDataIntroCollection(void *_object, cons
 	{
 		int index = 0;
 		DAVA::MetaInfo *valueType = collection->ItemType();
-		DAVA::IntrospectionCollectionBase::Iterator i = collection->Begin(object);
+		DAVA::IntrospectionCollection::Iterator i = collection->Begin(object);
 		while(NULL != i)
 		{
 			if(NULL != valueType->GetIntrospection())

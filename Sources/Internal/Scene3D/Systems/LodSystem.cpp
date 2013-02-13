@@ -67,7 +67,7 @@ void LodSystem::UpdateEntityAfterLoad(SceneNode * entity)
 			SceneNode * childEntity = entity->GetChild(ld.indexes[idx]);
 			ld.nodes.push_back(childEntity);
 			{
-				childEntity->SetUpdatable(false);
+				childEntity->SetLodVisible(false);
 			}
 		}
 	}
@@ -111,13 +111,13 @@ void LodSystem::UpdateLod(SceneNode * entity)
 			int32 size = oldLod->nodes.size();
 			for (int i = 0; i < size; i++) 
 			{
-				oldLod->nodes[i]->SetUpdatable(false);
+				oldLod->nodes[i]->SetLodVisible(false);
 			}
 		}
 		int32 size = lodComponent->currentLod->nodes.size();
 		for (int i = 0; i < size; i++) 
 		{
-			lodComponent->currentLod->nodes[i]->SetUpdatable(true);
+			lodComponent->currentLod->nodes[i]->SetLodVisible(true);
 		}
 	}
 }

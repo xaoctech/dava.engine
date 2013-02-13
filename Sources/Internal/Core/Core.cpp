@@ -43,7 +43,6 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
-#include "Scene3D/Systems/DeleteSystem.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -132,7 +131,6 @@ void Core::CreateSingletons()
 #endif //#if defined __DAVAENGINE_IPHONE__
 	
 	new UIScreenManager();
-	new DeleteSystem();
 
 #ifdef __DAVAENGINE_AUTOTESTING__
     new AutotestingSystem();
