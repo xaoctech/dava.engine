@@ -34,7 +34,16 @@ void CreatePlatformDlg::accept()
 	const QString platformName = GetPlatformName();
 	if (!platformName.isNull() && !platformName.isEmpty())
 	{
-		QDialog::accept();
+		if (GetHeight() > 0 && GetWidth() > 0)
+		{
+			QDialog::accept();
+		}
+		else
+		{
+			QMessageBox msgBox;
+			msgBox.setText(tr("Platform height and weight should have non-zero value!"));
+			msgBox.exec();
+		}
 	}
 	else
 	{

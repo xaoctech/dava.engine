@@ -415,6 +415,26 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>valuePosition</tabstop>
+  <tabstop>valueSpin</tabstop>
+  <tabstop>minValueSpin</tabstop>
+  <tabstop>maxValueSpin</tabstop>
+  <tabstop>thumbSpriteLineEdit</tabstop>
+  <tabstop>openThumbSpriteButton</tabstop>
+  <tabstop>removeThumbSpriteButton</tabstop>
+  <tabstop>thumbFrameSpinBox</tabstop>
+  <tabstop>minSpriteLineEdit</tabstop>
+  <tabstop>openMinSpriteButton</tabstop>
+  <tabstop>removeMinSpriteButton</tabstop>
+  <tabstop>minFrameSpinBox</tabstop>
+  <tabstop>minDrawTypeComboBox</tabstop>
+  <tabstop>maxSpriteLineEdit</tabstop>
+  <tabstop>openMaxSpriteButton</tabstop>
+  <tabstop>removeMaxSpriteButton</tabstop>
+  <tabstop>maxFrameSpinBox</tabstop>
+  <tabstop>maxDrawTypeComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

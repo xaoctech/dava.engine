@@ -147,6 +147,14 @@
    <header>qcolorbutton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>localizationKeyNameLineEdit</tabstop>
+  <tabstop>localizationKeyTextLineEdit</tabstop>
+  <tabstop>textForAllStatesCheckBox</tabstop>
+  <tabstop>fontSelectButton</tabstop>
+  <tabstop>fontSizeSpinBox</tabstop>
+  <tabstop>fontColorButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

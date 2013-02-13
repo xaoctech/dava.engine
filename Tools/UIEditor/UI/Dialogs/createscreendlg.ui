@@ -76,6 +76,11 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>platformsCombo</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

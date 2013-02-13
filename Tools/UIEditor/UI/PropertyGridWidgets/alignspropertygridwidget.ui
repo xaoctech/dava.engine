@@ -305,6 +305,20 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>leftAlignCheckBox</tabstop>
+  <tabstop>leftAlignSpinBox</tabstop>
+  <tabstop>hcenterAlignCheckBox</tabstop>
+  <tabstop>hcenterAlignSpinBox</tabstop>
+  <tabstop>rightAlignCheckBox</tabstop>
+  <tabstop>rigthAlignSpinBox</tabstop>
+  <tabstop>topAlignCheckBox</tabstop>
+  <tabstop>topAlignSpinBox</tabstop>
+  <tabstop>vcenterAlignCheckBox</tabstop>
+  <tabstop>vcenterAlignSpinBox</tabstop>
+  <tabstop>bottomAlignCheckBox</tabstop>
+  <tabstop>bottomAlignSpinBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
