@@ -566,8 +566,7 @@ void SceneDataManager::CollectTexture(Map<String, Texture *> &textures, const St
 {
 	if(!name.empty() && SceneValidator::Instance()->IsPathCorrectForProject(name))
 	{
-        String descriptorName = TextureDescriptor::GetDescriptorPathname(name);
-		textures[descriptorName] = tex;
+		textures[name] = tex;
 	}
 }
 
