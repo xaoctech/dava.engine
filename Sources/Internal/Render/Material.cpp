@@ -74,6 +74,7 @@ Light * InstanceMaterialState::GetLight(int32 lightIndex)
 
 void InstanceMaterialState::SetLightmap(Texture * _lightMapTexture, const String & _lightmapName)
 {
+    SafeRelease(lightmapTexture);
     lightmapTexture = SafeRetain(_lightMapTexture);
     lightmapName = _lightmapName;
 }
