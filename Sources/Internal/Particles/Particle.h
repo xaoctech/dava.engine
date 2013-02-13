@@ -90,6 +90,7 @@ public:
 	void CleanupForces();
 
 	int32	frame;
+	float32 frameLastUpdateTime;
 	
 	friend class ParticleEmitter;
 	
