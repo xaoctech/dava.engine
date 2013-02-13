@@ -11,7 +11,6 @@
 
 #include "LayerParticleEditorNode.h"
 #include "ForceParticleEditorNode.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 using namespace DAVA;
 
@@ -36,7 +35,7 @@ QString LayerParticleEditorNode::GetName() const
 
 int32 LayerParticleEditorNode::GetLayerIndex() const
 {
-    ParticleEmitter* emitter = GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = GetParticleEmitter();
     if (!emitter)
     {
         return -1;

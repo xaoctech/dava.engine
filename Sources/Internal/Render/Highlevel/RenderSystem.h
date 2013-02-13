@@ -45,6 +45,7 @@ class RenderBatch;
 class SceneNode;
 class Camera;
 class Light;
+class ParticleEmitterSystem;
     
 class RenderSystem
 {
@@ -121,6 +122,7 @@ private:
     FastNameMap<RenderLayer*> renderLayersMap;
     
     Vector<RenderObject*> renderObjectArray;
+	Vector<RenderObject*> particleEmitterArray;
     Vector<Light*> lights;
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
@@ -129,6 +131,7 @@ private:
     Camera * camera;
     //Vector<RenderObject*> forRemove;
     
+	ParticleEmitterSystem * particleEmitterSystem;
     
     friend class RenderPass;
 };

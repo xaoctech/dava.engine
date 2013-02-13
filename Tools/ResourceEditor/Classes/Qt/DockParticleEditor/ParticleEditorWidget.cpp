@@ -13,8 +13,6 @@
 #include "ui_mainwindow.h"
 #include <QScrollBar>
 
-#include "Scene3D/Components/ParticleEmitterComponent.h"
-
 ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	QScrollArea(parent)
 {
@@ -59,12 +57,12 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter = GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
+
 		if (emitterPropertiesWidget &&
 			emitterPropertiesWidget->GetEmitter() == emitter)
 			return;
@@ -106,12 +104,11 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter =  GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
 		if (emitterLayerWidget &&
 			emitterLayerWidget->GetLayer() == layer &&
 			emitterLayerWidget->GetEmitter() == emitter)
@@ -154,12 +151,11 @@ void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter =  GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
 		if (layerForceWidget &&
 			layerForceWidget->GetLayer() == layer &&
 			layerForceWidget->GetForceIndex() == forceIndex &&
