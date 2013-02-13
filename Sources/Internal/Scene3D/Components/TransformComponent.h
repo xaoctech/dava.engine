@@ -27,7 +27,10 @@ public:
 
 	void SetLocalTransform(const Matrix4 * transform);
 	void SetParent(SceneNode * node);
+
     virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive);
+	virtual void Deserialize(KeyedArchive *archive);
 
 private:
 	Matrix4 localMatrix;

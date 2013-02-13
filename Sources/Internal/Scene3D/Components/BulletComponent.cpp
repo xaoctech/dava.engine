@@ -35,6 +35,14 @@ BaseObject * BulletComponent::GetBulletObject()
 	return bulletObject;
 }
 
+void BulletComponent::Serialize(KeyedArchive *archive)
+{
+	Component::Serialize(archive);
+}
 
+void BulletComponent::Deserialize(KeyedArchive *archive)
+{
+	Component::Deserialize(archive);
+}
 
 }

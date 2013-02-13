@@ -582,7 +582,16 @@ const Map<String, VariantType*> & KeyedArchive::GetArchieveData() const
 {
     return objectMap;
 }
-    
+
+const char* KeyedArchive::GenKeyFromIndex(uint32 index)
+{
+	static char tmpKey[32];
+
+	sprintf(tmpKey, "%04u", index);
+	return tmpKey;
+}
+
+
 
 
 	
