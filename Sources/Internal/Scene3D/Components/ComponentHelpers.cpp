@@ -2,22 +2,34 @@
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
 
+RenderObject * GetRenerObject(SceneNode * fromEntity)
+{
+	RenderObject * object = 0;
+
+	RenderComponent * component = static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+	if(component)
+	{
+		object = component->GetRenderObject();
+	}
+
+	return object;
+}
+
 ParticleEmitter * GetEmitter(SceneNode * fromEntity)
 {
-	RenderComponent * component = static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
-	if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+	RenderObject * object = GetRenerObject(fromEntity);
+	ParticleEmitter * emitter = 0;
+	if(object && object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 	{
-		ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
-		return emitter;
+		emitter = static_cast<ParticleEmitter*>(object);
 	}
-	else
-	{
-		return 0;
-	}
+
+	return emitter;
 }
 
 }
