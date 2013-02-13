@@ -218,18 +218,6 @@ void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject *, void *, void *)
 }
 
 
-void SceneGraph::OnLookAtButtonPressed(BaseObject *, void *, void *)
-{
-    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(workingNode);
-    if (mesh)
-    {
-        AABBox3 bbox = mesh->GetBoundingBox();
-        AABBox3 transformedBox;
-        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
-        Vector3 center = transformedBox.GetCenter();
-        workingScene->GetCurrentCamera()->SetTarget(center);
-    }
-}
 
 void SceneGraph::OnBakeMatricesPressed(BaseObject *, void *, void *)
 {

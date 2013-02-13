@@ -161,4 +161,32 @@ void LodComponent::GetLodData(List<LodData*> &retLodLayers)
 }
 
     
+void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
+{
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
+    
+    if(INVALID_DISTANCE != distance)
+    {
+        float32 nearDistance = distance * 0.95f;
+        float32 farDistance = distance * 1.05f;
+        
+        if(GetLodLayersCount() - 1 == layerNum)
+        {
+            lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * 2);
+        }
+        if(layerNum)
+        {
+            lodLayersArray[layerNum-1].SetFarDistance(farDistance);
+        }
+        
+        lodLayersArray[layerNum].SetDistance(distance);
+        lodLayersArray[layerNum].SetNearDistance(nearDistance);
+    }
+    else 
+    {
+        lodLayersArray[layerNum].SetDistance(distance);
+    }
+}
+
+    
 };
