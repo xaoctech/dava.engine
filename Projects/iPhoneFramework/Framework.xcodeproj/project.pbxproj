@@ -17,6 +17,8 @@
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
+		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
 		E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */; };
 		E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92716C54A36006BEFF4 /* SpriteObject.h */; };
@@ -436,8 +438,6 @@
 		E8B3CC7116B9326E002BD35F /* LodComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9B616B9326E002BD35F /* LodComponent.h */; };
 		E8B3CC7216B9326E002BD35F /* ParticleEffectComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C9B716B9326E002BD35F /* ParticleEffectComponent.cpp */; };
 		E8B3CC7316B9326E002BD35F /* ParticleEffectComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9B816B9326E002BD35F /* ParticleEffectComponent.h */; };
-		E8B3CC7416B9326E002BD35F /* ParticleEmitterComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C9B916B9326E002BD35F /* ParticleEmitterComponent.cpp */; };
-		E8B3CC7516B9326E002BD35F /* ParticleEmitterComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9BA16B9326E002BD35F /* ParticleEmitterComponent.h */; };
 		E8B3CC7616B9326E002BD35F /* RenderComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C9BB16B9326E002BD35F /* RenderComponent.cpp */; };
 		E8B3CC7716B9326E002BD35F /* RenderComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C9BC16B9326E002BD35F /* RenderComponent.h */; };
 		E8B3CC7816B9326E002BD35F /* SwitchComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C9BD16B9326E002BD35F /* SwitchComponent.cpp */; };
@@ -657,6 +657,8 @@
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
+		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
@@ -1078,8 +1080,6 @@
 		E8B3C9B616B9326E002BD35F /* LodComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodComponent.h; sourceTree = "<group>"; };
 		E8B3C9B716B9326E002BD35F /* ParticleEffectComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEffectComponent.cpp; sourceTree = "<group>"; };
 		E8B3C9B816B9326E002BD35F /* ParticleEffectComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffectComponent.h; sourceTree = "<group>"; };
-		E8B3C9B916B9326E002BD35F /* ParticleEmitterComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterComponent.cpp; sourceTree = "<group>"; };
-		E8B3C9BA16B9326E002BD35F /* ParticleEmitterComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterComponent.h; sourceTree = "<group>"; };
 		E8B3C9BB16B9326E002BD35F /* RenderComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderComponent.cpp; sourceTree = "<group>"; };
 		E8B3C9BC16B9326E002BD35F /* RenderComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderComponent.h; sourceTree = "<group>"; };
 		E8B3C9BD16B9326E002BD35F /* SwitchComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchComponent.cpp; sourceTree = "<group>"; };
@@ -2002,6 +2002,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */,
+				CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */,
 				E8B3C9AD16B9326E002BD35F /* BulletComponent.cpp */,
 				E8B3C9AE16B9326E002BD35F /* BulletComponent.h */,
 				E8B3C9AF16B9326E002BD35F /* CameraComponent.cpp */,
@@ -2014,8 +2016,6 @@
 				E8B3C9B616B9326E002BD35F /* LodComponent.h */,
 				E8B3C9B716B9326E002BD35F /* ParticleEffectComponent.cpp */,
 				E8B3C9B816B9326E002BD35F /* ParticleEffectComponent.h */,
-				E8B3C9B916B9326E002BD35F /* ParticleEmitterComponent.cpp */,
-				E8B3C9BA16B9326E002BD35F /* ParticleEmitterComponent.h */,
 				E8B3C9BB16B9326E002BD35F /* RenderComponent.cpp */,
 				E8B3C9BC16B9326E002BD35F /* RenderComponent.h */,
 				E8B3C9BD16B9326E002BD35F /* SwitchComponent.cpp */,
@@ -2461,7 +2461,6 @@
 				E8B3CC6F16B9326E002BD35F /* LightComponent.h in Headers */,
 				E8B3CC7116B9326E002BD35F /* LodComponent.h in Headers */,
 				E8B3CC7316B9326E002BD35F /* ParticleEffectComponent.h in Headers */,
-				E8B3CC7516B9326E002BD35F /* ParticleEmitterComponent.h in Headers */,
 				E8B3CC7716B9326E002BD35F /* RenderComponent.h in Headers */,
 				E8B3CC7916B9326E002BD35F /* SwitchComponent.h in Headers */,
 				E8B3CC7B16B9326E002BD35F /* TransformComponent.h in Headers */,
@@ -2559,6 +2558,7 @@
 				E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */,
 				E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
+				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2816,7 +2816,6 @@
 				E8B3CC6E16B9326E002BD35F /* LightComponent.cpp in Sources */,
 				E8B3CC7016B9326E002BD35F /* LodComponent.cpp in Sources */,
 				E8B3CC7216B9326E002BD35F /* ParticleEffectComponent.cpp in Sources */,
-				E8B3CC7416B9326E002BD35F /* ParticleEmitterComponent.cpp in Sources */,
 				E8B3CC7616B9326E002BD35F /* RenderComponent.cpp in Sources */,
 				E8B3CC7816B9326E002BD35F /* SwitchComponent.cpp in Sources */,
 				E8B3CC7A16B9326E002BD35F /* TransformComponent.cpp in Sources */,
@@ -2911,6 +2910,7 @@
 				E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */,
 				E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
+				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

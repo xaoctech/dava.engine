@@ -72,32 +72,6 @@ protected:
 };
 
 
-class CommandBakeMatrixes: public Command
-{
-    
-public:
-	CommandBakeMatrixes();
-    
-protected:
-    
-    virtual void Execute();
-    virtual void Cancel();
-    
-private:
-    
-    SceneData * activeScene;
-};
-
-class CommandBuildQuadTree: public Command
-{
-    
-public:
-	CommandBuildQuadTree();
-    
-protected:
-    
-    virtual void Execute();
-};
 
 
 
