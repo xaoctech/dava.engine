@@ -325,6 +325,7 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp" />
+    <ClCompile Include="Classes\Commands\EditCommands.cpp" />
     <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp" />
@@ -797,6 +798,7 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\CustomColorCommands.h" />
+    <ClInclude Include="Classes\Commands\EditCommands.h" />
     <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h" />

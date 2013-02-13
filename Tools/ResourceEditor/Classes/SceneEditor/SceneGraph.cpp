@@ -12,8 +12,8 @@
 #include "../Qt/Main/QtUtils.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 
-#include "CommandsManager.h"
-#include "SceneGraphCommands.h"
+#include "../Commands/CommandsManager.h"
+#include "../Commands/SceneGraphCommands.h"
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
