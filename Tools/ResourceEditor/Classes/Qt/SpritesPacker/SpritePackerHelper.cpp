@@ -15,38 +15,7 @@ SpritePackerHelper::SpritePackerHelper()
 }
 
 void SpritePackerHelper::UpdateParticleSprites()
-{/*
-    String projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(projectPath.empty())
-    {
-        Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
-        return;
-    }
-    
-	SpritesPacker packer;
-	packer.SetInputDir(projectPath+"DataSource/Gfx/Particles");
-	packer.SetOutputDir(projectPath+"Data/Gfx/Particles");
-	packer.Pack();
-	List<SceneData *> foundedItems;
-	for(int32 i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
-	{
-		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
-		if(NULL != sceneData)
-		{
-			foundedItems.push_back(sceneData);
-			
-		}
-	}
-	uint32 count = 0;
-	for(List<SceneData*>::const_iterator it = foundedItems.begin(); it != foundedItems.end(); ++it)
-	{
-		// All the Particle Effects must be re-started after sprites are reloaded to avoid
-		// issue like DF-545.
-		ReloadParticleSprites(*it);
-		//emit repackStatus(++count,foundedItems.size());
-	}
-
-	ParticlesEditorController::Instance()->RefreshSelectedNode();*/
+{
 	String projectPath = EditorSettings::Instance()->GetProjectPath();
     if(projectPath.empty())
     {

@@ -25,8 +25,6 @@ signals:
 
 	void readyAll();
 
-	//void repackStatus(int curJob, int jobCount);
-
 protected: 
 	
 	void ReloadParticleSprites(SceneData* sceneData);
@@ -35,8 +33,9 @@ protected:
 	QFutureWatcher<void> watcher;
 
 private slots:
-	void threadRepackAllFinished();
+	
+    void threadRepackAllFinished();
 	
 };
 };
-#endif /* defined(__ResourceEditorQt__ParticlesEditorSpritePackerHelper__) */
+#endif /* __ResourceEditorQt__ParticlesEditorSpritePackerHelper__ */
