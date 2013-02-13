@@ -556,7 +556,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->Load(archive, this);
         
         Camera * cameraObject = new Camera();
-        cameraObject->Load(archive, this);
+        cameraObject->Load(archive);
         
         node->AddComponent(new CameraComponent(cameraObject));
         parent->AddNode(node);
