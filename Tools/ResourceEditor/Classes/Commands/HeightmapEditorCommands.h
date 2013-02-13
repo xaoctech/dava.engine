@@ -31,8 +31,7 @@ protected:
 	LandscapeEditorHeightmap* GetEditor();
 
 	String TimeString();
-	String SaveHeightmap(Heightmap* heightmap, String suffix);
-	String GetRandomString(uint32 len);
+	String SaveHeightmap(Heightmap* heightmap);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORCOMMANDS__) */

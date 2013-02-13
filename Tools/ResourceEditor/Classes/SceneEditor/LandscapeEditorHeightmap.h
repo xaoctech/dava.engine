@@ -36,7 +36,7 @@ public:
     virtual void TextureWillChanged(const String &forKey);
     virtual void TextureDidChanged(const String &forKey);
 
-	void GetHeightmap(Heightmap** heightmap);
+	Heightmap* GetHeightmap();
 	void UpdateHeightmap(Heightmap* heightmap);
     
 protected:

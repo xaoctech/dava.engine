@@ -181,6 +181,11 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionDefault
                                        );
 
+	//Edit Options
+	connect(ui->actionUndo, SIGNAL(triggered()), actionHandler, SLOT(UndoAction()));
+	connect(ui->actionRedo, SIGNAL(triggered()), actionHandler, SLOT(RedoAction()));
+	actionHandler->RegisterEditActions(ResourceEditor::EDIT_COUNT, ui->actionUndo, ui->actionRedo);
+
     //View Options
     connect(ui->menuViewOptions, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuViewOptionsWillShow()));
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
@@ -231,11 +236,19 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/QtIcons/rulertool.png"));
     
  	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/QtIcons/notpassableterrain.png"));
-    
+
+	DecorateWithIcon(ui->actionUndo, QString::fromUtf8(":/QtIcons/edit_undo.png"));
+	DecorateWithIcon(ui->actionRedo, QString::fromUtf8(":/QtIcons/edit_redo.png"));
+
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
+
+	ui->mainToolBar->addAction(ui->actionUndo);
+	ui->mainToolBar->addAction(ui->actionRedo);
+	ui->mainToolBar->addSeparator();
+
     ui->mainToolBar->addAction(ui->actionMaterialEditor);
 
     ui->mainToolBar->addAction(ui->actionHeightMapEditor);

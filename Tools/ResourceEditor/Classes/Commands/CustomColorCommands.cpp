@@ -114,6 +114,7 @@ void CommandChangeColorCustomColors::Execute()
 CommandDrawCustomColors::CommandDrawCustomColors()
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Custom Color Draw";
 	redoImage = NULL;
 
 	LandscapeEditorCustomColors* editor = GetEditor();

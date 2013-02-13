@@ -375,9 +375,9 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
     }
 }
 
-void LandscapeEditorHeightmap::GetHeightmap(Heightmap** heightmap)
+Heightmap* LandscapeEditorHeightmap::GetHeightmap()
 {
-	*heightmap = landscapesController->GetCurrentHeightmap();
+	return landscapesController->GetCurrentHeightmap();
 }
 
 void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap)

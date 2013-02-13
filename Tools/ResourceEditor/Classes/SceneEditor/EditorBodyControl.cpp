@@ -263,11 +263,10 @@ void EditorBodyControl::PlaceOnLandscape()
 
 void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 {
-	LandscapeNode * ls = scene->GetLandscape(scene);
-	if (ls && node)
+	if (node)
 	{
 		CommandPlaceOnLandscape* command;
-		command = new CommandPlaceOnLandscape(node, ls);
+		command = new CommandPlaceOnLandscape(node, this);
 		CommandsManager::Instance()->Execute(command);
 		SafeRelease(command);
 	}
@@ -389,21 +388,6 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                 activeScene->SelectNode(NULL);
                 activeScene->RebuildSceneGraph();
             }
-			else
-			{
-				//TODO: remove this code. Undo/Redo should be application-wide hotkeys
-				if(UIEvent::PHASE_KEYCHAR == event->phase)
-				{
-					if(DVKEY_Z == event->tid && IsKeyModificatorPressed(DVKEY_CTRL))
-					{
-						CommandsManager::Instance()->Undo();
-					}
-					if(DVKEY_Z == event->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
-					{
-						CommandsManager::Instance()->Redo();
-					}
-				}
-			}
         }
 	}
 	
@@ -443,7 +427,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 						{//copy object
-							CommandCloneObject* command = new CommandCloneObject(selection, this);
+							CommandCloneObject* command = new CommandCloneObject(selection, this, scene->collisionWorld);
 							CommandsManager::Instance()->Execute(command);
 							SafeRelease(command);
 
@@ -485,7 +469,14 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
                     if(!landscape)
                     {
                         PrepareModMatrix(event->point);
-                        selection->SetLocalTransform(currTransform);
+
+						if (IsLandscapeRelative())
+						{
+							currTransform = currTransform * GetLandscapeOffset(currTransform);
+						}
+
+						selection->SetLocalTransform(currTransform);
+
                         if(currentGraph)
                         {
                             currentGraph->UpdateMatricesForCurrentNode();
@@ -504,11 +495,6 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 																			 modifiedNode->GetLocalTransform());
 				CommandsManager::Instance()->Execute(command);
 				SafeRelease(command);
-
-                if (IsLandscapeRelative())
-                {
-                    PlaceOnLandscape();
-                }
 
 				if (selection)
 				{
@@ -545,7 +531,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 	}
 
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
-	if (arrowsNode && arrowsNode->IsVisible() && !inTouch)
+	if (arrowsNode && arrowsNode->GetVisible() && !inTouch)
 	{
 		Vector3 from, dir;
 		GetCursorVectors(&from, &dir, event->point);
@@ -706,13 +692,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
 
 		ArrowsNode* arrowsNode = GetArrowsNode(true);
-		Camera* curCam = scene->GetCurrentCamera();
-		if (arrowsNode && curCam)
-		{
+		if (arrowsNode)
 			UpdateArrowsNode(selection);
-			Vector3 camPos = curCam->GetPosition();
-			arrowsNode->UpdateSize(camPos);
-		}
 	}
 	else
 	{
@@ -1353,7 +1334,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 
 void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
 {
-	ArrowsNode* arrowsNode = GetArrowsNode(true);
+	ArrowsNode* arrowsNode = GetArrowsNode(false);
 	if (node && arrowsNode)
 	{
 		if (node == arrowsNode)
@@ -1363,7 +1344,9 @@ void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
 		}
 
 		Matrix4 nodeWT = node->GetLocalTransform();
-		arrowsNode->SetPosition(nodeWT.GetTranslationVector());
+		Matrix4 arrowsNodeTransform;
+		arrowsNodeTransform.CreateTranslation(nodeWT.GetTranslationVector());
+		arrowsNode->SetLocalTransform(arrowsNodeTransform);
 		arrowsNode->SetVisible(true);
 		arrowsNode->SetActive(InModificationMode());
 	}
@@ -1450,15 +1433,36 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 		}
 
 		Matrix4 originalTransform = selectedNode->GetLocalTransform();
-		CommandTransformObject* command = new CommandTransformObject(selectedNode,
-																	 originalTransform,
-																	 originalTransform * modification);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		modification = originalTransform * modification;
 
 		if (IsLandscapeRelative())
 		{
-			PlaceOnLandscape(selectedNode);
+			modification = modification * GetLandscapeOffset(modification);
 		}
+
+		CommandTransformObject* command = new CommandTransformObject(selectedNode,
+																	 originalTransform,
+																	 modification);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
 	}
+}
+
+Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
+{
+	Matrix4 resTransform;
+	resTransform.Identity();
+
+	Vector3 p = Vector3(0, 0, 0) * transform;
+
+	Vector3 result;
+	LandscapeNode* landscape = scene->GetLandscape(scene);
+	bool res = landscape->PlacePoint(p, result);
+	if (res)
+	{
+		Vector3 offset = result - p;
+		resTransform.CreateTranslation(offset);
+	}
+
+	return resTransform;
 }

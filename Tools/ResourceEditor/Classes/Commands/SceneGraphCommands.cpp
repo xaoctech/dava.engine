@@ -5,7 +5,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
-
+#include "CommandsManager.h"
 
 using namespace DAVA;
 
@@ -13,6 +13,7 @@ CommandRemoveRootNodes::CommandRemoveRootNodes()
     :   Command(Command::COMMAND_UNDO_REDO)
     ,   activeScene(NULL)
 {
+	commandName = "Remove Root Nodes";
 }
 
 
@@ -119,45 +120,96 @@ void CommandLockAtObject::Execute()
 
 
 CommandRemoveSceneNode::CommandRemoveSceneNode()
-    :   Command(Command::COMMAND_UNDO_REDO)
-    ,   activeScene(NULL)
-	,	undoNode(NULL)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
-}
-
-CommandRemoveSceneNode::~CommandRemoveSceneNode()
-{
-	SafeRelease(undoNode);
 }
 
 void CommandRemoveSceneNode::Execute()
 {
-	if (!undoNode)
-	{
-		activeScene = SceneDataManager::Instance()->SceneGetActive();
-		SceneNode *node = activeScene->GetSelectedNode();
-		if (!node)
-		{
-			SetState(STATE_INVALID);
-			return;
-		}
+	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
+	SceneNode *node = activeScene->GetSelectedNode();
 
-		undoNode = SafeRetain(node);
-	}
-
-	activeScene->RemoveSceneNode(undoNode);
+	CommandInternalRemoveSceneNode* command = new CommandInternalRemoveSceneNode(node);
+	CommandsManager::Instance()->Execute(command);
+	SafeRelease(command);
 }
 
-void CommandRemoveSceneNode::Cancel()
+
+CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node)
+:	Command(Command::COMMAND_UNDO_REDO)
 {
-	if (undoNode)
+	commandName = "Remove Object";
+
+	this->node = SafeRetain(node);
+	if (node)
 	{
-		if (activeScene == SceneDataManager::Instance()->SceneGetActive())
+		nodeParent = node->GetParent();
+
+		if (nodeParent)
 		{
-			activeScene->AddSceneNode(undoNode);
-			activeScene->SelectNode(undoNode);
+			insertBeforeNode = NULL;
+
+			uint32 i = GetNodeIndex(node);
+			if (i < nodeParent->GetChildrenCount() - 1)
+				insertBeforeNode = nodeParent->GetChild(i + 1);
 		}
 	}
+}
+
+CommandInternalRemoveSceneNode::~CommandInternalRemoveSceneNode()
+{
+	SafeRelease(node);
+}
+
+void CommandInternalRemoveSceneNode::Execute()
+{
+	if (!node || !nodeParent)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+
+	nodeParent->RemoveNode(node);
+
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
+}
+
+void CommandInternalRemoveSceneNode::Cancel()
+{
+	if (!node || !nodeParent)
+		return;
+
+	if (insertBeforeNode)
+	{
+		uint32 i = GetNodeIndex(insertBeforeNode);
+		if (i < nodeParent->GetChildrenCount())
+			nodeParent->InsertBeforeNode(node, insertBeforeNode);
+		else
+			nodeParent->AddNode(node);
+	}
+	else
+		nodeParent->AddNode(node);
+
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
+
+	activeScene->SelectNode(node);
+}
+
+uint32 CommandInternalRemoveSceneNode::GetNodeIndex(SceneNode* node)
+{
+	if (!node || !nodeParent)
+		return (uint32)-1;
+
+	uint32 i = 0;
+	for (; i < nodeParent->GetChildrenCount(); ++i)
+	{
+		if (nodeParent->GetChild(i) == node)
+			break;
+	}
+
+	return i;
 }
 
 

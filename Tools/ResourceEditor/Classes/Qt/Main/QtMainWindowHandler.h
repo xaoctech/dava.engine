@@ -36,7 +36,8 @@ public:
     void RegisterDockActions(DAVA::int32 count, ...);
     void RegisterTextureFormatActions(DAVA::int32 count, ...);
 	void RegisterModificationActions(DAVA::int32 count, ...);
-    
+	void RegisterEditActions(DAVA::int32 count, ...);
+
     void SetResentMenu(QMenu *menu);
     void SetResentAncorAction(QAction *ancorAction);
 
@@ -61,6 +62,8 @@ public:
 	void SetPointButtonStateVisibilityTool(bool state);
 	void SetAreaButtonStateVisibilityTool(bool state);
 
+	void UpdateUndoActionsState();
+
 public slots:
     //menu
     void MenuToolsWillShow();
@@ -79,6 +82,10 @@ public slots:
     void ExportAsPVR();
     void ExportAsDXT();
     void SaveToFolderWithChilds();
+
+	//Edit
+	void UndoAction();
+	void RedoAction();
 
     //View
     void RestoreViews();
@@ -178,6 +185,7 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
     QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
 	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
+	QAction *editActions[ResourceEditor::EDIT_COUNT];
 
     
     QMenu *menuResentScenes;

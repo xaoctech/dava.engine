@@ -68,6 +68,7 @@ void CommandSettings::Execute()
 CommandBakeScene::CommandBakeScene()
 :   Command(Command::COMMAND_UNDO_REDO)
 {
+	commandName = "Bake Scene";
 }
 
 

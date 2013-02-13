@@ -1,6 +1,8 @@
 #include "CommandsManager.h"
 #include "Command.h"
 
+#include "../Qt/Main/QtMainWindowHandler.h"
+
 using namespace DAVA;
 
 CommandsManager::CommandsManager()
@@ -65,6 +67,8 @@ void CommandsManager::Execute(Command *command)
             Logger::Warning("[CommandsManager::Execute] command type (%d) not processed", command->Type());
             break;
     }
+
+	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
 void CommandsManager::Undo()
@@ -74,6 +78,8 @@ void CommandsManager::Undo()
         //TODO: need check state?
         commandsQueue[currentCommandIndex]->Cancel();
         --currentCommandIndex;
+
+		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
     }
 }
 
@@ -87,4 +93,32 @@ void CommandsManager::Redo()
     }
 }
 
+int32 CommandsManager::GetUndoQueueLength()
+{
+	return currentCommandIndex + 1;
+}
 
+int32 CommandsManager::GetRedoQueueLength()
+{
+	return commandsQueue.size() - currentCommandIndex - 1;
+}
+
+String CommandsManager::GetUndoCommandName()
+{
+	if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
+	{
+		return commandsQueue[currentCommandIndex]->commandName;
+	}
+
+	return "";
+}
+
+String CommandsManager::GetRedoCommandName()
+{
+	if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
+	{
+		return commandsQueue[currentCommandIndex + 1]->commandName;
+	}
+
+	return "";
+}

@@ -143,6 +143,8 @@ public:
 	bool IsLandscapeRelative();
 	void SetLandscapeRelative(bool isLandscapeRelative);
 
+	Matrix4 GetLandscapeOffset(const Matrix4& transform);
+
 protected:
 
     void InitControls();

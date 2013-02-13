@@ -46,17 +46,26 @@ class CommandRemoveSceneNode: public Command
 {
 public:
 	CommandRemoveSceneNode();
-	virtual ~CommandRemoveSceneNode();
-    
-protected:
-	DAVA::SceneNode* undoNode;
 
+protected:
+    virtual void Execute();
+};
+
+class CommandInternalRemoveSceneNode: public Command
+{
+public:
+	CommandInternalRemoveSceneNode(DAVA::SceneNode* node);
+	virtual ~CommandInternalRemoveSceneNode();
+	
+protected:
+	DAVA::SceneNode* node;
+	DAVA::SceneNode* nodeParent;
+	DAVA::SceneNode* insertBeforeNode;
+	
     virtual void Execute();
     virtual void Cancel();
-    
-private:
-    
-    SceneData * activeScene;
+
+	DAVA::uint32 GetNodeIndex(DAVA::SceneNode* node);
 };
 
 
@@ -70,7 +79,6 @@ protected:
     
     virtual void Execute();
 };
-
 
 
 
