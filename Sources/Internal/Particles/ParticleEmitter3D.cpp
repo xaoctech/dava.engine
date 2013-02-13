@@ -57,11 +57,11 @@ void ParticleEmitter3D::Draw(Camera * camera)
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
 {
 	Vector3 tempPosition = particlesFollow ? Vector3() : position;
-    if (type == EMITTER_POINT)
+    if (emitterType == EMITTER_POINT)
     {
         particle->position = tempPosition;
     }
-    else if (type == EMITTER_LINE)
+    else if (emitterType == EMITTER_LINE)
     {
         // TODO: add emitter angle support
         float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
@@ -70,7 +70,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
             lineDirection = size->GetValue(time)*rand05;
         particle->position = tempPosition + lineDirection;
     }
-    else if (type == EMITTER_RECT)
+    else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
         float32 rand05_x = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
@@ -81,7 +81,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
         particle->position = tempPosition + lineDirection;
     }
-    else if (type == EMITTER_ONCIRCLE)
+    else if (emitterType == EMITTER_ONCIRCLE)
     {
         // here just set particle position
         particle->position = tempPosition;
@@ -146,7 +146,7 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
 	if (particle->direction.z <= EPSILON && particle->direction.z >= -EPSILON)
 		particle->direction.z = 0.f;
 	
-    if (type == EMITTER_ONCIRCLE)
+    if (emitterType == EMITTER_ONCIRCLE)
     {
         qvq1_v.Normalize();
         if(radius)
@@ -178,5 +178,19 @@ bool ParticleEmitter3D::Is3DFlagCorrect()
 	// For ParticleEmitter3D is3D flag must be set to TRUE.
 	return (is3D == true);
 }
+
+RenderObject * ParticleEmitter3D::Clone(RenderObject *newObject)
+{
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitter3D>(this), "Can clone only ParticleEmitter3D");
+		newObject = new ParticleEmitter3D();
+	}
+
+	((ParticleEmitter3D*)newObject)->LoadFromYaml(configPath);
+
+	return newObject;
+}
+
 }
 

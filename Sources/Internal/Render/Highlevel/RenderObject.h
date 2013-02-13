@@ -66,7 +66,7 @@ class RenderBatch;
 class RenderObject : public AnimatedObject
 {
 public:
-    enum eType
+    enum eEmitterType
     {
         TYPE_RENDEROBJECT = 0,  // Base Render Object
         TYPE_MESH,              // Normal mesh
@@ -74,6 +74,7 @@ public:
         TYPE_LANDSCAPE,         // Landscape object
         TYPE_CUSTOM_DRAW,       // Custom drawn object
 		TYPE_SPRITE,			// Sprite Node
+		TYPE_PARTICLE_EMTITTER  // Particle Emitter
     };
     
 	enum eFlags
@@ -115,7 +116,7 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
     
-    inline eType GetType() { return (eType)type; }
+    inline eEmitterType GetType() { return (eEmitterType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Serialize(KeyedArchive *archive);

@@ -38,6 +38,7 @@
 #include "Scene3D/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/Systems/ParticleEmitterSystem.h"
 
 namespace DAVA
 {
@@ -75,10 +76,13 @@ RenderSystem::RenderSystem()
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
     renderPassOrder.push_back(renderPassesMap[SHADOW_VOLUME_PASS]);
 
+	particleEmitterSystem = new ParticleEmitterSystem();
+
 }
 
 RenderSystem::~RenderSystem()
 {
+	SafeDelete(particleEmitterSystem);
     //for (FastNameMap<RenderPass*>::Iterator )
     Logger::Error("Write functions to release data from HashMaps. Need Iterations for HashMap.");
     
@@ -142,11 +146,12 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
+	particleEmitterSystem->AddIfEmitter(renderObject);
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
-    
+    particleEmitterSystem->RemoveIfEmitter(renderObject);
 }
 
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
@@ -324,6 +329,8 @@ void RenderSystem::Update(float32 timeElapsed)
 	{
         objectsForUpdate[i]->RenderUpdate(camera, timeElapsed);
     }
+
+	particleEmitterSystem->Update(timeElapsed);
 }
 
 void RenderSystem::Render()

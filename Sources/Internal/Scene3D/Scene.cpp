@@ -79,8 +79,6 @@ namespace DAVA
 {
     
 REGISTER_CLASS(Scene);
-
-Scene * Scene::activeScene = 0;
     
 Scene::Scene()
 	:   SceneNode()
@@ -91,8 +89,6 @@ Scene::Scene()
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
-	SetActiveScene(this);
-
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
@@ -127,9 +123,6 @@ void Scene::CreateSystems()
 
     debugRenderSystem = new DebugRenderSystem(this);
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
-
-	particleEmitterSystem = new ParticleEmitterSystem(this);
-	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
 
 	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
@@ -587,8 +580,6 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-	SetActiveScene(this);
-
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -603,9 +594,6 @@ void Scene::Update(float timeElapsed)
 	lodSystem->Process();
 
 	switchSystem->Process();
-
-	particleEmitterSystem->Process();
-	particleEffectSystem->Process();
     
 //	entityManager->Flush();
 
@@ -641,7 +629,6 @@ void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
 
-    SetActiveScene(this);
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -676,6 +663,7 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
+	particleEffectSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
@@ -890,16 +878,6 @@ const String & Scene::GetReferenceNodeSuffix()
 bool Scene::IsReferenceNodeSuffixChanged()
 {
 	return referenceNodeSuffixChanged;
-}
-
-void Scene::SetActiveScene(Scene * scene)
-{
-	activeScene = scene;
-}
-
-Scene * Scene::GetActiveScene()
-{
-	return activeScene;
 }
 
 EventSystem * Scene::GetEventSystem()

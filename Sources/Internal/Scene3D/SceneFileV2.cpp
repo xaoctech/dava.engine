@@ -51,7 +51,6 @@
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
@@ -873,11 +872,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		SceneNode * parent = particleEmitterNode->GetParent();
 
 		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
-		ParticleEmitterComponent * particleComponent = new ParticleEmitterComponent();
-		newNode->AddComponent(particleComponent);
-		particleComponent->SetParticleEmitter(emitter);
-
-		RenderComponent * renderComponent = new RenderComponent;
+		RenderComponent * renderComponent = new RenderComponent();
+		newNode->AddComponent(renderComponent);
 		renderComponent->SetRenderObject(emitter);
 		
 		DVASSERT(parent);
@@ -887,7 +883,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 			parent->RemoveNode(particleEmitterNode);
 		}
 
-		newNode->AddComponent(renderComponent);
 		newNode->Release();
 		return true;
 	}

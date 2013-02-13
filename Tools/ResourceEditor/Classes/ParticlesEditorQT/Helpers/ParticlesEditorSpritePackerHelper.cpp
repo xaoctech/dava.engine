@@ -57,14 +57,14 @@ void ParticlesEditorSpritePackerHelper::ReloadParticleSprites(SceneData* sceneDa
 		for (int32 i = 0; i < emittersCount; i ++)
 		{
 			SceneNode* childNode = curNode->GetChild(i);
-			ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(childNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+			ParticleEmitter * emitter = GetEmitter(childNode);
 
-			if (!emitterComponent || !emitterComponent->GetParticleEmitter())
+			if (!emitter)
 			{
 				continue;
 			}
 			
-			emitterComponent->GetParticleEmitter()->ReloadLayerSprites();
+			emitter->ReloadLayerSprites();
 		}
 
 		effectComponent->Start();
