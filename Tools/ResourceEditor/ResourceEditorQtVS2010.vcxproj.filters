@@ -193,6 +193,18 @@
     <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyWidgets">
       <UniqueIdentifier>{25aea96e-2c46-4777-a52d-c16b45629da1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\SpritesPacker">
+      <UniqueIdentifier>{dbff2565-204f-4397-92f0-4fd28c7fd321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\SpritesPacker">
+      <UniqueIdentifier>{7fd79982-9cf6-4f03-9bfe-e2641a79e968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\QResourceEditorProgressDialog">
+      <UniqueIdentifier>{2e8e4e2d-be31-4af1-bcdd-6538b982223e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\QResourceEditorProgressDialog">
+      <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1434,9 +1446,6 @@
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp">
       <Filter>QtGenerated\DockSceneGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.cpp">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
     </ClCompile>
@@ -1481,6 +1490,18 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
       <Filter>Sources\Qt\DockProperties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp">
+      <Filter>Sources\Qt\SpritesPacker</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp">
+      <Filter>QtGenerated\SpritesPacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp">
+      <Filter>Sources\Qt\QResourceEditorProgressDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp">
+      <Filter>QtGenerated\QResourceEditorProgressDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2597,9 +2618,6 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.h">
-      <Filter>Sources\ParticlesEditorQT\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
       <Filter>Sources\Qt\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClInclude>
@@ -2617,6 +2635,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
       <Filter>Sources\Qt\DockProperties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h">
+      <Filter>Sources\Qt\SpritesPacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h">
+      <Filter>Sources\Qt\QResourceEditorProgressDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
