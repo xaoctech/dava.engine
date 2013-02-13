@@ -21,12 +21,12 @@ public:
 
 	unsigned int getTimeIntervalForParcent() 
 	{ 
-		return timeIntervalForParcent;
+		return timeIntervalForPercent;
 	}
 	
 	void getTimeIntervalForParcent(unsigned int value) 
 	{ 
-		timeIntervalForParcent = value;
+		timeIntervalForPercent = value;
 	}
 
 protected:
@@ -34,7 +34,7 @@ protected:
 	virtual void	showEvent ( QShowEvent * e );
 
 	bool				isCycled;
-	unsigned int		timeIntervalForParcent;
+	unsigned int		timeIntervalForPercent;
 
 private slots:
 	

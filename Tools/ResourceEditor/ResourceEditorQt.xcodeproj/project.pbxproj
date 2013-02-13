@@ -260,7 +260,10 @@
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
-		8471AC8416A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */; };
+		841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */; };
+		841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */; };
+		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
+		8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */; };
 		8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8516A4136800129793 /* DXTConverter.cpp */; };
 		8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8916A414D900129793 /* ImageSplitter.cpp */; };
 		8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */; };
@@ -1028,8 +1031,12 @@
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
-		8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSpritePackerHelper.cpp; sourceTree = "<group>"; };
-		8471AC8316A40F2200129793 /* ParticlesEditorSpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSpritePackerHelper.h; sourceTree = "<group>"; };
+		841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QResourceEditorProgressDialog.cpp; path = Classes/Qt/QResourceEditorProgressDialog/QResourceEditorProgressDialog.cpp; sourceTree = "<group>"; };
+		841703F816CBA49C00F1023D /* QResourceEditorProgressDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QResourceEditorProgressDialog.h; path = Classes/Qt/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h; sourceTree = "<group>"; };
+		841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QResourceEditorProgressDialog_moc.cpp; path = _GeneratedQt/QResourceEditorProgressDialog/QResourceEditorProgressDialog_moc.cpp; sourceTree = "<group>"; };
+		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
+		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
+		8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper_moc.cpp; path = _GeneratedQt/SpritesPacker/SpritePackerHelper_moc.cpp; sourceTree = "<group>"; };
 		8471AC8516A4136800129793 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
 		8471AC8616A4136800129793 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		8471AC8916A414D900129793 /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitter.cpp; path = Classes/ImageSplitter/ImageSplitter.cpp; sourceTree = "<group>"; };
@@ -1315,6 +1322,8 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				841703FF16CBCE9700F1023D /* SpritesPacker */,
+				841703F616CBA48000F1023D /* QResourceEditorProgressDialog */,
 				E838D4D616AFFED4006F1721 /* DockCustomColors */,
 				E838D4D916AFFED4006F1721 /* DockLibrary */,
 				E838D4DE16AFFED4006F1721 /* DockParticleEditor */,
@@ -2055,6 +2064,40 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		841703F616CBA48000F1023D /* QResourceEditorProgressDialog */ = {
+			isa = PBXGroup;
+			children = (
+				841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */,
+				841703F816CBA49C00F1023D /* QResourceEditorProgressDialog.h */,
+			);
+			name = QResourceEditorProgressDialog;
+			sourceTree = "<group>";
+		};
+		841703FB16CBA66100F1023D /* QResourceEditorProgressDialog */ = {
+			isa = PBXGroup;
+			children = (
+				841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */,
+			);
+			name = QResourceEditorProgressDialog;
+			sourceTree = "<group>";
+		};
+		841703FF16CBCE9700F1023D /* SpritesPacker */ = {
+			isa = PBXGroup;
+			children = (
+				8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */,
+				8417040116CBCEAD00F1023D /* SpritePackerHelper.h */,
+			);
+			name = SpritesPacker;
+			sourceTree = "<group>";
+		};
+		8417040316CBCFA100F1023D /* SpritesPacker */ = {
+			isa = PBXGroup;
+			children = (
+				8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */,
+			);
+			name = SpritesPacker;
+			sourceTree = "<group>";
+		};
 		8471AC8816A4149900129793 /* ImageSplitter */ = {
 			isa = PBXGroup;
 			children = (
@@ -2079,8 +2122,6 @@
 		C18521A316831F84003D4A6F /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */,
-				8471AC8316A40F2200129793 /* ParticlesEditorSpritePackerHelper.h */,
 				1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */,
 				1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */,
 				1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */,
@@ -2580,6 +2621,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				8417040316CBCFA100F1023D /* SpritesPacker */,
+				841703FB16CBA66100F1023D /* QResourceEditorProgressDialog */,
 				E838D79016B00511006F1721 /* DockCustomColors */,
 				E838D79216B00511006F1721 /* DockLibrary */,
 				E838D79516B00511006F1721 /* DockParticleEditor */,
@@ -3064,7 +3107,6 @@
 				C18521B916831F84003D4A6F /* LayerParticleEditorNode.cpp in Build Sources */,
 				1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */,
 				1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */,
-				8471AC8416A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp in Build Sources */,
 				8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */,
 				8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */,
 				8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */,
@@ -3191,6 +3233,10 @@
 				E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */,
 				176D5C6E16C2A9EE00A45F67 /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				1742FF4A16C3AAB800D0F30B /* PropertyEditorStateHelper.cpp in Build Sources */,
+				841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */,
+				841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */,
+				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
+				8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
