@@ -21,6 +21,8 @@ public:
 	void Draw(Camera * camera);
 	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
 
+	virtual RenderObject * Clone(RenderObject *newObject);
+
 protected:
 	// Virtual methods which are different for 2D and 3D emitters.
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);

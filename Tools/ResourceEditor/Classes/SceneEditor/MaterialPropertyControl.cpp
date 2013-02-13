@@ -83,11 +83,6 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     }
 
     
-    for (uint32 slot = 0; slot < material->GetTextureSlotCount(); ++slot)
-    {
-        propertyList->AddFilepathProperty(material->GetTextureSlotName(slot));
-    }
-    
     propertyList->AddBoolProperty("property.material.isopaque");
     propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
     

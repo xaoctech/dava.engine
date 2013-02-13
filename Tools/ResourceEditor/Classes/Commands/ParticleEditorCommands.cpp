@@ -130,7 +130,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emitter = emitter;
 }
 
-void CommandUpdateEmitter::Init(ParticleEmitter::eType type,
+void CommandUpdateEmitter::Init(ParticleEmitter::eEmitterType emitterType,
 								RefPtr<PropertyLine<float32> > emissionAngle,
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,
@@ -139,7 +139,7 @@ void CommandUpdateEmitter::Init(ParticleEmitter::eType type,
 								RefPtr<PropertyLine<Vector3> > size,
 								float32 life)
 {
-	this->type = type;
+	this->emitterType = emitterType;
 	this->emissionAngle = emissionAngle;
 	this->emissionRange = emissionRange;
 	this->emissionVector = emissionVector;
@@ -153,7 +153,7 @@ void CommandUpdateEmitter::Execute()
 {
 	DVASSERT(emitter);
 
-	emitter->type = type;
+	emitter->emitterType = emitterType;
 	emitter->emissionAngle = emissionAngle;
 	emitter->emissionRange = emissionRange;
 	emitter->emissionVector = emissionVector;
@@ -568,18 +568,18 @@ void CommandLoadParticleEmitterFromYaml::Execute()
 
     // In case this emitter already has Editor Nodes - remove them before loading.
     ParticlesEditorController::Instance()->CleanupParticleEmitterEditorNode(emitterNode);
-    ParticleEmitterComponent* emitterComponent = emitterNode->GetParticleEmitterComponent();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
 
-    if(!emitterComponent || !emitterComponent->GetParticleEmitter())
+    if(!emitter)
     {
     	return;
     }
 
-    emitterComponent->LoadFromYaml(filePath.toStdString());
+    emitter->LoadFromYaml(filePath.toStdString());
 
 	// Perform the validation of the Yaml file loaded.
 	String validationMessage;
-	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitterComponent(emitterComponent, validationMessage) == false)
+	if (ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMessage) == false)
 	{
 		ShowErrorDialog(validationMessage);
 	}
@@ -602,13 +602,13 @@ void CommandSaveParticleEmitterToYaml::Execute()
         return;
     }
 
-    ParticleEmitterComponent* component = emitterNode->GetParticleEmitterComponent();
-    if (!component || !component->GetParticleEmitter())
+    ParticleEmitter * emitter = emitterNode->GetParticleEmitter();
+    if (!emitter)
     {
         return;
     }
 
-	String yamlPath = component->GetYamlPath();
+	String yamlPath = emitter->GetConfigPath();
     if (this->forceAskFilename || yamlPath.empty() )
     {
         QString projectPath = QString(EditorSettings::Instance()->GetParticlesConfigsPath().c_str());
@@ -623,6 +623,6 @@ void CommandSaveParticleEmitterToYaml::Execute()
         yamlPath = filePath.toStdString();
     }
 
-    component->SaveToYaml(yamlPath);
+    emitter->SaveToYaml(yamlPath);
 }
 

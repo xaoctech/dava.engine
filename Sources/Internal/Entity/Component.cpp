@@ -6,7 +6,6 @@
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/BulletComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
@@ -26,8 +25,6 @@ Component * Component::CreateByType(uint32 componentType)
 		return new DebugRenderComponent();
 	case LOD_COMPONENT:
 		return new LodComponent();
-	case PARTICLE_EMITTER_COMPONENT:
-		return new ParticleEmitterComponent();
 	case PARTICLE_EFFECT_COMPONENT:
 		return new ParticleEffectComponent();
 	case BULLET_COMPONENT:

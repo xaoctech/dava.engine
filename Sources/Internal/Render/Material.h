@@ -65,6 +65,9 @@ public:
     void SetLightmap(Texture * texture, const String & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
     
+    inline Texture * GetLightmap() const;
+	inline const String & GetLightmapName() const;
+
 private:
     Texture * lightmapTexture;
     String lightmapName;
@@ -432,6 +435,18 @@ inline eBlendMode Material::GetBlendDest() const
     return (eBlendMode)blendDst;
 }
 
+    
+inline Texture * InstanceMaterialState::GetLightmap() const
+{
+    return lightmapTexture;
+}
+
+inline const String & InstanceMaterialState::GetLightmapName() const
+{
+    return lightmapName;
+}
+
+    
 };
 
 #endif // __DAVAENGINE_MATERIAL_H__

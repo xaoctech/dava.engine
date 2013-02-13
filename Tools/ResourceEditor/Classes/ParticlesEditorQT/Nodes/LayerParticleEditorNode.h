@@ -39,7 +39,7 @@ public:
 	// Update the Emitter Editor node.
 	void UpdateEmitterEditorNode(EmitterParticleEditorNode* newNode)
 	{
-		this->emitter = newNode->GetEmitterNode();
+		this->emitterNode = newNode->GetEmitterNode();
 		this->emitterEditorNode = newNode;
 	};
 

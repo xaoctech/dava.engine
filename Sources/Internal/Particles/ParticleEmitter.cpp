@@ -42,6 +42,7 @@ namespace DAVA
 {
 ParticleEmitter::ParticleEmitter()
 {
+	type = TYPE_PARTICLE_EMTITTER;
 	Cleanup(false);
 }
 
@@ -52,7 +53,7 @@ ParticleEmitter::~ParticleEmitter()
 
 void ParticleEmitter::Cleanup(bool needCleanupLayers)
 {
-	type = EMITTER_POINT;
+	emitterType = EMITTER_POINT;
 	emissionVector.Set(NULL);
 	emissionVector = RefPtr<PropertyLineValue<Vector3> >(new PropertyLineValue<Vector3>(Vector3(1.0f, 0.0f, 0.0f)));
 	emissionAngle.Set(NULL);
@@ -125,8 +126,15 @@ void ParticleEmitter::CleanupLayers()
 
 RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 {
-	//should not clone as RenderObject
-	return 0;
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<ParticleEmitter>(this), "Can clone only ParticleEmitter");
+		newObject = new ParticleEmitter();
+	}
+
+	((ParticleEmitter*)newObject)->LoadFromYaml(configPath);
+
+	return newObject;
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
@@ -278,11 +286,11 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 {
 	// Yuri Coder, 2013/01/30. ParticleEmitter class can be now only 2D.
     Vector3 tempPosition = particlesFollow ? Vector3() : position;
-    if (type == EMITTER_POINT)
+    if (emitterType == EMITTER_POINT)
     {
         particle->position = tempPosition;
     }
-    else if (type == EMITTER_LINE)
+    else if (emitterType == EMITTER_LINE)
     {
         // TODO: add emitter angle support
         float32 rand05 = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
@@ -291,7 +299,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = size->GetValue(time)*rand05;
         particle->position = tempPosition + lineDirection;
     }
-    else if (type == EMITTER_RECT)
+    else if (emitterType == EMITTER_RECT)
     {
         // TODO: add emitter angle support
         float32 rand05_x = (float32)Random::Instance()->RandFloat() - 0.5f; // [-0.5f, 0.5f]
@@ -302,7 +310,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
             lineDirection = Vector3(size->GetValue(time).x * rand05_x, size->GetValue(time).y * rand05_y, size->GetValue(time).z * rand05_z);
 		particle->position = tempPosition + lineDirection;
 	}
-    else if (type == EMITTER_ONCIRCLE)
+    else if (emitterType == EMITTER_ONCIRCLE)
     {
         // here just set particle position
         particle->position = tempPosition;
@@ -340,7 +348,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
     vel.z = 0;
         
     // reuse particle velocity we've calculated
-    if (type == EMITTER_ONCIRCLE)
+    if (emitterType == EMITTER_ONCIRCLE)
     {
         if(radius)
             particle->position += vel * radius->GetValue(time);
@@ -410,17 +418,17 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 		if (typeNode)
 		{	
 			if (typeNode->AsString() == "point")
-				type = EMITTER_POINT;
+				emitterType = EMITTER_POINT;
 			else if (typeNode->AsString() == "line")
-				type = EMITTER_LINE;
+				emitterType = EMITTER_LINE;
 			else if (typeNode->AsString() == "rect")
-				type = EMITTER_RECT;
+				emitterType = EMITTER_RECT;
 			else if (typeNode->AsString() == "oncircle")
-				type = EMITTER_ONCIRCLE;
+				emitterType = EMITTER_ONCIRCLE;
 			else 
-				type = EMITTER_POINT;
+				emitterType = EMITTER_POINT;
 		}else
-			type = EMITTER_POINT;
+			emitterType = EMITTER_POINT;
 		
         size = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(emitterNode, "size");
         
@@ -607,7 +615,7 @@ Animation * ParticleEmitter::SizeAnimation(const Vector3 & newSize, float32 time
 
 String ParticleEmitter::GetEmitterTypeName()
 {
-    switch (this->type)
+    switch (this->emitterType)
     {
         case EMITTER_POINT:
         {

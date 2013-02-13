@@ -42,7 +42,6 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -570,14 +569,6 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 			SafeDelete(dstNode->components[k]);
 			dstNode->AddComponent(components[k]->Clone(dstNode));
 		}
-	}
-
-	//custom ParticleEmitter copying
-	RenderComponent * rc = (RenderComponent *)dstNode->GetComponent(Component::RENDER_COMPONENT);
-	ParticleEmitterComponent * pe = (ParticleEmitterComponent *)dstNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT);
-	if(rc && pe)
-	{
-		rc->SetRenderObject(pe->GetParticleEmitter());
 	}
     
     dstNode->name = name;
