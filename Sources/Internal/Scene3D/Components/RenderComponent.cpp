@@ -64,5 +64,36 @@ void RenderComponent::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
 	}
 }
 
+void RenderComponent::Serialize(KeyedArchive *archive)
+{
+	Component::Serialize(archive);
+
+	if(NULL != archive && NULL != renderObject)
+	{
+		KeyedArchive *roArch = new KeyedArchive();
+		renderObject->Serialize(roArch);
+
+		archive->SetArchive("rc.renderObj", roArch);
+
+		roArch->Release();
+	}
+}
+
+void RenderComponent::Deserialize(KeyedArchive *archive)
+{
+	if(NULL != archive)
+	{
+		KeyedArchive *roArch = archive->GetArchive("rc.renderObj");
+		if(NULL != roArch)
+		{
+			RenderObject* ro = new RenderObject();
+			ro->Deserialize(roArch);
+
+			SetRenderObject(ro);
+		}
+	}
+
+	Component::Deserialize(archive);
+}
 
 };

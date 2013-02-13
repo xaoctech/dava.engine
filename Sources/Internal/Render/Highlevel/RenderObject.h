@@ -118,6 +118,8 @@ public:
     inline eType GetType() { return (eType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
+	virtual void Serialize(KeyedArchive *archive);
+	virtual void Deserialize(KeyedArchive *archive);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     

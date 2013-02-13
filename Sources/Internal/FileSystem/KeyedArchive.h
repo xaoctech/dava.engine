@@ -428,6 +428,8 @@ public:
 // 	*/
 // 	bool SaveToYaml(const String & pathName);
     
+	static const char* GenKeyFromIndex(uint32 index);
+
 private:
 	Map<String, VariantType*> objectMap;
 };

@@ -55,15 +55,39 @@ Component::Component()
 
 }
 
+Component::~Component()
+{ }
+
 void Component::SetEntity(SceneNode * _entity)
 {
 	entity = _entity;
 }
+
+SceneNode* Component::GetEntity() 
+{ 
+	return entity;
+};
 
 void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
 {
     //Empty as default
 }
 
+void Component::Serialize(KeyedArchive *archive)
+{
+	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
+}
+
+void Component::Deserialize(KeyedArchive *archive)
+{
+	if(NULL != archive)
+	{
+		uint32 type;
+
+		if(archive->IsKeyExists("comp.type")) type = archive->GetUInt32("comp.type");
+
+		DVASSERT(type == GetType());
+	}
+}
 
 }
