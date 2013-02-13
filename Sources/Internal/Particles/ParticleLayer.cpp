@@ -91,6 +91,9 @@ ParticleLayer::ParticleLayer()
 	frameStart = 0;
 	frameEnd = 0;
 
+	frameOverLifeEnabled = false;
+	frameOverLifeFPS = 0;
+
     isDisabled = false;
 }
 
@@ -182,9 +185,6 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (alphaOverLife)
 		dstLayer->alphaOverLife.Set(alphaOverLife->Clone());
 	
-	if (frameOverLife)
-		dstLayer->frameOverLife.Set(frameOverLife->Clone());
-	
 	if (angle)
 		dstLayer->angle.Set(angle->Clone());
 	
@@ -202,7 +202,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	dstLayer->frameStart = frameStart;
 	dstLayer->frameEnd = frameEnd;
-	
+
+	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
+	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
+
     dstLayer->isDisabled = isDisabled;
     
 	return dstLayer;
@@ -555,11 +558,22 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 	{
 		particle->drawColor = particle->color*emitter->ambientColor;
 	}
-	
-	if (frameOverLife)
+
+	// Frame Overlife FPS defines how many frames should be displayed in a second.
+	// This property is cycled - if we reached the last frame, we'll update to the new one.
+	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
 	{
-		int32 frame = (int32)frameOverLife->GetValue(t);
-		particle->frame = frame;
+		float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
+		if (timeElapsed > (1 / frameOverLifeFPS))
+		{
+			particle->frame ++;
+			if (particle->frame >= this->sprite->GetFrameCount())
+			{
+				particle->frame = 0;
+			}
+
+			particle->frameLastUpdateTime = particle->life;
+		}
 	}
     
 	int32 forcesCount = (int32)particleForces.size();
@@ -681,7 +695,17 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
 	alphaOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "alphaOverLife");
 	
-	frameOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "frameOverLife");	
+	YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
+	if (frameOverLifeEnabledNode)
+	{
+		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
+	}
+
+	YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
+	if (frameOverLifeFPSNode)
+	{
+		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
+	}
 
 	life = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "life");	
 	lifeVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "lifeVariation");	
@@ -832,7 +856,8 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
 
     PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
-    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "frameOverLife", this->frameOverLife);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
@@ -895,40 +920,15 @@ void ParticleLayer::ReloadSprite()
 
 void ParticleLayer::UpdateFrameTimeline()
 {
-	if (!this->frameOverLife)
+	if (!this->frameOverLifeEnabled)
 	{
 		return;
 	}
 
 	if (!this->sprite)
 	{
-		this->frameOverLife.Set(NULL);
+		this->frameOverLifeEnabled = false;
 		return;
-	}
-
-	float32 maxFrame = (float32)this->sprite->GetFrameCount() - 1;
-	PropertyLineValue<float32>* pv = dynamic_cast< PropertyLineValue<float32> *>(frameOverLife.Get());
-	PropertyLineKeyframes<float32>* pk = dynamic_cast< PropertyLineKeyframes<float32> *>(frameOverLife.Get());
-	if (pv)
-	{
-		// Limit the single value.
-		if (pv->value > maxFrame)
-		{
-			pv->value = maxFrame;
-		}
-	}
-	
-	if (pk)
-	{
-		// Limit all the frames.
-		int32 framesCount = pk->keys.size();
-		for (int32 i = 0; i < framesCount; i ++)
-		{
-			if (pk->keys[i].value > maxFrame)
-			{
-				pk->keys[i].value = maxFrame;
-			}
-		}
 	}
 }
 	

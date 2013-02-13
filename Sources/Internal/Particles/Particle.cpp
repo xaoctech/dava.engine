@@ -44,7 +44,7 @@ ForceData::ForceData(float32 forceValue, const Vector3& forceDirection, float32 
 
 Particle::Particle()
 {
-    
+    frameLastUpdateTime = 0.0f;
 }
 
 Particle::~Particle()

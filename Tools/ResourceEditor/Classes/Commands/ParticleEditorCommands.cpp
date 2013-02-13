@@ -96,12 +96,13 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
-									  RefPtr< PropertyLine<float32> > frameOverLife,
 									  RefPtr< PropertyLine<float32> > angle,
 									  RefPtr< PropertyLine<float32> > angleVariation,
 									  float32 alignToMotion,
 									  float32 startTime,
-									  float32 endTime)
+									  float32 endTime,
+									  bool frameOverLifeEnabled,
+									  float32 frameOverLifeFPS)
 {
 	this->layerName = layerName;
 	this->isDisabled = isDisabled;
@@ -135,6 +136,8 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->alignToMotion = alignToMotion;
 	this->startTime = startTime;
 	this->endTime = endTime;
+	this->frameOverLifeEnabled = frameOverLifeEnabled;
+	this->frameOverLifeFPS = frameOverLifeFPS;
 }
 
 
@@ -165,7 +168,10 @@ void CommandUpdateParticleLayer::Execute()
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
-	layer->frameOverLife = frameOverLife;
+	
+	layer->frameOverLifeEnabled = frameOverLifeEnabled;
+	layer->frameOverLifeFPS = frameOverLifeFPS;
+
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
 	layer->alignToMotion = alignToMotion;
