@@ -81,7 +81,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	DVASSERT(emitter != 0);
 
 	DVASSERT(emitterType->currentIndex() != -1);
-	ParticleEmitter::eType type = (ParticleEmitter::eType)emitterType->currentIndex();
+	ParticleEmitter::eEmitterType type = (ParticleEmitter::eEmitterType)emitterType->currentIndex();
 
 	PropLineWrapper<float32> emissionAngle;
 	if(!emitterEmissionAngle->GetValue(0, emissionAngle.GetPropsPtr()))
@@ -135,7 +135,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 
 	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
-	emitterType->setCurrentIndex(emitter->type);
+	emitterType->setCurrentIndex(emitter->emitterType);
 
 	emitterEmissionAngle->Init(0.f, emitterLifeTime, updateMinimize);
 	emitterEmissionAngle->AddLine(0, PropLineWrapper<float32>(emitter->emissionAngle).GetProps(), Qt::blue, "emission angle");

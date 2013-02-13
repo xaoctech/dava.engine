@@ -1,5 +1,5 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
 
@@ -34,10 +34,11 @@ void ParticleEffectComponent::Start()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
-			component->GetParticleEmitter()->Play();
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->Play();
 		}
 	}
 
@@ -49,10 +50,11 @@ void ParticleEffectComponent::Stop()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
-			component->GetParticleEmitter()->Stop();
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->Stop();
 		}
 		emittersCurrentlyStopped++;
 	}
@@ -63,10 +65,11 @@ void ParticleEffectComponent::Restart()
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
-			component->GetParticleEmitter()->Restart();
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->Restart();
 		}
 	}
 }
@@ -86,10 +89,10 @@ void ParticleEffectComponent::EffectUpdate(float32 timeElapsed)
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
-			ParticleEmitter* emitter = component->GetParticleEmitter();
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
 			if (IsStopEmitter(emitter))
 			{
 				emitter->Stop();
@@ -112,10 +115,11 @@ void ParticleEffectComponent::UpdateDurationForChildNodes(float32 newEmitterLife
 	int32 childrenCount = entity->GetChildrenCount();
 	for (int32 i = 0; i < childrenCount; i ++)
 	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(entity->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
+		RenderComponent * component = static_cast<RenderComponent*>(entity->GetChild(i)->GetComponent(Component::RENDER_COMPONENT));
+		if(component && component->GetRenderObject() && component->GetRenderObject()->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
 		{
-			component->GetParticleEmitter()->SetLifeTime(newEmitterLifeTime);
+			ParticleEmitter * emitter = static_cast<ParticleEmitter*>(component->GetRenderObject());
+			emitter->SetLifeTime(newEmitterLifeTime);
 		}
 	}
 }

@@ -8,26 +8,26 @@
 
 #include "EmitterContainerNode.h"
 
-#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 using namespace DAVA;
 
-EmitterContainerNode::EmitterContainerNode(SceneNode* rootNode, SceneNode* emitter, const QString& nodeName) :
+EmitterContainerNode::EmitterContainerNode(SceneNode* rootNode, SceneNode* emitterNode, const QString& nodeName) :
     BaseParticleEditorNode(rootNode)
 {
     this->nodeName = nodeName;
-	this->emitter = NULL;
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    DVASSERT(emitterComponent);
-	this->emitter = emitter;
+	this->emitterNode = NULL;
+	ParticleEmitter * emitter = GetEmitter(emitterNode);
+    DVASSERT(emitter);
+	this->emitterNode = emitterNode;
 }
 
 EmitterContainerNode::~EmitterContainerNode()
 {
-    this->emitter = NULL;
+    this->emitterNode = NULL;
 }
 
-ParticleEmitterComponent * EmitterContainerNode::GetParticleEmitterComponent() const 
+ParticleEmitter * EmitterContainerNode::GetParticleEmitter() const 
 {
-	return static_cast<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	return GetEmitter(emitterNode);
 }

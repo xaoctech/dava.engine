@@ -110,7 +110,6 @@ public:
 	LodSystem * lodSystem;
     DebugRenderSystem * debugRenderSystem;
 	EventSystem * eventSystem;
-	ParticleEmitterSystem * particleEmitterSystem;
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
     LightUpdateSystem * lightUpdateSystem;

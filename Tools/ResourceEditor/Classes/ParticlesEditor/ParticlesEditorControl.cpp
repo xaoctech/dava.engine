@@ -1314,7 +1314,7 @@ void ParticlesEditorControl::GetEmitterPropValue(eProps id, bool getLimits)
     switch (id) {
         case EMITTER_TYPE:
             
-            selectedEmitterTypeElement = emitter->type;
+            selectedEmitterTypeElement = emitter->emitterType;
             
             SafeAddControl(emitterTypeList);
             SafeRemoveControl(valueBut);
@@ -1461,7 +1461,7 @@ void ParticlesEditorControl::SetEmitterPropValue(eProps id, bool def)
     }
     switch (id) {
         case EMITTER_TYPE:
-            emitter->type = (ParticleEmitter::eType)selectedEmitterTypeElement;
+            emitter->emitterType = (ParticleEmitter::eEmitterType)selectedEmitterTypeElement;
             break;
             
         case EMITTER_EMISSION_ANGLE:
@@ -1506,7 +1506,7 @@ void ParticlesEditorControl::ResetEmitterPropValue(eProps id)
     switch (id) {
         case EMITTER_TYPE:
             selectedEmitterTypeElement = 0;
-            emitter->type = ParticleEmitter::EMITTER_POINT;
+            emitter->emitterType = ParticleEmitter::EMITTER_POINT;
             break;
             
         case EMITTER_EMISSION_ANGLE:
@@ -2970,13 +2970,13 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
     
     int32 emitPropIndex = 0;
     
-    if(emitter->type == ParticleEmitter::EMITTER_POINT)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_POINT)
         file->WriteLine("    type: point");
-    if(emitter->type == ParticleEmitter::EMITTER_LINE)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_LINE)
         file->WriteLine("    type: line");
-    if(emitter->type == ParticleEmitter::EMITTER_RECT)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_RECT)
         file->WriteLine("    type: rect");
-    if(emitter->type == ParticleEmitter::EMITTER_ONCIRCLE)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE)
         file->WriteLine("    type: oncircle");
     emitPropIndex++;
     
