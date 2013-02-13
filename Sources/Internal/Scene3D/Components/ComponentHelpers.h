@@ -8,8 +8,10 @@ namespace DAVA
 
 class ParticleEmitter;
 class SceneNode;
+class RenderObject;
 
 ParticleEmitter * GetEmitter(SceneNode * fromEntity);
+RenderObject * GetRenerObject(SceneNode * fromEntity);
 
 }
 
