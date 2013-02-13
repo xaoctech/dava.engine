@@ -99,13 +99,22 @@ public:
 
 	void CreateDescriptorIfNeed(const String &forPathname);
     
+    
+    
 protected:
+
+    void ValidateRenderComponent(SceneNode *ownerNode, Set<String> &errorsLog);
+    void ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog);
+    void ValidateParticleEmitterComponent(SceneNode *ownerNode, Set<String> &errorsLog);
+
+    void ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
+    void ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog);
+
+    
     
     int32 EnumerateSceneNodes(SceneNode *node);
 	void EnumerateParticleEmitters(SceneNode* rootNode, Vector<ParticleEmitter*>& emitters);
     
-    void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
-    void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 	void ValidateParticleEmitterNodes(Scene *scene, Set<String> &errorsLog);
     
