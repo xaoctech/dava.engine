@@ -1,14 +1,7 @@
 #ifndef _ANDROID_LAYER_
 #define _ANDROID_LAYER_
 
-#include <jni.h>
-#include <android/log.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+#include "AndroidLayer.h"
 
 #include "Platform/TemplateAndroid/AndroidSpecifics.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
@@ -16,11 +9,6 @@
 #include "Utils/Utils.h"
 #include "Input/AccelerometerAndroid.h"
 #include "AndroidDelegate.h"
-
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "davaFrameworkLog", __VA_ARGS__)
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "davaFrameworkLog", __VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
-
 extern "C"
 {
 	jint JNI_OnLoad(JavaVM *vm, void *reserved);
@@ -328,7 +316,6 @@ void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobjec
 {
 	core->SetAssetManager(AAssetManager_fromJava(env, assetManager));
 }
-
 
 //END OF activity
 

@@ -84,11 +84,12 @@
 		5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7E031564DC7D009692EE /* ImposterNode.cpp */; };
 		5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7E041564DC7D009692EE /* ImposterNode.h */; };
 		8492304816BFCED000B28B3B /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8492304616BFCED000B28B3B /* DVAssertMessage.h */; };
-		8492304916BFCED000B28B3B /* DVAssertMessage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8492304716BFCED000B28B3B /* DVAssertMessage.mm */; };
 		8492304B16BFD45500B28B3B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8492304A16BFD45500B28B3B /* UIKit.framework */; };
 		8492304E16BFDA2D00B28B3B /* UIAlertView_Modal.h in Headers */ = {isa = PBXBuildFile; fileRef = 8492304C16BFDA2D00B28B3B /* UIAlertView_Modal.h */; };
 		8492304F16BFDA2D00B28B3B /* UIAlertView_Modal.m in Sources */ = {isa = PBXBuildFile; fileRef = 8492304D16BFDA2D00B28B3B /* UIAlertView_Modal.m */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C15DCAB616CA2F8D002C80B4 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C15DCAB416CA2F8D002C80B4 /* DVAssertMessage.cpp */; };
+		C15DCAB716CA2F8D002C80B4 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C15DCAB516CA2F8D002C80B4 /* DVAssertMessageApple.mm */; };
 		C19E4F4616C5465700D0AC28 /* BulletComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C19E4F3016C5465700D0AC28 /* BulletComponent.cpp */; };
 		C19E4F4716C5465700D0AC28 /* BulletComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = C19E4F3116C5465700D0AC28 /* BulletComponent.h */; };
 		C19E4F4816C5465700D0AC28 /* CameraComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C19E4F3216C5465700D0AC28 /* CameraComponent.cpp */; };
@@ -684,11 +685,12 @@
 		5CFD7E031564DC7D009692EE /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
 		5CFD7E041564DC7D009692EE /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		8492304616BFCED000B28B3B /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
-		8492304716BFCED000B28B3B /* DVAssertMessage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessage.mm; sourceTree = "<group>"; };
 		8492304A16BFD45500B28B3B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8492304C16BFDA2D00B28B3B /* UIAlertView_Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAlertView_Modal.h; sourceTree = "<group>"; };
 		8492304D16BFDA2D00B28B3B /* UIAlertView_Modal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAlertView_Modal.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C15DCAB416CA2F8D002C80B4 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
+		C15DCAB516CA2F8D002C80B4 /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
 		C19E4F3016C5465700D0AC28 /* BulletComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BulletComponent.cpp; path = Components/BulletComponent.cpp; sourceTree = "<group>"; };
 		C19E4F3116C5465700D0AC28 /* BulletComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BulletComponent.h; path = Components/BulletComponent.h; sourceTree = "<group>"; };
 		C19E4F3216C5465700D0AC28 /* CameraComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CameraComponent.cpp; path = Components/CameraComponent.cpp; sourceTree = "<group>"; };
@@ -1567,10 +1569,11 @@
 		FECFB36312E5904400C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				C15DCAB416CA2F8D002C80B4 /* DVAssertMessage.cpp */,
+				C15DCAB516CA2F8D002C80B4 /* DVAssertMessageApple.mm */,
 				8492304C16BFDA2D00B28B3B /* UIAlertView_Modal.h */,
 				8492304D16BFDA2D00B28B3B /* UIAlertView_Modal.m */,
 				8492304616BFCED000B28B3B /* DVAssertMessage.h */,
-				8492304716BFCED000B28B3B /* DVAssertMessage.mm */,
 				FEF538B415835B820014679C /* Backtrace.cpp */,
 				FEF538B515835B820014679C /* Backtrace.h */,
 				FE5E1668153DA0870047FAC5 /* Stats.cpp */,
@@ -2703,7 +2706,6 @@
 				E89ECC961663AA2700D17C41 /* FastName.cpp in Sources */,
 				E8C6B12516692EF7001EBE09 /* ParticleEffectNode.cpp in Sources */,
 				49E7A1E716835EC400F63EFE /* LibDxtHelper.cpp in Sources */,
-				8492304916BFCED000B28B3B /* DVAssertMessage.mm in Sources */,
 				8492304F16BFDA2D00B28B3B /* UIAlertView_Modal.m in Sources */,
 				C19E4F4616C5465700D0AC28 /* BulletComponent.cpp in Sources */,
 				C19E4F4816C5465700D0AC28 /* CameraComponent.cpp in Sources */,
@@ -2735,6 +2737,8 @@
 				C19E4FB116C548A800D0AC28 /* DLCSystem.cpp in Sources */,
 				C19E4FB316C548A800D0AC28 /* DLCUnpacker.cpp in Sources */,
 				C19E4FB516C548A800D0AC28 /* FileDownloader.cpp in Sources */,
+				C15DCAB616CA2F8D002C80B4 /* DVAssertMessage.cpp in Sources */,
+				C15DCAB716CA2F8D002C80B4 /* DVAssertMessageApple.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

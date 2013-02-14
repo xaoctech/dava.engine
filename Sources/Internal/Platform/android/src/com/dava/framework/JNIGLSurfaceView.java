@@ -63,39 +63,6 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		nativeOnResumeView();
 	}
     
-    @Override
-    public boolean onKeyDown(final int keyCode, final KeyEvent event)
-    {
-//    	queueEvent(new Runnable() 
-//    	{
-//    		public void run() 
-//    		{
-//    		}
-//    	});	
-    	
-    	return super.onKeyDown(keyCode, event);
-    }
-    
-    @Override
-    public boolean onKeyUp(final int keyCode, final KeyEvent event)
-    {
-    	/*queueEvent(new Runnable() 
-    	{
-    		public void run() 
-    		{
-    			int metaState = event.getMetaState(); 
-    			int keyChar = event.getUnicodeChar(metaState);
-    			if(0 != keyChar)
-    			{
-//    				Log.d(JNIConst.LOG_TAG, "Char = " + keyChar);
-    				nativeOnKeyUp(keyChar);
-    			}
-    		}
-    	});	*/
-
-    	return super.onKeyUp(keyCode, event);
-    }
-    
     class InputRunnable implements Runnable
     {
     	class InputEvent

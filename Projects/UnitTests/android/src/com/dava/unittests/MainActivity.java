@@ -2,6 +2,7 @@ package com.dava.unittests;
 
 import android.os.Bundle;
 import android.view.Menu;
+
 import com.dava.framework.JNIActivity;
 import com.dava.framework.JNIGLSurfaceView;
 import com.dava.unittests.R;
