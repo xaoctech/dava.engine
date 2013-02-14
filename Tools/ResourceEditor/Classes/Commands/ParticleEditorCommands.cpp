@@ -2,7 +2,6 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
-#include "../ParticlesEditor/ParticlesEditorControl.h"
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneGraph.h"
 
@@ -23,103 +22,6 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
-
-CommandOpenParticleEditorConfig::CommandOpenParticleEditorConfig()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
-{
-
-}
-
-void CommandOpenParticleEditorConfig::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	ParticlesEditorControl * editor = screen->GetParticlesEditor();
-	String currentPath = editor->GetActiveConfigName();
-	if(currentPath.empty())
-	{
-		currentPath = editor->GetConfigsPath();
-	}
-
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
-
-	String selectedPathname = PathnameToDAVAStyle(filePath);
-
-	if(selectedPathname.length() > 0)
-	{
-		screen->GetParticlesEditor()->LoadFromYaml(selectedPathname);
-		screen->FindCurrentBody()->bodyControl->GetSceneGraph()->UpdatePropertyPanel();
-	}
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
-
-CommandSaveParticleEditorConfig::CommandSaveParticleEditorConfig()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
-{
-
-}
-
-void CommandSaveParticleEditorConfig::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	ParticlesEditorControl * editor = screen->GetParticlesEditor();
-	String currentPath = editor->GetActiveConfigName();
-	if(currentPath.empty())
-	{
-		currentPath = editor->GetConfigsPath();
-	}
-
-	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
-	if(filePath.size() > 0)
-	{
-		String normalizedPathname = PathnameToDAVAStyle(filePath);
-		screen->GetParticlesEditor()->SaveToYaml(normalizedPathname);
-	}
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
-
-CommandOpenParticleEditorSprite::CommandOpenParticleEditorSprite()
-:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
-{
-
-}
-
-void CommandOpenParticleEditorSprite::Execute()
-{
-	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
-
-	ParticlesEditorControl * editor = screen->GetParticlesEditor();
-	editor->PackSprites();
-	String currentPath = editor->GetActiveSpriteName();
-	if(currentPath.empty())
-	{
-		currentPath = editor->GetSpritesDataPath();
-	}
-	else
-	{
-		currentPath = editor->GetActiveConfigFolder()+currentPath;
-	}
-
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString(currentPath.c_str()), QString("Sprite (*.txt)"));
-
-	String selectedPathname = PathnameToDAVAStyle(filePath);
-
-	if(selectedPathname.length() > 0)
-	{
-		uint32 pos = selectedPathname.find(".txt");
-		selectedPathname = selectedPathname.substr(0, pos);
-		String relativePath = FileSystem::AbsoluteToRelativePath(editor->GetActiveConfigFolder(), selectedPathname);
-		screen->GetParticlesEditor()->SetActiveSprite(relativePath);
-	}
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
@@ -196,12 +98,13 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  RefPtr< PropertyLine<Color> > colorRandom,
 									  RefPtr< PropertyLine<float32> > alphaOverLife,
 									  RefPtr< PropertyLine<Color> > colorOverLife,
-									  RefPtr< PropertyLine<float32> > frameOverLife,
 									  RefPtr< PropertyLine<float32> > angle,
 									  RefPtr< PropertyLine<float32> > angleVariation,
 									  float32 alignToMotion,
 									  float32 startTime,
-									  float32 endTime)
+									  float32 endTime,
+									  bool frameOverLifeEnabled,
+									  float32 frameOverLifeFPS)
 {
 	this->layerName = layerName;
 	this->isDisabled = isDisabled;
@@ -235,6 +138,8 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 	this->alignToMotion = alignToMotion;
 	this->startTime = startTime;
 	this->endTime = endTime;
+	this->frameOverLifeEnabled = frameOverLifeEnabled;
+	this->frameOverLifeFPS = frameOverLifeFPS;
 }
 
 
@@ -265,7 +170,10 @@ void CommandUpdateParticleLayer::Execute()
 	layer->colorRandom = colorRandom;
 	layer->alphaOverLife = alphaOverLife;
 	layer->colorOverLife = colorOverLife;
-	layer->frameOverLife = frameOverLife;
+	
+	layer->frameOverLifeEnabled = frameOverLifeEnabled;
+	layer->frameOverLifeFPS = frameOverLifeFPS;
+
 	layer->angle = angle;
 	layer->angleVariation = angleVariation;
 	layer->alignToMotion = alignToMotion;
@@ -302,6 +210,22 @@ void CommandUpdateParticleLayerTime::Execute()
 	layer->endTime = endTime;
 }
 
+CommandUpdateParticleLayerEnabled::CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled) :
+	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+	this->layer = layer;
+	this->isEnabled = isEnabled;
+}
+
+void CommandUpdateParticleLayerEnabled::Execute()
+{
+	if (this->layer)
+	{
+		this->layer->isDisabled = !isEnabled;
+		ParticlesEditorController::Instance()->RefreshSelectedNode(true);
+	}
+}
+
 CommandUpdateParticleLayerForce::CommandUpdateParticleLayerForce(ParticleLayer* layer, uint32 forceId) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
@@ -320,9 +244,7 @@ void CommandUpdateParticleLayerForce::Init(RefPtr< PropertyLine<Vector3> > force
 
 void CommandUpdateParticleLayerForce::Execute()
 {
-	layer->forces[forceId] = force;
-	layer->forcesVariation[forceId] = forcesVariation;
-	layer->forcesOverLife[forceId] = forcesOverLife;
+	layer->UpdateParticleForce(forceId, force, forcesVariation, forcesOverLife);
 }
 
 

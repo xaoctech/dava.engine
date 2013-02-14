@@ -5,7 +5,6 @@
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
-#include "../ParticlesEditor/ParticlesEditorControl.h"
 
 #include "EditorSettings.h"
 #include "SceneValidator.h"
@@ -33,8 +32,6 @@
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 {
-	particlesEditor = NULL;
-
 }
 
 void SceneEditorScreenMain::LoadResources()
@@ -57,7 +54,6 @@ void SceneEditorScreenMain::LoadResources()
     settingsDialog = new SettingsDialog(fullRect, this);
     textureTrianglesDialog = new TextureTrianglesDialog();
     materialEditor = new MaterialEditor();
-	particlesEditor = new ParticlesEditorControl();
     
     InitControls();
     
@@ -83,13 +79,10 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(helpDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
-    
+
     ReleaseNodeDialogs();
-    
-    
-	SafeRelease(particlesEditor);
     ReleaseBodyList();
-        
+
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     UNDOManager::Instance()->Release();
