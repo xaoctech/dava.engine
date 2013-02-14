@@ -19,6 +19,11 @@
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C189461516CD004A003BF954 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C189460F16CD004A003BF954 /* DVAssertMessage.cpp */; };
+		C189461616CD004A003BF954 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C189461016CD004A003BF954 /* DVAssertMessage.h */; };
+		C189461816CD004A003BF954 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C189461216CD004A003BF954 /* DVAssertMessageApple.mm */; };
+		C189461916CD004A003BF954 /* UIAlertView_Modal.h in Headers */ = {isa = PBXBuildFile; fileRef = C189461316CD004A003BF954 /* UIAlertView_Modal.h */; };
+		C189461A16CD004A003BF954 /* UIAlertView_Modal.m in Sources */ = {isa = PBXBuildFile; fileRef = C189461416CD004A003BF954 /* UIAlertView_Modal.m */; };
 		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
@@ -661,6 +666,11 @@
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C189460F16CD004A003BF954 /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
+		C189461016CD004A003BF954 /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
+		C189461216CD004A003BF954 /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
+		C189461316CD004A003BF954 /* UIAlertView_Modal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAlertView_Modal.h; sourceTree = "<group>"; };
+		C189461416CD004A003BF954 /* UIAlertView_Modal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAlertView_Modal.m; sourceTree = "<group>"; };
 		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1486,6 +1496,11 @@
 		E8B3C80416B9326D002BD35F /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				C189460F16CD004A003BF954 /* DVAssertMessage.cpp */,
+				C189461016CD004A003BF954 /* DVAssertMessage.h */,
+				C189461216CD004A003BF954 /* DVAssertMessageApple.mm */,
+				C189461316CD004A003BF954 /* UIAlertView_Modal.h */,
+				C189461416CD004A003BF954 /* UIAlertView_Modal.m */,
 				E8B3C80516B9326D002BD35F /* Backtrace.cpp */,
 				E8B3C80616B9326D002BD35F /* Backtrace.h */,
 				E8B3C80716B9326D002BD35F /* DVAssert.h */,
@@ -2566,6 +2581,8 @@
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
 				1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */,
+				C189461616CD004A003BF954 /* DVAssertMessage.h in Headers */,
+				C189461916CD004A003BF954 /* UIAlertView_Modal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2919,6 +2936,9 @@
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */,
+				C189461516CD004A003BF954 /* DVAssertMessage.cpp in Sources */,
+				C189461816CD004A003BF954 /* DVAssertMessageApple.mm in Sources */,
+				C189461A16CD004A003BF954 /* UIAlertView_Modal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
