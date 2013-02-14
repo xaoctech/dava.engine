@@ -26,9 +26,14 @@ public:
 	void TestFunction(PerfFuncData * data);
 	
 private:
+	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
+	
+private:
 	UITextField* textField;
 	UIStaticText* staticText;
 	UIButton* testButton;
+	
+	bool testFinished;
 };
 
 #endif /* defined(__TemplateProjectMacOS__InputTest__) */

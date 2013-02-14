@@ -17,7 +17,9 @@ InputTest::InputTest() :
 	staticText = NULL;
 	testButton = NULL;
 	
-	RegisterFunction(this, &InputTest::TestFunction, Format("InputTest of %s", "asdasd"), NULL);
+	testFinished = false;
+	
+	RegisterFunction(this, &InputTest::TestFunction, Format("InputTest"), NULL);
 }
 
 void InputTest::LoadResources()
@@ -28,14 +30,6 @@ void InputTest::LoadResources()
     DVASSERT(font);
 	font->SetSize(20);
     font->SetColor(Color::White());
-	
-	/*staticText = new UIStaticText(Rect(0, 0, 512, 200));
-    staticText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    staticText->SetMultiline(true);
-    staticText->SetFont(font);
-	staticText->SetText(L"staticText");
-	staticText->SetDebugDraw(true);
-    AddControl(staticText);*/
 	
 	textField = new UITextField(Rect(0, 0, 512, 100));
 #ifdef __DAVAENGINE_IPHONE__
@@ -68,11 +62,11 @@ void InputTest::LoadResources()
 	textField->SetDebugDraw(true);
 	AddControl(textField);
 
-
-	testButton = new UIButton(Rect(900, 0, 100, 635));
+	testButton = new UIButton(Rect(0, 300, 300, 30));
 	testButton->SetStateFont(0xFF, font);
-	testButton->SetStateText(0xFF, L"UIButton");
+	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
+	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
 	
 	AddControl(testButton);
 }
@@ -92,6 +86,12 @@ void InputTest::TestFunction(PerfFuncData * data)
 bool InputTest::RunTest(int32 testNum)
 {
 	TestTemplate<InputTest>::RunTest(testNum);
-	return false;
+	return testFinished;
+}
+
+
+void InputTest::ButtonPressed(BaseObject *obj, void *data, void *callerData)
+{
+	testFinished = true;
 }
 
