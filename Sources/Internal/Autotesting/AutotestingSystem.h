@@ -41,7 +41,7 @@
 
 #include "Autotesting/MongodbUpdateObject.h"
 
-#define AUTOTESTING_DB_IP    "10.128.128.131"
+#define AUTOTESTING_DB_IP    "10.128.128.5"
 #define AUTOTESTING_DB_PORT  27017
 #define AUTOTESTING_DB_NAME  "Autotesting"
 
