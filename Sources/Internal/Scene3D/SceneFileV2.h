@@ -126,6 +126,10 @@ public:
     void SetError(eError error);
     eError GetError();
     
+    void OptimizeScene(SceneNode * rootNode);
+    bool RemoveEmptySceneNodes(SceneNode * rootNode);
+    bool RemoveEmptyHierarchy(SceneNode * currentNode);
+    int32 removedNodeCount;
 private:
     void AddToNodeMap(DataNode * node);
 
@@ -148,6 +152,10 @@ private:
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
+    bool ReplaceNodeAfterLoad(SceneNode * node);
+	void ReplaceOldNodes(SceneNode * currentNode);
+
+    
     bool isDebugLogEnabled;
     bool isSaveForGame;
     String rootNodePathName, rootNodePath, rootNodeName; 

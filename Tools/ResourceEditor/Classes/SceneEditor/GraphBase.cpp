@@ -2,9 +2,10 @@
 #include "ControlsFactory.h"
 
 #include "EditorSettings.h"
+#include "SceneNodePropertyNames.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   delegate(newDelegate)
@@ -71,11 +72,11 @@ bool GraphBase::PropertiesOnScreen()
     return (propertyPanel->GetParent() != NULL);
 }
 
-void GraphBase::UpdatePropertiesForCurrentNode()
+void GraphBase::UpdateMatricesForCurrentNode()
 {
     if(propertyControl)
     {
-        propertyControl->UpdateFieldsForCurrentNode();
+        propertyControl->UpdateMatricesForCurrentNode();
     }
 }
 
@@ -140,10 +141,44 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
 }
 
 
-void GraphBase::NodesPropertyChanged()
+void GraphBase::NodesPropertyChanged(const String &forKey)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-    activeScene->RebuildSceneGraph();
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+
+	// For some properties rebuilding of selected node only is enough. For other ones,
+	// the whole Scene Graph refresh is needed.
+	if (IsRebuildSelectedNodeEnough(forKey))
+	{
+		SceneNode* selectedNode = activeScene->GetSelectedNode();
+		activeScene->RebuildSceneGraphNode(selectedNode);
+	}
+	else
+	{
+		activeScene->RebuildSceneGraph();
+	}
 }
 
+bool GraphBase::IsRebuildSelectedNodeEnough(const String& propertyName)
+{
+	static const char* supportedPropertyNames[] =
+	{
+		SCENE_NODE_IS_SOLID_PROPERTY_NAME,
+		SCENE_NODE_NAME_PROPERTY_NAME,
+		SCENE_NODE_IS_VISIBLE_PROPERTY_NAME,
+		
+		SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME,
+		SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME,
+		SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME
+	};
 
+	int32 supportedPropertyNamesCount = sizeof(supportedPropertyNames) / sizeof(*supportedPropertyNames);
+	for (int32 i = 0; i < supportedPropertyNamesCount; i ++)
+	{
+		if (propertyName.compare(supportedPropertyNames[i]) == 0)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}

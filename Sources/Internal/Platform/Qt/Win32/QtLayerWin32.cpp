@@ -65,7 +65,7 @@ void QtLayerWin32::WidgetDestroyed()
 void QtLayerWin32::OnSuspend()
 {
     SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
+//    Core::Instance()->SetIsActive(false);
 }
     
 void QtLayerWin32::OnResume()
@@ -181,7 +181,11 @@ void QtLayerWin32::ProcessFrame()
 
 void QtLayerWin32::LockKeyboardInput(bool locked)
 {
-	//do nothing
+	CoreWin32Platform *core = dynamic_cast<CoreWin32Platform *>(CoreWin32Platform::Instance());
+	if (NULL != core)
+	{
+		core->SetFocused(locked);
+	}
 }
 
 

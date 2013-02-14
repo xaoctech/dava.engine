@@ -23,6 +23,11 @@ private:
 
     void SetupProjectPath();
     void SetupDockWidgets();
+    
+    void closeEvent(QCloseEvent *event);
+
+    void SetupCustomColorsDock();
+    void SetCustomColorsDockControlsEnabled(bool enabled);
         
 private slots:
 

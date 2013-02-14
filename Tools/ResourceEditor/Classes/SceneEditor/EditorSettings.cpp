@@ -2,7 +2,7 @@
 
 #include "ControlsFactory.h"
 
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 
 EditorSettings::EditorSettings()
@@ -31,7 +31,10 @@ void EditorSettings::Save()
 
 void EditorSettings::ApplyOptions()
 {
-	RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    if(RenderManager::Instance())
+    {
+        RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    }
 }
 
 
@@ -39,7 +42,6 @@ void EditorSettings::SetDataSourcePath(const String &datasourcePath)
 {
     settings->SetString("3dDataSourcePath", datasourcePath);
 }
-
 
 String EditorSettings::GetDataSourcePath()
 {
@@ -56,17 +58,9 @@ String EditorSettings::GetProjectPath()
     return settings->GetString(String("ProjectPath"), String(""));
 }
 
-
-
-bool EditorSettings::IsValidPath(const String &path)
+String EditorSettings::GetParticlesConfigsPath()
 {
-    if(path.length() == 0) //for texture resetting
-        return true;
-    
-    size_t posPng = path.find(".png");
-    size_t posPvr = path.find(".pvr");
-    size_t posHeightmap = path.find(Heightmap::FileExtension());
-    return ((String::npos != posPng) || (String::npos != posPvr) || (String::npos != posHeightmap));
+	return GetProjectPath() + "Data/Configs/Particles/";
 }
 
 float32 EditorSettings::GetCameraSpeed()
@@ -240,3 +234,51 @@ bool EditorSettings::GetEnableImposters()
 	return settings->GetBool("enableImposters", true);
 }
 
+int32 EditorSettings::GetTextureViewFileFormat()
+{
+    return settings->GetInt32(String("TextureViewFileFormat"), PNG_FILE);
+}
+void EditorSettings::SetTextureViewFileFormat(int32 format)
+{
+    settings->SetInt32(String("TextureViewFileFormat"), format);
+}
+
+
+void EditorSettings::SetMaterialsColor(const Color &ambient, const Color &diffuse, const Color &specular)
+{
+    Vector4 ambientVector = ToVector4(ambient);
+    Vector4 diffuseVector = ToVector4(diffuse);
+    Vector4 specularVector = ToVector4(specular);
+	settings->SetVector4(String("materials.ambient"), ambientVector);
+	settings->SetVector4(String("materials.diffuse"), diffuseVector);
+	settings->SetVector4(String("materials.specular"), specularVector);
+}
+
+Color EditorSettings::GetMaterialAmbientColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.ambient"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+Color EditorSettings::GetMaterialDiffuseColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.diffuse"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+
+Color EditorSettings::GetMaterialSpecularColor()
+{
+	Vector4 colorVect = settings->GetVector4(String("materials.specular"), ToVector4(Color::White()));
+	return ToColor(colorVect);
+}
+
+Vector4 EditorSettings::ToVector4(const Color &color)
+{
+	Vector4 vect(color.r, color.g, color.b, color.a);
+	return vect;
+}
+
+Color EditorSettings::ToColor(const Vector4 &colorVector)
+{
+	Color color(colorVector.x, colorVector.y, colorVector.z, colorVector.w);
+	return color;
+}

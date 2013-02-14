@@ -2,7 +2,7 @@
 #include "ControlsFactory.h"
 
 #include "EditorSettings.h"
-#include "ErrorNotifier.h"
+#include "../Qt/Main/QtUtils.h"
 
 SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDelegate)
     :   UIControl(rect)
@@ -72,7 +72,7 @@ void SettingsDialog::OnClose(BaseObject * , void * , void * )
         
         if(cur <= prev)
         {
-            ErrorNotifier::Instance()->ShowError("Lod layers have wrong values.");
+            ShowErrorDialog("Lod layers have wrong values.");
             return;
         }
     }

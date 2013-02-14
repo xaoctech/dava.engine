@@ -36,6 +36,7 @@
 #include "Base/ObjectFactory.h"
 #include "UI/UIYamlLoader.h"
 #include "Render/RenderHelper.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
@@ -207,6 +208,14 @@ namespace DAVA
 	const List<UIControl*> &UIControl::GetChildren()
 	{
 		return childs;
+	}
+
+	List<UIControl* >& UIControl::GetRealChildren()
+	{
+        realChilds.clear();
+        realChilds = childs;
+
+		return realChilds;
 	}
 
 	void UIControl::SetName(const String & _name)
@@ -813,8 +822,12 @@ namespace DAVA
 		}
 		
 		RemoveAllControls();
-		List<UIControl*>::iterator it = srcControl->childs.begin();
-		for(; it != srcControl->childs.end(); ++it)
+        
+        // Yuri Coder, 2012/11/30. Use Real Children List to avoid copying
+        // unnecessary children we have on the for example UIButton.
+        const List<UIControl*>& realChildren = srcControl->GetRealChildren();
+		List<UIControl*>::const_iterator it = realChildren.begin();
+		for(; it != realChildren.end(); ++it)
 		{
 			
 			UIControl *c = (*it)->Clone();
@@ -862,7 +875,6 @@ namespace DAVA
 	
 	void UIControl::SystemWillDisappear()
 	{
-		WillDisappear();
         if (GetHover()) 
         {
             UIControlSystem::Instance()->SetHoveredControl(NULL);
@@ -887,6 +899,8 @@ namespace DAVA
 			}
 			++it;
 		}
+
+		WillDisappear();
 	}
 	
 	void UIControl::SystemDidAppear()
@@ -1410,6 +1424,72 @@ namespace DAVA
 		
 	}
 	
+	YamlNode* UIControl::SaveToYamlNode(UIYamlLoader * loader)
+	{
+		//Temp variables
+		String stringValue;
+		VariantType *nodeValue = new VariantType();
+		//Return node
+		YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
+        
+		//Control Type      
+		node->Set("type", "UIControl");
+		//Control name
+		node->Set("name", this->GetName());
+			//Visible
+		node->Set("visible", this->GetVisible());
+		//Enabled
+		node->Set("enabled", !this->GetDisabled());
+		//Clip contents       
+		node->Set("clip", this->GetClipContents());
+		//Input
+		node->Set("noInput", !this->GetInputEnabled());
+		//Sprite
+		Sprite *sprite =  this->GetSprite();
+		if (sprite)
+		{
+			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+		}
+
+		//Color
+		Color color =  this->GetBackground()->color;
+		Vector4 colorVector4(color.r, color.g, color.b, color.a);
+		nodeValue->SetVector4(colorVector4);        
+		node->Set("color", nodeValue);
+		//Frame
+		node->Set("frame", this->GetFrame());
+		//Rect
+		Rect rect = GetRect();
+		Vector4 rectVector4(rect.x, rect.y, rect.dx, rect.dy);
+		nodeValue->SetVector4(rectVector4);
+		node->Set("rect", nodeValue);        
+		//Align
+		node->Set("align", this->GetSpriteAlign());
+		//Pivot
+		nodeValue->SetVector2(pivotPoint);
+		node->Set("pivot", nodeValue);
+
+		//Color inherit
+		UIControlBackground::eColorInheritType colorInheritType =  this->GetBackground()->GetColorInheritType();   
+		node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
+		//Draw type
+		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType(); 
+		node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+		//LeftRightStretchCapNode
+		node->Set("leftRightStretchCap", this->GetBackground()->GetLeftRightStretchCap());
+		//topBottomStretchCap
+		node->Set("topBottomStretchCap", this->GetBackground()->GetTopBottomStretchCap());
+		//Angle
+		node->Set("angle", this->angle);
+		//Tag
+		node->Set("tag", this->tag);
+        
+		//Release variantType variable
+		SafeDelete(nodeValue);
+
+		return node;
+	}
+
 	void UIControl::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	{
 		YamlNode * spriteNode = node->Get("sprite");
@@ -1474,7 +1554,7 @@ namespace DAVA
 		YamlNode * visibleNode = node->Get("visible");
 		if(visibleNode)
 		{
-			bool visible = loader->GetBoolFromYamlNode(clipNode, false); 
+			bool visible = loader->GetBoolFromYamlNode(visibleNode, false); 
 			SetVisible(visible);
 		}
 		

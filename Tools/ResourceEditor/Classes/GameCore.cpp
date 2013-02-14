@@ -18,7 +18,6 @@
 #include "BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
-#include "SceneEditor/OutputManager.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "SceneEditor/PVRConverter.h"
@@ -26,8 +25,10 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "Qt/SceneDataManager.h"
+#include "ImageSplitter/ImageSplitterScreen.h"
 
+#include "TextureBrowser/TextureConvertor.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 using namespace DAVA;
 
@@ -65,41 +66,59 @@ void GameCore::OnAppStarted()
     new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
-    new OutputManager();
 	new PVRConverter();
-    new SceneDataManager();
-        
-    
+
+#if defined (__DAVAENGINE_MACOS__)
+	PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
+#elif defined (__DAVAENGINE_WIN32__)
+    PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
+#endif
+
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
-    
     exporterScreen = new ExporterScreen();
+
+	new ParticlesEditorController();
+    imageSplitterScreen = new ImageSplitterScreen();
+
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
-    
     UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_IMAGE_SPLITTER, imageSplitterScreen);
 
+    
     if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_EXPORTER);
     }
-    else 
+    else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
+    {
+        UIScreenManager::Instance()->SetFirst(SCREEN_IMAGE_SPLITTER);
+    }
+    else
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
     }
+	
+	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using
+	// ParticleEffectNode and thus REGISTER_CLASS(ParticleEffectNode) must not be removed during optimization.
+	ParticleEffectNode* effectNode = new ParticleEffectNode();
+	delete effectNode;
 }
 
 void GameCore::OnAppFinished()
 {
-    SceneDataManager::Instance()->Release();
 	PVRConverter::Instance()->Release();
-    OutputManager::Instance()->Release();
     SceneValidator::Instance()->Release();
-    
+
+	BeastProxy::Instance()->Release();
+
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
     SafeRelease(exporterScreen);
+    SafeRelease(imageSplitterScreen);
 }
 
 void GameCore::OnSuspend()

@@ -15,15 +15,17 @@ ParticleEmitterPropertyControl::~ParticleEmitterPropertyControl()
 
 void ParticleEmitterPropertyControl::ReadFrom(SceneNode * sceneNode)
 {
+	//Andrii Makovii 2013/01/16 This codeis outdated - new particle emitter editor should be used.
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-	ParticleEmitterNode * emitter = dynamic_cast<ParticleEmitterNode*> (sceneNode);
+	ParticleEmitter * emitter = GetEmitter(sceneNode);
+    
 	DVASSERT(emitter);
 
 	propertyList->AddSection("Particles emitter");
 
 	propertyList->AddStringProperty("Yaml path", PropertyList::PROPERTY_IS_READ_ONLY);
-	propertyList->SetStringPropertyValue("Yaml path", emitter->GetYamlPath());
+	propertyList->SetStringPropertyValue("Yaml path", emitter->GetConfigPath());
 
 	propertyList->AddMessageProperty("Open editor", Message(this, &ParticleEmitterPropertyControl::OnOpenEditor));
 }
@@ -31,6 +33,7 @@ void ParticleEmitterPropertyControl::ReadFrom(SceneNode * sceneNode)
 void ParticleEmitterPropertyControl::OnOpenEditor(BaseObject * object, void * userData, void * callerData)
 {
 	SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
-	ParticleEmitterNode * emitter = dynamic_cast<ParticleEmitterNode*> (currentSceneNode);
-	screen->EditParticleEmitter(emitter);
+	ParticleEmitter * emitter = GetEmitter(currentSceneNode);
+    DVASSERT(emitter);
+	screen->EditParticleEmitter(currentSceneNode);
 }

@@ -23,8 +23,6 @@ public:
 protected:
     Vector<String> tiledModes;
 
-    void CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath);
-
     void SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname);
 
     void GenerateFullTiledTexture(BaseObject * object, void * userData, void * callerData);
@@ -32,6 +30,17 @@ protected:
     void SaveHeightmapToPng(BaseObject * object, void * userData, void * callerData);
     
     void AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level);
+    
+//    void SetChannelsNames();
+//    
+//    
+//    void OnSaveChannels(BaseObject * object, void * userData, void * callerData);
+//    void OnLoadChannels(BaseObject * object, void * userData, void * callerData);
+//    
+//    void SaveChannels();
+//    void LoadChannels();
+
+	LandscapeNode* GetLandscape() const;
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__

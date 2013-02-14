@@ -56,7 +56,7 @@ public:
 private:
 	DAVA::Cursor * cursor;
 	
-	int testCount;
+	int32 testCount;
 	
 	List<Test*> tests;
 	ResultScreen *resultScreen;

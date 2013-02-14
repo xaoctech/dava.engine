@@ -198,7 +198,7 @@ public:
 	void SaveToYaml(const String &pathToFile);
 	String GetActiveConfigName();
 	String GetActiveConfigFolder();
-	void SetNode(ParticleEmitterNode * node);
+	void SetNode(SceneNode * node);
 	void SetActiveSprite(const String & path);
 	String GetActiveSpriteName();
 
@@ -362,5 +362,5 @@ protected:
     
     ForcePreviewControl *forcePreview;
 
-	ParticleEmitterNode * particleEmitterNode;
+	SceneNode * particleEmitterNode;
 };

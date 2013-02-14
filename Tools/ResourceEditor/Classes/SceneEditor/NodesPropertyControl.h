@@ -13,16 +13,13 @@ class NodesPropertyDelegate
 {
 public:
     
-    virtual void NodesPropertyChanged() = 0;
+    virtual void NodesPropertyChanged(const String &forKey) = 0;
     
 };
 
 class NodesPropertyControl: public UIControl, public PropertyListDelegate, public CreatePropertyControlDelegate, public UIListDelegate
 {
-    enum eConst
-    {
-        CELL_HEIGHT = 20,
-    };
+    static const int32 CELL_HEIGHT = 20;
     
 public:
     NodesPropertyControl(const Rect & rect, bool createNodeProperties);
@@ -35,7 +32,10 @@ public:
     virtual void ReadFrom(DataNode *dataNode);
 	virtual void ReadFrom(Entity *entity);
     
+
+
     void UpdateFieldsForCurrentNode();
+	void UpdateMatricesForCurrentNode();
 
     
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);

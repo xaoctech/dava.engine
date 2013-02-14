@@ -13,6 +13,11 @@
 #include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/HeightmapNode.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/BulletComponent.h"
+#include "Render/Highlevel/RenderObject.h"
+
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -23,8 +28,8 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 EditorScene::EditorScene()
 :Scene()
 {
-    selectedMeshInstance = NULL;
-    
+    selectedEntity = NULL;
+    originalHandler = NULL;
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
@@ -67,38 +72,36 @@ void EditorScene::Update(float32 timeElapsed)
 
 void EditorScene::CheckNodes(SceneNode * curr)
 {
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
+	RenderComponent * renderComponent = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
+	BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
 	UserNode * userNode = dynamic_cast<UserNode *> (curr);	
-	if (mesh)
+	if(renderComponent && renderComponent->GetRenderObject())
 	{
-		if (mesh->GetUserData() == 0 && mesh->IsLodMain(0))
+		if (bulletComponent == 0 && curr->IsLodMain(0))
 		{
-			SceneNodeUserData * data = new SceneNodeUserData();
-			curr->SetUserData(data);
-			data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
-			SafeRelease(data);
+			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+			bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
 		}
-		else if (mesh->GetUserData())
+		else if(bulletComponent && bulletComponent->GetBulletObject())
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)mesh->GetUserData();
-			data->bulletObject->UpdateCollisionObject();
+			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
 	}
-	else if (userNode)
-	{
-		if (userNode->GetUserData() == 0)
-		{
-			SceneNodeUserData * data = new SceneNodeUserData();
-			curr->SetUserData(data);
-			data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
-			SafeRelease(data);
-		}
-		else if (userNode->GetUserData())
-		{
-			SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
-			data->bulletObject->UpdateCollisionObject();
-		}
-	}
+	//else if (userNode)
+	//{
+	//	if (userNode->GetUserData() == 0)
+	//	{
+	//		SceneNodeUserData * data = new SceneNodeUserData();
+	//		curr->SetUserData(data);
+	//		data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
+	//		SafeRelease(data);
+	//	}
+	//	else if (userNode->GetUserData())
+	//	{
+	//		SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
+	//		data->bulletObject->UpdateCollisionObject();
+	//	}
+	//}
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -109,8 +112,10 @@ void EditorScene::CheckNodes(SceneNode * curr)
 
 void EditorScene::ReleaseUserData(SceneNode * curr)
 {
-	if (curr)
-		curr->SetUserData(0);
+	if(curr)
+	{
+		curr->RemoveComponent(Component::BULLET_COMPONENT);
+	}
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -136,10 +141,10 @@ SceneNode * GetSolidParent(SceneNode* curr)
 
 SceneNode * GetLodParent(SceneNode * curr)
 {
-	LodNode * node = dynamic_cast<LodNode*> (curr);
-	if (node)
+	bool hasLod = (curr->GetComponent(Component::LOD_COMPONENT) != 0);
+	if(hasLod)
 	{
-		return node;
+		return curr;
 	}
 	else 
 	{
@@ -155,7 +160,7 @@ SceneNode * GetLodParent(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -169,18 +174,19 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->GetUserData();
-			if (data)
+			BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
+			BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+			if (bulletObject)
 			{
 				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
 				{					
-					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+					if (bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
 					{
 						findedIndex = i;
 						break;
 					}
 				}
-				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+				while (findedIndex >= 0 && bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
 					findedIndex--;
 				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
@@ -200,6 +206,62 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+void EditorScene::JuncCollWorldToLandscapeCollWorld()
+{
+	
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		originalHandler = landscapeObjects[i]->getBroadphaseHandle();
+		collisionWorld->addCollisionObject(landscapeObjects[i]);
+	}
+}
+
+void EditorScene::SeparateCollWorldFromLandscapeCollWorld()
+{
+	btCollisionObjectArray& landscapeObjects = landCollisionWorld->getCollisionObjectArray();
+	if(landscapeObjects.size() > 1)
+	{
+		return;
+	}
+	for(int32 i = 0; i < landscapeObjects.size(); ++i)
+	{
+		collisionWorld->removeCollisionObject(landscapeObjects[i]);
+		landscapeObjects[i]->setBroadphaseHandle(originalHandler);
+	}
+}
+
+bool EditorScene::TryIsTargetAccesible(Vector3 from, Vector3 target)
+{
+	if (selection)
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS));
+
+	btVector3 pos(from.x, from.y, from.z);
+    btVector3 to(target.x, target.y, target.z);
+
+    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
+    
+	collisionWorld->rayTest(pos, to, cb);
+
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
+    {
+		//there is some obj before target
+		//cb.m_hitPointWorld - contain coord of breaker
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+	
+}
+
 bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::Vector3 &direction, DAVA::Vector3 &point)
 {
 	btVector3 pos(from.x, from.y, from.z);
@@ -210,7 +272,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	uint64 time2;
     landCollisionWorld->rayTest(pos, to, cb);
 	time2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("raytest %lld", time2-time1);
+	//Logger::Debug("raytest %lld", time2-time1);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
@@ -234,27 +296,45 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-
-
-LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
+LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
-    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent)
+	{
+		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		if (land)
+			return land;
+	}
 	
-    if (land) 
-    {
-		return land;
-    }
-    
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandScape(child);
+		LandscapeNode * result = GetLandscape(child);
 		if (result)
 			return result;
     }
 	return 0;
 }
 
+SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
+{
+	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
+	if (renderComponent)
+	{
+		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		if (land)
+			return node;
+	}
+	
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+		SceneNode * result = GetLandscapeNode(child);
+		if (result)
+			return result;
+    }
+	return NULL;
+}
 
 HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject * coll)
 {
@@ -278,16 +358,19 @@ HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject *
 
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
-	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
-	if (node == 0)
-		node = dynamic_cast<LightNode *> (curr);
+	SceneNode * node = curr;
+// LIGHT
+//	if (node == 0)
+//		node = dynamic_cast<LightNode *> (curr);
+    
 	if (node == 0)
 		node = dynamic_cast<UserNode *> (curr);
 	
-	if (node && node->GetUserData())
+	BulletComponent * bulletComponent = (BulletComponent*)node->GetComponent(Component::BULLET_COMPONENT);
+	if (bulletComponent && bulletComponent->GetBulletObject())
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
-		if (data->bulletObject->GetCollisionObject() == coll)
+		BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+		if (bulletObject->GetCollisionObject() == coll)
 			return curr;
 	}
     
@@ -306,21 +389,25 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     if (selection)
     {
         uint32 flags = selection->GetDebugFlags();
-        uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        uint32 newFlags = flags & ~DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
         
         SetNodeDebugFlags(selection, newFlags);
     }
     
 	selection = newSelection;
-    selectedMeshInstance = dynamic_cast<MeshInstanceNode *>(newSelection);
+    selectedEntity = newSelection;
     
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
-		if (solid == 0)
+		if(solid == 0)
+		{
 			solid = GetLodParent(selection);
-		if (solid)
+		}
+		if(solid)
+		{
 			selection = solid;
+		}
 			
 		
 		proxy = GetHighestProxy(selection);
@@ -336,7 +423,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if(selection)
     {
         uint32 flags = selection->GetDebugFlags();
-        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        uint32 newFlags = flags | DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS;
         
         SetNodeDebugFlags(selection, newFlags);
     }
@@ -345,9 +432,9 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
 {
     selectedNode->SetDebugFlags(flags);
-    if(selectedMeshInstance && selectedMeshInstance != selectedNode)
+    if(selectedEntity && selectedEntity != selectedNode)
     {
-        selectedMeshInstance->SetDebugFlags(flags, false);
+        selectedEntity->SetDebugFlags(flags, false);
     }
 }
 
@@ -374,9 +461,15 @@ SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {
-	SceneNodeUserData * userData = (SceneNodeUserData*)curr->GetUserData();
-	if (userData)
-		userData->bulletObject->SetUpdateFlag(value);
+	if(lastSelectedPhysics)
+	{
+		BulletComponent * bulletComponent = (BulletComponent*)lastSelectedPhysics->GetComponent(Component::BULLET_COMPONENT);
+		if (bulletComponent)
+		{
+			BulletObject * bulletObject = (BulletObject*)bulletComponent->GetBulletObject();
+			bulletObject->SetUpdateFlag(value);
+		}
+	}
 	
 	for (int32 i = 0; i < curr->GetChildrenCount(); i++)
 	{
@@ -425,23 +518,6 @@ void EditorScene::DrawGrid()
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	RenderManager::Instance()->SetState(oldState);
-}
-
-void EditorScene::DrawDebugNodes(SceneNode * curr)
-{
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
-	
-	if (mesh && mesh->GetUserData())
-	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
-		data->bulletObject->Draw(mesh->GetWorldTransform(), mesh);
-	}
-
-	int size = curr->GetChildrenCount();
-	for (int i = 0; i < size; i++)
-	{
-		DrawDebugNodes(curr->GetChild(i));
-	}
 }
 
 void EditorScene::SetDrawGrid(bool newDrawGrid)

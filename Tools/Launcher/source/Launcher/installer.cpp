@@ -17,6 +17,7 @@
 
 #define INSTALL_TYPE "INSTALL_TYPE"
 #define INSTALL_NAME "INSTALL_NAME"
+#define INSTALL_VERISON "INSTALL_VERISON"
 
 #define APP_INSTALLER_DIR "Installers"
 
@@ -50,9 +51,20 @@ void Installer::UpdateConfigFinished(const AppsConfig & update) {
 
     UpdateAvailableSoftware();
 
-    Update(m_AvailableSoftWare.m_Stable, eAppTypeStable);
+    //install all dependencies
+    for (AvailableSoftWare::SoftWareMap::const_iterator iter = m_AvailableSoftWare.m_Dependencies.begin();
+         iter != m_AvailableSoftWare.m_Dependencies.end();
+         ++iter) {
+        const SoftWare& soft = iter.value();
+        if (soft.m_CurVersion.isEmpty()) {
+            Install(iter.key(), soft.m_NewVersion, eAppTypeDependencies);
+            break; //wait until install finished
+        }
+    }
+
+    Update(m_AvailableSoftWare.m_Stable, eAppTypeStable, true);
     Update(m_AvailableSoftWare.m_Development, eAppTypeDevelopment);
-    Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies);
+    Update(m_AvailableSoftWare.m_Dependencies, eAppTypeDependencies, true);
 }
 
 void Installer::UpdateAvailableSoftware() {
@@ -81,28 +93,36 @@ void Installer::UpdateAvailableSoftware() {
 
 
 void Installer::FormatFromSetting(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& setting) {
-    for (AppsConfig::AppMap::const_iterator iter = setting.begin(); iter != setting.end(); ++iter) {
-        const QString& name = iter.key();
+    for (AppsConfig::AppMap::const_iterator appIter = setting.begin(); appIter != setting.end(); ++appIter) {
+        AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+        if (iter == appIter.value().end())
+            continue;
+
         const AppConfig& appConfig = iter.value();
 
         SoftWare soft;
         soft.m_CurVersion = appConfig.m_Version;
         soft.m_RunPath = appConfig.m_RunPath;
-        softMap[name] = soft;
+        softMap[appConfig.m_Name] = soft;
     }
 }
 
 void Installer::FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& update) {
-    for (AppsConfig::AppMap::const_iterator iter = update.begin(); iter != update.end(); ++iter) {
-        const QString& name = iter.key();
-        const AppConfig& appConfig = iter.value();
+    for (AppsConfig::AppMap::const_iterator appIter = update.begin(); appIter != update.end(); ++appIter) {
+        for (AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+             iter != appIter.value().end();
+             ++iter) {
+            const AppConfig& appConfig = iter.value();
 
-        if (softMap.contains(name)) {
-            softMap[name].m_NewVersion = appConfig.m_Version;
-        } else {
-            SoftWare soft;
-            soft.m_NewVersion = appConfig.m_Version;
-            softMap[name] = soft;
+            if (softMap.contains(appConfig.m_Name)) {
+                softMap[appConfig.m_Name].m_AvailableVersion.insert(appConfig.m_Version);
+            } else {
+                SoftWare soft;
+                soft.m_AvailableVersion.insert(appConfig.m_Version);
+                softMap[appConfig.m_Name] = soft;
+            }
+            if (Settings::GetVersion(softMap[appConfig.m_Name].m_NewVersion) < Settings::GetVersion(appConfig.m_Version))
+                softMap[appConfig.m_Name].m_NewVersion = appConfig.m_Version;
         }
     }
 }
@@ -139,15 +159,19 @@ QString Installer::GetInstallPath(eAppType type) const {
     return "";
 }
 
-bool Installer::Install(const QString& appName, eAppType type) {
+bool Installer::Install(const QString& appName, const QString& appVersion, eAppType type) {
     Logger::GetInstance()->AddLog(tr("Installing %1").arg(appName));
 
     const AppsConfig::AppMap* apps = GetAppMap(type);
     if (!apps)
         return false;
 
-    AppsConfig::AppMap::const_iterator iter = apps->find(appName);
-    if (iter == apps->end())
+    AppsConfig::AppMap::const_iterator appIter = apps->find(appName);
+    if (appIter == apps->end())
+        return false;
+
+    AppsConfig::AppVersion::const_iterator iter = appIter.value().find(appVersion);
+    if (iter == appIter->end())
         return false;
 
     const AppConfig& config = iter.value();
@@ -157,6 +181,7 @@ bool Installer::Install(const QString& appName, eAppType type) {
     connect(m_pReply, SIGNAL(finished()), this, SLOT(OnAppDownloaded()));
     m_pReply->setProperty(INSTALL_TYPE, type);
     m_pReply->setProperty(INSTALL_NAME, appName);
+    m_pReply->setProperty(INSTALL_VERISON, appVersion);
 
     emit StartDownload();
 
@@ -187,11 +212,21 @@ void Installer::OnAppDownloaded() {
         return;
 
     eAppType type = (eAppType)m_pReply->property(INSTALL_TYPE).toInt();
-    QString name = m_pReply->property(INSTALL_NAME).toString();
+    QString appName = m_pReply->property(INSTALL_NAME).toString();
+    QString appVersion = m_pReply->property(INSTALL_VERISON).toString();
     const AppsConfig::AppMap* pUpdateMap = m_AppsConfig.GetAppMap(type);
     if (!pUpdateMap)
         return;
-    const AppConfig& updateConfig = pUpdateMap->value(name);
+
+    AppsConfig::AppMap::const_iterator appIter = pUpdateMap->find(appName);
+    if (appIter == pUpdateMap->end())
+        return;
+
+    AppsConfig::AppVersion::const_iterator iter = appIter.value().find(appVersion);
+    if (iter == appIter.value().end())
+        return;
+
+    const AppConfig& updateConfig = iter.value();
 
     QByteArray data = m_pReply->readAll();
     if (!data.size()) {
@@ -264,7 +299,7 @@ void Installer::OnAppDownloaded() {
                 break;
             }
             //create app installer path
-            InstallerPath = InstallersPath + "/" + name;
+            InstallerPath = InstallersPath + "/" + appName;
             DirectoryManager::DeleteDir(InstallerPath);
             if (!QDir().mkdir(InstallerPath)) {
                 Logger::GetInstance()->AddLog(tr("Error create installer path"));
@@ -303,7 +338,7 @@ void Installer::OnAppDownloaded() {
         AppConfig config;
 
         //const AppConfig installedConfig = installedApp.value(name);
-        config.m_Name = name;
+        config.m_Name = appName;
         if (!updateConfig.m_RunPath.isEmpty())
             config.m_RunPath = updateConfig.m_RunPath;
         config.m_InstalledFiles = installedFiles;
@@ -316,8 +351,9 @@ void Installer::OnAppDownloaded() {
         AppsConfig setting = Settings::GetInstance()->GetCurrentConfig();
         AppsConfig::AppMap* pSettingMap = setting.GetAppMap(type);
         if (pSettingMap) {
-            pSettingMap->remove(name);
-            pSettingMap->insert(name, config);
+            pSettingMap->remove(config.m_Name);
+            //pSettingMap->insert(appName, config);
+            (*pSettingMap)[config.m_Name][config.m_Version] = config;
         }
         Settings::GetInstance()->UpdateConfig(setting);
     }
@@ -327,20 +363,28 @@ void Installer::OnAppDownloaded() {
     QFile().remove(tempFilePath);
 
     UpdateAvailableSoftware();
-    if (bInstalled)
-        Logger::GetInstance()->AddLog(tr("%1 installed.").arg(name));
+    if (bInstalled) {
+        Logger::GetInstance()->AddLog(tr("%1 installed.").arg(appName));
+        CheckForUpdate();
+    }
 }
 
 bool Installer::Delete(const QString& appName, eAppType type) {
     Logger::GetInstance()->AddLog(tr("Deleting %1").arg(appName));
     AppsConfig appsConfig = Settings::GetInstance()->GetCurrentConfig();
     AppsConfig::AppMap* appMap = appsConfig.GetAppMap(type);
-    if (!appMap || !appMap->contains(appName)) {
-        return false;
-    }
+
+    AppsConfig::AppMap::const_iterator appIter = appMap->find(appName);
+    if (appIter == appMap->end())
+        return "";
+
+    AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+    if (iter == appIter.value().end())
+        return "";
+
+    const AppConfig& config = iter.value();
 
     QString installPath = GetInstallPath(type);
-    const AppConfig& config = appMap->value(appName);
     if (!config.m_RunPath.isEmpty()){
         while (ProcessHelper::IsProcessRuning(installPath + config.m_RunPath)) {
             Logger::GetInstance()->AddLog(tr("%1 app is running.").arg(appName));
@@ -405,32 +449,40 @@ bool Installer::Delete(const QString& appName, eAppType type) {
 QString Installer::GetRunPath(const QString& appName, eAppType type) {
     AppsConfig appsConfig = Settings::GetInstance()->GetCurrentConfig();
     AppsConfig::AppMap* appMap = appsConfig.GetAppMap(type);
-    if (!appMap || !appMap->contains(appName)) {
+    if (!appMap) {
         return "";
     }
 
-    const AppConfig& config = appMap->value(appName);
+    AppsConfig::AppMap::const_iterator appIter = appMap->find(appName);
+    if (appIter == appMap->end())
+        return "";
+
+    AppsConfig::AppVersion::const_iterator iter = appIter.value().begin();
+    if (iter == appIter.value().end())
+        return "";
+
+    const AppConfig& config = iter.value();
     return GetInstallPath(type) + config.m_RunPath;
 }
 
-bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type) {
+bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type, bool force /*= false*/) {
     AvailableSoftWare::SoftWareMap::const_iterator iter;
     for (iter = softMap.begin(); iter != softMap.end(); ++iter) {
         const QString& name = iter.key();
         const SoftWare& soft = iter.value();
         if (!soft.m_CurVersion.isEmpty() &&
             Settings::GetVersion(soft.m_CurVersion) < Settings::GetVersion(soft.m_NewVersion)) {
-
-            if (0 == QMessageBox::information(NULL,//this,
+            if (force ||
+                0 == QMessageBox::information(NULL,//this,
                                              tr("Update available"),
                                              tr("%1 update available.").arg(name),
                                              tr("Install"),
                                              tr("Cancel"))) {
                 if (!Delete(name, type)) {
-                    Logger::GetInstance()->AddLog(tr("Error update Calculator"));
+                    Logger::GetInstance()->AddLog(tr("Error update %1"));
                     return false;
                 }
-                Install(name, type);
+                Install(name, soft.m_NewVersion, type);
             }
         }
     }

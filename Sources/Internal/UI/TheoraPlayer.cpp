@@ -29,6 +29,9 @@
  =====================================================================================*/
 
 #include "UI/TheoraPlayer.h"
+
+#if !defined(__DAVAENGINE_ANDROID__)
+
 #include <theora/theoradec.h>
 
 namespace DAVA
@@ -49,7 +52,7 @@ struct TheoraData
     ogg_int64_t         videoBufGranulePos;
 };
     
-TheoraPlayer::TheoraPlayer(const String & filePath) :
+TheoraPlayer::TheoraPlayer(const String & _filePath) :
 isPlaying(false),
 theora_p(0),
 isVideoBufReady(false),
@@ -64,13 +67,13 @@ frameBuffer(0)
     theoraData->thSetup = 0;
     theoraData->thCtx = 0;
     theoraData->videoBufGranulePos = -1;
-    SetClipContents(true);
+    filePath = _filePath;
     OpenFile(filePath);
 }
 
 TheoraPlayer::~TheoraPlayer()
 {
-    CloseFile();
+    ReleaseData();
     SafeDelete(theoraData);
 }
 
@@ -82,7 +85,7 @@ int32 TheoraPlayer::BufferData()
     return bytes;
 }
 
-void TheoraPlayer::CloseFile()
+void TheoraPlayer::ReleaseData()
 {
     if(theoraData)
     {
@@ -104,10 +107,13 @@ void TheoraPlayer::CloseFile()
         delete [] frameBuffer;
         frameBuffer = 0;
     }
+    isPlaying = false;
 }
 
 void TheoraPlayer::OpenFile(const String &path)
 {
+    ReleaseData();
+    
     if(path == "")
         return;
     
@@ -222,6 +228,8 @@ void TheoraPlayer::OpenFile(const String &path)
     repeatFilePos = file->GetPos();
     
     frameTime = (float32)(theoraData->thInfo.fps_denominator)/(float32)(theoraData->thInfo.fps_numerator);
+    
+    isPlaying = true;
 }
 
 void TheoraPlayer::SetPlaying(bool _isPlaying)
@@ -279,7 +287,7 @@ void TheoraPlayer::Update(float32 timeElapsed)
 
             if(th_decode_packetin(theoraData->thCtx, &theoraData->packet, &theoraData->videoBufGranulePos) == 0)
             {
-                if((videoBufTime = (float32)th_granule_time(theoraData->thCtx, theoraData->videoBufGranulePos)) >= videoTime)
+                if((videoBufTime = th_granule_time(theoraData->thCtx, theoraData->videoBufGranulePos)) >= videoTime)
                     isVideoBufReady = true;
                 else
                     pp_inc = (pp_level > 0)? -1 : 0;
@@ -306,18 +314,24 @@ void TheoraPlayer::Update(float32 timeElapsed)
     
         for(int i = 0; i < frameBufferH; i++) //Y
         {
-            int yShift = theoraData->yuvBuffer[0].stride * i;
-            int uShift = theoraData->yuvBuffer[1].stride * (i / 2);
-            int vShift = theoraData->yuvBuffer[2].stride * (i / 2);
+            int yShift = 0, uShift = 0, vShift = 0;
+            const bool inBuffer = (i <= theoraData->yuvBuffer[0].height);
+            if(inBuffer)
+            {
+                yShift = theoraData->yuvBuffer[0].stride * i;
+                uShift = theoraData->yuvBuffer[1].stride * (i / 2);
+                vShift = theoraData->yuvBuffer[2].stride * (i / 2);
+            }
+            
             for(int j = 0; j < frameBufferW; j++) //X
             {
-                int index = (i * frameBufferW + j) * 4;
+                const int index = (i * frameBufferW + j) * 4;
                 
-                if(i <= theoraData->yuvBuffer[0].height && j <= theoraData->yuvBuffer[0].width)
+                if(inBuffer && j <= theoraData->yuvBuffer[0].width)
                 {
-                    unsigned char Y = *(theoraData->yuvBuffer[0].data + yShift + j);
-                    unsigned char U = *(theoraData->yuvBuffer[1].data + uShift + j / 2);
-                    unsigned char V = *(theoraData->yuvBuffer[2].data + vShift + j / 2);
+                    const unsigned char Y = *(theoraData->yuvBuffer[0].data + yShift + j);
+                    const unsigned char U = *(theoraData->yuvBuffer[1].data + uShift + j / 2);
+                    const unsigned char V = *(theoraData->yuvBuffer[2].data + vShift + j / 2);
                 
                     frameBuffer[index]   = ClampFloatToByte(Y + 1.371f * (V - 128));
                     frameBuffer[index+1] = ClampFloatToByte(Y - 0.698f * (V - 128) - 0.336f * (U - 128));
@@ -333,8 +347,8 @@ void TheoraPlayer::Update(float32 timeElapsed)
     
         if(!ret)
         {
-            Texture * tex = Texture::CreateFromData(FORMAT_RGBA8888, frameBuffer, frameBufferW, frameBufferH);
-            Sprite * spr = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
+            Texture * tex = Texture::CreateFromData(FORMAT_RGBA8888, frameBuffer, frameBufferW, frameBufferH, false);
+            Sprite * spr = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
             spr->ConvertToVirtualSize();
 
             SafeRelease(tex);
@@ -358,17 +372,17 @@ void TheoraPlayer::Update(float32 timeElapsed)
     }
     if(isRepeat && file->GetPos() == file->GetSize())
     {
-        CloseFile();
+        ReleaseData();
         OpenFile(filePath);
     }
 }
 
 unsigned char TheoraPlayer::ClampFloatToByte(const float &value)
 {
-    unsigned char result = (unsigned char)value;
+    char result = (char)value;
     
-    (value < 0.f) ? result = 0 : NULL;
-    (value > 255.f) ? result = 255 : NULL;
+    (value < 0) ? result = 0 : NULL;
+    (value > 255) ? result = 255 : NULL;
     
     return (unsigned char)result;
 }
@@ -384,7 +398,7 @@ uint32 TheoraPlayer::binCeil(uint32 value)
 void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
-    YamlNode * fileNode = node->AsMap()["file"];
+    YamlNode * fileNode = node->Get("file");
     
 	if(fileNode)
         OpenFile(fileNode->AsString());
@@ -395,9 +409,9 @@ void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         Rect rect = rectNode->AsRect();
         if(rect.dx == -1)
-            rect.dx = (float32)theoraData->thInfo.pic_width;
+            rect.dx = theoraData->thInfo.pic_width;
         if(rect.dy == -1)
-            rect.dy = (float32)theoraData->thInfo.pic_height;
+            rect.dy = theoraData->thInfo.pic_height;
         
         SetRect(rect);
     }
@@ -413,3 +427,5 @@ void TheoraPlayer::Draw(const UIGeometricData &geometricData)
 }
     
 }
+
+#endif //#if !defined(__DAVAENGINE_ANDROID__)

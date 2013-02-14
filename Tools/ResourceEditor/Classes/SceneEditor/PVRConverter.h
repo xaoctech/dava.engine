@@ -10,13 +10,18 @@ public:
 	PVRConverter();
 	virtual ~PVRConverter();
 
-    DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, DAVA::int32 format, bool generateMimpaps);
+	DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor);
+
+	DAVA::String GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor);
+
+	void SetPVRTexTool(const DAVA::String &textToolPathname);
+
+	DAVA::String GetPVRToolOutput(const DAVA::String &inputPVR);
 
 protected:
+	DAVA::Map<DAVA::PixelFormat, DAVA::String> pixelFormatToPVRFormat;
 
-	DAVA::String dataFolderPath;
+	DAVA::String pvrTexToolPathname;
 };
-
-
 
 #endif // __PVR_CONVERTER_H__

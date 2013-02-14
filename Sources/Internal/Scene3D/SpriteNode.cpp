@@ -171,7 +171,7 @@ void SpriteNode::Draw()
     {
         case TYPE_OBJECT:
         {
-            meshFinalMatrix = worldTransform * cameraMatrix;
+            meshFinalMatrix = GetWorldTransform() * cameraMatrix;
             break;
         };
         case TYPE_BILLBOARD:
@@ -190,13 +190,13 @@ void SpriteNode::Draw()
             inverse._21 = cameraMatrix._12;
             inverse._22 = cameraMatrix._22;
             
-            meshFinalMatrix = inverse * worldTransform * modelViewMatrix;
+            meshFinalMatrix = inverse * GetWorldTransform() * modelViewMatrix;
             break;
         };
         case TYPE_BILLBOARD_TO_CAMERA:
         {
             Camera * camera = scene->GetCurrentCamera();
-            Vector3 look = camera->GetPosition() - Vector3(0.0f, 0.0f, 0.0f) * worldTransform; 
+            Vector3 look = camera->GetPosition() - Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform(); 
             look.Normalize();
             Vector3 right = CrossProduct(camera->GetUp(), look);
             Vector3 up = CrossProduct(look, right);
@@ -214,7 +214,7 @@ void SpriteNode::Draw()
             matrix._21 = look.y;
             matrix._22 = look.z;
             
-            meshFinalMatrix = matrix * worldTransform * modelViewMatrix;
+            meshFinalMatrix = matrix * GetWorldTransform() * modelViewMatrix;
 
 //            left.x = cameraTransform._00;
 //            left.y = cameraTransform._10;
@@ -274,7 +274,7 @@ void SpriteNode::Draw()
 	eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
 //    RenderManager::Instance()->EnableBlending(true);
@@ -302,15 +302,29 @@ void SpriteNode::Draw()
     
 	RenderManager::Instance()->SetBlendMode(sblend, dblend);
 
-    if (debugFlags & DEBUG_DRAW_ALL)
-    {
-        AABBox3 box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
-        RenderHelper::Instance()->DrawBox(box);
-    }
+//    if (debugFlags & DEBUG_DRAW_ALL)
+//    {
+//        AABBox3 box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
+//        RenderHelper::Instance()->DrawBox(box);
+//    }
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 }
-    
+
+Sprite * SpriteNode::GetSprite() const
+{
+	return sprite;
+}
+
+const Vector2 & SpriteNode::GetScale() const
+{
+	return sprScale;
+}
+
+const Vector2 & SpriteNode::GetPivot() const
+{
+	return sprPivot;
+}
     
 
 };

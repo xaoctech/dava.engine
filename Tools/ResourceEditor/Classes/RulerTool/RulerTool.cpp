@@ -30,14 +30,15 @@
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Main/QtUtils.h"
 #include "../SceneEditor/HeightmapNode.h"
 #include "../LandscapeEditor/RulerToolLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -72,12 +73,9 @@ bool RulerTool::EnableTool(EditorScene *scene)
     editorScene = SafeRetain(scene);
     if(scene)
     {
-        Vector<LandscapeNode *>landscapes;
-        scene->GetChildNodes(landscapes);
-        
-        if(0 < landscapes.size())
+		if (EditorScene::GetLandscape(scene))
         {
-            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
             landscapesController = SafeRetain(activeScene->GetLandscapesController());
             rulerToolLandscape = SafeRetain(landscapesController->CreateRulerToolLandscape());
             rulerToolLandscape->SetPoints(linePoints);
@@ -89,7 +87,6 @@ bool RulerTool::EnableTool(EditorScene *scene)
             
             heightmapNode = new HeightmapNode(editorScene, rulerToolLandscape);
             editorScene->AddNode(heightmapNode);
-            
         }
     }
     
@@ -98,6 +95,12 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
+	if(SceneDataManager::Instance())
+	{
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+		activeScene->ResetLandsacpeSelection();
+	}
+
     if(landscapesController)
     {
         landscapesController->ReleaseRulerToolLandscape();
@@ -124,8 +127,7 @@ bool RulerTool::Input(DAVA::UIEvent *touch)
             bool isIntersect = GetIntersectionPoint(touch->point, point);
             if(isIntersect)
             {
-                bool commandKeyIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
-                if(commandKeyIsPressed)
+                if(IsKeyModificatorPressed(DVKEY_SHIFT))
                 {
                     SetStartPoint(point);
                 }

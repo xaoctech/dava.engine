@@ -1,6 +1,13 @@
 #include "SceneExporter.h"
 #include "SceneValidator.h"
 
+#include "PVRConverter.h"
+#include "DXTConverter.h"
+
+#include "Render/TextureDescriptor.h"
+#include "../Qt/Scene/SceneDataManager.h"
+
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -14,8 +21,9 @@ SceneExporter::SceneExporter()
 
 SceneExporter::~SceneExporter()
 {
-    
+    ReleaseTextures();
 }
+
 
 void SceneExporter::CleanFolder(const String &folderPathname, Set<String> &errorLog)
 {
@@ -42,14 +50,26 @@ void SceneExporter::SetOutFolder(const String &folderPathname)
 
 void SceneExporter::SetExportingFormat(const String &newFormat)
 {
-    format = newFormat;
-    if(0 < format.length() && format.at(0) != '.')
+    String format = newFormat;
+    if(!format.empty() && format.at(0) != '.')
     {
         format = "." + format;
     }
+    
+    exportFormat = NOT_FILE;
+    if(0 == CompareCaseInsensitive(format, ".png"))
+    {
+        exportFormat = PNG_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(format, ".pvr"))
+    {
+        exportFormat = PVR_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(format, ".dds"))
+    {
+        exportFormat = DXT_FILE;
+    }
 }
-
-
 
 void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 {
@@ -69,15 +89,22 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 		{
 			scene->AddNode(tempV[i]);
 		}
+		
+		ExportScene(scene, fileName, errorLog);
     }
-    
-    ExportScene(scene, fileName, errorLog);
+	else
+	{
+		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", fileName.c_str()));
+	}
 
     SafeRelease(scene);
 }
 
 void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
+    DVASSERT(0 == texturesForExport.size())
+    DVASSERT(0 == exportedTextures.size())
+    
     //Create destination folder
     String normalizedFileName = FileSystem::Instance()->GetCanonicalPath(fileName);
 
@@ -93,9 +120,13 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
-    ExportMaterials(scene, errorLog);
+    texturesForExport.clear();
+    SceneDataManager::EnumerateTextures(scene, texturesForExport);
+
+    ExportTextures(scene, errorLog);
     ExportLandscape(scene, errorLog);
-    ExportMeshLightmaps(scene, errorLog);
+    
+    ReleaseTextures();
     
     //save scene to new place
     SceneFileV2 * outFile = new SceneFileV2();
@@ -106,8 +137,6 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
-
-
 
 void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
 {
@@ -127,19 +156,37 @@ void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
         }
 		else
 		{
-			LightNode * light = dynamic_cast<LightNode*>(node);
-			if(light)
-			{
-				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-				if(!isDynamic)
-				{
-					node->GetParent()->RemoveNode(node);
-				}
-			}
+            // LIGHT
+//			LightNode * light = dynamic_cast<LightNode*>(node);
+//			if(light)
+//			{
+//				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+//				if(!isDynamic)
+//				{
+//					node->GetParent()->RemoveNode(node);
+//				}
+//			}
 		}
     }
 }
 
+
+
+void SceneExporter::ExportTextures(DAVA::Scene *scene, Set<String> &errorLog)
+{
+    Map<String, Texture *>::const_iterator endIt = texturesForExport.end();
+    Map<String, Texture *>::iterator it = texturesForExport.begin();
+    for( ; it != endIt; ++it)
+    {
+        ExportTexture( it->first, errorLog);
+    }
+}
+
+void SceneExporter::ReleaseTextures()
+{
+    texturesForExport.clear();
+    exportedTextures.clear();
+}
 
 void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog)
 {
@@ -185,38 +232,6 @@ String SceneExporter::NormalizeFolderPath(const String &pathname)
 }
 
 
-void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
-{
-    Logger::Debug("[ExportMaterials]");
-
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for (int32 i = 0; i < (int32)materials.size(); i++)
-    {
-        Material *m = materials[i];
-        if (m->GetName().find("editor.") == String::npos)
-        {
-			if (m->GetTexture(Material::TEXTURE_DIFFUSE))
-			{
-				if (!m->GetTexture(Material::TEXTURE_DIFFUSE)->relativePathname.empty())
-				{
-//                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTextureName(Material::TEXTURE_DIFFUSE), errorLog));
-                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTexture(Material::TEXTURE_DIFFUSE)->relativePathname, errorLog));
-				}
-			}
-            
-			if (m->GetTexture(Material::TEXTURE_DECAL))
-			{
-				if (!m->GetTexture(Material::TEXTURE_DECAL)->relativePathname.empty())
-				{
-//                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTextureName(Material::TEXTURE_DECAL), errorLog));
-                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTexture(Material::TEXTURE_DECAL)->relativePathname, errorLog));
-				}
-			}
-        }
-    }
-}
-
 void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     Logger::Debug("[ExportLandscape]");
@@ -233,48 +248,25 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
         
         LandscapeNode *landscape = landscapes[0];
         ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
-        
-        for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-        {
-            if(LandscapeNode::TEXTURE_DETAIL == i)
-            {
-                continue;
-            }
-            else if(LandscapeNode::TEXTURE_TILE_FULL == i)
-            {
-                ExportLandscapeFullTiledTexture(landscape, errorLog);
-            }
-            else
-            {
-                Texture *t = landscape->GetTexture((LandscapeNode::eTextureLevel)i);
-                if(t)
-                {
-                    landscape->SetTextureName((LandscapeNode::eTextureLevel)i,
-                                              ExportTexture(landscape->GetTextureName((LandscapeNode::eTextureLevel)i), errorLog));
-                }
-                else
-                {
-                    errorLog.insert(String(Format("There is no landscape texture for index %d", i)));
-                }
-            }
-        }
+        ExportLandscapeFullTiledTexture(landscape, errorLog);
     }
 }
 
 void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog)
 {
-    String textureName = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_FULL);
-    if(0 < textureName.length())
+    if(landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK)
     {
-        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, ExportTexture(textureName, errorLog));
+        return;
     }
-    else
+    
+    String textureName = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_FULL);
+    if(textureName.empty())
     {
         String colorTextureMame = landscape->GetTextureName(LandscapeNode::TEXTURE_COLOR);
         String filename, pathname;
         FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
         
-        String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+        String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail_exported.png");
         String workingPathname = RemoveFolderFromPath(fullTiledPathname, dataSourceFolder);
         PrepareFolderForCopy(workingPathname, errorLog);
 
@@ -282,36 +274,41 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
         Image *image = fullTiledTexture->CreateImageFromMemory();
         if(image)
         {
-            image->Save(dataFolder + workingPathname);
+            ImageLoader::Save(image, dataFolder + workingPathname);
+            ImageLoader::Save(image, dataSourceFolder + workingPathname);
             SafeRelease(image);
+            
+            TextureDescriptor *descriptor = new TextureDescriptor();
+            if(exportFormat == PVR_FILE)
+            {
+                descriptor->pvrCompression.format = FORMAT_PVR4;
+            }
+            
+            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(workingPathname);
+            descriptor->Save(dataFolder + descriptorPathname);
+            
+            bool needToDeleteDescriptorFile = !FileSystem::Instance()->IsFile(dataSourceFolder + descriptorPathname);
+            descriptor->Save(dataSourceFolder + descriptorPathname);
+            
+            SafeRelease(descriptor);
+            
+            landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
+            
+            if(needToDeleteDescriptorFile)
+            {
+                FileSystem::Instance()->DeleteFile(dataSourceFolder + descriptorPathname);
+            }
+            FileSystem::Instance()->DeleteFile(dataSourceFolder + workingPathname);
+
+            errorLog.insert(String(Format("Full tiled texture is autogenerated png-image.", workingPathname.c_str())));
         }
         else
         {
             errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
+            landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, String(""));
         }
         
         landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
-    }
-}
-
-
-void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
-{
-    Logger::Debug("[ExportMeshLightmaps]");
-
-    Vector<MeshInstanceNode *> meshInstances;
-    scene->GetChildNodes(meshInstances);
-
-    for(int32 iMesh = 0; iMesh < (int32)meshInstances.size(); ++iMesh)
-    {
-        for (int32 li = 0; li < meshInstances[iMesh]->GetLightmapCount(); ++li)
-        {
-            MeshInstanceNode::LightmapData * ld = meshInstances[iMesh]->GetLightmapDataForIndex(li);
-            if (ld)
-            {
-                ld->lightmapName = ExportTexture(ld->lightmapName, errorLog);
-            }
-        }
     }
 }
 
@@ -352,72 +349,136 @@ void SceneExporter::PrepareFolderForCopy(const String &filePathname, Set<String>
 
 
 
-String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
+bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
 {
-		//    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
+    //TODO: Create correct export
     
-    //TODO: return at format will be enabled
-    String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
-    bool ret = ExportFileDirectly(exportedPathname, errorLog);
-    if(!ret)
-    {
-        //TODO: blen textures
-        RenderManager::Instance()->LockNonMain();
-
-        Texture *tex = Texture::CreateFromFile(texturePathname);
-        if(tex)
-        {
-            Sprite *fbo = Sprite::CreateAsRenderTarget((float32)tex->width, (float32)tex->height, FORMAT_RGBA8888);
-            Sprite *texSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
-            if(fbo && texSprite)
-            {
-                
-                RenderManager::Instance()->SetRenderTarget(fbo);
-                texSprite->SetPosition(0.f, 0.f);
-                texSprite->Draw();
-                
-                RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 1.0f, 0.5f));
-                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)tex->width, (float32)tex->height));
-
-                RenderManager::Instance()->RestoreRenderTarget();
-                
-                //Save new texture
-                String workingPathname = RemoveFolderFromPath(texturePathname, dataSourceFolder);
-                PrepareFolderForCopy(workingPathname, errorLog);
-                exportedPathname = dataFolder + workingPathname;
-                
-                Image *image = fbo->GetTexture()->CreateImageFromMemory();
-                if(image)
-                {
-                    image->Save(exportedPathname);
-                }
-                else 
-                {
-                    errorLog.insert(String(Format("Can't create image from fbo for file %s", texturePathname.c_str())));
-                }
-                
-                SafeRelease(image);
-            }
-            else 
-            {
-                errorLog.insert(String(Format("Can't create FBO for file %s", texturePathname.c_str())));
-            }
-            
-            SafeRelease(texSprite);
-            SafeRelease(fbo);
-            SafeRelease(tex);
-        }
-        else 
-        {
-            errorLog.insert(String(Format("Can't create texture for file %s", texturePathname.c_str())));
-        }
-        RenderManager::Instance()->UnlockNonMain();
-        
-    }
+    ExportTextureDescriptor(texturePathname, errorLog);
+    CompressTextureIfNeed(texturePathname, errorLog);
     
-    return exportedPathname;
+    bool ret = ExportFileDirectly(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat), errorLog);
+//    if(!ret)
+//    {
+//        //TODO: blen textures
+//        RenderManager::Instance()->LockNonMain();
+//
+//        Texture *tex = Texture::CreateFromFile(texturePathname);
+//        if(tex)
+//        {
+//            Sprite *fbo = Sprite::CreateAsRenderTarget((float32)tex->width, (float32)tex->height, FORMAT_RGBA8888);
+//            Sprite *texSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
+//            if(fbo && texSprite)
+//            {
+//                
+//                RenderManager::Instance()->SetRenderTarget(fbo);
+//                texSprite->SetPosition(0.f, 0.f);
+//                texSprite->Draw();
+//                
+//                RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 1.0f, 0.5f));
+//                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)tex->width, (float32)tex->height));
+//
+//                RenderManager::Instance()->RestoreRenderTarget();
+//                
+//                //Save new texture
+//                String workingPathname = RemoveFolderFromPath(texturePathname, dataSourceFolder);
+//                PrepareFolderForCopy(workingPathname, errorLog);
+//                exportedPathname = dataFolder + workingPathname;
+//                
+//                Image *image = fbo->GetTexture()->CreateImageFromMemory();
+//                if(image)
+//                {
+//                    ImageLoader::Save(image, exportedPathname);
+//                }
+//                else 
+//                {
+//                    errorLog.insert(String(Format("Can't create image from fbo for file %s", texturePathname.c_str())));
+//                }
+//                
+//                SafeRelease(image);
+//            }
+//            else 
+//            {
+//                errorLog.insert(String(Format("Can't create FBO for file %s", texturePathname.c_str())));
+//            }
+//            
+//            SafeRelease(texSprite);
+//            SafeRelease(fbo);
+//            SafeRelease(tex);
+//        }
+//        else 
+//        {
+//            errorLog.insert(String(Format("Can't create texture for file %s", texturePathname.c_str())));
+//        }
+//        RenderManager::Instance()->UnlockNonMain();
+//        
+//    }
+    
+    return ret;
 }
 
+void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
+{
+    TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
+    if(!descriptor)
+    {
+        Logger::Error("[SceneExporter::ExportTextureDescriptor] Can't cerate descriptor for pathname% %s", texturePathname.c_str());
+        return;
+    }
+
+    descriptor->textureFileFormat = exportFormat;
+    
+    String workingPathname = RemoveFolderFromPath(descriptor->pathname, dataSourceFolder);
+    PrepareFolderForCopy(workingPathname, errorLog);
+    
+#if defined TEXTURE_SPLICING_ENABLED
+    descriptor->ExportAndSlice(dataFolder + workingPathname, GetExportedTextureName(texturePathname));
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    descriptor->Export(dataFolder + workingPathname);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
+    SafeRelease(descriptor);
+}
+
+
+void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog)
+{
+    String modificationDate = File::GetModificationDate(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat));
+    
+    String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
+    
+    if(PNG_FILE != exportFormat)
+    {
+        bool needToConvert = SceneValidator::IsTextureChanged(sourceTexturePathname, exportFormat);
+        if(needToConvert || modificationDate.empty())
+        {
+            //TODO: convert to pvr/dxt
+            //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
+            
+            TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
+			if(descriptor)
+			{
+				if(exportFormat == PVR_FILE)
+				{
+					PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
+					descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+					descriptor->Save();
+				}
+				else if(exportFormat == DXT_FILE)
+				{
+					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
+					descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+					descriptor->Save();
+				}
+
+				SafeRelease(descriptor);
+			}
+			else
+			{
+				errorLog.insert(String(Format("Can't load descriptor from path: %s", texturePathname.c_str())));
+			}
+        }
+    }
+}
 
 String SceneExporter::RemoveFolderFromPath(const String &pathname, const String &folderPathname)
 {
@@ -430,5 +491,4 @@ String SceneExporter::RemoveFolderFromPath(const String &pathname, const String 
 
     return workingPathname;
 }
-
 

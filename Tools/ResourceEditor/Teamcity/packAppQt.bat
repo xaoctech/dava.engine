@@ -1,16 +1,21 @@
-cd ..\ReleaseQt
+cd ..\_ReleaseQt
 
 if exist app rmdir /s /q app
 if exist app.zip del /q app.zip
 
-mkdir app\1\2\3\Data
-mkdir app\dava.resourceeditor.beast
-xcopy /e ..\Data\*.* app\1\2\3\Data 
-xcopy *.exe app\1\2\3
-xcopy ..\glew32.dll app\1\2\3
-xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtCore4.dll app\1\2\3
-xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.dll app\1\2\3
-xcopy ..\..\..\..\dava.resourceeditor.beast\beast\bin\beast32.dll app\1\2\3
-xcopy /e ..\..\..\..\dava.resourceeditor.beast\*.* app\dava.resourceeditor.beast
+mkdir app\ResourceEditor\dava.framework\Tools\ResourceEditor\Data
+mkdir app\ResourceEditor\dava.resourceeditor.beast
+call git log --since=3.days --branches="development" --pretty=format:"%%%%s (%%%%an, %%%%ar) " >> app/ResourceEditor/changes.txt
+echo cd .\dava.framework\Tools\ResourceEditor > app/ResourceEditor/start.cmd
+echo start ResourceEditorQtVS2010.exe >> app/ResourceEditor/start.cmd
+
+xcopy /e ..\Data\*.* app\ResourceEditor\dava.framework\Tools\ResourceEditor\Data 
+xcopy *.exe app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy ..\glew32.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy ..\Teamcity\imagesplitter\*.bat app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtCore4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy ..\..\..\..\dava.resourceeditor.beast\beast\bin\beast32.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy /e ..\..\..\..\dava.resourceeditor.beast\*.* app\ResourceEditor\dava.resourceeditor.beast\
 
 wzzip -p -r ResourceEditor_win_%1.zip app\*.*	

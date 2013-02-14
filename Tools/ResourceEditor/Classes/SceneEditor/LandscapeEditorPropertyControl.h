@@ -35,12 +35,16 @@ public:
     enum eEditorMode
     {
         MASK_EDITOR_MODE = 0,
-        HEIGHT_EDITOR_MODE        
+        HEIGHT_EDITOR_MODE,
+		COLORIZE_EDITOR_MODE
     };
     
 	LandscapeEditorPropertyControl(const Rect & rect, bool createNodeProperties, eEditorMode mode);
 	virtual ~LandscapeEditorPropertyControl();
 
+    virtual void Input(UIEvent *currentInput);
+
+    
 	virtual void ReadFrom(SceneNode * sceneNode);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);

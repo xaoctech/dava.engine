@@ -1,6 +1,8 @@
-varying vec3 clr;
+#ifdef GL_ES
+precision lowp float;
+#endif
 
 void main()
 {
-gl_FragColor = vec4((clr+1.0)/2.0, 1.0);
+
 }

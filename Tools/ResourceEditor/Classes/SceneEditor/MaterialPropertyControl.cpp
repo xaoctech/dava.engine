@@ -4,6 +4,8 @@
 
 #include "ControlsFactory.h"
 
+#include "../Qt/Main/QtUtils.h"
+
 static const String textureNames[] = 
 {
     "Diffuse texture", 
@@ -54,20 +56,20 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     propertyList->SetComboPropertyIndex("property.material.type", materialType);
 
     
-    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], ".png;.pvr");
+    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], TextureDescriptor::GetSupportedTextureExtensions());
     SetFilepathValue(material, ETT_DIFFUSE);
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DECAL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DECAL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_DECAL);
     }
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DETAIL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DETAIL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_DETAIL);
     }
     
@@ -76,11 +78,10 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType)
 		||  (Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], TextureDescriptor::GetSupportedTextureExtensions());
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 
-    
     
     propertyList->AddBoolProperty("property.material.isopaque");
     propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
@@ -213,7 +214,7 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         
         ReadFrom(currentDataNode);
         
-        SceneValidator::Instance()->ValidateScene(material->GetScene());
+        SceneValidator::Instance()->ValidateSceneAndShowErrors(material->GetScene());
     }
 	else if ("property.material.blendSrc" == forKey) 
 	{
@@ -247,17 +248,27 @@ void MaterialPropertyControl::OnFloatPropertyChanged(PropertyList *forList, cons
 
 void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
-    for (int i = 0; i < ME_TEX_COUNT; i++) 
+	Set<String> errorLog;
+	bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
+	if(!isCorrect)
+	{
+		ShowErrorDialog(errorLog);
+		return;
+	}
+    
+    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
+    for (int32 i = 0; i < ME_TEX_COUNT; i++)
     {
         if (forKey == textureNames[i]) 
         {
             Material *material = dynamic_cast<Material *> (currentDataNode);
 
-            material->SetTexture((Material::eTextureLevel)textureTypes[i], newValue);
+            material->SetTexture((Material::eTextureLevel)textureTypes[i], descriptorPathname);
             Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
-                SceneValidator::Instance()->ValidateTexture(tx);
+                SceneValidator::Instance()->ValidateTextureAndShowErrors(tx, material->GetTextureName((Material::eTextureLevel)textureTypes[i]),
+					Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), textureTypes[i]));
             }
             else 
             {

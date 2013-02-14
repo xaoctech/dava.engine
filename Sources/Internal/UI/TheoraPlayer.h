@@ -35,6 +35,8 @@
 #include "UI/UIControl.h"
 #include "FileSystem/File.h"
 
+#if !defined(__DAVAENGINE_ANDROID__)
+
 namespace DAVA
 {
 
@@ -67,9 +69,9 @@ public:
     void OpenFile(const String & filePath);
     
     /**
-     \brief close currect video file
+     \brief release theora data and close file
 	 */
-    void CloseFile();
+    void ReleaseData();
     
     /**
 	 \brief Calls on every frame with frame delata time parameter. 
@@ -133,4 +135,7 @@ private:
 };
 
 }
+
+#endif //#if !defined(__DAVAENGINE_ANDROID__)
+
 #endif

@@ -318,8 +318,10 @@ void PolygonGroup::BuildTangentsBinormals(uint32 flagsToAdd)
         ////*bres = -*bres;
         //*tres = -*tres;
         
-        //Vector3 nrecomp = CrossProduct(*tres, *bres);
-        
+        /*
+         BORODA: Removed unused variable
+         Vector3 nrecomp = CrossProduct(*tres, *bres);
+        */
         
         // int xt = 0;
         // use this method (get from .. http://www.c4engine.com/code/tangent.html);

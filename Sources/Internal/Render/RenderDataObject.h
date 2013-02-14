@@ -67,9 +67,9 @@ public:
     virtual ~RenderDataObject();
     
     RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
-    uint32 GetResultFormat();
+    uint32 GetResultFormat() const;
 
-    uint32 GetStreamCount() { return (uint32)streamArray.size(); };
+    uint32 GetStreamCount() const { return (uint32)streamArray.size(); };
     RenderDataStream * GetStream(uint32 index) { return streamArray[index]; }
     /*
         We think that render data object can pack data automatically. 
@@ -78,17 +78,17 @@ public:
     */
     void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
     
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-	virtual void SaveToSystemMemory();
-	virtual void Lost();
-	virtual void Invalidate();
-	int32 savedVertexCount;
-    bool isLost;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+//#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//	virtual void SaveToSystemMemory();
+//	virtual void Lost();
+//	virtual void Invalidate();
+//	int32 savedVertexCount;
+//    bool isLost;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
     void BuildIndexBuffer();
-    uint32 GetIndexBufferID() { return indexBuffer; };
+    uint32 GetIndexBufferID() const { return indexBuffer; };
 
     
 private:
@@ -101,9 +101,9 @@ private:
     
     eIndexFormat indexFormat;
     uint8 * indices;
-#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-    uint8 * savedIndices;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+//#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+//    uint8 * savedIndices;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
     uint32 indexBuffer;
     int32 indexCount;
     

@@ -1,0 +1,42 @@
+<RCC>
+  <qresource prefix="/">
+    <file>QtIcons/modify_select.png</file>
+    <file>QtIcons/modify_reset.png</file>
+    <file>QtIcons/modify_move.png</file>
+    <file>QtIcons/modify_rotate.png</file>
+    <file>QtIcons/modify_placeonland.png</file>
+    <file>QtIcons/modify_snaptoland.png</file>
+    <file>QtIcons/modify_scale.png</file>
+    <file>QtImages/tree-doc.png</file>
+    <file>QtImages/tree-folder.png</file>
+    <file>QtImages/tree-folder-opened.png</file>
+    <file>QtImages/tree-closed.png</file>
+    <file>QtImages/tree-end.png</file>
+    <file>QtImages/tree-more.png</file>
+    <file>QtImages/tree-open.png</file>
+    <file>QtImages/tree-vline.png</file>
+    <file>QtIconsTextureDialog/filter.png</file>
+    <file>QtIconsTextureDialog/alpha.png</file>
+    <file>QtIconsTextureDialog/editclear.png</file>
+    <file>QtIconsTextureDialog/blue.png</file>
+    <file>QtIconsTextureDialog/green.png</file>
+    <file>QtIconsTextureDialog/red.png</file>
+    <file>QtIconsTextureDialog/opacity.png</file>
+    <file>QtIconsTextureDialog/zoom_fit.png</file>
+    <file>QtIconsTextureDialog/border.png</file>
+    <file>QtIconsTextureDialog/view_list.png</file>
+    <file>QtIconsTextureDialog/view_pictures.png</file>
+    <file>QtIconsTextureDialog/zoom_100.png</file>
+    <file>QtImages/loading.gif</file>
+    <file>QtIcons/newscene.png</file>
+    <file>QtIcons/openproject.png</file>
+    <file>QtIcons/openscene.png</file>
+    <file>QtIcons/savescene.png</file>
+    <file>QtIcons/materialeditor.png</file>
+    <file>QtIcons/reloadtextures.png</file>
+    <file>QtIcons/notpassableterrain.png</file>
+    <file>QtIcons/heightmapeditor.png</file>
+    <file>QtIcons/tilemapeditor.png</file>
+    <file>QtIcons/rulertool.png</file>
+  </qresource>
+</RCC>

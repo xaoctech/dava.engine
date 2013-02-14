@@ -71,7 +71,7 @@ public:
     virtual void Update(float32 timeElapsed);
 	virtual void SetScene(Scene *_scene);
 
-    void LockAtSelection();
+    void LookAtSelection();
     
     
 protected:
@@ -81,12 +81,14 @@ protected:
 	Vector2 startPt;
     Vector2 stopPt;
 
+	void UpdateAngels(Camera * camera);
 	void UpdateCamAlt3But(Camera * camera);
 	void UpdateCam3But(Camera * camera);
 	void UpdateCam2But(Camera * camera);
 	    
     float32 radius;
 	Vector3 center;
+	Camera * lastCamera;
     
 };
 

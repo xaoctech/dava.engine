@@ -12,6 +12,12 @@
 #include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
 
+#include "Render/Highlevel/Camera.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/LightComponent.h"
+
+
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
 {
@@ -105,7 +111,8 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
     {
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
-            sceneNode = new LandscapeNode();
+            sceneNode = new SceneNode();
+            sceneNode->AddComponent(new RenderComponent(new LandscapeNode()));
             sceneNode->SetName("Landscape");
             break;
 
@@ -113,7 +120,9 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         {
             SetHeader(LocalizedString(L"createnode.light"));
             
-            sceneNode = EditorLightNode::CreateSceneAndEditorLight();
+            //sceneNode = //EditorLightNode::CreateSceneAndEditorLight();
+            sceneNode = new SceneNode();
+            sceneNode->AddComponent(new LightComponent(ScopedPtr<Light>(new Light)));
             sceneNode->SetName("Light");
             break;
         }
@@ -128,24 +137,18 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
             break;
         }
 
-        case ResourceEditor::NODE_BOX:
-            SetHeader(LocalizedString(L"createnode.box"));
-            sceneNode = new CubeNode();
-            sceneNode->SetName("Cube");
-            break;
-
-        case ResourceEditor::NODE_SPHERE:
-            SetHeader(LocalizedString(L"createnode.sphere"));
-            sceneNode = new SphereNode();
-            sceneNode->SetName("Sphere");
-            break;
-
         case ResourceEditor::NODE_CAMERA:
+        {
+            
             SetHeader(LocalizedString(L"createnode.camera"));
-            sceneNode = new Camera();
-            ((Camera *)sceneNode)->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+            sceneNode = new SceneNode();
+            
+            Camera * camera = new Camera();
+            camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+            sceneNode->AddComponent(new CameraComponent(camera));
             sceneNode->SetName("Camera");
-            break;
+            SafeRelease(camera);
+        }break;
 
 		case ResourceEditor::NODE_IMPOSTER:
 			SetHeader(LocalizedString(L"createnode.imposter"));
@@ -156,12 +159,17 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
-			ParticleEmitterNode * node = new ParticleEmitterNode();
-			node->LoadFromYaml("");
+			sceneNode = new SceneNode();
+			sceneNode->SetName("Particle Emitter");
 
-			sceneNode = node;
-		}
+			ParticleEmitter* newEmitter = new ParticleEmitter();
+
+			RenderComponent * renderComponent = new RenderComponent();
+			renderComponent->SetRenderObject(newEmitter);
+			sceneNode->AddComponent(renderComponent);
+
 			break;
+		}
 
 		case ResourceEditor::NODE_USER_NODE:
 			SetHeader(LocalizedString(L"createnode.usernode"));
@@ -175,11 +183,23 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
 			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-			customProperties->SetBool("editor.isSolid", false);
+			customProperties->SetBool(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}
 			break;
 
-            
+
+		case ResourceEditor::NODE_PARTICLE_EFFECT:
+		{
+			SetHeader(L"Particle Effect");
+
+			sceneNode = new SceneNode();
+			ParticleEffectComponent* newEffectComponent = new ParticleEffectComponent();
+			sceneNode->AddComponent(newEffectComponent);
+			sceneNode->SetName("Particle Effect");
+
+			break;
+		}
+
         default:
             break;
     }

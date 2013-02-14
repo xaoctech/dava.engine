@@ -5,7 +5,8 @@
 
 using namespace DAVA;
 
-class FileManagerWrapper {
+class FileManagerWrapper
+{
 	FileManagerWrapper();
 	FileManagerWrapper(const FileManagerWrapper&);
 	FileManagerWrapper& operator=(const FileManagerWrapper&);

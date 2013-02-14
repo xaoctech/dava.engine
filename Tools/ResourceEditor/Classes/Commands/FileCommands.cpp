@@ -6,17 +6,18 @@
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/SceneValidator.h"
 
-#include "../Qt/QtUtils.h"
-#include "../Qt/GUIState.h"
-#include "../Qt/QtMainWindowHandler.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
+#include "../Qt/Main/QtUtils.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 #include <QFileDialog>
 #include <QString>
 
 using namespace DAVA;
 
+#if 0
 //Open Project
 CommandOpenProject::CommandOpenProject()
     :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
@@ -37,8 +38,12 @@ void CommandOpenProject::Execute()
         }
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
-        EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
+        String dataSource3Dpathname = projectPath + String("DataSource/3d/");
+        EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 		EditorSettings::Instance()->Save();
+
+        SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
+		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		
@@ -48,17 +53,18 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
-		SceneValidator::Instance()->SetPathForChecking(projectPath);
-
-		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		/* #### dock -->
+		SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
         if(activeScene)
         {
             activeScene->ReloadLibrary();
         }
+		<-- */
 	}
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
+#endif
 
 
 //Open scene
@@ -107,6 +113,7 @@ void CommandNewScene::Execute()
     if(screen)
     {
         screen->NewScene();
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 
@@ -120,7 +127,7 @@ CommandSaveScene::CommandSaveScene()
 
 void CommandSaveScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     if(activeScene->CanSaveScene())
     {
         SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
@@ -143,6 +150,8 @@ void CommandSaveScene::Execute()
 			String normalizedPathname = PathnameToDAVAStyle(filePath);
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+
+			SaveParticleEmitterNodes(activeScene->GetScene());
             screen->SaveSceneToFile(normalizedPathname);
 
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
@@ -152,8 +161,60 @@ void CommandSaveScene::Execute()
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
+void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	int32 childrenCount = scene->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
+	}
+}
+
+void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
+{
+	bool needSaveThisLevelNode = true;
+	ParticleEmitter * emitter = GetEmitter(parentNode);
+	if (!emitter)
+	{
+		needSaveThisLevelNode = false;
+	}
+
+	if (needSaveThisLevelNode)
+	{
+		// Do we have file name? Ask for it, if not.
+		String yamlPath = emitter->GetConfigPath();
+		if (yamlPath.empty())
+		{
+			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
+			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+
+			if (!saveDialogYamlPath.isEmpty())
+			{
+				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
+			}
+		}
+
+		if (!yamlPath.empty())
+		{
+			emitter->SaveToYaml(yamlPath);
+		}
+	}
+
+	// Repeat for all children.
+	int32 childrenCount = parentNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
+	}
+}
+
 //Export
-CommandExport::CommandExport(ResourceEditor::eExportFormat fmt)
+CommandExport::CommandExport(ImageFileFormat fmt)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
     ,   format(fmt)
 {
