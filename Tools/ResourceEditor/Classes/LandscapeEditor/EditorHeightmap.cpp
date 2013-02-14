@@ -674,8 +674,7 @@ void EditorHeightmap::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
         uint32 ySrc = (uint32)(posFrom.y + iRow);
         uint32 yDst = (uint32)(posTo.y + iRow);
         
-        if(     (0 <= ySrc && ySrc < src->height)
-           &&   (0 <= yDst && yDst < dst->height))
+        if( ySrc < src->height && yDst < dst->height)
         {
             int32 srcIndex = ySrc * src->width;
             int32 dstIndex = yDst * dst->width;
@@ -685,8 +684,7 @@ void EditorHeightmap::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
                 uint32 xSrc = (uint32)(posFrom.x + iCol);
                 uint32 xDst = (uint32)(posTo.x + iCol);
                 
-                if(     (0 <= xSrc && xSrc < src->width)
-                   &&   (0 <= xDst && xDst < dst->width))
+                if((xSrc < src->width) && (xDst < dst->width))
                 {
                     uint8 maskData = mask->data[(iRow * width + iCol) * 4];
                     if(maskData)
