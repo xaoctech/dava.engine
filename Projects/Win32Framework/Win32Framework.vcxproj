@@ -329,6 +329,7 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
@@ -672,6 +673,7 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />

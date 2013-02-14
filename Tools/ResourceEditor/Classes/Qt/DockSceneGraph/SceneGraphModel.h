@@ -64,6 +64,17 @@ protected:
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
+	
+	// Tree item checkboxes functionality.
+	// Is particular item checkable?
+	bool IsItemCheckable(const QModelIndex &index) const;
+	
+	// Get/set the checked state for the item.
+	Qt::CheckState GetItemCheckState(const QModelIndex& index) const;
+	void SetItemCheckState(const QModelIndex& index, bool value);
+	
+	// Get the graph model by Model Index (or NULL if no Graph Model attached).
+	GraphItem* GetGraphItemByModelIndex(const QModelIndex& index) const;
 
 protected:
 

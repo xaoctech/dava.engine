@@ -6,37 +6,6 @@
 
 using namespace DAVA;
 
-class CommandOpenParticleEditorConfig: public Command
-{
-public:	
-	CommandOpenParticleEditorConfig();
-
-protected:	
-
-	virtual void Execute();
-};
-
-class CommandSaveParticleEditorConfig: public Command
-{
-public:	
-	CommandSaveParticleEditorConfig();
-
-protected:	
-
-	virtual void Execute();
-};
-
-class CommandOpenParticleEditorSprite: public Command
-{
-public:	
-	CommandOpenParticleEditorSprite();
-
-protected:	
-
-	virtual void Execute();
-};
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Yuri Coder, 03/12/2012. New commands for Particle Editor QT.
 
@@ -146,7 +115,7 @@ protected:
 private:
 	ParticleEmitter* emitter;
 
-	ParticleEmitter::eEmitterType emitterType;
+	ParticleEmitter::eType type;
 	RefPtr<PropertyLine<float32> > emissionAngle;
 	RefPtr<PropertyLine<float32> > emissionRange;
 	RefPtr<PropertyLine<Vector3> > emissionVector;
@@ -186,12 +155,13 @@ public:
 			  RefPtr< PropertyLine<Color> > colorRandom,
 			  RefPtr< PropertyLine<float32> > alphaOverLife,
 			  RefPtr< PropertyLine<Color> > colorOverLife,
-			  RefPtr< PropertyLine<float32> > frameOverLife,
 			  RefPtr< PropertyLine<float32> > angle,
 			  RefPtr< PropertyLine<float32> > angleVariation,
 			  float32 alignToMotion,
 			  float32 startTime,
-			  float32 endTime
+			  float32 endTime,
+			  bool frameOverLifeEnabled,
+			  float32 frameOverLifeFPS
 			  );
 
 protected:
@@ -248,6 +218,19 @@ private:
 	ParticleLayer* layer;
 	float32 startTime;
 	float32 endTime;
+};
+
+class CommandUpdateParticleLayerEnabled: public Command
+{
+public:
+	CommandUpdateParticleLayerEnabled(ParticleLayer* layer, bool isEnabled);
+
+protected:
+    virtual void Execute();
+	
+private:
+	ParticleLayer* layer;
+	bool isEnabled;
 };
 
 class CommandUpdateParticleLayerForce: public Command
