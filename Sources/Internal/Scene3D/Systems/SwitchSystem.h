@@ -18,7 +18,7 @@ public:
 private:
 	Set<SceneNode*> updatableEntities;
 
-	void SetUpdatableHierarchy(SceneNode * entity, bool updatable);
+	void SetVisibleHierarchy(SceneNode * entity, bool visible);
 };
 
 }

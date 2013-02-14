@@ -7,7 +7,6 @@
 //
 
 #include "ParticlesEditorController.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
@@ -151,7 +150,7 @@ void ParticlesEditorController::EmitNodeWillBeDeselected()
 	emit NodeDeselected(this->selectedNode);
 }
 
-void ParticlesEditorController::EmitSelectedNodeChanged()
+void ParticlesEditorController::EmitSelectedNodeChanged(bool forceRefresh)
 {
     if (this->selectedNode == NULL)
     {
@@ -178,7 +177,7 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     LayerParticleEditorNode* layerEditorNode = dynamic_cast<LayerParticleEditorNode*>(this->selectedNode);
     if (layerEditorNode)
     {
-        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode);
+        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode, forceRefresh);
         return;
     }
     
@@ -211,12 +210,12 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitter
         EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectNode, emitterSceneNode,
                                                                                      QString::fromStdString(emitterSceneNode->GetName()));
 		
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterSceneNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		ParticleEmitter * emitter = GetEmitter(emitterSceneNode);
+		if (!emitter)
 		{
-		    return ;
+		    return;
 		}
-		emitterComponent->GetParticleEmitter()->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
+		emitter->SetLifeTime(LIFETIME_FOR_NEW_PARTICLE_EMITTER);
 
         effectNode->AddNode(emitterSceneNode);
         effectEditorNode->AddChildNode(emitterEditorNode);
@@ -254,7 +253,7 @@ LayerParticleEditorNode* ParticlesEditorController::AddParticleLayerToNode(Emitt
         return NULL;
     }
     
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -299,7 +298,7 @@ LayerParticleEditorNode* ParticlesEditorController::CloneParticleLayerNode(Layer
         return NULL;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return NULL;
@@ -327,7 +326,7 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
         return;
     }
 
-    ParticleEmitter* emitter = emitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = emitterNode->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -363,15 +362,15 @@ ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(Layer
     }
     
     // Add the new Force to the Layer.
-    layer->forces.push_back(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))));
-    layer->forcesVariation.push_back(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))));
-    layer->forcesOverLife.push_back(RefPtr<PropertyLine<float32> >(new PropertyLineValue<float32>(1.0f)));
-    
+	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
+												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
+	layer->AddParticleForce(newForce);
+
     // Create the node for the new layer.
-    int newLayerIndex = layer->forces.size() - 1;
+    int newLayerIndex = layer->particleForces.size() - 1;
     ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(layerNode, newLayerIndex);
     layerNode->AddChildNode(forceNode);
-    
+
     // Update the names for the forces.
     layerNode->UpdateForcesIndices();
     
@@ -397,8 +396,7 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
 
     // Remove the force from the emitter...
     int forceIndex = forceNode->GetForceIndex();
-    layer->forces.erase(layer->forces.begin() + forceIndex);
-    layer->forcesOverLife.erase(layer->forcesOverLife.begin() + forceIndex);
+	layer->RemoveParticleForce(forceIndex);
     
     // ...and from the tree.
     layerNode->RemoveChildNode(forceNode);
@@ -515,7 +513,7 @@ bool ParticlesEditorController::ChangeLayersOrderInSameEmitter(LayerParticleEdit
 	ParticleLayer* layerToMove = movedItemNode->GetLayer();
 	ParticleLayer* layerToMoveAbove = moveAboveNode->GetLayer();
 
-	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitterComponent()->GetParticleEmitter();
+	ParticleEmitter* parentEmitter = movedItemNode->GetParticleEmitter();
 	parentEmitter->MoveLayer(layerToMove, layerToMoveAbove);
 	
 	return true;
@@ -552,8 +550,8 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 														   LayerParticleEditorNode* layerNodeToMove,
 														   LayerParticleEditorNode* layerNodeToInsertAbove)
 {
-	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
-	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitterComponent()->GetParticleEmitter();
+	ParticleEmitter* oldParentEmitter = oldEmitterNode->GetParticleEmitter();
+	ParticleEmitter* newParentEmitter = newEmitterNode->GetParticleEmitter();
 	if (!oldParentEmitter || !newParentEmitter)
 	{
 		return false;
@@ -583,11 +581,11 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	return true;
 }
 
-void ParticlesEditorController::RefreshSelectedNode()
+void ParticlesEditorController::RefreshSelectedNode(bool forceRefresh)
 {
 	if (this->selectedNode)
 	{
-		EmitSelectedNodeChanged();
+		EmitSelectedNodeChanged(forceRefresh);
 	}
 }
 

@@ -160,8 +160,6 @@ void QSceneGraphTreeView::ShowSceneGraphMenu(const QModelIndex &index, const QPo
 		AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 	
 		AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
-		AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
-		AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
     
 		SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
 		if (node)

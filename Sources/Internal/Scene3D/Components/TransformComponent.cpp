@@ -2,6 +2,7 @@
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -12,6 +13,8 @@ TransformComponent::TransformComponent()
 	worldMatrix = Matrix4::IDENTITY;
 	parentMatrix = 0;
 	parent = 0;
+
+	GlobalEventSystem::Instance()->Event(0, this, EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
     
 TransformComponent::~TransformComponent()
@@ -27,8 +30,6 @@ Component * TransformComponent::Clone(SceneNode * toEntity)
 	newTransform->worldMatrix = worldMatrix;
     newTransform->parent = this->parent;
 
-	Scene::GetActiveScene()->ImmediateEvent(toEntity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
-
     return newTransform;
 }
 
@@ -41,7 +42,7 @@ void TransformComponent::SetLocalTransform(const Matrix4 * transform)
 		worldMatrix = *transform;
 	}
 
-	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
+	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
 void TransformComponent::SetParent(SceneNode * node)
@@ -57,12 +58,12 @@ void TransformComponent::SetParent(SceneNode * node)
 		parentMatrix = 0;
 	}
 
-	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::TRANSFORM_PARENT_CHANGED);
+	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::TRANSFORM_PARENT_CHANGED);
 }
 
 Matrix4 & TransformComponent::ModifyLocalTransform()
 {
-	Scene::GetActiveScene()->ImmediateEvent(entity, GetType(), EventSystem::LOCAL_TRANSFORM_CHANGED);
+	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::LOCAL_TRANSFORM_CHANGED);
 	return localMatrix;
 }
 

@@ -48,49 +48,6 @@ void CommandTextureConverter::Execute()
     }
 }
 
-//Show/Hide Heightmap Editor
-CommandHeightmapEditor::CommandHeightmapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandHeightmapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HeightmapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
-    }
-    
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->RebuildSceneGraph();
-}
-
-
-//Show/Hide Tilemap Editor
-CommandTilemapEditor::CommandTilemapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandTilemapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->TilemapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
-    }
-
-//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-//    activeScene->RebuildSceneGraph();
-}
-
 //Show settings
 CommandSettings::CommandSettings()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)

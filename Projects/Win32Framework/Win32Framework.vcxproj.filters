@@ -61,12 +61,6 @@
     <Filter Include="Internal\Platform">
       <UniqueIdentifier>{3dee422f-a3ac-43fb-a3ca-32d2b8ed05e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Platform\TemplateiOS">
-      <UniqueIdentifier>{f5d0f973-b101-49d7-83f5-444c3cebefb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Platform\TemplateMacOS">
-      <UniqueIdentifier>{b69fca1f-b86a-415a-a523-a7bb307c59f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Platform\TemplateWin32">
       <UniqueIdentifier>{f21eeb05-df0b-4fd6-bdff-8d0c36593c3a}</UniqueIdentifier>
     </Filter>
@@ -115,9 +109,6 @@
     <Filter Include="Internal\Platform\Qt\Win32">
       <UniqueIdentifier>{802c9b10-286b-4081-add3-d26ed34ac6d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Platform\Qt\MacOS">
-      <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Render\Material">
       <UniqueIdentifier>{08283861-a6e9-4e98-88c8-2cfd8d75e035}</UniqueIdentifier>
     </Filter>
@@ -129,6 +120,12 @@
     </Filter>
     <Filter Include="Internal\Scene3D\Systems">
       <UniqueIdentifier>{182b255d-1f50-474b-b265-7dcc2a0f0a55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Base\Radix">
+      <UniqueIdentifier>{43813d6b-dd92-4284-b1af-ec15e0904636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\DLC">
+      <UniqueIdentifier>{8b6654bd-b8b7-4415-97cd-58c934760ce1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -906,9 +903,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -1080,9 +1074,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1104,9 +1095,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.h">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1124,9 +1112,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
@@ -1194,19 +1179,71 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h" />
-    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h" />
-    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssertMessage.h">
-      <Filter>Internal\Debug</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Radix\Radix.h">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h">
+      <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
+      <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1858,9 +1895,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -1996,9 +2030,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2020,9 +2051,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DeleteSystem.cpp">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2040,9 +2068,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEmitterComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
@@ -2104,8 +2129,56 @@
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.mm">
-      <Filter>Internal\Debug</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\Radix\Radix.cpp">
+      <Filter>Internal\Base\Radix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp">
+      <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp">
+      <Filter>Internal\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

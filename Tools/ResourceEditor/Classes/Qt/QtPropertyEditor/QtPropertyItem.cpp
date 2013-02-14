@@ -15,16 +15,13 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 	if(NULL != data && NULL != name)
 	{
 		bool hasChildren = false;
-		QMapIterator<QString, QtPropertyData*> i = data->ChildIterator();
 
-		while(i.hasNext())
+		for (int i = 0; i < data->ChildCount(); ++i)
 		{
-			i.next();
-
+			QPair<QString, QtPropertyData*> childData = data->ChildGet(i);
 			QList<QStandardItem *> subItems;
-
-			QtPropertyItem *subName = new QtPropertyItem(i.key());
-			QtPropertyItem *subValue = new QtPropertyItem(i.value(), subName);
+			QtPropertyItem *subName = new QtPropertyItem(childData.first);
+			QtPropertyItem *subValue = new QtPropertyItem(childData.second, subName);
 
 			subValue->itemDataDeleteByParent = true;
 			subName->setEditable(false);
@@ -36,8 +33,6 @@ QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 
 			hasChildren = true;
 		}
-		
-		//setIcon(data->GetIcon());
 
 		ApplyDataFlags();
 		ApplyNameStyle(name);

@@ -155,6 +155,8 @@ public:
 	// properties
 	void SetVisible(bool isVisible);
 	inline bool GetVisible();
+	void SetLodVisible(bool isLodVisible);
+	void SetSwitchVisible(bool isSwitchVisible);
 	inline SceneNode * GetParent();
 	void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);
@@ -232,8 +234,6 @@ public:
 
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-
-	virtual int32 Release();
 	
     // Do not use variables 
     std::deque<SceneNodeAnimation *> nodeAnimations;
@@ -349,30 +349,28 @@ protected:
 	Scene * scene;
 	SceneNode * parent;
 	Vector<SceneNode*> children;
-	Deque<SceneNode*> removedCache;
-    bool inUpdate;
 
 	String	name;
 	int32	tag;
 
     uint32 flags;
 
-	Matrix4 worldTransform;
     KeyedArchive *customProperties;
     
 private:
-	Component * components[Component::COMPONENT_COUNT];
+	Vector<Component *> components;
     Matrix4 defaultLocalTransform;
    	friend class Scene;
     
 public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
 		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		MEMBER(worldTransform, "World transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
         MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+
+		COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE)
     );
 };
 	

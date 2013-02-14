@@ -28,7 +28,7 @@ void SwitchSystem::Process()
 			int32 childrenCound = entity->GetChildrenCount();
 			for(int32 i = 0; i < childrenCound; ++i)
 			{
-				SetUpdatableHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
+				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
 			}
 			sw->oldSwitchIndex = sw->newSwitchIndex;
 		}
@@ -45,13 +45,13 @@ void SwitchSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 	}
 }
 
-void SwitchSystem::SetUpdatableHierarchy(SceneNode * entity, bool updatable)
+void SwitchSystem::SetVisibleHierarchy(SceneNode * entity, bool visible)
 {
-	entity->SetUpdatable(updatable);
+	entity->SetSwitchVisible(visible);
 	uint32 size = entity->GetChildrenCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		SetUpdatableHierarchy(entity->GetChild(i), updatable);
+		SetVisibleHierarchy(entity->GetChild(i), visible);
 	}
 }
 

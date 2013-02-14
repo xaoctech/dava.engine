@@ -48,16 +48,16 @@ public:
     Heightmap();
 	virtual ~Heightmap();
     
-    bool BuildFromImage(Image *image);
+    bool BuildFromImage( const Image *image);
     void SaveToImage(const String & filename);
     
     virtual void Save(const String &filePathname);
     virtual bool Load(const String &filePathname);
     
     uint16 * Data();
-    int32 Size();
+    int32 Size() const;
     
-    int32 GetTileSize();
+    int32 GetTileSize() const;
     void SetTileSize(int32 newSize);
     
     static const String FileExtension();

@@ -11,7 +11,9 @@
 #include "../EditorScene.h"
 
 #include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
+#include "Scene3D/Components/ComponentHelpers.h"
 
 SceneValidator::SceneValidator()
 {
@@ -44,8 +46,7 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     if(scene) 
     {
         ValidateSceneNode(scene, errorsLog);
-        ValidateLodNodes(scene, errorsLog);
-        
+
         for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
             SceneNode * node = *it;
@@ -128,24 +129,13 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
     for(int32 i = 0; i < count; ++i)
     {
         SceneNode *node = sceneNode->GetChild(i);
-        MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode*>(node);
-        if(mesh)
-        {
-            ValidateMeshInstance(mesh, errorsLog);
-        }
-        else 
-        {
-            LandscapeNode *landscape = dynamic_cast<LandscapeNode*>(node);
-            if (landscape) 
-            {
-                ValidateLandscape(landscape, errorsLog);
-            }
-            else
-            {
-                ValidateSceneNode(node, errorsLog);
-            }
-        }
         
+        ValidateRenderComponent(node, errorsLog);
+        ValidateLodComponent(node, errorsLog);
+        ValidateParticleEmitterComponent(node, errorsLog);
+        
+        
+
         KeyedArchive *customProperties = node->GetCustomProperties();
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
@@ -168,28 +158,195 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
                 }
             }
         }
+        
+        ValidateSceneNode(node, errorsLog);
+    }
+}
+
+
+void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+{
+    RenderComponent *rc = static_cast<RenderComponent *>(ownerNode->GetComponent(Component::RENDER_COMPONENT));
+    if(!rc) return;
+    
+    RenderObject *ro = rc->GetRenderObject();
+    if(!ro) return;
+    
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 b = 0; b < count; ++b)
+    {
+        RenderBatch *renderBatch = ro->GetRenderBatch(b);
+        ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
     }
     
-    if(typeid(SceneNode) == typeid(*sceneNode))
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+    if(landscape)
     {
-        Set<DataNode*> dataNodeSet;
-        sceneNode->GetDataNodes(dataNodeSet);
-        if (dataNodeSet.size() == 0)
+        ValidateLandscape(landscape, errorsLog);
+    }
+}
+
+
+void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+{
+    LodComponent *lodComponent = static_cast<LodComponent *>(ownerNode->GetComponent(Component::LOD_COMPONENT));
+    if(!lodComponent) return;
+
+
+    int32 layersCount = lodComponent->GetLodLayersCount();
+    for(int32 layer = 0; layer < layersCount; ++layer)
+    {
+        float32 distance = lodComponent->GetLodLayerDistance(layer);
+        if(LodNode::INVALID_DISTANCE == distance)
         {
-            if(NodeRemovingDisabled(sceneNode))
+            //TODO: why this function isn't realized for lodcomponent?
+            lodComponent->SetLodLayerDistance(layer, LodComponent::GetDefaultDistance(layer));
+            errorsLog.insert(Format("Node %s: lod distances weren't correct. Re-save.", ownerNode->GetName().c_str()));
+        }
+    }
+    
+    List<LodComponent::LodData *>lodLayers;
+    lodComponent->GetLodData(lodLayers);
+    
+    List<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
+    int32 layer = 0;
+    for(List<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
+    {
+        LodComponent::LodData * ld = *it;
+        
+        if(ld->layer != layer)
+        {
+            ld->layer = layer;
+            errorsLog.insert(Format("Node %s: lod layers weren't correct. Rename childs. Re-save.", ownerNode->GetName().c_str()));
+        }
+    }
+}
+
+void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode, Set<String> &errorsLog)
+{
+	ParticleEmitter * emitter = GetEmitter(ownerNode);
+    if(!emitter) 
+		return;
+
+    String validationMsg;
+    if (!ParticlesEditorSceneDataHelper::ValidateParticleEmitter(emitter, validationMsg))
+    {
+        errorsLog.insert(validationMsg);
+    }
+}
+
+
+
+void SceneValidator::ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
+{
+    ownerNode->RemoveFlag(SceneNode::NODE_INVALID);
+    
+    
+    Material *material = renderBatch->GetMaterial();
+    if(material)
+    {
+        ValidateMaterial(material, errorsLog);
+    }
+    
+    InstanceMaterialState *materialState = renderBatch->GetMaterialInstance();
+    if(materialState)
+    {
+        ValidateInstanceMaterialState(materialState, errorsLog);
+    }
+    
+    
+    PolygonGroup *polygonGroup = renderBatch->GetPolygonGroup();
+    if(polygonGroup)
+    {
+        if(material)
+        {
+            if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
             {
-                return;
-            }
-            
-            SceneNode * parent = sceneNode->GetParent();
-            if (parent)
-            {
-                // TODO: Uncomment this!!! Or check that this code is not required anymore.
-                // emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+                ownerNode->AddFlag(SceneNode::NODE_INVALID);
+                errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
+                errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
             }
         }
     }
 }
+
+void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog)
+{
+    for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
+    {
+        Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
+        if(texture)
+        {
+            ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
+            
+            String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
+            if(!IsTextureDescriptorPath(matTexName))
+            {
+                material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
+            }
+        }
+    }
+}
+
+
+void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog)
+{
+    if(materialState->GetLightmap())
+    {
+        ValidateTexture(materialState->GetLightmap(), materialState->GetLightmapName(), "InstanceMaterialState, lightmap", errorsLog);
+    }
+    
+    String lightmapName = materialState->GetLightmapName();
+    if(!IsTextureDescriptorPath(lightmapName))
+    {
+        Texture *lightmap = SafeRetain(materialState->GetLightmap());
+        materialState->SetLightmap(lightmap, TextureDescriptor::GetDescriptorPathname(lightmapName));
+        SafeRelease(lightmap);
+    }
+}
+
+
+void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
+{
+    if(!landscape) return;
+    
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    if(editorLandscape)
+    {
+        return;
+    }
+    
+    
+    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    {
+        if(		(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
+           ||	(LandscapeNode::TEXTURE_TILE_FULL == (LandscapeNode::eTextureLevel)i
+                 &&	landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK))
+        {
+            continue;
+        }
+        
+		// TODO:
+		// new texture path
+		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
+		if(!IsTextureDescriptorPath(landTexName))
+		{
+			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
+		}
+        
+        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), landscape->GetTextureName((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
+    }
+    
+    bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
+    if(!pathIsCorrect)
+    {
+        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
+        errorsLog.insert("Wrong path of Heightmap: " + path);
+    }
+}
+
+
+
 
 bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
 {
@@ -239,107 +396,8 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 }
 
 
-void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
-{
-    if(!landscape) return;
- 
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
-    if(editorLandscape)
-    {
-        return;
-    }
-    
-    
-    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
-    {
-        if(		(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i) 
-			||	(LandscapeNode::TEXTURE_TILE_FULL == (LandscapeNode::eTextureLevel)i 
-				&&	landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK))
-        {
-            continue;
-        }
-
-		// TODO:
-		// new texture path
-		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
-		if(!IsTextureDescriptorPath(landTexName))
-		{
-			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
-		}
-        
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), landscape->GetTextureName((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
-    }
-    
-    bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
-    if(!pathIsCorrect)
-    {
-        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
-        errorsLog.insert("Wrong path of Heightmap: " + path);
-    }
-}
 
 
-void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog)
-{
-    meshNode->RemoveFlag(SceneNode::NODE_INVALID);
-    
-    const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
-    //Vector<Material *>materials = meshNode->GetMaterials();
-    for(int32 iMat = 0; iMat < (int32)polygroups.size(); ++iMat)
-    {
-        Material * material = polygroups[iMat]->GetMaterial();
-
-        ValidateMaterial(material, errorsLog);
-
-        if (material->Validate(polygroups[iMat]->GetPolygonGroup()) == Material::VALIDATE_INCOMPATIBLE)
-        {
-            meshNode->AddFlag(SceneNode::NODE_INVALID);
-            errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), meshNode->GetFullName().c_str()));
-            errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
-        }
-    }
-    
-    int32 lightmapCont = meshNode->GetLightmapCount();
-    for(int32 iLight = 0; iLight < lightmapCont; ++iLight)
-    {
-        DAVA::String lightmapName = meshNode->GetLightmapDataForIndex(iLight)->lightmapName;
-		if(!IsTextureDescriptorPath(lightmapName))
-		{
-            meshNode->GetLightmapDataForIndex(iLight)->lightmapName = TextureDescriptor::GetDescriptorPathname(lightmapName);
-		}
-        
-		DAVA::MeshInstanceNode::LightmapData *ln = meshNode->GetLightmapDataForIndex(iLight);
-        ValidateTexture(ln->lightmap, ln->lightmapName, Format("Mesh %s. Lightmap %d", meshNode->GetName().c_str(), iLight), errorsLog);
-    }
-}
-
-
-void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog)
-{
-    for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
-    {
-        Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
-        if(texture)
-        {
-            ValidateTexture(texture, material->GetTextureName((Material::eTextureLevel)iTex), Format("Material: %s. TextureLevel %d.", material->GetName().c_str(), iTex), errorsLog);
-            
-            // TODO:
-            // new texture path
-            String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-            if(!IsTextureDescriptorPath(matTexName))
-            {
-                material->SetTexture((Material::eTextureLevel)iTex, TextureDescriptor::GetDescriptorPathname(matTexName));
-            }
-            
-            /*
-             if(material->GetTextureName((Material::eTextureLevel)iTex).find(".pvr.png") != String::npos)
-             {
-             errorsLog.insert(material->GetName() + ": wrong texture name " + material->GetTextureName((Material::eTextureLevel)iTex));
-             }
-             */
-        }
-    }
-}
 
 void SceneValidator::EnumerateSceneTextures()
 {
@@ -417,44 +475,6 @@ bool SceneValidator::IsFBOTexture(Texture *texture)
 }
 
 
-void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
-{
-    Vector<LodNode *> lodnodes;
-    scene->GetChildNodes(lodnodes); 
-    
-    for(int32 index = 0; index < (int32)lodnodes.size(); ++index)
-    {
-        LodNode *ln = lodnodes[index];
-        
-        int32 layersCount = ln->GetLodLayersCount();
-        for(int32 layer = 0; layer < layersCount; ++layer)
-        {
-            float32 distance = ln->GetLodLayerDistance(layer);
-            if(LodNode::INVALID_DISTANCE == distance)
-            {
-                ln->SetLodLayerDistance(layer, ln->GetDefaultDistance(layer));
-                errorsLog.insert(Format("Node %s: lod distances weren't correct. Re-save.", ln->GetName().c_str()));
-            }
-        }
-        
-        List<LodNode::LodData *>lodLayers;
-        ln->GetLodData(lodLayers);
-        
-        List<LodNode::LodData *>::const_iterator endIt = lodLayers.end();
-        int32 layer = 0;
-        for(List<LodNode::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
-        {
-            LodNode::LodData * ld = *it;
-            
-            if(ld->layer != layer)
-            {
-                ld->layer = layer;
-
-                errorsLog.insert(Format("Node %s: lod layers weren't correct. Rename childs. Re-save.", ln->GetName().c_str()));
-            }
-        }
-    }
-}
 
 String SceneValidator::SetPathForChecking(const String &pathname)
 {

@@ -16,18 +16,20 @@ void UpdatableSystem::AddEntity(SceneNode * entity)
 {
 	UpdatableComponent * component = (UpdatableComponent*)entity->GetComponent(Component::UPDATABLE_COMPONENT);
 	IUpdatable * object = component->GetUpdatableObject();
-	DVASSERT(object);
 
-	IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
-	if(updateBeforeTransform)
+	if(object)
 	{
-		updatesBeforeTransform.push_back(updateBeforeTransform);
-	}
+		IUpdatableBeforeTransform * updateBeforeTransform = dynamic_cast<IUpdatableBeforeTransform*>(object);
+		if(updateBeforeTransform)
+		{
+			updatesBeforeTransform.push_back(updateBeforeTransform);
+		}
 
-	IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
-	if(updateAfterTransform)
-	{
-		updatesAfterTransform.push_back(updateAfterTransform);
+		IUpdatableAfterTransform * updateAfterTransform = dynamic_cast<IUpdatableAfterTransform*>(object);
+		if(updateAfterTransform)
+		{
+			updatesAfterTransform.push_back(updateAfterTransform);
+		}
 	}
 }
 
@@ -48,7 +50,7 @@ void UpdatableSystem::RemoveEntity(SceneNode * entity)
 				{
 					updatesBeforeTransform[i] = updatesBeforeTransform[size-1];
 					updatesBeforeTransform.pop_back();
-					return;
+					break;
 				}
 			}
 		}
@@ -63,7 +65,7 @@ void UpdatableSystem::RemoveEntity(SceneNode * entity)
 				{
 					updatesAfterTransform[i] = updatesAfterTransform[size-1];
 					updatesAfterTransform.pop_back();
-					return;
+					break;
 				}
 			}
 		}

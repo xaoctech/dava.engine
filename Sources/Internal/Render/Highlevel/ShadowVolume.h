@@ -37,7 +37,7 @@ namespace DAVA
 {
 
 class PolygonGroup;
-class LightNode;
+class Light;
     
 class ShadowVolume : public RenderBatch
 {

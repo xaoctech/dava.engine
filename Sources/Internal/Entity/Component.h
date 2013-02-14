@@ -50,7 +50,6 @@ public:
 		SWITCH_COMPONENT,
         CAMERA_COMPONENT,
         LIGHT_COMPONENT,
-		PARTICLE_EMITTER_COMPONENT,
 		PARTICLE_EFFECT_COMPONENT,
 		BULLET_COMPONENT,
 		UPDATABLE_COMPONENT,
@@ -82,13 +81,14 @@ public:
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
 
-    
+    SceneNode * GetEntity() { return entity; };
 protected:
     SceneNode * entity;
 
 public:
 	INTROSPECTION(Component, 
-		NULL);
+		MEMBER(entity, "entity", INTROSPECTION_SERIALIZABLE)
+		);
 };
 
     

@@ -64,7 +64,6 @@
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdatableSystem.h"
-#include "Scene3D/Systems/DeleteSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
 
@@ -80,8 +79,6 @@ namespace DAVA
 {
     
 REGISTER_CLASS(Scene);
-
-Scene * Scene::activeScene = 0;
     
 Scene::Scene()
 	:   SceneNode()
@@ -92,8 +89,6 @@ Scene::Scene()
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
-	SetActiveScene(this);
-
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
@@ -116,7 +111,6 @@ void Scene::CreateSystems()
 {
 	renderSystem = new RenderSystem();
 	eventSystem = new EventSystem();
-	deleteSystem = new DeleteSystem();
 
     transformSystem = new TransformSystem(this);
     AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
@@ -129,9 +123,6 @@ void Scene::CreateSystems()
 
     debugRenderSystem = new DebugRenderSystem(this);
     AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
-
-	particleEmitterSystem = new ParticleEmitterSystem(this);
-	AddSystem(particleEmitterSystem, (1 << Component::PARTICLE_EMITTER_COMPONENT));
 
 	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
@@ -186,14 +177,13 @@ Scene::~Scene()
     systems.clear();
 
 	SafeDelete(eventSystem);
-	SafeDelete(deleteSystem);
 	SafeDelete(renderSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
 {
     //Logger::Debug("Register node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
     {
         lights.insert(light);
@@ -266,7 +256,7 @@ void Scene::UnregisterNode(SceneNode * node)
     
     //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
 
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
         lights.erase(light);
 
@@ -590,8 +580,6 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-	SetActiveScene(this);
-
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -606,9 +594,6 @@ void Scene::Update(float timeElapsed)
 	lodSystem->Process();
 
 	switchSystem->Process();
-
-	particleEffectSystem->Process();
-	particleEmitterSystem->Process();
     
 //	entityManager->Flush();
 
@@ -635,8 +620,6 @@ void Scene::Update(float timeElapsed)
 	{
 		imposterManager->Update(timeElapsed);
 	}
-
-	deleteSystem->Process();
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
     Stats::Instance()->EndTimeMeasure("Scene.Update", this);
@@ -646,7 +629,6 @@ void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
 
-    SetActiveScene(this);
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -681,13 +663,12 @@ void Scene::Draw()
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
     renderUpdateSystem->Process();
+	particleEffectSystem->Process();
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process();
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-    
-    //SceneNode::Draw();
     
     if(imposterManager)
 	{
@@ -822,11 +803,11 @@ void Scene::UpdateLights()
     
 }
     
-LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 position)
+Light * Scene::GetNearestDynamicLight(Light::eType type, Vector3 position)
 {
     switch(type)
     {
-        case LightNode::TYPE_DIRECTIONAL:
+        case Light::TYPE_DIRECTIONAL:
             
             break;
             
@@ -835,13 +816,13 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
     };
     
 	float32 squareMinDistance = 10000000.0f;
-	LightNode * nearestLight = 0;
+	Light * nearestLight = 0;
 
-	Set<LightNode*> & lights = GetLights();
-	const Set<LightNode*>::iterator & endIt = lights.end();
-	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
+	Set<Light*> & lights = GetLights();
+	const Set<Light*>::iterator & endIt = lights.end();
+	for (Set<Light*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
-		LightNode * node = *it;
+		Light * node = *it;
 		if(node->IsDynamic())
 		{
 			const Vector3 & lightPosition = node->GetPosition();
@@ -858,7 +839,7 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	return nearestLight;
 }
 
-Set<LightNode*> & Scene::GetLights()
+Set<Light*> & Scene::GetLights()
 {
     return lights;
 }
@@ -897,16 +878,6 @@ const String & Scene::GetReferenceNodeSuffix()
 bool Scene::IsReferenceNodeSuffixChanged()
 {
 	return referenceNodeSuffixChanged;
-}
-
-void Scene::SetActiveScene(Scene * scene)
-{
-	activeScene = scene;
-}
-
-Scene * Scene::GetActiveScene()
-{
-	return activeScene;
 }
 
 EventSystem * Scene::GetEventSystem()

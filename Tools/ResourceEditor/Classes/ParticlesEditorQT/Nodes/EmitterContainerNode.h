@@ -23,12 +23,12 @@ public:
                                   const QString& nodeName);
     virtual ~EmitterContainerNode();
         
-    SceneNode* GetEmitterNode() const {return emitter;};
+    SceneNode* GetEmitterNode() const {return emitterNode;};
 
-    ParticleEmitterComponent * GetParticleEmitterComponent() const; 
+	ParticleEmitter * GetParticleEmitter() const; 
 
 protected:
-    SceneNode* emitter;
+    SceneNode* emitterNode;
 };
     
 };

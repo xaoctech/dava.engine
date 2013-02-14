@@ -5,7 +5,6 @@
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
-#include "../ParticlesEditor/ParticlesEditorControl.h"
 
 #include "EditorSettings.h"
 #include "SceneValidator.h"
@@ -27,13 +26,12 @@
 #include "../Qt/Main/QtUtils.h"
 #include "FileSystem/FileSystem.h"
 
-#include "Scene3D/Components/ParticleEmitterComponent.h"
+#include "../Commands/SceneEditorScreenMainCommands.h"
+#include "../Commands/CommandsManager.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
 {
-	particlesEditor = NULL;
-
 }
 
 void SceneEditorScreenMain::LoadResources()
@@ -56,7 +54,6 @@ void SceneEditorScreenMain::LoadResources()
     settingsDialog = new SettingsDialog(fullRect, this);
     textureTrianglesDialog = new TextureTrianglesDialog();
     materialEditor = new MaterialEditor();
-	particlesEditor = new ParticlesEditorControl();
     
     InitControls();
     
@@ -82,13 +79,10 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(helpDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(settingsDialog);
-    
+
     ReleaseNodeDialogs();
-    
-    
-	SafeRelease(particlesEditor);
     ReleaseBodyList();
-        
+
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     UNDOManager::Instance()->Release();
@@ -291,8 +285,9 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-        BodyItem *iBody = FindCurrentBody();
-        iBody->bodyControl->AddNode(nodeDialog->GetSceneNode());
+		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
     }
 }
 
@@ -450,26 +445,6 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
     {
         bodies[i]->bodyControl->RecreteFullTilingTexture();
     }
-}
-
-void SceneEditorScreenMain::EditParticleEmitter(SceneNode * emitter)
-{
-	//BodyItem *iBody = FindCurrentBody();
-	if (!particlesEditor->GetParent())
-	{
-		SafeRelease(particlesEditor);
-		particlesEditor = new ParticlesEditorControl();
-
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitter->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
-		{
-		    return;
-		}
-
-		particlesEditor->SetNode(emitter);
-		particlesEditor->SetEmitter(emitterComponent->GetParticleEmitter());
-		AddControl(particlesEditor);
-	}
 }
 
 void SceneEditorScreenMain::NewScene()

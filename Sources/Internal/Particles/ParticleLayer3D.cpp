@@ -13,17 +13,20 @@ ParticleLayer3D::ParticleLayer3D()
 	renderData = new RenderDataObject();
 
 	//TODO: set material from outside
-	material = new Material();
+	
+	Material * material = new Material();
 	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
 	material->SetAlphablend(true);
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
 	material->SetName("ParticleLayer3D_material");
+
+	renderBatch->SetMaterial(material);
+	SafeRelease(material);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
 {
-	SafeRelease(material);
 	SafeRelease(renderData);
 }
 
@@ -55,7 +58,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		material->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -146,8 +149,6 @@ void ParticleLayer3D::Draw(Camera * camera)
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 
-		
-		renderBatch->SetMaterial(material);
 		renderBatch->SetRenderDataObject(renderData);
 	}
 }
@@ -172,7 +173,7 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 
 Material * ParticleLayer3D::GetMaterial()
 {
-	return material;
+	return renderBatch->GetMaterial();
 }
 	
 void ParticleLayer3D::SetAdditive(bool additive)
@@ -180,13 +181,13 @@ void ParticleLayer3D::SetAdditive(bool additive)
 	ParticleLayer::SetAdditive(additive);
 	if(additive)
 	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE);
+		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE);
 	}
 	else
 	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 }
 

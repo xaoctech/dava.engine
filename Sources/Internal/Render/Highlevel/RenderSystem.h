@@ -44,7 +44,8 @@ class RenderObject;
 class RenderBatch;
 class SceneNode;
 class Camera;
-class LightNode;
+class Light;
+class ParticleEmitterSystem;
     
 class RenderSystem
 {
@@ -84,7 +85,7 @@ public:
     void Render();
     
     void MarkForUpdate(RenderObject * renderObject);
-    void MarkForUpdate(LightNode * lightNode);
+    void MarkForUpdate(Light * lightNode);
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
@@ -93,9 +94,9 @@ public:
     void UnregisterFromUpdate(IRenderUpdatable * renderObject);
     
     
-    void AddLight(LightNode * light);
-    void RemoveLight(LightNode * light);
-    Vector<LightNode*> & GetLights();
+    void AddLight(Light * light);
+    void RemoveLight(Light * light);
+    Vector<Light*> & GetLights();
 
     
 private:
@@ -113,7 +114,7 @@ private:
     Vector<IRenderUpdatable*> objectsForUpdate;
     Vector<RenderObject*> objectsForPermanentUpdate;
     List<RenderObject*> markedObjects;
-    List<LightNode*> movedLights;
+    List<Light*> movedLights;
     Vector<RenderPass*> renderPassOrder;
     //Vector<RenderLayer*> renderLayers;
     
@@ -121,7 +122,8 @@ private:
     FastNameMap<RenderLayer*> renderLayersMap;
     
     Vector<RenderObject*> renderObjectArray;
-    Vector<LightNode*> lights;
+	Vector<RenderObject*> particleEmitterArray;
+    Vector<Light*> lights;
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     
@@ -129,6 +131,7 @@ private:
     Camera * camera;
     //Vector<RenderObject*> forRemove;
     
+	ParticleEmitterSystem * particleEmitterSystem;
     
     friend class RenderPass;
 };

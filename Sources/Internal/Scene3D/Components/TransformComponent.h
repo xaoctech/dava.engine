@@ -44,9 +44,7 @@ public:
     INTROSPECTION_EXTEND(TransformComponent, Component,
         MEMBER(localMatrix, "Local Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
         MEMBER(worldMatrix, "World Transform", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR_READONLY | INTROSPECTION_EDITOR)
-                         
         MEMBER(parentMatrix, "Parent Matrix", INTROSPECTION_SERIALIZABLE)
-        MEMBER(parent, "Parente SceneNode", INTROSPECTION_SERIALIZABLE)
     );
 };
 
