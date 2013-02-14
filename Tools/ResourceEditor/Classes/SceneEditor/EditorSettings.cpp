@@ -80,7 +80,7 @@ void EditorSettings::SetCameraSpeedIndex(int32 camSpeedIndex)
 void EditorSettings::SetCameraSpeed(int32 camSpeedIndex, float32 speed)
 {
     DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
-    settings->SetFloat("CameraSpeedValue" + camSpeedIndex, speed);
+    settings->SetFloat(Format("CameraSpeedValue_%d", camSpeedIndex), speed);
 }
 
 float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
@@ -88,7 +88,7 @@ float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
     DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
     
     static const float32 speedConst[] = {35, 100, 250, 400};
-    return settings->GetFloat("CameraSpeedValue" + camSpeedIndex, speedConst[camSpeedIndex]);
+    return settings->GetFloat(Format("CameraSpeedValue_%d", camSpeedIndex), speedConst[camSpeedIndex]);
 }
 
 
@@ -193,15 +193,12 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     for(int32 i = 0; i < count; ++i)
     {
         String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
-        if(path == pathToFile)
+        if(path != pathToFile)
         {
-            return;
+            filesList.push_back(path);
         }
-        
-        filesList.push_back(path);
     }
 
-    
     filesList.insert(filesList.begin(), pathToFile);
     count = 0;
     for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_COUNT); ++count)
