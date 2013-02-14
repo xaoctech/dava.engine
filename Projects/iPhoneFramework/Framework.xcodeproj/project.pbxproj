@@ -17,60 +17,6 @@
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
-<<<<<<< HEAD
-		C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */; };
-		C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651F415E3D7A900E25BF4 /* ReferenceNode.h */; };
-		C2F0A4FC161DEA8C003A2006 /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F0A4F9161DEA8C003A2006 /* Observable.cpp */; };
-		C2F0A4FD161DEA8C003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A4FA161DEA8C003A2006 /* Observable.h */; };
-		C2F0A4FE161DEA8C003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A4FB161DEA8C003A2006 /* Observer.h */; };
-		C74366661625916600AEDD0F /* liblua_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C74366651625916600AEDD0F /* liblua_ios.a */; };
-		C756A273162599A900FBBA91 /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */; };
-		C756A274162599A900FBBA91 /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C756A272162599A900FBBA91 /* AutotestingSystemYaml.h */; };
-		C756A2781625B5F100FBBA91 /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */; };
-		C756A2791625B5F100FBBA91 /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C756A2771625B5F100FBBA91 /* AutotestingSystemLua.h */; };
-		C75A4E23162DC87000CC0156 /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C75A4E22162DC87000CC0156 /* AutotestingSystemSwig.cpp */; };
-		C75A4E26162DCAD000CC0156 /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C75A4E24162DCAD000CC0156 /* UIControlSwig.cpp */; };
-		C75A4E27162DCAD000CC0156 /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C75A4E25162DCAD000CC0156 /* VectorSwig.cpp */; };
-		C75A4E29162DCC0200CC0156 /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C75A4E28162DCC0200CC0156 /* RectSwig.cpp */; };
-		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
-		C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895CE157FA00C00B0E00A /* Action.cpp */; };
-		C7E895D9157FA00C00B0E00A /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895CF157FA00C00B0E00A /* Action.h */; };
-		C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D0157FA00C00B0E00A /* AssertAction.cpp */; };
-		C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D1157FA00C00B0E00A /* AssertAction.h */; };
-		C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */; };
-		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
-		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
-		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
-		C7EB91DA159DA8E7000F0756 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D7159DA8E7000F0756 /* Config.h */; };
-		C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */; };
-		C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */; };
-		C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC47158B4D0F00BF42E0 /* Component.cpp */; };
-		C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC48158B4D0F00BF42E0 /* Component.h */; };
-		C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */; };
-		C7EFBC5C158B4D1000BF42E0 /* Components.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4A158B4D0F00BF42E0 /* Components.h */; };
-		C7EFBC5D158B4D1000BF42E0 /* ComponentTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC4B158B4D0F00BF42E0 /* ComponentTypes.cpp */; };
-		C7EFBC5E158B4D1000BF42E0 /* ComponentTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4C158B4D0F00BF42E0 /* ComponentTypes.h */; };
-		C7EFBC5F158B4D1000BF42E0 /* DumpVariable.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4D158B4D0F00BF42E0 /* DumpVariable.h */; };
-		C7EFBC60158B4D1000BF42E0 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC4E158B4D0F00BF42E0 /* Entity.cpp */; };
-		C7EFBC61158B4D1000BF42E0 /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4F158B4D1000BF42E0 /* Entity.h */; };
-		C7EFBC62158B4D1000BF42E0 /* EntityFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC50158B4D1000BF42E0 /* EntityFamily.cpp */; };
-		C7EFBC63158B4D1000BF42E0 /* EntityFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC51158B4D1000BF42E0 /* EntityFamily.h */; };
-		C7EFBC64158B4D1000BF42E0 /* EntityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC52158B4D1000BF42E0 /* EntityManager.cpp */; };
-		C7EFBC65158B4D1000BF42E0 /* EntityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC53158B4D1000BF42E0 /* EntityManager.h */; };
-		C7EFBC66158B4D1000BF42E0 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC54158B4D1000BF42E0 /* Pool.h */; };
-		C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC55158B4D1000BF42E0 /* PoolSystem.cpp */; };
-		C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC56158B4D1000BF42E0 /* PoolSystem.h */; };
-		C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC57158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp */; };
-		C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */; };
-		CCFF223615EE15B100363446 /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFF223415EE15B100363446 /* SwitchNode.cpp */; };
-		CCFF223715EE15B100363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF223515EE15B100363446 /* SwitchNode.h */; };
-		E85D7A6B1609E37F00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */; };
-		E85D7A6C1609E37F00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */; };
-		E8F98C70161B163600B50BDA /* TexturePVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C6F161B163600B50BDA /* TexturePVR.cpp */; };
-		E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C82161B301E00B50BDA /* LibPVRHelper.cpp */; };
-		E8F98C85161B301E00B50BDA /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C83161B301E00B50BDA /* LibPVRHelper.h */; };
-		E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F98C86161B326200B50BDA /* PVRDefines.h */; };
-=======
 		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
@@ -679,7 +625,6 @@
 		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */; };
 		E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */; };
->>>>>>> to_master
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
@@ -712,57 +657,8 @@
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
-<<<<<<< HEAD
-		C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
-		C22651F415E3D7A900E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
-		C2F0A4F9161DEA8C003A2006 /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
-		C2F0A4FA161DEA8C003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
-		C2F0A4FB161DEA8C003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
-		C74366651625916600AEDD0F /* liblua_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_ios.a; path = ../../Libs/libs/liblua_ios.a; sourceTree = "<group>"; };
-		C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
-		C756A272162599A900FBBA91 /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
-		C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
-		C756A2771625B5F100FBBA91 /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
-		C75A4E22162DC87000CC0156 /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
-		C75A4E24162DCAD000CC0156 /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
-		C75A4E25162DCAD000CC0156 /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
-		C75A4E28162DCC0200CC0156 /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
-		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
-		C7E895CE157FA00C00B0E00A /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
-		C7E895CF157FA00C00B0E00A /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
-		C7E895D0157FA00C00B0E00A /* AssertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssertAction.cpp; sourceTree = "<group>"; };
-		C7E895D1157FA00C00B0E00A /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
-		C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
-		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
-		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
-		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
-		C7EB91D7159DA8E7000F0756 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
-		C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
-		C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
-		C7EFBC47158B4D0F00BF42E0 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
-		C7EFBC48158B4D0F00BF42E0 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
-		C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
-		C7EFBC4A158B4D0F00BF42E0 /* Components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Components.h; path = Entity/Components.h; sourceTree = "<group>"; };
-		C7EFBC4B158B4D0F00BF42E0 /* ComponentTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComponentTypes.cpp; path = Entity/ComponentTypes.cpp; sourceTree = "<group>"; };
-		C7EFBC4C158B4D0F00BF42E0 /* ComponentTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentTypes.h; path = Entity/ComponentTypes.h; sourceTree = "<group>"; };
-		C7EFBC4D158B4D0F00BF42E0 /* DumpVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DumpVariable.h; path = Entity/DumpVariable.h; sourceTree = "<group>"; };
-		C7EFBC4E158B4D0F00BF42E0 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = Entity/Entity.cpp; sourceTree = "<group>"; };
-		C7EFBC4F158B4D1000BF42E0 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = Entity/Entity.h; sourceTree = "<group>"; };
-		C7EFBC50158B4D1000BF42E0 /* EntityFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityFamily.cpp; path = Entity/EntityFamily.cpp; sourceTree = "<group>"; };
-		C7EFBC51158B4D1000BF42E0 /* EntityFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityFamily.h; path = Entity/EntityFamily.h; sourceTree = "<group>"; };
-		C7EFBC52158B4D1000BF42E0 /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityManager.cpp; path = Entity/EntityManager.cpp; sourceTree = "<group>"; };
-		C7EFBC53158B4D1000BF42E0 /* EntityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityManager.h; path = Entity/EntityManager.h; sourceTree = "<group>"; };
-		C7EFBC54158B4D1000BF42E0 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = Entity/Pool.h; sourceTree = "<group>"; };
-		C7EFBC55158B4D1000BF42E0 /* PoolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PoolSystem.cpp; path = Entity/PoolSystem.cpp; sourceTree = "<group>"; };
-		C7EFBC56158B4D1000BF42E0 /* PoolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PoolSystem.h; path = Entity/PoolSystem.h; sourceTree = "<group>"; };
-		C7EFBC57158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityAABBoxComponent.cpp; path = Entity/VisibilityAABBoxComponent.cpp; sourceTree = "<group>"; };
-		C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxComponent.h; path = Entity/VisibilityAABBoxComponent.h; sourceTree = "<group>"; };
-		CCFF223415EE15B100363446 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
-		CCFF223515EE15B100363446 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
-=======
 		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
->>>>>>> to_master
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E80D2FB2164D51A100C13D70 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
@@ -1381,12 +1277,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< HEAD
-				C74366661625916600AEDD0F /* liblua_ios.a in Frameworks */,
-=======
 				E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
->>>>>>> to_master
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
 				0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */,
 				0224B7331598AC2800CDEF9E /* libtheora_ios.a in Frameworks */,
@@ -1414,12 +1306,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
-				C74366651625916600AEDD0F /* liblua_ios.a */,
-=======
 				E81F2B0416BFF65700C4545E /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
->>>>>>> to_master
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
 				0224B7481598B40100CDEF9E /* libogg_ios.a */,
 				0224B7491598B40100CDEF9E /* libogg_macos.a */,
@@ -1481,27 +1369,6 @@
 		E8B3C7B116B9326D002BD35F /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
-				C75A4E28162DCC0200CC0156 /* RectSwig.cpp */,
-				C75A4E24162DCAD000CC0156 /* UIControlSwig.cpp */,
-				C75A4E25162DCAD000CC0156 /* VectorSwig.cpp */,
-				C75A4E22162DC87000CC0156 /* AutotestingSystemSwig.cpp */,
-				C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */,
-				C756A2771625B5F100FBBA91 /* AutotestingSystemLua.h */,
-				C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */,
-				C756A272162599A900FBBA91 /* AutotestingSystemYaml.h */,
-				C7EB91D7159DA8E7000F0756 /* Config.h */,
-				C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */,
-				C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */,
-				C7E895CE157FA00C00B0E00A /* Action.cpp */,
-				C7E895CF157FA00C00B0E00A /* Action.h */,
-				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
-				C7E895D1157FA00C00B0E00A /* AssertAction.h */,
-				C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */,
-				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
-				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
-				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
-=======
 				E8B3C7B216B9326D002BD35F /* Action.cpp */,
 				E8B3C7B316B9326D002BD35F /* Action.h */,
 				E8B3C7B416B9326D002BD35F /* AssertAction.cpp */,
@@ -1513,7 +1380,6 @@
 				E8B3C7BA16B9326D002BD35F /* MongodbUpdateObject.h */,
 				E8B3C7BB16B9326D002BD35F /* TouchAction.cpp */,
 				E8B3C7BC16B9326D002BD35F /* TouchAction.h */,
->>>>>>> to_master
 			);
 			path = Autotesting;
 			sourceTree = "<group>";
@@ -2365,291 +2231,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */,
-<<<<<<< HEAD
-				FECFB5B212E5904500C71562 /* AnimatedObject.h in Headers */,
-				FECFB5B412E5904500C71562 /* Animation.h in Headers */,
-				FECFB5B612E5904500C71562 /* AnimationManager.h in Headers */,
-				FECFB5B812E5904500C71562 /* BezierSplineAnimation.h in Headers */,
-				FECFB5BA12E5904500C71562 /* Interpolation.h in Headers */,
-				FECFB5BC12E5904500C71562 /* KeyframeAnimation.h in Headers */,
-				FECFB5BE12E5904500C71562 /* LinearAnimation.h in Headers */,
-				FECFB5BF12E5904500C71562 /* NamedAnimationsList.h in Headers */,
-				FECFB5C112E5904500C71562 /* BaseMath.h in Headers */,
-				FECFB5C212E5904500C71562 /* BaseObject.h in Headers */,
-				FECFB5C412E5904500C71562 /* BaseObjectChecker.h in Headers */,
-				FECFB5C512E5904500C71562 /* BaseTypes.h in Headers */,
-				FECFB5C712E5904500C71562 /* DynamicObjectCache.h in Headers */,
-				FECFB5C912E5904500C71562 /* EventDispatcher.h in Headers */,
-				FECFB5CA12E5904500C71562 /* Exception.h in Headers */,
-				FECFB5CC12E5904500C71562 /* Message.h in Headers */,
-				FECFB5CD12E5904500C71562 /* ObjectCreator.h in Headers */,
-				FECFB5CF12E5904500C71562 /* ObjectFactory.h in Headers */,
-				FECFB5D012E5904500C71562 /* RefPtr.h in Headers */,
-				FECFB5D112E5904500C71562 /* Singleton.h in Headers */,
-				FECFB5D212E5904500C71562 /* StaticSingleton.h in Headers */,
-				FECFB5D412E5904500C71562 /* CollisionObject2.h in Headers */,
-				FECFB5D612E5904500C71562 /* ApplicationCore.h in Headers */,
-				FECFB5D812E5904500C71562 /* Core.h in Headers */,
-				FECFB5DB12E5904500C71562 /* CoreMacOS_CarbonWindow.h in Headers */,
-				FECFB5DD12E5904500C71562 /* CoreMacOS_OpenGL.h in Headers */,
-				FECFB5DE12E5904500C71562 /* DisplayMode.h in Headers */,
-				FECFB5DF12E5904500C71562 /* DAVAConfig.h in Headers */,
-				FECFB5E112E5904500C71562 /* DAVAEngine.h in Headers */,
-				FECFB5E212E5904500C71562 /* DVAssert.h in Headers */,
-				FECFB5E312E5904500C71562 /* List.h in Headers */,
-				FECFB5E412E5904500C71562 /* ListAllocator.h in Headers */,
-				FECFB5E612E5904500C71562 /* MemoryManager.h in Headers */,
-				FECFB5E812E5904500C71562 /* DynamicMemoryFile.h in Headers */,
-				FECFB5EA12E5904500C71562 /* File.h in Headers */,
-				FECFB5EC12E5904500C71562 /* FileSystem.h in Headers */,
-				FECFB5EE12E5904500C71562 /* KeyedArchive.h in Headers */,
-				FECFB5F012E5904500C71562 /* KeyedArchiver.h in Headers */,
-				FECFB5F212E5904500C71562 /* KeyedUnarchiver.h in Headers */,
-				FECFB5F312E5904500C71562 /* LocalizationIPhone.h in Headers */,
-				FECFB5F612E5904500C71562 /* LocalizationSystem.h in Headers */,
-				FECFB5F812E5904500C71562 /* Logger.h in Headers */,
-				FECFB5FB12E5904500C71562 /* VariantType.h in Headers */,
-				FECFB5FC12E5904500C71562 /* XMLParser.h in Headers */,
-				FECFB5FF12E5904500C71562 /* YamlArchive.h in Headers */,
-				FECFB60112E5904500C71562 /* YamlParser.h in Headers */,
-				FECFB60312E5904500C71562 /* Accelerometer.h in Headers */,
-				FECFB60412E5904500C71562 /* AccelerometeriPhone.h in Headers */,
-				FECFB60712E5904500C71562 /* AABBox2.h in Headers */,
-				FECFB60912E5904500C71562 /* AABBox3.h in Headers */,
-				FECFB60B12E5904500C71562 /* BezierSpline.h in Headers */,
-				FECFB60F12E5904500C71562 /* Color.h in Headers */,
-				FECFB61012E5904500C71562 /* Math2D.h in Headers */,
-				FECFB61112E5904500C71562 /* Math2DTemplateClasses.h in Headers */,
-				FECFB61212E5904500C71562 /* MathConstants.h in Headers */,
-				FECFB61312E5904500C71562 /* MathHelpers.h in Headers */,
-				FECFB61412E5904500C71562 /* Matrix2.h in Headers */,
-				FECFB61512E5904500C71562 /* Matrix3.h in Headers */,
-				FECFB61612E5904500C71562 /* Matrix4.h in Headers */,
-				FECFB61712E5904500C71562 /* OOBBox.h in Headers */,
-				FECFB61812E5904500C71562 /* Plane.h in Headers */,
-				FECFB61A12E5904500C71562 /* Polygon2.h in Headers */,
-				FECFB61C12E5904500C71562 /* Polygon3.h in Headers */,
-				FECFB61D12E5904500C71562 /* Quaternion.h in Headers */,
-				FECFB61E12E5904500C71562 /* Ray.h in Headers */,
-				FECFB61F12E5904500C71562 /* Rect.h in Headers */,
-				FECFB62112E5904500C71562 /* Spline.h in Headers */,
-				FECFB62212E5904500C71562 /* Vector.h in Headers */,
-				FECFB62312E5904500C71562 /* BaseNetworkConnection.h in Headers */,
-				FECFB62512E5904500C71562 /* BTNetworkConnection.h in Headers */,
-				FECFB62812E5904500C71562 /* NetworkConnection.h in Headers */,
-				FECFB62912E5904500C71562 /* NetworkConnectionIPhone.h in Headers */,
-				FECFB62C12E5904500C71562 /* NetworkDelegate.h in Headers */,
-				FECFB62E12E5904500C71562 /* NetworkPacket.h in Headers */,
-				FECFB62F12E5904500C71562 /* TCPServer.h in Headers */,
-				FECFB63112E5904500C71562 /* WFNetworkConnection.h in Headers */,
-				FECFB63412E5904500C71562 /* Particle.h in Headers */,
-				FECFB63612E5904500C71562 /* ParticleEmitter.h in Headers */,
-				FECFB63812E5904500C71562 /* ParticleEmitterObject.h in Headers */,
-				FECFB63A12E5904500C71562 /* ParticleLayer.h in Headers */,
-				FECFB63C12E5904500C71562 /* ParticlePropertyLine.h in Headers */,
-				FECFB63E12E5904500C71562 /* ParticleSystem.h in Headers */,
-				FECFB64012E5904500C71562 /* Mutex.h in Headers */,
-				FECFB64212E5904500C71562 /* SystemTimer.h in Headers */,
-				FECFB64412E5904500C71562 /* Thread.h in Headers */,
-				FECFB64812E5904500C71562 /* Font.h in Headers */,
-				FECFB64A12E5904500C71562 /* FontManager.h in Headers */,
-				FECFB64C12E5904500C71562 /* FTFont.h in Headers */,
-				FECFB64E12E5904500C71562 /* GraphicsFont.h in Headers */,
-				FECFB64F12E5904500C71562 /* GridSprite.h in Headers */,
-				FECFB65112E5904500C71562 /* Sprite.h in Headers */,
-				FECFB65312E5904500C71562 /* TextBlock.h in Headers */,
-				FECFB65512E5904500C71562 /* AnimatedMesh.h in Headers */,
-				FECFB65712E5904500C71562 /* PolygonGroup.h in Headers */,
-				FECFB65912E5904500C71562 /* StaticMesh.h in Headers */,
-				FECFB65B12E5904500C71562 /* D3D9Helpers.h in Headers */,
-				FECFB65D12E5904500C71562 /* DynamicIndexBuffer.h in Headers */,
-				FECFB65F12E5904500C71562 /* DynamicVertexBuffer.h in Headers */,
-				FECFB66112E5904500C71562 /* Image.h in Headers */,
-				FECFB66212E5904500C71562 /* IndexBuffer.h in Headers */,
-				FECFB66412E5904500C71562 /* LibPngHelpers.h in Headers */,
-				FECFB66512E5904500C71562 /* Light.h in Headers */,
-				FECFB66612E5904500C71562 /* Material.h in Headers */,
-				FECFB66712E5904500C71562 /* OGLHelpers.h in Headers */,
-				FECFB66812E5904500C71562 /* RenderBase.h in Headers */,
-				FECFB66A12E5904500C71562 /* RenderEffect.h in Headers */,
-				FECFB66C12E5904500C71562 /* RenderGrayscaleEffect.h in Headers */,
-				FECFB66E12E5904500C71562 /* RenderHelper.h in Headers */,
-				FECFB67012E5904500C71562 /* RenderManager.h in Headers */,
-				FECFB67612E5904500C71562 /* RenderResource.h in Headers */,
-				FECFB67712E5904500C71562 /* RGBColor.h in Headers */,
-				FECFB67912E5904500C71562 /* StaticIndexBuffer.h in Headers */,
-				FECFB67B12E5904500C71562 /* StaticVertexBuffer.h in Headers */,
-				FECFB67D12E5904500C71562 /* Texture.h in Headers */,
-				FECFB67F12E5904500C71562 /* VertexBuffer.h in Headers */,
-				FECFB68112E5904500C71562 /* Box2DDebugDraw.h in Headers */,
-				FECFB68312E5904500C71562 /* Box2DGameObjectManager.h in Headers */,
-				FECFB68512E5904500C71562 /* GameObject.h in Headers */,
-				FECFB68712E5904500C71562 /* GameObjectAnimations.h in Headers */,
-				FECFB68912E5904500C71562 /* GameObjectManager.h in Headers */,
-				FECFB68B12E5904500C71562 /* BoneNode.h in Headers */,
-				FECFB68F12E5904500C71562 /* MeshInstanceNode.h in Headers */,
-				FECFB69112E5904500C71562 /* PathManip.h in Headers */,
-				FECFB69312E5904500C71562 /* RotatingCubeNode.h in Headers */,
-				FECFB69512E5904500C71562 /* Scene.h in Headers */,
-				FECFB69712E5904500C71562 /* SceneAnimationMixer.h in Headers */,
-				FECFB69912E5904500C71562 /* SceneFile.h in Headers */,
-				FECFB69B12E5904500C71562 /* SceneNode.h in Headers */,
-				FECFB6A012E5904500C71562 /* SceneNodeAnimation.h in Headers */,
-				FECFB6A212E5904500C71562 /* SceneNodeAnimationKey.h in Headers */,
-				FECFB6A412E5904500C71562 /* SceneNodeAnimationList.h in Headers */,
-				FECFB6A612E5904500C71562 /* SkeletonNode.h in Headers */,
-				FECFB6A712E5904500C71562 /* SpriteNode.h in Headers */,
-				FECFB6A812E5904500C71562 /* StateNode.h in Headers */,
-				FECFB6B812E5904500C71562 /* ScrollHelper.h in Headers */,
-				FECFB6BA12E5904500C71562 /* UIButton.h in Headers */,
-				FECFB6BC12E5904500C71562 /* UIControl.h in Headers */,
-				FECFB6BE12E5904500C71562 /* UIControlBackground.h in Headers */,
-				FECFB6C012E5904500C71562 /* UIControlSystem.h in Headers */,
-				FECFB6C412E5904500C71562 /* UIEvent.h in Headers */,
-				FECFB6C612E5904500C71562 /* UIFadeTransition.h in Headers */,
-				FECFB6C812E5904500C71562 /* UIHoleTransition.h in Headers */,
-				FECFB6CA12E5904500C71562 /* UIJoypad.h in Headers */,
-				FECFB6CC12E5904500C71562 /* UIList.h in Headers */,
-				FECFB6CE12E5904500C71562 /* UIListCell.h in Headers */,
-				FECFB6D012E5904500C71562 /* UILoadingTransition.h in Headers */,
-				FECFB6D212E5904500C71562 /* UIMoveInTransition.h in Headers */,
-				FECFB6D412E5904500C71562 /* UIPopup.h in Headers */,
-				FECFB6D612E5904500C71562 /* UIScreen.h in Headers */,
-				FECFB6D712E5904500C71562 /* UIScreenManager.h in Headers */,
-				FECFB6D812E5904500C71562 /* UIScreenManageriPhone.h in Headers */,
-				FECFB6DA12E5904500C71562 /* UIScreenManageriPhoneImpl.h in Headers */,
-				FECFB6DD12E5904500C71562 /* UIScreenManagerMacOS.h in Headers */,
-				FECFB6DF12E5904500C71562 /* UIScreenTransition.h in Headers */,
-				FECFB6E112E5904500C71562 /* UISlider.h in Headers */,
-				FECFB6E312E5904500C71562 /* UIStaticText.h in Headers */,
-				FECFB6E512E5904500C71562 /* UITextField.h in Headers */,
-				FECFB6E612E5904500C71562 /* UITextFieldiPhone.h in Headers */,
-				FECFB6E912E5904500C71562 /* UIYamlLoader.h in Headers */,
-				FECFB6EA12E5904500C71562 /* HTTPDownloader.h in Headers */,
-				FECFB6ED12E5904500C71562 /* StringFormat.h in Headers */,
-				FECFB6EF12E5904500C71562 /* UTF8Utils.h in Headers */,
-				FECFB6F112E5904500C71562 /* Utils.h in Headers */,
-				FECFB83E12E5938500C71562 /* EAGLView.h in Headers */,
-				FECFB84012E5938500C71562 /* EAGLViewController.h in Headers */,
-				FECFB84212E5938500C71562 /* ES1Renderer.h in Headers */,
-				FECFB84412E5938500C71562 /* ES2Renderer.h in Headers */,
-				FECFB84612E5938500C71562 /* ESRenderer.h in Headers */,
-				FECFB84712E5938500C71562 /* HelperAppDelegate.h in Headers */,
-				FECFBD5B12E7398700C71562 /* CollisionPolygons.h in Headers */,
-				FECFBD5F12E73AF000C71562 /* Collisions.h in Headers */,
-				FE9C216812E9A254005C397A /* Circle.h in Headers */,
-				FE9C216912E9A254005C397A /* Sphere.h in Headers */,
-				475D59571300236500A18EC7 /* Box2DGameObject.h in Headers */,
-				475D59591300236500A18EC7 /* Box2DHelper.h in Headers */,
-				475D595B1300236500A18EC7 /* Box2DTileCollider.h in Headers */,
-				FEFD19B513096A4C0050D7E6 /* DoxygenDocumenation.h in Headers */,
-				FEEB6EBB131BC67400958ACB /* Replay.h in Headers */,
-				FE578B4413278D730081BDE9 /* ALUtils.h in Headers */,
-				FE578B4613278D730081BDE9 /* Sound.h in Headers */,
-				FE578B4813278D730081BDE9 /* SoundBuffer.h in Headers */,
-				FE578B4A13278D730081BDE9 /* SoundChannel.h in Headers */,
-				FE578B4C13278D730081BDE9 /* SoundDataProvider.h in Headers */,
-				FE578B4E13278D730081BDE9 /* SoundGroup.h in Headers */,
-				FE578B5013278D730081BDE9 /* SoundInstance.h in Headers */,
-				FE578B5413278D730081BDE9 /* SoundSystem.h in Headers */,
-				FE578B5613278D730081BDE9 /* SoundWVProvider.h in Headers */,
-				FED7B17B1346F91C0032144E /* FileList.h in Headers */,
-				FED7B17F1346F92A0032144E /* MD5.h in Headers */,
-				FE0A4FF8134B15AB001EAA90 /* Cursor.h in Headers */,
-				FE4E01E613AAA9D00013464E /* Camera.h in Headers */,
-				FE4E01EA13AAA9EF0013464E /* UI3DView.h in Headers */,
-				FE4E01F213AAAB170013464E /* UIHierarchy.h in Headers */,
-				FE4E01F413AAAB170013464E /* UIHierarchyCell.h in Headers */,
-				FE4E01F613AAAB170013464E /* UIHierarchyNode.h in Headers */,
-				FED0474413B73D0A00A9A859 /* RenderStateBlock.h in Headers */,
-				FE5DB8A413B8D62400C00F98 /* Shader.h in Headers */,
-				FE044F00140EE86D002A6D27 /* ResourceArchive.h in Headers */,
-				FE044F09140EE88D002A6D27 /* ColorOnlyEffect.h in Headers */,
-				FE044F0B140EE88D002A6D27 /* MultiTextureEffect.h in Headers */,
-				FE044F0D140EE88D002A6D27 /* TextureMulColorEffect.h in Headers */,
-				FE044F11140EE8AC002A6D27 /* RenderDataObject.h in Headers */,
-				FE044F15140EE8DD002A6D27 /* RenderManagerGL20.h in Headers */,
-				FE044F18140EE8F1002A6D27 /* MusicIos.h in Headers */,
-				FE044F58140EEB7F002A6D27 /* Frustum.h in Headers */,
-				FE044F5A140EEB7F002A6D27 /* LandscapeNode.h in Headers */,
-				FE127708144444E80082901E /* UIScrollBar.h in Headers */,
-				FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */,
-				FEE98F00146948C900EEAEFC /* UberShader.h in Headers */,
-				FEE98F04146948EB00EEAEFC /* Data.h in Headers */,
-				EDA6D63414753FF0000898F8 /* TextGameObject.h in Headers */,
-				4780A9F014BF413A00BAA259 /* BillboardNode.h in Headers */,
-				4780A9F214BF413A00BAA259 /* CubeNode.h in Headers */,
-				4780A9F414BF413A00BAA259 /* DataNode.h in Headers */,
-				4780A9F614BF413A00BAA259 /* LightNode.h in Headers */,
-				4780A9F814BF413A00BAA259 /* ProxyNode.h in Headers */,
-				4780A9FC14BF413A00BAA259 /* SphereNode.h in Headers */,
-				4780AA0514BF423C00BAA259 /* InputSystem.h in Headers */,
-				4780AA0714BF423C00BAA259 /* KeyboardDevice.h in Headers */,
-				4780AFCE14C499E600BAA259 /* SceneFileV2.h in Headers */,
-				4780AFD014C499E600BAA259 /* SceneManager.h in Headers */,
-				5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */,
-				5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */,
-				5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */,
-				5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */,
-				5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */,
-				FE5E166B153DA0870047FAC5 /* Stats.h in Headers */,
-				FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */,
-				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
-				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
-				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
-				5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */,
-				5CFD7DFB1564DC58009692EE /* SharedFBO.h in Headers */,
-				5CFD7E001564DC67009692EE /* RectPacker.h in Headers */,
-				5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */,
-				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
-				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
-				C7E895D9157FA00C00B0E00A /* Action.h in Headers */,
-				C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */,
-				C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */,
-				C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */,
-				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
-				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
-				FE40BC901579567C0014BB7D /* NeonMath.h in Headers */,
-				FEF538B715835B820014679C /* Backtrace.h in Headers */,
-				C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */,
-				C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */,
-				C7EFBC5C158B4D1000BF42E0 /* Components.h in Headers */,
-				C7EFBC5E158B4D1000BF42E0 /* ComponentTypes.h in Headers */,
-				C7EFBC5F158B4D1000BF42E0 /* DumpVariable.h in Headers */,
-				C7EFBC61158B4D1000BF42E0 /* Entity.h in Headers */,
-				C7EFBC63158B4D1000BF42E0 /* EntityFamily.h in Headers */,
-				C7EFBC65158B4D1000BF42E0 /* EntityManager.h in Headers */,
-				C7EFBC66158B4D1000BF42E0 /* Pool.h in Headers */,
-				C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */,
-				C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */,
-				022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */,
-				5CBFD6DD159C6D4500852F1A /* LandscapeGeometryComponent.h in Headers */,
-				5CBFD6DE159C6D4500852F1A /* LandscapeGeometrySystem.h in Headers */,
-				5CBFD6E0159C6D4500852F1A /* MeshInstanceComponent.h in Headers */,
-				5CBFD6E2159C6D4500852F1A /* MeshInstanceDrawSystem.h in Headers */,
-				5CBFD6E4159C6D4500852F1A /* TransformComponent.h in Headers */,
-				5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */,
-				C7EB91DA159DA8E7000F0756 /* Config.h in Headers */,
-				C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */,
-				5CD7156415AC3B6300D08E8E /* ParticleEmitter3D.h in Headers */,
-				5CD7156615AC3B6300D08E8E /* ParticleLayer3D.h in Headers */,
-				5CD7156B15AC3B7D00D08E8E /* ParticleEmitterNode.h in Headers */,
-				5C5EAC1115A582F200279915 /* Bitstream.h in Headers */,
-				5C44738C15B5A1C500028948 /* FixedSizePoolAllocator.h in Headers */,
-				5C44738E15B5A1C500028948 /* HashMap.h in Headers */,
-				5C44738F15B5A1C500028948 /* Mallocator.h in Headers */,
-				5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */,
-				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
-				C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */,
-				CCFF223715EE15B100363446 /* SwitchNode.h in Headers */,
-				E85D7A6C1609E37F00F3EBBE /* ParticleLayerLong.h in Headers */,
-				C2F0A4FD161DEA8C003A2006 /* Observable.h in Headers */,
-				C2F0A4FE161DEA8C003A2006 /* Observer.h in Headers */,
-				E8F98C85161B301E00B50BDA /* LibPVRHelper.h in Headers */,
-				E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */,
-				C756A274162599A900FBBA91 /* AutotestingSystemYaml.h in Headers */,
-				C756A2791625B5F100FBBA91 /* AutotestingSystemLua.h in Headers */,
-=======
 				E8B3CA7F16B9326E002BD35F /* AnimatedObject.h in Headers */,
 				E8B3CA8116B9326E002BD35F /* Animation.h in Headers */,
 				E8B3CA8316B9326E002BD35F /* AnimationManager.h in Headers */,
@@ -2978,7 +2559,6 @@
 				E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
->>>>>>> to_master
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3052,261 +2632,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< HEAD
-				FECFB5B112E5904500C71562 /* AnimatedObject.cpp in Sources */,
-				FECFB5B312E5904500C71562 /* Animation.cpp in Sources */,
-				FECFB5B512E5904500C71562 /* AnimationManager.cpp in Sources */,
-				FECFB5B712E5904500C71562 /* BezierSplineAnimation.cpp in Sources */,
-				FECFB5B912E5904500C71562 /* Interpolation.cpp in Sources */,
-				FECFB5BB12E5904500C71562 /* KeyframeAnimation.cpp in Sources */,
-				FECFB5BD12E5904500C71562 /* LinearAnimation.cpp in Sources */,
-				FECFB5C012E5904500C71562 /* BaseMath.cpp in Sources */,
-				FECFB5C312E5904500C71562 /* BaseObjectChecker.cpp in Sources */,
-				FECFB5C612E5904500C71562 /* DynamicObjectCache.cpp in Sources */,
-				FECFB5C812E5904500C71562 /* EventDispatcher.cpp in Sources */,
-				FECFB5CB12E5904500C71562 /* Message.cpp in Sources */,
-				FECFB5CE12E5904500C71562 /* ObjectFactory.cpp in Sources */,
-				FECFB5D312E5904500C71562 /* CollisionObject2.cpp in Sources */,
-				FECFB5D512E5904500C71562 /* ApplicationCore.cpp in Sources */,
-				FECFB5D712E5904500C71562 /* Core.cpp in Sources */,
-				FECFB5D912E5904500C71562 /* CoreMacOS.cpp in Sources */,
-				FECFB5DA12E5904500C71562 /* CoreMacOS_CarbonWindow.cpp in Sources */,
-				FECFB5DC12E5904500C71562 /* CoreMacOS_OpenGL.cpp in Sources */,
-				FECFB5E012E5904500C71562 /* DAVAEngine.cpp in Sources */,
-				FECFB5E512E5904500C71562 /* MemoryManager.cpp in Sources */,
-				FECFB5E712E5904500C71562 /* DynamicMemoryFile.cpp in Sources */,
-				FECFB5E912E5904500C71562 /* File.cpp in Sources */,
-				FECFB5EB12E5904500C71562 /* FileSystem.cpp in Sources */,
-				FECFB5ED12E5904500C71562 /* KeyedArchive.cpp in Sources */,
-				FECFB5EF12E5904500C71562 /* KeyedArchiver.cpp in Sources */,
-				FECFB5F112E5904500C71562 /* KeyedUnarchiver.cpp in Sources */,
-				FECFB5F412E5904500C71562 /* LocalizationIPhone.mm in Sources */,
-				FECFB5F512E5904500C71562 /* LocalizationSystem.cpp in Sources */,
-				FECFB5F712E5904500C71562 /* Logger.cpp in Sources */,
-				FECFB5F912E5904500C71562 /* LoggerMacOS.mm in Sources */,
-				FECFB5FA12E5904500C71562 /* VariantType.cpp in Sources */,
-				FECFB5FD12E5904500C71562 /* XMLParser.mm in Sources */,
-				FECFB5FE12E5904500C71562 /* YamlArchive.cpp in Sources */,
-				FECFB60012E5904500C71562 /* YamlParser.cpp in Sources */,
-				FECFB60212E5904500C71562 /* Accelerometer.cpp in Sources */,
-				FECFB60512E5904500C71562 /* AccelerometeriPhone.mm in Sources */,
-				FECFB60612E5904500C71562 /* AABBox2.cpp in Sources */,
-				FECFB60812E5904500C71562 /* AABBox3.cpp in Sources */,
-				FECFB60A12E5904500C71562 /* BezierSpline.cpp in Sources */,
-				FECFB61912E5904500C71562 /* Polygon2.cpp in Sources */,
-				FECFB61B12E5904500C71562 /* Polygon3.cpp in Sources */,
-				FECFB62012E5904500C71562 /* Spline.cpp in Sources */,
-				FECFB62412E5904500C71562 /* BaseNetworkConnection.mm in Sources */,
-				FECFB62612E5904500C71562 /* BTNetworkConnection.mm in Sources */,
-				FECFB62712E5904500C71562 /* NetworkConnection.cpp in Sources */,
-				FECFB62A12E5904500C71562 /* NetworkConnectionIPhone.mm in Sources */,
-				FECFB62B12E5904500C71562 /* NetworkDelegate.cpp in Sources */,
-				FECFB62D12E5904500C71562 /* NetworkPacket.cpp in Sources */,
-				FECFB63012E5904500C71562 /* TCPServer.mm in Sources */,
-				FECFB63212E5904500C71562 /* WFNetworkConnection.mm in Sources */,
-				FECFB63312E5904500C71562 /* Particle.cpp in Sources */,
-				FECFB63512E5904500C71562 /* ParticleEmitter.cpp in Sources */,
-				FECFB63712E5904500C71562 /* ParticleEmitterObject.cpp in Sources */,
-				FECFB63912E5904500C71562 /* ParticleLayer.cpp in Sources */,
-				FECFB63B12E5904500C71562 /* ParticlePropertyLine.cpp in Sources */,
-				FECFB63D12E5904500C71562 /* ParticleSystem.cpp in Sources */,
-				FECFB63F12E5904500C71562 /* Mutex.cpp in Sources */,
-				FECFB64112E5904500C71562 /* SystemTimer.cpp in Sources */,
-				FECFB64312E5904500C71562 /* Thread.cpp in Sources */,
-				FECFB64512E5904500C71562 /* ThreadMacOS.mm in Sources */,
-				FECFB64612E5904500C71562 /* ThreadWin32.cpp in Sources */,
-				FECFB64712E5904500C71562 /* Font.cpp in Sources */,
-				FECFB64912E5904500C71562 /* FontManager.cpp in Sources */,
-				FECFB64B12E5904500C71562 /* FTFont.cpp in Sources */,
-				FECFB64D12E5904500C71562 /* GraphicsFont.cpp in Sources */,
-				FECFB65012E5904500C71562 /* Sprite.cpp in Sources */,
-				FECFB65212E5904500C71562 /* TextBlock.cpp in Sources */,
-				FECFB65412E5904500C71562 /* AnimatedMesh.cpp in Sources */,
-				FECFB65612E5904500C71562 /* PolygonGroup.cpp in Sources */,
-				FECFB65812E5904500C71562 /* StaticMesh.cpp in Sources */,
-				FECFB65A12E5904500C71562 /* D3D9Helpers.cpp in Sources */,
-				FECFB65C12E5904500C71562 /* DynamicIndexBuffer.cpp in Sources */,
-				FECFB65E12E5904500C71562 /* DynamicVertexBuffer.cpp in Sources */,
-				FECFB66012E5904500C71562 /* Image.cpp in Sources */,
-				FECFB66312E5904500C71562 /* LibPngHelpers.cpp in Sources */,
-				FECFB66912E5904500C71562 /* RenderEffect.cpp in Sources */,
-				FECFB66B12E5904500C71562 /* RenderGrayscaleEffect.cpp in Sources */,
-				FECFB66D12E5904500C71562 /* RenderHelper.cpp in Sources */,
-				FECFB66F12E5904500C71562 /* RenderManager.cpp in Sources */,
-				FECFB67112E5904500C71562 /* RenderManagerDX.cpp in Sources */,
-				FECFB67312E5904500C71562 /* RenderManagerGL.cpp in Sources */,
-				FECFB67512E5904500C71562 /* RenderResource.cpp in Sources */,
-				FECFB67812E5904500C71562 /* StaticIndexBuffer.cpp in Sources */,
-				FECFB67A12E5904500C71562 /* StaticVertexBuffer.cpp in Sources */,
-				FECFB67C12E5904500C71562 /* Texture.cpp in Sources */,
-				FECFB67E12E5904500C71562 /* TextureDX9.cpp in Sources */,
-				FECFB68012E5904500C71562 /* Box2DDebugDraw.cpp in Sources */,
-				FECFB68212E5904500C71562 /* Box2DGameObjectManager.cpp in Sources */,
-				FECFB68412E5904500C71562 /* GameObject.cpp in Sources */,
-				FECFB68612E5904500C71562 /* GameObjectAnimations.cpp in Sources */,
-				FECFB68812E5904500C71562 /* GameObjectManager.cpp in Sources */,
-				FECFB68A12E5904500C71562 /* BoneNode.cpp in Sources */,
-				FECFB68E12E5904500C71562 /* MeshInstanceNode.cpp in Sources */,
-				FECFB69012E5904500C71562 /* PathManip.cpp in Sources */,
-				FECFB69212E5904500C71562 /* RotatingCubeNode.cpp in Sources */,
-				FECFB69412E5904500C71562 /* Scene.cpp in Sources */,
-				FECFB69612E5904500C71562 /* SceneAnimationMixer.cpp in Sources */,
-				FECFB69812E5904500C71562 /* SceneFile.cpp in Sources */,
-				FECFB69A12E5904500C71562 /* SceneNode.cpp in Sources */,
-				FECFB69F12E5904500C71562 /* SceneNodeAnimation.cpp in Sources */,
-				FECFB6A112E5904500C71562 /* SceneNodeAnimationKey.cpp in Sources */,
-				FECFB6A312E5904500C71562 /* SceneNodeAnimationList.cpp in Sources */,
-				FECFB6A512E5904500C71562 /* SkeletonNode.cpp in Sources */,
-				FECFB6B712E5904500C71562 /* ScrollHelper.cpp in Sources */,
-				FECFB6B912E5904500C71562 /* UIButton.cpp in Sources */,
-				FECFB6BB12E5904500C71562 /* UIControl.cpp in Sources */,
-				FECFB6BD12E5904500C71562 /* UIControlBackground.cpp in Sources */,
-				FECFB6BF12E5904500C71562 /* UIControlSystem.cpp in Sources */,
-				FECFB6C312E5904500C71562 /* UIEvent.cpp in Sources */,
-				FECFB6C512E5904500C71562 /* UIFadeTransition.cpp in Sources */,
-				FECFB6C712E5904500C71562 /* UIHoleTransition.cpp in Sources */,
-				FECFB6C912E5904500C71562 /* UIJoypad.cpp in Sources */,
-				FECFB6CB12E5904500C71562 /* UIList.cpp in Sources */,
-				FECFB6CD12E5904500C71562 /* UIListCell.cpp in Sources */,
-				FECFB6CF12E5904500C71562 /* UILoadingTransition.cpp in Sources */,
-				FECFB6D112E5904500C71562 /* UIMoveInTransition.cpp in Sources */,
-				FECFB6D312E5904500C71562 /* UIPopup.cpp in Sources */,
-				FECFB6D512E5904500C71562 /* UIScreen.cpp in Sources */,
-				FECFB6D912E5904500C71562 /* UIScreenManageriPhone.mm in Sources */,
-				FECFB6DB12E5904500C71562 /* UIScreenManageriPhoneImpl.mm in Sources */,
-				FECFB6DC12E5904500C71562 /* UIScreenManagerMacOS.cpp in Sources */,
-				FECFB6DE12E5904500C71562 /* UIScreenTransition.cpp in Sources */,
-				FECFB6E012E5904500C71562 /* UISlider.cpp in Sources */,
-				FECFB6E212E5904500C71562 /* UIStaticText.cpp in Sources */,
-				FECFB6E412E5904500C71562 /* UITextField.cpp in Sources */,
-				FECFB6E712E5904500C71562 /* UITextFieldiPhone.mm in Sources */,
-				FECFB6E812E5904500C71562 /* UIYamlLoader.cpp in Sources */,
-				FECFB6EB12E5904500C71562 /* HTTPDownloader.mm in Sources */,
-				FECFB6EC12E5904500C71562 /* StringFormat.cpp in Sources */,
-				FECFB6EE12E5904500C71562 /* UTF8Utils.cpp in Sources */,
-				FECFB6F012E5904500C71562 /* Utils.cpp in Sources */,
-				FECFB6F212E5904500C71562 /* UtilsMacOS.mm in Sources */,
-				FECFB83F12E5938500C71562 /* EAGLView.mm in Sources */,
-				FECFB84112E5938500C71562 /* EAGLViewController.mm in Sources */,
-				FECFB84312E5938500C71562 /* ES1Renderer.mm in Sources */,
-				FECFB84512E5938500C71562 /* ES2Renderer.mm in Sources */,
-				FECFB84812E5938500C71562 /* HelperAppDelegate.mm in Sources */,
-				FECFBD5A12E7398700C71562 /* CollisionPolygons.cpp in Sources */,
-				FECFBD5E12E73AF000C71562 /* Collisions.cpp in Sources */,
-				FEB6037712E8ED7200C749A1 /* Math2D.cpp in Sources */,
-				475D59561300236500A18EC7 /* Box2DGameObject.cpp in Sources */,
-				475D59581300236500A18EC7 /* Box2DHelper.cpp in Sources */,
-				475D595A1300236500A18EC7 /* Box2DTileCollider.cpp in Sources */,
-				FEEB6EBA131BC67400958ACB /* Replay.cpp in Sources */,
-				FE578B4513278D730081BDE9 /* Sound.cpp in Sources */,
-				FE578B4713278D730081BDE9 /* SoundBuffer.cpp in Sources */,
-				FE578B4913278D730081BDE9 /* SoundChannel.cpp in Sources */,
-				FE578B4B13278D730081BDE9 /* SoundDataProvider.cpp in Sources */,
-				FE578B4D13278D730081BDE9 /* SoundGroup.cpp in Sources */,
-				FE578B4F13278D730081BDE9 /* SoundInstance.cpp in Sources */,
-				FE578B5313278D730081BDE9 /* SoundSystem.cpp in Sources */,
-				FE578B5513278D730081BDE9 /* SoundWVProvider.cpp in Sources */,
-				FED7B17A1346F91C0032144E /* FileList.cpp in Sources */,
-				FED7B17E1346F92A0032144E /* MD5.cpp in Sources */,
-				FE0A4FF9134B15AB001EAA90 /* CursorMacOS.mm in Sources */,
-				FE0A4FFA134B15AB001EAA90 /* CursorWin32.cpp in Sources */,
-				FE4E01E513AAA9D00013464E /* Camera.cpp in Sources */,
-				FE4E01E913AAA9EF0013464E /* UI3DView.cpp in Sources */,
-				FE4E01F113AAAB170013464E /* UIHierarchy.cpp in Sources */,
-				FE4E01F313AAAB170013464E /* UIHierarchyCell.cpp in Sources */,
-				FE4E01F513AAAB170013464E /* UIHierarchyNode.cpp in Sources */,
-				FED0474313B73D0A00A9A859 /* RenderStateBlock.cpp in Sources */,
-				FED0478213B7AA6800A9A859 /* Matrix4.cpp in Sources */,
-				FE5DB8A313B8D62400C00F98 /* Shader.cpp in Sources */,
-				FE5DB8A513B8D62400C00F98 /* ShaderDX.cpp in Sources */,
-				FE5DB8A613B8D62400C00F98 /* ShaderGL.cpp in Sources */,
-				FE203F3F13BCCD3400350E9A /* RenderManagerFactory.cpp in Sources */,
-				FE044EFF140EE86D002A6D27 /* ResourceArchive.cpp in Sources */,
-				FE044F08140EE88D002A6D27 /* ColorOnlyEffect.cpp in Sources */,
-				FE044F0A140EE88D002A6D27 /* MultiTextureEffect.cpp in Sources */,
-				FE044F0C140EE88D002A6D27 /* TextureMulColorEffect.cpp in Sources */,
-				FE044F10140EE8AC002A6D27 /* RenderDataObject.cpp in Sources */,
-				FE044F14140EE8DD002A6D27 /* RenderManagerGL20.cpp in Sources */,
-				FE044F19140EE8F1002A6D27 /* MusicIos.mm in Sources */,
-				FE044F57140EEB7F002A6D27 /* Frustum.cpp in Sources */,
-				FE044F59140EEB7F002A6D27 /* LandscapeNode.cpp in Sources */,
-				47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */,
-				FE127707144444E80082901E /* UIScrollBar.cpp in Sources */,
-				FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */,
-				FEE98EFB146948C000EEAEFC /* Material.cpp in Sources */,
-				FEE98EFF146948C900EEAEFC /* UberShader.cpp in Sources */,
-				FEE98F03146948EB00EEAEFC /* Data.cpp in Sources */,
-				EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */,
-				C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */,
-				4780A9EF14BF413A00BAA259 /* BillboardNode.cpp in Sources */,
-				4780A9F114BF413A00BAA259 /* CubeNode.cpp in Sources */,
-				4780A9F314BF413A00BAA259 /* DataNode.cpp in Sources */,
-				4780A9F514BF413A00BAA259 /* LightNode.cpp in Sources */,
-				4780A9F714BF413A00BAA259 /* ProxyNode.cpp in Sources */,
-				4780A9FB14BF413A00BAA259 /* SphereNode.cpp in Sources */,
-				4780AA0414BF423C00BAA259 /* InputSystem.cpp in Sources */,
-				4780AA0614BF423C00BAA259 /* KeyboardDevice.cpp in Sources */,
-				4780AFCD14C499E600BAA259 /* SceneFileV2.cpp in Sources */,
-				4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */,
-				5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */,
-				5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */,
-				5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */,
-				5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */,
-				5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */,
-				FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */,
-				FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */,
-				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
-				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
-				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
-				5CFD7DF91564DC58009692EE /* RenderBase.cpp in Sources */,
-				5CFD7DFA1564DC58009692EE /* SharedFBO.cpp in Sources */,
-				5CFD7DFF1564DC67009692EE /* RectPacker.cpp in Sources */,
-				5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */,
-				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
-				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
-				C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */,
-				C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */,
-				C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */,
-				C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */,
-				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
-				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
-				FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */,
-				FEF538B615835B820014679C /* Backtrace.cpp in Sources */,
-				C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */,
-				C7EFBC5D158B4D1000BF42E0 /* ComponentTypes.cpp in Sources */,
-				C7EFBC60158B4D1000BF42E0 /* Entity.cpp in Sources */,
-				C7EFBC62158B4D1000BF42E0 /* EntityFamily.cpp in Sources */,
-				C7EFBC64158B4D1000BF42E0 /* EntityManager.cpp in Sources */,
-				C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */,
-				C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */,
-				022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */,
-				5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */,
-				5CBFD6DF159C6D4500852F1A /* MeshInstanceComponent.cpp in Sources */,
-				5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
-				5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */,
-				C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */,
-				5CD7156315AC3B6300D08E8E /* ParticleEmitter3D.cpp in Sources */,
-				5CD7156515AC3B6300D08E8E /* ParticleLayer3D.cpp in Sources */,
-				5CD7156A15AC3B7D00D08E8E /* ParticleEmitterNode.cpp in Sources */,
-				5C5EAC1015A582F200279915 /* Bitstream.cpp in Sources */,
-				5C5EAC1315A582F200279915 /* XMLParser.cpp in Sources */,
-				5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */,
-				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
-				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
-				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
-				C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */,
-				CCFF223615EE15B100363446 /* SwitchNode.cpp in Sources */,
-				E85D7A6B1609E37F00F3EBBE /* ParticleLayerLong.cpp in Sources */,
-				C2F0A4FC161DEA8C003A2006 /* Observable.cpp in Sources */,
-				E8F98C70161B163600B50BDA /* TexturePVR.cpp in Sources */,
-				E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */,
-				C756A273162599A900FBBA91 /* AutotestingSystemYaml.cpp in Sources */,
-				C756A2781625B5F100FBBA91 /* AutotestingSystemLua.cpp in Sources */,
-				C75A4E23162DC87000CC0156 /* AutotestingSystemSwig.cpp in Sources */,
-				C75A4E26162DCAD000CC0156 /* UIControlSwig.cpp in Sources */,
-				C75A4E27162DCAD000CC0156 /* VectorSwig.cpp in Sources */,
-				C75A4E29162DCC0200CC0156 /* RectSwig.cpp in Sources */,
-=======
 				E8B3CA7E16B9326E002BD35F /* AnimatedObject.cpp in Sources */,
 				E8B3CA8016B9326E002BD35F /* Animation.cpp in Sources */,
 				E8B3CA8216B9326E002BD35F /* AnimationManager.cpp in Sources */,
@@ -3586,7 +2911,6 @@
 				E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
->>>>>>> to_master
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
