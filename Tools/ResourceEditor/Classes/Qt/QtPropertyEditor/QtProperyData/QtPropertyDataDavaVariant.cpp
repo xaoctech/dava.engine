@@ -116,14 +116,7 @@ QVariant QtPropertyDataDavaVariant::GetValueInternal()
         v = FromColor(curVariantValue.AsColor());
         break;
     case DAVA::VariantType::TYPE_FASTNAME:
-        {
-            const char *str = curVariantValue.AsFastName().c_str();
-            if(str)
-            {
-                v = str;
-            }
-        }
-//        v = curVariantValue.AsFastName().c_str();
+        v = QString(curVariantValue.AsFastName().c_str());
         break;
 	case DAVA::VariantType::TYPE_AABBOX3:
 		v = FromAABBox3(curVariantValue.AsAABBox3());
@@ -187,10 +180,7 @@ void QtPropertyDataDavaVariant::SetValueInternal(const QVariant &value)
         ToColor(value);
         break;
     case DAVA::VariantType::TYPE_FASTNAME:
-        {
-            DAVA::String str = value.toString().toStdString();
-            curVariantValue.SetFastName(DAVA::FastName(str.c_str()));
-        }
+        curVariantValue.SetFastName(DAVA::FastName(value.toString().toStdString().c_str()));
         break;
 	case DAVA::VariantType::TYPE_AABBOX3:
 		ToAABBox3(value);
