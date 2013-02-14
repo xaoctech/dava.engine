@@ -939,8 +939,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
 
 		newNode->AddComponent(new RenderComponent(spriteObject));
-		newNode->AddComponent(new TransformComponent());
-
 
 		SceneNode * parent = spr->GetParent();
 		DVASSERT(parent);
