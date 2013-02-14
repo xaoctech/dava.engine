@@ -178,9 +178,8 @@ void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
 void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
 {
 	bool needSaveThisLevelNode = true;
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>
-		(parentNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-	if (!emitterComponent || !emitterComponent->GetParticleEmitter())
+	ParticleEmitter * emitter = GetEmitter(parentNode);
+	if (!emitter)
 	{
 		needSaveThisLevelNode = false;
 	}
@@ -188,7 +187,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
 	if (needSaveThisLevelNode)
 	{
 		// Do we have file name? Ask for it, if not.
-		String yamlPath = emitterComponent->GetYamlPath();
+		String yamlPath = emitter->GetConfigPath();
 		if (yamlPath.empty())
 		{
 			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
@@ -202,7 +201,7 @@ void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
 
 		if (!yamlPath.empty())
 		{
-			emitterComponent->SaveToYaml(yamlPath);
+			emitter->SaveToYaml(yamlPath);
 		}
 	}
 

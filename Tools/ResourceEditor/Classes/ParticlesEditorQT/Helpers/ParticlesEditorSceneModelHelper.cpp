@@ -13,7 +13,6 @@
 #include "Commands/ParticleEditorCommands.h"
 
 #include "Entity/Component.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
@@ -104,8 +103,8 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
     // move the raw Emitter node to it.
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(rawNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!emitterComponent)
+	ParticleEmitter * emitter = GetEmitter(rawNode);
+    if (!emitter)
     {
         return rawNode;
     }
@@ -243,8 +242,8 @@ void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(Effect
         for (int32 i = 0; i < emittersCountInEffect; i ++)
         {
             // Create the new Emitter and add it to the tree.
-			ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(effectRootNode->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-			if (!emitterComponent)
+			ParticleEmitter * emitter =  GetEmitter(effectRootNode->GetChild(i));
+			if (!emitter)
 			{
 			    continue;
 			}
@@ -264,13 +263,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         return;
     }
 
-    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
-    if (!emitterComponent)
-    {
-        return;
-    }
-    
-    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+    ParticleEmitter* emitter = node->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -298,13 +291,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         return;
     }
     
-    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
-    if (!emitterComponent)
-    {
-        return;
-    }
-    
-    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+    ParticleEmitter* emitter = node->GetParticleEmitter();
     if (!emitter)
     {
         return;

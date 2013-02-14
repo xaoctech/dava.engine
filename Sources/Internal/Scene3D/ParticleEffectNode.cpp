@@ -10,7 +10,6 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 using namespace DAVA;
 REGISTER_CLASS(ParticleEffectNode);
@@ -44,92 +43,92 @@ void ParticleEffectNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeN
 
 bool ParticleEffectNode::PrepareNewParticleEmitterNode(SceneNode* node)
 {
-    // Only Particle Emitter nodes are allowed.
-    ParticleEmitterComponent * particleEmitterComponent = static_cast<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!particleEmitterComponent)
-    {
-        Logger::Warning("ParticleEffectNode::PrepareNewParticleEmitterNode() - attempt to add child node with wrong type!");
-        return false;
-    }
-    
-    ParticleEmitter* emitter = particleEmitterComponent->GetParticleEmitter();
-    if (!emitter)
-    {
-        Logger::Error("ParticleEffectNode::PrepareNewParticleEmitterNode() - no Emitter exists!");
-        return false;
-    }
+    //// Only Particle Emitter nodes are allowed.
+    //ParticleEmitterComponent * particleEmitterComponent = static_cast<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+    //if (!particleEmitterComponent)
+    //{
+    //    Logger::Warning("ParticleEffectNode::PrepareNewParticleEmitterNode() - attempt to add child node with wrong type!");
+    //    return false;
+    //}
+    //
+    //ParticleEmitter* emitter = particleEmitterComponent->GetParticleEmitter();
+    //if (!emitter)
+    //{
+    //    Logger::Error("ParticleEffectNode::PrepareNewParticleEmitterNode() - no Emitter exists!");
+    //    return false;
+    //}
 
-    // Default Node State is Stopped.
-    //emitter->Stop();
-    
-    // The effect duration is the same as longest lifetime of the child nodes.
-    float32 newEmitterLifeTime = emitter->GetLifeTime();
-    if (newEmitterLifeTime > effectDuration)
-    {
-        this->effectDuration = newEmitterLifeTime;
-        UpdateDurationForChildNodes(newEmitterLifeTime);
-    }
-    else
-    {
-        emitter->SetLifeTime(effectDuration);
-    }
+    //// Default Node State is Stopped.
+    ////emitter->Stop();
+    //
+    //// The effect duration is the same as longest lifetime of the child nodes.
+    //float32 newEmitterLifeTime = emitter->GetLifeTime();
+    //if (newEmitterLifeTime > effectDuration)
+    //{
+    //    this->effectDuration = newEmitterLifeTime;
+    //    UpdateDurationForChildNodes(newEmitterLifeTime);
+    //}
+    //else
+    //{
+    //    emitter->SetLifeTime(effectDuration);
+    //}
 
     return true;
 }
 
 void ParticleEffectNode::UpdateDurationForChildNodes(float32 newEmitterLifeTime)
 {
-    int32 childrenCount = GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; i ++)
-    {
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-        if (emitterComponent)
-        {
-            emitterComponent->GetParticleEmitter()->SetLifeTime(newEmitterLifeTime);
-        }
-    }
+  //  int32 childrenCount = GetChildrenCount();
+  //  for (int32 i = 0; i < childrenCount; i ++)
+  //  {
+		//ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+  //      if (emitterComponent)
+  //      {
+  //          emitterComponent->GetParticleEmitter()->SetLifeTime(newEmitterLifeTime);
+  //      }
+  //  }
 }
 
 void ParticleEffectNode::Start()
 {
-    int32 childrenCount = GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; i ++)
-    {
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
-		{
-			component->GetParticleEmitter()->Play();
-		}
-    }
+  //  int32 childrenCount = GetChildrenCount();
+  //  for (int32 i = 0; i < childrenCount; i ++)
+  //  {
+		//ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		//if(component)
+		//{
+		//	component->GetParticleEmitter()->Play();
+		//}
+  //  }
 
-    this->emittersCurrentlyStopped = 0;
+  //  this->emittersCurrentlyStopped = 0;
 }
 
 void ParticleEffectNode::Stop()
 {
-	int32 childrenCount = GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
-		{
-			component->GetParticleEmitter()->Stop();
-		}
-		emittersCurrentlyStopped++;
-	}
+	//int32 childrenCount = GetChildrenCount();
+	//for (int32 i = 0; i < childrenCount; i ++)
+	//{
+	//	ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	//	if(component)
+	//	{
+	//		component->GetParticleEmitter()->Stop();
+	//	}
+	//	emittersCurrentlyStopped++;
+	//}
 }
 
 void ParticleEffectNode::Restart()
 {
-	int32 childrenCount = GetChildrenCount();
-	for (int32 i = 0; i < childrenCount; i ++)
-	{
-		ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(component)
-		{
-			component->GetParticleEmitter()->Restart(true);
-		}
-	}
+	//int32 childrenCount = GetChildrenCount();
+	//for (int32 i = 0; i < childrenCount; i ++)
+	//{
+	//	ParticleEmitterComponent * component = static_cast<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+	//	if(component)
+	//	{
+	//		component->GetParticleEmitter()->Restart(true);
+	//	}
+	//}
 }
 
 void ParticleEffectNode::StopAfterNRepeats(int32 numberOfRepeats)
@@ -144,24 +143,24 @@ void ParticleEffectNode::StopWhenEmpty(bool value)
 
 void ParticleEffectNode::Update(float32 timeElapsed)
 {
-    int32 childrenCount = GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; i ++)
-    {
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if(!emitterComponent)
-		{
-			continue;
-		}
-        ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
-        if (IsStopEmitter(emitter))
-        {
-            emitter->Stop();
-            this->emittersCurrentlyStopped ++;
+  //  int32 childrenCount = GetChildrenCount();
+  //  for (int32 i = 0; i < childrenCount; i ++)
+  //  {
+		//ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
+		//if(!emitterComponent)
+		//{
+		//	continue;
+		//}
+  //      ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+  //      if (IsStopEmitter(emitter))
+  //      {
+  //          emitter->Stop();
+  //          this->emittersCurrentlyStopped ++;
 
-            // Are all the emitters finished playback? Notify user if yes.
-            CheckPlaybackComplete();
-        }
-    }
+  //          // Are all the emitters finished playback? Notify user if yes.
+  //          CheckPlaybackComplete();
+  //      }
+  //  }
 }
 
 void DAVA::ParticleEffectNode::Draw()

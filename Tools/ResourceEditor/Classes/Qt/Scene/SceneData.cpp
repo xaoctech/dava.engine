@@ -376,49 +376,56 @@ void SceneData::ResetLandsacpeSelection()
 
 void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture)
 {
-	//materials
-	Vector<Material*> materials;
-	scene->GetDataNodes(materials);
-	for(int32 m = 0; m < (int32)materials.size(); ++m)
-	{
-		for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-		{
-			if(materials[m]->GetTextureName((Material::eTextureLevel)t) == descriptorPathname)
-			{
-				materials[m]->SetTexture((Material::eTextureLevel)t, texture);
-			}
-		}
-	}
-
-	//landscapes
-	Vector<LandscapeNode *> landscapes;
-	scene->GetChildNodes(landscapes);
-	for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-	{
-		for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
-		{
-			if(landscapes[l]->GetTextureName((LandscapeNode::eTextureLevel)t) == descriptorPathname)
-			{
-				landscapes[l]->SetTexture((LandscapeNode::eTextureLevel)t, texture);
-			}
-		}
-	}
-
-	//lightmaps
-	Vector<MeshInstanceNode *> meshInstances;
-	scene->GetChildNodes(meshInstances);
-	for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-	{
-		for (int32 li = 0; li < meshInstances[m]->GetLightmapCount(); ++li)
-		{
-			MeshInstanceNode::LightmapData * ld = meshInstances[m]->GetLightmapDataForIndex(li);
-			if (ld)
-			{
-				SafeRelease(ld->lightmap);
-				ld->lightmap = SafeRetain(texture);
-			}
-		}
-	}
+    Vector<SceneNode *> nodes;
+    scene->GetChildNodes(nodes);
+    
+    for(int32 n = 0; n < (int32)nodes.size(); ++n)
+    {
+        RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
+        if(!rc) continue;
+        
+        RenderObject *ro = rc->GetRenderObject();
+        if(!ro) continue;
+        
+        uint32 count = ro->GetRenderBatchCount();
+        for(uint32 b = 0; b < count; ++b)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(b);
+            
+            Material *material = renderBatch->GetMaterial();
+            if(material)
+            {
+                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+                {
+                    if(material->GetTextureName((Material::eTextureLevel)t) == descriptorPathname)
+                    {
+                        material->SetTexture((Material::eTextureLevel)t, texture);
+                    }
+                }
+            }
+            
+            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+            if(instanceMaterial)
+            {
+                if(instanceMaterial->GetLightmapName() == descriptorPathname)
+                {
+                    instanceMaterial->SetLightmap(texture, instanceMaterial->GetLightmapName());
+                }
+            }
+        }
+        
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+        if(landscape)
+        {
+            for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; ++t)
+            {
+                if(landscape->GetTextureName((LandscapeNode::eTextureLevel)t) == descriptorPathname)
+                {
+                    landscape->SetTexture((LandscapeNode::eTextureLevel)t, texture);
+                }
+            }
+        }
+    }
 }
 
 void SceneData::EmitSceneChanged()
