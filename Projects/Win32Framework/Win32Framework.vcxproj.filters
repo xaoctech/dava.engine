@@ -1242,6 +1242,9 @@
     <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
       <Filter>Internal\DLC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Serializable.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>

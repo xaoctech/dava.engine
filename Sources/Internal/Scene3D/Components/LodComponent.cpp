@@ -188,5 +188,15 @@ void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
     }
 }
 
+void LodComponent::SetForceLodLayer(int32 layer)
+{
+    forceLodLayer = layer;
+}
+    
+int32 LodComponent::GetForceLodLayer()
+{
+    return forceLodLayer;
+}
+
     
 };

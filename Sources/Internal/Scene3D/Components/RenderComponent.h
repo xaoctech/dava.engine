@@ -15,12 +15,15 @@ public:
     virtual ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
-    virtual Component * Clone(SceneNode * toEntity);
 
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
     
-    /**
+	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive);
+	virtual void Deserialize(KeyedArchive *archive);
+
+	/**
      \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);

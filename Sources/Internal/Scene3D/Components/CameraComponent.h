@@ -15,21 +15,22 @@ public:
     CameraComponent(Camera * _camera = 0);
     virtual ~CameraComponent();
 
+	Camera* GetCamera();
+	void SetCamera(Camera * _camera);
+
     IMPLEMENT_COMPONENT_TYPE(CAMERA_COMPONENT);
 
-    virtual Component * Clone(SceneNode * toEntity);
-
-    void SetCamera(Camera * _camera);
+    virtual Component* Clone(SceneNode *toEntity);
+	virtual void Serialize(KeyedArchive *archive);
+	virtual void Deserialize(KeyedArchive *archive);
     
 private:
-    Camera * camera;
+    Camera* camera;
     
 public:
-
     INTROSPECTION_EXTEND(CameraComponent, Component,
-        MEMBER(camera, "Camera", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(camera, "Camera", GetCamera, SetCamera, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
-
 };
 
 

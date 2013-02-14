@@ -15,7 +15,7 @@ void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-    Camera *camera = dynamic_cast<Camera*> (sceneNode);
+    Camera *camera = GetCamera(sceneNode);
 	DVASSERT(camera);
 
     propertyList->AddSection("property.camera.camera", GetHeaderState("property.camera.camera", true));
@@ -51,7 +51,7 @@ void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
 
 void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    Camera *camera = dynamic_cast<Camera *> (currentSceneNode);
+    Camera *camera = GetCamera(currentSceneNode);
     if(     "property.camera.fov" == forKey 
        ||   "property.camera.znear" == forKey 
        ||   "property.camera.zfar" == forKey)
@@ -89,7 +89,7 @@ void CameraPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const S
 {
     if("property.camera.isortho" == forKey)
     {
-        Camera *camera = dynamic_cast<Camera *> (currentSceneNode);
+        Camera *camera = GetCamera(currentSceneNode);
         camera->Setup(
                       propertyList->GetFloatPropertyValue("property.camera.fov"),
                       320.0f / 480.0f,
@@ -100,3 +100,17 @@ void CameraPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const S
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
+
+Camera * CameraPropertyControl::GetCamera(SceneNode *node)
+{
+    CameraComponent *cc = static_cast<CameraComponent *>(node->GetComponent(Component::CAMERA_COMPONENT));
+    if(cc)
+    {
+        return cc->GetCamera();
+    }
+    
+    return NULL;
+}
+
+
+

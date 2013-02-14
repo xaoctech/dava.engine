@@ -31,6 +31,7 @@
 #define __DAVAENGINE_SCENE3D_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Serializable.h"
 #include "Base/Introspection.h"
 
 namespace DAVA 
@@ -38,7 +39,7 @@ namespace DAVA
     
 class DataNode;
 class SceneNode;
-class Component
+class Component : public Serializable
 {
 public:
     enum eType
@@ -64,26 +65,29 @@ public:
 	static Component * CreateByType(uint32 componentType);
 
 	Component();
-    
-    virtual ~Component() {};
-    virtual uint32 GetType() = 0;
-    virtual Component * Clone(SceneNode * toEntity) = 0;
+    virtual ~Component();
 
+    virtual uint32 GetType() = 0;
+    virtual Component* Clone(SceneNode * toEntity) = 0;
+	virtual void Serialize(KeyedArchive *archive);
+	virtual void Deserialize(KeyedArchive *archive);
+
+	SceneNode* GetEntity();
 	virtual void SetEntity(SceneNode * entity);
     
     /**
          \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
     /**
          \brief Function to get data nodes of requested type to specific container you provide.
      */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
 
-    SceneNode * GetEntity() { return entity; };
 protected:
-    SceneNode * entity;
+    SceneNode * entity; // entity is a SceneNode, that this component belongs to
 
 public:
 	INTROSPECTION(Component, 
@@ -91,9 +95,7 @@ public:
 		);
 };
 
-    
 #define IMPLEMENT_COMPONENT_TYPE(TYPE) virtual uint32 GetType() { return TYPE; }; 
-
     
 template<template <typename> class Container, class T>
 void Component::GetDataNodes(Container<T> & container)

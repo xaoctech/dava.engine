@@ -112,5 +112,40 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	return newObject;
 }
 
+void RenderObject::Serialize(KeyedArchive * archive)
+{
+	AnimatedObject::Serialize(archive);
+
+	if(NULL != archive)
+	{
+		archive->SetUInt32("ro.type", type);
+		archive->SetUInt32("ro.flags", flags);
+		archive->SetUInt32("ro.debugflags", debugFlags);
+		archive->SetUInt32("ro.batchCount", GetRenderBatchCount());
+
+		KeyedArchive *batchesArch = new KeyedArchive();
+		for(uint32 i = 0; i < GetRenderBatchCount(); ++i)
+		{
+			KeyedArchive *batcheArch = new KeyedArchive();
+			GetRenderBatch(i)->Serialize(batcheArch);
+			batchesArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), batcheArch);
+			batcheArch->Release();
+		}
+
+		archive->SetArchive("ro.batches", batchesArch);
+		batchesArch->Release();
+	}
+}
+
+void RenderObject::Deserialize(KeyedArchive * archive)
+{
+	if(NULL != archive)
+	{
+		// TODO:
+	}
+
+	AnimatedObject::Deserialize(archive);
+}
+
 
 };
