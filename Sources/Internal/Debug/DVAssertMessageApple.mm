@@ -6,7 +6,7 @@ using namespace DAVA;
 #import <Foundation/Foundation.h>
 #include <AppKit/NSAlert.h>
 #elif defined(__DAVAENGINE_IPHONE__)
-#include <UIKit.h>
+#include <UIKit/UIKit.h>
 #include "UI/UIScreenManager.h"
 #import "UIAlertView_Modal.h"
 #endif
