@@ -2,14 +2,13 @@ package com.dava.framework;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -73,8 +72,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         glView.setFocusable(true);
         glView.requestFocus();
         
-        //glView.setMinimumHeight(752);
-        
         editText = new EditText(this);
         InitEditText(editText);
     
@@ -83,9 +80,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 
         }
 
-//        boolean pathFound = FindSystemPath();
-        
-        
         Log.i(JNIConst.LOG_TAG, "[Activity::onCreate] isFirstRun is " + isFirstRun); 
         nativeOnCreate(isFirstRun);
     }
@@ -236,6 +230,10 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         params.topMargin = -1;
         addContentView(editText, params);
 
+        editText.setMaxLines(1);
+        editText.setBackgroundColor(Color.BLACK);
+        editText.setTextColor(Color.WHITE);
+        
         InputFilter inputFilter = new InputFilter() {
 			
 			@Override
@@ -258,7 +256,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 					try {
 						mutex.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -293,18 +290,15 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 		editText.setText(defaultText);
 		editText.setSelection(editText.getText().length());
 		
-		int unit = TypedValue.COMPLEX_UNIT_DIP;
-		DisplayMetrics metrics = getResources().getDisplayMetrics();
-		dy = TypedValue.applyDimension(unit, dy, metrics);
-		
-		//editText.setWidth((int)(dx + 0.5f));
-		//editText.setHeight((int)(dy + 0.5f));
+		//TODO: YZ fix incorrect control height
+		dy += 5f;	
+		//dy += editText.getPaddingBottom() - editText.getPaddingTop();
 		
 		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) editText.getLayoutParams();
 		params.leftMargin = (int)x;
 		params.topMargin = (int)y;
 		params.width = (int)(dx + 0.5f);
-		params.height = (int)(dy + 0.5f);// + (editText.getPaddingBottom() - editText.getPaddingTop());
+		params.height = (int)(dy + 0.5f); 
 		editText.setLayoutParams(params);
 		
 		editText.requestFocus();
