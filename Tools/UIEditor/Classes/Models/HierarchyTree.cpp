@@ -93,6 +93,10 @@ bool HierarchyTree::Load(const QString& projectPath)
         // Remember the platform to load its localization later.
         loadedPlatforms.insert(std::make_pair(platformNode, platform));
 	}
+	
+	// If no platforms were loaded - interrupt loading sequence
+	if (loadedPlatforms.empty())
+		return false;
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens. The update direction is FROM Control TO Extra Data.
