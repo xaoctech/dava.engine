@@ -754,6 +754,9 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
+    
+    
+    
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
@@ -762,7 +765,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file)
+    if(descriptor && file && IsReloadAvailable(fileFormat, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -811,6 +814,18 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     
     SafeRelease(file);
 }
+    
+bool Texture::IsReloadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+{
+    if(     (PVR_FILE == fileFormat && descriptor->pvrCompression.format == FORMAT_INVALID)
+       ||   (DXT_FILE == fileFormat && descriptor->dxtCompression.format == FORMAT_INVALID))
+    {
+        return false;
+    }
+
+    return true;
+}
+
     
 int32 Texture::Release()
 {
