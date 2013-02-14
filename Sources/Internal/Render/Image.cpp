@@ -48,7 +48,7 @@ Image::~Image()
 	SafeDeleteArray(data);
 }
 
-Image * Image::Create(int32 width, int32 height, PixelFormat format)
+Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
 {
 	Image * image = new Image();
 	image->width = width;
@@ -86,112 +86,105 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	return image;
 }
 
-void Image::ResizeImage(int32 newWidth, int32 newHeight)
+void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {
-	if(newWidth>0 && newHeight>0)
+	uint8 * newData = NULL;
+	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+
+	if(formatSize>0)
 	{
-		uint8 * newData = NULL;
-		uint8 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+		newData = new uint8[newWidth * newHeight * formatSize];
+		memset(newData, 0, newWidth * newHeight * formatSize);
 
-		if(formatSize>0)
+		float32 kx = (float32)width / (float32)newWidth;
+		float32 ky = (float32)height / (float32)newHeight;
+
+		float32 xx = 0, yy = 0;
+		uint32 offset = 0;
+		uint32 offsetOld = 0;
+		uint32 posX, posY;
+		for (uint32 y = 0; y < newHeight; ++y)
 		{
-			newData = new uint8[newWidth * newHeight * formatSize];
-			memset(newData, 0, newWidth * newHeight * formatSize);
-
-			float32 kx = (float32)width / (float32)newWidth;
-			float32 ky = (float32)height / (float32)newHeight;
-
-			float32 xx = 0, yy = 0;
-			int32 offset = 0;
-			int32 offsetOld = 0;
-			int32 posX, posY;
-			for (int32 y = 0; y < newHeight; ++y)
+			for (uint32 x = 0; x < newWidth; ++x)
 			{
-				for (int32 x = 0; x < newWidth; ++x)
-				{
-					posX = (int32)(xx + 0.5f);
-					posY = (int32)(yy + 0.5f);
-					if (posX >= width)
-						posX = width - 1;
+				posX = (uint32)(xx + 0.5f);
+				posY = (uint32)(yy + 0.5f);
+				if (posX >= width)
+					posX = width - 1;
 
-					if (posY >= height)
-						posY = height - 1;
+				if (posY >= height)
+					posY = height - 1;
 
 
-					offsetOld = (posY * width + posX) * formatSize;
-					memcpy(newData + offset, data + offsetOld, formatSize);
+				offsetOld = (posY * width + posX) * formatSize;
+				memcpy(newData + offset, data + offsetOld, formatSize);
 
-					xx += kx;
-					offset += formatSize;
-				}
-				yy += ky;
-				xx = 0;
+				xx += kx;
+				offset += formatSize;
 			}
-
-			// resized data
-			width = newWidth;
-			height = newHeight;
-			SafeDeleteArray(data);
-			data = newData;
+			yy += ky;
+			xx = 0;
 		}
-	}
 
+		// resized data
+		width = newWidth;
+		height = newHeight;
+		SafeDeleteArray(data);
+		data = newData;
+	}
 }
 
-void Image::ResizeCanvas(int32 newWidth, int32 newHeight)
+void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
 {
-    if(newWidth>0 && newHeight>0)
-    {
-        uint8 * newData = NULL;
-        uint32 newDataSize = 0;
-        uint8 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    uint8 * newData = NULL;
+    uint32 newDataSize = 0;
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
         
-        if(formatSize>0)
+    if(formatSize>0)
+    {
+        newDataSize = newWidth * newHeight * formatSize;
+        newData = new uint8[newDataSize];
+            
+        uint32 currentLine = 0;
+        uint32 indexOnLine = 0;
+        uint32 indexInOldData = 0;
+            
+        for(uint32 i = 0; i < newDataSize; ++i)
         {
-            newDataSize = newWidth * newHeight * formatSize;
-            newData = new uint8[newDataSize];
-            
-            uint32 currentLine = 0;
-            uint32 indexOnLine = 0;
-            uint32 indexInOldData = 0;
-            
-            for(uint32 i = 0; i < newDataSize; ++i)
+            if((currentLine+1)*newWidth*formatSize<=i)
             {
-                if((currentLine+1)*newWidth*formatSize<=i)
-                {
-                    currentLine++;
-                }
+                currentLine++;
+            }
                 
-                indexOnLine = i - currentLine*newWidth*formatSize;
+            indexOnLine = i - currentLine*newWidth*formatSize;
                 
-                if(currentLine<(uint32)height)
+            if(currentLine<(uint32)height)
+            {
+                // within height of old image
+                if(indexOnLine<(uint32)(width*formatSize))
                 {
-                    // within height of old image
-                    if(indexOnLine<(uint32)(width*formatSize))
-                    {
-                        // we have data in old image for new image
-                        indexInOldData = currentLine*width*formatSize + indexOnLine;
-                        newData[i] = data[indexInOldData];
-                    }
-                    else
-                    {
-                        newData[i] = 0;
-                    }
+                    // we have data in old image for new image
+                    indexInOldData = currentLine*width*formatSize + indexOnLine;
+                    newData[i] = data[indexInOldData];
                 }
                 else
                 {
                     newData[i] = 0;
                 }
             }
-            
-            // resized data
-            width = newWidth;
-            height = newHeight;
-            
-            SafeDeleteArray(data);
-            data = newData;
-            dataSize = newDataSize;
+            else
+            {
+                newData[i] = 0;
+            }
         }
+            
+        // resized data
+        width = newWidth;
+        height = newHeight;
+            
+        SafeDeleteArray(data);
+        data = newData;
+        dataSize = newDataSize;
     }
 }
 

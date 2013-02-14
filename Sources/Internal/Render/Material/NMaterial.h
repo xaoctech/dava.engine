@@ -44,11 +44,11 @@ class UberShader;
 class Shader;
 class Texture;    
 class SceneFileV2;
-class LightNode;
+class Light;
 class PolygonGroup;
 class RenderDataObject;
 class RenderStateBlock;
-class LightNode;
+class Light;
 
 class NMaterialDescriptor : public BaseObject
 {
@@ -78,7 +78,7 @@ public:
     
     bool LoadFromYaml(const String & pathname);
     uint32 GetLightCount() { return lightCount; };
-    void SetLightNode(uint32 index, LightNode * lightNode) { lightNodes[index] = lightNode; };
+    void SetLightNode(uint32 index, Light * lightNode) { lightNodes[index] = lightNode; };
     RenderStateBlock * GetRenderState() { return &renderState; };
 
     void PrepareInstanceForShader(Shader * shader);
@@ -105,7 +105,7 @@ private:
     UniformInfo *           uniforms;
     uint8 *                 uniformData;
     uint32                  lightCount;
-    LightNode              *lightNodes[8];
+    Light              *lightNodes[8];
     RenderStateBlock        renderState;
     Shader *                shader;
     friend class NMaterial;

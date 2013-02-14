@@ -37,10 +37,13 @@
 
 namespace DAVA
 {
+
+REGISTER_CLASS(RenderBatch)
     
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
+    ,   sortingKey(0)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -79,7 +82,6 @@ void RenderBatch::SetMaterial(Material * _material)
     material = SafeRetain(_material);
 }
 
-static const uint32 VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME;
     
 void RenderBatch::Draw(Camera * camera)
 {
@@ -91,7 +93,7 @@ void RenderBatch::Draw(Camera * camera)
     }
     
     uint32 flags = renderObject->GetFlags();
-    if ((flags & VISIBILITY_CRITERIA) != VISIBILITY_CRITERIA)
+    if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
         return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
@@ -102,8 +104,18 @@ void RenderBatch::Draw(Camera * camera)
     
 const FastName & RenderBatch::GetOwnerLayerName()
 {
-    static FastName fn("OpaqueRenderLayer");
-    return fn;
+    static FastName opaqueLayer("OpaqueRenderLayer");
+    static FastName translucentLayer("TransclucentRenderLayer");
+    
+    if (material)
+    {
+        if(material->GetOpaque() || material->GetAlphablend())
+		{
+			return translucentLayer;
+		}
+    }
+    
+    return opaqueLayer;
 }
 
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
@@ -131,13 +143,14 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->indexCount = indexCount;
 	rb->type = type;
 
-	rb->ownerLayer = ownerLayer;
-	if(ownerLayer)
-	{
-		ownerLayer->AddRenderBatch(rb);
-	}
-
 	rb->aabbox = aabbox;
+// TODO: Understand what this code means.
+// 
+//	rb->ownerLayer = ownerLayer;
+//	if(ownerLayer)
+//	{
+//		ownerLayer->AddRenderBatch(rb);
+//	}
 
 	return rb;
 }

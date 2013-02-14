@@ -100,6 +100,13 @@ public:
 
 	int32 flags;
     
+    /**
+         \brief Registers LOD layer into the LodNode.
+         \param[in] layerNum is the layer index
+         \param[in] distance near view distance for the layer
+	 */
+    void SetLodLayerDistance(int32 layerNum, float32 distance);
+
 
 public:
     

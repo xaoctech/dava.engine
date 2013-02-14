@@ -6,9 +6,9 @@
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/BulletComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
 
 namespace DAVA
 {
@@ -25,19 +25,19 @@ Component * Component::CreateByType(uint32 componentType)
 		return new DebugRenderComponent();
 	case LOD_COMPONENT:
 		return new LodComponent();
-	case PARTICLE_EMITTER_COMPONENT:
-		return new ParticleEmitterComponent();
 	case PARTICLE_EFFECT_COMPONENT:
 		return new ParticleEffectComponent();
 	case BULLET_COMPONENT:
 		return new BulletComponent();
 	case UPDATABLE_COMPONENT:
 		return new UpdatableComponent();
+	case CAMERA_COMPONENT:
+		return new CameraComponent();
+		break;
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case ACTION_COMPONENT:
 	case SCRIPT_COMPONENT:
-	case CAMERA_COMPONENT:
 	case LIGHT_COMPONENT:
 	default:
 		DVASSERT(0);

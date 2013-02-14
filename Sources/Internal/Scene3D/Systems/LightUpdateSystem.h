@@ -43,7 +43,7 @@ class RenderObject;
 class RenderBatch;
 class SceneNode;
 class Camera;
-class LightNode;
+class Light;
     
     
 /**
@@ -59,7 +59,7 @@ public:
     virtual void RemoveEntity(SceneNode * entity);
     virtual void ImmediateEvent(SceneNode * entity, uint32 event);
 private:
-    HashMap<SceneNode*, LightNode*> entityObjectMap;
+    HashMap<SceneNode*, Light*> entityObjectMap;
 };
     
 } // ns

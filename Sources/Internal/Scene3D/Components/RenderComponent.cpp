@@ -29,7 +29,7 @@ Component * RenderComponent::Clone(SceneNode * toEntity)
     RenderComponent * component = new RenderComponent();
 	component->SetEntity(toEntity);
 
-    component->renderObject = renderObject->Clone();
+    component->renderObject = renderObject->Clone(component->renderObject);
     return component;
 }
 

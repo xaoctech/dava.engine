@@ -220,6 +220,8 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/SpriteObject.h"
+#include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
@@ -234,15 +236,16 @@
 #include "Scene3D/Systems/EventSystem.h"
 
 //Components
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/BulletComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 // Application core 
 #include "Core/Core.h"

@@ -258,4 +258,15 @@ Texture * EditorLandscapeNode::GetDisplayedTexture()
     return nestedLandscape->GetTexture(TEXTURE_TILE_FULL);
 }
 
+DAVA::RenderObject * EditorLandscapeNode::Clone( DAVA::RenderObject *newObject )
+{
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<EditorLandscapeNode>(this), "Can clone only EditorLandscapeNode");
+		newObject = new EditorLandscapeNode();
+	}
+
+	return LandscapeNode::Clone(newObject);
+}
+
 

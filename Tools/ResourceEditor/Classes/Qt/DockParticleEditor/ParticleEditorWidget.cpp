@@ -13,8 +13,6 @@
 #include "ui_mainwindow.h"
 #include <QScrollBar>
 
-#include "Scene3D/Components/ParticleEmitterComponent.h"
-
 ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	QScrollArea(parent)
 {
@@ -29,9 +27,9 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnEmitterSelected(SceneNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)));
+			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
@@ -59,12 +57,12 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter = GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
+
 		if (emitterPropertiesWidget &&
 			emitterPropertiesWidget->GetEmitter() == emitter)
 			return;
@@ -101,20 +99,20 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	}
 }
 
-void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
 {
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter =  GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
-		if (emitterLayerWidget &&
+		if (!forceRefresh && emitterLayerWidget &&
 			emitterLayerWidget->GetLayer() == layer &&
-			emitterLayerWidget->GetEmitter() == emitter)
+			emitterLayerWidget->GetEmitter() == emitter &&
+			!forceRefresh)
 			return;
 	}
 
@@ -154,12 +152,11 @@ void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		emitter =  GetEmitter(emitterNode);
+		if (!emitter)
 		{
 			return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
 		if (layerForceWidget &&
 			layerForceWidget->GetLayer() == layer &&
 			layerForceWidget->GetForceIndex() == forceIndex &&

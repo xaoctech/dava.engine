@@ -2,11 +2,12 @@
 #define __DAVAENGINE_INTROSPECTION_BASE_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/VariantType.h"
 
 namespace DAVA
 {
 	class IntrospectionInfo;
-	class IntrospectionCollectionBase;
+	class IntrospectionCollection;
 	class KeyedArchive;
 	struct MetaInfo;
 
@@ -16,27 +17,16 @@ namespace DAVA
 		friend class IntrospectionInfo;
 
 	public:
-		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: name(_name), desc(_desc), offset(_offset), type(_type), flags(_flags)	
-		{ }
+		IntrospectionMember(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0);
 
 		// Имя члена интроспекции, соответствует имени члена класса
-		const char* Name() const
-		{
-			return name;
-		}
+		const char* Name() const;
 
 		// Описание члена интроспекции, произвольно указанное пользователем при объявлении интроспекции
-		const char* Desc() const
-		{
-			return desc;
-		}
+		const char* Desc() const;
 
 		// Возвдащает мета-тип члена интроспекции
-		const MetaInfo* Type() const
-		{
-			return type;
-		}
+		const MetaInfo* Type() const;
 
 		// Возвращает указатель непосдедственно на данные члена интроспекции
 		// Следует учитывать, что если членом интроспекции является указатель, 
@@ -44,34 +34,39 @@ namespace DAVA
 		// Проверить является ли член интроспекции указателем можно по его мета-информации:
 		//   MetaInfo* meta = member->Type();
 		//   meta->IsPointer();
-		void* Pointer(void *object) const
-		{
-			return (((char *) object) + offset);
-		}
+		//
+		// для int  a    - функция вернет &a, тип int *
+		// для int* a    - функция вернет &a, тип int **
+		// для classC  c - функция вернет &c, тип c *
+		// для classC* c - функция вернет &c, тип с **
+		// 
+		// см. так же функцию Object()
+		// 
+		void* Pointer(void *object) const;
+
+		// Вернет указатель на объек данного члена интроспекции. 
+		// Функция сама проверит, является ли данный член интроспекции указателем и
+		// если он таковым является то вернет значение данного указателя.
+		// Привер по типам члена интроспекции:
+		// 
+		// для int  a    - функция вернет &a, тип int *
+		// для int* a    - функция вернет a,  тип int *
+		// для classC  c - функция вернет &c, тип classC *
+		// для classC* c - функция вернет c,  тип classC *
+		// 
+		void* Data(void *object) const;
 
 		// Возвращает вариант данных члена интроспекции. Имлементация варианта должна поддерживать
 		// создание из данных, определяемыт мета-типом данного члена интроспекции.
-		virtual VariantType Value(void *object) const
-		{
-			return VariantType::LoadData(Pointer(object), type);
-		}
+		virtual VariantType Value(void *object) const;
 
 		// Устанавливает данные члена интроспекции из указанного варианта. 
-		virtual void SetValue(void *object, const VariantType &val) const
-		{
-			VariantType::SaveData(Pointer(object), type, val);
-		}
+		virtual void SetValue(void *object, const VariantType &val) const;
 
 		// Возвращает данные члена интроспекции в виде коллекции
-		virtual const IntrospectionCollectionBase* Collection() const
-		{
-			return NULL;
-		}
+		virtual const IntrospectionCollection* Collection() const;
 
-		const int Flags() const
-		{
-			return flags;
-		}
+		const int Flags() const;
 
 	protected:
 		const char* name;
@@ -82,24 +77,28 @@ namespace DAVA
 	};
 
 	// Базовое представление члена интроспекции, являющегося коллекцией
-	class IntrospectionCollectionBase : public IntrospectionMember
+	class IntrospectionCollection : public IntrospectionMember
 	{
 	public:
 		typedef void* Iterator;
 
-		IntrospectionCollectionBase(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
 			: IntrospectionMember(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		virtual MetaInfo* CollectionType() const = 0;
-		virtual MetaInfo* ValueType() const = 0;
+		virtual MetaInfo* ItemType() const = 0;
 		virtual int Size(void *object) const = 0;
+		virtual void Resize(void *object, int newSize) const = 0;
 		virtual Iterator Begin(void *object) const = 0;
 		virtual Iterator Next(Iterator i) const = 0;
 		virtual void Finish(Iterator i) const = 0;
 		virtual void ItemValueGet(Iterator i, void *itemDst) const = 0;
 		virtual void ItemValueSet(Iterator i, void *itemSrc) = 0;
 		virtual void* ItemPointer(Iterator i) const = 0;
+		virtual void* ItemData(Iterator i) const = 0;
+		//virtual Iterator ItemAdd(void *object) = 0;
+		//virtual void ItemRem(Iterator i) = 0;
 	};
 
 	// Вспомогательный класс для определения содержит ли указанный шаблонный тип интроспекцию
@@ -184,7 +183,7 @@ namespace DAVA
 		return NULL;
 	}
 
-	// Глобальная шаблонная функция(#3) для получения интроспекции заданного объекта. 
+	// Глобальная шаблонная функция(#3) для получения интроспекции типа заданного объекта. 
 	// Тип объекта будет выведен компилятором автоматически.
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет true
 	// Пример:
@@ -208,13 +207,20 @@ namespace DAVA
 		return ret;
 	}
 
-	// Глобальная шаблонная функция(#4) для получения интроспекции заданного объекта. 
+	// Глобальная шаблонная функция(#4) для получения интроспекции типа заданного объекта. 
 	// Тип объекта будет выведен компилятором автоматически.
 	// Функция скомпилируется только для тех типов, для которых HasIntrospection<T>::result будет false
 	template<typename T>
 	typename EnableIf<!HasIntrospection<T>::result, const IntrospectionInfo*>::type GetIntrospection(const T *t) 
 	{
 		return NULL;
+	}
+
+	template<typename T>
+	const IntrospectionInfo* GetIntrospectionByObject(void *object)
+	{
+		const T* t = (const T *) object;
+		return GetIntrospection(t);
 	}
 };
 

@@ -45,10 +45,10 @@ RenderLayer::~RenderLayer()
 {
     
 }
-    
 
 void RenderLayer::AddRenderBatch(RenderBatch * batch)
 {
+    DVASSERT(batch->GetRemoveIndex() == -1)
     renderBatchArray.push_back(batch);
     batch->SetRemoveIndex(this, renderBatchArray.size() - 1);
     flags |= SORT_REQUIRED;
@@ -56,38 +56,77 @@ void RenderLayer::AddRenderBatch(RenderBatch * batch)
 
 void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
 {
+    DVASSERT(batch->GetRemoveIndex() != -1)
 	uint32 oldIndex = batch->GetRemoveIndex();
     renderBatchArray[oldIndex] = renderBatchArray[renderBatchArray.size() - 1];
 	renderBatchArray[oldIndex]->SetRemoveIndex(this, oldIndex);
     renderBatchArray.pop_back();
     batch->SetRemoveIndex(0, -1);
 }
+    
+bool RenderLayer::MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b)
+{
+    return a.sortingKey < b.sortingKey;
+}
 
-void RenderLayer::Update()
+void RenderLayer::Update(Camera * camera)
 {
     // Need sort
     if ((flags & SORT_THIS_FRAME) == SORT_THIS_FRAME)
     {
+        uint32 renderBatchCount = (uint32)renderBatchArray.size();
+        sortArray.resize(renderBatchCount);
         if (flags & SORT_BY_MATERIAL)
         {
-//            RenderBatch * renderBatchArrayPtr = renderBatchArray.front();
-//            uint32 size = renderBatchArray.size();
-//            RadixSort(renderBatchArrayPtr, 0, size, 24);
-//         
-//            
-//            
-//            
-//            for (uint32 k = 0; k < size; ++k)
-//            {
-//                renderBatchArray[k]->SetRemoveIndex(this, k);
-//            }
-//            flags &= ~SORT_REQUIRED;
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                RenderBatch * batch = renderBatchArray[k];;
+                item.renderBatch = batch;
+                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() << 4) | batch->GetSortingKey();
+            }
+            
+            std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                renderBatchArray[k] = item.renderBatch;
+                item.renderBatch->SetRemoveIndex(this, k);
+            }
         }
         
         if (flags & SORT_BY_DISTANCE)
         {
+            Vector3 cameraPosition = camera->GetPosition();
             
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                RenderBatch * batch = renderBatchArray[k];;
+                item.renderBatch = batch;
+
+                item.sortingKey = 0;
+                if (batch)
+                {
+                    RenderObject * renderObject = batch->GetRenderObject();
+                    Vector3 position = renderObject->GetBoundingBox().GetCenter();
+                    float32 distance = (position - cameraPosition).Length();
+                    
+                    item.sortingKey = ((uint32)distance) << 4 | batch->GetSortingKey();
+                }
+            }
             
+            std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
+            
+            for (uint32 k = 0; k < renderBatchCount; ++k)
+            {
+                RenderBatchSortItem & item = sortArray[k];
+                renderBatchArray[k] = item.renderBatch;
+                item.renderBatch->SetRemoveIndex(this, k);
+            }
+            
+            flags |= SORT_REQUIRED;
         }
     }
     
@@ -102,12 +141,15 @@ uint32 RenderLayer::GetRenderBatchCount()
 
 void RenderLayer::Draw(Camera * camera)
 {
-    Update();
+    Update(camera);
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
         renderBatchArray[k]->Draw(camera);
     }
+#if 0
+    Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
+#endif
 }
 
 };

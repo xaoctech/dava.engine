@@ -53,7 +53,7 @@ class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
-class LightNode;
+class Light;
 class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
@@ -72,7 +72,6 @@ class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
 class UpdatableSystem;
-class DeleteSystem;
 class LightUpdateSystem;
 class SwitchSystem;
     
@@ -111,10 +110,8 @@ public:
 	LodSystem * lodSystem;
     DebugRenderSystem * debugRenderSystem;
 	EventSystem * eventSystem;
-	ParticleEmitterSystem * particleEmitterSystem;
 	ParticleEffectSystem * particleEffectSystem;
 	UpdatableSystem * updatableSystem;
-	DeleteSystem * deleteSystem;
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;
@@ -234,8 +231,8 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
-    Set<LightNode*> & GetLights();
-	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
+    Set<Light*> & GetLights();
+	Light * GetNearestDynamicLight(Light::eType type, Vector3 position);
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
@@ -248,9 +245,6 @@ public:
 	void SetReferenceNodeSuffix(const String & suffix);
 	const String & GetReferenceNodeSuffix();
 	bool IsReferenceNodeSuffixChanged();
-
-	static void SetActiveScene(Scene * scene);
-	static Scene * GetActiveScene();
 
 	EventSystem * GetEventSystem();
 	RenderSystem * GetRenderSystem();
@@ -281,15 +275,13 @@ protected:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
-    Set<LightNode*> lights;
+    Set<Light*> lights;
 
 	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;
 
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
-
-	static Scene * activeScene;
     
     friend class SceneNode;
 };

@@ -66,21 +66,27 @@ class RenderBatch;
 class RenderObject : public AnimatedObject
 {
 public:
-    enum eType
+    enum eEmitterType
     {
         TYPE_RENDEROBJECT = 0,  // Base Render Object
         TYPE_MESH,              // Normal mesh
         TYPE_SKINNED_MESH,      // Animated mesh for skinned animations
         TYPE_LANDSCAPE,         // Landscape object
         TYPE_CUSTOM_DRAW,       // Custom drawn object
+		TYPE_SPRITE,			// Sprite Node
+		TYPE_PARTICLE_EMTITTER  // Particle Emitter
     };
     
 	enum eFlags
 	{
 		VISIBLE = 1 << 0,
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
+		VISIBLE_LOD = 1 << 2,
+		VISIBLE_SWITCH = 1 << 3,
         TRANSFORM_UPDATED = 1 << 15,
 	};
+
+	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH;
 
     RenderObject();
     virtual ~RenderObject();
@@ -110,9 +116,9 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
     
-    inline eType GetType() { return (eType)type; }
+    inline eEmitterType GetType() { return (eEmitterType)type; }
 
-	virtual RenderObject * Clone();
+	virtual RenderObject * Clone(RenderObject *newObject);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     
@@ -181,7 +187,6 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
-    Scene::GetActiveScene()->GetRenderSystem()->MarkForUpdate(this);
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const

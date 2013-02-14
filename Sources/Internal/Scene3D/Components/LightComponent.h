@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
+#include "Scene3D/SceneNode.h"
 #include "Render/Highlevel/Light.h"
 
 namespace DAVA 
@@ -11,17 +12,17 @@ namespace DAVA
 class LightComponent : public Component
 {
 public:
-    LightComponent(LightNode * _light = 0);
+    LightComponent(Light * _light = 0);
     ~LightComponent();
     
     IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
     virtual Component * Clone(SceneNode * toEntity);
 
-    void SetLightObject(LightNode * _light);
-    LightNode * GetLightObject();
+    void SetLightObject(Light * _light);
+    Light * GetLightObject();
     
 private:
-    LightNode * light;
+    Light * light;
     
 public:
     

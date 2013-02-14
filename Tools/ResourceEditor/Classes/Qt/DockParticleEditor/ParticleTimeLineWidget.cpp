@@ -13,7 +13,6 @@
 #include <QPushButton>
 #include "Commands/ParticleEditorCommands.h"
 #include "Commands/CommandsManager.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 #include "ParticlesEditorController.h"
 
@@ -78,12 +77,11 @@ void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
 	ParticleEmitter* emitter = NULL;
 	if (node)
 	{
-		ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-		if (!emitterComponent)
+		ParticleEmitter * emitter = GetEmitter(node);
+		if (!emitter)
 		{
-		    return ;
+		    return;
 		}
-		emitter = emitterComponent->GetParticleEmitter();
 		if (emitter)
 			maxTime = emitter->GetLifeTime();
 	}
@@ -128,12 +126,12 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(i));
 			if (emitterNode)
 			{
-				ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-				if (!emitterComponent)
+				ParticleEmitter * emitter = GetEmitter(emitterNode);
+				if (!emitter)
 				{
 					continue;
 				}
-				ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+
 				if (emitter)
 					maxTime = Max(maxTime, emitter->GetLifeTime());
 			}
@@ -150,12 +148,12 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(iEmitter));
 			if (emitterNode)
 			{
-				ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(emitterNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-				if (!emitterComponent)
+				ParticleEmitter * emitter = GetEmitter(emitterNode);
+				if (!emitter)
 				{
 					continue;
 				}
-				ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+
 				if (emitter)
 				{
 					const Vector<ParticleLayer*> & layers = emitter->GetLayers();

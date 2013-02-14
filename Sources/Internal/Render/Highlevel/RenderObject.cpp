@@ -28,12 +28,16 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
+
+REGISTER_CLASS(RenderObject)
+
 RenderObject::RenderObject()
     :   type(TYPE_RENDEROBJECT)
-    ,   flags(VISIBLE)
+    ,   flags(VISIBLE | VISIBLE_LOD | VISIBLE_SWITCH)
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
@@ -61,7 +65,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
         
     }
     
-    bbox.AddAABBox(batch->GetBoundingBox());
+    const AABBox3 & boundingBox = batch->GetBoundingBox();
+//    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
+//             boundingBox.min.y != AABBOX_INFINITY &&
+//             boundingBox.min.z != AABBOX_INFINITY);
+    
+    bbox.AddAABBox(boundingBox);
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
@@ -79,24 +88,28 @@ RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
     return renderBatchArray[batchIndex];
 }
 
-RenderObject * RenderObject::Clone()
+RenderObject * RenderObject::Clone(RenderObject *newObject)
 {
-	RenderObject * ro = new RenderObject();
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<RenderObject>(this), "Can clone only RenderObject");
+		newObject = new RenderObject();
+	}
 
-	ro->type = type;
-	ro->flags = flags;
-	ro->debugFlags = debugFlags;
-	ro->bbox = bbox;
-	ro->worldBBox = worldBBox;
+	newObject->type = type;
+	newObject->flags = flags;
+	newObject->debugFlags = debugFlags;
+	//ro->bbox = bbox;
+	//ro->worldBBox = worldBBox;
 
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		ro->AddRenderBatch(GetRenderBatch(i)->Clone());
+		newObject->AddRenderBatch(GetRenderBatch(i)->Clone());
 	}
-    ro->ownerDebugInfo = ownerDebugInfo;
+    newObject->ownerDebugInfo = ownerDebugInfo;
 
-	return ro;
+	return newObject;
 }
 
 

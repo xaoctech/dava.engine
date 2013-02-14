@@ -11,7 +11,6 @@
 
 #include "LayerParticleEditorNode.h"
 #include "ForceParticleEditorNode.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 
 using namespace DAVA;
 
@@ -36,7 +35,7 @@ QString LayerParticleEditorNode::GetName() const
 
 int32 LayerParticleEditorNode::GetLayerIndex() const
 {
-    ParticleEmitter* emitter = GetParticleEmitterComponent()->GetParticleEmitter();
+    ParticleEmitter* emitter = GetParticleEmitter();
     if (!emitter)
     {
         return -1;
@@ -93,6 +92,6 @@ void LayerParticleEditorNode::UpdateForcesIndices()
     }
 
     // We have to update exactly the same child nodes as the forces count we have.
-    int32 forcesCount = curLayer->forces.size();
+    int32 forcesCount = curLayer->particleForces.size();
     DVASSERT(forcesCount == processedChildNodes);
 }

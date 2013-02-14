@@ -8,13 +8,13 @@ namespace DAVA
 	// Класс представляет расширение базового класса IntrospectionMember и описывает члена интроспекции, как коллекцию
 	// Поддерживаемые коллекци - контейнеры с одним шаблонным параметром: Vector, List, Set
 	template<template <typename> class C, typename T>
-	class IntrospectionCollection : public IntrospectionCollectionBase
+	class IntrospectionCollectionImpl : public IntrospectionCollection
 	{
 	public:
 		typedef C<T> CollectionT;
 
-		IntrospectionCollection(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
-			: IntrospectionCollectionBase(_name, _desc, _offset, _type, _flags)
+		IntrospectionCollectionImpl(const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags = 0)
+			: IntrospectionCollection(_name, _desc, _offset, _type, _flags)
 		{ }
 
 		DAVA::MetaInfo* CollectionType() const
@@ -22,7 +22,7 @@ namespace DAVA
 			return DAVA::MetaInfo::Instance<CollectionT >();
 		}
 
-		DAVA::MetaInfo* ValueType() const
+		DAVA::MetaInfo* ItemType() const
 		{
 			return DAVA::MetaInfo::Instance<T>();
 		}
@@ -37,6 +37,14 @@ namespace DAVA
 			}
 
 			return size;
+		}
+
+		void Resize(void *object, int newSize) const
+		{
+			if(NULL != object)
+			{
+				((CollectionT *) object)->resize(newSize);
+			}
 		}
 
 		Iterator Begin(void *object) const
@@ -123,7 +131,19 @@ namespace DAVA
 			return p;
 		}
 
-		const IntrospectionCollectionBase* Collection() const
+		void* ItemData(Iterator i) const
+		{
+			if(ItemType()->IsPointer())
+			{
+				return *((void **) ItemPointer(i));
+			}
+			else
+			{
+				return ItemPointer(i);
+			}
+		}
+
+		const IntrospectionCollection* Collection() const
 		{
 			return this;
 		}
@@ -138,9 +158,9 @@ namespace DAVA
 
 	// Функция создает IntrospectionCollection, типы выводятся автоматически
 	template<template <typename> class Container, class T>
-	static IntrospectionCollectionBase* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
+	static IntrospectionCollection* CreateIntrospectionCollection(Container<T> *t, const char *_name, const char *_desc, const int _offset, const MetaInfo *_type, int _flags)
 	{
-		return new IntrospectionCollection<Container, T>(_name, _desc, _offset, _type, _flags);
+		return new IntrospectionCollectionImpl<Container, T>(_name, _desc, _offset, _type, _flags);
 	}
 };
 

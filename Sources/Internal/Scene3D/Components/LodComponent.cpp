@@ -125,14 +125,14 @@ void LodComponent::SetCurrentLod(LodData *newLod)
 			int32 size = currentLod->nodes.size();
 			for (int i = 0; i < size; i++) 
 			{
-				currentLod->nodes[i]->SetUpdatable(false);
+				currentLod->nodes[i]->SetLodVisible(false);
 			}
 		}
 		currentLod = newLod;
 		int32 size = currentLod->nodes.size();
 		for (int i = 0; i < size; i++) 
 		{
-			currentLod->nodes[i]->SetUpdatable(true);
+			currentLod->nodes[i]->SetLodVisible(true);
 		}
 	}
 }
@@ -158,6 +158,34 @@ void LodComponent::GetLodData(List<LodData*> &retLodLayers)
 		LodData *ld = &(*it);
 		retLodLayers.push_back(ld);
 	}
+}
+
+    
+void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
+{
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
+    
+    if(INVALID_DISTANCE != distance)
+    {
+        float32 nearDistance = distance * 0.95f;
+        float32 farDistance = distance * 1.05f;
+        
+        if(GetLodLayersCount() - 1 == layerNum)
+        {
+            lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * 2);
+        }
+        if(layerNum)
+        {
+            lodLayersArray[layerNum-1].SetFarDistance(farDistance);
+        }
+        
+        lodLayersArray[layerNum].SetDistance(distance);
+        lodLayersArray[layerNum].SetNearDistance(nearDistance);
+    }
+    else 
+    {
+        lodLayersArray[layerNum].SetDistance(distance);
+    }
 }
 
     

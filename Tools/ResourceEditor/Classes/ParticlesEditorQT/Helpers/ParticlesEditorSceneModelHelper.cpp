@@ -9,11 +9,11 @@
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 
+#include "Commands/CommandsManager.h"
 #include "Commands/SceneGraphCommands.h"
 #include "Commands/ParticleEditorCommands.h"
 
 #include "Entity/Component.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
@@ -104,8 +104,8 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
     // move the raw Emitter node to it.
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(rawNode->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (!emitterComponent)
+	ParticleEmitter * emitter = GetEmitter(rawNode);
+    if (!emitter)
     {
         return rawNode;
     }
@@ -243,8 +243,8 @@ void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(Effect
         for (int32 i = 0; i < emittersCountInEffect; i ++)
         {
             // Create the new Emitter and add it to the tree.
-			ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(effectRootNode->GetChild(i)->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-			if (!emitterComponent)
+			ParticleEmitter * emitter =  GetEmitter(effectRootNode->GetChild(i));
+			if (!emitter)
 			{
 			    continue;
 			}
@@ -264,13 +264,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(Emitt
         return;
     }
 
-    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
-    if (!emitterComponent)
-    {
-        return;
-    }
-    
-    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+    ParticleEmitter* emitter = node->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -298,13 +292,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
         return;
     }
     
-    ParticleEmitterComponent* emitterComponent = node->GetParticleEmitterComponent();
-    if (!emitterComponent)
-    {
-        return;
-    }
-    
-    ParticleEmitter* emitter = emitterComponent->GetParticleEmitter();
+    ParticleEmitter* emitter = node->GetParticleEmitter();
     if (!emitter)
     {
         return;
@@ -317,7 +305,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
     }
 
     // Synchronize the Forces.
-    int32 forcesCountInLayer = layer->forces.size();
+    int32 forcesCountInLayer = layer->particleForces.size();
     int32 forcesCountInLayerNode = node->GetForcesCount();
 
     if (forcesCountInLayer > 0 && forcesCountInLayerNode == 0)
@@ -612,5 +600,59 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemForParticlesLayer(G
 	}
 	
 	// Nothing is found...
+	return NULL;
+}
+
+void* ParticlesEditorSceneModelHelper::GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const
+{
+	ExtraUserData* extraData = GetExtraUserDataByModelIndex(modelIndex);
+	if (!extraData)
+	{
+		// Not ours..
+		return NULL;
+	}
+	
+	return extraData;
+}
+
+bool ParticlesEditorSceneModelHelper::IsGraphItemCheckable(GraphItem* graphItem) const
+{
+	// Only Particle Editor Layers are checkable for now.
+	return (GetLayerEditorNodeByGraphItem(graphItem) != NULL);
+}
+
+bool ParticlesEditorSceneModelHelper::GetCheckableStateForGraphItem(GraphItem* graphItem) const
+{
+	LayerParticleEditorNode* layerEditorNode = GetLayerEditorNodeByGraphItem(graphItem);
+	if (!layerEditorNode || !layerEditorNode->GetLayer())
+	{
+		return false;
+	}
+	
+	return !layerEditorNode->GetLayer()->isDisabled;
+}
+
+void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* graphItem, bool value)
+{
+	LayerParticleEditorNode* layerEditorNode = GetLayerEditorNodeByGraphItem(graphItem);
+	if (!layerEditorNode || !layerEditorNode->GetLayer())
+	{
+		return;
+	}
+	
+	// Execute the appropriate command.
+	CommandUpdateParticleLayerEnabled* command = new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value);
+	CommandsManager::Instance()->Execute(command);
+}
+
+LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const
+{
+	SceneGraphItem* curItem = dynamic_cast<SceneGraphItem*>(graphItem);
+	if (curItem && curItem->GetExtraUserData())
+	{
+		LayerParticleEditorNode* editorNode = dynamic_cast<LayerParticleEditorNode*>(curItem->GetExtraUserData());
+		return editorNode;
+	}
+	
 	return NULL;
 }

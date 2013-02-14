@@ -372,6 +372,18 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	return node;
 }
 
+DAVA::SceneNode* SceneDataManager::SceneGetRootNode(SceneData *scene)
+{
+	DAVA::SceneNode *node = NULL;
+
+	if(NULL != scene)
+	{
+		node = scene->GetScene();
+	}
+
+	return node;
+}
+
 void SceneDataManager::SceneShowPreview(const DAVA::String &path)
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
@@ -498,43 +510,46 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
 {
 	if(!forNode)  return;
 
-	//materials
-	Vector<Material*> materials;
-	EnumerateMaterials(forNode, materials);
-	for(int32 m = 0; m < (int32)materials.size(); ++m)
-	{
-		for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
-		{
-			CollectTexture(textures, materials[m]->GetTextureName((Material::eTextureLevel)t), materials[m]->GetTexture((Material::eTextureLevel)t));
-		}
-	}
+    Vector<SceneNode *> nodes;
+    forNode->GetChildNodes(nodes);
+    
+    nodes.push_back(forNode);
+    
+    for(int32 n = 0; n < (int32)nodes.size(); ++n)
+    {
+        RenderComponent *rc = static_cast<RenderComponent *>(nodes[n]->GetComponent(Component::RENDER_COMPONENT));
+        if(!rc) continue;
+            
+        RenderObject *ro = rc->GetRenderObject();
+        if(!ro) continue;
+        
+        uint32 count = ro->GetRenderBatchCount();
+        for(uint32 b = 0; b < count; ++b)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(b);
+            
+            Material *material = renderBatch->GetMaterial();
+            if(material)
+            {
+                for(int32 t = 0; t < Material::TEXTURE_COUNT; ++t)
+                {
+                    CollectTexture(textures, material->GetTextureName((DAVA::Material::eTextureLevel)t), material->GetTexture((DAVA::Material::eTextureLevel)t));
+                }
+            }
 
-	//landscapes
-	Vector<LandscapeNode *> landscapes;
-	forNode->GetChildNodes(landscapes);
-	LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(forNode);
-	if(landscape)
-	{
-		landscapes.push_back(landscape);
-	}
+            InstanceMaterialState *instanceMaterial = renderBatch->GetMaterialInstance();
+            if(instanceMaterial)
+            {
+                CollectTexture(textures, instanceMaterial->GetLightmapName(), instanceMaterial->GetLightmap());
+            }
+        }
 
-	for(int32 l = 0; l < (int32)landscapes.size(); ++l)
-	{
-		CollectLandscapeTextures(textures, landscapes[l]);
-	}
-
-	//lightmaps
-	Vector<MeshInstanceNode *> meshInstances;
-	forNode->GetChildNodes(meshInstances);
-	MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(forNode);
-	if(mesh)
-	{
-		meshInstances.push_back(mesh);
-	}
-	for(int32 m = 0; m < (int32)meshInstances.size(); ++m)
-	{
-		CollectMeshTextures(textures, meshInstances[m]);
-	}
+        LandscapeNode *land = dynamic_cast<LandscapeNode *>(ro);
+        if(land)
+        {
+            CollectLandscapeTextures(textures, land);
+        }
+    }
 }
 
 void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
@@ -545,17 +560,6 @@ void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Te
 	}
 }
 
-void SceneDataManager::CollectMeshTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, MeshInstanceNode *forNode)
-{
-	for (int32 li = 0; li < forNode->GetLightmapCount(); ++li)
-	{
-		MeshInstanceNode::LightmapData * ld = forNode->GetLightmapDataForIndex(li);
-		if (ld)
-		{
-			CollectTexture(textures, ld->lightmapName, ld->lightmap);
-		}
-	}
-}
 
 
 void SceneDataManager::CollectTexture(Map<String, Texture *> &textures, const String &name, Texture *tex)

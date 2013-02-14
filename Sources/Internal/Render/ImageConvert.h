@@ -186,7 +186,7 @@ public:
 		}
 	}
 
-	Image* DownscaleTwiceBillinear(Image * source)
+	Image* DownscaleTwiceBillinear(const Image * source)
 	{
 		if (source->GetPixelFormat() == FORMAT_RGBA8888)
 		{

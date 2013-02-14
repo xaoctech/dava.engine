@@ -46,6 +46,18 @@ enum eHideableWidgets
     
     HIDABLEWIDGET_COUNT
 };
+	
+enum eModificationActions
+{
+	MODIFY_NONE = 0,
+	MODIFY_MOVE,
+	MODIFY_ROTATE,
+	MODIFY_SCALE,
+	MODIFY_PLACE_ON_LAND,
+	MODIFY_SNAP_TO_LAND,
+
+	MODIFY_COUNT
+};
     
     
 };

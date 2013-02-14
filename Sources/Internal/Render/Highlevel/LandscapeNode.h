@@ -282,6 +282,9 @@ public:
 
     LandscapeCursor *GetCursor();
     
+	virtual RenderObject * Clone(RenderObject *newObject);
+
+
 protected:	
     
     class LandscapeQuad

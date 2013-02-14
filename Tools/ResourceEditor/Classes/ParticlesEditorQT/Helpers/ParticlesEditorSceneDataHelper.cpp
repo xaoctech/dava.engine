@@ -8,15 +8,14 @@
 
 #include "ParticlesEditorSceneDataHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
-#include "Scene3D/Components/ParticleEmitterComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 using namespace DAVA;
 
 bool ParticlesEditorSceneDataHelper::AddSceneNode(SceneNode* node) const
 {
-	ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (emitterComponent)
+	ParticleEmitter * emitter = GetEmitter(node);
+    if (emitter)
     {
         ParticlesEditorController::Instance()->AddParticleEmitterNodeToScene(node);
         return true;
@@ -44,9 +43,25 @@ void ParticlesEditorSceneDataHelper::RemoveSceneNode(SceneNode *node) const
     }
 
     // If the Particle Emitter node is removed - remove it from the tree.
-    ParticleEmitterComponent * emitterComponent = cast_if_equal<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
-    if (emitterComponent)
+    ParticleEmitter * emitter = GetEmitter(node);
+    if (emitter)
     {
         ParticlesEditorController::Instance()->RemoveParticleEmitterNode(node);
     }
+}
+
+bool ParticlesEditorSceneDataHelper::ValidateParticleEmitter(ParticleEmitter * emitter, String& validationMsg)
+{
+	if (!emitter)
+	{
+		return true;
+	}
+	
+	if (emitter->Is3DFlagCorrect())
+	{
+		return true;
+	}
+	
+	validationMsg = Format("\"3d\" flag value is wrong for Particle Emitter Configuration file %s. Please verify whether you are using the correct configuration file.", emitter->GetConfigPath().c_str());
+	return false;
 }

@@ -107,7 +107,7 @@ void MaterialCompiler::GenerateCode(MaterialGraph * materialGraph)
         GenerateCodeForNode(node, vertexShader, pixelShader);
     }
     
-    MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
+    //MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
 
     String vertexShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetVertexShaderFilename();
     String fragmentShaderPath = materialGraph->GetMaterialPath() + materialGraph->GetPixelShaderFilename();
