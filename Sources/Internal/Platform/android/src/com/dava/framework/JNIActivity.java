@@ -2,24 +2,27 @@ package com.dava.framework;
 
 import android.app.Activity;
 import android.content.Context;
-//import android.content.pm.ApplicationInfo;
-//import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
-
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 
 public abstract class JNIActivity extends Activity implements JNIAccelerometer.JNIAccelerometerListener
 {
 	private static int errorState = 0;
 
-	private GLSurfaceView mGLView = null;
-    private JNIAccelerometer accelerometer = null;
-
-	public boolean keyboardShowed = false;
+	private JNIAccelerometer accelerometer = null;
+	private GLSurfaceView glView = null;
+	private EditText editText = null;
     
     private native void nativeOnCreate(boolean isFirstRun);
     private native void nativeOnStart();
@@ -30,12 +33,14 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     
     private boolean isFirstRun = true;
     
-    private String dataDirString = "";
-    private String apkFileString = "";
-    
     public abstract JNIGLSurfaceView GetSurfaceView();
     
     private static JNIActivity activity = null;
+    
+    public static JNIActivity GetActivity()
+	{
+		return activity;
+	}
     
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -61,14 +66,17 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         accelerometer = new JNIAccelerometer(this, sensorManager);
 
         // initialize GL VIEW
-        //mGLView = new JNIGLSurfaceView(this);
-        mGLView = GetSurfaceView();
-        assert(mGLView != null);
-        mGLView.setFocusableInTouchMode(true);
-        mGLView.setClickable(true);
-        mGLView.setFocusable(true);
-        mGLView.requestFocus();
-        //setContentView(mGLView);
+        glView = GetSurfaceView();
+        assert(glView != null);
+        glView.setFocusableInTouchMode(true);
+        glView.setClickable(true);
+        glView.setFocusable(true);
+        glView.requestFocus();
+        
+        //glView.setMinimumHeight(752);
+        
+        editText = new EditText(this);
+        InitEditText(editText);
     
         if(0 != errorState)
         {
@@ -82,42 +90,6 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         nativeOnCreate(isFirstRun);
     }
     
-//    private boolean FindSystemPath()
-//    {
-//    	boolean pathFound = false;
-//    	
-//    	java.io.File dataDir = getFilesDir(); 
-////        Log.i(JNIConst.LOG_TAG, String.format("[Activity::FindSystemPath] external files dir is %s", dataDir.toString())); 
-//        
-//        try
-//        {
-//        	dataDirString = dataDir.toString();
-//        	
-//            String []strs = getAssets().list(dataDirString);
-//            int count = strs.length;
-//            for(int i = 0; i < count; ++i)
-//            {
-////                Log.i(JNIConst.LOG_TAG, String.format("[Activity::FindSystemPath] AL[%d]:  %s", i, strs[i])); 
-//            }
-//            
-//    		PackageManager packMgmr = getPackageManager();
-//    		ApplicationInfo appInfo = packMgmr.getApplicationInfo(JNIConst.PACKAGE_NAME, 0);
-//    		apkFileString = appInfo.sourceDir;
-//    		
-//    		pathFound = true;
-//    		
-////            Log.i(JNIConst.LOG_TAG, String.format("[Activity::FindSystemPath] dataDirString is %s", dataDirString));
-////            Log.i(JNIConst.LOG_TAG, String.format("[Activity::FindSystemPath] apkFileString is %s", apkFileString));
-//        }
-//        catch(Exception e)
-//        {
-//            Log.e(JNIConst.LOG_TAG, "[Activity::FindSystemPath] Exc: " + e.getMessage()); 
-//        }
-//        
-//    	return pathFound;
-//    }
-    
-    
     @Override
     protected void onStart()
     {
@@ -125,6 +97,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
     	// The activity is about to become visible.
     	
         Log.i(JNIConst.LOG_TAG, "[Activity::onStart]");
+        
+        //editText.setVisibility(EditText.INVISIBLE);
         
         //call native method
         nativeOnStart();
@@ -168,9 +142,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         }
         
         // activate GLView 
-        if(null != mGLView)
+        if(null != glView)
         {
-        	mGLView.onResume();
+        	glView.onResume();
         }
 
         Log.i(JNIConst.LOG_TAG, "[Activity::onResume] finish");
@@ -195,9 +169,9 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         }
 
         // deactivate GLView 
-        if(null != mGLView)
+        if(null != glView)
         {
-        	mGLView.onPause();
+        	glView.onPause();
         }
         
         boolean isActivityFinishing = isFinishing();
@@ -253,29 +227,116 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
 	{
 		nativeOnAccelerometer(x, y, z);
 	}
+    
+    static boolean inputFilterRes = false;
+    private void InitEditText(EditText editText)
+    {
+    	FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(new FrameLayout.MarginLayoutParams(0, 0));
+        params.leftMargin = -1;
+        params.topMargin = -1;
+        addContentView(editText, params);
+
+        InputFilter inputFilter = new InputFilter() {
+			
+			@Override
+			public CharSequence filter(final CharSequence source, final int start, final int end,
+					Spanned dest, int dstart, int dend) {
+				if (source.length() > 1)
+					return source;
+				
+				inputFilterRes = false;
+				final Object mutex = new Object();
+				glView.queueEvent(new Runnable() {
+					public void run() {
+						inputFilterRes = JNITextField.TextFieldKeyPressed(start, end - start, source.toString());
+						synchronized (mutex) {
+							mutex.notify();
+						}
+					}
+				});
+				synchronized (mutex) {
+					try {
+						mutex.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if (inputFilterRes)
+					return source;
+				return "";
+			}
+		};
+        editText.setFilters(new InputFilter[]{inputFilter});
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+			
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER)
+				{
+					glView.queueEvent(new Runnable() {
+						@Override
+						public void run() {
+							JNITextField.TextFieldShouldReturn();
+						}
+					});
+					return true;
+				}
+				return false;
+			}
+		});
+    }
 	
-	public void ShowKeyboard()
+	public void ShowEditText(float x, float y, float dx, float dy, String defaultText)
 	{
-//		if(!keyboardShowed)
-//		{
-//			InputMethodManager im = ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE));
-//			im.showSoftInput(mGLView, 0);
-//			keyboardShowed = true;
-//		}
+		editText.setText(defaultText);
+		editText.setSelection(editText.getText().length());
+		
+		int unit = TypedValue.COMPLEX_UNIT_DIP;
+		DisplayMetrics metrics = getResources().getDisplayMetrics();
+		dy = TypedValue.applyDimension(unit, dy, metrics);
+		
+		//editText.setWidth((int)(dx + 0.5f));
+		//editText.setHeight((int)(dy + 0.5f));
+		
+		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) editText.getLayoutParams();
+		params.leftMargin = (int)x;
+		params.topMargin = (int)y;
+		params.width = (int)(dx + 0.5f);
+		params.height = (int)(dy + 0.5f);// + (editText.getPaddingBottom() - editText.getPaddingTop());
+		editText.setLayoutParams(params);
+		
+		editText.requestFocus();
+		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		input.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
 	}
 	
-	public void HideKeyboard()
+	public void HideEditText(boolean notifyCore)
 	{
-//		if(keyboardShowed)
-//		{
-//			InputMethodManager im = ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE));
-//			im.hideSoftInputFromWindow(mGLView.getWindowToken(), 0);
-//			keyboardShowed = false;
-//		}
+		InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		input.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+		
+		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) editText.getLayoutParams();
+		params.leftMargin = (int)-1;
+		params.topMargin = (int)-1;
+		params.width = (int)0;
+		params.height = (int)0;
+		editText.setLayoutParams(params);
+		if (notifyCore)
+		{
+			final String text = editText.getText().toString();
+			glView.queueEvent(new Runnable() {
+				@Override
+				public void run() {
+					JNITextField.FieldHiddenWithText(text);
+				}
+			});
+		}
 	}
 	
-	public static Activity GetActivity()
+	public String GetEditText()
 	{
-		return activity;
+		return editText.getText().toString();
 	}
 }

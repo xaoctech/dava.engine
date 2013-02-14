@@ -22,8 +22,6 @@ InputTest::InputTest() :
 
 void InputTest::LoadResources()
 {
-	DVASSERT_MSG(false, "asdfasdfasdfasdfasdf");
-	
 	GetBackground()->SetColor(Color(1.f, 0, 0, 1));
 	
 	Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
@@ -31,23 +29,47 @@ void InputTest::LoadResources()
 	font->SetSize(20);
     font->SetColor(Color::White());
 	
-	staticText = new UIStaticText(Rect(0, 0, 512, 200));
+	/*staticText = new UIStaticText(Rect(0, 0, 512, 200));
     staticText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
     staticText->SetMultiline(true);
     staticText->SetFont(font);
 	staticText->SetText(L"staticText");
 	staticText->SetDebugDraw(true);
-    AddControl(staticText);
+    AddControl(staticText);*/
 	
-	textField = new UITextField(Rect(0, 200, 512, 200));
-#ifndef __DAVAENGINE_IPHONE__
+	textField = new UITextField(Rect(0, 0, 512, 100));
+#ifdef __DAVAENGINE_IPHONE__
+	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+#else
+	textField->SetFont(font);
+#endif
+	textField->SetText(L"textField");
+	textField->SetDebugDraw(true);
+	textField->SetDelegate(new UITextFieldDelegate());
+	AddControl(textField);
+	
+	textField = new UITextField(Rect(600, 10, 100, 100));
+#ifdef __DAVAENGINE_IPHONE__
+	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+#else
 	textField->SetFont(font);
 #endif
 	textField->SetText(L"textField");
 	textField->SetDebugDraw(true);
 	AddControl(textField);
-	
-	testButton = new UIButton(Rect(0, 400, 512, 100));
+
+	textField = new UITextField(Rect(750, 10, 100, 500));
+#ifdef __DAVAENGINE_IPHONE__
+	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+#else
+	textField->SetFont(font);
+#endif
+	textField->SetText(L"textField");
+	textField->SetDebugDraw(true);
+	AddControl(textField);
+
+
+	testButton = new UIButton(Rect(900, 0, 100, 635));
 	testButton->SetStateFont(0xFF, font);
 	testButton->SetStateText(0xFF, L"UIButton");
 	testButton->SetDebugDraw(true);

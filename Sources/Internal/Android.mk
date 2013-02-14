@@ -15,6 +15,7 @@ LOCAL_MODULE := libInternal
 
 # set path for includes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/Platform/TemplateAndroid/
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
 
 # set exported includes
