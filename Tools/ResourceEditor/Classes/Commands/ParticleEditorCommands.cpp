@@ -32,7 +32,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emitter = emitter;
 }
 
-void CommandUpdateEmitter::Init(ParticleEmitter::eEmitterType emitterType,
+void CommandUpdateEmitter::Init(ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > emissionAngle,
 								RefPtr<PropertyLine<float32> > emissionRange,
 								RefPtr<PropertyLine<Vector3> > emissionVector,

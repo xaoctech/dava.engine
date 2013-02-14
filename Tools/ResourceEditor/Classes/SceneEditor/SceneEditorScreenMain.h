@@ -91,8 +91,6 @@ public:
 
     void EditMaterial(Material *material);
 
-	void EditParticleEmitter(SceneNode * emitter);
-    
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
 	BodyItem * FindCurrentBody();

@@ -81,7 +81,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	DVASSERT(emitter != 0);
 
 	DVASSERT(emitterType->currentIndex() != -1);
-	ParticleEmitter::eEmitterType type = (ParticleEmitter::eEmitterType)emitterType->currentIndex();
+	ParticleEmitter::eType type = (ParticleEmitter::eType)emitterType->currentIndex();
 
 	PropLineWrapper<float32> emissionAngle;
 	if(!emitterEmissionAngle->GetValue(0, emissionAngle.GetPropsPtr()))

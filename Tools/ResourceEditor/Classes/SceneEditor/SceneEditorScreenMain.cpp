@@ -447,26 +447,6 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
     }
 }
 
-void SceneEditorScreenMain::EditParticleEmitter(SceneNode * emitterNode)
-{
-	//BodyItem *iBody = FindCurrentBody();
-	if (!particlesEditor->GetParent())
-	{
-		SafeRelease(particlesEditor);
-		particlesEditor = new ParticlesEditorControl();
-
-		ParticleEmitter * emitter = GetEmitter(emitterNode);
-		if (!emitter)
-		{
-		    return;
-		}
-
-		particlesEditor->SetNode(emitterNode);
-		particlesEditor->SetEmitter(emitter);
-		AddControl(particlesEditor);
-	}
-}
-
 void SceneEditorScreenMain::NewScene()
 {
 	SceneData *levelScene = SceneDataManager::Instance()->CreateNewScene();
