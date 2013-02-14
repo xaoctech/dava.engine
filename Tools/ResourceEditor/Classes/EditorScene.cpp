@@ -10,7 +10,6 @@
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
 #include "SceneEditor/SceneValidator.h"
-#include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/HeightmapNode.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
@@ -532,10 +531,10 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SceneNode *n = node;
     
     do {
-        LodNode *lodNode = dynamic_cast<LodNode *>(n);
-        if(lodNode)
+        LodComponent *lc = static_cast<LodComponent *>(n->GetComponent(Component::LOD_COMPONENT));
+        if(lc)
         {
-            lodNode->SetForceLodLayer(layer);
+            lc->SetForceLodLayer(layer);
         }
         
         n = n->GetParent();
@@ -546,10 +545,10 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
 
 void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 {
-    LodNode *lodNode = dynamic_cast<LodNode *>(node);
-    if(lodNode)
+    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    if(lc)
     {
-        lodNode->SetForceLodLayer(layer);
+        lc->SetForceLodLayer(layer);
     }
     
     int32 count = node->GetChildrenCount();
@@ -564,9 +563,9 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 {
     if(!node)   return -1;
 
-    LodNode *lodNode = dynamic_cast<LodNode *>(node);
-    if(lodNode)
-        return lodNode->GetForceLodLayer();
+    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    if(lc)
+        return lc->GetForceLodLayer();
     
     int32 count = node->GetChildrenCount();
     for(int32 i = 0; i < count; ++i)

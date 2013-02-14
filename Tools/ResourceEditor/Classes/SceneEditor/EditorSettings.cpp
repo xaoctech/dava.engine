@@ -162,13 +162,13 @@ void EditorSettings::SetRightPanelWidth(int32 width)
 
 float32 EditorSettings::GetLodLayerDistance(int32 layerNum)
 {
-    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
-    return settings->GetFloat(Format("LODLayer_%d", layerNum), LodNode::GetDefaultDistance(layerNum));
+    DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
+    return settings->GetFloat(Format("LODLayer_%d", layerNum), LodComponent::GetDefaultDistance(layerNum));
 }
 
 void EditorSettings::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
-    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
+    DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
     return settings->SetFloat(Format("LODLayer_%d", layerNum), distance);
 }
 
