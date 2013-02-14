@@ -131,7 +131,7 @@ class CommandUpdateEmitter: public Command
 {
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
-	void Init(ParticleEmitter::eType type,
+	void Init(ParticleEmitter::eEmitterType emitterType,
 			  RefPtr<PropertyLine<float32> > emissionAngle,
 			  RefPtr<PropertyLine<float32> > emissionRange,
 			  RefPtr<PropertyLine<Vector3> > emissionVector,
@@ -146,7 +146,7 @@ protected:
 private:
 	ParticleEmitter* emitter;
 
-	ParticleEmitter::eType type;
+	ParticleEmitter::eEmitterType emitterType;
 	RefPtr<PropertyLine<float32> > emissionAngle;
 	RefPtr<PropertyLine<float32> > emissionRange;
 	RefPtr<PropertyLine<Vector3> > emissionVector;
