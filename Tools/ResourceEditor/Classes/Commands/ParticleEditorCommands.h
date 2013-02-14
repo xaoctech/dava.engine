@@ -100,7 +100,7 @@ class CommandUpdateEmitter: public Command
 {
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
-	void Init(ParticleEmitter::eEmitterType emitterType,
+	void Init(ParticleEmitter::eType emitterType,
 			  RefPtr<PropertyLine<float32> > emissionAngle,
 			  RefPtr<PropertyLine<float32> > emissionRange,
 			  RefPtr<PropertyLine<Vector3> > emissionVector,
@@ -115,7 +115,7 @@ protected:
 private:
 	ParticleEmitter* emitter;
 
-	ParticleEmitter::eType type;
+	ParticleEmitter::eType emitterType;
 	RefPtr<PropertyLine<float32> > emissionAngle;
 	RefPtr<PropertyLine<float32> > emissionRange;
 	RefPtr<PropertyLine<Vector3> > emissionVector;
@@ -203,6 +203,8 @@ private:
 	float32 alignToMotion;
 	float32 startTime;
 	float32 endTime;
+	bool frameOverLifeEnabled;
+	float32 frameOverLifeFPS;
 };
 
 class CommandUpdateParticleLayerTime: public Command
