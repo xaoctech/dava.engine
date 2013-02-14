@@ -68,8 +68,10 @@ LOCAL_SRC_FILES :=  \
                     \
                     Rope/b2Rope.cpp \
 
-#LOCAL_CFLAGS := -g -O0
 LOCAL_CFLAGS := -O2
+
+# set arm mode
+# LOCAL_ARM_MODE := arm
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)

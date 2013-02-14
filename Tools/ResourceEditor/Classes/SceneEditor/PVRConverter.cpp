@@ -1,16 +1,19 @@
 #include "PVRConverter.h"
+#include "Render/TextureDescriptor.h"
 
 using namespace DAVA;
 
 PVRConverter::PVRConverter()
 {
-	dataFolderPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	std::replace(dataFolderPath.begin(), dataFolderPath.end(),'\\','/');
-	String::size_type pos = dataFolderPath.find_first_of(":");
-	if(String::npos != pos)
-	{
-		dataFolderPath = dataFolderPath.substr(pos+1);
-	}
+	// pvr map
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA8888] = "OGL8888";
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA4444] = "OGL4444";
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGBA5551] = "OGL5551";
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGB565] = "OGL565";
+	pixelFormatToPVRFormat[DAVA::FORMAT_RGB888] = "OGL888";
+	pixelFormatToPVRFormat[DAVA::FORMAT_PVR2] = "OGLPVRTC2";
+	pixelFormatToPVRFormat[DAVA::FORMAT_PVR4] = "OGLPVRTC4";
+	pixelFormatToPVRFormat[DAVA::FORMAT_A8] = "OGL8";
 }
 
 PVRConverter::~PVRConverter()
@@ -18,77 +21,79 @@ PVRConverter::~PVRConverter()
 
 }
 
-
-String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format, bool generateMimpaps)
+String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-    String filePath, pngFileName;
-    FileSystem::SplitPath(fileToConvert, filePath, pngFileName);
-    String pvrFileName = FileSystem::ReplaceExtension(pngFileName, ".pvr");
+	String outputName;
+	String command = GetCommandLinePVR(fileToConvert, descriptor);
+    Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
-	String cwd = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	FileSystem::Instance()->SetCurrentWorkingDirectory(filePath);
-    
-    String command = "";
-#if defined (__DAVAENGINE_MACOS__)
-    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexTool");
-    
-    switch (format)
-    {
-        case FORMAT_PVR4:
-            command = Format("%s -fOGLPVRTC4 -i%s -yflip0", converterPath.c_str(), pngFileName.c_str());
-            break;
+	if(!command.empty())
+	{
+		FileSystem::Instance()->Spawn(command);
+		outputName = GetPVRToolOutput(fileToConvert);
+	}
 
-        case FORMAT_PVR2:
-            command = Format("%s -fOGLPVRTC2 -i%s -yflip0", converterPath.c_str(), pngFileName.c_str());
-            break;
-            
-        default:
-            break;
-    }
-    
-    if(generateMimpaps && command.length())
-    {
-        command += " -m";
-    }
-    
-#elif defined (__DAVAENGINE_WIN32__)
-	String converterPath = FileSystem::Instance()->AbsoluteToRelativePath(filePath, dataFolderPath);
-	converterPath += "/Data/PVRTexTool.exe";
-    
-    switch (format)
-    {
-        case FORMAT_PVR4:
-            if(generateMimpaps)
-            {
-                command = Format("\"\"%s\" -fOGLPVRTC4 -i%s -m -yflip0\"", converterPath.c_str(), pngFileName.c_str());
-            }
-            else
-            {
-                command = Format("\"\"%s\" -fOGLPVRTC4 -i%s -yflip0\"", converterPath.c_str(), pngFileName.c_str());
-            }
-            break;
-            
-        case FORMAT_PVR2:
-            if(generateMimpaps)
-            {
-                command = Format("\"\"%s\" -fOGLPVRTC2 -i%s -m -yflip0\"", converterPath.c_str(), pngFileName.c_str());
-            }
-            else
-            {
-                command = Format("\"\"%s\" -fOGLPVRTC2 -i%s -yflip0\"", converterPath.c_str(), pngFileName.c_str());
-            }
-            break;
-            
-        default:
-            break;
-    }
-#endif    
-    
-	Logger::Info(command.c_str());
-	FileSystem::Instance()->Spawn(command);
-    
-	FileSystem::Instance()->SetCurrentWorkingDirectory(cwd);
-    
-    String retPvrName = filePath + pvrFileName;
-    return retPvrName;
+	return outputName;
 }
+
+String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
+{
+	String command = pvrTexToolPathname;
+	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
+
+	if(command != "" && format != "")
+	{
+		String outputFile = GetPVRToolOutput(fileToConvert);
+
+		// assemble command
+
+		// input file
+		command += Format(" -i \"%s\"", fileToConvert.c_str());
+
+		// output format
+		command += Format(" -f%s", format.c_str());
+
+		// pvr should be always flipped-y
+		command += " -yflip0";
+
+		// mipmaps
+		if(descriptor.generateMipMaps)
+		{
+			command += " -m";
+		}
+
+		// base mipmap level (base resize)
+		if(0 != descriptor.pvrCompression.compressToWidth && descriptor.pvrCompression.compressToHeight != 0)
+		{
+			command += Format(" -x %d -y %d", descriptor.pvrCompression.compressToWidth, descriptor.pvrCompression.compressToHeight);
+		}
+
+		// output file
+		command += Format(" -o \"%s\"", outputFile.c_str());
+	}
+    else
+    {
+        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.c_str());
+        command = "";
+    }
+
+	return command;
+}
+
+String PVRConverter::GetPVRToolOutput(const DAVA::String &inputPVR)
+{
+	return FileSystem::ReplaceExtension(inputPVR, ".pvr");
+}
+
+void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
+{
+	pvrTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
+	pvrTexToolPathname = FileSystem::Instance()->GetCanonicalPath(pvrTexToolPathname);
+
+	if(!FileSystem::Instance()->IsFile(pvrTexToolPathname))
+	{
+		Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.c_str());
+		pvrTexToolPathname = "";
+	}
+}
+

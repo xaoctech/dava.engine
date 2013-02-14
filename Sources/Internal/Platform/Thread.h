@@ -44,6 +44,7 @@ namespace DAVA
 	\ingroup threads
 	\brief wrapper class to give us level of abstraction on thread implementation in particual OS. Now is supports Win32, MacOS, iPhone platforms.
 */
+    
 class Thread : public BaseObject
 {
 public:
@@ -132,11 +133,15 @@ public:
 private:
 	friend void	* PthreadMain(void * param);
 	void		StartAndroid();
-	bool		isMainThread;
+    
+    static pid_t mainThreadId;
+    
 public:
-	void		MainThread();
+
+	static void		InitMainThread();
 	static void		SleepThread(int32 timems);
-#else //PLATFORMS
+
+	#else //PLATFORMS
 	// other platforms
 #endif //PLATFORMS	
 };

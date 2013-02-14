@@ -94,6 +94,7 @@
 	
     willQuit = false;
     keyboardLocked = true;
+    needToSkipMouseUp = false;
     
     
     windowOffset = Vector2(0.0f, 0.0f);
@@ -232,7 +233,8 @@
 
 - (BOOL)resignFirstResponder
 {	
-	return YES;
+//	return YES;
+    return NO;
 }
 
 
@@ -364,7 +366,8 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
     [super mouseDown:theEvent];
     
-	[self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
+    if(!needToSkipMouseUp)
+        [self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -390,6 +393,12 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
     [super mouseUp:theEvent];
 
+    if(needToSkipMouseUp)
+    {
+        needToSkipMouseUp = false;
+        return;
+    }
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 
@@ -403,7 +412,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
     [super mouseEntered:theEvent];
 
-	NSLog(@"mouse ENTERED");
+//	NSLog(@"mouse ENTERED");
     if(RenderManager::Instance()->GetCursor())
     {
         if(RenderManager::Instance()->GetCursor()->IsShow())
@@ -418,7 +427,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
     [super mouseExited:theEvent];
 
 	
-    NSLog(@"mouse EXITED");
+//    NSLog(@"mouse EXITED");
     [NSCursor unhide];
 //	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
@@ -542,6 +551,10 @@ static int32 oldModifersFlags = 0;
 - (void) LockKeyboardInput:(bool) locked
 {
     keyboardLocked = locked;
+    if(keyboardLocked)
+    {
+        needToSkipMouseUp = true;
+    }
 }
 
 

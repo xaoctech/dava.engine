@@ -7,9 +7,10 @@
 
 #include "SceneValidator.h"
 
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtUtils.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
@@ -89,6 +90,11 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
 
 void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     SceneNode *n = (SceneNode *)node;
     UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
     text->SetText(StringToWString(n->GetName()));
@@ -116,6 +122,8 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     {
         cell->SetSelected(false, false);
     }
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
@@ -133,7 +141,7 @@ void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
         Camera * cam = dynamic_cast<Camera*>(workingNode);
         if (cam)
         {
-            if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
+            if (IsKeyModificatorPressed(DVKEY_ALT))
             {
                 workingScene->SetClipCamera(cam);
             }
@@ -200,7 +208,7 @@ void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
 
 void SceneGraph::OnRemoveNodeButtonPressed(BaseObject *, void *, void *)
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RemoveSceneNode(workingNode);
 }
 
@@ -210,18 +218,6 @@ void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject *, void *, void *)
 }
 
 
-void SceneGraph::OnLookAtButtonPressed(BaseObject *, void *, void *)
-{
-    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(workingNode);
-    if (mesh)
-    {
-        AABBox3 bbox = mesh->GetBoundingBox();
-        AABBox3 transformedBox;
-        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
-        Vector3 center = transformedBox.GetCenter();
-        workingScene->GetCurrentCamera()->SetTarget(center);
-    }
-}
 
 void SceneGraph::OnBakeMatricesPressed(BaseObject *, void *, void *)
 {
@@ -255,13 +251,13 @@ void SceneGraph::OnEnableDebugFlagsPressed(BaseObject *, void *, void *)
 {
     if (workingNode)
     {
-        if (workingNode->GetDebugFlags() & SceneNode::DEBUG_DRAW_ALL)
+        if (workingNode->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             workingNode->SetDebugFlags(0, true);
         }
         else
         {
-            workingNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL, true);
+            workingNode->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
         }
     }
 }

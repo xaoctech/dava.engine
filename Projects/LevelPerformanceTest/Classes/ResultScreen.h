@@ -2,17 +2,23 @@
 #define LevelPerformanceTest_ResultScreen_h
 
 #include "DAVAEngine.h"
+#include "LandscapeTestData.h"
 
 using namespace DAVA;
 
-enum ResultScreenState {
-	RESULT_STATE_NORMAL=0,
+enum eResultScreenState
+{
+	RESULT_STATE_NORMAL = 0,
 	RESULT_STATE_MAKING_SCREEN_SHOT,
 	RESULT_STATE_FINISHED
 };
 
-class ResultScreen: public DAVA::UIScreen {
+class ResultScreen: public DAVA::UIScreen
+{
 public:
+	ResultScreen(const LandscapeTestData& testData, const String& filename, Texture* landscapeTexture);
+	~ResultScreen();
+	
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual void WillAppear();
@@ -22,21 +28,25 @@ public:
 	virtual void Draw(const UIGeometricData &geometricData);
 	
 	virtual void Input(DAVA::UIEvent * touch);
-	
-	ResultScreen(const Vector<float>* const fpsStatistics, const String& filename, int testCount, int testNumber);
 
-	ResultScreenState GetState() const {return state;};
+	eResultScreenState GetState() const {return state;};
 	bool IsFinished() const {return isFinished;};
 private:
 	ResultScreen();
 	ResultScreen& operator=(const ResultScreen&);
+    
+    void PrepareSprite();
 	
-	void DrawStatImage(Vector<float> *v, DAVA::Rect rect);
-	Color PickColor(float fps) const;
+	void DrawStatImage(DAVA::Rect rect);
+	void DrawMinFpsTargets(DAVA::Rect rect);
+    
+	Texture* texture;
+	Sprite* textureSprite;
+    Sprite* resultSprite;
 
 	String filename;
-	Vector<float> data[3];
-	ResultScreenState state;
+	const LandscapeTestData& testData;
+	eResultScreenState state;
 	bool isFinished;
 	
 	UIStaticText *fileNameText;
@@ -44,8 +54,8 @@ private:
 	UIStaticText *tapToContinue;
 	UIStaticText *screenshotText;
 	
-	int testCount;
-	int testNumber;
+	int32 testCount;
+	int32 testNumber;
 };
 
 #endif

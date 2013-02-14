@@ -34,8 +34,8 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/Camera.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Light.h"
 
 namespace DAVA
 {
@@ -53,7 +53,7 @@ class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
-class LightNode;
+class Light;
 class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
@@ -61,7 +61,21 @@ class ImposterManager;
 class ImposterNode;
 class EntityManager;
 class BVHierarchy;
-/** 
+class Component;
+class SceneSystem;
+class RenderSystem;
+class RenderUpdateSystem;
+class TransformSystem;
+class LodSystem;
+class DebugRenderSystem;
+class EventSystem;
+class ParticleEmitterSystem;
+class ParticleEffectSystem;
+class UpdatableSystem;
+class LightUpdateSystem;
+class SwitchSystem;
+    
+/**
     \ingroup scene3d
     \brief This class is a code of our 3D Engine scene graph. 
     To visualize any 3d scene you'll need to create Scene object. 
@@ -73,25 +87,34 @@ class BVHierarchy;
 class Scene : public SceneNode
 {
 public:	
-    
-//    struct LodLayer
-//    {
-//        float32 nearDistance;
-//        float32 farDistance;
-//
-//        float32 nearDistanceSq;
-//        float32 farDistanceSq;
-//    };
-    
 	Scene();
 	virtual ~Scene();
 	
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
      */
-    virtual void    RegisterNode(SceneNode * node);
-    virtual void    UnregisterNode(SceneNode * node);
+    virtual void    RegisterNode(SceneNode * entity);
+    virtual void    UnregisterNode(SceneNode * entity);
     
+    virtual void    AddComponent(SceneNode * entity, Component * component);
+    virtual void    RemoveComponent(SceneNode * entity, Component * component);
+    
+    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    
+	virtual void ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event);
+
+    Vector<SceneSystem*> systems;
+    TransformSystem * transformSystem;
+    RenderUpdateSystem * renderUpdateSystem;
+	LodSystem * lodSystem;
+    DebugRenderSystem * debugRenderSystem;
+	EventSystem * eventSystem;
+	ParticleEffectSystem * particleEffectSystem;
+	UpdatableSystem * updatableSystem;
+    LightUpdateSystem * lightUpdateSystem;
+	SwitchSystem * switchSystem;
+	RenderSystem * renderSystem;
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -208,8 +231,8 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
-    Set<LightNode*> & GetLights();
-	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
+    Set<Light*> & GetLights();
+	Light * GetNearestDynamicLight(Light::eType type, Vector3 position);
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
@@ -222,6 +245,9 @@ public:
 	void SetReferenceNodeSuffix(const String & suffix);
 	const String & GetReferenceNodeSuffix();
 	bool IsReferenceNodeSuffixChanged();
+
+	EventSystem * GetEventSystem();
+	RenderSystem * GetRenderSystem();
     
 protected:	
     
@@ -249,15 +275,14 @@ protected:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
-    Set<LightNode*> lights;
-	ShadowRect * shadowRect;
-	BVHierarchy * bvHierarchy;
+    Set<Light*> lights;
 
+	BVHierarchy * bvHierarchy;
 	ImposterManager * imposterManager;
 
 	String referenceNodeSuffix;
 	bool referenceNodeSuffixChanged;
-
+    
     friend class SceneNode;
 };
 

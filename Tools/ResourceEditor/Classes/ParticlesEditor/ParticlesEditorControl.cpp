@@ -1,6 +1,6 @@
 #include "ParticlesEditorControl.h" 
 #include "../SceneEditor/ControlsFactory.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 #include "../SpritesPacker.h"
 
 ParticlesEditorControl::ParticlesEditorControl()
@@ -1314,7 +1314,7 @@ void ParticlesEditorControl::GetEmitterPropValue(eProps id, bool getLimits)
     switch (id) {
         case EMITTER_TYPE:
             
-            selectedEmitterTypeElement = emitter->type;
+            selectedEmitterTypeElement = emitter->emitterType;
             
             SafeAddControl(emitterTypeList);
             SafeRemoveControl(valueBut);
@@ -1461,7 +1461,7 @@ void ParticlesEditorControl::SetEmitterPropValue(eProps id, bool def)
     }
     switch (id) {
         case EMITTER_TYPE:
-            emitter->type = (ParticleEmitter::eType)selectedEmitterTypeElement;
+            emitter->emitterType = (ParticleEmitter::eEmitterType)selectedEmitterTypeElement;
             break;
             
         case EMITTER_EMISSION_ANGLE:
@@ -1506,7 +1506,7 @@ void ParticlesEditorControl::ResetEmitterPropValue(eProps id)
     switch (id) {
         case EMITTER_TYPE:
             selectedEmitterTypeElement = 0;
-            emitter->type = ParticleEmitter::EMITTER_POINT;
+            emitter->emitterType = ParticleEmitter::EMITTER_POINT;
             break;
             
         case EMITTER_EMISSION_ANGLE:
@@ -2354,8 +2354,9 @@ void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
 
 void ParticlesEditorControl::LoadFromYaml(const String &pathToFile)
 {
-	particleEmitterNode->LoadFromYaml(pathToFile);
-	SetEmitter(particleEmitterNode->GetEmitter());
+	//This code should not be used any more because of new particle editor structure.
+	//particleEmitterNode->LoadFromYaml(pathToFile);
+	//SetEmitter(particleEmitterNode->GetEmitter());
 }
 
 void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
@@ -2969,13 +2970,13 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
     
     int32 emitPropIndex = 0;
     
-    if(emitter->type == ParticleEmitter::EMITTER_POINT)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_POINT)
         file->WriteLine("    type: point");
-    if(emitter->type == ParticleEmitter::EMITTER_LINE)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_LINE)
         file->WriteLine("    type: line");
-    if(emitter->type == ParticleEmitter::EMITTER_RECT)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_RECT)
         file->WriteLine("    type: rect");
-    if(emitter->type == ParticleEmitter::EMITTER_ONCIRCLE)
+    if(emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE)
         file->WriteLine("    type: oncircle");
     emitPropIndex++;
     
@@ -3043,7 +3044,7 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 			file->WriteLine("    isLong: true");
 		}
 		
-		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
+		//file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
 
 		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
 		file->WriteLine(Format("    pivotPoint: [%.1f, %.1f]", emitter->GetLayers()[i]->pivotPoint.x-(sprite->GetWidth()/2.0f), emitter->GetLayers()[i]->pivotPoint.y-(sprite->GetHeight()/2.0f)));
@@ -3454,7 +3455,7 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 	propList->Refresh();
 }
 
-void ParticlesEditorControl::SetNode(ParticleEmitterNode * node)
+void ParticlesEditorControl::SetNode(SceneNode * node)
 {
 	SafeRelease(particleEmitterNode);
 	particleEmitterNode = SafeRetain(node);

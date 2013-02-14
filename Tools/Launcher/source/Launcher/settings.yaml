@@ -1,4 +1,13 @@
-CONFIG_UPDATE_INTERVAL: 30
 LAUNCHER:
-  LAUNCHER_UPDATE_URL: http://192.168.2.1/~adebt/Launcher/config.yaml
+  LAUNCHER_UPDATE_URL: http://127.0.0.1/~adebt/Launcher/config.yaml
   LAUNCHER_VER: 0.1
+DEVELOPMENT:
+  Calculator:
+    ver: 2.2
+    runPath: Calculator.app/Contents/MacOS/Calculator
+    installCmd: ""
+    uninstallCmd: ""
+    installParams: ""
+    uninstallParams: ""
+    installedFiles:
+      - Calculator.app

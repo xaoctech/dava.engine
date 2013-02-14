@@ -5,6 +5,12 @@
 
 #include "EditorSettings.h"
 
+
+const float32 LandscapeToolsPanel::SLIDER_WIDTH = 250.0f;
+const float32 LandscapeToolsPanel::TEXTFIELD_WIDTH = 40.0f;
+const float32 LandscapeToolsPanel::TEXT_WIDTH = 60.0f;
+
+
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
     ,   delegate(newDelegate)
@@ -35,6 +41,9 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
+LandscapeToolsPanel::LandscapeToolsPanel(const Rect & rect):UIControl(rect)
+{
+};
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
@@ -46,6 +55,11 @@ LandscapeToolsPanel::~LandscapeToolsPanel()
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
     UISlider *slider = new UISlider(rect);
     slider->SetMinMaxValue(0.f, 1.0f);
     slider->SetValue(0.5f);
@@ -59,6 +73,8 @@ UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
     slider->SetMaxLeftRightStretchCap(5);
 
     slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     
     return slider;
 }
@@ -108,6 +124,7 @@ LandscapeTool * LandscapeToolsPanel::CurrentTool()
 void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
 {
     selectionPanel = newPanel;
+	selectionPanel->SetVisible(this->GetVisible());
     if(selectionPanel)
     {
         selectionPanel->SetDelegate(this);

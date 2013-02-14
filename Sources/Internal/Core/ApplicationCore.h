@@ -213,10 +213,15 @@ protected:
 	
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	/**
-		\brief Called when application go to background on iOS platforms
+		\brief Called when application goes to background on iOS platforms
 	 */
 	virtual void OnBackground() = 0;
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
+    
+    /**
+     \brief Called when application goes to background due to device lock on iOS platforms
+	 */
+	virtual void OnDeviceLocked() = 0;
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	
 	/**	
 		\brief this function is called every frame to let you update your application. 

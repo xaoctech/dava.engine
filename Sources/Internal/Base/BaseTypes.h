@@ -187,7 +187,7 @@ typedef std::string		String;
 #if defined(__DAVAENGINE_ANDROID__)
 	typedef std::basic_string<wchar_t>	WideString;
 #else //#if defined(__DAVAENGINE_ANDROID__)
-typedef std::wstring	WideString;
+	typedef std::wstring	WideString;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	
@@ -207,8 +207,13 @@ template<	class _Kty,
 			class _Ty,
 			class _Pr = std::less<_Kty>,
 			class _Alloc = std::allocator<std::pair<const _Kty, _Ty> > >
-
 class Map : public std::map<_Kty, _Ty, _Pr, _Alloc> {};
+
+template<	class _Kty,
+			class _Ty,
+			class _Pr = std::less<_Kty>,
+			class _Alloc = std::allocator<std::pair<const _Kty, _Ty> > >
+class MultiMap : public std::multimap<_Kty, _Ty, _Pr, _Alloc> {};
 
 template < class T, class Container = std::deque<T> > class Stack : public std::stack< T, Container > {};
 
@@ -247,9 +252,16 @@ inline T Clamp(T val, T a, T b)
 }
 	
 
+#if defined(__DAVAENGINE_WIN32__)
+#define Snprinf	_snprintf	
+#else //#if defined(__DAVAENGINE_WIN32__)
+#define Snprinf	snprintf	
+#endif //#if defined(__DAVAENGINE_WIN32__)
 
+#define Memcmp memcmp
 #define Memcpy memcpy
 #define Memset memset
+#define Memmove memmove
 #define Alloc malloc
 #define Free free
 #define Realloc realloc

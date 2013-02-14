@@ -135,6 +135,7 @@ bool ResourcePackerScreen::IsMD5ChangedDir(const String & processDirectoryPath, 
 	MD5::ForDirectory(pathname, newMD5Digest, isRecursive);
 
 	file = File::Create(md5FileName, File::CREATE | File::WRITE);
+    
 	int32 bytes = file->Write(newMD5Digest, 16);
 	DVASSERT(bytes == 16 && "16 bytes should be always written for md5 file");
 	SafeRelease(file);
@@ -496,23 +497,19 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 			TexturePacker packer;
 			String outputPathWithSlash = outputPath + String("/");
 				
-			bool isSplit = false;
-			if (CommandLineParser::Instance()->IsFlagSet("--split"))
-				isSplit = true;
-
 			if(isLightmapsPacking)
 			{
 				packer.UseOnlySquareTextures();
 				packer.SetMaxTextureSize(2048);
 			}
 
-			if (!isSplit)
+			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 			{
-				packer.PackToTextures(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
+				packer.PackToTexturesSeparate(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
 			}
 			else
 			{
-				packer.PackToTexturesSeparate(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
+				packer.PackToTextures(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
 			}
 		}
 	}	

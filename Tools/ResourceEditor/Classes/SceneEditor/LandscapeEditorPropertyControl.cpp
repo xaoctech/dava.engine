@@ -1,4 +1,5 @@
 #include "LandscapeEditorPropertyControl.h"
+#include "../Qt/Main/QtUtils.h"
 
 //*********************  LandscapeEditorSettings  **********************
 LandscapeEditorSettings::LandscapeEditorSettings()
@@ -30,6 +31,33 @@ LandscapeEditorPropertyControl::~LandscapeEditorPropertyControl()
     SafeRelease(settings);
 }
 
+void LandscapeEditorPropertyControl::Input(DAVA::UIEvent *currentInput)
+{
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    {
+        if(IsKeyModificatorPressed(DVKEY_CTRL))
+        {
+            if(DVKEY_1 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskred", true);
+            }
+            if(DVKEY_2 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskgreen", true);
+            }
+            if(DVKEY_3 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskblue", true);
+            }
+            if(DVKEY_4 == currentInput->tid)
+            {
+                OnTexturePreviewPropertyChanged(propertyList, "landscapeeditor.maskalpha", true);
+            }
+        }
+    }
+
+    LandscapePropertyControl::Input(currentInput);
+}
 
 void LandscapeEditorPropertyControl::OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
@@ -116,17 +144,19 @@ void LandscapeEditorPropertyControl::SetValuesFromSettings()
 {
     if(MASK_EDITOR_MODE == editorMode)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        DVASSERT(landscape);
-        
-        propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskred", settings->redMask, 
-                                                     landscape->GetTexture(LandscapeNode::TEXTURE_TILE0));
-        propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskgreen", settings->greenMask,
-                                                     landscape->GetTexture(LandscapeNode::TEXTURE_TILE1));
-        propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskblue", settings->blueMask,
-                                                     landscape->GetTexture(LandscapeNode::TEXTURE_TILE2));
-        propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskalpha", settings->alphaMask,
-                                                     landscape->GetTexture(LandscapeNode::TEXTURE_TILE3));
+        //LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+		LandscapeNode *landscape = GetLandscape();
+		if (landscape)
+        {
+			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskred", settings->redMask,
+														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE0));
+			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskgreen", settings->greenMask,
+														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE1));
+			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskblue", settings->blueMask,
+														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE2));
+			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskalpha", settings->alphaMask,
+														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE3));
+		}
     }
 }
 

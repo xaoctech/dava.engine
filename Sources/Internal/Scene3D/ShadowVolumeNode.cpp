@@ -60,7 +60,7 @@ void DAVA::ShadowVolumeNode::Draw()
 void DAVA::ShadowVolumeNode::DrawShadow()
 {
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
+	Matrix4 meshFinalMatrix = GetWorldTransform() * prevMatrix;
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
 	Matrix4 projMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
@@ -70,8 +70,8 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
 
-	Vector3 position = Vector3() * worldTransform;
-	LightNode * light = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, position);
+	Vector3 position = Vector3() * GetWorldTransform();
+	Light * light = scene->GetNearestDynamicLight(Light::TYPE_COUNT, position);
 	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
 	if (light && uniformLightPosition0 != -1)
 	{
@@ -472,6 +472,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
+		DVASSERT_MSG(IsPointerToExactClass<ShadowVolumeNode>(this), "Can clone only ShadowVolumeNode");
 		dstNode = new ShadowVolumeNode();
 	}
 
@@ -479,7 +480,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 	ShadowVolumeNode *nd = (ShadowVolumeNode *)dstNode;
 
 	nd->shadowPolygonGroup = shadowPolygonGroup;
-	nd->shadowPolygonGroup->Retain();
+    SafeRetain(nd->shadowPolygonGroup);
 
 	return dstNode;
 }

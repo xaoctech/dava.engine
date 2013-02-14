@@ -34,15 +34,15 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
-#if defined (__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     #include "PVRDefines.h"
-#else
+#else //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 //    #include "libpvr/PVRTError.h"
 //    #include "libpvr/PVRTDecompress.h"
 //    #include "libpvr/PVRTMap.h"
     #include "libpvr/PVRTextureHeader.h"
 //    #include "libpvr/PVRTexture.h"
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
 namespace DAVA
 {
@@ -65,7 +65,7 @@ struct PVRHeaderV3{
     
 	//Constructor for the header - used to make sure that the header is initialised usefully. The initial pixel format is an invalid one and must be set.
 	PVRHeaderV3() :
-    u32Version(PVRTEX3_IDENT),u32Flags(0),
+    u32Version(0),u32Flags(0),
     u64PixelFormat(ePVRTPF_NumCompressedPFs),
     u32ColourSpace(0),u32ChannelType(0),
     u32Height(1),u32Width(1),u32Depth(1),
@@ -100,24 +100,31 @@ struct PVRHeaderV2
     
     
 class Texture;
+class Image;
+class ImageSet;
+class File;
 class LibPVRHelper
 {
 public:
 
-    static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
-    static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture);
+    static bool IsPvrFile(File *file);
+    static uint32 GetMipMapLevelsCount(File *file);
+    
+    static bool ReadFile(File *file, const Vector<Image *> &imageSet);
     
     static PixelFormat GetPixelFormat(const String &filePathname);
     static uint32 GetDataLength(const String &filePathname);
-
     
 protected:
+
+    static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
+
     static uint32 GetBitsPerPixel(uint64 pixelFormat);
     static void GetFormatMinDims(uint64 pixelFormat, uint32 &minX, uint32 &minY, uint32 &minZ);
     static uint32 GetTextureDataSize(PVRHeaderV3 textureHeader, int32 mipLevel = PVRTEX_ALLMIPLEVELS, bool allSurfaces = true, bool allFaces = true);
     static void MapLegacyTextureEnumToNewFormat(PVRTPixelType OldFormat, uint64& newType, EPVRTColourSpace& newCSpace, EPVRTVariableType& newChanType, bool& isPreMult);
     static void ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, PVRHeaderV3& NewHeader);
-    static bool IsGLExtensionSupported(const char * const extension);
+//    static bool IsGLExtensionSupported(const char * const extension);
 
     static const PixelFormat GetCompressedFormat(const uint64 PixelFormat);
     static const PixelFormat GetFloatTypeFormat(const uint64 PixelFormat);
@@ -126,10 +133,21 @@ protected:
     
     static const PixelFormat GetTextureFormat(const PVRHeaderV3& textureHeader);
     
-    static PVRHeaderV3 GetHeaderForFile(const String &filePathname);
-    static PVRHeaderV3 GetHeaderForData(const uint8* pvrData, const int32 pvrDataSize);
+    static PVRHeaderV3 GetHeader(const String &filePathname);
+    static PVRHeaderV3 GetHeader(File *file);
+    static PVRHeaderV3 GetHeader(const uint8* pvrData, const int32 pvrDataSize);
     
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
+    
+    static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
+    
+    static bool CopyToImage(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header, const uint8 *pvrData);
+    
+    static PVRHeaderV3 CreateDecompressedHeader(const PVRHeaderV3 &compressedHeader);
+    static bool AllocateImageData(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header);
+    
+    static int32 GetMipMapLayerOffset(uint32 mipMapLevel, const PVRHeaderV3 &header);
+    
 };
     
 };

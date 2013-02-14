@@ -115,9 +115,16 @@ public:
 
 	virtual bool IsTextSupportsSoftwareRendering() { return true; };
 
+	//We need to return font path
+	String GetFontPath();
+	// Put font properties into YamlNode
+	virtual YamlNode * SaveToYamlNode();
+
 private:
 	FTFont(FTInternalFont* internalFont);
 	FTInternalFont	* internalFont;
+	
+	String fontPath;
 };
 
 

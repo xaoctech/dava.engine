@@ -32,6 +32,11 @@
 #include "FileSystem/ResourceArchive.h"
 #include "FileSystem/DynamicMemoryFile.h"
 
+#include "Utils/StringFormat.h"
+
+#include <sys/stat.h>
+#include <time.h>
+
 
 namespace DAVA 
 {
@@ -79,6 +84,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 			uint8 * buffer = new uint8[size];
 			item.archive->LoadResource(relfilename, buffer);
 			DynamicMemoryFile * file =  DynamicMemoryFile::Create(buffer, size, attributes);
+            SafeDeleteArray(buffer);
 			return file;
 		}
 	}
@@ -109,6 +115,8 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	{
 		file = fopen(filename.c_str(),"ab");
 		if (!file)return NULL;
+		fseek(file, 0, SEEK_END);
+		size = ftell(file);
 	}
 	else 
 	{
@@ -123,12 +131,12 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	return fileInstance;
 }
 
-const char8 * File::GetFilename()
+const String File::GetFilename()
 {
-	return filename.c_str();
+	return filename;
 }
 
-const char8 * File::GetPathname()
+const String File::GetPathname()
 {
 	Logger::Debug("[AnsiFile::GetPathname] not implemented; allways return NULL;");
 	return 0;
@@ -169,6 +177,22 @@ uint32 File::ReadString(char8 * destinationBuffer, uint32 destinationBufferSize)
 	}
 	return writeIndex - 1;
 }
+    
+uint32 File::ReadString(String & destinationString)
+{
+    uint32 writeIndex = 0;
+	while(!IsEof())
+	{
+		uint8 currentChar;
+		Read(&currentChar, 1);
+		
+		destinationString += currentChar;
+		writeIndex++;
+		if(currentChar == 0)break;
+	}
+	return writeIndex - 1;
+}
+
 
 uint32 File::ReadLine(void * pointerToData, uint32 bufferSize)
 {
@@ -241,10 +265,11 @@ bool File::IsEof()
 	return (feof(file) != 0);
 }
 
-bool File::WriteString(const String & strtowrite)
+bool File::WriteString(const String & strtowrite, bool shouldNullBeWritten)
 {
 	const char * str = strtowrite.c_str();
-	return (Write((void*)str, (uint32)(strtowrite.length() + 1)) == strtowrite.length() + 1);
+    uint32 null = (shouldNullBeWritten) ? (1) : (0);
+	return (Write((void*)str, (uint32)(strtowrite.length() + null)) == strtowrite.length() + null);
 }
     
 bool File::WriteNonTerminatedString(const String & strtowrite)
@@ -268,4 +293,28 @@ bool File::WriteLine(const String & string)
 
 }
 
+String File::GetModificationDate(const String & filePathname)
+{
+    String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
+    
+    struct stat fileInfo = {0};
+    int32 ret = stat(realPathname.c_str(), &fileInfo);
+    if(0 == ret)
+    {
+#if defined (__DAVAENGINE_WIN32__)
+		tm* utcTime = gmtime(&fileInfo.st_mtime);
+#elif defined (__DAVAENGINE_ANDROID__)
+		tm* utcTime = gmtime((const time_t *)&fileInfo.st_mtime);
+#elif defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
+        tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
+#endif
+        return String(Format("%04d.%02d.%02d %02d:%02d:%02d",
+                       utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
+                       utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec));
+    }
+    return String("");
+}
+
+    
+    
 }

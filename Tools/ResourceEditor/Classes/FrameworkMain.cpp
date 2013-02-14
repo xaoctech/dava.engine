@@ -18,9 +18,11 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
 
+#include "SceneEditor/PVRConverter.h"
+#include "version.h"
+
 using namespace DAVA;
 
-#define VERSION     "0.0.35"
  
 void PrintUsage()
 {
@@ -87,23 +89,92 @@ void ProcessRecourcePacker()
         return;
     }
     
+    new PVRConverter();
+
+    
+    if(commandLine.size() < 3)
+    {
+        printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
+        return;
+    }
+
+#if defined (__DAVAENGINE_MACOS__)
+	String toolName = String("/PVRTexToolCL");
+#elif defined (__DAVAENGINE_WIN32__)
+	String toolName = String("/PVRTexToolCL.exe");
+#endif
+    PVRConverter::Instance()->SetPVRTexTool(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2] + toolName);
+
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
     printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.c_str());
     printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.c_str());
     
-    
+    Texture::InitializePixelFormatDescriptors();
     resourcePackerScreen->PackResources();
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
+    
+    PVRConverter::Instance()->Release();
     
     SafeRelease(resourcePackerScreen);
 }
 
 
+/*
+    Is it possible, to store size before vector, seems doable and cache friendly, because to tranverse vector firstly you 
+    need to read size.
+ */
+template<class T>
+class CacheFriendlyVector
+{
+public:
+    uint8 * data;
+};
+
+
+
+class EntityX
+{
+//    Vector<Component*> fastAccessArray;
+//    Vector<Component*> allComponents;
+    Component ** fastAccessArray;
+    Component ** allComponents;
+    EntityX ** children;
+};
+
+
+class EntitySTL
+{
+    CacheFriendlyVector<Component*> fastAccessArray;
+    CacheFriendlyVector<Component*> allComponents;
+    CacheFriendlyVector<EntitySTL*> children;
+};
+
+/*
+    => 24 bytes for each entity. (8 * 3 = 24 = 64bit system) (12bytes on 32 bit system)
+    =>
+    
+    Action update transform: (тут не может не быть cache misses)
+ 
+    Entity * entity = GetEntity(); // cache miss
+    TransformComponent * tc = entity->fastTransforms[COMPONENT_TRANSFORM]; // cache miss
+    tc->UpdateLocalTransform(transform); // cache miss
+ 
+ 
+    TransformSystem:
+    for each object go to his children and add them, for them do the same, linearly
+ 
+ */
+
+
+
 void FrameworkDidLaunched()
 {
+    uint32 size = sizeof(EntityX);
+    uint32 size2 = sizeof(EntitySTL);
+    
 //	EntityTest();
 
     new CommandLineTool();
@@ -111,7 +182,23 @@ void FrameworkDidLaunched()
     new EditorSettings();
 	new EditorConfig();
     new SceneValidator();
+
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
+    
+    String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
+    String sourceFolder = String("DataSource/3d");
+    
+    if(!CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
+    {
+        if(sourceFolder.length() <= dataSourcePathname.length())
+        {
+            uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
+            SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
+            creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
+            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+        }
+    }
+    
     
 	if (Core::Instance()->IsConsoleMode())
 	{
@@ -134,7 +221,7 @@ void FrameworkDidLaunched()
             CommandLineParser::Instance()->SetExtendedOutput(true);
         }
 		
-        if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+        if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
         {
             ProcessRecourcePacker();
             return;  
@@ -146,7 +233,7 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
     
 	DAVA::Core::Instance()->SetVirtualScreenSize(480, 320);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "Gfx");
 #else
 	KeyedArchive * appOptions = new KeyedArchive();
     
@@ -160,26 +247,30 @@ void FrameworkDidLaunched()
         DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
     }
     
-	appOptions->SetString("title", Format("DAVA SDK - Studio. %s", VERSION));
+	appOptions->SetString("title", Format("dava framework - resource editor | %s", RESOURCE_EDITOR_VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "XGfx");
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "Gfx");
 #endif
     
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
 	DAVA::Core::Instance()->SetOptions(appOptions);
     DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
+
+	SafeRelease(appOptions);
 }
 
 
 void FrameworkWillTerminate()
 {
-    CommandLineTool::Instance()->Release();
+	SceneValidator::Instance()->Release();
+	EditorConfig::Instance()->Release();
+	EditorSettings::Instance()->Release();
     SceneExporter::Instance()->Release();
-    EditorSettings::Instance()->Release();
+	CommandLineTool::Instance()->Release();
 }

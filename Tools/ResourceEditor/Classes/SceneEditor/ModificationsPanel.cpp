@@ -4,6 +4,11 @@
 #include "ModificationPopUp.h"
 #include "../EditorScene.h"
 #include "EditorConfig.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
+
+static const float32 BUTTON_W = 20.0f;
+static const float32 BUTTON_B = 5.0f;
 
 static const WideString mods[3] = { L"M", L"R", L"S"};
 static const WideString axises[3] = { L"X", L"Y", L"Z"};
@@ -155,13 +160,13 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 		KeyedArchive * customProperties = node->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0) == modeCollision)
 		{
-			node->SetDebugFlags(node->GetDebugFlags() | (SceneNode::DEBUG_DRAW_RED_AABBOX));
+			node->SetDebugFlags(node->GetDebugFlags() | (DebugRenderComponent::DEBUG_DRAW_RED_AABBOX));
 			return;
 		}
 	}
 	else
 	{
-		node->SetDebugFlags(node->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_RED_AABBOX));
+		node->SetDebugFlags(node->GetDebugFlags() & (~DebugRenderComponent::DEBUG_DRAW_RED_AABBOX));
 	}
 
 	int size = node->GetChildrenCount();

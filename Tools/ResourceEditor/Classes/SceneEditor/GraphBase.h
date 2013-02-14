@@ -33,7 +33,7 @@ public:
     
     bool GraphOnScreen();
     bool PropertiesOnScreen();
-    void UpdatePropertiesForCurrentNode();
+    void UpdateMatricesForCurrentNode();
     
     virtual void SelectNode(BaseObject *node) = 0;
     virtual void UpdatePropertyPanel() = 0;
@@ -42,7 +42,7 @@ public:
     virtual void RefreshGraph();
     
     //NodesPropertyDelegate
-    virtual void NodesPropertyChanged();
+    virtual void NodesPropertyChanged(const String& forKey);
     
 protected:
 
@@ -57,6 +57,10 @@ protected:
     
     virtual void CreateGraphPanel(const Rect &rect);
     void CreatePropertyPanel(const Rect &rect);
+
+	// Returns TRUE if it is enough to rebuild selected node for this property.
+	bool IsRebuildSelectedNodeEnough(const String& propertyName);
+
     UIControl *graphPanel;
     UIControl *propertyPanel;
 

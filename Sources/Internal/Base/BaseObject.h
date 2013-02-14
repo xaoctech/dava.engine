@@ -32,9 +32,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObjectChecker.h"
+#include "Base/Introspection.h"
 #include "Debug/DVAssert.h"
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 #include "Render/RenderBase.h"
 #include <typeinfo>
 
@@ -56,7 +58,8 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
-class   KeyedArchive;
+class IntrospectionInfo;
+class KeyedArchive;
 	
 class	BaseObject
 {
@@ -140,22 +143,36 @@ public:
     
     static BaseObject * DummyGet() { return 0; };
 protected:
+    /*
+    void SaveIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void SaveCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
+    
+    void LoadIntrospection(const String &key, KeyedArchive * archive, const IntrospectionInfo *info, void * object);
+    void LoadCollection(const String &key, KeyedArchive * archive, const IntrospectionMember *member, void * object);
+
+    void * GetMemberObject(const IntrospectionMember *member, void * object) const;
+	*/
+    
 	
 	BaseObject(const BaseObject & b)
-	{
-	}
+	{ }
+
 	BaseObject & operator = (const BaseObject & b)
 	{
 		return *this;
 	}
 	
 	int32 referenceCount;
+
+public:
+		INTROSPECTION(BaseObject,
+		MEMBER(referenceCount, "referenceCount", INTROSPECTION_EDITOR))
 };
 
 
 /** 
 	\ingroup baseobjects
-	\brief	function to perform release safely. It checks if given object not equal to zero, in debug mode it also checks if such object 
+	\brief	function to perform release safely. It checks if given object not equal to zero, in debug mode it also checks if such object
 			haven't deallocated before and only if both checks is positive it call Release. After release it set value of variable to 0 to avoid 
 			possible errors with usage of this variable
  */
@@ -174,6 +191,7 @@ void SafeRelease(C * &c)
 		c = 0;
 	}
 }
+    
 
 // /*#if defined(__DAVAENGINE_DIRECTX9__)*/
 //template<>

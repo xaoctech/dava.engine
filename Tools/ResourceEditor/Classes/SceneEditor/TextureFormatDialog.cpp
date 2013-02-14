@@ -1,8 +1,10 @@
 #include "TextureFormatDialog.h"
 
 #include "ControlsFactory.h"
-#include "ErrorNotifier.h"
 #include "UICheckBox.h"
+
+#include "../Qt/Main/QtUtils.h"
+
 
 TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegate)
     :   ExtendedDialog()
@@ -137,13 +139,13 @@ void TextureFormatDialog::OnConvert(DAVA::BaseObject *, void *, void *)
 {
     if(PVR_NONE == currentPVRButton)
     {
-        ErrorNotifier::Instance()->ShowError("Format not selected.");
+        ShowErrorDialog(String("Format not selected."));
     }
     else 
     {
         if(delegate)
         {
-            const int32 formats[] = 
+            const PixelFormat formats[] =
             {
                 FORMAT_PVR4,
                 FORMAT_PVR2

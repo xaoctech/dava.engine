@@ -35,6 +35,7 @@
 #include "FileSystem/File.h"
 #include "Core/Core.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/YamlParser.h"
 
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
@@ -120,6 +121,7 @@ FTFont * FTFont::Create(const String& path)
 	}
 	
 	FTFont * font = new FTFont(iFont);
+	font->fontPath = path;
 	
 	return font;
 }
@@ -132,8 +134,9 @@ FTFont *	FTFont::Clone()
 
 	retFont->verticalSpacing =	verticalSpacing;
 
-	return retFont;
+	retFont->fontPath = fontPath;
 	
+	return retFont;
 }
 
 bool FTFont::IsEqual(Font *font)
@@ -142,6 +145,7 @@ bool FTFont::IsEqual(Font *font)
 	{
 		return false;
 	}
+
 	return true;
 }
 	
@@ -170,6 +174,20 @@ bool FTFont::IsCharAvaliable(char16 ch)
 	return internalFont->IsCharAvaliable(ch);
 }
 
+String FTFont::GetFontPath()
+{
+	return internalFont->fontPath;
+}
+
+YamlNode * FTFont::SaveToYamlNode()
+{
+	YamlNode *node = Font::SaveToYamlNode();
+	//Type
+	node->Set("type", "FTFont");
+	node->Set("name", internalFont->fontPath);
+
+	return node;
+}
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -360,20 +378,18 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					DVASSERT(ind >= 0);
 					int16 * writeBuf = resultBuf + ind;
 					uint8 * readBuf = bitmap->buffer;
+                    
+                    uint16 color = (((r >> 4)<<12) | ((g >> 4)<<8) | ((b >> 4) << 4));
 					for(int32 h = 0; h < realH; h++)
 					{
 						for(int32 w = 0; w < realW; w++)
 						{
-							int32 oldPix = *readBuf;
-							uint8 preAlpha = (oldPix*a)>>8;
-							if(preAlpha)
+                            uint8 oldPix = *readBuf;
+							if(oldPix)
 							{
-								uint8 tempA = preAlpha>>4;
-								uint8 tempR = (preAlpha*r)>>12; 
-								uint8 tempG = (preAlpha*g)>>12;
-								uint8 tempB = (preAlpha*b)>>12;
+								uint8 tempA = (oldPix*a)>>12;
 								DVASSERT(writeBuf-resultBuf <= bufWidth*bufHeight);
-								*writeBuf = ((tempR<<12) | (tempG<<8) | (tempB<<4) | tempA);
+								*writeBuf = (color | tempA);
 							}
 							++writeBuf;
 							++readBuf;

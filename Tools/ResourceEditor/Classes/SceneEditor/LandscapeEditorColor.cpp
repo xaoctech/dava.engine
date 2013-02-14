@@ -3,15 +3,17 @@
 #include "LandscapeTool.h"
 #include "LandscapeToolsPanelColor.h"
 #include "PropertyControlCreator.h"
-#include "ErrorNotifier.h"
 #include "EditorScene.h"
 
-#include "UNDOManager.h"
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
+#include "../Qt/Main/QtUtils.h"
+
+#include "../Commands/CommandsManager.h"
+#include "../Commands/TilemapEditorCommands.h"
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -33,12 +35,14 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
-    dstBlendMode = BLEND_ONE;
+    dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
     paintColor = Color(1.f, 1.f, 1.f, 1.0f);
     
     toolsPanel = new LandscapeToolsPanelColor(this, toolsRect);
 
     editingIsEnabled = false;
+
+	command = NULL;
 }
 
 LandscapeEditorColor::~LandscapeEditorColor()
@@ -78,7 +82,7 @@ void LandscapeEditorColor::CreateMaskTexture()
     savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
     if(savedTexture)
     {
-        savedPath = savedTexture->relativePathname;
+        savedPath = savedTexture->GetPathname();
     }
     else 
     {
@@ -87,8 +91,8 @@ void LandscapeEditorColor::CreateMaskTexture()
     
     CreateMaskFromTexture(savedTexture);
     
-    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
-    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+//    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
+//    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
 }
 
 void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
@@ -110,6 +114,7 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     if(tex)
     {
         RenderManager::Instance()->LockNonMain();
+        RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
         
         Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         
@@ -234,6 +239,10 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_BEGAN:
         {
             editingIsEnabled = true;
+
+			DVASSERT(command == NULL);
+			command = new CommandDrawTilemap();
+
             break;
         }
             
@@ -242,11 +251,19 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
             if(editingIsEnabled && !intersects)
             {
                 editingIsEnabled = false;
-                UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+
+				if (command)
+				{
+					CommandsManager::Instance()->Execute(command);
+					SafeRelease(command);
+				}
             }
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
+
+				DVASSERT(command == NULL);
+				command = new CommandDrawTilemap();
             }
             break;
         }
@@ -254,7 +271,13 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_ENDED:
         {
             editingIsEnabled = false;
-            UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+
+			if (command)
+			{
+				CommandsManager::Instance()->Execute(command);
+				SafeRelease(command);
+			}
+
             break;
         }
             
@@ -288,6 +311,27 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
     }
 }
 
+void LandscapeEditorColor::StoreState(Image **image)
+{
+	*image = maskSprite->GetTexture()->CreateImageFromMemory();
+}
+
+void LandscapeEditorColor::RestoreState(Image *image)
+{
+	if (image)
+	{
+        Texture *texture = Texture::CreateTextFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+
+        //TODO: is code usefull?
+        texture->GenerateMipmaps();
+        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        //ENDOFTODO
+
+        CreateMaskFromTexture(texture);
+		//TODO: SafeRelease(texture)?
+    }
+}
+
 void LandscapeEditorColor::HideAction()
 {
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, savedTexture);
@@ -317,36 +361,12 @@ void LandscapeEditorColor::ShowAction()
 
 void LandscapeEditorColor::UndoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
-    if(UNDOAction::ACTION_TILEMASK == type)
-    {
-        Image::EnableAlphaPremultiplication(false);
-        
-        Texture *tex = UNDOManager::Instance()->UndoTilemask();
-        
-        Image::EnableAlphaPremultiplication(true);
-        tex->GenerateMipmaps();
-        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
-        CreateMaskFromTexture(tex);
-    }
+	CommandsManager::Instance()->Undo();
 }
 
 void LandscapeEditorColor::RedoAction()
 {
-    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
-    if(UNDOAction::ACTION_TILEMASK == type)
-    {
-        Image::EnableAlphaPremultiplication(false);
-        
-        Texture *tex = UNDOManager::Instance()->RedoTilemask();
-        
-        Image::EnableAlphaPremultiplication(true);
-        tex->GenerateMipmaps();
-        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
-        CreateMaskFromTexture(tex);
-    }
+	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
@@ -356,11 +376,14 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            img->Save(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             SafeRelease(savedTexture);
-            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); 
+            
+            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToFile);
+            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, descriptorPathname);
+
             savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
             workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, maskSprite->GetTexture());
         }
@@ -369,16 +392,12 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 {
-    LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
-    
+    LandscapeEditorPropertyControl *propsControl =
+		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
     propsControl->SetDelegate(this);
-
     LandscapeEditorSettingsChanged(propsControl->Settings());
     return propsControl;
 }
-
-
 
 void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
 {
@@ -418,10 +437,10 @@ void LandscapeEditorColor::RecreateHeightmapNode()
 
 bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("Cannot start tile mask editor. Remove EditorLandscapeNode from scene");
+        ShowErrorDialog(String("Cannot start tile mask editor. Remove EditorLandscapeNode from scene"));
         return false;
     }
     

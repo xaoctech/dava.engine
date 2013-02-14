@@ -6,10 +6,7 @@
 class Command;
 class CommandsManager: public DAVA::Singleton<CommandsManager>
 {
-    enum eConst
-    {
-        UNDO_QUEUE_SIZE = 50
-    };
+    static const DAVA::int32 UNDO_QUEUE_SIZE = 50;
     
 public:	
 	CommandsManager();

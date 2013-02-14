@@ -22,24 +22,21 @@ class LandscapeToolsPanel:
 {
 protected:
     
-    enum eConst
-    {
-        OFFSET = 1,
-        SLIDER_WIDTH = 250,
-        
-        TEXTFIELD_WIDTH = 40,
-        TEXT_WIDTH = 60
-    };
+    static const int32 OFFSET = 1;
+    static const float32 SLIDER_WIDTH;
+    static const float32 TEXTFIELD_WIDTH;
+    static const float32 TEXT_WIDTH;
     
 public:
     LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
+	LandscapeToolsPanel(const Rect & rect); // for custom panels
     virtual ~LandscapeToolsPanel();
     
     virtual void WillAppear();
     virtual void Input(UIEvent *currentInput);
 
     LandscapeTool *CurrentTool();
-    void SetSelectionPanel(LandscapeToolsSelection *newPanel);
+    virtual void SetSelectionPanel(LandscapeToolsSelection *newPanel);
     
     //LandscapeToolsSelectionDelegate
     virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);

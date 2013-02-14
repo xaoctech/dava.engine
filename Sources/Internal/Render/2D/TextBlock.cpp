@@ -109,7 +109,7 @@ TextBlock::~TextBlock()
 void TextBlock::SetFont(Font * _font)
 {
 	DVASSERT(_font);
-	if (!constFont || constFont->IsEqual(_font))
+	if (!constFont || !constFont->IsEqual(_font))
 	{
 		needRedraw = true;
 	}
@@ -124,6 +124,18 @@ void TextBlock::SetFont(Font * _font)
 	Prepare();
 }
 	
+void TextBlock::SetFontColor(const Color& fontColor)
+{
+    if (!font || font->GetColor() == fontColor)
+    {
+        return;
+    }
+
+    font->SetColor(fontColor);
+    needRedraw = true;
+    Prepare();
+}
+    
 void TextBlock::SetRectSize(const Vector2 & size)
 {
 	if (rectSize != size) 
@@ -668,7 +680,7 @@ void TextBlock::Prepare()
 				}
 			}
 			
-			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, addInfo.c_str());
+			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, false, addInfo.c_str());
 			delete[] buf;
 			sprite = Sprite::CreateFromTexture(tex, 0, 0, finalW, finalH);
 			SafeRelease(tex);

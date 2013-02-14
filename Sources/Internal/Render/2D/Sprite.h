@@ -138,7 +138,8 @@ public:
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */	
 	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL); 
-	
+    void InitFromFile(File *file, const String &pathName, const String &texturePathname);
+
 	/**
 	 \brief Function to create sprite from the already created texture.
 	 
@@ -171,13 +172,13 @@ public:
 	Texture* GetTexture();
 	Texture* GetTexture(int32 frameNumber);
 	
-	int32 GetFrameCount();
+	int32 GetFrameCount() const;
 	
-	float32 GetWidth();
-	float32 GetHeight();
-	const Vector2 &GetSize();
+	float32 GetWidth() const;
+	float32 GetHeight() const;
+	const Vector2 &GetSize() const;
 	
-	const Vector2 &GetDefaultPivotPoint();
+	const Vector2 &GetDefaultPivotPoint() const;
 	
 	void SetFrame(int32 frm);
 	
@@ -221,10 +222,10 @@ public:
 
     void DrawPoints(Vector2 *verticies, Vector2 *textureCoordinates);
 
-	inline int32 GetResourceSizeIndex();
+	inline int32 GetResourceSizeIndex() const;
 
 	
-	const String GetName() { return relativePathname; }
+	const String &GetName() const { return relativePathname; }
 
 	/** 
 		\brief Function to get rect & offset of sprite frame position in texture
@@ -256,7 +257,7 @@ public:
 	/** 
 	 \brief Returns multiplyer to convert sprite to the physical coordinates.
 	 */
-	inline float32 GetResourceToPhysicalFactor();
+	inline float32 GetResourceToPhysicalFactor() const;
     
 	/** 
 	 \brief Returns texture coordinates for the requested frame.
@@ -270,11 +271,13 @@ public:
 	*/
 	void ConvertToVirtualSize();
 
-	const String & GetRelativePathname();
+	const String & GetRelativePathname() const;
 
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 	
+    void Reload();
+    
 protected:
 	Sprite();
 	Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
@@ -284,7 +287,12 @@ protected:
 	 \brief Removes all sprite data.
 	 */
 	void Clear();
+
 	
+    static Sprite* GetSpriteFromMap(const String &pathname);
+    static String GetScaledName(const String &spriteName);
+    static File* LoadLocalizedFile(const String &spritePathname, String &texturePath);
+    
 //private:
     
     
@@ -299,8 +307,10 @@ protected:
 
 	
 	String  relativePathname;
+	String  relativeTexturePathname;
 	
 	Texture ** textures;
+	String *textureNames;
 	int32 *frameTextureIndex;
 	int32 textureCount;
 	
@@ -417,12 +427,12 @@ inline void Sprite::DrawState::SetPerPixelAccuracyUsage(bool needToUse)
 }
 
 	
-inline int32 Sprite::GetResourceSizeIndex()
+inline int32 Sprite::GetResourceSizeIndex() const
 {
 	return resourceSizeIndex;
 }
 
-inline float32 Sprite::GetResourceToPhysicalFactor()
+inline float32 Sprite::GetResourceToPhysicalFactor() const
 {
 	return resourceToPhysicalFactor;
 }

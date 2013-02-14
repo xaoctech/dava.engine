@@ -39,6 +39,9 @@
 #include "Base/BaseMath.h"
 #include "Utils/StringFormat.h"
 
+#include "DLC/DLCSystem.h"
+#include "DLC/DLCUnpacker.h"
+#include "DLC/FileDownloader.h"
 
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"
@@ -62,6 +65,7 @@
 
 // ptrs
 #include "Base/RefPtr.h"
+#include "Base/ScopedPtr.h"
 
 // threads
 #include "Platform/Thread.h"
@@ -91,6 +95,7 @@
 
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/Parser.h"
 
 
 // Collisions
@@ -107,8 +112,10 @@
 
 // 2D Graphics
 #include "Render/2D/Sprite.h"
+#include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
+#include "Render/ImageLoader.h"
 #include "Render/Shader.h"
 
 #include "Core/DisplayMode.h"
@@ -120,6 +127,9 @@
 #include "Render/RenderHelper.h"
 
 #include "Render/Cursor.h"
+
+#include "Render/LibDxtHelper.h"
+
 
 // Fonts
 #include "Render/2D/Font.h"
@@ -195,26 +205,47 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Render/3D/EdgeAdjacency.h"
 
+// Material compiler
+#include "Render/Material/MaterialCompiler.h"
+#include "Render/Material/MaterialGraph.h"
+#include "Render/Material/MaterialGraphNode.h"
+
 // 3D scene management
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/SpriteNode.h"
 #include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
-#include "Scene3D/LandscapeNode.h"
-#include "Scene3D/CubeNode.h"
-#include "Scene3D/SphereNode.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Heightmap.h"
+#include "Render/Highlevel/Light.h"
+#include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/SpriteObject.h"
+#include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/ParticleEffectNode.h"
 #include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
-#include "Scene3D/Heightmap.h"
+#include "Scene3D/UserNode.h"
+#include "Scene3D/Systems/LodSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
 
+//Components
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/BulletComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/UpdatableComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 // Application core 
 #include "Core/Core.h"
@@ -224,11 +255,6 @@
 #include "Network/NetworkConnection.h"
 #include "Network/NetworkDelegate.h"
 #include "Network/NetworkPacket.h"
-
-// Entity
-#include "Entity/Entity.h"
-#include "Entity/EntityManager.h"
-#include "Entity/Component.h"
 
 #endif // __DAVAENGINE_H__
 

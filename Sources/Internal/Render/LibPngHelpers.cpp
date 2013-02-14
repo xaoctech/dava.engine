@@ -97,57 +97,61 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 
 int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 {
-	File * infile;
+	File * infile = File::Create(file, File::OPEN | File::READ);
+	if (!infile)
+	{
+		return 0;
+	}
+
+    int retCode = ReadPngFile(infile, image);
+    SafeRelease(infile);
+    
+    return retCode;
+}
+
+int LibPngWrapper::ReadPngFile(File *infile, Image * image)
+{
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
-	uint8 *image_data;      
-	char sig[8];     
+	uint8 *image_data;
+	char sig[8];
 	
 	int bit_depth;
 	int color_type;
 	
 	png_uint_32 width;
-	png_uint_32 height; 
+	png_uint_32 height;
 	unsigned int rowbytes;
 	
 	image_data = NULL;
 	int i;
 	png_bytepp row_pointers = NULL;
 	
-	infile = File::Create(file, File::OPEN | File::READ);
-	if (!infile) 
-	{
-		return 0;
-	}
-
+    
 	infile->Read(sig, 8);
 	
-	if (!png_check_sig((unsigned char *) sig, 8)) 
+	if (!png_check_sig((unsigned char *) sig, 8))
 	{
-		infile->Release();
 		return 0;
 	}
-
+    
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (!png_ptr) 
+	if (!png_ptr)
 	{
-		infile->Release();
 		return 4;    /* out of memory */
 	}
 	
 	info_ptr = png_create_info_struct(png_ptr);
-	if (!info_ptr) 
+	if (!info_ptr)
 	{
 		png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
-		infile->Release();
 		return 4;    /* out of memory */
 	}
 	
-	if (setjmp(png_jmpbuf(png_ptr))) 
+	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		infile->Release();
 		return 0;
 	}
 	
@@ -159,22 +163,22 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 	
 	png_read_info(png_ptr, info_ptr);
 	
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, 
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
 				 &color_type, NULL, NULL, NULL);
 	
 	image->width = width;
 	image->height = height;
-
+    
 	//1 bit images -> 8 bit
-	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
+	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
 		png_set_expand_gray_1_2_4_to_8(png_ptr);
-
-//	if(bit_depth > 8) 
-//	{
-//		DVASSERT_MSG(0, "bit_depth > 8");
-//		png_set_strip_16(png_ptr);
-//	}
-
+    
+    //	if(bit_depth > 8)
+    //	{
+    //		DVASSERT_MSG(0, "bit_depth > 8");
+    //		png_set_strip_16(png_ptr);
+    //	}
+    
 	image->format = FORMAT_RGBA8888;
 	if(color_type == PNG_COLOR_TYPE_GRAY)
 	{
@@ -182,51 +186,51 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
         {
             image->format = FORMAT_A16;
         }
-        else 
+        else
         {
             image->format = FORMAT_A8;
         }
 	}
-	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA) 
+	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 	{
         if(16 == bit_depth)
         {
             image->format = FORMAT_A16;
         }
-        else 
+        else
         {
             image->format = FORMAT_A8;
         }
 		png_set_strip_alpha(png_ptr);
 	}
-	else if(color_type == PNG_COLOR_TYPE_PALETTE) 
+	else if(color_type == PNG_COLOR_TYPE_PALETTE)
 	{
 		png_set_palette_to_rgb(png_ptr);
 		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
 	}
 	else if(color_type == PNG_COLOR_TYPE_RGB)
-	{	
+	{
 		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
 	}
-
+    
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 	{
 		png_set_tRNS_to_alpha(png_ptr);
 	}
-
+    
 	png_read_update_info(png_ptr, info_ptr);
 	
 	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 	
 	image_data = new uint8 [rowbytes * height];
-	if (image_data == 0) 
+	if (image_data == 0)
 	{
 		memset(image_data, 0, rowbytes * height);
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return 4;
     }
 	
-	if ((row_pointers = (png_bytepp)malloc(height*sizeof(png_bytep))) == NULL) 
+	if ((row_pointers = (png_bytepp)malloc(height*sizeof(png_bytep))) == NULL)
 	{
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         delete [] (image_data);
@@ -252,18 +256,25 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 	
 	/* Clean up. */
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-	infile->Release();
 	
 	image->data = image_data;
 	
 	return 1;
 }
 
+bool LibPngWrapper::IsPngFile(File *file)
+{
+    char sig[8];
+    file->Read(sig, 8);
+	
+    return (0 != png_check_sig((unsigned char *) sig, 8));
+}
+
 
 
 void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
-	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
+//	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
 	
 	png_structp png_ptr;
@@ -486,15 +497,9 @@ bool PngImage::CreateFromFBOSprite(Sprite * fboSprite)
 	Texture * texture = fboSprite->GetTexture();
 	if (texture->format == FORMAT_RGBA8888)
 	{
-		//glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
-		//glBindTexture(GL_TEXTURE_2D, texture->id);
-		//glGetTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		
 		RenderManager::Instance()->SetRenderTarget(fboSprite);
 		glReadPixels(0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		RenderManager::Instance()->RestoreRenderTarget();
-		
-		//glBindTexture(GL_TEXTURE_2D, saveId);
 	}
 	return true;
 }

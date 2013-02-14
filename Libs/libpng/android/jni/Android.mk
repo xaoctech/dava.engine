@@ -13,6 +13,7 @@ LOCAL_MODULE := libpng_android
 # set path for includes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../include/libpng
 
 # set exported includes
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -21,7 +22,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_SRC_FILES :=  \
                   ../../src/png.c \
                   ../../src/pngerror.c \
-                  ../../src/pnggccrd.c \
                   ../../src/pngget.c \
                   ../../src/pngmem.c \
                   ../../src/pngpread.c \
@@ -30,16 +30,13 @@ LOCAL_SRC_FILES :=  \
                   ../../src/pngrtran.c \
                   ../../src/pngrutil.c \
                   ../../src/pngset.c \
-                  ../../src/pngtest.c \
                   ../../src/pngtrans.c \
-                  ../../src/pngvcrd.c \
                   ../../src/pngwio.c \
                   ../../src/pngwrite.c \
                   ../../src/pngwtran.c \
                   ../../src/pngwutil.c \
 
-#LOCAL_CFLAGS := -g -O0
-#LOCAL_CFLAGS := -O2
+LOCAL_CFLAGS := -O2
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)

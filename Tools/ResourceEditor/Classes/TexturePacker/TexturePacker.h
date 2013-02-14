@@ -23,6 +23,8 @@ struct SizeSortItem
 	int					frameIndex;
 };
 
+class DAVA::TextureDescriptor;
+class PngImageExt;
 class TexturePacker 
 {
 public:
@@ -49,6 +51,12 @@ public:
 	void SetMaxTextureSize(int32 maxTextureSize);
 	
 private:
+    
+    void ExportImage(PngImageExt *image, const String &exportedPathname);
+    DAVA::TextureDescriptor * CreateDescriptor();
+    PixelFormat DetectPixelFormatFromFlags();
+    
+    
 	ImagePacker *			lastPackedPacker;
 	std::vector<ImagePacker*> usedPackers;
 

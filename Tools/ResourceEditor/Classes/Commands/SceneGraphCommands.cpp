@@ -1,9 +1,11 @@
 #include "SceneGraphCommands.h"
 
 #include "DAVAEngine.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 using namespace DAVA;
 
@@ -16,7 +18,7 @@ CommandRemoveRootNodes::CommandRemoveRootNodes()
 
 void CommandRemoveRootNodes::Execute()
 {
-    activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene = SceneDataManager::Instance()->SceneGetActive();
     SceneNode *selectedNode = activeScene->GetSelectedNode();
     EditorScene *scene = activeScene->GetScene();
     if(selectedNode && scene && (selectedNode->GetParent() == scene))
@@ -66,7 +68,7 @@ void CommandRemoveRootNodes::Execute()
         
 //        SceneValidator::Instance()->EnumerateSceneTextures();
         
-        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+        SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
         sceneData->RebuildSceneGraph();
     }
     else
@@ -89,7 +91,7 @@ CommandRefreshSceneGraph::CommandRefreshSceneGraph()
 
 void CommandRefreshSceneGraph::Execute()
 {
-    SceneData * activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
 }
 
@@ -102,7 +104,7 @@ CommandLockAtObject::CommandLockAtObject()
 
 void CommandLockAtObject::Execute()
 {
-    SceneData * activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
     SceneNode *node = activeScene->GetSelectedNode();
     if(node)
     {
@@ -119,29 +121,43 @@ void CommandLockAtObject::Execute()
 CommandRemoveSceneNode::CommandRemoveSceneNode()
     :   Command(Command::COMMAND_UNDO_REDO)
     ,   activeScene(NULL)
+	,	undoNode(NULL)
 {
 }
 
+CommandRemoveSceneNode::~CommandRemoveSceneNode()
+{
+	SafeRelease(undoNode);
+}
 
 void CommandRemoveSceneNode::Execute()
 {
-    activeScene = SceneDataManager::Instance()->GetActiveScene();
-    SceneNode *node = activeScene->GetSelectedNode();
-    if(node)
-    {
-        //TODO: save scene state here
-        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-        activeScene->RemoveSceneNode(node);
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
+	if (!undoNode)
+	{
+		activeScene = SceneDataManager::Instance()->SceneGetActive();
+		SceneNode *node = activeScene->GetSelectedNode();
+		if (!node)
+		{
+			SetState(STATE_INVALID);
+			return;
+		}
+
+		undoNode = SafeRetain(node);
+	}
+
+	activeScene->RemoveSceneNode(undoNode);
 }
 
 void CommandRemoveSceneNode::Cancel()
 {
-    //TODO: restore saved state if active scene is same as saved
+	if (undoNode)
+	{
+		if (activeScene == SceneDataManager::Instance()->SceneGetActive())
+		{
+			activeScene->AddSceneNode(undoNode);
+			activeScene->SelectNode(undoNode);
+		}
+	}
 }
 
 
@@ -153,17 +169,17 @@ CommandDebugFlags::CommandDebugFlags()
 
 void CommandDebugFlags::Execute()
 {
-    SceneData * activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
     SceneNode *node = activeScene->GetSelectedNode();
     if(node)
     {
-        if (node->GetDebugFlags() & SceneNode::DEBUG_DRAW_ALL)
+        if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)
         {
             node->SetDebugFlags(0, true);
         }
         else
         {
-            node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL, true);
+            node->SetDebugFlags(DebugRenderComponent::DEBUG_DRAW_ALL, true);
         }
     }
     else
@@ -173,58 +189,3 @@ void CommandDebugFlags::Execute()
 }
 
 
-CommandBakeMatrixes::CommandBakeMatrixes()
-    :   Command(Command::COMMAND_UNDO_REDO)
-    ,   activeScene(NULL)
-{
-}
-
-
-void CommandBakeMatrixes::Execute()
-{
-    activeScene = SceneDataManager::Instance()->GetActiveScene();
-
-    SceneNode *node = activeScene->GetSelectedNode();
-    if(node)
-    {
-        //Safe node state
-        node->BakeTransforms();
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
-}
-
-void CommandBakeMatrixes::Cancel()
-{
-    //TODO: restore saved state if active scene is same as saved
-}
-
-
-CommandBuildQuadTree::CommandBuildQuadTree()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandBuildQuadTree::Execute()
-{
-    SceneData * activeScene = SceneDataManager::Instance()->GetActiveScene();
-    SceneNode *node = activeScene->GetSelectedNode();
-    if(node)
-    {
-//        Scene * scene = workingNode->GetScene();
-//        QuadTree * quadTree = dynamic_cast<QuadTree*>(scene->GetBVHierarchy());
-//        if (!quadTree)
-//        {
-//            quadTree = new QuadTree();
-//            scene->SetBVHierarchy(quadTree);
-//        }
-//        quadTree->Build(scene);
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
-}

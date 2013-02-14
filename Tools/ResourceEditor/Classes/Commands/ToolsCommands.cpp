@@ -3,10 +3,10 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-#include "../Qt/GUIState.h"
-#include "../Qt/SceneData.h"
-#include "../Qt/SceneDataManager.h"
-#include "../Qt/QtMainWindowHandler.h"
+#include "../Qt/Main/GUIState.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
+#include "../Qt/Main/QtMainWindowHandler.h"
 
 
 using namespace DAVA;
@@ -40,51 +40,12 @@ void CommandTextureConverter::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen)
     {
-        screen->TextureConverterTriggered();
+		// Replaced with Qt
+		// TODO:
+		// remove this
+		// 
+        // screen->TextureConverterTriggered();
     }
-}
-
-//Show/Hide Heightmap Editor
-CommandHeightmapEditor::CommandHeightmapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandHeightmapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->HeightmapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
-    }
-    
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-    activeScene->RebuildSceneGraph();
-}
-
-
-//Show/Hide Tilemap Editor
-CommandTilemapEditor::CommandTilemapEditor()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandTilemapEditor::Execute()
-{
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        screen->TilemapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
-    }
-
-//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-//    activeScene->RebuildSceneGraph();
 }
 
 //Show settings
@@ -112,7 +73,7 @@ CommandBakeScene::CommandBakeScene()
 
 void CommandBakeScene::Execute()
 {
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->BakeScene();
 }
 
@@ -154,7 +115,7 @@ void CommandRulerTool::Execute()
         screen->RulerToolTriggered();
     }
     
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
     
     QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());

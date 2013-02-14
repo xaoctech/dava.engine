@@ -65,6 +65,10 @@ void LodNode::LodDistance::SetFarDistance(float32 newDistance)
 
 REGISTER_CLASS(LodNode);
     
+const float32 LodNode::INVALID_DISTANCE = -1.f;
+const float32 LodNode::MIN_LOD_DISTANCE = 0;
+const float32 LodNode::MAX_LOD_DISTANCE = 500;
+
 
 LodNode::LodNode()
 :	SceneNode()
@@ -363,9 +367,6 @@ void LodNode::Update(float32 timeElapsed)
 	{
 		lastLodUpdateFrame = RECHECK_LOD_EVERY_FRAME + 1;
 	}
-    
-    SceneNode::Update(timeElapsed);
-    
 }
 
 	
@@ -373,6 +374,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
+		DVASSERT_MSG(IsPointerToExactClass<LodNode>(this), "Can clone only LodNode");
         dstNode = new LodNode();
     }
     
@@ -381,50 +383,53 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
 
     nd->lodLayers = lodLayers;
     int32 lodIdx = 0;// Don't ask me how it's works
-    const List<LodData>::const_iterator &end = nd->lodLayers.end();
-    nd->currentLod = &(*nd->lodLayers.begin());
-    for (List<LodData>::iterator it = nd->lodLayers.begin(); it != end; ++it)
-    {
-        LodData & ld = *it;
-        size_t size = ld.nodes.size();
-        for (size_t idx = 0; idx < size; ++idx)
-        {
-            for (int i = 0; i < (int)children.size(); i++) 
-            {
-                if(children[i] == ld.nodes[idx])
-                {
-                    ld.nodes[idx] = nd->children[i];
-                    if (nd->currentLod != &ld) 
-                    {
-                        ld.nodes[idx]->SetUpdatable(false);
-                    }
-                    else 
-                    {
-                        ld.nodes[idx]->SetUpdatable(true);
-                    }
+	if(!nd->lodLayers.empty())
+	{
+		const List<LodData>::const_iterator &end = nd->lodLayers.end();
+		nd->currentLod = &(*nd->lodLayers.begin());
+		for (List<LodData>::iterator it = nd->lodLayers.begin(); it != end; ++it)
+		{
+			LodData & ld = *it;
+			size_t size = ld.nodes.size();
+			for (size_t idx = 0; idx < size; ++idx)
+			{
+				for (int i = 0; i < (int)children.size(); i++) 
+				{
+					if(children[i] == ld.nodes[idx])
+					{
+						ld.nodes[idx] = nd->children[i];
+						if (nd->currentLod != &ld) 
+						{
+							ld.nodes[idx]->SetUpdatable(false);
+						}
+						else 
+						{
+							ld.nodes[idx]->SetUpdatable(true);
+						}
 
-                    break;
-                }
-            }
-        }
-        lodIdx++;
-    }
+						break;
+					}
+				}
+			}
+			lodIdx++;
+		}
+	}
     
-    //Lod values
-    for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
-    {
-        nd->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
-        nd->lodLayersArray[iLayer].nearDistance = lodLayersArray[iLayer].nearDistance;
-        nd->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
-        nd->lodLayersArray[iLayer].farDistance = lodLayersArray[iLayer].farDistance;
-        nd->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
-    }
+	//Lod values
+	for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
+	{
+		nd->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
+		nd->lodLayersArray[iLayer].nearDistance = lodLayersArray[iLayer].nearDistance;
+		nd->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
+		nd->lodLayersArray[iLayer].farDistance = lodLayersArray[iLayer].farDistance;
+		nd->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
+	}
+
+	nd->forceDistance = forceDistance;
+	nd->forceDistanceSq = forceDistanceSq;
+	nd->forceLodLayer = forceLodLayer;
     
-    nd->forceDistance = forceDistance;
-    nd->forceDistanceSq = forceDistanceSq;
-    nd->forceLodLayer = forceLodLayer;
-    
-    return dstNode;
+	return dstNode;
 }
     /**
      \brief virtual function to save node to KeyedArchive

@@ -248,7 +248,7 @@ public:
 
 }
 
-void * operator new(size_t _size) throw()
+void * operator new(size_t _size) throw(std::bad_alloc )
 {
 	return DAVA::MemoryManagerImpl::Instance()->New(_size);
 }
@@ -269,7 +269,7 @@ void   operator delete(void * _ptr, const std::nothrow_t &) throw()
 }
 
 
-void * operator new[](size_t _size) throw()
+void * operator new[](size_t _size) throw(std::bad_alloc)
 {
 	return DAVA::MemoryManagerImpl::Instance()->New(_size);
 }
@@ -503,8 +503,10 @@ void MemoryManagerImpl::CheckMemoryLeaks()
     memoryLog << Format("* Overhead percentage: %0.3f %%", (float)peakManagerOverheadSize / (float)peakMemoryUsage * 100.0f) << std::endl;
     memoryLog << Format("* Total backtrace count: %d", backtraceSet.size()) << std::endl; 
 
+    uint32 index = 0;
 	for (MemoryBlock * currentBlock = headBlock->next; currentBlock != headBlock; currentBlock = currentBlock->next)
 	{
+        index++;
 		//MemoryBlock * block = currentBlock;
 		//CheckMemblockOverrun(block);
 		//if (block.filename)

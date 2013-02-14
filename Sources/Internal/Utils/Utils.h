@@ -63,12 +63,12 @@ void ReplaceBundleName(const String &newBundlePath);
 	
     
 /**
- \brief Function to compare strings without letter case
+ \brief Function to compare strings case-insensitive
  \param[in] ext1 - first string 
  \param[in] ext2 - second string 
  \param[out] result of comparision 
  */
-int32 CompareStrings(const String &str1, const String &str2);
+int32 CompareCaseInsensitive(const String &str1, const String &str2);
 
 //implementation
 
@@ -97,6 +97,31 @@ inline String WStringToString(const WideString& s)
 	for (size_t i = 0; i < len; ++i)
 		temp[i] = (char)s[i];
 	return temp; 
+}
+
+// Truncate the file extension.
+inline String TruncateFileExtension(const String& fileName, const String& extension)
+{
+    String truncatedName = fileName;
+    
+    int truncatedStringLen = truncatedName.length() - extension.length();
+    bool endsWithExtension = false;
+    if (fileName.length() >= extension.length())
+    {
+        endsWithExtension = (truncatedName.compare(truncatedStringLen, extension.length(), extension) == 0);
+    }
+    
+    if (endsWithExtension)
+    {
+        truncatedName.resize(truncatedStringLen);
+    }
+    
+    return truncatedName;
+}
+
+inline String TruncateTxtFileExtension(const String& fileName)
+{
+    return TruncateFileExtension(fileName, ".txt");
 }
 
 };

@@ -89,22 +89,21 @@ public:
 	 \returns file instance
 	 */
 	static File * CreateFromSystemPath(const String &filePath, uint32 attributes);
-#if defined(__DAVAENGINE_ANDROID__)
-	static File * CreateFromSystemPath(zip *APKArchive, const String &filename);
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 
 	/**
 		\brief Get this file name
 		\returns filename of this file 
 	 */
-	virtual	const char8 * GetFilename();
+//	virtual	const char8 * GetFilename();
+	virtual	const String GetFilename();
+
 	
 	/**
 		\brief Get this file full pathname
 		\returns filename of this file 
 	 */
-	virtual const char8 * GetPathname();
+//	virtual const char8 * GetPathname();
+	virtual	const String GetPathname();
 	
 	/** 
 		\brief Write [dataSize] bytes to this file from [pointerToData]
@@ -115,12 +114,13 @@ public:
 	virtual uint32 Write(const void * sourceBuffer, uint32 dataSize);
 
 	/** 
-		\brief Write string
-		write null-terminated string from current position in file
-		\param[in] string - string data loaded to this variable
+		\brief Write string.
+		write null-terminated string from current position in file.
+		\param[in] string string data loaded to this variable/
+        \param[in] shouldNullBeWritten indicates does it require to save null terminator.
 		\return true if success otherwise false
 	 */
-	virtual bool WriteString(const String & string);
+	virtual bool WriteString(const String & string, bool shouldNullBeWritten = true);
 
 	/**
      \brief Write string
@@ -162,6 +162,7 @@ public:
 		\returns actual length of the string that was read
 	 */
 	virtual uint32 ReadString(char8 * destinationBuffer, uint32 destinationBufferSize);
+    uint32 ReadString(String & destinationString);
 	
 	/** 
 		\brief Get current file position
@@ -185,6 +186,8 @@ public:
 	//! return true if end of file reached and false in another case
 	virtual bool IsEof();
 	
+    static String GetModificationDate(const String & filePathname);
+    
 private:
 	FILE	*	file;
 	uint32		size;

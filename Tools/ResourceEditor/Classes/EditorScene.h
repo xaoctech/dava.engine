@@ -31,6 +31,9 @@ public:
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
+	bool TryIsTargetAccesible(Vector3 from, Vector3 target);
+	void JuncCollWorldToLandscapeCollWorld();
+	void SeparateCollWorldFromLandscapeCollWorld();
     bool LandscapeIntersection(const Vector3 &from, const Vector3 &direction, Vector3 &point); 
 
 	inline SceneNode * GetSelection()
@@ -50,7 +53,8 @@ public:
 	void DrawGrid();
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
-	LandscapeNode * GetLandScape(SceneNode *node);
+	static LandscapeNode * GetLandscape(SceneNode *node);
+	static SceneNode* GetLandscapeNode(SceneNode *node);
     
     void SetDrawGrid(bool newDrawGrid);
 	
@@ -78,15 +82,16 @@ protected:
 	SceneNode * selection;
 	SceneNode * proxy;
     
-    MeshInstanceNode *selectedMeshInstance;
+    SceneNode *selectedEntity;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
-	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
     
     bool drawGrid;
+
+	btBroadphaseProxy* originalHandler;
 };
 
 #endif

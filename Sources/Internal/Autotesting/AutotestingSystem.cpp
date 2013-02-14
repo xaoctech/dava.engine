@@ -804,9 +804,15 @@ void AutotestingSystem::OnInput(const UIEvent &input)
                 Logger::Error("AutotestingSystemYaml::OnInput PHASE_BEGAN duplicate touch id=%d",id);
             }
         }
+<<<<<<< HEAD
             break;
 #ifndef __DAVAENGINE_IPHONE__
         case UIEvent::PHASE_MOVE:
+=======
+        break;
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
+    case UIEvent::PHASE_MOVE:
+>>>>>>> to_master
         {
             mouseMove = input;
             if(IsTouchDown(id))

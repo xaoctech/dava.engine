@@ -102,7 +102,7 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
 }
     
     
-void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end)
+void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 lineWidth)
 {
     vertices[0] = start.x;						
     vertices[1] = start.y;
@@ -116,7 +116,14 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end)
     vertexStream->Set(TYPE_FLOAT, 3, 0, vertices);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
+
+#ifdef __DAVAENGINE_OPENGL__
+	glLineWidth(lineWidth);
+#endif
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
+#ifdef __DAVAENGINE_OPENGL__
+	glLineWidth(1.f);
+#endif
 }
 
 
@@ -451,61 +458,61 @@ void RenderHelper::DrawBox(const AABBox3 & box)
 	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.max.z));
 }
 	
-	void RenderHelper::DrawCornerBox(AABBox3 bbox)
-	{
-		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f;
-		Vector3 off = Vector3(offs, offs, offs);
-		AABBox3 newBox(bbox.min - off, bbox.max + off);
-		offs *= 2.0f;
-		
-		//1
-		Vector3 point = newBox.min;
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
-		
-		//2
-		point = newBox.max;
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
-		
-		//3
-		point = Vector3(newBox.min.x, newBox.max.y, newBox.min.z);
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
-		
-		//4
-		point = Vector3(newBox.max.x, newBox.max.y, newBox.min.z);
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
-		
-		//5
-		point = Vector3(newBox.max.x, newBox.min.y, newBox.min.z);
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
-		
-		//6
-		point = Vector3(newBox.min.x, newBox.max.y, newBox.max.z);
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
-		
-		//7
-		point = Vector3(newBox.min.x, newBox.min.y, newBox.max.z);
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
-		
-		//8
-		point = Vector3(newBox.max.x, newBox.min.y, newBox.max.z);
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
-		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
-		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));	
-	}
+void RenderHelper::DrawCornerBox(const AABBox3 & bbox)
+{
+    float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f + 0.05f;
+    Vector3 off = Vector3(offs, offs, offs);
+    AABBox3 newBox(bbox.min - off, bbox.max + off);
+    offs *= 2.0f;
+    
+    //1
+    Vector3 point = newBox.min;
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+    
+    //2
+    point = newBox.max;
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+    
+    //3
+    point = Vector3(newBox.min.x, newBox.max.y, newBox.min.z);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+    
+    //4
+    point = Vector3(newBox.max.x, newBox.max.y, newBox.min.z);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+    
+    //5
+    point = Vector3(newBox.max.x, newBox.min.y, newBox.min.z);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+    
+    //6
+    point = Vector3(newBox.min.x, newBox.max.y, newBox.max.z);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+    
+    //7
+    point = Vector3(newBox.min.x, newBox.min.y, newBox.max.z);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+    
+    //8
+    point = Vector3(newBox.max.x, newBox.min.y, newBox.max.z);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));	
+}
 	
 	void RenderHelper::DrawSphere(float32 r)
 	{

@@ -44,7 +44,6 @@ AnimationManager::AnimationManager()
 	
 AnimationManager::~AnimationManager()
 {
-	
 }
 	
 void AnimationManager::SetAnimationLoggerEnabled(bool isEnabled)

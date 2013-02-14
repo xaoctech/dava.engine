@@ -47,6 +47,7 @@
 #include <sys/stat.h>
 #include <Shlobj.h>
 #elif defined(__DAVAENGINE_ANDROID__)
+#include "Platform/Android/CorePlatformAndroid.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -70,43 +71,33 @@ String FileSystem::virtualBundlePath = "";
 	{
 		if(virtualBundlePath.empty())
 		{
-			return Format("./Data/%s", relativePathname);
+			String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
+			currentFolder = FileSystem::Instance()->GetCanonicalPath(currentFolder);
+			return Format("%s/Data/%s", currentFolder.c_str(), relativePathname);
 		}
 		else
 		{
 			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
 		}
 	}
-	
-    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	
 #if defined(__DAVAENGINE_ANDROID__)
-
     const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
-		return Format("assets/Data%s", relativePathname);
+		return Format("Data%s", relativePathname);
 	}
-
-    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
-
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
+const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
+{
+    return FilepathRelativeToBundle(relativePathname.c_str());
+}
+
+    
 FileSystem::FileSystem()
 {
-#if defined(__DAVAENGINE_ANDROID__)
-	assetsPath[0] = 0;
-	documentsPath[0] = 0;
-	APKArchive = NULL;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 }
 
 FileSystem::~FileSystem()
@@ -118,33 +109,16 @@ FileSystem::~FileSystem()
 		SafeRelease(item.archive);
 	}
 	resourceArchiveList.clear();
-
-#if defined(__DAVAENGINE_ANDROID__)
-	if(APKArchive)
-	{
-		zip_close(APKArchive);
-		APKArchive = NULL;
-	}
-#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
 FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & filePath, bool isRecursive)
 {
+    String path = SystemPathForFrameworkPath(filePath);
 	if (!isRecursive)
 	{
-#ifdef __DAVAENGINE_WIN32__
-		BOOL res = ::CreateDirectoryA(filePath.c_str(), 0);
-		return (res == 0) ? DIRECTORY_CANT_CREATE : DIRECTORY_CREATED;
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-		int res = mkdir(filePath.c_str(), 0777);
-		if (res == EEXIST)
-			return DIRECTORY_EXISTS;
-		return (res == 0) ? (DIRECTORY_CREATED) : (DIRECTORY_CANT_CREATE);
-#endif //PLATFORMS
+        return CreateExactDirectory(path);
 	}
 
-
-	String path = filePath;
 	std::replace(path.begin(), path.end(),'\\','/');
 	Vector<String> tokens;
     Split(path, "/", tokens);
@@ -171,83 +145,82 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{
 		dir += tokens[k] + "/";
-#if defined(__DAVAENGINE_WIN32__)
-		BOOL res = ::CreateDirectoryA(dir.c_str(), 0);
+        
+        eCreateDirectoryResult ret = CreateExactDirectory(dir);
 		if (k == tokens.size() - 1)
-		{
-			if (!res)
-			{
-				if (GetLastError() == ERROR_ALREADY_EXISTS)
-					return DIRECTORY_EXISTS;
-				else
-					return DIRECTORY_CANT_CREATE;
-			}
-			return DIRECTORY_CREATED;
-		}
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-		int res = mkdir(dir.c_str(), 0777);
-		if (k == tokens.size() - 1)
-		{
-			if (res == EEXIST)
-				return DIRECTORY_EXISTS;
-			return (res == 0) ? (DIRECTORY_CREATED) : (DIRECTORY_CANT_CREATE);
-		}
-#endif //PLATFORMS
+        {
+            return ret;
+        }
 	}
 	return DIRECTORY_CANT_CREATE;
 }
+    
+FileSystem::eCreateDirectoryResult FileSystem::CreateExactDirectory(const String & filePath)
+{
+    if(IsDirectory(filePath))
+        return DIRECTORY_EXISTS;
+    
+#ifdef __DAVAENGINE_WIN32__
+    BOOL res = ::CreateDirectoryA(filePath.c_str(), 0);
+    return (res == 0) ? DIRECTORY_CANT_CREATE : DIRECTORY_CREATED;
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    int res = mkdir(filePath.c_str(), 0777);
+    return (res == 0) ? (DIRECTORY_CREATED) : (DIRECTORY_CANT_CREATE);
+#endif //PLATFORMS
+}
+
 
 bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 {
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::CopyFileA(existingFile.c_str(), newFile.c_str(), true);
+	BOOL ret = ::CopyFileA(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), true);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
 
-	int ret = 0;
+	bool copied = false;
 
 	File *srcFile = File::Create(existingFile, File::OPEN | File::READ);
-	File *dstFile = File::Create(existingFile, File::WRITE | File::CREATE);
+	File *dstFile = File::Create(newFile, File::WRITE | File::CREATE);
 	if(srcFile && dstFile)
 	{
-		int32 fileSize = srcFile->GetSize();
-
-		const int32 TMP_DATA_SIZE = 1024;
-		uint8 tmpData[TMP_DATA_SIZE];
-
-		while(0 < fileSize)
-		{
-			int32 forRead = Min(TMP_DATA_SIZE, fileSize);
-			int32 read = srcFile->Read(tmpData, forRead);
-			if(read != forRead)
-			{
-				//error
-			}
-
-			int32 written = dstFile->Write(tmpData, read);
-			if(written != read)
-			{
-				//error
-			}
-
-			fileSize -= written;
-		}
-
-		if(0 == fileSize)
-		{
-			ret = 1;
-		}
+		uint32 fileSize = srcFile->GetSize();
+        uint8 *data = new uint8[fileSize];
+        if(data)
+        {
+			uint32 read = srcFile->Read(data, fileSize);
+            if(read == fileSize)
+            {
+                uint32 written = dstFile->Write(data, fileSize);
+                if(written == fileSize)
+                {
+                    copied = true;
+                }
+                else
+                {
+                    Logger::Error("[FileSystem::CopyFile] can't write to file %s", newFile.c_str());
+                }
+            }
+            else
+            {
+                Logger::Error("[FileSystem::CopyFile] can't read file %s", existingFile.c_str());
+            }
+            
+            SafeDeleteArray(data);
+        }
+        else
+        {
+            Logger::Error("[FileSystem::CopyFile] can't allocate memory of %d Bytes", fileSize);
+        }
 	}
 
 	SafeRelease(dstFile);
 	SafeRelease(srcFile);
 
-	return ret==0;
+	return copied;
 
 #else //iphone & macos
-    int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
+    int ret = copyfile(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
     return ret==0;
-	//DVASSERT(0 && "FileSystem::CopyFile not implemented for current platform");
 #endif //PLATFORMS
 }
 
@@ -376,7 +349,7 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 	if(String::npos != find)
 	{
-		return File::CreateFromSystemPath(APKArchive, SystemPathForFrameworkPath(frameworkPath));
+		return APKFile::CreateFromAssets(SystemPathForFrameworkPath(frameworkPath), attributes);
 	}
 	else
 	{
@@ -412,6 +385,8 @@ const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPa
 			tempRetPath = FilepathInDocuments("") + tempRetPath;
 		}
 	}
+    
+    tempRetPath = NormalizePath(tempRetPath);
 	return tempRetPath;
 }
 	
@@ -440,101 +415,103 @@ bool FileSystem::SetCurrentWorkingDirectory(const String & newWorkingDirectory)
 #endif //PLATFORMS
 	return false; 
 }
+  
+bool FileSystem::IsFile(const String & pathToCheck)
+{
+    String pathname = SystemPathForFrameworkPath(pathToCheck);
     
+    struct stat s;
+    if(stat(pathname.c_str(),&s) == 0)
+    {
+        return (0 != (s.st_mode & S_IFREG));
+    }
+    return false;
+}
+	  
 bool FileSystem::IsDirectory(const String & pathToCheck)
 {
+    String pathname = SystemPathForFrameworkPath(pathToCheck);
+    
     struct stat s;
-    if( stat(pathToCheck.c_str(),&s) == 0 )
+    if(stat(pathname.c_str(), &s) == 0)
     {
-        if( s.st_mode & S_IFDIR )
-        {
-            return true;
-        }
-        else if( s.st_mode & S_IFREG )
-        {
-            //it's a file
-        }
-        else
-        {
-            //something else
-        }
-    }
-    else
-    {
-        //error
+        return (0 != (s.st_mode & S_IFDIR));
     }
     return false;
 }
 
-    const String & FileSystem::GetCurrentDocumentsDirectory()
-    {
-        return currentDocDirectory; 
-    }
-    
-    void FileSystem::SetCurrentDocumentsDirectory(const String & newDocDirectory)
-    {
-        currentDocDirectory = newDocDirectory;
-    }
-    
-    const String FileSystem::FilepathInDocuments(const char * relativePathname)
-    {
-        //return Format("./Documents/%s", relativePathname);
-        return currentDocDirectory + relativePathname;
-    }
-    
-    const String FileSystem::FilepathInDocuments(const String & relativePathname)
-    {
-        return FilepathInDocuments(relativePathname.c_str());
-    }
-    
-    void FileSystem::SetDefaultDocumentsDirectory()
-    {
+const String & FileSystem::GetCurrentDocumentsDirectory()
+{
+    return currentDocDirectory; 
+}
+
+void FileSystem::SetCurrentDocumentsDirectory(const String & newDocDirectory)
+{
+    currentDocDirectory = newDocDirectory;
+}
+
+const String FileSystem::FilepathInDocuments(const char * relativePathname)
+{
+    //return Format("./Documents/%s", relativePathname);
+    return currentDocDirectory + relativePathname;
+}
+
+const String FileSystem::FilepathInDocuments(const String & relativePathname)
+{
+    return FilepathInDocuments(relativePathname.c_str());
+}
+
+void FileSystem::SetDefaultDocumentsDirectory()
+{
 #if defined(__DAVAENGINE_WIN32__)
-        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVASOUND_ANDROID__)
-        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 #endif //PLATFORMS
-    }
-    
-	
+}
+
+
 #if defined(__DAVAENGINE_WIN32__)
-    const String FileSystem::GetUserDocumentsPath()
-    {
-        char * szPath = new char[MAX_PATH];
-        SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath);
-        int32 n = strlen(szPath);
-        szPath[n] = '\\';
-        szPath[n+1] = 0;
-        String str(szPath);
-        delete[] szPath;
-        return str;
-    }
-    
-    const String FileSystem::GetPublicDocumentsPath()
-    {
-        char * szPath = new char[MAX_PATH];
-        SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath);
-        int32 n = strlen(szPath);
-        szPath[n] = '\\';
-        szPath[n+1] = 0;
-        String str(szPath);
-        delete[] szPath;
-        return str;
-    }
+const String FileSystem::GetUserDocumentsPath()
+{
+    char * szPath = new char[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath);
+    int32 n = strlen(szPath);
+    szPath[n] = '\\';
+    szPath[n+1] = 0;
+    String str(szPath);
+    delete[] szPath;
+    return str;
+}
+
+const String FileSystem::GetPublicDocumentsPath()
+{
+    char * szPath = new char[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath);
+    int32 n = strlen(szPath);
+    szPath[n] = '\\';
+    szPath[n+1] = 0;
+    String str(szPath);
+    delete[] szPath;
+    return str;
+}
 #endif //#if defined(__DAVAENGINE_WIN32__)
+
     
 #if defined(__DAVAENGINE_ANDROID__)
-    const String FileSystem::GetUserDocumentsPath()
-    {
-        return documentsPath;
-    }
+const String FileSystem::GetUserDocumentsPath()
+{
+    CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
+    return core->GetExternalStoragePathname() + String("/");
+}
+
+const String FileSystem::GetPublicDocumentsPath()
+{
+    CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
+    return core->GetExternalStoragePathname() + String("/");
+}
+#endif //#if defined(__DAVAENGINE_ANDROID__)
     
-    const String FileSystem::GetPublicDocumentsPath()
-    {
-        //TODO: need to return real path;
-        return documentsPath;
-    }
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
     
 String FileSystem::RealPath(const String & _path)
 {
@@ -720,6 +697,31 @@ void  FileSystem::SplitPath(const String & filePath, String & path, String & fil
 		filename = fullPath.substr(lastSlashPos + 1, fullPath.size() - lastSlashPos - 1);
 	}
 }
+    
+String FileSystem::ReadFileContents(const String & pathname)
+{
+    File * fp = File::Create(pathname, File::OPEN|File::READ);
+	if (!fp)
+	{
+		Logger::Error("Failed to open file: %s", pathname.c_str());
+		return 0;
+	}
+	uint32 fileSize = fp->GetSize();
+
+    String fileContents;
+    uint32 dataRead = fp->ReadString(fileContents);
+    
+	if (dataRead != fileSize)
+	{
+		Logger::Error("Failed to read data from file: %s", pathname.c_str());
+		return 0;
+	}
+    
+	SafeRelease(fp);
+    return fileContents;
+    
+}
+
 
 uint8 * FileSystem::ReadFileContents(const String & pathname, uint32 & fileSize)
 {
@@ -811,30 +813,8 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     return (retPath + fileName);
 }
 
-#if defined(__DAVAENGINE_ANDROID__)
-
-void FileSystem::SetPath(const char8 *docPath, const char8 *assets)
-{
-	strcpy(documentsPath, docPath);
-	strcpy(assetsPath, assets);
-
-	if(APKArchive)
-	{
-		zip_close(APKArchive);
-		APKArchive = NULL;
-	}
-
-	APKArchive = zip_open(assetsPath, 0, NULL);
-	if (!APKArchive)
-	{
-		Logger::Error("[FileSystem::SetPath] can't open APK from path: %s", assetsPath);
-	}
-}
 
 
-
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
     
 }
 

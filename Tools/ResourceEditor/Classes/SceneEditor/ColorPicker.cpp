@@ -2,6 +2,8 @@
 #include "ControlsFactory.h"
 #include "ColorPickerDelegate.h"
 
+#include "EditorSettings.h"
+
 //*************  ColorDetailControl  *************
 ColorDetailControl::ColorDetailControl(const Rect &rect)
 :   UIControl(rect)
@@ -63,12 +65,13 @@ ColorSelectorControl::ColorSelectorControl(const Rect &rect)
 
     SetInitialColors();
 
-    float32 sectionHeight = rect.dy / 6.f;
+    float32 sectionHeight = rect.dy / (float32)SECTIONS_COUNT;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
     
     float32 colorDelta = 1.0f / (sectionHeight);
     for(int32 dy = 0; dy < (int32)sectionHeight; ++dy)
     {
-        for(int32 iSection = 0; iSection < 6; ++iSection)
+        for(int32 iSection = 0; iSection < SECTIONS_COUNT; ++iSection)
         {
             RenderManager::Instance()->SetColor(sections[iSection]);
             RenderHelper::Instance()->DrawLine(Vector2(0, iSection*sectionHeight + dy), 
@@ -103,10 +106,14 @@ void ColorSelectorControl::SetInitialColors()
 
 void ColorSelectorControl::ColorSelected(const Vector2 &point)
 {
-    float32 sectionHeight = GetRect().dy / 6.f;
+    float32 sectionHeight = GetRect().dy / (float32)SECTIONS_COUNT;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
+
     float32 colorDelta = 1.0f / (sectionHeight);
 
     int32 sectionId = (int32)(point.y / sectionHeight);
+    if(SECTIONS_COUNT == sectionId) sectionId = SECTIONS_COUNT - 1;
+    
     float32 sectionDelta = (point.y - (sectionHeight * sectionId));
     
     selectedColor = sections[sectionId];
@@ -144,7 +151,9 @@ void ColorSelectorControl::SetColor(const DAVA::Color &color)
 {
     float32 minLength = 100.f;
     
-    float32 sectionHeight = GetRect().dy / 6.f;
+    float32 sectionHeight = GetRect().dy / (float32)SECTIONS_COUNT;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
+    
     float32 colorDelta = 1.0f / (sectionHeight);
         
     
@@ -159,7 +168,7 @@ void ColorSelectorControl::SetColor(const DAVA::Color &color)
     
     for(int32 dy = 0; dy < (int32)sectionHeight; ++dy)
     {
-        for(int32 iSection = 0; iSection < 6; ++iSection)
+        for(int32 iSection = 0; iSection < SECTIONS_COUNT; ++iSection)
         {
             float32 length =    (colors[iSection].r - color.r) * (colors[iSection].r - color.r) + 
                                 (colors[iSection].g - color.g) * (colors[iSection].g - color.g) + 
@@ -339,6 +348,12 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     :   ExtendedDialog()
     ,   delegate(newDelegate)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
+    Texture::SetDefaultFileFormat(NOT_FILE);
+
+    
     draggableDialog->SetRect(GetDialogRect());
     
     colorMapControl = new ColorMapControl(Rect(ControlsFactory::OFFSET, ControlsFactory::OFFSET, 
@@ -412,6 +427,8 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     SafeRelease(btnOk);
     
     SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    
+    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 }
 
 ColorPicker::~ColorPicker()

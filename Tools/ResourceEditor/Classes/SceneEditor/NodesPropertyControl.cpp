@@ -5,7 +5,7 @@
 
 #include "EditorSettings.h"
 #include "EditorConfig.h"
-
+#include "SceneNodePropertyNames.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
@@ -78,6 +78,8 @@ NodesPropertyControl::~NodesPropertyControl()
     SafeRelease(btnPlus);
 
     SafeRelease(propertyList);
+    
+    SafeRelease(currentSceneNode);
 }
 
 void NodesPropertyControl::WillAppear()
@@ -106,11 +108,14 @@ void NodesPropertyControl::WillDisappear()
         
         ReleaseChildLodData();
     }
+    
+    SafeRelease(currentSceneNode);
 }
 
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    currentSceneNode = sceneNode;
+	SafeRelease(currentSceneNode);
+    currentSceneNode = SafeRetain(sceneNode);
     currentDataNode = NULL;
     ReleaseChildLodData();
     
@@ -122,10 +127,19 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddIntProperty("property.scenenode.retaincount", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.ptr", PropertyList::PROPERTY_IS_READ_ONLY);
+        
+//        for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+//        {
+//            propertyList->AddStringProperty(Format("Component:%s", sceneNode->components sa M.  zz))
+//        }
+        
+        
         
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());
+        propertyList->SetStringPropertyValue("property.scenenode.ptr", Format("%p", sceneNode));
         
         AABBox3 unitBox = sceneNode->GetWTMaximumBoundingBoxSlow();
         if((-AABBOX_INFINITY != unitBox.max.x) && (AABBOX_INFINITY != unitBox.min.x))
@@ -134,26 +148,26 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
             Vector3 size = unitBox.max - unitBox.min;
             
-            propertyList->AddFloatProperty(String("X-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("X-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("X-Size"), size.x);
             
-            propertyList->AddFloatProperty(String("Y-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("Y-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("Y-Size"), size.y);
 
-            propertyList->AddFloatProperty(String("Z-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("Z-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("Z-Size"), size.z);
             
         }
     }
 
     propertyList->AddSection("property.scenenode.scenenode", GetHeaderState("property.scenenode.scenenode", true));
-    propertyList->AddStringProperty("property.scenenode.name", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetStringPropertyValue("property.scenenode.name", sceneNode->GetName());
+    propertyList->AddStringProperty(SCENE_NODE_NAME_PROPERTY_NAME, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetStringPropertyValue(SCENE_NODE_NAME_PROPERTY_NAME, sceneNode->GetName());
 
     if(!createNodeProperties)
     {
-        propertyList->AddBoolProperty("property.scenenode.isVisible", PropertyList::PROPERTY_IS_EDITABLE);
-		propertyList->SetBoolPropertyValue("property.scenenode.isVisible", sceneNode->GetVisible());
+        propertyList->AddBoolProperty(SCENE_NODE_IS_VISIBLE_PROPERTY_NAME, PropertyList::PROPERTY_IS_EDITABLE);
+		propertyList->SetBoolPropertyValue(SCENE_NODE_IS_VISIBLE_PROPERTY_NAME, sceneNode->GetVisible());
 		
         propertyList->AddSection("property.scenenode.matrixes", GetHeaderState("property.scenenode.matrixes", false));
         propertyList->AddMatrix4Property("property.scenenode.localmatrix", PropertyList::PROPERTY_IS_EDITABLE);
@@ -167,14 +181,14 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 	{ //static light
 		 propertyList->AddSection("Used in static lighting", GetHeaderState("Used in static lighting", true));
 
-		 propertyList->AddBoolProperty("Used in static lighting");
-		 propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
 
-		 propertyList->AddBoolProperty("Cast shadows");
-		 propertyList->SetBoolPropertyValue("Cast shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
 
-		 propertyList->AddBoolProperty("Receive shadows");
-		 propertyList->SetBoolPropertyValue("Receive shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.receiveshadows", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.receiveshadows", true));
 	}
     
     
@@ -399,7 +413,7 @@ void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const Strin
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -427,7 +441,7 @@ void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *, const String 
 
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -439,7 +453,7 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 
 void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
-    if(forKey == "property.scenenode.name") //SceneNode
+    if(forKey == SCENE_NODE_NAME_PROPERTY_NAME) //SceneNode
     {
         if(currentSceneNode)
         {
@@ -464,7 +478,7 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String 
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
@@ -484,7 +498,7 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &forKey, int newValue)
@@ -504,7 +518,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &fo
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -514,15 +528,15 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
         
-        if("Used in static lighting" == forKey)
+        if(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME == forKey)
         {
             customProperties->SetBool("editor.staticlight.used", newValue);
         }
-		else if("Cast shadows" == forKey)
+		else if(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME == forKey)
 		{
 			customProperties->SetBool("editor.staticlight.castshadows", newValue);
 		}
-		else if("Receive shadows" == forKey)
+		else if(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME == forKey)
 		{
 			customProperties->SetBool("editor.staticlight.receiveshadows", newValue);
 		}
@@ -555,7 +569,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
         if(!createNodeProperties)
         {
             KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-            if (forKey == "property.scenenode.isVisible")
+            if (forKey == SCENE_NODE_IS_VISIBLE_PROPERTY_NAME)
             {
                 currentSceneNode->SetVisible(newValue);
             }
@@ -578,14 +592,14 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
-void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &, const String &)
+void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const String &)
 {
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
@@ -604,7 +618,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -621,7 +635,7 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *, const String &forKey
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -817,9 +831,22 @@ void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
     if(currentSceneNode)
     {
+		currentSceneNode->Retain();
         ReadFrom(currentSceneNode);
+        currentSceneNode->Release();
     }
 }
+
+void NodesPropertyControl::UpdateMatricesForCurrentNode()
+{
+	if(!createNodeProperties && currentSceneNode)
+	{
+		propertyList->SetBoolPropertyValue("property.scenenode.isVisible", currentSceneNode->GetVisible());
+		propertyList->SetMatrix4PropertyValue("property.scenenode.localmatrix", currentSceneNode->GetLocalTransform());
+		propertyList->SetMatrix4PropertyValue("property.scenenode.worldmatrix", currentSceneNode->GetWorldTransform());
+	}
+}
+
 
 bool NodesPropertyControl::GetHeaderState(const String & headerName, bool defaultValue)
 {

@@ -32,6 +32,8 @@
 	<string>MainWindow-iPad</string>
 	<key>UIInterfaceOrientation</key>
 	<string>UIInterfaceOrientationLandscapeLeft</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 </dict>

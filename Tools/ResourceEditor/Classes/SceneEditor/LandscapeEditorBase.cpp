@@ -3,8 +3,10 @@
 #include "HeightmapNode.h"
 #include "EditorSettings.h"
 #include "../EditorScene.h"
-#include "ErrorNotifier.h"
 #include "EditorBodyControl.h"
+
+#include "../Qt/Main/QtUtils.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
 
 
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
@@ -71,10 +73,10 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
     SafeRelease(workingScene);
     
-    workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
+    workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
     if(!workingLandscape)
     {
-        ErrorNotifier::Instance()->ShowError("No landscape at level.");
+        ShowErrorDialog(String("No landscape at level."));
         return false;
     }
     
@@ -131,7 +133,9 @@ void LandscapeEditorBase::Close()
 {
     HideAction();
     
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    // RETURN TO THIS CODE LATER
+    // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+    
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
@@ -191,7 +195,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     {
         if(UIEvent::BUTTON_1 == touch->tid)
         {
-            inverseDrawingEnabled = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+            inverseDrawingEnabled = IsKeyModificatorPressed(DVKEY_ALT);
             
             if(UIEvent::PHASE_BEGAN == touch->phase)
             {
@@ -228,12 +232,12 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     
     if(UIEvent::PHASE_KEYCHAR == touch->phase)
     {
-        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_CTRL))
         {
             UndoAction();
             return true;
         }
-        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
         {
             RedoAction();
             return true;
@@ -249,7 +253,8 @@ void LandscapeEditorBase::SaveTexture()
     
     if(savedPath.length())
     {
-        SaveTextureAs(savedPath, true);
+        String pathToSave = FileSystem::Instance()->ReplaceExtension(savedPath, ".png");
+        SaveTextureAs(pathToSave, true);
     }
     else if(!fileSystemDialog->GetParent())
     {
@@ -289,14 +294,15 @@ void LandscapeEditorBase::OnShowGrid(bool show)
 {
     if(workingLandscape)
     {
-        if(show)
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
-        }
-        else 
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
-        }
+// RETURN TO THIS CODE LATER
+//        if(show)
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
+//        else 
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
     }
     else 
     {
@@ -304,6 +310,13 @@ void LandscapeEditorBase::OnShowGrid(bool show)
     }
 }
 
+void LandscapeEditorBase::ClearSceneResources()
+{
+	if(IsActive())
+	{
+		HideAction();
+	}
+}
 
 void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
