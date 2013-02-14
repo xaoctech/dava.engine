@@ -65,7 +65,7 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::OnClose(BaseObject * , void * , void * )
 {
-    for(int32 iLod = 1; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
+    for(int32 iLod = 1; iLod < LodComponent::MAX_LOD_LAYERS; ++iLod)
     {
         float32 prev = EditorSettings::Instance()->GetLodLayerDistance(iLod - 1);
         float32 cur = EditorSettings::Instance()->GetLodLayerDistance(iLod);

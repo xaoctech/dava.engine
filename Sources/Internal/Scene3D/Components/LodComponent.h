@@ -101,11 +101,19 @@ public:
 	int32 flags;
     
     /**
-         \brief Registers LOD layer into the LodNode.
+         \brief Registers LOD layer into the LodComponent.
          \param[in] layerNum is the layer index
          \param[in] distance near view distance for the layer
 	 */
     void SetLodLayerDistance(int32 layerNum, float32 distance);
+
+    
+    /**
+         \brief Sets lod layer thet would be forcely used in the whole scene.
+         \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
+	 */
+    void SetForceLodLayer(int32 layer);
+    int32 GetForceLodLayer();
 
 
 public:

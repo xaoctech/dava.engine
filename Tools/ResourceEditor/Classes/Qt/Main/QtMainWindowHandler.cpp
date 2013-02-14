@@ -396,10 +396,6 @@ void QtMainWindowHandler::ShowSettings()
     Execute(new CommandSettings());
 }
 
-void QtMainWindowHandler::BakeScene()
-{
-    Execute(new CommandBakeScene());
-}
 
 void QtMainWindowHandler::Beast()
 {

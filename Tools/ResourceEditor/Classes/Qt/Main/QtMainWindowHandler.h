@@ -91,7 +91,6 @@ public slots:
     void TilemapEditor();
     void RulerTool();
     void ShowSettings();
-    void BakeScene();
     void Beast();
     
     //ViewOptions
