@@ -1053,7 +1053,6 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
     }
     else 
     {
-        DVASSERT(textures[TEXTURE_TILE_FULL]);
         if (textures[TEXTURE_TILE_FULL])
             RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_FULL], 0);
 

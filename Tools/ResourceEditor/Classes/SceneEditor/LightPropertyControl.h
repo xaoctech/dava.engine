@@ -20,6 +20,8 @@ public:
 
 protected:
     Vector<String> types;
+    
+    Light *GetLight(SceneNode *node);
 
 };
 

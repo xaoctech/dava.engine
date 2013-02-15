@@ -154,17 +154,24 @@ void main()
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #endif
 
-#if defined(VERTEX_COLOR)
-	gl_FragColor = vec4(textureColor0*varVertexColor);
-#elif defined(VERTEX_FOG)
-    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
-#elif defined(ALPHABLEND)
+#if defined(ALPHABLEND)
 	gl_FragColor = vec4(color, textureColor0.a);
 #else
     gl_FragColor = vec4(color, 1.0);
 #endif
-    
+
+#if defined(VERTEX_COLOR)
+	gl_FragColor *= varVertexColor;
+#endif
+
 #if defined(FLATCOLOR)
     gl_FragColor *= flatColor;
 #endif
+	
+#if defined(VERTEX_FOG)
+    gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+#endif
+
+    
+
 }

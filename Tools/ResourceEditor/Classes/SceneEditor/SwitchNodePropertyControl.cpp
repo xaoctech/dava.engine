@@ -23,18 +23,25 @@ void SwitchNodePropertyControl::ReadFrom(SceneNode * sceneNode)
 		switchIndeces.push_back("0");
 	}
 
-	SwitchNode * switchNode = dynamic_cast<SwitchNode*>(sceneNode);
-	propertyList->AddComboProperty("Switch index", switchIndeces);
-	propertyList->SetComboPropertyIndex("Switch index", switchNode->GetSwitchIndex());
+    
+    SwitchComponent *switchComponent = static_cast<SwitchComponent *>(sceneNode->GetComponent(Component::SWITCH_COMPONENT));
+    if(switchComponent)
+    {
+        propertyList->AddComboProperty("Switch index", switchIndeces);
+        propertyList->SetComboPropertyIndex("Switch index", switchComponent->GetSwitchIndex());
+    }
 }
 
 void SwitchNodePropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
-	SwitchNode * switchNode = dynamic_cast<SwitchNode*>(currentSceneNode);
-
-	if("Switch index" == forKey)
-	{
-		switchNode->SetSwitchIndex(newItemIndex);
-	}
+    SwitchComponent *switchComponent = static_cast<SwitchComponent *>(currentSceneNode->GetComponent(Component::SWITCH_COMPONENT));
+    if(switchComponent);
+    {
+        if("Switch index" == forKey)
+        {
+            switchComponent->SetSwitchIndex(newItemIndex);
+        }
+    }
+    
 	NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }
