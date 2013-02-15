@@ -69,8 +69,12 @@ void DXTTest::TestFunction(PerfFuncData * data)
     {
         ReloadSprites();
 
-        TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, dxtSprite, formats[currentTest]);
-        float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+		float32 differencePersentage = 100.f;
+		if (decompressedPNGSprite->GetSize() == dxtSprite->GetSize())
+		{
+			TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, dxtSprite, formats[currentTest]);
+			differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+		}
         
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
         data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
