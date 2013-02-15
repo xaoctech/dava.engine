@@ -411,3 +411,9 @@ void ArrowsRenderBatch::Draw(DAVA::Camera *camera)
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, oldMatrix);
 }
+
+const FastName & ArrowsRenderBatch::GetOwnerLayerName()
+{
+	static FastName translucentLayer("TransclucentRenderLayer");
+	return translucentLayer;
+}
