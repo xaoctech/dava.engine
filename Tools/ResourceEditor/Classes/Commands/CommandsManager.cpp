@@ -6,33 +6,70 @@
 using namespace DAVA;
 
 CommandsManager::CommandsManager()
-    :   currentCommandIndex(-1)
+:	activeQueue(NULL)
 {
-    commandsQueue.reserve(UNDO_QUEUE_SIZE);
 }
 
 CommandsManager::~CommandsManager()
 {
-    ClearQueue();
+	ClearAllQueues();
 }
 
-void CommandsManager::ClearQueue()
+void CommandsManager::ClearAllQueues()
 {
-    currentCommandIndex = -1;
-    
-	for_each(commandsQueue.begin(), commandsQueue.end(), SafeRelease<Command>);
-    commandsQueue.clear();
+	for (QUEUE_LIST::iterator it = queueList.begin(); it != queueList.end(); ++it)
+	{
+		ClearQueue((*it).second);
+		SafeDelete((*it).second);
+	}
+	queueList.clear();
+}
+
+void CommandsManager::ChangeQueue(void *scene)
+{
+	DVASSERT(scene);
+
+	QUEUE_LIST::iterator it = queueList.find(scene);
+
+	if (it != queueList.end())
+	{
+		activeQueue = (*it).second;
+	}
+	else
+	{
+		UndoQueue* newQueue = new UndoQueue(scene);
+		queueList[scene] = newQueue;
+		activeQueue = newQueue;
+	}
+}
+
+void CommandsManager::ClearQueue(UndoQueue* queue)
+{
+	if (!queue)
+		return;
+
+	UndoQueue* q = queue;
+	if (!q)
+		q = activeQueue;
+
+	q->commandIndex = -1;
+	for_each(q->commands.begin(),
+			 q->commands.end(),
+			 SafeRelease<Command>);
+	q->commands.clear();
 }
 
 void CommandsManager::ClearQueueTail()
 {
-    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
-    {
-        int32 newCount = currentCommandIndex + 1;
-		for_each(commandsQueue.begin() + newCount, commandsQueue.end(), SafeRelease<Command>);
-        
-        commandsQueue.resize(newCount);
-    }
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	{
+		int32 newCount = activeQueue->commandIndex + 1;
+		for_each(activeQueue->commands.begin() + newCount,
+				 activeQueue->commands.end(),
+				 SafeRelease<Command>);
+		activeQueue->commands.resize(newCount);
+	}
 }
 
 
@@ -50,9 +87,9 @@ void CommandsManager::Execute(Command *command)
             if(Command::STATE_VALID == command->State())
             {
                 //TODO: VK: if need only UNDO_QUEUE_SIZE commands at queue you may add code here
-                ClearQueueTail();
-                commandsQueue.push_back(SafeRetain(command));
-                ++currentCommandIndex;
+				ClearQueueTail();
+				activeQueue->commands.push_back(SafeRetain(command));
+				++activeQueue->commandIndex;
             }
             break;
 
@@ -73,41 +110,44 @@ void CommandsManager::Execute(Command *command)
 
 void CommandsManager::Undo()
 {
-    if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
-    {
-        //TODO: need check state?
-        commandsQueue[currentCommandIndex]->Cancel();
-        --currentCommandIndex;
+	if ((activeQueue->commandIndex >= 0) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	{
+		//TODO: need check state?
+		activeQueue->commands[activeQueue->commandIndex]->Cancel();
+		--activeQueue->commandIndex;
 
 		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
-    }
+	}
 }
 
 void CommandsManager::Redo()
 {
-    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
-    {
-        //TODO: need check state?
-        ++currentCommandIndex;
-        commandsQueue[currentCommandIndex]->Execute();
-    }
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
+	{
+		//TODO: need check state?
+		++activeQueue->commandIndex;
+		activeQueue->commands[activeQueue->commandIndex]->Execute();
+	}
 }
 
 int32 CommandsManager::GetUndoQueueLength()
 {
-	return currentCommandIndex + 1;
+	return activeQueue->commandIndex + 1;
 }
 
 int32 CommandsManager::GetRedoQueueLength()
 {
-	return commandsQueue.size() - currentCommandIndex - 1;
+	return activeQueue->commands.size() - activeQueue->commandIndex - 1;
 }
 
 String CommandsManager::GetUndoCommandName()
 {
-	if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
+	if ((activeQueue->commandIndex >= 0) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
 	{
-		return commandsQueue[currentCommandIndex]->commandName;
+		return activeQueue->commands[activeQueue->commandIndex]->commandName;
 	}
 
 	return "";
@@ -115,9 +155,10 @@ String CommandsManager::GetUndoCommandName()
 
 String CommandsManager::GetRedoCommandName()
 {
-	if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
 	{
-		return commandsQueue[currentCommandIndex + 1]->commandName;
+		return activeQueue->commands[activeQueue->commandIndex + 1]->commandName;
 	}
 
 	return "";

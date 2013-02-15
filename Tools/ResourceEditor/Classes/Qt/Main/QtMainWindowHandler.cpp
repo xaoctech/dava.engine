@@ -64,6 +64,9 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
+
+	SceneDataManager* sceneDataManager = SceneDataManager::Instance();
+	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -731,7 +734,8 @@ void QtMainWindowHandler::ModificationSnapToLand()
 void QtMainWindowHandler::UpdateModificationActions()
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (!screen || !screen->FindCurrentBody())
+		return;
 
 	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
 	ResourceEditor::eModificationActions modificationMode = bodyControl->GetModificationMode();
@@ -826,4 +830,12 @@ void QtMainWindowHandler::UpdateUndoActionsState()
 		str += " " + tr(commandName.c_str());
 	editActions[ResourceEditor::EDIT_REDO]->setText(str);
 	editActions[ResourceEditor::EDIT_REDO]->setEnabled(isEnabled);
+}
+
+void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
+{
+	CommandsManager::Instance()->ChangeQueue(scene);
+
+	UpdateUndoActionsState();
+	UpdateModificationActions();
 }

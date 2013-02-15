@@ -145,7 +145,8 @@ public slots:
 	void OnApplyModification(double x, double y, double z);
 	void OnResetModification();
 	void SetModificationMode(ResourceEditor::eModificationActions mode);
-	
+
+	void OnSceneActivated(SceneData *scene);
 signals:
 
 	void ProjectChanged();
