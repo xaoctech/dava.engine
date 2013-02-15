@@ -108,6 +108,8 @@ public:
     const AABBox3 & GetBoundingBox() const;
 
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
     
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
