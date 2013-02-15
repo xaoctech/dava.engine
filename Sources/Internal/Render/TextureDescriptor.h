@@ -105,6 +105,8 @@ public:
     bool IsSourceValidForFormat(ImageFileFormat fileFormat);
     
     static String GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat);
+    static ImageFileFormat GetFormatForPathname(const String &pathname);
+    static ImageFileFormat GetFormatForExtension(const String &extension);
 
     void SetDefaultValues();
     
