@@ -21,13 +21,30 @@ public:
 
 	DAVA::String GetUndoCommandName();
 	DAVA::String GetRedoCommandName();
-private:
 
-    void ClearQueue();
+	void ChangeQueue(void* scene);
+
+private:
+	struct UndoQueue
+	{
+		DAVA::Vector<Command*> commands;
+		DAVA::int32 commandIndex;
+		void* activeScene;
+
+		UndoQueue(void* scene)
+		:	commandIndex(-1)
+		,	activeScene(scene)
+		{ commands.reserve(UNDO_QUEUE_SIZE); };
+	};
+
+	typedef DAVA::Map<void*, UndoQueue*> QUEUE_LIST;
+
+    void ClearQueue(UndoQueue* queue = NULL);
     void ClearQueueTail();
-    
-    DAVA::Vector<Command *> commandsQueue;
-    DAVA::int32 currentCommandIndex;
+	void ClearAllQueues();
+
+	QUEUE_LIST queueList;
+	UndoQueue* activeQueue;
 };
 
 
