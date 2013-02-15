@@ -708,7 +708,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
 				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
 				{
-					newProperties->SetVariant(it->first, it->second);
+					newProperties->SetVariant(it->first, *it->second);
 				}
                 removedNodeCount++;
                 SafeRelease(childNode);

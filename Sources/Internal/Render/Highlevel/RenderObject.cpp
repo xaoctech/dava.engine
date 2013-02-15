@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderObject.h"
+#include "Base/ObjectFactory.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
@@ -112,9 +113,9 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	return newObject;
 }
 
-void RenderObject::Serialize(KeyedArchive * archive)
+void RenderObject::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 {
-	AnimatedObject::Serialize(archive);
+	AnimatedObject::Save(archive);
 
 	if(NULL != archive)
 	{
@@ -126,10 +127,15 @@ void RenderObject::Serialize(KeyedArchive * archive)
 		KeyedArchive *batchesArch = new KeyedArchive();
 		for(uint32 i = 0; i < GetRenderBatchCount(); ++i)
 		{
-			KeyedArchive *batcheArch = new KeyedArchive();
-			GetRenderBatch(i)->Serialize(batcheArch);
-			batchesArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), batcheArch);
-			batcheArch->Release();
+			RenderBatch *batch = GetRenderBatch(i);
+			if(NULL != batch)
+			{
+				KeyedArchive *batchArch = new KeyedArchive();
+				batch->Save(batchArch, sceneFile);
+				batchArch->SetString("rb.classname", batch->GetClassName());
+				batchesArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), batchArch);
+				batchArch->Release();
+			} 
 		}
 
 		archive->SetArchive("ro.batches", batchesArch);
@@ -137,14 +143,35 @@ void RenderObject::Serialize(KeyedArchive * archive)
 	}
 }
 
-void RenderObject::Deserialize(KeyedArchive * archive)
+void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		// TODO:
+		if(archive->IsKeyExists("ro.type")) type = archive->GetUInt32("ro.type");
+		if(archive->IsKeyExists("ro.flags")) flags = archive->GetUInt32("ro.flags");
+		if(archive->IsKeyExists("ro.debugflags")) debugFlags = archive->GetUInt32("ro.debugflags");
+
+		if(archive->IsKeyExists("ro.batchCount"))
+		{
+			KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
+			for(uint32 i = 0; i < archive->GetUInt32("ro.batchCount"); ++i)
+			{
+				KeyedArchive *batchArch = batchesArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+				if(NULL != batchArch)
+				{
+					RenderBatch *batch = (RenderBatch *) ObjectFactory::Instance()->New(batchArch->GetString("rb.classname"));
+					if(NULL != batch)
+					{
+						batch->Load(batchArch, sceneFile);
+						AddRenderBatch(batch);
+						batch->Release();
+					}
+				}
+			}
+		}
 	}
 
-	AnimatedObject::Deserialize(archive);
+	AnimatedObject::Load(archive);
 }
 
 

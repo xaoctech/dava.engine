@@ -155,5 +155,24 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	return rb;
 }
 
+void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
+{
+	if(NULL != archive)
+	{
+		archive->SetUInt32("rb.type", type);
+		archive->SetUInt32("rb.indexCount", indexCount);
+		archive->SetUInt32("rb.startIndex", startIndex);
+		archive->SetVariant("rb.aabbox", VariantType(aabbox));
+	}
+
+	BaseObject::Save(archive);
+}
+
+void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+
+
+	BaseObject::Load(archive);
+}
 
 };
