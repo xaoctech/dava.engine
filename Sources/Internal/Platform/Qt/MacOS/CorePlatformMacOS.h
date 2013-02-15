@@ -53,6 +53,7 @@ public:
 	virtual DisplayMode GetCurrentDisplayMode();
 	virtual Vector2 GetMousePosition();
 	
+    virtual uint32 GetScreenDPI();
 };	
 };
 
