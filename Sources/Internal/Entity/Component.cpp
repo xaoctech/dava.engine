@@ -70,12 +70,12 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     //Empty as default
 }
 
-void Component::Serialize(KeyedArchive *archive)
+void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
 }
 
-void Component::Deserialize(KeyedArchive *archive)
+void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{

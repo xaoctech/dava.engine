@@ -32,5 +32,37 @@ Component * LightComponent::Clone(SceneNode * toEntity)
     return component;
 }
 
+void LightComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	Component::Serialize(archive, sceneFile);
+
+	if(NULL != archive && NULL != light)
+	{
+		KeyedArchive *lightArch = new KeyedArchive();
+		light->Save(lightArch, sceneFile);
+
+		archive->SetArchive("lc.light", lightArch);
+
+		lightArch->Release();
+	}
+}
+
+void LightComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		KeyedArchive *lightArch = archive->GetArchive("lc.light");
+		if(NULL != lightArch)
+		{
+			Light* l = new Light();
+			l->Load(lightArch, sceneFile);
+			SetLightObject(l);
+			l->Release();
+		}
+	}
+
+	Component::Deserialize(archive, sceneFile);
+}
+
 
 };

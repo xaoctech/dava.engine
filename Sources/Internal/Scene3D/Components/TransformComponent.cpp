@@ -67,9 +67,9 @@ Matrix4 & TransformComponent::ModifyLocalTransform()
 	return localMatrix;
 }
 
-void TransformComponent::Serialize(KeyedArchive *archive)
+void TransformComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	Component::Serialize(archive);
+	Component::Serialize(archive, sceneFile);
 
 	if(NULL != archive)
 	{
@@ -78,7 +78,7 @@ void TransformComponent::Serialize(KeyedArchive *archive)
 	}
 }
 
-void TransformComponent::Deserialize(KeyedArchive *archive)
+void TransformComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
@@ -86,7 +86,7 @@ void TransformComponent::Deserialize(KeyedArchive *archive)
 		if(archive->IsKeyExists("tc.worldMatrix")) localMatrix = archive->GetMatrix4("tc.worldMatrix");
 	}
 
-	Component::Deserialize(archive);
+	Component::Deserialize(archive, sceneFile);
 }
 
 };

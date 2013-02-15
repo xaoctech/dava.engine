@@ -92,6 +92,19 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 	return newLod;
 }
 
+void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+
+	}
+}
+
+void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+
+}
+
 LodComponent::LodComponent()
 :	forceLodLayer(INVALID_LOD_LAYER),
 	forceDistance(INVALID_DISTANCE),
@@ -159,7 +172,6 @@ void LodComponent::GetLodData(List<LodData*> &retLodLayers)
 		retLodLayers.push_back(ld);
 	}
 }
-
     
 void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
