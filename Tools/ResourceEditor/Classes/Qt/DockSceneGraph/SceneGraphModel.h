@@ -30,6 +30,10 @@ public:
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
+	// Get the persistent data for Model Index, needed for save/restore
+	// SceneGraphModel expanded state.
+	void* GetPersistentDataForModelIndex(const QModelIndex &modelIndex);
+
    const DAVA::ParticlesEditorSceneModelHelper& GetParticlesEditorSceneModelHelper() const { return particlesEditorSceneModelHelper; };
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -60,6 +64,17 @@ protected:
     
     // Custom selection handling for Particle Editor.
     bool HandleParticleEditorSelection();
+	
+	// Tree item checkboxes functionality.
+	// Is particular item checkable?
+	bool IsItemCheckable(const QModelIndex &index) const;
+	
+	// Get/set the checked state for the item.
+	Qt::CheckState GetItemCheckState(const QModelIndex& index) const;
+	void SetItemCheckState(const QModelIndex& index, bool value);
+	
+	// Get the graph model by Model Index (or NULL if no Graph Model attached).
+	GraphItem* GetGraphItemByModelIndex(const QModelIndex& index) const;
 
 protected:
 
@@ -68,7 +83,7 @@ protected:
     
     DAVA::ParticlesEditorSceneModelHelper particlesEditorSceneModelHelper;
     
-    // Selectted Scene Graph item for Particle Editor.
+    // Selected Scene Graph item for Particle Editor.
     SceneGraphItem* selectedGraphItemForParticleEditor;
 };
 

@@ -92,8 +92,21 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	alphaOverLifeTimeLine = new TimeLineWidget(this);
 	InitWidget(alphaOverLifeTimeLine);
 	
-	frameOverLifeTimeLine = new TimeLineWidget(this);
-	InitWidget(frameOverLifeTimeLine);
+	QHBoxLayout* frameOverlifeLayout = new QHBoxLayout();
+	frameOverlifeCheckBox = new QCheckBox("frame over life", this);
+	connect(frameOverlifeCheckBox, SIGNAL(stateChanged(int)),
+				  this, SLOT(OnValueChanged()));
+
+	frameOverlifeFPSSpin = new QSpinBox(this);
+	frameOverlifeFPSSpin->setMinimum(0);
+	frameOverlifeFPSSpin->setMaximum(1000);
+	connect(frameOverlifeFPSSpin, SIGNAL(valueChanged(int)),
+			this, SLOT(OnValueChanged()));
+
+	frameOverlifeLayout->addWidget(frameOverlifeCheckBox);
+	frameOverlifeLayout->addWidget(frameOverlifeFPSSpin);
+	frameOverlifeLayout->addWidget(new QLabel("FPS", this));
+	mainBox->addLayout(frameOverlifeLayout);
 	
 	angleTimeLine = new TimeLineWidget(this);
 	InitWidget(angleTimeLine);
@@ -175,6 +188,14 @@ EmitterLayerWidget::~EmitterLayerWidget()
 			SIGNAL(valueChanged(double)),
 			this,
 			SLOT(OnValueChanged()));
+	disconnect(frameOverlifeCheckBox,
+		   SIGNAL(stateChanged(int)),
+		   this,
+		   SLOT(OnValueChanged()));
+	disconnect(frameOverlifeFPSSpin,
+		   SIGNAL(valueChanged(int)),
+		   this,
+		   SLOT(OnValueChanged()));
 }
 
 void EmitterLayerWidget::InitWidget(QWidget* widget)
@@ -257,7 +278,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
 	
-	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	sizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
 	sizeOverLifeTimeLine->SetMinLimits(0);
 	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
 
@@ -292,23 +313,17 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	colorRandomGradient->Init(0, 1, "random color");
 	colorRandomGradient->SetValues(PropLineWrapper<Color>(layer->colorRandom).GetProps());
 	
-	colorOverLifeGradient->Init(0, 1, "color over life");
+	colorOverLifeGradient->Init(0.0f, 1.0f, "color over life");
 	colorOverLifeGradient->SetValues(PropLineWrapper<Color>(layer->colorOverLife).GetProps());
 
-	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
+	alphaOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
 	alphaOverLifeTimeLine->SetMinLimits(0);
 	alphaOverLifeTimeLine->SetMaxLimits(1.f);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
 	
-	frameOverLifeTimeLine->Init(0, 1, updateMinimized, false, true, true);
-	frameOverLifeTimeLine->SetMinLimits(0);
-	int32 frameCount = 0;
-	if (layer && layer->GetSprite())
-	{
-		frameCount = layer->GetSprite()->GetFrameCount() - 1;
-	}
-	frameOverLifeTimeLine->SetMaxLimits(frameCount);
-	frameOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->frameOverLife).GetProps(), Qt::blue, "frame over life");
+	frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
+	frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
+	frameOverlifeFPSSpin->setEnabled(layer->frameOverLifeEnabled);
 	
 	angleTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
 	angleTimeLine->AddLine(0, PropLineWrapper<float32>(layer->angle).GetProps(), Qt::blue, "angle");
@@ -344,7 +359,6 @@ void EmitterLayerWidget::RestoreVisualState(KeyedArchive* visualStateProps)
 	spinTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_SPIN_PROPS"));
 	motionTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_MOTION_RANDOM_PROPS"));
 	bounceTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_BOUNCE_PROPS"));
-	frameOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_FRAME_OVER_LIFE_PROPS"));
 	alphaOverLifeTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ALPHA_OVER_LIFE_PROPS"));
 	angleTimeLine->SetVisualState(visualStateProps->GetArchive("LAYER_ANGLE"));	
 }
@@ -395,10 +409,6 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 	alphaOverLifeTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_ALPHA_OVER_LIFE_PROPS", props);
 
-	props->DeleteAllKeys();
-	frameOverLifeTimeLine->GetVisualState(props);
-	visualStateProps->SetArchive("LAYER_FRAME_OVER_LIFE_PROPS", props);
-	
 	props->DeleteAllKeys();
 	angleTimeLine->GetVisualState(props);
 	visualStateProps->SetArchive("LAYER_ANGLE", props);
@@ -512,9 +522,6 @@ void EmitterLayerWidget::OnValueChanged()
 	PropLineWrapper<float32> propAlphaOverLife;
 	alphaOverLifeTimeLine->GetValue(0, propAlphaOverLife.GetPropsPtr());
 	
-	PropLineWrapper<float32> propFrameOverLife;
-	frameOverLifeTimeLine->GetValue(0, propFrameOverLife.GetPropsPtr());
-	
 	PropLineWrapper<float32> propAngle;
 	PropLineWrapper<float32> propAngleVariation;
 	angleTimeLine->GetValue(0, propAngle.GetPropsPtr());
@@ -547,12 +554,13 @@ void EmitterLayerWidget::OnValueChanged()
 						 propColorRandom.GetPropLine(),
 						 propAlphaOverLife.GetPropLine(),
 						 propColorOverLife.GetPropLine(),
-						 propFrameOverLife.GetPropLine(),
 						 propAngle.GetPropLine(),
 						 propAngleVariation.GetPropLine(),
 						 (float32)alignToMotionSpin->value(),
 						 (float32)startTimeSpin->value(),
-						 (float32)endTimeSpin->value());
+						 (float32)endTimeSpin->value(),
+						 frameOverlifeCheckBox->isChecked(),
+						 (float32)frameOverlifeFPSSpin->value());
 
 	CommandsManager::Instance()->Execute(updateLayerCmd);
 	SafeRelease(updateLayerCmd);
