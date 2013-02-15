@@ -47,7 +47,9 @@ LandscapeEditorCustomColors::LandscapeEditorCustomColors(LandscapeEditorDelegate
 	radius = 64;
 	UpdateCircleTexture(false);
 
-	command = NULL;
+	originalTexture = NULL;
+
+	unsavedChanges = false;
 }
 
 LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
@@ -291,8 +293,8 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = true;
 
-			DVASSERT(command == NULL);
-			command = new CommandDrawCustomColors();
+			DVASSERT(originalTexture == NULL);
+			originalTexture = StoreState();
 
             break;
         }
@@ -303,18 +305,21 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = false;
 
-				if (command)
+				if (originalTexture)
 				{
+					CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
 					CommandsManager::Instance()->Execute(command);
 					SafeRelease(command);
+					SafeRelease(originalTexture);
+					unsavedChanges = true;
 				}
             }
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
 
-				DVASSERT(command == NULL);
-				command = new CommandDrawCustomColors();
+				DVASSERT(originalTexture == NULL);
+				originalTexture = StoreState();
             }
             break;
         }
@@ -323,10 +328,13 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = false;
 
-			if (command)
+			if (originalTexture)
 			{
+				CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
 				CommandsManager::Instance()->Execute(command);
 				SafeRelease(command);
+				SafeRelease(originalTexture);
+				unsavedChanges = true;
 			}
             break;
         }
@@ -339,9 +347,9 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
 	wasTileMaskToolUpdate = true;
 }
 
-void LandscapeEditorCustomColors::StoreState(DAVA::Image **image)
+Image* LandscapeEditorCustomColors::StoreState()
 {
-	*image = colorSprite->GetTexture()->CreateImageFromMemory();
+	return colorSprite->GetTexture()->CreateImageFromMemory();
 }
 
 void LandscapeEditorCustomColors::RestoreState(DAVA::Image *image)
@@ -418,12 +426,10 @@ void LandscapeEditorCustomColors::ShowAction()
 
 void LandscapeEditorCustomColors::UndoAction()
 {
-	CommandsManager::Instance()->Undo();
 }
 
 void LandscapeEditorCustomColors::RedoAction()
 {
-	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
@@ -441,6 +447,8 @@ void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 				StoreSaveFileName(pathToFile);
 				ImageLoader::Save(img, pathToFile);
 				SafeRelease(img);
+
+				unsavedChanges = false;
 			}
 		}
 	}
@@ -464,11 +472,8 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 												   image->GetHeight(),
 												   false);
 
-		if(colorSprite != 0)
-		{
-			DVASSERT(command == NULL);
-			command = new CommandDrawCustomColors();
-		}
+		DVASSERT(originalTexture == NULL);
+		originalTexture = StoreState();
 
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
@@ -485,10 +490,13 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 
 		StoreSaveFileName(pathToFile);
 
-		if (command)
+		if (originalTexture)
 		{
+			CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
 			CommandsManager::Instance()->Execute(command);
 			SafeRelease(command);
+			SafeRelease(originalTexture);
+			unsavedChanges = true;
 		}
 	}
 }
@@ -616,13 +624,12 @@ String LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String&
 
 void LandscapeEditorCustomColors::SaveTexture()
 {
-//	TODO: fix it later
-//	if(UNDOAction::ACTION_COLORIZE == UNDOManager::Instance()->GetLastUNDOAction())
-//    {
+	if (unsavedChanges)
+	{
 		Command * saveCommand = new CommandSaveTextureCustomColors;
 		CommandsManager::Instance()->Execute(saveCommand);
 		SafeRelease(saveCommand);
-//	}
+	}
 	Close();
 }
 

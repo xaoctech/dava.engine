@@ -111,15 +111,13 @@ void CommandChangeColorCustomColors::Execute()
     }
 }
 
-CommandDrawCustomColors::CommandDrawCustomColors()
+CommandDrawCustomColors::CommandDrawCustomColors(Image* originalImage)
 :	Command(COMMAND_UNDO_REDO)
 {
 	commandName = "Custom Color Draw";
 	redoImage = NULL;
 
-	LandscapeEditorCustomColors* editor = GetEditor();
-	if (editor)
-		editor->StoreState(&undoImage);
+	undoImage = SafeRetain(originalImage);
 }
 
 CommandDrawCustomColors::~CommandDrawCustomColors()
@@ -139,7 +137,7 @@ void CommandDrawCustomColors::Execute()
 
 	if (redoImage == NULL)
 	{
-		editor->StoreState(&redoImage);
+		redoImage = SafeRetain(editor->StoreState());
 	}
 	else
 	{

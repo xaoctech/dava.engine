@@ -43,7 +43,7 @@ public:
 
 	void ClearSceneResources();
 
-	void StoreState(Image** image);
+	Image* StoreState();
 	void RestoreState(Image* image);
 
 protected:
@@ -96,7 +96,9 @@ protected:
 	bool		isCursorTransparent;
 	bool		isFogEnabled;
 
-	CommandDrawCustomColors* command;
+	bool unsavedChanges;
+
+	Image* originalTexture;
 };
 
 
