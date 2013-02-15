@@ -1,6 +1,5 @@
 #include "Base/BaseTypes.h"
-#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
-#include "Platform/Qt/QtLayer.h"
+#include "Core/Core.h"
 
 
 #if defined(__DAVAENGINE_MACOS__)
@@ -11,7 +10,7 @@
 
 namespace DAVA
 {
-    uint32 CoreMacOSPlatform::GetScreenDPI()
+    uint32 Core::GetScreenDPI()
     {
         
         NSScreen *screen = [NSScreen mainScreen];
