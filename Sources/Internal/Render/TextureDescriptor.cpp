@@ -549,6 +549,31 @@ String TextureDescriptor::GetPathnameForFormat(const String &pathname, ImageFile
 
     return String("");
 }
+    
+ImageFileFormat TextureDescriptor::GetFormatForPathname(const String &pathname)
+{
+    String extension = FileSystem::GetExtension(pathname);
+    return GetFormatForExtension(extension);
+}
+    
+
+ImageFileFormat TextureDescriptor::GetFormatForExtension(const String &extension)
+{
+    if(0 == CompareCaseInsensitive(extension, ".png"))
+    {
+        return PNG_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(extension, ".pvr"))
+    {
+        return PVR_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(extension, ".dds"))
+    {
+        return DXT_FILE;
+    }
+
+    return NOT_FILE;
+}
 
 
 

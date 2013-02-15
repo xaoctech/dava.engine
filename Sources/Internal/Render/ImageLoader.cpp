@@ -160,7 +160,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
-        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
+//        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
         return imageSet;
     }
     return Vector<Image *>();
