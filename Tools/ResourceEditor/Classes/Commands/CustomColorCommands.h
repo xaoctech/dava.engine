@@ -56,7 +56,7 @@ protected:
 class CommandDrawCustomColors: public Command
 {
 public:
-	CommandDrawCustomColors();
+	CommandDrawCustomColors(Image* originalImage);
 	virtual ~CommandDrawCustomColors();
 protected:
 	Image* undoImage;
