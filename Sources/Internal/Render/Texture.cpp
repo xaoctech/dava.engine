@@ -707,7 +707,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
-    if(IsLoadAvailable(formatForLoading, descriptor))
+    if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
         String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
         texture = CreateFromImage(imagePathname, descriptor);
