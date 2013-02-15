@@ -42,7 +42,7 @@ void TransformSystem::Process()
 
 	if(passedNodes)
 	{
-		//Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
+		Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
 	}
 }
 
@@ -106,7 +106,7 @@ void TransformSystem::HierahicAddToUpdate(SceneNode * entity)
 	{
 		entity->AddFlag(SceneNode::TRANSFORM_DIRTY);
 		SceneNode * parent = entity->GetParent();
-		if(parent)
+		if(parent && parent->GetParent())
 		{
 			HierahicAddToUpdate(entity->GetParent());
 		}
