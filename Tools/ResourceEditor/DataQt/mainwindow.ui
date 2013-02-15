@@ -398,7 +398,6 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
-    <addaction name="actionBakeScene"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
@@ -714,11 +713,6 @@
   <action name="actionSceneInfo">
    <property name="text">
     <string>Scene Info</string>
-   </property>
-  </action>
-  <action name="actionBakeScene">
-   <property name="text">
-    <string>Bake Scene</string>
    </property>
   </action>
   <action name="actionShowSettings">
