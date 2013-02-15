@@ -79,7 +79,7 @@ public:
     static TextureDescriptor *CreateFromFile(const String &filePathname);
     
     
-    void UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const;
+    bool UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const;
 
     bool Load(const String &filePathname);
 

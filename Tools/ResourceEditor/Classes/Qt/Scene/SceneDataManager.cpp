@@ -624,8 +624,8 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 
 // 			}
 // 
-// 			descriptor->UpdateDateAndCrcForFormat(fileFormat);
-// 			descriptor->Save();
+// 			bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(fileFormat);
+// 			if(wasUpdated) descriptor->Save();
 // 			SafeRelease(descriptor);
 // 		}
 // 	}
