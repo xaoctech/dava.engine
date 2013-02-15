@@ -740,12 +740,12 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     }
 
 	KeyedArchive *compsArch = new KeyedArchive();
-	for(int i = 0; i < components.size(); ++i)
+	for(uint32 i = 0; i < components.size(); ++i)
 	{
 		if(NULL != components[i])
 		{
 			KeyedArchive *compArch = new KeyedArchive();
-			components[i]->Serialize(compArch);
+			components[i]->Serialize(compArch, sceneFileV2);
 			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), compArch);
 			compArch->Release();
 		}
@@ -789,7 +789,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	KeyedArchive *compsArch = archive->GetArchive("components");
 	if(NULL != compsArch)
 	{
-		for(int i = 0; i < components.size(); ++i)
+		for(uint32 i = 0; i < components.size(); ++i)
 		{
 			KeyedArchive *compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 			if(NULL != compArch)
@@ -798,7 +798,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 				if(compType != 0xFFFFFFFF)
 				{
 					Component *comp = Component::CreateByType(compType);
-					comp->Deserialize(compArch);
+					comp->Deserialize(compArch, sceneFileV2);
 					AddComponent(comp);
 				}
 			}

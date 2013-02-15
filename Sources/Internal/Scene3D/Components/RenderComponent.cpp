@@ -64,14 +64,14 @@ void RenderComponent::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
 	}
 }
 
-void RenderComponent::Serialize(KeyedArchive *archive)
+void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	Component::Serialize(archive);
+	Component::Serialize(archive, sceneFile);
 
 	if(NULL != archive && NULL != renderObject)
 	{
 		KeyedArchive *roArch = new KeyedArchive();
-		renderObject->Serialize(roArch);
+		renderObject->Save(roArch, sceneFile);
 
 		archive->SetArchive("rc.renderObj", roArch);
 
@@ -79,7 +79,7 @@ void RenderComponent::Serialize(KeyedArchive *archive)
 	}
 }
 
-void RenderComponent::Deserialize(KeyedArchive *archive)
+void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
@@ -87,13 +87,13 @@ void RenderComponent::Deserialize(KeyedArchive *archive)
 		if(NULL != roArch)
 		{
 			RenderObject* ro = new RenderObject();
-			ro->Deserialize(roArch);
+			ro->Load(roArch, sceneFile);
 
 			SetRenderObject(ro);
 		}
 	}
 
-	Component::Deserialize(archive);
+	Component::Deserialize(archive, sceneFile);
 }
 
 };
