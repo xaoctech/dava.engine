@@ -423,21 +423,6 @@ void QtMainWindowHandler::ReloadTexturesFromFileSystem()
     Execute(new CommandReloadTextures());
 }
 
-void QtMainWindowHandler::OpenParticleEditorConfig()
-{
-	Execute(new CommandOpenParticleEditorConfig());
-}
-
-void QtMainWindowHandler::SaveParticleEditorConfig()
-{
-	Execute(new CommandSaveParticleEditorConfig());
-}
-
-void QtMainWindowHandler::OpenParticleEditorSprite()
-{
-	Execute(new CommandOpenParticleEditorSprite());
-}
-
 void QtMainWindowHandler::CreateParticleEmitterNode()
 {
     CreateNode(ResourceEditor::NODE_PARTICLE_EMITTER);
