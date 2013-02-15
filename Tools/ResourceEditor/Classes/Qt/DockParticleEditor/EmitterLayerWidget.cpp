@@ -278,7 +278,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	sizeVariationTimeLine->AddLines(PropLineWrapper<Vector2>(layer->sizeVariation).GetProps(), colors, legends);
 	sizeVariationTimeLine->EnableLock(true);
 	
-	sizeOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized);
+	sizeOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
 	sizeOverLifeTimeLine->SetMinLimits(0);
 	sizeOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->sizeOverLife).GetProps(), Qt::blue, "size over life");
 
@@ -313,10 +313,10 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	colorRandomGradient->Init(0, 1, "random color");
 	colorRandomGradient->SetValues(PropLineWrapper<Color>(layer->colorRandom).GetProps());
 	
-	colorOverLifeGradient->Init(0, 1, "color over life");
+	colorOverLifeGradient->Init(0.0f, 1.0f, "color over life");
 	colorOverLifeGradient->SetValues(PropLineWrapper<Color>(layer->colorOverLife).GetProps());
 
-	alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
+	alphaOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized);
 	alphaOverLifeTimeLine->SetMinLimits(0);
 	alphaOverLifeTimeLine->SetMaxLimits(1.f);
 	alphaOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->alphaOverLife).GetProps(), Qt::blue, "alpha over life");
