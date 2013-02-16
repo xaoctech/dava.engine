@@ -81,7 +81,7 @@ class Particle;
 class ParticleEmitter : public RenderObject, public IRenderUpdatable
 {
 public:
-	enum eEmitterType
+	enum eType
 	{
 		EMITTER_POINT,
 		EMITTER_LINE,
@@ -349,7 +349,7 @@ public:
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<Vector3> > size;
     
-	eEmitterType	emitterType;
+	eType	emitterType;
 	Color currentColor;
 
 	bool GetCurrentColor(Color * currentColor);

@@ -75,7 +75,8 @@ private:
 	TimeLineWidget* motionTimeLine;
 	TimeLineWidget* bounceTimeLine;
 	TimeLineWidget* alphaOverLifeTimeLine;
-	TimeLineWidget* frameOverLifeTimeLine;
+	QCheckBox* frameOverlifeCheckBox;
+	QSpinBox* frameOverlifeFPSSpin;
 	TimeLineWidget* angleTimeLine;
 	GradientPickerWidget* colorRandomGradient;
 	GradientPickerWidget* colorOverLifeGradient;

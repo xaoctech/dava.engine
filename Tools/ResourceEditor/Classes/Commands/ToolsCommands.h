@@ -36,17 +36,6 @@ protected:
     virtual void Execute();
 };
 
-class CommandBakeScene: public Command
-{
-public:
-	CommandBakeScene();
-    
-protected:
-    
-    virtual void Execute();
-    virtual void Cancel();
-
-};
 
 class CommandBeast: public Command
 {
