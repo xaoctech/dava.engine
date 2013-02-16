@@ -53,6 +53,8 @@ private:
     
     NodesPropertyControl *controls[EPCID_COUNT];
     
+    ePropertyControlIDs DetectNodeType(SceneNode *node);
+    
 };
 
 #endif //__PROPERTY_CONTROL_CREATOR_H__
