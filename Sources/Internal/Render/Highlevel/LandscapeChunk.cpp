@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -37,7 +38,7 @@ REGISTER_CLASS(LandscapeChunk);
 LandscapeChunk::LandscapeChunk(LandscapeNode * _landscape)
     : landscape(_landscape)
 {
-    
+    SetOwnerLayerName(LAYER_OPAQUE);
 }
     
 LandscapeChunk::~LandscapeChunk()
