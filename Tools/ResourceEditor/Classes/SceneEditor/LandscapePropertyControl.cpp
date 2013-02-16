@@ -14,6 +14,7 @@ LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool creat
     tiledModes.push_back("Tile mask mode");
     tiledModes.push_back("Texture mode");
     tiledModes.push_back("Mixed mode");
+    tiledModes.push_back("Detail mask mode");
 }
 
 LandscapePropertyControl::~LandscapePropertyControl()
@@ -60,7 +61,20 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     AddFilepathProperty(String("property.landscape.texture.tile3"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE3);
     AddFilepathProperty(String("property.landscape.texture.tilemask"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_MASK);
     AddFilepathProperty(String("property.landscape.texture.tiledtexture"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_FULL);
-    propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"), 
+
+    propertyList->AddColorProperty("property.landscape.texture.tilecolor0");
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor0", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE0));
+    
+    propertyList->AddColorProperty("property.landscape.texture.tilecolor1");
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor1", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE1));
+    
+    propertyList->AddColorProperty("property.landscape.texture.tilecolor2");
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor2", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE2));
+    
+    propertyList->AddColorProperty("property.landscape.texture.tilecolor3");
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor3", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE3));
+
+    propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"),
                                      Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
 
     propertyList->AddMessageProperty(String("property.landscape.saveheightmaptopng"),
@@ -351,6 +365,35 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
 		if (!landscape)
 			return;
         landscape->SetFogColor(newColor);
+    }
+    
+    if("property.landscape.texture.tilecolor0" == forKey)
+    {
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE0, newColor);
+    }
+    if("property.landscape.texture.tilecolor1" == forKey)
+    {
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE1, newColor);
+    }
+    if("property.landscape.texture.tilecolor2" == forKey)
+    {
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE2, newColor);
+    }
+    if("property.landscape.texture.tilecolor3" == forKey)
+    {
+		LandscapeNode *landscape = GetLandscape();
+		if (!landscape)
+			return;
+        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE3, newColor);
     }
     
     PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
