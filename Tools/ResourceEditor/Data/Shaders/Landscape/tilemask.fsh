@@ -42,11 +42,13 @@ varying float varFogFactor;
 
 void main()
 {
-    lowp vec3 color0 = texture2D(tileTexture0, varTexCoord0).rgb;
 #ifndef DETAILMASK
+    lowp vec3 color0 = texture2D(tileTexture0, varTexCoord0).rgb;
     lowp vec3 color1 = texture2D(tileTexture1, varTexCoord1).rgb;
     lowp vec3 color2 = texture2D(tileTexture2, varTexCoord2).rgb;
     lowp vec3 color3 = texture2D(tileTexture3, varTexCoord3).rgb;
+#else
+    lowp vec4 color0 = texture2D(tileTexture0, varTexCoord0).rgba;
 #endif
 
     lowp vec4 mask = texture2D(tileMask, varTexCoordOrig);

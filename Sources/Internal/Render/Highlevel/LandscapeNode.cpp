@@ -133,7 +133,7 @@ void LandscapeNode::InitShaders()
     }
     if (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode)
     {
-        if (defines.size() == 0)defines += ";";
+        if (defines.size() != 0)defines += ";";
         defines += "DETAILMASK";
     }
     tileMaskShader->SetDefineList(defines);
@@ -154,10 +154,10 @@ void LandscapeNode::InitShaders()
     uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("texture2Tiling");
     uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
     
-    uniformTileColor[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("textureColor0");
-    uniformTileColor[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("textureColor1");
-    uniformTileColor[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("textureColor2");
-    uniformTileColor[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("textureColor3");
+    uniformTileColor[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("tileColor0");
+    uniformTileColor[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("tileColor1");
+    uniformTileColor[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("tileColor2");
+    uniformTileColor[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("tileColor3");
 
     
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
