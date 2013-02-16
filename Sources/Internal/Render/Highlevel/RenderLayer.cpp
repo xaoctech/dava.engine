@@ -34,7 +34,7 @@
 
 namespace DAVA
 {
-RenderLayer::RenderLayer(const char * _name)
+RenderLayer::RenderLayer(const FastName & _name)
     : name(_name)
     , flags(0)
 {

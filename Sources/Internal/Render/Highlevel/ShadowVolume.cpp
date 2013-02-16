@@ -30,7 +30,7 @@
 #include "Render/3D/StaticMesh.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
-
+#include "Render/Highlevel/RenderFastNames.h"
 
 
 namespace DAVA
@@ -44,6 +44,9 @@ ShadowVolume::ShadowVolume()
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
+
+    
+    SetOwnerLayerName(LAYER_SHADOW_VOLUME);
 }
 
 ShadowVolume::~ShadowVolume()
@@ -507,12 +510,6 @@ void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)
 PolygonGroup * ShadowVolume::GetPolygonGroup()
 {
     return shadowPolygonGroup;
-}
-
-const FastName & ShadowVolume::GetOwnerLayerName()
-{
-    static FastName fn("ShadowVolumeRenderLayer");
-    return fn;
 }
 
 

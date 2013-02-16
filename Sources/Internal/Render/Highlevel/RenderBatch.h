@@ -80,8 +80,8 @@ public:
     RenderBatch();
     virtual ~RenderBatch();
     
-    // TEMPORARY
-    virtual const FastName & GetOwnerLayerName();
+    const FastName & GetOwnerLayerName();
+    void SetOwnerLayerName(const FastName & fastname);
     
     void SetPolygonGroup(PolygonGroup * _polygonGroup);
     inline PolygonGroup * GetPolygonGroup();
@@ -90,6 +90,7 @@ public:
     inline RenderDataObject * GetRenderDataObject();
     
     void SetMaterial(Material * _material);
+    
     inline Material * GetMaterial();
     inline InstanceMaterialState * GetMaterialInstance();
     
@@ -121,6 +122,7 @@ protected:
     Material * material;                    // Should be replaced to NMaterial
     InstanceMaterialState * materialInstance; // Should be replaced by NMaterialInstance
 	RenderObject * renderObject;
+    FastName ownerLayerName;
     
     uint32 startIndex;
     uint32 indexCount;

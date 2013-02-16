@@ -47,6 +47,10 @@ public:
 	{
 		HashMap<FastName, V>::Insert(FastName(name), value);
 	}
+	void Insert(const FastName & name, const V &value)
+	{
+		HashMap<FastName, V>::Insert(name, value);
+	}
 };
 
 };

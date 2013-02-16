@@ -34,6 +34,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -53,6 +54,7 @@ RenderBatch::RenderBatch()
     type = PRIMITIVETYPE_TRIANGLELIST;
 	renderObject = 0;
     materialInstance = new InstanceMaterialState();
+    ownerLayerName = INHERIT_FROM_MATERIAL;
 }
     
 RenderBatch::~RenderBatch()
@@ -104,19 +106,37 @@ void RenderBatch::Draw(Camera * camera)
     
 const FastName & RenderBatch::GetOwnerLayerName()
 {
-    static FastName opaqueLayer("OpaqueRenderLayer");
-    static FastName translucentLayer("TransclucentRenderLayer");
-    
-    if (material)
+    if (ownerLayerName == INHERIT_FROM_MATERIAL)
     {
-        if(material->GetOpaque() || material->GetAlphablend())
-		{
-			return translucentLayer;
-		}
+        DVASSERT(material != 0);
+        return material->GetOwnerLayerName();
     }
-    
-    return opaqueLayer;
+    else
+    {
+        return ownerLayerName;
+    }
 }
+    
+void RenderBatch::SetOwnerLayerName(const FastName & fastname)
+{
+    ownerLayerName = fastname;
+}
+    
+//const FastName & RenderBatch::GetOwnerLayerName()
+//{
+//    static FastName opaqueLayer("OpaqueRenderLayer");
+//    static FastName translucentLayer("TransclucentRenderLayer");
+//    
+//    if (material)
+//    {
+//        if(material->GetOpaque() || material->GetAlphablend())
+//		{
+//			return translucentLayer;
+//		}
+//    }
+//    
+//    return opaqueLayer;
+//}
 
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 {
