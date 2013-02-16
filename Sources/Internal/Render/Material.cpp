@@ -394,11 +394,6 @@ void Material::RebuildShader()
     
     
 
-    if(GetAlphablend())
-    {
-        SetOwnerLayerName(LAYER_TRANSLUCENT);
-    }
-    SetOwnerLayerName(LAYER_OPAQUE);
 
     //RetrieveTextureSlotNames();
 }
@@ -1010,6 +1005,12 @@ const Vector2 & Material::GetTextureShift()
     
 const FastName & Material::GetOwnerLayerName()
 {
+    if(GetAlphablend())
+    {
+        SetOwnerLayerName(LAYER_TRANSLUCENT);
+    }
+    else SetOwnerLayerName(LAYER_OPAQUE);
+
     return ownerLayerName;
 }
 
