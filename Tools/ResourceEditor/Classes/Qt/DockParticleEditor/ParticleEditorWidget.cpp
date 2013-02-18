@@ -27,9 +27,9 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnEmitterSelected(SceneNode*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)));
+			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
@@ -99,7 +99,7 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	}
 }
 
-void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
 {
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
@@ -109,9 +109,10 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 		{
 			return;
 		}
-		if (emitterLayerWidget &&
+		if (!forceRefresh && emitterLayerWidget &&
 			emitterLayerWidget->GetLayer() == layer &&
-			emitterLayerWidget->GetEmitter() == emitter)
+			emitterLayerWidget->GetEmitter() == emitter &&
+			!forceRefresh)
 			return;
 	}
 

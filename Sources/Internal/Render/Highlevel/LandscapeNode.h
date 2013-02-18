@@ -124,6 +124,7 @@ public:
         TILED_MODE_TILEMASK = 0,
         TILED_MODE_TEXTURE,
         TILED_MODE_MIXED,
+        TILED_MODE_TILE_DETAIL_MASK, 
         
         TILED_MODE_COUNT
     };
@@ -232,7 +233,11 @@ public:
         \returns Tiling for specified texture level.
      */
     const Vector2 & GetTextureTiling(eTextureLevel level); 
+
     
+    const void SetTileColor(eTextureLevel level, const Color & color);
+    const Color & GetTileColor(eTextureLevel level);
+
     /**
         \brief Overloaded draw function to draw landscape
      */
@@ -360,6 +365,8 @@ protected:
     int32 uniformTextures[TEXTURE_COUNT];
     int32 uniformTextureTiling[TEXTURE_COUNT];
     Vector2 textureTiling[TEXTURE_COUNT];
+    int32 uniformTileColor[TEXTURE_COUNT];
+    Color tileColor[TEXTURE_COUNT];
     
     int32 uniformFogDensity;
     int32 uniformFogColor;

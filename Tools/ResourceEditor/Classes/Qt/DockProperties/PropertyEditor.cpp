@@ -7,9 +7,12 @@
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 
+#include "PropertyEditorStateHelper.h"
+
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
 	, curNode(NULL)
+	, treeStateHelper(this, this->curModel)
 {
 	// global scene manager signals
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
@@ -25,6 +28,11 @@ PropertyEditor::~PropertyEditor()
 
 void PropertyEditor::SetNode(DAVA::SceneNode *node)
 {
+	// Store the current Property Editor Tree state before switching to the new node.
+	// Do not clear the current states map - we are using one storage to share opened
+	// Property Editor nodes between the different Scene Nodes.
+	treeStateHelper.SaveTreeViewState(false);
+
 	SafeRelease(curNode);
 	curNode = SafeRetain(node);
 
@@ -43,7 +51,16 @@ void PropertyEditor::SetNode(DAVA::SceneNode *node)
         }
 	}
 
-	expandToDepth(0);
+	// Restore back the tree view state from the shared storage.
+	if (!treeStateHelper.IsTreeStateStorageEmpty())
+	{
+		treeStateHelper.RestoreTreeViewState();
+	}
+	else
+	{
+		// Expand the root elements as default value.
+		expandToDepth(0);
+	}
 }
 
 void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)

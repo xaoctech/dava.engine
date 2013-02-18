@@ -220,9 +220,12 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 					DAVA::Logger::Error("---");
 				}
 
-				item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
-				item->descriptorCopy.Save();
-			}
+				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
+                if(wasUpdated)
+                {
+                    item->descriptorCopy.Save();
+                }
+            }
 
 			Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFile(outputPath);
 
@@ -269,8 +272,11 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
-				item->descriptorCopy.Save();
+				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+                if(wasUpdated)
+                {
+                    item->descriptorCopy.Save();
+                }
 
 				outputPath = DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
 			}
@@ -336,8 +342,11 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 						p.start(command);
 						p.waitForFinished(-1);
 
-						descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
-						descriptor->Save();
+						bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+                        if(wasUpdated)
+                        {
+                            descriptor->Save();
+                        }
 					}
 				}
 
@@ -351,8 +360,11 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 						// DXT convert
 						// ...
 
-						descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
-						descriptor->Save();
+						bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+                        if(wasUpdated)
+                        {
+                            descriptor->Save();
+                        }
 					}
 				}
 			}

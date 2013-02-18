@@ -41,7 +41,7 @@ class Camera;
 class RenderPass
 {
 public:
-    RenderPass(const char * name);
+    RenderPass(const FastName & name);
     virtual ~RenderPass();
     
     const FastName & GetName();

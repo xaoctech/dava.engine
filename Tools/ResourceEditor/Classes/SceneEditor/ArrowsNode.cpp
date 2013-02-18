@@ -1,6 +1,7 @@
 #include "ArrowsNode.h"
 
 #include "EditorScene.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 #define RED Color(1.f, 0.f, 0.f, 1.f)
 #define GREEN Color(0.f, 1.f, 0.f, 1.f)
@@ -399,6 +400,8 @@ ArrowsRenderObject::ArrowsRenderObject(ArrowsNode* node)
 ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
 :	node(node)
 {
+    
+    SetOwnerLayerName(LAYER_OPAQUE);
 }
 
 void ArrowsRenderBatch::Draw(DAVA::Camera *camera)
@@ -410,4 +413,10 @@ void ArrowsRenderBatch::Draw(DAVA::Camera *camera)
 		node->Draw();
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, oldMatrix);
+}
+
+const FastName & ArrowsRenderBatch::GetOwnerLayerName()
+{
+	static FastName translucentLayer("TransclucentRenderLayer");
+	return translucentLayer;
 }

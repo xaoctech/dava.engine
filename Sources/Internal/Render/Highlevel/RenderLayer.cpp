@@ -34,7 +34,7 @@
 
 namespace DAVA
 {
-RenderLayer::RenderLayer(const char * _name)
+RenderLayer::RenderLayer(const FastName & _name)
     : name(_name)
     , flags(0)
 {
@@ -66,7 +66,7 @@ void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
     
 bool RenderLayer::MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b)
 {
-    return a.sortingKey < b.sortingKey;
+    return a.sortingKey > b.sortingKey;
 }
 
 void RenderLayer::Update(Camera * camera)

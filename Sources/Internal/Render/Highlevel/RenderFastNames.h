@@ -23,68 +23,37 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_RENDER_FASTNAMES_H__
+#define	__DAVAENGINE_RENDER_FASTNAMES_H__
 
-#ifndef __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
-#define __DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__
-
-#include "Render/3D/PolygonGroup.h"
-#include "Render/Shader.h"
-#include "Render/3D/EdgeAdjacency.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/BaseTypes.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
 
-class PolygonGroup;
-class Light;
+// GLOBAL PASSES
+static FastName PASS_FORWARD("ForwardPass");
+static FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
+static FastName PASS_DEFERRED("DeferredPass");
+
+// GLOBAL LAYERS
+static FastName LAYER_OPAQUE("OpaqueRenderLayer");
+static FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
+static FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
+
+static FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
     
-class ShadowVolume : public RenderBatch
-{
-public:
-	ShadowVolume();
-	virtual ~ShadowVolume();
-
-    virtual void Draw(Camera * camera);
-
-	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
-    void SetPolygonGroup(PolygonGroup * polygonGroup);
-    PolygonGroup * GetPolygonGroup();
+static FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
     
-	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+static FastName INHERIT_FROM_MATERIAL("Inherit from material");
 
-	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
+} // ns
 
-private:
-	Shader * shader;
+#endif	/* __DAVAENGINE_RENDER_FASTNAMES_H__ */
 
-	//shadow mesh generation
-	PolygonGroup * shadowPolygonGroup;
-
-	struct EdgeMapping
-	{
-		int32 oldEdge[2];
-		int32 newEdge[2][2];
-
-	public:
-		EdgeMapping()
-		{
-			Memset(oldEdge, -1, sizeof(oldEdge));
-			Memset(newEdge, -1, sizeof(newEdge));
-		}
-	};
-
-	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
-    
-public:
-    
-    INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
-        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-    );
-};
-
-}
-
-#endif //__DAVAENGINE_RENDER_HIGHLEVEL_SHADOW_VOLUME_H__

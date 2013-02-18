@@ -41,6 +41,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Render/TextureDescriptor.h"
 #include "Platform/SystemTimer.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA 
 {
@@ -157,7 +158,7 @@ Material::Material()
     ,   ambientColor(0.2f, 0.2f, 0.2f, 1.0f)
     ,   emissiveColor(0.0f, 0.0f, 0.0f, 1.0f)
     ,   shininess(1.0f)
-    ,   isOpaque(false)
+    ,   isTranslucent(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
 	,	setupLightmapSize(32)
@@ -173,6 +174,8 @@ Material::Material()
     ,   isWireframe(false)
     ,   isTexture0ShiftEnabled(false)
     ,   texture0Shift(0.0f, 0.0f)
+    ,   isExportOwnerLayerEnabled(true)
+    ,   ownerLayerName(LAYER_OPAQUE)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
@@ -321,7 +324,7 @@ void Material::RebuildShader()
         default:
             break;
     };
-    if (isOpaque)
+    if (isTranslucent)
     {
         shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
     }
@@ -413,6 +416,9 @@ void Material::RebuildShader()
         DVASSERT(uniformTexture0Shift != -1);
     }
     
+    
+
+
     //RetrieveTextureSlotNames();
 }
     
@@ -484,7 +490,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.emission", emissiveColor);
     keyedArchive->SetFloat("mat.shininess", shininess);
 
-    keyedArchive->SetBool("mat.isOpaque", isOpaque);
+    keyedArchive->SetBool("mat.isOpaque", isTranslucent);
     keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
 
 	keyedArchive->SetBool("mat.isAlphablend", isAlphablend);
@@ -552,7 +558,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     emissiveColor = keyedArchive->GetByteArrayAsType("mat.emission", emissiveColor);
     shininess = keyedArchive->GetFloat("mat.shininess", shininess);
     
-    isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+    isTranslucent = keyedArchive->GetBool("mat.isOpaque", isTranslucent);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
 
 	isAlphablend = keyedArchive->GetBool("mat.isAlphablend", isAlphablend);
@@ -569,13 +575,13 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 void Material::SetOpaque(bool _isOpaque)
 {
-    isOpaque = _isOpaque;
+    isTranslucent = _isOpaque;
     RebuildShader();
 }
 
 bool Material::GetOpaque()
 {
-    return isOpaque;
+    return isTranslucent;
 }
 void Material::SetTwoSided(bool _isTwoSided)
 {
@@ -708,7 +714,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 //		}
 	}
 
-	if (isOpaque || isTwoSided)
+	if (isTranslucent || isTwoSided)
 	{
 		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
 	}
@@ -843,12 +849,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		return;
 	}
 
-	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
+	if(isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
 	{
 		return;
 	}
 
-	if(!isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	if(!isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
 	}
@@ -1019,6 +1025,32 @@ void Material::SetTextureShift(const Vector2 & speed)
 const Vector2 & Material::GetTextureShift()
 {
     return texture0Shift;
+}
+    
+const FastName & Material::GetOwnerLayerName()
+{
+    if(GetAlphablend())
+    {
+        SetOwnerLayerName(LAYER_TRANSLUCENT);
+    }
+    else SetOwnerLayerName(LAYER_OPAQUE);
+
+    return ownerLayerName;
+}
+
+void Material::SetOwnerLayerName(const FastName & fastname)
+{
+    ownerLayerName = fastname;
+    
+}
+const bool & Material::IsExportOwnerLayerEnabled()
+{
+    return isExportOwnerLayerEnabled;
+}
+    
+void Material::SetExportOwnerLayer(const bool & isEnabled)
+{
+    isExportOwnerLayerEnabled = isEnabled;
 }
 
 
