@@ -68,12 +68,21 @@ public:
     
     inline Texture * GetLightmap() const;
 	inline const String & GetLightmapName() const;
+    
+    void SetFlatColor(const Color & color);
+    const Color & GetFlatColor();
+    
+    void SetTextureShift(const Vector2 & speed);
+    const Vector2 & GetTextureShift();
 
 private:
     Texture * lightmapTexture;
     String lightmapName;
     Vector2 uvOffset;
     Vector2 uvScale;
+    Color flatColor;
+    Vector2 texture0Shift;
+
     
     Light * lightNodes[LIGHT_NODE_MAX_COUNT];
     
@@ -84,6 +93,10 @@ public:
                          MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         
+                         PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
 };
@@ -167,9 +180,6 @@ public:
     void EnableFlatColor(const bool & isEnabled);
     const bool & IsFlatColorEnabled();
     
-    void SetFlatColor(const Color & color);
-    const Color & GetFlatColor();
-    
     void SetWireframe(bool isWireframe);
     bool GetWireframe();
     
@@ -205,8 +215,6 @@ public:
     void EnableTextureShift(const bool & isEnabled);
     const bool & IsTextureShiftEnabled();
 
-    void SetTextureShift(const Vector2 & speed);
-    const Vector2 & GetTextureShift();
 
     /**
         \brief Bind material to render system.
@@ -315,10 +323,8 @@ private:
 
 	bool isAlphablend;
     bool isFlatColorEnabled;
-    Color flatColor;
     
     bool isTexture0ShiftEnabled;
-    Vector2 texture0Shift;
     
     bool isWireframe;
     
@@ -372,10 +378,8 @@ public:
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         
         PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
         PROPERTY(isExportOwnerLayerEnabled, "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY(ownerLayerName, "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
