@@ -1,4 +1,5 @@
 #include "Scene3D/Components/RenderComponent.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA 
 {
@@ -72,9 +73,7 @@ void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		KeyedArchive *roArch = new KeyedArchive();
 		renderObject->Save(roArch, sceneFile);
-
 		archive->SetArchive("rc.renderObj", roArch);
-
 		roArch->Release();
 	}
 }
@@ -86,10 +85,12 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		KeyedArchive *roArch = archive->GetArchive("rc.renderObj");
 		if(NULL != roArch)
 		{
-			RenderObject* ro = new RenderObject();
-			ro->Load(roArch, sceneFile);
-
-			SetRenderObject(ro);
+			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New(roArch->GetString("##name"));
+			if(NULL != ro)
+			{
+				ro->Load(roArch, sceneFile);
+				SetRenderObject(ro);
+			}
 		}
 	}
 
