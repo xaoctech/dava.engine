@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
 {
@@ -37,7 +38,7 @@ REGISTER_CLASS(LandscapeChunk);
 LandscapeChunk::LandscapeChunk(LandscapeNode * _landscape)
     : landscape(_landscape)
 {
-    
+
 }
     
 LandscapeChunk::~LandscapeChunk()
@@ -47,7 +48,20 @@ LandscapeChunk::~LandscapeChunk()
     
 void LandscapeChunk::Draw(Camera * camera)
 {
-    landscape->Draw(camera);
+	if(NULL != landscape)
+	{
+		landscape->Draw(camera);
+	}
+}
+
+void LandscapeChunk::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	// Don't need to save this batch
+}
+
+void LandscapeChunk::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	// Don't need to load this batch
 }
     
 };

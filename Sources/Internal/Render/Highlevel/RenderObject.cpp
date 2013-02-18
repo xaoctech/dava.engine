@@ -132,7 +132,10 @@ void RenderObject::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 			{
 				KeyedArchive *batchArch = new KeyedArchive();
 				batch->Save(batchArch, sceneFile);
-				batchArch->SetString("rb.classname", batch->GetClassName());
+				if(batchArch->Count() > 0)
+				{
+					batchArch->SetString("rb.classname", batch->GetClassName());
+				}
 				batchesArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), batchArch);
 				batchArch->Release();
 			} 

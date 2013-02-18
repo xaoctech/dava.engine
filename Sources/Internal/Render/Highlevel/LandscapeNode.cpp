@@ -1350,7 +1350,7 @@ const String & LandscapeNode::GetHeightmapPathname()
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    //SceneNode::Save(archive, sceneFile);
+    RenderObject::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
     if(Heightmap::FileExtension() != heightmapPath.GetExtension())
@@ -1389,8 +1389,8 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    //SceneNode::Load(archive, sceneFile);
-    
+	RenderObject::Load(archive, sceneFile);
+
     String path = archive->GetString("hmap");
     path = sceneFile->RelativeToAbsolute(path);
     AABBox3 boxDef;
