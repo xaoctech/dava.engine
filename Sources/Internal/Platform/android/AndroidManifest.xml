@@ -13,12 +13,9 @@
 
     <application
         android:allowBackup="true"
-        android:debuggable="true"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:debuggable="true">
         <activity
-            android:name="com.dava.framework.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:name="com.dava.framework.Framework">
         </activity>
     </application>
 
