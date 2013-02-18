@@ -7,7 +7,7 @@ import com.dava.framework.JNIActivity;
 import com.dava.framework.JNIGLSurfaceView;
 import com.dava.unittests.R;
 
-public class MainActivity extends JNIActivity {
+public class UnitTests extends JNIActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
