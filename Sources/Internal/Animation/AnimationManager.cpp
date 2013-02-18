@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Animation/AnimationManager.h"
 #include "FileSystem/Logger.h"
+#include "Render/RenderManager.h"
 
 #include <typeinfo>
 
@@ -111,6 +112,7 @@ void AnimationManager::StopAnimations()
 	
 void AnimationManager::DeleteAnimations(AnimatedObject * _owner, int32 track)
 {
+RenderManager::Instance()->LockNonMain();
 	for (Vector<Animation*>::iterator t = animations.begin(); t != animations.end(); ++t)
 	{
 		Animation * animation = *t;
@@ -129,7 +131,8 @@ void AnimationManager::DeleteAnimations(AnimatedObject * _owner, int32 track)
 			animation->state &= ~Animation::STATE_FINISHED;
 			animation->state |= Animation::STATE_DELETE_ME;
 		}
-	}	
+	}
+RenderManager::Instance()->UnlockNonMain();
 }
 	
 Animation * AnimationManager::FindLastAnimation(AnimatedObject * _owner, int32 _groupId)
