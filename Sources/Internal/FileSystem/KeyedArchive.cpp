@@ -521,6 +521,18 @@ void KeyedArchive::DeleteAllKeys()
 	objectMap.clear();
 }
 
+uint32 KeyedArchive::Count(const String &key)
+{
+	if(key.empty())
+	{
+		return objectMap.size();
+	}
+	else
+	{
+		return objectMap.count(key);
+	}
+}
+
 	
 void KeyedArchive::Dump()
 {

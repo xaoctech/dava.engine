@@ -395,7 +395,8 @@ public:
 		\brief Deletes all keys, making archive empty.
 	 */
 	void DeleteAllKeys();
-	
+
+	uint32 Count(const String & key = "");
     
 	/**
      \brief Function to get all data of archive.
