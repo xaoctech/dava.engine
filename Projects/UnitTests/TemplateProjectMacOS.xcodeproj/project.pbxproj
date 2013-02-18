@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
+		172382C316D2735F0078DEE3 /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 172382C116D2735F0078DEE3 /* InputTest.cpp */; };
+		172382C516D276920078DEE3 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 172382C416D276920078DEE3 /* WebKit.framework */; };
 		49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */; };
 		49C432081675E370000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432061675E370000EA877 /* DXTTest.cpp */; };
 		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
@@ -67,8 +69,9 @@
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
-		17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
+		172382C116D2735F0078DEE3 /* InputTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputTest.cpp; path = Classes/InputTest.cpp; sourceTree = "<group>"; };
+		172382C216D2735F0078DEE3 /* InputTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputTest.h; path = Classes/InputTest.h; sourceTree = "<group>"; };
+		172382C416D276920078DEE3 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
@@ -133,6 +136,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
 				FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */,
+				172382C516D276920078DEE3 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,13 +172,13 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		17EACFAC16C3FF3600F6D3D2 /* DLCTest */ = {
+		172382C016D272DE0078DEE3 /* InputTests */ = {
 			isa = PBXGroup;
 			children = (
-				17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */,
-				17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */,
+				172382C116D2735F0078DEE3 /* InputTest.cpp */,
+				172382C216D2735F0078DEE3 /* InputTest.h */,
 			);
-			name = DLCTest;
+			name = InputTests;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
@@ -188,6 +192,7 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				172382C416D276920078DEE3 /* WebKit.framework */,
 				5CDC2500156CC93300742348 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
 				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
@@ -252,6 +257,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				172382C016D272DE0078DEE3 /* InputTests */,
 				E81F2AEA16BFA49100C4545E /* MaterialCompilerTest */,
 				49B774CA16B1889A00A80FA3 /* DLCTest */,
 				E8EF77FE1669248300DA7BD2 /* CloneTest */,
@@ -517,6 +523,7 @@
 				49C432081675E370000EA877 /* DXTTest.cpp in Sources */,
 				E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */,
 				49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */,
+				172382C316D2735F0078DEE3 /* InputTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

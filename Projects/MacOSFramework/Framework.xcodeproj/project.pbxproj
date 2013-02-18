@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
+		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
+		171F938B16CE779A007038AB /* WebViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 171F938916CE779A007038AB /* WebViewControlMacOS.mm */; };
+		171F938C16CE779A007038AB /* WebViewControlMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938A16CE779A007038AB /* WebViewControlMacOS.h */; };
+		171F938D16CE7AB2007038AB /* WebViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 171F938916CE779A007038AB /* WebViewControlMacOS.mm */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
 		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -1264,6 +1269,11 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
+		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
+		171F938816CE777A007038AB /* WebViewControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebViewControl.h; sourceTree = "<group>"; };
+		171F938916CE779A007038AB /* WebViewControlMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControlMacOS.mm; sourceTree = "<group>"; };
+		171F938A16CE779A007038AB /* WebViewControlMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewControlMacOS.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
@@ -2354,6 +2364,7 @@
 				E8989C1016BD24E400732C04 /* Thread.cpp */,
 				E8989C1116BD24E400732C04 /* Thread.h */,
 				E8989C1316BD24E400732C04 /* ThreadMacOS.mm */,
+				171F938816CE777A007038AB /* WebViewControl.h */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -2395,6 +2406,8 @@
 				E8989C0916BD24E400732C04 /* NSFullScreenWindow.m */,
 				E8989C0A16BD24E400732C04 /* OpenGLView.h */,
 				E8989C0B16BD24E400732C04 /* OpenGLView.mm */,
+				171F938916CE779A007038AB /* WebViewControlMacOS.mm */,
+				171F938A16CE779A007038AB /* WebViewControlMacOS.h */,
 			);
 			path = TemplateMacOS;
 			sourceTree = "<group>";
@@ -2828,6 +2841,8 @@
 				E8989D8716BD24E500732C04 /* UITextField.h */,
 				E8989D8A16BD24E500732C04 /* UIYamlLoader.cpp */,
 				E8989D8B16BD24E500732C04 /* UIYamlLoader.h */,
+				171F938316CE6F28007038AB /* UIWebView.cpp */,
+				171F938416CE6F28007038AB /* UIWebView.h */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -3230,6 +3245,8 @@
 				E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */,
 				1799E52716CCEC030058061F /* ParticleForce.h in Headers */,
+				171F938616CE6F28007038AB /* UIWebView.h in Headers */,
+				171F938C16CE779A007038AB /* WebViewControlMacOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3926,6 +3943,8 @@
 				E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
+				171F938516CE6F28007038AB /* UIWebView.cpp in Sources */,
+				171F938B16CE779A007038AB /* WebViewControlMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4208,6 +4227,7 @@
 				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
 				1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */,
+				171F938D16CE7AB2007038AB /* WebViewControlMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
