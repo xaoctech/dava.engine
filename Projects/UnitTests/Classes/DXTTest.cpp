@@ -113,7 +113,11 @@ bool DXTTest::IsCurrentTestAccepted()
 
 
 	PixelFormatDescriptor pixelFormat = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-	if(		(pixelFormat.format == FORMAT_DXT1A || pixelFormat.format == FORMAT_DXT5NM)
+	
+	if (pixelFormat.format == 0)
+		return false;
+	
+	if ((pixelFormat.format == FORMAT_DXT1A || pixelFormat.format == FORMAT_DXT5NM)
 		 && (deviceCaps.isDXTSupported && 0 == pixelFormat.internalformat))
 	{
 		return false;
@@ -124,6 +128,8 @@ bool DXTTest::IsCurrentTestAccepted()
 		//not all DXT formats are supported 
 		return false;
 	}
+	
+
 	
 	return true;
 }
