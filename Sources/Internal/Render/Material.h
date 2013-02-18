@@ -78,6 +78,8 @@ public:
     void SetTextureShift(const Vector2 & speed);
     const Vector2 & GetTextureShift();
 
+	void ClearLightmap();
+
 private:
     Texture * lightmapTexture;
     String lightmapName;
