@@ -350,7 +350,7 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 	if(String::npos != find)
 	{
 #ifdef __DAVAENGINE_DEBUG__
-#define USE_LOCAL_RESOURCES
+//#define USE_LOCAL_RESOURCES
 #endif
 #ifdef USE_LOCAL_RESOURCES
 		String path;
