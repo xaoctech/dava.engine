@@ -670,24 +670,13 @@ Texture * Texture::PureCreate(const String & pathName)
     }
     else
     {
-        texture = CreateFromImage(pathName, descriptor);
-        if(texture)
+        ImageFileFormat fileFormat = TextureDescriptor::GetFormatForExtension(extension);
+        if(IsLoadAvailable(fileFormat, descriptor))
         {
-            if(0 == CompareCaseInsensitive(extension, ".png"))
+            texture = CreateFromImage(pathName, descriptor);
+            if(texture)
             {
-                texture->loadedAsFile = PNG_FILE;
-            }
-            else if(0 == CompareCaseInsensitive(extension, ".pvr"))
-            {
-                texture->loadedAsFile = PVR_FILE;
-            }
-            else if(0 == CompareCaseInsensitive(extension, ".dds"))
-            {
-                texture->loadedAsFile = DXT_FILE;
-            }
-            else
-            {
-                texture->loadedAsFile = NOT_FILE;
+                texture->loadedAsFile = fileFormat;
             }
         }
     }
@@ -718,12 +707,16 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     Texture * texture = NULL;
     
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
-    texture = CreateFromImage(imagePathname, descriptor);
-    if(texture)
+    if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
-        texture->loadedAsFile = formatForLoading;
+        String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
+        texture = CreateFromImage(imagePathname, descriptor);
+        if(texture)
+        {
+            texture->loadedAsFile = formatForLoading;
+        }
     }
+    
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
@@ -754,9 +747,6 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
-    
-    
-    
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
@@ -765,7 +755,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
-    if(descriptor && file && IsReloadAvailable(fileFormat, descriptor))
+    if(descriptor && file && IsLoadAvailable(fileFormat, descriptor))
     {
         loaded = LoadFromImage(file, descriptor);
     }
@@ -815,7 +805,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     SafeRelease(file);
 }
     
-bool Texture::IsReloadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+bool Texture::IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     if(     (PVR_FILE == fileFormat && descriptor->pvrCompression.format == FORMAT_INVALID)
        ||   (DXT_FILE == fileFormat && descriptor->dxtCompression.format == FORMAT_INVALID))

@@ -36,6 +36,7 @@
 #include "Render/RenderStateBlock.h"
 
 #include "FileSystem/FilePath.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -218,11 +219,12 @@ public:
 	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
-    /**
-        \brief Unbind material. 
-        Restore some default properties that can influence to rendering in the future.
-     */
-    //void UnbindMaterial();
+    // TODO: remove const &
+    const bool & IsExportOwnerLayerEnabled();
+    void SetExportOwnerLayer(const bool & isEnabled);
+    const FastName & GetOwnerLayerName();
+    void SetOwnerLayerName(const FastName & fastname);
+
     
     
 //    eType   type; //TODO: waiting for enums at introspection
@@ -296,7 +298,7 @@ private:
 
     void RebuildShader();
     
-    bool    isOpaque;  
+    bool    isTranslucent;
     bool    isTwoSided;
 
 	bool	isSetupLightmap;
@@ -347,15 +349,15 @@ private:
     /*
         TODO: Uniform array, with set of all uniforms, with one set.
      */
-    
-    
+    bool isExportOwnerLayerEnabled;
+    FastName ownerLayerName;
     
     static UberShader * uberShader;
     
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
-        MEMBER(isOpaque, "Is Opaque", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(setupLightmapSize, "Setup Lightmap Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -375,9 +377,12 @@ public:
         PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-         PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
+        PROPERTY(isExportOwnerLayerEnabled, "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(ownerLayerName, "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

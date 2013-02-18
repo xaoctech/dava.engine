@@ -30,6 +30,7 @@ Component * RenderComponent::Clone(SceneNode * toEntity)
     RenderComponent * component = new RenderComponent();
 	component->SetEntity(toEntity);
 
+    //TODO: Do not forget ot check what does it means.
     component->renderObject = renderObject->Clone(component->renderObject);
     return component;
 }

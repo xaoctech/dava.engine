@@ -38,7 +38,7 @@ REGISTER_CLASS(LandscapeChunk);
 LandscapeChunk::LandscapeChunk(LandscapeNode * _landscape)
     : landscape(_landscape)
 {
-
+    SetOwnerLayerName(LAYER_OPAQUE);
 }
     
 LandscapeChunk::~LandscapeChunk()

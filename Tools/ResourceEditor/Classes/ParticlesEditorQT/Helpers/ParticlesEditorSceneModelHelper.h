@@ -62,7 +62,18 @@ public:
 
 	// Get the Scene Graph item which contains the appropriate Particles Editor objects.
 	SceneGraphItem* GetGraphItemForParticlesLayer(GraphItem* rootItem, DAVA::ParticleLayer* layer);
+	
+	// Get the persistent pointer to the Particle Editor element.
+	void* GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const;
 
+	// Some Scene Graph tree nodes might be checkable - check logic.
+	// Is the graph item passed checkable?
+	bool IsGraphItemCheckable(GraphItem* graphItem) const;
+	
+	// Get/set the checked state for the Graph Item, if it is checkable.
+	bool GetCheckableStateForGraphItem(GraphItem* graphItem) const;
+	void SetCheckableStateForGraphItem(GraphItem* graphItem, bool value);
+	
 protected:
 	// Add the action to QT menu.
 	void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command) const;
@@ -92,7 +103,12 @@ protected:
 	bool IsMoveItemToParentForbidden(GraphItem* movedItem, GraphItem* newParentItem);
 
 	SceneNode* CreateParticleEffectNode();
+	
+	// Get the particular type of node by the graph item. Return NULL if the graph item
+	// belongs to another kind of node.
+	LayerParticleEditorNode* GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const;
 };
+	
 }
 
 #endif /* defined(__ResourceEditorQt__ParticlesEditorSceneModelHelper__) */
