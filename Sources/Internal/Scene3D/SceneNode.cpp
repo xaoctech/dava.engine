@@ -798,8 +798,11 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 				if(compType != 0xFFFFFFFF)
 				{
 					Component *comp = Component::CreateByType(compType);
-					comp->Deserialize(compArch, sceneFileV2);
-					AddComponent(comp);
+					if(NULL != comp)
+					{
+						comp->Deserialize(compArch, sceneFileV2);
+						AddComponent(comp);
+					}
 				}
 			}
 		}
