@@ -22,7 +22,6 @@ void DVAssertMessage::InnerShow(const char* content)
     [alert setInformativeText:contents];
     [alert runModal];
     [alert release];
-    [formatString release];
     [contents release];
 #elif defined(__DAVAENGINE_IPHONE__)
     NSString *contents = [NSString stringWithUTF8String:content];

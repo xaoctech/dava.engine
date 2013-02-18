@@ -81,12 +81,12 @@ void GameCore::OnAppStarted()
 //    new SplitTest();
     new MaterialCompilerTest();
     new CloneTest();
-    new PVRTest();
+//	new PVRTest();
 	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
-	new SoundTest();
+	//new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
 	new DLCTest();
