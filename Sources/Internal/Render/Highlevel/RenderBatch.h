@@ -109,6 +109,8 @@ public:
     const AABBox3 & GetBoundingBox() const;
 
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
     
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
@@ -141,15 +143,11 @@ public:
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
         MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 //        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(material, "Material", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
 //        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
 
         MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
         MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-//        MEMBER(ownerLayer, "Owner Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY) 
-        MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE)
                          
         MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
         MEMBER(material, "Material", INTROSPECTION_EDITOR)

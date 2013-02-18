@@ -110,7 +110,7 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
     memset(uniforms, 0, sizeof(UniformInfo) * uniformCount);
     
     uint32 uniformDataSize = 0;
-    for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+    for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         uint32 size = shader->GetUniformTypeSize(uniformType) * shader->GetUniformArraySize(uniformIndex) + 4;
@@ -121,7 +121,7 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
     
     uniformData = new uint8[uniformDataSize];
 
-    for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+    for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         //Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         const String & uniformName = shader->GetUniformName(uniformIndex);
@@ -160,7 +160,7 @@ void NMaterialInstance::PrepareInstanceForShader(Shader * _shader)
 
 void NMaterialInstance::BindUniforms()
 {
-    for (int32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
+    for (uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
     {
         Shader::eUniformType uniformType = shader->GetUniformType(uniformIndex);
         UniformInfo uniformInfo = uniforms[uniformIndex];

@@ -37,9 +37,9 @@ Component* CameraComponent::Clone(SceneNode * toEntity)
     return newComponent;
 }
 
-void CameraComponent::Serialize(KeyedArchive *archive)
+void CameraComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	Component::Serialize(archive);
+	Component::Serialize(archive, sceneFile);
 
 	if(NULL != archive && NULL != camera)
 	{
@@ -52,7 +52,7 @@ void CameraComponent::Serialize(KeyedArchive *archive)
 	}
 }
 
-void CameraComponent::Deserialize(KeyedArchive *archive)
+void CameraComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
@@ -66,7 +66,7 @@ void CameraComponent::Deserialize(KeyedArchive *archive)
 		}
 	}
 
-	Component::Deserialize(archive);
+	Component::Deserialize(archive, sceneFile);
 }
     
 };
