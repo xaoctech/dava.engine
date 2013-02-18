@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 
 namespace DAVA

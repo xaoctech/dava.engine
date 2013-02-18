@@ -34,6 +34,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
