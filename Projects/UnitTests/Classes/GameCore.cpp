@@ -79,6 +79,7 @@ void GameCore::OnAppStarted()
 //    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
+	new InputTest();
     new MaterialCompilerTest();
     new CloneTest();
 //	new PVRTest();
