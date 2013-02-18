@@ -119,8 +119,8 @@ public:
     inline eEmitterType GetType() { return (eEmitterType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
-	virtual void Serialize(KeyedArchive *archive);
-	virtual void Deserialize(KeyedArchive *archive);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     

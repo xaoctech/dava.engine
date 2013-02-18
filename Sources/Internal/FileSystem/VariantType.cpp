@@ -105,6 +105,106 @@ VariantType::VariantType(const VariantType &var) : pointerValue(NULL)
 	SetVariant(var);
 }
 
+VariantType::VariantType(bool value) : pointerValue(NULL)
+{
+	SetBool(value);
+}
+
+VariantType::VariantType(int32 value) : pointerValue(NULL)
+{
+	SetInt32(value);
+}
+
+VariantType::VariantType(uint32 value) : pointerValue(NULL)
+{
+	SetUInt32(value);
+}
+
+VariantType::VariantType(float32 value) : pointerValue(NULL)
+{
+	SetFloat(value);
+}
+
+VariantType::VariantType(const String & value) : pointerValue(NULL)
+{
+	SetString(value);
+}
+
+VariantType::VariantType(const WideString & value) : pointerValue(NULL)
+{
+	SetWideString(value);
+}
+
+VariantType::VariantType(const uint8 *_array, int32 arraySizeInBytes) : pointerValue(NULL)
+{
+	SetByteArray(_array, arraySizeInBytes);
+}
+
+VariantType::VariantType(KeyedArchive *archive) : pointerValue(NULL)
+{
+	SetKeyedArchive(archive);
+}
+
+VariantType::VariantType(const int64 & value) : pointerValue(NULL)
+{
+	SetInt64(value);
+}
+
+VariantType::VariantType(const uint64 & value) : pointerValue(NULL)
+{
+	SetUInt64(value);
+}
+
+VariantType::VariantType(const Vector2 & value) : pointerValue(NULL)
+{
+	SetVector2(value);
+}
+
+VariantType::VariantType(const Vector3 & value) : pointerValue(NULL)
+{
+	SetVector3(value);
+}
+
+VariantType::VariantType(const Vector4 & value) : pointerValue(NULL)
+{
+	SetVector4(value);
+}
+
+VariantType::VariantType(const Matrix2 & value) : pointerValue(NULL)
+{
+	SetMatrix2(value);
+}
+
+VariantType::VariantType(const Matrix3 & value) : pointerValue(NULL)
+{
+	SetMatrix3(value);
+}
+
+VariantType::VariantType(const Matrix4 & value) : pointerValue(NULL)
+{
+	SetMatrix4(value);
+}
+
+VariantType::VariantType(const void* const &value) : pointerValue(NULL)
+{
+	SetPointer(value);
+}
+
+VariantType::VariantType(const Color & value) : pointerValue(NULL)
+{
+	SetColor(value);
+}
+
+VariantType::VariantType(const FastName & value) : pointerValue(NULL)
+{
+	SetFastName(value);
+}
+
+VariantType::VariantType(const AABBox3 & value) : pointerValue(NULL)
+{
+	SetAABBox3(value);
+}
+
 VariantType::~VariantType()
 {
     ReleasePointer();
@@ -225,7 +325,7 @@ void VariantType::SetPointer(const void* const &value)
 {
 	ReleasePointer();
 	type = TYPE_POINTER;
-	pointerValue = value;
+	x64PointerValue = new uint64((const uint64) value);
 }
 
 void VariantType::SetColor(const DAVA::Color &value)
@@ -250,8 +350,6 @@ void VariantType::SetAABBox3(const DAVA::AABBox3 &value)
 
 	aabbox3 = new AABBox3(value);
 }
-
-
 
 void VariantType::SetVariant(const VariantType& var)
 {
@@ -468,10 +566,10 @@ const Matrix4 & VariantType::AsMatrix4() const
     return *matrix4Value;
 }
 
-const void* const & VariantType::AsPointer() const
+const void* const VariantType::AsPointer() const
 {
 	DVASSERT(type == TYPE_POINTER);
-	return pointerValue;
+	return (void *) *x64PointerValue;
 }
     
 const Color & VariantType::AsColor() const
@@ -618,7 +716,8 @@ bool VariantType::Write(File * fp) const
             break;
 	case TYPE_POINTER:
 		{
-			DVASSERT(0 && "Can't write pointer");
+			written = fp->Write(x64PointerValue, sizeof(uint64));
+			if (written != sizeof(uint64))return false;
 		}
 		break;
     case TYPE_COLOR:
@@ -651,8 +750,9 @@ bool VariantType::Write(File * fp) const
 bool VariantType::Read(File * fp)
 {
 	int32 read = fp->Read(&type, 1);
-	if (read == 0)return false;
-	
+	if (read == 0) return false;
+
+	ReleasePointer();
 	switch(type)
 	{
 		case TYPE_BOOLEAN:
@@ -713,7 +813,6 @@ bool VariantType::Read(File * fp)
         break;
 		case TYPE_BYTE_ARRAY:
 		{
-            ReleasePointer();
 			int32 len;
 			read = fp->Read(&len, 4);
 			if (read != 4)return false;
@@ -726,7 +825,6 @@ bool VariantType::Read(File * fp)
         break;	
 		case TYPE_KEYED_ARCHIVE:
 		{
-            ReleasePointer();
 			int32 len;
 			read = fp->Read(&len, 4);
 			if (read != 4)return false;
@@ -799,13 +897,13 @@ bool VariantType::Read(File * fp)
             break;
 		case TYPE_POINTER:
 			{
-				DVASSERT(0 && "Can't read pointer");
+				x64PointerValue = new uint64;
+				read = fp->Read(x64PointerValue, sizeof(uint64));
+				if (read != sizeof(uint64))return false;
 			}
 			break;
         case TYPE_COLOR:
 			{
-				ReleasePointer();
-
 				colorValue = new Color;
 				read = fp->Read(colorValue->color, sizeof(float32) * 4);
 				if (read != sizeof(sizeof(float32) * 4))return false;
@@ -917,6 +1015,11 @@ void VariantType::ReleasePointer()
                 delete colorValue;
             }
                 break;
+			case  TYPE_POINTER:
+			{
+				delete x64PointerValue;
+			}
+				break;
             case TYPE_FASTNAME:
             {
                 delete fastnameValue;
@@ -1242,7 +1345,7 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 
 				for(i = values.begin(); i != values.end(); ++i)
 				{
-					dstArchive->SetVariant(i->first, i->second);
+					dstArchive->SetVariant(i->first, *i->second);
 				}
 			}
 		}

@@ -59,6 +59,9 @@ class InstanceMaterialState : public BaseObject
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
+
+	virtual void Save(KeyedArchive * archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 *sceneFile);
     
     void SetLight(int32 lightIndex, Light * lightNode);
     Light * GetLight(int32 lightIndex);
