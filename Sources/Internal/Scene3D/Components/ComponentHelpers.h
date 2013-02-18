@@ -9,9 +9,18 @@ namespace DAVA
 class ParticleEmitter;
 class SceneNode;
 class RenderObject;
+class Light;
+class LightComponent;
+class LodComponent;
+class SwitchComponent;
+class LandscapeNode;
 
 ParticleEmitter * GetEmitter(SceneNode * fromEntity);
 RenderObject * GetRenerObject(SceneNode * fromEntity);
+
+Light *GetLight(SceneNode * fromEntity);
+LandscapeNode *GetLandscape(SceneNode * fromEntity);
+
 
 }
 

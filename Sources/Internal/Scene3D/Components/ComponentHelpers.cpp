@@ -2,7 +2,9 @@
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/LandscapeNode.h"
 
 namespace DAVA
 {
@@ -31,5 +33,30 @@ ParticleEmitter * GetEmitter(SceneNode * fromEntity)
 
 	return emitter;
 }
+
+
+Light * GetLight( SceneNode * fromEntity )
+{
+	LightComponent * component = static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
+	if(component)
+	{
+		return component->GetLightObject();
+	}
+
+	return NULL;
+}
+
+LandscapeNode * GetLandscape( SceneNode * fromEntity )
+{
+	RenderObject * object = GetRenerObject(fromEntity);
+	if(object && object->GetType() == RenderObject::TYPE_LANDSCAPE)
+	{
+		LandscapeNode *landscape = static_cast<LandscapeNode *>(object);
+		return landscape;
+	}
+
+	return NULL;
+}
+
 
 }

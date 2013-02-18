@@ -109,6 +109,7 @@ public:
     void SetForceLodLayer(int32 layer);
     int32 GetForceLodLayer();
 
+	int32 GetMaxLodLayer();
 
 public:
     
