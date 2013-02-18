@@ -83,7 +83,7 @@ void TransformComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFi
 	if(NULL != archive)
 	{
 		if(archive->IsKeyExists("tc.localMatrix")) localMatrix = archive->GetMatrix4("tc.localMatrix");
-		if(archive->IsKeyExists("tc.worldMatrix")) localMatrix = archive->GetMatrix4("tc.worldMatrix");
+		if(archive->IsKeyExists("tc.worldMatrix")) worldMatrix = archive->GetMatrix4("tc.worldMatrix");
 	}
 
 	Component::Deserialize(archive, sceneFile);
