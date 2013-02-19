@@ -152,6 +152,29 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
     return aabbox;
 }
 
+void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+	if(material)
+	{
+		InsertDataNode(material, dataNodes);
+	}
+
+	if(dataSource)
+	{
+		InsertDataNode(dataSource, dataNodes);
+	}
+}
+
+void RenderBatch::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
+{
+	dataNodes.insert(node);
+
+	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		InsertDataNode(node->GetChild(i), dataNodes);
+	}
+}
+
 RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 {
     RenderBatch * rb = destination;

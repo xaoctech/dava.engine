@@ -108,6 +108,7 @@ public:
     
     const AABBox3 & GetBoundingBox() const;
 
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
@@ -137,6 +138,8 @@ protected:
     uint32 removeIndex;
 
 	AABBox3 aabbox;
+
+	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     
 public:
     
