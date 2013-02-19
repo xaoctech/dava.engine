@@ -88,6 +88,13 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
     uvOffset = _uvOffset;
     uvScale = _uvScale;
 }
+
+void InstanceMaterialState::ClearLightmap()
+{
+	SafeRelease(lightmapTexture);
+	lightmapName = String("");
+}
+
     
 void InstanceMaterialState::SetFlatColor(const Color & color)
 {

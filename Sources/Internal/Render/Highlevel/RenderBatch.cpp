@@ -45,7 +45,7 @@ REGISTER_CLASS(RenderBatch)
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
-    ,   sortingKey(0)
+    ,   sortingKey(8)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -191,6 +191,9 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->type = type;
 
 	rb->aabbox = aabbox;
+
+	rb->ownerLayerName = ownerLayerName;
+	rb->sortingKey = sortingKey;
 // TODO: Understand what this code means.
 // 
 //	rb->ownerLayer = ownerLayer;

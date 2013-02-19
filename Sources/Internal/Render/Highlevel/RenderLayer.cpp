@@ -83,7 +83,7 @@ void RenderLayer::Update(Camera * camera)
                 RenderBatchSortItem & item = sortArray[k];
                 RenderBatch * batch = renderBatchArray[k];;
                 item.renderBatch = batch;
-                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() & 0x0fffffff) | (batch->GetSortingKey() << 24);
+                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
             std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
