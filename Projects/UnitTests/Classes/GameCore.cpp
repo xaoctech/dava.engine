@@ -74,7 +74,7 @@ void GameCore::OnAppStarted()
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
-//    new HashMapTest();
+    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
     new MaterialCompilerTest();

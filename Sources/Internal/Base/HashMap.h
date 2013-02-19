@@ -127,13 +127,17 @@ public:
 		HashMapIterator(const HashMap *map)
 			: szTable(map->szTable)
 			, table(map->table)
-			, current_index(-1)
+			, current_index(0)
 			, current_item(NULL)
 		{
 			if(NULL != table && szTable > 0)
 			{
-				current_index = 0;
 				current_item = table[0];
+
+				if(NULL == current_item)
+				{
+					GoEnd();
+				}
 			}
 		}
 
@@ -168,8 +172,7 @@ public:
 					}
 					else
 					{
-						current_item = NULL;
-						current_index = szTable;
+						GoEnd();
 					}
 				}
 			}
@@ -209,7 +212,7 @@ public:
 		HashMapIterator<K, V>& GoEnd()
 		{
 			current_item = NULL;
-			current_index = szTable;
+			current_index = 0;
 
 			return *this;
 		}
