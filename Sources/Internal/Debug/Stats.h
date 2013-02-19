@@ -90,6 +90,10 @@ class TimeMeasure
 private:
     struct FunctionMeasure
     {
+		FunctionMeasure()
+		:	parent(0)
+		{
+		}
         FastName name;
         uint32 frameCounter;
         uint64 timeStart;
