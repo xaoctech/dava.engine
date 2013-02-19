@@ -117,7 +117,6 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		archive->SetVector2("ims.uvoffset", uvOffset);
 		archive->SetVector2("ims.uvscale", uvScale);
 		archive->SetString("ims.lightmapname", lightmapName);
-		archive->SetVariant("ims.lightmaptextute", VariantType(lightmapTexture));
 	}
 }
 
@@ -129,9 +128,13 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
 
 		String lName = archive->GetString("ims.lightmapname");
-		Texture* lTextute = (Texture *) sceneFile->GetNodeByPointer((uint64) archive->GetVariant("ims.lightmaptextute")->AsPointer());
 
-		SetLightmap(lTextute, lName);
+		if(!lName.empty())
+		{
+			Texture* lTextute = Texture::CreateFromFile(lName);
+			SetLightmap(lTextute, lName);
+			lTextute->Release();
+		}
 	}
 }
 
