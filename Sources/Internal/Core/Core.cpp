@@ -591,6 +591,8 @@ void Core::SystemAppFinished()
 
 void Core::SystemProcessFrame()
 {
+    TIME_MEASURE("Core::SystemProcessFrame");
+    
 	if (!core) return;
 	if (!isActive)return;
 	
