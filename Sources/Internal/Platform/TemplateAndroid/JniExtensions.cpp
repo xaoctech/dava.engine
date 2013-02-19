@@ -38,3 +38,17 @@ jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCod
 
 	return mid;
 }
+
+Rect JniExtension::V2P(const Rect& srcRect) const
+{
+	Vector2 offset = Core::Instance()->GetPhysicalDrawOffset();
+	float32 v2p = Core::Instance()->GetVirtualToPhysicalFactor();
+	Rect rect = srcRect;
+	rect.x *= v2p;
+	rect.y *= v2p;
+	rect.dx *= v2p;
+	rect.dy *= v2p;
+
+	rect += offset;
+	return rect;
+}
