@@ -21,6 +21,10 @@ namespace DAVA
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	bool MailSender::SendEmail(const String &email, const String &subject, const String &messageText)
 	{
+		// Don't try to send open mail client if emty email string is passed
+		if (email.empty() || email == "")
+			return false;
+			
 		// Convert input values into NSString
 		NSString* msgEmail = [NSString stringWithUTF8String:email.c_str()];
 		NSString* msgSubj = [NSString stringWithUTF8String:subject.c_str()];
