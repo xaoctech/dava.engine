@@ -132,8 +132,14 @@ public:
 		{
 			if(NULL != table && szTable > 0)
 			{
-				current_item = table[0];
-
+                for (uint32 k = 0; k < szTable; ++k)
+                    if (table[k] != 0)
+                    {
+                        current_item = table[k];
+                        current_index = k;
+                        break;
+                    }
+                
 				if(NULL == current_item)
 				{
 					GoEnd();
@@ -166,11 +172,13 @@ public:
 				{
 					current_index++;
 
-					if(current_index < szTable)
+                    current_item = 0;
+					while(current_index < szTable && current_item == 0)
 					{
-						current_item = table[current_index];
+						current_item = table[current_index++];
 					}
-					else
+                    
+					if (current_item == 0)
 					{
 						GoEnd();
 					}
