@@ -10,6 +10,8 @@
 
 #if defined(__DAVAENGINE_MACOS__)
 #include "../Platform/TemplateMacOS/WebViewControlMacOS.h"
+#elif defined(__DAVAENGINE_ANDROID__)
+#include "../Platform/TemplateMacOS/WebViewControlMacOS.h"
 #else
 #pragma error UIWEbView control is not implemented for this platform yet!
 #endif
