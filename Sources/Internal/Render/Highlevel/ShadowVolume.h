@@ -51,11 +51,10 @@ public:
     void SetPolygonGroup(PolygonGroup * polygonGroup);
     PolygonGroup * GetPolygonGroup();
     
-	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
-	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-
 	virtual RenderBatch * Clone(RenderBatch * dstNode = NULL);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 private:
 	Shader * shader;
