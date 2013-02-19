@@ -40,6 +40,9 @@
 
 namespace DAVA 
 {
+
+REGISTER_CLASS(ParticleEmitter);
+
 ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
@@ -135,6 +138,30 @@ RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 	((ParticleEmitter*)newObject)->LoadFromYaml(configPath);
 
 	return newObject;
+}
+
+void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Save(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		archive->SetString("pe.configpath", configPath);
+	}
+}
+
+void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Load(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("pe.configpath"))
+		{
+			configPath = archive->GetString("pe.configpath");
+			LoadFromYaml(configPath);
+		}
+	}
 }
 
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
