@@ -89,11 +89,7 @@ LandscapeNode::LandscapeNode()
     SetTiledShaderMode(TILED_MODE_MIXED);
     
     heightmap = new Heightmap();
-    
-    Stats::Instance()->RegisterEvent("Scene.LandscapeNode", "Everything related to LandscapeNode");
-    // Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Update", "Time spent in LandscapeNode Update");
-    Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
-    
+        
     prevLodLayer = -1;
     
     isFogEnabled = false;
@@ -1140,8 +1136,7 @@ void LandscapeNode::UnbindMaterial()
     
 void LandscapeNode::Draw(Camera * camera)
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
-    //uint64 time = SystemTimer::Instance()->AbsoluteMS();
+    TIME_MEASURE("LandscapeNode.Draw");
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
@@ -1322,8 +1317,6 @@ void LandscapeNode::Draw(Camera * camera)
     //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
     //Logger::Debug("landscape draw time: %lld", drawTime);
-    
-    Stats::Instance()->EndTimeMeasure("Scene.LandscapeNode.Draw", this);
 }
 
 
