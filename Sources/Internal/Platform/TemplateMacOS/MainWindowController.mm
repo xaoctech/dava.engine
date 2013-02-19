@@ -120,10 +120,6 @@ namespace DAVA
 		return mouseLocation;
 	}
 	
-	void* CoreMacOSPlatform::GetOpenGLView()
-	{
-		return mainWindowController->openGLView;
-	}
 }
 
 - (id)init

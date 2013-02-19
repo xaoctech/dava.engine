@@ -10,8 +10,6 @@
 #define __TemplateProjectMacOS__InputTest__
 
 #include "DAVAEngine.h"
-#include "UI/UIWebView.h"
-
 using namespace DAVA;
 
 #include "TestTemplate.h"
@@ -35,9 +33,6 @@ private:
 	UIStaticText* staticText;
 	UIButton* testButton;
 	
-	UIWebView* webView1;
-	UIWebView* webView2;
-
 	bool testFinished;
 };
 

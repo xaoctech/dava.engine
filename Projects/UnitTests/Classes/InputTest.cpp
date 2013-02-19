@@ -67,28 +67,15 @@ void InputTest::LoadResources()
 	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &InputTest::ButtonPressed));
-
-	webView1 = new UIWebView(Rect(5, 105, 500, 190));
-	webView1->OpenURL("http://www.google.com");
-	AddControl(webView1);
-
-	webView2 = new UIWebView(Rect(305, 300, 440, 190));
-	webView2->OpenURL("http://www.apple.com");
-	AddControl(webView2);
-
+	
 	AddControl(testButton);
 }
 
 void InputTest::UnloadResources()
 {
-	RemoveAllControls();
-
 	SafeRelease(testButton);
 	SafeRelease(textField);
 	SafeRelease(staticText);
-	
-	SafeRelease(webView1);
-	SafeRelease(webView2);
 }
 
 void InputTest::TestFunction(PerfFuncData * data)
