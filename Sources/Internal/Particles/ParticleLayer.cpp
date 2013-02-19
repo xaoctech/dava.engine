@@ -299,13 +299,6 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	if (this->isDisabled)
-	{
-		// Yuri Coder, 2013/02/15. Temporary code - the last particle layer frame
-		// is freezed in this case. Return to this code later.
-		return;
-	}
-
 	// increment timer	
 	layerTime += timeElapsed;
 

@@ -322,9 +322,6 @@ public:
 protected:
 	int32 screenOrientation;
 
-	// Needs to be overriden for the platforms where it has sence (MacOS, iOS).
-	virtual void* GetOpenGLView() { return NULL; };
-
 private:
 	float32 screenWidth;
 	float32 screenHeight;
