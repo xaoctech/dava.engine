@@ -145,6 +145,12 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 	}
 }
 
+InstanceMaterialState * InstanceMaterialState::Clone()
+{
+	InstanceMaterialState * newState = new InstanceMaterialState();
+	return newState;
+}
+
 
 REGISTER_CLASS(Material);
     

@@ -257,7 +257,7 @@ uint64 SystemTimer::GetAbsoluteNano()
 	{
 		LARGE_INTEGER liCounter;
 		QueryPerformanceCounter(&liCounter);
-		return (uint64)(((float64)(liCounter.QuadPart))/(float64)liFrequency.QuadPart);
+		return (uint64)(((float64)(liCounter.QuadPart))/(float64)liFrequency.QuadPart * 1000000000.);
 	}
 	else
 	{
