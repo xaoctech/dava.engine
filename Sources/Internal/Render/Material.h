@@ -79,6 +79,8 @@ public:
     const Vector2 & GetTextureShift();
 
 	void ClearLightmap();
+	
+	InstanceMaterialState * Clone();
 
 private:
     Texture * lightmapTexture;
