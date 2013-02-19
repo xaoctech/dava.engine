@@ -319,6 +319,9 @@ public:
     
     void EnableReloadResourceOnResize(bool enable);
 	
+	// Needs to be overriden for the platforms where it has sence (MacOS, iOS).
+	virtual void* GetOpenGLView() { return NULL; };
+	
 protected:
 	int32 screenOrientation;
 

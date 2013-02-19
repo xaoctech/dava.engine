@@ -10,8 +10,10 @@ JniTextField::JniTextField() :
 	activeTextField = NULL;
 }
 
-void JniTextField::ShowField(UITextField* textField, const Rect& rect, const char* defaultText)
+void JniTextField::ShowField(UITextField* textField, const Rect& controlRect, const char* defaultText)
 {
+	Rect rect = V2P(controlRect);
+
 	if (activeTextField)
 		HideField();
 
@@ -91,18 +93,8 @@ UITextFieldAndroid::~UITextFieldAndroid()
 
 void UITextFieldAndroid::ShowField()
 {
-	Vector2 offset = Core::Instance()->GetPhysicalDrawOffset();
-	float32 v2p = Core::Instance()->GetVirtualToPhysicalFactor();
-	Rect rect = textField->GetRect();
-	rect.x *= v2p;
-	rect.y *= v2p;
-	rect.dx *= v2p;
-	rect.dy *= v2p;
-
-	rect += offset;
-
 	String text = WStringToString(textField->GetText());
-	JniTextField::jniTextField->ShowField(textField, rect, text.c_str());
+	JniTextField::jniTextField->ShowField(textField, textField->GetRect(), text.c_str());
 }
 
 void UITextFieldAndroid::HideField()

@@ -3,6 +3,8 @@
 
 #include <jni.h>
 
+#include "DAVAEngine.h"
+
 namespace DAVA
 {
 
@@ -15,6 +17,7 @@ public:
 
 protected:
 	JNIEnv* GetEnvironment() {return env;};
+	Rect V2P(const Rect& rect) const;
 
 protected:
 	const char* className;
