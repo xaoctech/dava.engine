@@ -49,6 +49,9 @@ namespace DAVA
 REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
+    :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   texture0Shift(0.0f, 0.0f)
+
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
         lightNodes[k] = 0;
@@ -86,9 +89,61 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
     uvScale = _uvScale;
 }
 
+void InstanceMaterialState::ClearLightmap()
+{
+	SafeRelease(lightmapTexture);
+	lightmapName = String("");
+}
+
     
+void InstanceMaterialState::SetFlatColor(const Color & color)
+{
+    flatColor = color;
+}
+
+const Color & InstanceMaterialState::GetFlatColor()
+{
+    return flatColor;
+}
+
+
+void InstanceMaterialState::SetTextureShift(const Vector2 & speed)
+{
+    texture0Shift = speed;
+}
+
+const Vector2 & InstanceMaterialState::GetTextureShift()
+{
+    return texture0Shift;
+}
+
+void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		archive->SetVector2("ims.uvoffset", uvOffset);
+		archive->SetVector2("ims.uvscale", uvScale);
+		archive->SetString("ims.lightmapname", lightmapName);
+		archive->SetVariant("ims.lightmaptextute", VariantType(lightmapTexture));
+	}
+}
+
+void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("ims.uvoffset")) uvOffset = archive->GetVector2("ims.uvoffset");
+		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
+
+		String lName = archive->GetString("ims.lightmapname");
+		Texture* lTextute = (Texture *) sceneFile->GetNodeByPointer((uint64) archive->GetVariant("ims.lightmaptextute")->AsPointer());
+
+		SetLightmap(lTextute, lName);
+	}
+}
+
+
 REGISTER_CLASS(Material);
-    
     
 UberShader * Material::uberShader = 0;
     
@@ -143,13 +198,11 @@ Material::Material()
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
 	,	isAlphablend(false)
     ,   isFlatColorEnabled(false)
-    ,   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock()
     ,   isWireframe(false)
     ,   isTexture0ShiftEnabled(false)
-    ,   texture0Shift(0.0f, 0.0f)
     ,   isExportOwnerLayerEnabled(true)
     ,   ownerLayerName(LAYER_OPAQUE)
 {
@@ -764,19 +817,20 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
         DVASSERT(uniformFogColor != -1)
         shader->SetUniformColor3(uniformFogColor, fogColor);
 	}
-    if (isFlatColorEnabled)
-    {
-        DVASSERT(uniformFlatColor != -1);
-        shader->SetUniformColor4(uniformFlatColor, flatColor);
-    }
-    if (isTexture0ShiftEnabled)
-    {
-        DVASSERT(uniformTexture0Shift != -1);
-        shader->SetUniformValue(uniformTexture0Shift, texture0Shift);
-    }
     
     if (instanceMaterialState)
     {
+        if (isFlatColorEnabled)
+        {
+            DVASSERT(uniformFlatColor != -1);
+            shader->SetUniformColor4(uniformFlatColor, instanceMaterialState->flatColor);
+        }
+        if (isTexture0ShiftEnabled)
+        {
+            DVASSERT(uniformTexture0Shift != -1);
+            shader->SetUniformValue(uniformTexture0Shift, instanceMaterialState->texture0Shift);
+        }
+
         Camera * camera = scene->GetCurrentCamera();
         Light * lightNode0 = instanceMaterialState->GetLight(0);
         if (lightNode0 && camera)
@@ -970,17 +1024,6 @@ const bool & Material::IsFlatColorEnabled()
     return isFlatColorEnabled;
 }
 
-void Material::SetFlatColor(const Color & color)
-{
-    flatColor = color;
-}
-    
-const Color & Material::GetFlatColor()
-{
-    return flatColor;
-}
-
-    
 void Material::EnableTextureShift(const bool & isEnabled)
 {
     isTexture0ShiftEnabled = isEnabled;
@@ -993,15 +1036,6 @@ const bool & Material::IsTextureShiftEnabled()
     return isTexture0ShiftEnabled;
 }
 
-void Material::SetTextureShift(const Vector2 & speed)
-{
-    texture0Shift = speed;
-}
-
-const Vector2 & Material::GetTextureShift()
-{
-    return texture0Shift;
-}
     
 const FastName & Material::GetOwnerLayerName()
 {

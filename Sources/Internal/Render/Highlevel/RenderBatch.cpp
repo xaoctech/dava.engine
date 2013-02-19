@@ -35,6 +35,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
 {
@@ -44,7 +45,7 @@ REGISTER_CLASS(RenderBatch)
 RenderBatch::RenderBatch()
     :   ownerLayer(0)
     ,   removeIndex(-1)
-    ,   sortingKey(0)
+    ,   sortingKey(8)
 {
     dataSource = 0;
     renderDataObject = 0;
@@ -69,7 +70,10 @@ void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
 	SafeRelease(dataSource);
     dataSource = SafeRetain(_polygonGroup);
-	aabbox = dataSource->GetBoundingBox();
+	if(NULL != dataSource)
+	{
+		aabbox = dataSource->GetBoundingBox();
+	}
 }
 
 void RenderBatch::SetRenderDataObject(RenderDataObject * _renderDataObject)
@@ -164,6 +168,9 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->type = type;
 
 	rb->aabbox = aabbox;
+
+	rb->ownerLayerName = ownerLayerName;
+	rb->sortingKey = sortingKey;
 // TODO: Understand what this code means.
 // 
 //	rb->ownerLayer = ownerLayer;
@@ -175,5 +182,49 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	return rb;
 }
 
+void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
+{
+	BaseObject::Save(archive);
+
+	if(NULL != archive)
+	{
+		archive->SetUInt32("rb.type", type);
+		archive->SetUInt32("rb.indexCount", indexCount);
+		archive->SetUInt32("rb.startIndex", startIndex);
+		archive->SetVariant("rb.aabbox", VariantType(aabbox));
+		archive->SetVariant("rb.datasource", VariantType(dataSource));
+		archive->SetVariant("rb.maretial", VariantType(GetMaterial()));
+		
+		KeyedArchive *mia = new KeyedArchive();
+		materialInstance->Save(mia, sceneFile);
+		archive->SetArchive("rb.matinst", mia);
+		mia->Release();
+	}
+}
+
+void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		type = archive->GetUInt32("rb.type", type);
+		indexCount = archive->GetUInt32("rb.indexCount", indexCount);
+		startIndex = archive->GetUInt32("rb.startIndex", startIndex);
+		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
+
+		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.datasource")->AsPointer()));
+		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.maretial")->AsPointer()));
+
+		SetPolygonGroup(pg);
+		SetMaterial(mat);
+
+		KeyedArchive *mia = archive->GetArchive("rb.matinst");
+		if(NULL != mia)
+		{
+			materialInstance->Load(mia, sceneFile);
+		}
+	}
+
+	BaseObject::Load(archive);
+}
 
 };
