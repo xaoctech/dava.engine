@@ -284,7 +284,7 @@ uint64 SystemTimer::GetAbsoluteNano()
 	uint64_t elapsed = mach_absolute_time();
 	elapsed *= numer;
 	elapsed /= denom;
-	return elapsed / 1000;
+	return elapsed;
 #else //PLATFORMS
 	//other plaforms
 	return 0;
