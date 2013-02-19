@@ -59,8 +59,6 @@ public:
     
     void SetFocused(bool focused);
 
-	uint32 GetScreenDPI();
-
 private:
 
 	bool willQuit;
