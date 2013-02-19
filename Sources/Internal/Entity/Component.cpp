@@ -9,6 +9,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 
 namespace DAVA
 {
@@ -34,11 +35,13 @@ Component * Component::CreateByType(uint32 componentType)
 	case CAMERA_COMPONENT:
 		return new CameraComponent();
 		break;
+	case LIGHT_COMPONENT:
+		return new LightComponent();
+		break;
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case ACTION_COMPONENT:
 	case SCRIPT_COMPONENT:
-	case LIGHT_COMPONENT:
 	default:
 		DVASSERT(0);
 		return 0;
@@ -70,12 +73,12 @@ void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     //Empty as default
 }
 
-void Component::Serialize(KeyedArchive *archive)
+void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
 }
 
-void Component::Deserialize(KeyedArchive *archive)
+void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{

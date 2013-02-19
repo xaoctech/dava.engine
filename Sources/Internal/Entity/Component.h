@@ -69,8 +69,8 @@ public:
 
     virtual uint32 GetType() = 0;
     virtual Component* Clone(SceneNode * toEntity) = 0;
-	virtual void Serialize(KeyedArchive *archive);
-	virtual void Deserialize(KeyedArchive *archive);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	SceneNode* GetEntity();
 	virtual void SetEntity(SceneNode * entity);
