@@ -73,7 +73,6 @@ namespace DAVA
                 if(NO_DPI_INFO_FOUND == retDPI)
                 {
                     retDPI = (*it)->screenDPI;// set default value
-                    continue;
                 }
             }
             else
@@ -93,8 +92,9 @@ namespace DAVA
     {
         //due to magnificent api of ios the only way of determination of dpi is hardcode
         CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        CGFloat screenHeight = screenRect.size.height;
+        CGFloat scale = [[UIScreen mainScreen] scale]; //support of retina
+        CGFloat screenWidth = screenRect.size.width * scale;
+        CGFloat screenHeight = screenRect.size.height * scale;
         
          //width and height could be swapped according orientation
         uint32 minRes = screenWidth > screenHeight ? screenHeight : screenWidth;
