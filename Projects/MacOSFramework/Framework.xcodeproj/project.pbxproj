@@ -21,7 +21,8 @@
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
-		84D9249E16CD43FA0098EFA9 /* CorePlatformMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84D9249B16CD43B90098EFA9 /* CorePlatformMacOS.mm */; };
+		84D924CF16CE3A390098EFA9 /* CorePlatformMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84D924CE16CE3A390098EFA9 /* CorePlatformMacOS.mm */; };
+		84D924D016CE3A9E0098EFA9 /* CorePlatformMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 84D924CE16CE3A390098EFA9 /* CorePlatformMacOS.mm */; };
 		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -1276,7 +1277,7 @@
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
-		84D9249B16CD43B90098EFA9 /* CorePlatformMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CorePlatformMacOS.mm; sourceTree = "<group>"; };
+		84D924CE16CE3A390098EFA9 /* CorePlatformMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CorePlatformMacOS.mm; sourceTree = "<group>"; };
 		CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2373,7 +2374,6 @@
 		E8989BE316BD24E400732C04 /* MacOS */ = {
 			isa = PBXGroup;
 			children = (
-				84D9249B16CD43B90098EFA9 /* CorePlatformMacOS.mm */,
 				E8989BE416BD24E400732C04 /* CorePlatformMacOS.cpp */,
 				E8989BE516BD24E400732C04 /* CorePlatformMacOS.h */,
 				E8989BE616BD24E400732C04 /* OpenGLView.h */,
@@ -2388,6 +2388,7 @@
 		E8989C0116BD24E400732C04 /* TemplateMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				84D924CE16CE3A390098EFA9 /* CorePlatformMacOS.mm */,
 				E8989C0216BD24E400732C04 /* AppDelegate.h */,
 				E8989C0316BD24E400732C04 /* AppDelegate.mm */,
 				E8989C0416BD24E400732C04 /* CorePlatformMacOS.cpp */,
@@ -3929,6 +3930,7 @@
 				E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
+				84D924CF16CE3A390098EFA9 /* CorePlatformMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4211,7 +4213,7 @@
 				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
 				1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */,
-				84D9249E16CD43FA0098EFA9 /* CorePlatformMacOS.mm in Sources */,
+				84D924D016CE3A9E0098EFA9 /* CorePlatformMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

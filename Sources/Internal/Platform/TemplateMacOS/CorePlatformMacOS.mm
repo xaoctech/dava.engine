@@ -19,7 +19,10 @@ namespace DAVA
         CGSize displayPhysicalSize =
             CGDisplayScreenSize([[description objectForKey:@"NSScreenNumber"] unsignedIntValue]);
         
-        
+        if(displayPhysicalSize.width == 0)
+        {
+            return 0;
+        }
         return  (displayPixelSize.width / displayPhysicalSize.width) * 25.4f;
     }
 	
