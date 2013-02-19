@@ -1,0 +1,618 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		744A5B4616CE92AB00F1B252 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 744A5B4316CE92AB00F1B252 /* main.cpp */; };
+		744A5B4716CE92AB00F1B252 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 744A5B4416CE92AB00F1B252 /* mainwindow.cpp */; };
+		748487C416D22C92004756EE /* mainwindow.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 748487C316D22C92004756EE /* mainwindow.ui */; };
+		748487C816D22CC0004756EE /* moc_mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748487C616D22CC0004756EE /* moc_mainwindow.cpp */; };
+		748487D816D22FBC004756EE /* MailSenderTest.pro in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 748487D716D22FBC004756EE /* MailSenderTest.pro */; };
+		748487DA16D22FF2004756EE /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748487D916D22FF2004756EE /* libbz2.dylib */; };
+		748487DC16D22FF9004756EE /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748487DB16D22FF9004756EE /* libz.dylib */; };
+		748487DE16D22FFE004756EE /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748487DD16D22FFE004756EE /* Cocoa.framework */; };
+		748487E016D23004004756EE /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748487DF16D23004004756EE /* OpenGL.framework */; };
+		748487E216D2300A004756EE /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748487E116D2300A004756EE /* OpenAL.framework */; };
+		748489A316D230FE004756EE /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748489A216D230FE004756EE /* QtCore.framework */; };
+		748489A516D23127004756EE /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748489A416D23127004756EE /* QtGui.framework */; };
+		748489A716D23146004756EE /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748489A616D23146004756EE /* QtOpenGL.framework */; };
+		748489A916D23186004756EE /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 748489A816D23186004756EE /* QtNetwork.framework */; };
+		74CC1BD616D28B0200788D5F /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 74CC1BC216D2442400788D5F /* libFrameworkQt.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		74CC1BBF16D2442400788D5F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 74CC1BA216D2410700788D5F /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = Framework;
+		};
+		74CC1BC116D2442400788D5F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 74CC1BA216D2410700788D5F /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6696C2755263B468FDDDA935 /* Bundle Copy [FILETYPES] */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Resources;
+			dstSubfolderSpec = 1;
+			files = (
+			);
+			name = "Bundle Copy [FILETYPES]";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		744A5B3E16CE926800F1B252 /* MailSenderTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MailSenderTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		744A5B4316CE92AB00F1B252 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
+		744A5B4416CE92AB00F1B252 /* mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = SOURCE_ROOT; };
+		744A5B4516CE92AB00F1B252 /* mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mainwindow.h; sourceTree = SOURCE_ROOT; };
+		744A5B4A16CE92C500F1B252 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		748487C316D22C92004756EE /* mainwindow.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = SOURCE_ROOT; };
+		748487C616D22CC0004756EE /* moc_mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_mainwindow.cpp; sourceTree = SOURCE_ROOT; };
+		748487C716D22CC0004756EE /* ui_mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_mainwindow.h; sourceTree = SOURCE_ROOT; };
+		748487D716D22FBC004756EE /* MailSenderTest.pro */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MailSenderTest.pro; sourceTree = SOURCE_ROOT; };
+		748487D916D22FF2004756EE /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/lib/libbz2.dylib; sourceTree = DEVELOPER_DIR; };
+		748487DB16D22FF9004756EE /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
+		748487DD16D22FFE004756EE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		748487DF16D23004004756EE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/OpenGL.framework; sourceTree = DEVELOPER_DIR; };
+		748487E116D2300A004756EE /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/OpenAL.framework; sourceTree = DEVELOPER_DIR; };
+		748489A216D230FE004756EE /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Users/denisbespalov/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<absolute>"; };
+		748489A416D23127004756EE /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = /Users/denisbespalov/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<absolute>"; };
+		748489A616D23146004756EE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = /Users/denisbespalov/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<absolute>"; };
+		748489A816D23186004756EE /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = /Users/denisbespalov/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<absolute>"; };
+		74CC1BA216D2410700788D5F /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A1043669E6E5A7426EA502A /* Frameworks & Libraries */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74CC1BD616D28B0200788D5F /* libFrameworkQt.a in Frameworks & Libraries */,
+				748487DA16D22FF2004756EE /* libbz2.dylib in Frameworks & Libraries */,
+				748487DC16D22FF9004756EE /* libz.dylib in Frameworks & Libraries */,
+				748487DE16D22FFE004756EE /* Cocoa.framework in Frameworks & Libraries */,
+				748487E216D2300A004756EE /* OpenAL.framework in Frameworks & Libraries */,
+				748487E016D23004004756EE /* OpenGL.framework in Frameworks & Libraries */,
+				748489A916D23186004756EE /* QtNetwork.framework in Frameworks & Libraries */,
+				748489A516D23127004756EE /* QtGui.framework in Frameworks & Libraries */,
+				748489A316D230FE004756EE /* QtCore.framework in Frameworks & Libraries */,
+				748489A716D23146004756EE /* QtOpenGL.framework in Frameworks & Libraries */,
+			);
+			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05596AB53D8D521C69802C27 /* MailSenderTest */ = {
+			isa = PBXGroup;
+			children = (
+				74CC1BA216D2410700788D5F /* Framework.xcodeproj */,
+				744A5B4216CE928A00F1B252 /* Classes */,
+				748487C516D22CAF004756EE /* GeneratedFiles */,
+				748487C216D22C86004756EE /* UI */,
+				744A5B4916CE92BC00F1B252 /* Data */,
+				748487D516D22F73004756EE /* External Frameworks and Libraries */,
+				744A5B3F16CE926800F1B252 /* Products */,
+				748487D616D22FA3004756EE /* Sources[qmake] */,
+			);
+			name = MailSenderTest;
+			sourceTree = "<unknown>";
+			usesTabs = 1;
+		};
+		744A5B3F16CE926800F1B252 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				744A5B3E16CE926800F1B252 /* MailSenderTest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		744A5B4216CE928A00F1B252 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				744A5B4316CE92AB00F1B252 /* main.cpp */,
+				744A5B4416CE92AB00F1B252 /* mainwindow.cpp */,
+				744A5B4516CE92AB00F1B252 /* mainwindow.h */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		744A5B4916CE92BC00F1B252 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				744A5B4A16CE92C500F1B252 /* Info.plist */,
+			);
+			name = Data;
+			sourceTree = "<group>";
+		};
+		748487C216D22C86004756EE /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				748487C316D22C92004756EE /* mainwindow.ui */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		748487C516D22CAF004756EE /* GeneratedFiles */ = {
+			isa = PBXGroup;
+			children = (
+				748487C616D22CC0004756EE /* moc_mainwindow.cpp */,
+				748487C716D22CC0004756EE /* ui_mainwindow.h */,
+			);
+			name = GeneratedFiles;
+			sourceTree = "<group>";
+		};
+		748487D516D22F73004756EE /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				748489A816D23186004756EE /* QtNetwork.framework */,
+				748489A616D23146004756EE /* QtOpenGL.framework */,
+				748489A416D23127004756EE /* QtGui.framework */,
+				748489A216D230FE004756EE /* QtCore.framework */,
+				748487E116D2300A004756EE /* OpenAL.framework */,
+				748487DF16D23004004756EE /* OpenGL.framework */,
+				748487DD16D22FFE004756EE /* Cocoa.framework */,
+				748487DB16D22FF9004756EE /* libz.dylib */,
+				748487D916D22FF2004756EE /* libbz2.dylib */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		748487D616D22FA3004756EE /* Sources[qmake] */ = {
+			isa = PBXGroup;
+			children = (
+				748487D716D22FBC004756EE /* MailSenderTest.pro */,
+			);
+			name = "Sources[qmake]";
+			sourceTree = "<group>";
+		};
+		74CC1BBB16D2442400788D5F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				74CC1BC016D2442400788D5F /* libFramework.a */,
+				74CC1BC216D2442400788D5F /* libFrameworkQt.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E1C863C2D5D5D65BA4AC3B75 /* MailSenderTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "MailSenderTest" */;
+			buildPhases = (
+				D7BA7D76DAB5DD13389D6332 /* Qt Qmake */,
+				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
+				6696C2755263B468FDDDA935 /* Bundle Copy [FILETYPES] */,
+				C29B8785722055ED95EF7B57 /* Build Sources */,
+				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
+				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MailSenderTest;
+			productName = MailSenderTest;
+			productReference = 744A5B3E16CE926800F1B252 /* MailSenderTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91B15E841AA80083484172DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "MailSenderTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 05596AB53D8D521C69802C27 /* MailSenderTest */;
+			productRefGroup = 744A5B3F16CE926800F1B252 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 74CC1BBB16D2442400788D5F /* Products */;
+					ProjectRef = 74CC1BA216D2410700788D5F /* Framework.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				E1C863C2D5D5D65BA4AC3B75 /* MailSenderTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		74CC1BC016D2442400788D5F /* libFramework.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFramework.a;
+			remoteRef = 74CC1BBF16D2442400788D5F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		74CC1BC216D2442400788D5F /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = 74CC1BC116D2442400788D5F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3787F99312C85FF0073FD7BA /* Bundle Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				748487C416D22C92004756EE /* mainwindow.ui in Bundle Resources */,
+				748487D816D22FBC004756EE /* MailSenderTest.pro in Bundle Resources */,
+			);
+			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Preprocessors";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -d GeneratedFiles ]; then\n    mkdir GeneratedFiles\nfi\n\nmake -C $PROJECT_DIR -f 'MailSenderTest.xcodeproj/qt_preprocess.mak'";
+		};
+		D7BA7D76DAB5DD13389D6332 /* Qt Qmake */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Qmake";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C $PROJECT_DIR -f 'MailSenderTest.xcodeproj/qt_makeqmake.mak'";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C29B8785722055ED95EF7B57 /* Build Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				744A5B4616CE92AB00F1B252 /* main.cpp in Build Sources */,
+				744A5B4716CE92AB00F1B252 /* mainwindow.cpp in Build Sources */,
+				748487C816D22CC0004756EE /* moc_mainwindow.cpp in Build Sources */,
+			);
+			name = "Build Sources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4B72B24813252891014BCF61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					Classes,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../../Libs/libs/,
+					../../Libs/freetype/lib/,
+					../../Libs/oggvorbis/lib/,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DDAVA_DEBUG",
+					"-DDDARWIN_NO_CARBON",
+					"-DFT2_BUILD_LIBRARY",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DDAVA_DEBUG",
+					"-DDDARWIN_NO_CARBON",
+					"-DFT2_BUILD_LIBRARY",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../dava.framework/Libs/libs/",
+					"-L../dava.framework/Libs/freetype/lib/",
+					"-L../dava.framework/Libs/oggvorbis/lib/",
+				);
+				PRODUCT_NAME = MailSenderTest;
+				SDKROOT = macosx10.7;
+			};
+			name = Debug;
+		};
+		8C7174830A1E4DCBA0332EC1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = DAVA_SAVE_TO_YAML;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					./Classes,
+					.,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../../Libs/libs/,
+					../../Libs/freetype/lib/,
+					../../Libs/oggvorbis/lib/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+				);
+				PRODUCT_NAME = MailSenderTest;
+				SDKROOT = macosx10.7;
+			};
+			name = Release;
+		};
+		BEC09A62E69C3553534FF35E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DAVA_DEBUG,
+					DAVA_SAVE_TO_YAML,
+				);
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					./Classes,
+					.,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					/usr/local/include,
+				);
+				"INFOPLIST_FILE[sdk=*]" = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../../Libs/libs/,
+					../../Libs/freetype/lib/,
+					../../Libs/oggvorbis/lib/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+				);
+				PRODUCT_NAME = MailSenderTest;
+				SDKROOT = macosx10.7;
+			};
+			name = Debug;
+		};
+		D70590BEB531B51029F711BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					Classes,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../../Libs/libs/,
+					../../Libs/freetype/lib/,
+					../../Libs/oggvorbis/lib/,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DDAVA_DEBUG",
+					"-DDDARWIN_NO_CARBON",
+					"-DFT2_BUILD_LIBRARY",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DDAVA_DEBUG",
+					"-DDDARWIN_NO_CARBON",
+					"-DFT2_BUILD_LIBRARY",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../dava.framework/Libs/libs/",
+					"-L../dava.framework/Libs/freetype/lib/",
+					"-L../dava.framework/Libs/oggvorbis/lib/",
+				);
+				PRODUCT_NAME = MailSenderTest;
+				SDKROOT = macosx10.7;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "MailSenderTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BEC09A62E69C3553534FF35E /* Debug */,
+				8C7174830A1E4DCBA0332EC1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "MailSenderTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B72B24813252891014BCF61 /* Debug */,
+				D70590BEB531B51029F711BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91B15E841AA80083484172DE /* Project object */;
+}
