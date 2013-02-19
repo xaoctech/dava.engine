@@ -88,9 +88,16 @@ void HashMapTest::HashMapInsertRemoveGetTest(PerfFuncData * data)
 		}
 	}
 
+	// iterator test
 	DAVA::HashMap<DAVA::int32, DAVA::uint32>::Iterator iter = map.Begin();
 	for(; iter != map.End(); ++iter)
 	{
 		TEST_VERIFY(vect[iter.Key()] == iter.Value());
 	}
+
+	// 0-size hash map iterator test
+	DAVA::HashMap<DAVA::int32, DAVA::uint32> map0;
+	iter = map0.Begin();
+	for (; iter != map0.End(); ++iter)
+	{}
 }
