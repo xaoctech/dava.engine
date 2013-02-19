@@ -597,9 +597,6 @@ void Scene::Update(float timeElapsed)
     
 //	entityManager->Flush();
 
-    // lights 
-    flags &= ~SCENE_LIGHTS_MODIFIED;
-    
 	int32 size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
 	{

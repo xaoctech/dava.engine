@@ -87,7 +87,28 @@ public:
 	static const String TYPENAME_AABBOX3;     // "AABBox3"
 
 	VariantType();
-    VariantType(const VariantType &var);
+	VariantType(bool value);
+	VariantType(int32 value);
+    VariantType(uint32 value);
+	VariantType(float32 value);
+	VariantType(const String & value);
+	VariantType(const WideString & value);
+	VariantType(const uint8 *array, int32 arraySizeInBytes);
+	VariantType(KeyedArchive *archive);
+	VariantType(const int64 & value);
+	VariantType(const uint64 & value);
+	VariantType(const Vector2 & value);
+	VariantType(const Vector3 & value);
+	VariantType(const Vector4 & value);
+	VariantType(const Matrix2 & value);
+	VariantType(const Matrix3 & value);
+	VariantType(const Matrix4 & value);
+	VariantType(const VariantType &value);
+	VariantType(const void* const &value);
+	VariantType(const Color & value);
+	VariantType(const FastName & value);
+	VariantType(const AABBox3 & value);
+
 	~VariantType();
 	
     enum eVariantType
@@ -134,7 +155,9 @@ public:
         Matrix2* matrix2Value;
         Matrix3* matrix3Value;
         Matrix4* matrix4Value;
-        const void* pointerValue;
+
+		uint64 *x64PointerValue;
+		const void* pointerValue;
         
         String* stringValue;
         WideString* wideStringValue;
@@ -388,7 +411,7 @@ public:
 	 */
      const Matrix4 &AsMatrix4() const;
 
-	 const void* const & AsPointer() const;
+	 const void* const AsPointer() const;
 
     /**
          \brief Function to return Color from variable. Returns pointer to the Color inside.

@@ -317,6 +317,8 @@ private:
     
     static ImageFileFormat defaultFileFormat;
     ImageFileFormat loadedAsFile;
+    
+    static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions

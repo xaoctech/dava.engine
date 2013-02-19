@@ -271,7 +271,7 @@ public:
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
-	void SetVariant(const String & key, VariantType *value);
+	void SetVariant(const String & key, const VariantType &value);
 	/**
         \brief Function to set another keyed archive as kye for this archive.
         \param[in] key string key
@@ -395,7 +395,8 @@ public:
 		\brief Deletes all keys, making archive empty.
 	 */
 	void DeleteAllKeys();
-	
+
+	uint32 Count(const String & key = "");
     
 	/**
      \brief Function to get all data of archive.

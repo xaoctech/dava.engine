@@ -33,7 +33,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObjectChecker.h"
 #include "Base/Introspection.h"
-#include "Base/Serializable.h"
 #include "Debug/DVAssert.h"
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
@@ -62,7 +61,7 @@ namespace DAVA
 class IntrospectionInfo;
 class KeyedArchive;
 	
-class BaseObject : public Serializable
+class BaseObject
 {
 public:
 	
@@ -132,9 +131,6 @@ public:
     
     virtual void Save(KeyedArchive * archive);
 	virtual void Load(KeyedArchive * archive);
-
-	virtual void Serialize(KeyedArchive *archive);
-	virtual void Deserialize(KeyedArchive *archive);
     
     static BaseObject * LoadFromArchive(KeyedArchive * archive);
     

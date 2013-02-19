@@ -360,7 +360,7 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 
 			if(NULL != archive && NULL != childVariantData)
 			{
-				archive->SetVariant(lastChangedChildKey.toStdString(), &(childVariantData->curVariantValue));
+				archive->SetVariant(lastChangedChildKey.toStdString(), childVariantData->curVariantValue);
 			}
 		}
 		break;

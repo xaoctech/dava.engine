@@ -69,7 +69,6 @@ LandscapeNode::LandscapeNode()
     fullTiledShader = NULL;
     nearLodIndex = 0;
     farLodIndex = 1;
-    SetTiledShaderMode(TILED_MODE_MIXED);
     
 	cursor = 0;
     uniformCameraPosition = -1;
@@ -79,12 +78,15 @@ LandscapeNode::LandscapeNode()
         uniformTextures[k] = -1;
         uniformTextureTiling[k] = -1;
         textureTiling[k] = Vector2(1.0f, 1.0f);
+        uniformTileColor[k] = -1;
+        tileColor[k] = Color::White();
     }
     uniformFogDensity = -1;
     uniformFogColor = -1;
     uniformFogDensityFT = -1;
     uniformFogColorFT = -1;
 
+    SetTiledShaderMode(TILED_MODE_MIXED);
     
     heightmap = new Heightmap();
     
@@ -122,10 +124,20 @@ void LandscapeNode::InitShaders()
     
     tileMaskShader = new Shader();
     tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+    
+    String defines = "";
+    
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
-        tileMaskShader->SetDefineList("VERTEX_FOG");   
+        defines += "VERTEX_FOG";
     }
+    if (TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode)
+    {
+        if (defines.size() != 0)defines += ";";
+        defines += "DETAILMASK";
+    }
+    tileMaskShader->SetDefineList(defines);
+    
     tileMaskShader->Recompile();
     
     uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("tileTexture0");
@@ -141,6 +153,12 @@ void LandscapeNode::InitShaders()
     uniformTextureTiling[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("texture1Tiling");
     uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("texture2Tiling");
     uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
+    
+    uniformTileColor[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("tileColor0");
+    uniformTileColor[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("tileColor1");
+    uniformTileColor[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("tileColor2");
+    uniformTileColor[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("tileColor3");
+
     
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
@@ -580,6 +598,17 @@ const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
 {
     return textureTiling[level];
 }
+    
+const void LandscapeNode::SetTileColor(eTextureLevel level, const Color & color)
+{
+    tileColor[level] = color;
+}
+
+const Color & LandscapeNode::GetTileColor(eTextureLevel level)
+{
+    return tileColor[level];
+}
+
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
@@ -1046,6 +1075,17 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
         if (uniformTextureTiling[TEXTURE_TILE3] != -1)
             tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
 
+        
+        if (uniformTileColor[TEXTURE_TILE0] != -1)
+            tileMaskShader->SetUniformColor3(uniformTileColor[TEXTURE_TILE0], tileColor[TEXTURE_TILE0]);
+        if (uniformTileColor[TEXTURE_TILE1] != -1)
+            tileMaskShader->SetUniformColor3(uniformTileColor[TEXTURE_TILE1], tileColor[TEXTURE_TILE1]);
+        if (uniformTileColor[TEXTURE_TILE2] != -1)
+            tileMaskShader->SetUniformColor3(uniformTileColor[TEXTURE_TILE2], tileColor[TEXTURE_TILE2]);
+        if (uniformTileColor[TEXTURE_TILE3] != -1)
+            tileMaskShader->SetUniformColor3(uniformTileColor[TEXTURE_TILE3], tileColor[TEXTURE_TILE3]);
+                
+        
         if (uniformFogColor != -1)
             tileMaskShader->SetUniformColor3(uniformFogColor, fogColor);
         if (uniformFogDensity != -1)
@@ -1350,7 +1390,7 @@ const String & LandscapeNode::GetHeightmapPathname()
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    //SceneNode::Save(archive, sceneFile);
+    RenderObject::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
     if(Heightmap::FileExtension() != heightmapPath.GetExtension())
@@ -1389,8 +1429,8 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    //SceneNode::Load(archive, sceneFile);
-    
+	RenderObject::Load(archive, sceneFile);
+
     String path = archive->GetString("hmap");
     path = sceneFile->RelativeToAbsolute(path);
     AABBox3 boxDef;
@@ -1637,6 +1677,10 @@ void LandscapeNode::SetTiledShaderMode(DAVA::LandscapeNode::eTiledShaderMode _ti
     
     switch (tiledShaderMode)
     {
+        case TILED_MODE_TILE_DETAIL_MASK:
+            nearLodIndex = 0;
+            farLodIndex = 0;
+            break;
         case TILED_MODE_TILEMASK:
             nearLodIndex = 0;
             farLodIndex = 0;
@@ -1655,6 +1699,9 @@ void LandscapeNode::SetTiledShaderMode(DAVA::LandscapeNode::eTiledShaderMode _ti
         default:
             break;
     }
+    // Reload shaders to
+    ReleaseShaders();
+    InitShaders();
 }
     
 void LandscapeNode::SetFog(bool _isFogEnabled)

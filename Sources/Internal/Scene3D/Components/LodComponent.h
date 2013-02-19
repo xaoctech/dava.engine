@@ -47,8 +47,8 @@ public:
         
         INTROSPECTION(LodDistance,
             PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_EDITOR_READONLY)
+            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_EDITOR_READONLY)
         );
 	};
 
@@ -57,24 +57,18 @@ public:
 		LodData()
 		:	layer(INVALID_LOD_LAYER),
 			isDummy(false)
-		{
-		}
+		{ }
+
 		Vector<SceneNode*> nodes;
 		Vector<int32> indexes;
 		int32 layer;
 		bool isDummy;
-        
-        INTROSPECTION(LodData,
-            COLLECTION(nodes, "Nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            COLLECTION(indexes, "Indexes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
-            MEMBER(layer, "Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            MEMBER(isDummy, "isDummy", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        );
 	};
 
 	LodComponent();
 	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	static float32 GetDefaultDistance(int32 layer);
 	void SetCurrentLod(LodData *newLod);
@@ -115,20 +109,16 @@ public:
     void SetForceLodLayer(int32 layer);
     int32 GetForceLodLayer();
 
+	int32 GetMaxLodLayer();
 
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
-
-        COLLECTION(lodLayers, "Lod Layers", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-
         COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
-    
-    
     
 //    SceneNode::Save(archive, sceneFile);
 //    archive->SetInt32("lodCount", (int32)lodLayers.size());
