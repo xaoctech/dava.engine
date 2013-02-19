@@ -274,16 +274,6 @@ void BaseObject::LoadCollection(const String &key, KeyedArchive * archive, const
 }
 */
 
-void BaseObject::Serialize(KeyedArchive * archive)
-{
-
-}
-
-void BaseObject::Deserialize(KeyedArchive * archive)
-{
-
-}
-
 };
 
 

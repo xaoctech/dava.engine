@@ -54,7 +54,8 @@ public:
     PolygonGroup * GetPolygonGroup(uint32 index);
     
 	virtual RenderObject * Clone(RenderObject *newObject);
-
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 protected:
     //Vector<PolygonGroup*> polygonGroups;

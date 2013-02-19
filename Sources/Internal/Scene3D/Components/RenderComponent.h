@@ -20,8 +20,8 @@ public:
     RenderObject * GetRenderObject();
     
 	virtual Component * Clone(SceneNode * toEntity);
-	virtual void Serialize(KeyedArchive *archive);
-	virtual void Deserialize(KeyedArchive *archive);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	/**
      \brief This function should be implemented in each node that have data nodes inside it.

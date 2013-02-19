@@ -1,4 +1,5 @@
 #include "Scene3D/Components/RenderComponent.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA 
 {
@@ -29,6 +30,7 @@ Component * RenderComponent::Clone(SceneNode * toEntity)
     RenderComponent * component = new RenderComponent();
 	component->SetEntity(toEntity);
 
+    //TODO: Do not forget ot check what does it means.
     component->renderObject = renderObject->Clone(component->renderObject);
     return component;
 }
@@ -64,36 +66,36 @@ void RenderComponent::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
 	}
 }
 
-void RenderComponent::Serialize(KeyedArchive *archive)
+void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	Component::Serialize(archive);
+	Component::Serialize(archive, sceneFile);
 
 	if(NULL != archive && NULL != renderObject)
 	{
 		KeyedArchive *roArch = new KeyedArchive();
-		renderObject->Serialize(roArch);
-
+		renderObject->Save(roArch, sceneFile);
 		archive->SetArchive("rc.renderObj", roArch);
-
 		roArch->Release();
 	}
 }
 
-void RenderComponent::Deserialize(KeyedArchive *archive)
+void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
 		KeyedArchive *roArch = archive->GetArchive("rc.renderObj");
 		if(NULL != roArch)
 		{
-			RenderObject* ro = new RenderObject();
-			ro->Deserialize(roArch);
-
-			SetRenderObject(ro);
+			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New(roArch->GetString("##name"));
+			if(NULL != ro)
+			{
+				ro->Load(roArch, sceneFile);
+				SetRenderObject(ro);
+			}
 		}
 	}
 
-	Component::Deserialize(archive);
+	Component::Deserialize(archive, sceneFile);
 }
 
 };

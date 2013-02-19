@@ -2,7 +2,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/SpriteObject.h"
-
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
@@ -10,6 +10,7 @@ namespace DAVA
 SpriteRenderBatch::SpriteRenderBatch()
 	: RenderBatch()
 {
+    SetOwnerLayerName(LAYER_TRANSLUCENT);
 }
 
 SpriteRenderBatch::~SpriteRenderBatch()
@@ -104,13 +105,6 @@ void SpriteRenderBatch::Draw(Camera * camera)
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, spriteObject->GetFrame() * 4, 4);
 }
-
-const FastName & SpriteRenderBatch::GetOwnerLayerName()
-{
-	static FastName translucentLayer("TransclucentRenderLayer");
-	return translucentLayer;
-}
-
 
 
 };

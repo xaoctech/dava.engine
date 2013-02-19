@@ -36,14 +36,14 @@
 
 namespace DAVA
 {
-//class RenderBatch;
+
 class RenderBatchArray;
 class Camera;
     
 class RenderLayer
 {
 public:
-    RenderLayer(const char * name);
+    RenderLayer(const FastName & name);
     virtual ~RenderLayer();
     
     enum

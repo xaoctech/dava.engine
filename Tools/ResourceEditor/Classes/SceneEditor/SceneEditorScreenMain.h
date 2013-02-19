@@ -19,7 +19,7 @@ class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
 class HelpDialog;
-class ParticlesEditorControl;
+
 class SceneEditorScreenMain: 
     public UIScreen,
     public CreateNodesDialogDelegeate,
@@ -91,8 +91,6 @@ public:
 
     void EditMaterial(Material *material);
 
-	void EditParticleEmitter(SceneNode * emitter);
-    
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
 	BodyItem * FindCurrentBody();
@@ -109,8 +107,6 @@ public:
     
     void RecreteFullTilingTexture();
 
-	ParticlesEditorControl * GetParticlesEditor() { return particlesEditor; }
-    
     void SelectNodeQt(SceneNode *node);
     void OnReloadRootNodesQt();
     
@@ -149,7 +145,7 @@ private:
     CreateNodesDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
-	ParticlesEditorControl * particlesEditor;
+
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     
