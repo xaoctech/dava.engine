@@ -72,21 +72,21 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new InputTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
 //    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
+	new InputTest();
     new MaterialCompilerTest();
     new CloneTest();
-//	new PVRTest();
+    new PVRTest();
 	new DXTTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();
 	new HashMapTest();
-	//new SoundTest();
+	new SoundTest();
 	new SplitTest();
     new KeyedArchiveYamlTest();
 	new DLCTest();
