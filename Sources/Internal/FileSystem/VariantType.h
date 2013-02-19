@@ -87,27 +87,27 @@ public:
 	static const String TYPENAME_AABBOX3;     // "AABBox3"
 
 	VariantType();
-	VariantType(bool value);
-	VariantType(int32 value);
-    VariantType(uint32 value);
-	VariantType(float32 value);
-	VariantType(const String & value);
-	VariantType(const WideString & value);
-	VariantType(const uint8 *array, int32 arraySizeInBytes);
-	VariantType(KeyedArchive *archive);
-	VariantType(const int64 & value);
-	VariantType(const uint64 & value);
-	VariantType(const Vector2 & value);
-	VariantType(const Vector3 & value);
-	VariantType(const Vector4 & value);
-	VariantType(const Matrix2 & value);
-	VariantType(const Matrix3 & value);
-	VariantType(const Matrix4 & value);
 	VariantType(const VariantType &value);
-	VariantType(const void* const &value);
-	VariantType(const Color & value);
-	VariantType(const FastName & value);
-	VariantType(const AABBox3 & value);
+	explicit VariantType(bool value);
+	explicit VariantType(int32 value);
+    explicit VariantType(uint32 value);
+	explicit VariantType(float32 value);
+	explicit VariantType(const String & value);
+	explicit VariantType(const WideString & value);
+	explicit VariantType(const uint8 *array, int32 arraySizeInBytes);
+	explicit VariantType(KeyedArchive *archive);
+	explicit VariantType(const int64 & value);
+	explicit VariantType(const uint64 & value);
+	explicit VariantType(const Vector2 & value);
+	explicit VariantType(const Vector3 & value);
+	explicit VariantType(const Vector4 & value);
+	explicit VariantType(const Matrix2 & value);
+	explicit VariantType(const Matrix3 & value);
+	explicit VariantType(const Matrix4 & value);
+	explicit VariantType(const void* const &value);
+	explicit VariantType(const Color & value);
+	explicit VariantType(const FastName & value);
+	explicit VariantType(const AABBox3 & value);
 
 	~VariantType();
 	
