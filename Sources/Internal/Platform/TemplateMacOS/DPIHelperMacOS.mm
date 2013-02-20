@@ -1,8 +1,5 @@
 #include "Base/BaseTypes.h"
-#include "Core/Core.h"
-
-
-#if defined(__DAVAENGINE_MACOS__)
+#include "Platform/DPIHelper.h"
 
 #include <AppKit/NSScreen.h>
 #include <ApplicationServices/ApplicationServices.h>
@@ -10,7 +7,7 @@
 
 namespace DAVA
 {
-    uint32 Core::GetScreenDPI()
+    uint32 DPIHelper::GetScreenDPI()
     {
         
         NSScreen *screen = [NSScreen mainScreen];
@@ -27,7 +24,3 @@ namespace DAVA
     }
 	
 }
-
-
-
-#endif // #if defined(__DAVAENGINE_MACOS__)
