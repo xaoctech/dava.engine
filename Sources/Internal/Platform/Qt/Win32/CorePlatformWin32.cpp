@@ -390,16 +390,5 @@ void CoreWin32Platform::SetFocused(bool focused)
 	}
 }
 
-uint32 Core::GetScreenDPI()
-{
-	HDC screen = GetDC(NULL);
-
-	// in common dpi is the same in horizontal and vertical demensions
-	// in any case under win this value is 96dpi due to OS limitation
-	uint32 hDPI = GetDeviceCaps(screen, LOGPIXELSX);
-	ReleaseDC(NULL, screen);
-	return hDPI;
-}
-
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)
