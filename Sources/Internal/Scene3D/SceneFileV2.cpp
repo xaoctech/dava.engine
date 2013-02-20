@@ -794,6 +794,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
                 mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
                 
                 parent->RemoveNode(oldShadowVolumeNode);
+                SafeRelease(newShadowVolume);
             }
         }
         
