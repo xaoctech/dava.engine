@@ -1,8 +1,6 @@
 #include "Base/BaseTypes.h"
-#include "Core/Core.h"
+#include "Platform/DPIHelper.h"
 
-
-#if defined(__DAVAENGINE_IPHONE__)
 
 #include <UIKit/UIKit.h>
 #include <UIKit/UIDevice.h>
@@ -88,7 +86,7 @@ namespace DAVA
         
     }
     
-    uint32 Core::GetScreenDPI()
+    uint32 DPIHelper::GetScreenDPI()
     {
         //due to magnificent api of ios the only way of determination of dpi is hardcode
         CGRect screenRect = [[UIScreen mainScreen] bounds];
@@ -122,4 +120,4 @@ namespace DAVA
     
 }
 
-#endif // #if defined(__DAVAENGINE_IPHONE__)
+
