@@ -3,7 +3,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
 #include "Math/MathHelpers.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
@@ -13,17 +13,20 @@ ParticleLayer3D::ParticleLayer3D()
 	renderData = new RenderDataObject();
 
 	//TODO: set material from outside
-	material = new Material();
+	
+	Material * material = new Material();
 	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
 	material->SetAlphablend(true);
 	material->SetBlendSrc(BLEND_SRC_ALPHA);
 	material->SetBlendDest(BLEND_ONE);
 	material->SetName("ParticleLayer3D_material");
+
+	renderBatch->SetMaterial(material);
+	SafeRelease(material);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
 {
-	SafeRelease(material);
 	SafeRelease(renderData);
 }
 
@@ -41,6 +44,7 @@ void ParticleLayer3D::Draw(Camera * camera)
             rotationMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
             break;
     }
+
     Matrix4 mv = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW)*rotationMatrix;
     
 	Vector3 _up(mv._01, mv._11, mv._21);
@@ -54,7 +58,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		material->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
@@ -138,33 +142,21 @@ void ParticleLayer3D::Draw(Camera * camera)
 		current = TYPE_PARTICLES == type ? current->next : 0;
 	}
 
+	renderBatch->SetTotalCount(totalCount);
 	if(totalCount > 0)
 	{			
 		renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
 		renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
-	
-		RenderManager::Instance()->SetRenderData(renderData);
- 		material->PrepareRenderState();
 
-		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
+		renderBatch->SetRenderDataObject(renderData);
 	}
 }
 
 void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
 {
 	ParticleLayer::LoadFromYaml(configPath, node);
-
-	if(additive)
-	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE);
-	}
-	else
-	{
-		material->SetBlendSrc(BLEND_SRC_ALPHA);
-		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
-	}
+	SetAdditive(additive);
 }
 
 ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
@@ -181,7 +173,22 @@ ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
 
 Material * ParticleLayer3D::GetMaterial()
 {
-	return material;
+	return renderBatch->GetMaterial();
+}
+	
+void ParticleLayer3D::SetAdditive(bool additive)
+{
+	ParticleLayer::SetAdditive(additive);
+	if(additive)
+	{
+		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE);
+	}
+	else
+	{
+		renderBatch->GetMaterial()->SetBlendSrc(BLEND_SRC_ALPHA);
+		renderBatch->GetMaterial()->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
+	}
 }
 
 };

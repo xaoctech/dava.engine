@@ -221,7 +221,7 @@ protected:
      \brief Called when application goes to background due to device lock on iOS platforms
 	 */
 	virtual void OnDeviceLocked() = 0;
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	
 	/**	
 		\brief this function is called every frame to let you update your application. 

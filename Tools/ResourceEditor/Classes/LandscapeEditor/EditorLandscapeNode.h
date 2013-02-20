@@ -47,7 +47,7 @@ public:
 
     void SetRenderer(LandscapeRenderer *renderer);
     
-	virtual void Draw();
+	virtual void Draw(DAVA::Camera * camera);
     virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
     
     virtual void SetHeightmap(DAVA::Heightmap *height);
@@ -59,6 +59,9 @@ public:
 	virtual DAVA::Texture * GetTexture(eTextureLevel level);
     virtual void BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox);
     virtual void UpdateFullTiledTexture();
+
+	virtual DAVA::RenderObject * Clone(DAVA::RenderObject *newObject);
+
 
 protected:
     

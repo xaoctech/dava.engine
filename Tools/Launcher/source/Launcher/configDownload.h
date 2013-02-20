@@ -45,7 +45,8 @@ class AppsConfig {
 public:
     AppConfig m_Launcher;
 
-    typedef QMap<QString, AppConfig> AppMap;
+    typedef QMap<QString, AppConfig> AppVersion;    //version, app config
+    typedef QMap<QString, AppVersion> AppMap;
     AppMap m_Stable;
     AppMap m_Development;
     AppMap m_Dependencies;

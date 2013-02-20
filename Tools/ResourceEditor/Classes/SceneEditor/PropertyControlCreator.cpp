@@ -1,18 +1,17 @@
 #include "PropertyControlCreator.h"
 #include "NodesPropertyControl.h"
 #include "LightPropertyControl.h"
-#include "BoxPropertyControl.h"
-#include "SpherePropertyControl.h"
 #include "CameraPropertyControl.h"
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
 #include "MaterialPropertyControl.h"
 #include "LodNodePropertyControl.h"
 #include "EntityPropertyControl.h"
-#include "Entity/Entity.h"
 #include "ParticleEmitterPropertyControl.h"
 #include "SwitchNodePropertyControl.h"
 #include "ParticleEffectPropertyControl.h"
+#include "MeshInstancePropertyControl.h"
+
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -33,69 +32,61 @@ PropertyControlCreator::~PropertyControlCreator()
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties)
 {
-	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
-	if(light)
-	{
-        return CreateControlForNode(EPCID_LIGHT, rect, createNodeProperties);
-	}
+	return CreateControlForNode(DetectNodeType(sceneNode), rect, createNodeProperties);
     
-    CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
-    if(cube)
-    {
-        return CreateControlForNode(EPCID_CUBE, rect, createNodeProperties);
-    }
-
-    SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
-    if(sphere)
-    {
-        return CreateControlForNode(EPCID_SPHERE, rect, createNodeProperties);
-    }
-
-    Camera *camera = dynamic_cast<Camera *> (sceneNode);
-    if(camera)
-    {
-        return CreateControlForNode(EPCID_CAMERA, rect, createNodeProperties);
-    }
-
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *> (sceneNode);
-    if(landscape)
-    {
-        return CreateControlForNode(EPCID_LANDSCAPE, rect, createNodeProperties);
-    }
-    
-    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(sceneNode); //must be later children of MeshInstanceNode
-    if(mesh)
-    {
-        return CreateControlForNode(EPCID_MESH, rect, createNodeProperties);
-    }
-    
-    LodNode *lodNode = dynamic_cast<LodNode*>(sceneNode);
-    if(lodNode)
-    {
-        return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
-    }
-
-	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode *>(sceneNode);
-	if(particleEmitterNode)
-	{
-		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
-	}
-
-	SwitchNode * switchNode = dynamic_cast<SwitchNode*>(sceneNode);
-	if(switchNode)
-	{
-		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
-	}
-
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode*>(sceneNode);
-	if(particleEffect)
-	{
-		return CreateControlForNode(EPCID_PARTICLE_EFFECT, rect, createNodeProperties);
-	}
-
-
-	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
+
+
+PropertyControlCreator::ePropertyControlIDs PropertyControlCreator::DetectNodeType(SceneNode *node)
+{
+    if(node->GetComponent(Component::LIGHT_COMPONENT))
+    {
+        return EPCID_LIGHT;
+    }
+    
+    if(node->GetComponent(Component::CAMERA_COMPONENT))
+    {
+        return EPCID_CAMERA;
+    }
+    
+    if(node->GetComponent(Component::SWITCH_COMPONENT))
+    {
+        return EPCID_SWITCH;
+    }
+    
+    if(GetEmitter(node))
+    {
+        return EPCID_PARTICLE_EMITTER;
+    }
+    
+    if(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+    {
+        return EPCID_PARTICLE_EFFECT;
+    }
+
+    if(node->GetComponent(Component::LOD_COMPONENT))
+    {
+        return EPCID_LODNODE;
+    }
+
+    
+    
+    RenderComponent *rc = static_cast<RenderComponent *>(node->GetComponent(Component::RENDER_COMPONENT));
+    if(rc)
+    {
+        RenderObject *ro = rc->GetRenderObject();
+        
+        if(dynamic_cast<LandscapeNode *>(ro))
+        {
+            return EPCID_LANDSCAPE;
+        }
+    }
+    
+    
+    return EPCID_NODE;
+}
+
+
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * dataNode, const Rect & rect, bool createNodeProperties)
 {
@@ -123,12 +114,6 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
         {
             case EPCID_LIGHT:
                 controls[controlID] = new LightPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_CUBE:
-                controls[controlID] = new BoxPropertyControl(rect, createNodeProperties);
-                break;
-            case EPCID_SPHERE:
-                controls[controlID] = new SpherePropertyControl(rect, createNodeProperties);
                 break;
             case EPCID_CAMERA:
                 controls[controlID] = new CameraPropertyControl(rect, createNodeProperties);

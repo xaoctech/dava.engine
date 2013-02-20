@@ -19,7 +19,7 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
+    Light *light = GetLight(sceneNode);
 	DVASSERT(light);
 
     propertyList->AddSection("property.lightnode.light", GetHeaderState("property.lightnode.light", true));
@@ -43,7 +43,9 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     
 	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
-	propertyList->AddBoolProperty("property.staticlight.enable");
+/*  
+    // LIGHT
+    propertyList->AddBoolProperty("property.staticlight.enable");
 	propertyList->SetBoolPropertyValue("property.staticlight.enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
 
 	propertyList->AddBoolProperty("Cast shadows");
@@ -76,19 +78,23 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	
 	propertyList->AddBoolProperty("property.dynamiclight.enable");
 	propertyList->SetBoolPropertyValue("property.dynamiclight.enable", light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true));
+
+    */
 }
 
 void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
     if("property.lightnode.type" == forKey)
     {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        light->SetType((LightNode::eType)newItemIndex);
+        Light *light = GetLight(currentSceneNode);
+        light->SetType((Light::eType)newItemIndex);
         
-        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+        if(Light::TYPE_DIRECTIONAL == light->GetType())
         {
+/*      // LIGHT
             light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
             light->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
+ */
         }
     }
 
@@ -97,97 +103,108 @@ void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 
 void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("property.staticlight.enable" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        light->GetCustomProperties()->SetBool("editor.staticlight.enable", newValue);
-    }
-	else if("property.dynamiclight.enable" == forKey)
-	{
-		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-		light->GetCustomProperties()->SetBool("editor.dynamiclight.enable", newValue);
-		light->SetDynamic(newValue);
-	}
-    else if("Cast shadows" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        light->GetCustomProperties()->SetBool("editor.staticlight.castshadows", newValue);
-    }
+// LIGHT
+//    if("property.staticlight.enable" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        light->GetCustomProperties()->SetBool("editor.staticlight.enable", newValue);
+//    }
+//	else if("property.dynamiclight.enable" == forKey)
+//	{
+//		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//		light->GetCustomProperties()->SetBool("editor.dynamiclight.enable", newValue);
+//		light->SetDynamic(newValue);
+//	}
+//    else if("Cast shadows" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        light->GetCustomProperties()->SetBool("editor.staticlight.castshadows", newValue);
+//    }
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
 
 void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("Intensity" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        light->GetCustomProperties()->SetFloat("editor.intensity", newValue);
-    }
-    else if("Shadow angle" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
-        {
-            light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", newValue);
-        }
-    }
-	else if("Shadow radius" == forKey)
-	{
-		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-		if(LightNode::TYPE_POINT == light->GetType())
-		{
-			light->GetCustomProperties()->SetFloat("editor.staticlight.shadowradius", newValue);
-		}
-	}
-	else if("Falloff cutoff" == forKey)
-	{
-		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffcutoff", newValue);
-	}
-	else if("Falloff exponent" == forKey)
-	{
-		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffexponent", newValue);
-	}else if("property.lightnode.intensity" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        light->SetIntensity(newValue);
-    }
+// LIGHT
+//    if("Intensity" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        light->GetCustomProperties()->SetFloat("editor.intensity", newValue);
+//    }
+//    else if("Shadow angle" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+//        {
+//            light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", newValue);
+//        }
+//    }
+//	else if("Shadow radius" == forKey)
+//	{
+//		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//		if(LightNode::TYPE_POINT == light->GetType())
+//		{
+//			light->GetCustomProperties()->SetFloat("editor.staticlight.shadowradius", newValue);
+//		}
+//	}
+//	else if("Falloff cutoff" == forKey)
+//	{
+//		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffcutoff", newValue);
+//	}
+//	else if("Falloff exponent" == forKey)
+//	{
+//		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffexponent", newValue);
+//	}else if("property.lightnode.intensity" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        light->SetIntensity(newValue);
+//    }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
 
 void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
 {
-    if("Shadow samples" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
-        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
-        {
-            light->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", newValue);
-        }
-    }
+// LIGHT
+//    if("Shadow samples" == forKey)
+//    {
+//        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+//        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+//        {
+//            light->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", newValue);
+//        }
+//    }
     
     NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
 }
 
 void LightPropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
 {
+    Light *light = GetLight(currentSceneNode);
     if("property.lightnode.ambient.color" == forKey)
     {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
         light->SetAmbientColor(newColor);
     }
     if("property.lightnode.diffuse.color" == forKey)
     {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
         light->SetDiffuseColor(newColor);
     }
     if("property.lightnode.specular.color" == forKey)
     {
-        LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
         light->SetSpecularColor(newColor);
     }
 }
 
+Light *LightPropertyControl::GetLight(SceneNode *node)
+{
+    LightComponent *lc = static_cast<LightComponent *>(node->GetComponent(Component::LIGHT_COMPONENT));
+    if(lc)
+    {
+        return lc->GetLightObject();
+    }
+    
+    return NULL;
+}

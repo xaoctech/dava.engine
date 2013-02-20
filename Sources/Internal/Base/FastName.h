@@ -7,8 +7,7 @@
 #ifndef __DAVAENGINE_FAST_NAME__
 #define __DAVAENGINE_FAST_NAME__
 
-#include "HashMap.h"
-#include "Debug/DVAssert.h"
+#include "Base/HashMap.h"
 #include "Base/StaticSingleton.h"
 
 namespace DAVA
@@ -41,14 +40,13 @@ struct FastNameDB : public StaticSingleton<FastNameDB>
 
 class FastName
 {
-private:
-
 public:
 	FastName();
 	FastName(const char *name);
 	FastName(const FastName &_name);
 	~FastName();
 
+	const char* c_str() const;
 	const char* operator*() const;
 	FastName& operator=(const FastName &_name);
 	bool operator==(const FastName &_name) const;
@@ -58,6 +56,8 @@ public:
 private:
 	int index;
 
+	void AddRef(int i) const;
+	void RemRef(int i) const;
 };
 
 };

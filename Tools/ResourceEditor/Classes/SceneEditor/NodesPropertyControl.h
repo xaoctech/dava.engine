@@ -13,7 +13,7 @@ class NodesPropertyDelegate
 {
 public:
     
-    virtual void NodesPropertyChanged() = 0;
+    virtual void NodesPropertyChanged(const String &forKey) = 0;
     
 };
 
@@ -67,7 +67,7 @@ public:
     
 protected:
 
-    int32 GetTrianglesForLodLayer(LodNode::LodData *lodData);
+    int32 GetTrianglesForLodLayer(LodComponent::LodData *lodData);
     
     
     bool GetHeaderState(const String & headerName, bool defaultValue = true);
@@ -109,8 +109,10 @@ protected:
     UIButton *btnCancel;
     void OnCancel(BaseObject * object, void * userData, void * callerData);
     
-    Vector<LodNode *>childLodNodes;
+    Vector<LodComponent *>childLodComponents;
     Vector<float32 *>childDistances;
+    
+    LodComponent *GetLodComponent(SceneNode *node);
 };
 
 

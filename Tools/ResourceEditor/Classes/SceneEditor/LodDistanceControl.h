@@ -47,8 +47,8 @@ private:
     UIControl **sliders;
     
     int32 count;
-    float32 distances[LodNode::MAX_LOD_LAYERS];
-    int32 triangles[LodNode::MAX_LOD_LAYERS];
+    float32 distances[LodComponent::MAX_LOD_LAYERS];
+    int32 triangles[LodComponent::MAX_LOD_LAYERS];
     
     float32 maxDistance;
 
@@ -67,11 +67,11 @@ private:
     UIControl *leftZone;
     UIControl *rightZone;
     
-    UIStaticText *distanceText[LodNode::MAX_LOD_LAYERS];
-    UITextField *distanceTextValues[LodNode::MAX_LOD_LAYERS];
+    UIStaticText *distanceText[LodComponent::MAX_LOD_LAYERS];
+    UITextField *distanceTextValues[LodComponent::MAX_LOD_LAYERS];
 
-    UIStaticText *trianglesText[LodNode::MAX_LOD_LAYERS];
-    UIStaticText *trianglesTextValues[LodNode::MAX_LOD_LAYERS];
+    UIStaticText *trianglesText[LodComponent::MAX_LOD_LAYERS];
+    UIStaticText *trianglesTextValues[LodComponent::MAX_LOD_LAYERS];
 
     UIStaticText *distanceToCameraText;
     UIStaticText *distanceToCameraValue;

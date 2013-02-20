@@ -27,25 +27,40 @@ private:
 
     void SetupMainMenu();
 	void SetupToolBar();
+	void SetupModificationToolBar();
     void SetupDockWidgets();
     void SetupCustomColorsDock();
 	void SetupVisibilityToolDock();
     
 	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
     void SetCustomColorsDockControlsEnabled(bool enabled);
-      
+
+	void UpdateLibraryFileTypes();
+	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
+
 public slots:
 	void TextureCheckConvetAndWait(bool forceConvertAll = false);
+	void ChangeParticleDockVisible(bool visible);
+	void ChangeParticleDockTimeLineVisible(bool visible);
+
+	void UpdateParticleSprites();
+
+	void returnToOldMaxMinSizesForDockSceneGraph();
 
 private slots:
 	void ProjectOpened(const QString &path);
     void MenuFileWillShow();
+	void LibraryFileTypesChanged();
 	
 	//reference
 	void ApplyReferenceNodeSuffix();
 	void ConvertWaitDone(QObject *destroyed);
 	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
-        
+
+signals:
+	// Library File Types.
+	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
+
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
@@ -53,6 +68,10 @@ private:
 	QProgressDialog *convertWaitDialog;
     
     //LibraryModel *libraryModel;
+	
+	QSize oldDockSceneGraphMaxSize;
+	QSize oldDockSceneGraphMinSize;
+
 };
 
 
@@ -85,9 +104,6 @@ private:
 
     void OpenLastProject();
     void SetupDockWidgets();
-    void SetupCustomColorsDock();
-    
-    void SetCustomColorsDockControlsEnabled(bool enabled);
         
 private slots:
 

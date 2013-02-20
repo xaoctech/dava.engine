@@ -166,6 +166,12 @@ public:
 	 \param[in] topStretchCap Unscalable part in pixels.
 	 */
 	virtual void SetTopBottomStretchCap(float32 topStretchCap);
+    
+    /*
+     Getters for StretchCap
+     */
+	virtual float32 GetLeftRightStretchCap();
+	virtual float32 GetTopBottomStretchCap();
 	/**
 	 \brief Sets horizontal or vertical sprite flip modificators.
 	 \param[in] modification eSpriteModification bit mask.
