@@ -2185,7 +2185,7 @@
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Platform\DPIHelperWin32.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
   </ItemGroup>
