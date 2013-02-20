@@ -57,6 +57,8 @@ private slots:
 	void ConvertWaitDone(QObject *destroyed);
 	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
 
+	void RepackSpritesWaitDone(QObject *destroyed);
+
 signals:
 	// Library File Types.
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
@@ -66,6 +68,7 @@ private:
 	QtPosSaver posSaver;
 
 	QProgressDialog *convertWaitDialog;
+	QProgressDialog *repackSpritesWaitDialog;
     
     //LibraryModel *libraryModel;
 	
