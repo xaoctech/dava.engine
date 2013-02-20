@@ -30,6 +30,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Base/ObjectFactory.h"
 #include "Debug/DVAssert.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -78,6 +79,20 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
     batch->SetRenderObject(0);
 	batch->Release();
+
+    FindAndRemoveExchangingWithLast(renderBatchArray, batch);
+    RecalcBoundingBox();
+}
+    
+void RenderObject::RecalcBoundingBox()
+{
+    bbox = AABBox3();
+    
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        bbox.AddAABBox(renderBatchArray[k]->GetBoundingBox());
+    }
 }
     
 uint32 RenderObject::GetRenderBatchCount()
