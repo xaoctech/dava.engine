@@ -31,6 +31,7 @@
 #include "Platform/SystemTimer.h"
 #include "Core/Core.h"
 #include "Utils/StringFormat.h"
+#include "Platform/Thread.h"
 
 namespace DAVA
 {
@@ -42,6 +43,8 @@ TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
     
 TimeMeasure::TimeMeasure(const FastName & blockName)
 {
+    if (!Thread::IsMainThread())return;
+    
     function = mainThread.functions.Value(blockName);
     if (!function)
     {
@@ -60,12 +63,20 @@ TimeMeasure::TimeMeasure(const FastName & blockName)
         parent->function->children.Insert(function, function);
         function->parent = parent->function;
     }
+    
+    if (activeTimeMeasure == 0)
+    {
+        mainThread.topFunctions.push_back(function);
+    }
+    
     function->timeStart = SystemTimer::Instance()->GetAbsoluteNano();
     activeTimeMeasure = this;
 }
 
 TimeMeasure::~TimeMeasure()
 {
+    if (!Thread::IsMainThread())return;
+
     uint32 frameCounter = Core::Instance()->GetGlobalFrameIndex();
     if (frameCounter == function->frameCounter)
     {
@@ -78,20 +89,36 @@ TimeMeasure::~TimeMeasure()
     activeTimeMeasure = parent;
 }
     
+void TimeMeasure::ClearFunctions()
+{
+    mainThread.topFunctions.clear();
+}
+    
 void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
 {
-    if (!function)
-        function = TimeMeasure::lastframeTopFunction;
     if (level == 0)
-        Logger::Debug("Stats for frame: %d", function->frameCounter);
-    Logger::Debug("%s %s %0.9llf seconds", GetIndentString('-', level + 1), function->name.c_str(), (double)function->timeSpent / 1e+9);
-    
-    for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
-         it != function->children.End(); ++it)
     {
-        FunctionMeasure * childFunction = it.Value();
-        Dump(childFunction, level + 1);
+        Logger::Debug("Stats for frame: %d", Core::Instance()->GetGlobalFrameIndex());
+    
+        for (List<FunctionMeasure*>::iterator it = mainThread.topFunctions.begin(); it != mainThread.topFunctions.end(); ++it)
+        {
+            FunctionMeasure * function = *it;
+            if (function->frameCounter == Core::Instance()->GetGlobalFrameIndex())
+                Dump(function, level + 1);
+        }
+    }else
+    {
+        Logger::Debug("%s %s %0.9llf seconds", GetIndentString('-', level + 1), function->name.c_str(), (double)function->timeSpent / 1e+9);
+        for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
+             it != function->children.End(); ++it)
+        {
+            FunctionMeasure * childFunction = it.Value();
+            if (childFunction->frameCounter == Core::Instance()->GetGlobalFrameIndex())
+                Dump(childFunction, level + 1);
+        }
     }
+    
+    
 }
 
     
@@ -117,7 +144,7 @@ void Stats::EnableStatsOutputEventNFrame(int32 _skipFrameCount)
 
 void Stats::BeginFrame()
 {
-    
+    TimeMeasure::ClearFunctions();
 }
     
 
