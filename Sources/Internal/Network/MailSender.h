@@ -1,26 +1,22 @@
 //
 //  MailSender.h
-//  Framework
+//  
 //
 //  Created by Denis Bespalov on 2/18/13.
 //
 //
 
-#ifndef Framework_MailSender_h
-#define Framework_MailSender_h
+#ifndef __DAVAENGINE_MAILSENDER_H__
+#define __DAVAENGINE_MAILSENDER_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
 
 namespace DAVA 
 {
-class MailSender : public Singleton <MailSender>
+class MailSender
 {
 public:
-	MailSender();
-	virtual ~MailSender();
-	// Main
-	bool SendEmail(const String& email, const String& subject, const String& messageText);
+	static bool SendEmail(const WideString& email, const WideString& subject, const WideString& messageText);
 };
 };
 
