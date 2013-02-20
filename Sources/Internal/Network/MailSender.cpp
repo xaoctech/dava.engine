@@ -7,11 +7,12 @@
 //
 
 #include "Network/MailSender.h"
+
+using namespace DAVA;
+
 #if defined(__DAVAENGINE_WIN32__)
 #include "Utils/StringFormat.h"
 #include <shellapi.h>
-
-using namespace DAVA;
 
 bool MailSender::SendEmail(const WideString& email, const WideString& subject, const WideString& messageText)
 {
@@ -28,6 +29,54 @@ bool MailSender::SendEmail(const WideString& email, const WideString& subject, c
 	// If the function succeeds, it returns a value greater than 32.
 	// If the function fails, it returns an error value that indicates the cause of the failure. 
 	return (result > 32);
+}
+
+#elif defined(__DAVAENGINE_ANDROID__)
+#include "JniExtensions.h"
+#include "Utils/Utils.h"
+
+class JniMailSender: public JniExtension
+{
+public:
+	JniMailSender();
+
+	bool SendEmail(const String& email, const String& subject, const String& messageText);
+
+public:
+	static JniMailSender* jniMailSender;
+};
+
+JniMailSender* JniMailSender::jniMailSender = NULL;
+
+JniMailSender::JniMailSender() :
+	JniExtension("com/dava/framework/JNISendMail")
+{
+
+}
+
+bool JniMailSender::SendEmail(const String& email, const String& subject, const String& messageText)
+{
+	jmethodID mid = GetMethodID("SendEMail", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	bool res = false;
+	if (mid)
+	{
+		jstring jEMail = GetEnvironment()->NewStringUTF(email.c_str());
+		jstring jSubject = GetEnvironment()->NewStringUTF(subject.c_str());
+		jstring jMessageText = GetEnvironment()->NewStringUTF(messageText.c_str());
+		res = GetEnvironment()->CallStaticBooleanMethod(javaClass, mid, jEMail, jSubject, jMessageText);
+		GetEnvironment()->DeleteLocalRef(jEMail);
+		GetEnvironment()->DeleteLocalRef(jSubject);
+		GetEnvironment()->DeleteLocalRef(jMessageText);
+	}
+	return res;
+}
+
+bool MailSender::SendEmail(const WideString& email, const WideString& subject, const WideString& messageText)
+{
+	if (!JniMailSender::jniMailSender)
+		JniMailSender::jniMailSender = new JniMailSender();
+
+	return JniMailSender::jniMailSender->SendEmail(WStringToString(email), WStringToString(subject), WStringToString(messageText));
 }
 
 #endif
