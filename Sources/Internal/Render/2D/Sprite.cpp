@@ -1363,7 +1363,7 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 }
 	
-float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType)
+float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
 {
 	return rectsAndOffsets[frame][valueType];
 }
