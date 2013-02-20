@@ -1,12 +1,13 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/SceneNode.h"
 #include "Particles/ParticleEmitter.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderObject.h"
 
 
 namespace DAVA
@@ -71,6 +72,17 @@ Camera * GetCamera(SceneNode * fromEntity)
     
     return NULL;
 }
+    
+LodComponent * GetLodComponent(SceneNode *fromEntity)
+{
+    if(fromEntity)
+    {
+        return static_cast<LodComponent*>(fromEntity->GetComponent(Component::LOD_COMPONENT));
+    }
+    
+    return NULL;
+}
+
 
 
 }
