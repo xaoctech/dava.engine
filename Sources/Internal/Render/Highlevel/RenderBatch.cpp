@@ -151,6 +151,14 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
 {
     return aabbox;
 }
+    
+    
+inline void RenderBatch::SetSortingKey(uint32 _key)
+{
+    sortingKey = _key;
+    if (ownerLayer)ownerLayer->ForceLayerSort();
+}
+
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
