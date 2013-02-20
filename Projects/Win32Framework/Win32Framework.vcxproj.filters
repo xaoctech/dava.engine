@@ -1245,6 +1245,10 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2179,6 +2183,10 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\DPIHelperWin32.cpp">
+      <Filter>Internal\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
