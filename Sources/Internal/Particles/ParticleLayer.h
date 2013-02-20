@@ -34,9 +34,11 @@
 #include "Base/RefPtr.h"
 #include "Base/DynamicObjectCache.h"
 #include "Render/2D/Sprite.h"
+#include "Render/Highlevel/ParticleLayerBatch.h"
 
 #include "FileSystem/YamlParser.h"
 #include "Particles/Particle.h"
+#include "Particles/ParticleForce.h"
 #include "Particles/ParticlePropertyLine.h"
 
 namespace DAVA
@@ -94,7 +96,7 @@ public:
 	/**
 		\brief This function draws layer properties and layer particles. 
 	 */
-	virtual void Draw();
+	virtual void Draw(Camera * camera);
 	
 	/** 
 		\brief Function to set emitter for layer. 
@@ -119,6 +121,12 @@ public:
 	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
 
 	/**
+     \brief Function to save layer to yaml node.
+     Normally this function is called from ParticleEmitter.
+	 */
+    void SaveToYamlNode(YamlNode* parentNode, int32 layerIndex);
+
+	/**
 		\brief Get head(first) particle of the layer.
 		Can be used to iterate through the particles'.
 	 */
@@ -127,6 +135,27 @@ public:
     float32 GetLayerTime();
 
 	const String & GetRelativeSpriteName();
+
+    // Whether this layer is Long Layer?
+    virtual bool IsLong() {return false;};
+    
+	RenderBatch * GetRenderBatch();
+
+	// Reload the layer sprite, update the Frames timeline if needed.
+	void ReloadSprite();
+	
+	virtual void SetAdditive(bool additive);
+	bool GetAdditive() const {return additive;};
+
+
+	// Logic to work with Particle Forces.
+	void AddParticleForce(ParticleForce* particleForce);
+	void RemoveParticleForce(ParticleForce* particleForce);
+	void RemoveParticleForce(int32 particleForceIndex);
+
+	void UpdateParticleForce(int32 particleForceIndex, RefPtr< PropertyLine<Vector3> > force,
+							 RefPtr< PropertyLine<Vector3> > forceVariation,
+							 RefPtr< PropertyLine<float32> > forceOverLife);
 
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
@@ -141,6 +170,12 @@ protected:
 	void RunParticle(Particle * particle);
 	void ProcessParticle(Particle * particle);
 	
+    void SaveForcesToYamlNode(YamlNode* layerNode);
+
+	void UpdateFrameTimeline();
+	
+	void CleanupParticleForces();
+
 	// list of particles
 	Particle *	head;
 	int32		count;
@@ -157,7 +192,12 @@ protected:
 	Sprite 			* sprite;
 	String			relativeSpriteName;
 
-public:		
+	ParticleLayerBatch * renderBatch;
+
+	bool		additive;
+	
+public:
+	String			layerName;
 	Vector2			pivotPoint;
 	/*
 	 Properties of particle layer that describe particle system logic
@@ -166,7 +206,7 @@ public:
 	RefPtr< PropertyLine<float32> > lifeVariation;		// variation part of life that added to particle life during generation of the particle
 	
 	RefPtr< PropertyLine<float32> > number;				// number of particles per second
-	RefPtr< PropertyLine<float32> > numberVariation;		// variation part of number that added to particle count during generation of the particle
+	RefPtr< PropertyLine<float32> > numberVariation;	// variation part of number that added to particle count during generation of the particle
 	
 	RefPtr< PropertyLine<Vector2> > size;				// size of particles in pixels 
 	RefPtr< PropertyLine<Vector2> > sizeVariation;		// size variation in pixels
@@ -176,9 +216,7 @@ public:
 	RefPtr< PropertyLine<float32> > velocityVariation;	
 	RefPtr< PropertyLine<float32> > velocityOverLife;
 	
-	Vector< RefPtr< PropertyLine<Vector3> > > forces;				// weight property from 
-	Vector< RefPtr< PropertyLine<Vector3> > > forcesVariation;
-	Vector< RefPtr< PropertyLine<float32> > > forcesOverLife;
+	Vector<ParticleForce*> particleForces;
 	
 	RefPtr< PropertyLine<float32> > spin;				// spin of angle / second
 	RefPtr< PropertyLine<float32> > spinVariation;
@@ -195,17 +233,80 @@ public:
 	RefPtr< PropertyLine<Color> > colorRandom;		
 	RefPtr< PropertyLine<float32> > alphaOverLife;	
 	RefPtr< PropertyLine<Color> > colorOverLife;	
-	RefPtr< PropertyLine<float32> > frameOverLife;				// in frame index
+
+	RefPtr< PropertyLine<float32> > angle;				// sprite angle in degrees
+	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
 
 	float32		alignToMotion;
-	bool		additive;
 	float32		startTime;
 	float32		endTime;
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;
 
+	bool		frameOverLifeEnabled;
+	float32		frameOverLifeFPS;
+
     bool isDisabled;
+    
+public:
+    
+    INTROSPECTION_EXTEND(ParticleLayer, BaseObject,
+                         NULL
+//        MEMBER(particlesToGenerate, "Particles To Generate", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(layerTime, "Layer Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(relativeSpriteName, "Relative Sprite Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        MEMBER(renderBatch, "Render Batch", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(pivotPoint, "Pivot Point", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(life, "Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(lifeVariation, "Life Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
+//        MEMBER(number, "Number", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(numberVariation, "Number Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(size, "Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(sizeVariation, "Size Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(sizeOverLife, "Size Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//                         
+//        MEMBER(velocity, "Velocity", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(velocityVariation, "Velocity Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(velocityOverLife, "Velocity Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(forces, "Forces", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(forcesVariation, "Forces Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(forcesOverLife, "Forces Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(spin, "Spin", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(spinVariation, "Spin Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(spinOverLife, "Spin Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//
+//        MEMBER(motionRandom, "Motion Random", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(motionRandomVariation, "Motion Random Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(motionRandomOverLife, "Motion Random Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(bounce, "Bounce", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(bounceVariation, "Bounce Variation", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(bounceOverLife, "Bounce Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(colorRandom, "Color Random", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(alphaOverLife, "Alpha Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(colorOverLife, "Color Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameOverLife, "Frame Over Life", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(alignToMotion, "Align To Motion", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(additive, "Additive", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(startTime, "Start Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(endTime, "End Time", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameStart, "Frame Start", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(frameEnd, "Frame End", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//      MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//                         
+//        MEMBER(isDisabled, "Is Disabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    );
 };
 
 inline int32 ParticleLayer::GetParticleCount()

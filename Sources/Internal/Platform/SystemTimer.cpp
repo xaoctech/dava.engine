@@ -92,6 +92,9 @@ uint64 SystemTimer::GetTickCount()
 
 SystemTimer::SystemTimer()
 {
+    globalTime = 0.0f;
+    pauseMultiplier = 1.0f;
+
 #if defined(__DAVAENGINE_WIN32__)
 	bHighTimerSupport = QueryPerformanceFrequency(&liFrequency);
 	if (bHighTimerSupport)

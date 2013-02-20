@@ -1,0 +1,207 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA Consulting, LLC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA Consulting, LLC nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#include "Render/Material/MaterialGraph.h"
+#include "Render/Material/MaterialGraphNode.h"
+#include "FileSystem/FileSystem.h"
+
+namespace DAVA
+{
+
+    
+// MaterialGraph
+MaterialGraph::MaterialGraph()
+:   usedTextureCoordsCount(0)
+,   usedTextures(0)
+{
+    
+}
+
+MaterialGraph::~MaterialGraph()
+{
+    RemoveAllNodes();
+}
+
+void MaterialGraph::RemoveAllNodes()
+{
+    uint32 size = allNodes.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        SafeRelease(allNodes[k]);
+    }
+    allNodes.clear();
+}
+    
+void MaterialGraph::AddNode(MaterialGraphNode * node)
+{
+    allNodes.push_back(SafeRetain(node));
+}
+    
+void MaterialGraph::RemoveNode(MaterialGraphNode * node)
+{
+    allNodes.erase(std::remove(allNodes.begin(), allNodes.end(), node));
+    SafeRelease(node);
+}
+    
+void MaterialGraph::RemoveNodeRecursive(MaterialGraphNode * node)
+{
+//    Map<String, MaterialGraphNodeConnector*> & inputConnectors = node->GetInputConnectors();
+//    for (Map<String, MaterialGraphNodeConnector*>::iterator it = inputConnectors.begin(); it != inputConnectors.end(); ++it)
+//    {
+//        MaterialGraphNodeConnector * connector = it->second;
+//        MaterialGraphNode * connectedNode = connector->node;
+//        RemoveNodeRecursive(connectedNode);
+//    }
+    
+    RemoveNode(node);
+}
+
+bool MaterialGraph::LoadFromFile(const String & pathname)
+{
+    
+    YamlParser * materialFileParser = YamlParser::Create(pathname);
+    if (!materialFileParser)return false;
+    
+    FileSystem::Instance()->SplitPath(pathname, materialPath, materialFilename);
+        
+    
+    YamlNode * rootNode = materialFileParser->GetRootNode();
+    YamlNode * materialNode = rootNode->Get("material");
+    
+    YamlNode * vertexShaderFileNode = materialNode->Get("vertexShader");
+    vertexShaderFilename = vertexShaderFileNode->AsString();
+    
+    YamlNode * pixelShaderFileNode = materialNode->Get("pixelShader");
+    pixelShaderFilename = pixelShaderFileNode->AsString();
+    
+    YamlNode * nodes = rootNode->Get("nodes");
+    if (nodes && nodes->GetType() == YamlNode::TYPE_ARRAY)
+    {
+        for (int32 k = 0; k < nodes->GetCount(); ++k)
+        {
+            YamlNode * graphNode = nodes->Get(k);
+            bool result = LoadNode(graphNode);
+            if (!result)break;
+        }
+    }
+    
+    SafeRelease(materialFileParser);
+    return true;
+}
+
+bool MaterialGraph::LoadNode(YamlNode * graphNode)
+{
+
+    MaterialGraphNode * node = new MaterialGraphNode(this);
+    node->InitFromYamlNode(graphNode);
+    AddNode(node);
+    
+    usedTextureCoordsCount = Max(usedTextureCoordsCount, node->GetTextureInputIndex() + 1);
+    
+    if (node->GetType() == MaterialGraphNode::TYPE_SAMPLE_2D)
+        usedTextures++;
+    
+    //YamlNode *
+    YamlNode * nameNode = graphNode->Get("name");
+    YamlNode * typeNode = graphNode->Get("node");
+    Logger::Debug("- Read Node %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
+
+    // Parse inputs
+    std::multimap<String, YamlNode*> & map = graphNode->AsMap();
+    std::pair<std::multimap<String, YamlNode*>::iterator, std::multimap<String, YamlNode*>::iterator> inputs = map.equal_range("input");
+    
+    uint32 count = 0;
+    for (std::multimap<String, YamlNode*>::iterator it = inputs.first; it != inputs.second; ++it)
+    {
+        YamlNode * inputNode = it->second;
+        const String & inputName = inputNode->Get(0)->AsString();
+        const String & nodeName = inputNode->Get(1)->AsString();
+        const String & connectionModifier = inputNode->Get(2)->AsString();
+        
+        MaterialGraphNode * connectNode = GetNodeByName(nodeName);
+        if (connectNode)
+        {
+            Logger::Debug("- Read Input: %s connected:%s filter:%s",
+                          inputNode->Get(0)->AsString().c_str(),
+                          inputNode->Get(1)->AsString().c_str(),
+                          inputNode->Get(2)->AsString().c_str());
+
+            node->ConnectToNode(inputName, connectNode, connectionModifier);
+            count++;
+        }
+    }
+    SafeRelease(node);
+    return true;
+}
+    
+    
+uint32 MaterialGraph::GetNodeCount() const
+{
+    return (uint32)allNodes.size();
+}
+MaterialGraphNode * MaterialGraph::GetNode(uint32 index) const
+{
+    return allNodes[index];
+}
+MaterialGraphNode * MaterialGraph::GetNodeByName(const String & name) const
+{
+    uint32 size = allNodes.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        if (allNodes[k]->GetName() == name)return allNodes[k];
+    }
+    return 0;
+}
+
+bool MaterialGraph::SortByDepthMarkerDescending(MaterialGraphNode * node1, MaterialGraphNode * node2)
+{
+    return (node1->GetDepthMarker() > node2->GetDepthMarker());
+}
+
+void MaterialGraph::SortByDepthMarkerAndRemoveUnused()
+{
+    for (Vector<MaterialGraphNode*>::iterator it = allNodes.begin(); it != allNodes.end();)
+    {
+        MaterialGraphNode * node = *it;
+        if (node->GetDepthMarker() == -1)
+        {
+            Logger::Debug("- remove empty node: %s", node->GetName().c_str());
+            RemoveNodeRecursive(node);
+            it = allNodes.begin();
+            continue;
+        }
+        ++it;
+    }
+    
+    std::sort(allNodes.begin(), allNodes.end(), SortByDepthMarkerDescending);
+}
+
+
+};
+

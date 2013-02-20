@@ -59,7 +59,7 @@ void ResultScreen::Input(UIEvent * event)
                 Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
                 String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
                 saveFileName += filename + ".png";
-                image->Save(saveFileName);
+                ImageLoader::Save(image, saveFileName);
                 state = RESULT_STATE_FINISHED;
             }
 		}

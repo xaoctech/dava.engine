@@ -100,7 +100,7 @@ void Core::CreateSingletons()
     
 	new FileSystem();
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
-        FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+    FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 
 	
 	new Logger();
@@ -170,7 +170,6 @@ void Core::ReleaseSingletons()
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
-
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Release();
 #endif
@@ -627,6 +626,7 @@ void Core::SystemProcessFrame()
 		}
 
 		float32 frameDelta = SystemTimer::Instance()->FrameDelta();
+        SystemTimer::Instance()->UpdateGlobalTime(frameDelta);
 
 		if(Replay::IsRecord())
 		{

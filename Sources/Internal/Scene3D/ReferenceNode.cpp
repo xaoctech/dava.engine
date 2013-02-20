@@ -77,8 +77,6 @@ void ReferenceNode::Update(float32 timeElapsed)
 			nodeToAdd = node->Clone();
 		}
 	}
-
-	SceneNode::Update(timeElapsed);
 }
 
 SceneNode* ReferenceNode::Clone(SceneNode *dstNode /*= NULL*/)

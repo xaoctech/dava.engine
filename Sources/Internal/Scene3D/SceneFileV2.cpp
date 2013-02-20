@@ -36,12 +36,36 @@
 #include "Scene3D/PathManip.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/BoneNode.h"
-#include "Scene3D/Camera.h"
+#include "Scene3D/SwitchNode.h"
+#include "Render/Highlevel/Camera.h"
+#include "Render/Highlevel/Mesh.h"
+
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/ReferenceNode.h"
+#include "Scene3D/LodNode.h"
+#include "Scene3D/Systems/TransformSystem.h"
+#include "Scene3D/Components/LodComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/ParticleEmitterNode.h"
+#include "Scene3D/ParticleEffectNode.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/ShadowVolumeNode.h"
+
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
+#include "Base/TemplateHelpers.h"
+#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/ShadowVolume.h"
+
+#include "Scene3D/SpriteNode.h"
+#include "Render/Highlevel/SpriteObject.h"
+
 
 namespace DAVA
 {
@@ -172,7 +196,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 5;
+    header.version = 6;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -271,11 +295,14 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         
     SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
+	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
-        LoadHierarchy(_scene, rootNode, file, 1);
+        LoadHierarchy(0, rootNode, file, 1);
     }
-
+    
+    OptimizeScene(rootNode);
+    
 	rootNode->SceneDidLoaded();
     
     if (GetError() == ERROR_NO_ERROR)
@@ -493,10 +520,75 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     //SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
     
     String name = archive->GetString("##name");
-    SceneNode * node = dynamic_cast<SceneNode*>(ObjectFactory::Instance()->New(name));
+    BaseObject * baseObject = 0;
+    SceneNode * node = 0;
+    
+    bool skipNode = false;
+    bool removeChildren = false;
+    
+    
+    
+    if (name == "LandscapeNode")
+    {
+        node = new SceneNode();
+        baseObject = node;
+
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        LandscapeNode * landscapeRenderObject = new LandscapeNode();
+        landscapeRenderObject->Load(archive, this);
+        
+        node->AddComponent(new RenderComponent(landscapeRenderObject));
+
+        parent->AddNode(node);
+        
+        SafeRelease(landscapeRenderObject);
+        // Elegant fix became part of architecture....
+        skipNode = true;
+    }else if (name == "Camera")
+    {
+        node = new SceneNode();
+        baseObject = node;
+        
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        Camera * cameraObject = new Camera();
+        cameraObject->Load(archive);
+        
+        node->AddComponent(new CameraComponent(cameraObject));
+        parent->AddNode(node);
+        
+        SafeRelease(cameraObject);
+        skipNode = true;
+    }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
+    {
+        node = new SceneNode();
+        baseObject = node;
+        
+        node->SetScene(scene);
+        node->Load(archive, this);
+        
+        bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+        
+        Light * light = new Light();
+        light->Load(archive, this);
+        light->SetDynamic(isDynamic);
+        
+        node->AddComponent(new LightComponent(light));
+        parent->AddNode(node);
+        
+        SafeRelease(light);
+        skipNode = true;
+        removeChildren = true;
+    }else
+    {
+        baseObject = ObjectFactory::Instance()->New(name);
+        node = dynamic_cast<SceneNode*>(baseObject);
+    }
 
 	//TODO: refactor this elegant fix
-	bool skipNode = false;
 	if(!node) //in case if editor class is loading in non-editor sprsoject
 	{
 		node = new SceneNode();
@@ -515,6 +607,9 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			node->SetScene(scene);
 			node->Load(archive, this);
+            
+            //ReplaceNodeAfterLoad(&node);
+            
 			parent->AddNode(node);
 		}
         
@@ -524,10 +619,384 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 		{
 			LoadHierarchy(scene, node, file, level + 1);
 		}
+        if (removeChildren)
+            node->RemoveAllChildren();
+
         SafeRelease(node);
     }
     
     SafeRelease(archive);
 }
     
+bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
+{
+    for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+    {
+        SceneNode * childNode = currentNode->GetChild(c);
+        bool dec = RemoveEmptySceneNodes(childNode);
+        if(dec)c--;
+    }
+    if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(SceneNode)))
+    {
+        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+        bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
+        
+        uint32 componentCount = currentNode->GetComponentCount();
+        if (componentCount != 0)
+        {
+            doNotRemove = true;
+        }
+        
+        if (!doNotRemove)
+        {
+            SceneNode * parent  = currentNode->GetParent();
+            if (parent)
+            {
+                parent->RemoveNode(currentNode);
+                removedNodeCount++;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+    
+bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
+{
+    for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+    {
+        SceneNode * childNode = currentNode->GetChild(c);
+        bool dec = RemoveEmptyHierarchy(childNode);
+        if(dec)c--;
+    }
+    
+//    if (currentNode->GetName() == "back_plain02.sc2")
+//    {
+//        int32 k = 0;
+//        k++;
+//        Logger::Debug("found node: %s %p", currentNode->GetName().c_str(), currentNode);
+//    }
+
+    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
+    {
+        if (currentNode->GetComponentCount() == 1)
+        {
+            bool isTransfrom = currentNode->GetComponent(Component::TRANSFORM_COMPONENT) != 0;
+            if (!isTransfrom)
+                return false;
+        }
+        else if (currentNode->GetComponentCount() >= 2)
+            return false;
+        
+        if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+        {
+            SceneNode * parent  = currentNode->GetParent();
+            if (parent)
+            {
+                SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
+                String currentName = currentNode->GetName();
+				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
+                
+                //Logger::Debug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
+				parent->InsertBeforeNode(childNode, currentNode);
+                parent->RemoveNode(currentNode);
+                
+                childNode->SetName(currentName);
+				//merge custom properties
+				KeyedArchive * newProperties = childNode->GetCustomProperties();
+				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+				{
+					newProperties->SetVariant(it->first, *it->second);
+				}
+                removedNodeCount++;
+                SafeRelease(childNode);
+				SafeRelease(currentProperties);
+                return true;
+            }
+            //RemoveEmptyHierarchy(childNode);
+        }
+    }
+    return false;
+}
+
+    
+bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
+{
+    MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(node);
+    if (oldMeshInstanceNode)
+    {
+        Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+
+        for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
+        {
+            PolygonGroupWithMaterial * group = polygroups[k];
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+                {
+                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+        }
+        SceneNode * newMeshInstanceNode = new SceneNode();
+        oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
+        newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode));
+        
+        //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
+        
+        Mesh * mesh = new Mesh();
+        
+        for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
+        {
+            PolygonGroupWithMaterial * group = polygroups[k];
+            mesh->AddPolygonGroup(group->GetPolygonGroup(), group->GetMaterial());
+            
+            
+            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            {
+//                if (oldMeshInstanceNode->GetLightmapCount() == 0)
+//                {
+//                    Logger::Debug(Format("%s - lightmaps:%d", oldMeshInstanceNode->GetFullName().c_str(), 0));
+//                }
+                
+                //DVASSERT(oldMeshInstanceNode->GetLightmapCount() > 0);
+                //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
+            }
+            
+            if (oldMeshInstanceNode->GetLightmapCount() > 0)
+            {
+                RenderBatch * batch = mesh->GetRenderBatch(k);
+                batch->GetMaterialInstance()->SetLightmap(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap,
+                                                          oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmapName);
+                batch->GetMaterialInstance()->SetUVOffsetScale(oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvOffset,
+                                                               oldMeshInstanceNode->GetLightmapDataForIndex(k)->uvScale);
+            }
+        }
+        
+        mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
+        
+        //
+        SceneNode * parent = oldMeshInstanceNode->GetParent();
+        for (int32 k = 0; k < parent->GetChildrenCount(); ++k)
+        {
+            ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
+            if (oldShadowVolumeNode)
+            {
+                ShadowVolume * newShadowVolume = new ShadowVolume();
+                newShadowVolume->SetPolygonGroup(oldShadowVolumeNode->GetPolygonGroup());
+                mesh->AddRenderBatch(newShadowVolume);
+                
+                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                
+                parent->RemoveNode(oldShadowVolumeNode);
+            }
+        }
+        
+        
+        
+        
+        RenderComponent * renderComponent = new RenderComponent;
+        renderComponent->SetRenderObject(mesh);
+        newMeshInstanceNode->AddComponent(renderComponent);
+        
+		if(parent)
+		{
+			parent->InsertBeforeNode(newMeshInstanceNode, oldMeshInstanceNode);
+			parent->RemoveNode(oldMeshInstanceNode);
+		}
+		else
+		{
+			DVASSERT(0 && "How we appeared here");
+		}
+		newMeshInstanceNode->Release();
+		mesh->Release();
+        return true;
+    }
+
+	LodNode * lod = dynamic_cast<LodNode*>(node);
+	if(lod)
+	{
+		SceneNode * newNode = new SceneNode();
+		lod->SceneNode::Clone(newNode);
+		SceneNode * parent = lod->GetParent();
+
+		newNode->AddComponent(new LodComponent());
+		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
+
+		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
+		{
+			lc->lodLayersArray[iLayer].distance = lod->GetLodLayerDistance(iLayer);
+			lc->lodLayersArray[iLayer].nearDistance = lod->GetLodLayerNear(iLayer);
+			lc->lodLayersArray[iLayer].nearDistanceSq = lod->GetLodLayerNearSquare(iLayer);
+			lc->lodLayersArray[iLayer].farDistance = lod->GetLodLayerFar(iLayer);
+			lc->lodLayersArray[iLayer].farDistanceSq = lod->GetLodLayerFarSquare(iLayer);
+		}
+
+		List<LodNode::LodData*> oldLodData;
+		lod->GetLodData(oldLodData);
+		for(List<LodNode::LodData*>::iterator it = oldLodData.begin(); it != oldLodData.end(); ++it)
+		{
+			LodNode::LodData * oldDataItem = *it;
+			LodComponent::LodData newLodDataItem;
+			newLodDataItem.indexes = oldDataItem->indexes;
+			newLodDataItem.isDummy = oldDataItem->isDummy;
+			newLodDataItem.layer = oldDataItem->layer;
+			newLodDataItem.nodes = oldDataItem->nodes;
+
+			lc->lodLayers.push_back(newLodDataItem);
+		}
+
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, lod);
+			parent->RemoveNode(lod);
+		}
+
+		//GlobalEventSystem::Instance()->Event(newNode, )
+		//newNode->GetScene()->transformSystem->ImmediateEvent(newNode, EventSystem::LOCAL_TRANSFORM_CHANGED);
+		newNode->Release();
+		return true;
+	}
+
+	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
+	if(particleEmitterNode)
+	{
+		SceneNode * newNode = new SceneNode();
+		particleEmitterNode->SceneNode::Clone(newNode);
+		SceneNode * parent = particleEmitterNode->GetParent();
+
+		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
+		RenderComponent * renderComponent = new RenderComponent();
+		newNode->AddComponent(renderComponent);
+		renderComponent->SetRenderObject(emitter);
+		
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, particleEmitterNode);
+			parent->RemoveNode(particleEmitterNode);
+		}
+
+		newNode->Release();
+		return true;
+	}
+
+	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(node);
+	if(particleEffectNode)
+	{
+		SceneNode * newNode = new SceneNode();
+		particleEffectNode->SceneNode::Clone(newNode);
+		SceneNode * parent = particleEffectNode->GetParent();
+
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, particleEffectNode);
+			parent->RemoveNode(particleEffectNode);
+		}
+
+		ParticleEffectComponent * effectComponent = new ParticleEffectComponent();
+		newNode->AddComponent(effectComponent);
+		newNode->Release();
+		return true;
+	}
+
+	SwitchNode * sw = dynamic_cast<SwitchNode*>(node);
+	if(sw)
+	{
+		SceneNode * newNode = new SceneNode();
+		sw->SceneNode::Clone(newNode);
+
+		SwitchComponent * swConponent = new SwitchComponent();
+		newNode->AddComponent(swConponent);
+		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
+
+		SceneNode * parent = sw->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, sw);
+			parent->RemoveNode(sw);
+		}
+
+		newNode->Release();
+		return true;
+	}
+
+	SpriteNode * spr = dynamic_cast<SpriteNode*>(node);
+	if(spr)
+	{
+		SceneNode * newNode = new SceneNode();
+		spr->Clone(newNode);
+
+		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
+		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
+
+		newNode->AddComponent(new RenderComponent(spriteObject));
+
+		SceneNode * parent = spr->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, spr);
+			parent->RemoveNode(spr);
+		}
+
+		spriteObject->Release();
+		newNode->Release();
+		return true;
+	}
+
+
+	return false;
+} 
+    
+
+
+void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
+{
+	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
+	{
+		SceneNode * childNode = currentNode->GetChild(c);
+		ReplaceOldNodes(childNode);
+        /**
+            Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
+            was deep in hierarchy first.
+         */
+		bool wasReplace = ReplaceNodeAfterLoad(childNode);
+		if(wasReplace)
+		{
+			c--;
+		}
+	}
+}
+
+    
+void SceneFileV2::OptimizeScene(SceneNode * rootNode)
+{
+    int32 beforeCount = rootNode->GetChildrenCountRecursive();
+    removedNodeCount = 0;
+    rootNode->BakeTransforms();
+    
+    //MERGE: commented
+    RemoveEmptySceneNodes(rootNode);
+    RemoveEmptyHierarchy(rootNode);
+	ReplaceOldNodes(rootNode);
+    
+//    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
+//    {
+//        SceneNode * node = rootNode->GetChild(k);
+//        if (node->GetName() == "instance_0")
+//            node->SetName(rootNodeName);
+//    }
+    int32 nowCount = rootNode->GetChildrenCountRecursive();
+    Logger::Debug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+}
+ 
 };

@@ -53,7 +53,8 @@ public:
 	void DrawGrid();
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
-	LandscapeNode * GetLandScape(SceneNode *node);
+	static LandscapeNode * GetLandscape(SceneNode *node);
+	static SceneNode* GetLandscapeNode(SceneNode *node);
     
     void SetDrawGrid(bool newDrawGrid);
 	
@@ -81,11 +82,10 @@ protected:
 	SceneNode * selection;
 	SceneNode * proxy;
     
-    MeshInstanceNode *selectedMeshInstance;
+    SceneNode *selectedEntity;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
-	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
     

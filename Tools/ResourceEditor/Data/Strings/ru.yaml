@@ -131,6 +131,8 @@ property.scenenode.retaincount: "Retain Count:"
 property.scenenode.classname: "Class Name:"
 property.scenenode.c++classname: "C++ Class Name:"
 property.scenenode.scenenode: "Scene Node"
+property.scenenode.ptr: "Ptr to class:"
+
 property.scenenode.name: "Название:"
 property.scenenode.matrixes: "Матрицы"
 property.scenenode.localmatrix: "Local Matrix:"

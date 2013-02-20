@@ -94,3 +94,8 @@ void LibraryView::FileSelectionChanged(const QItemSelection & selected, const QI
 
 	SceneDataManager::Instance()->SceneShowPreview(previewPath);
 }
+
+void LibraryView::LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files)
+{
+	libModel->SetFileNameFilters(showDAEFiles, showSC2Files);
+}

@@ -115,62 +115,63 @@ void RenderManager::Release()
 
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
-    
-    
-bool IsGLExtensionSupported(const char * const extension)
+
+bool IsGLExtensionSupported(const String &extension)
 {
-    // The recommended technique for querying OpenGL extensions;
-    // from http://opengl.org/resources/features/OGLextensions/
-    const GLubyte *extensions = NULL;
-    const GLubyte *start;
-    GLubyte *where, *terminator;
-    
-    /* Extension names should not have spaces. */
-    where = (GLubyte *) strchr(extension, ' ');
-    if (where || *extension == '\0')
-        return 0;
-    
-    extensions = glGetString(GL_EXTENSIONS);
-    //    Logger::Warning("[EXT] %s", extensions);
-    
-    /* It takes a bit of care to be fool-proof about parsing the
-     OpenGL extensions string. Don't be fooled by sub-strings, etc. */
-    start = extensions;
-    for (;;) {
-        where = (GLubyte *) strstr((const char *) start, extension);
-        if (!where)
-            break;
-        terminator = where + strlen(extension);
-        if (where == start || *(where - 1) == ' ')
-            if (*terminator == ' ' || *terminator == '\0')
-                return true;
-        start = terminator;
+    String::size_type spacePosition = extension.find(" ");
+    if(String::npos != spacePosition || extension.empty())
+    {
+        /* Extension names should not have spaces. */
+        Logger::Info("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
+        return false;
     }
     
-    return false;
+    String extensions((const char8 *)glGetString(GL_EXTENSIONS));
+    String::size_type extPosition = extensions.find(extension);
+    return (String::npos != extPosition);
 }
+
     
 void RenderManager::DetectRenderingCapabilities()
 {
 #if defined(__DAVAENGINE_MACOS__)
 	caps.isHardwareCursorSupported = true;
-#elif defined (__DAVAENGINE_IPHONE__)
+#elif defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	caps.isHardwareCursorSupported = false;
 #endif
 
 #if defined(__DAVAENGINE_IPHONE__)
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
     caps.isETCSupported = false;
+	caps.isDXTSupported = false;
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
-#else
+#elif defined(__DAVAENGINE_ANDROID__)
+    //TODO: added correct
+    caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
+    caps.isETCSupported = false;
+	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
+    caps.isBGRA8888Supported = false;
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+#elif defined(__DAVAENGINE_MACOS__)
+    caps.isPVRTCSupported = false;
+	caps.isDXTSupported = false;
+    caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
+    caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
+#elif defined(__DAVAENGINE_WIN32__)
     caps.isPVRTCSupported = false;
     caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
+	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
 #endif
+
+//	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
 }
 
 bool RenderManager::IsDeviceLost()
@@ -647,7 +648,7 @@ void RenderManager::SetColorPointer(int size, eVertexDataType _typeIndex, int st
 
 void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 {
-	const int32 types[PRIMITIVETYPE_COUNT] = 
+	static const int32 types[PRIMITIVETYPE_COUNT] = 
 	{
 		GL_POINTS,			// 		PRIMITIVETYPE_POINTLIST = 0,
 		GL_LINES,			// 		PRIMITIVETYPE_LINELIST,
@@ -691,7 +692,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
     
 void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-	const int32 types[PRIMITIVETYPE_COUNT] = 
+	static const int32 types[PRIMITIVETYPE_COUNT] = 
 	{
 		GL_POINTS,			// 		PRIMITIVETYPE_POINTLIST = 0,
 		GL_LINES,			// 		PRIMITIVETYPE_LINELIST,
@@ -713,7 +714,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 #endif //not defined(GL_UNSIGNED_INT)
 #endif // __DAVAENGINE_IPHONE__
 
-	const int32 indexTypes[2] = 
+	static const int32 indexTypes[2] = 
 	{
 		GL_UNSIGNED_SHORT, 
 		GL_UNSIGNED_INT,

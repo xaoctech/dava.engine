@@ -46,6 +46,9 @@ ParticleLayer::ParticleLayer()
 	, emitter(0)
 	, sprite(0)
 {
+	renderBatch = new ParticleLayerBatch();
+	renderBatch->SetParticleLayer(this);
+
 	life = 0;
 	lifeVariation = 0;
 
@@ -79,19 +82,30 @@ ParticleLayer::ParticleLayer()
 	particlesToGenerate = 0.0f;
 	alignToMotion = 0.0f;
 	
+	angle = 0;
+	angleVariation = 0;
+
 	layerTime = 0.0f;
 	additive = true;
 	type = TYPE_PARTICLES;
     
     endTime = 100000000.0f;
-    
+
+	frameStart = 0;
+	frameEnd = 0;
+
+	frameOverLifeEnabled = false;
+	frameOverLifeFPS = 0;
+
     isDisabled = false;
 }
 
 ParticleLayer::~ParticleLayer()
 {
+	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	head = 0;
+	CleanupParticleForces();
 	// dynamic cache automatically delete all particles
 }
 
@@ -101,6 +115,7 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	{
 		dstLayer = new ParticleLayer();
 	}
+
 	if (life)
 		dstLayer->life.Set(life->Clone());
 	
@@ -130,30 +145,14 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	if (velocityOverLife)
 		dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
-	
-	for (int32 f = 0; f < (int32)forces.size(); ++f)
-	{
-		// TODO: normal fix for the calls
-		RefPtr< PropertyLine<Vector3> > forceClone;
-		if (forces[f])
-			forceClone.Set(forces[f]->Clone());
-		dstLayer->forces.push_back(forceClone);
 
-		RefPtr< PropertyLine<float32> > forceOverLifeClone;
-		if (forcesOverLife[f])
-			forceOverLifeClone.Set(forcesOverLife[f]->Clone());
-		dstLayer->forcesOverLife.push_back(forceOverLifeClone);
+	// Copy the forces.
+	for (int32 f = 0; f < (int32)particleForces.size(); ++ f)
+	{
+		ParticleForce* clonedForce = new ParticleForce(this->particleForces[f]);
+		dstLayer->AddParticleForce(clonedForce);
 	}
-	
-    for(int32 f = 0; f < (int32)forcesVariation.size(); ++f)
-    {
-        
-		RefPtr< PropertyLine<Vector3> > forceVariationClone;
-		if (forcesVariation[f])
-			forceVariationClone.Set(forcesVariation[f]->Clone());
-		dstLayer->forcesVariation.push_back(forceVariationClone);        
-    }
-    
+
 	if (spin)
 		dstLayer->spin.Set(spin->Clone());
 	
@@ -190,9 +189,13 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	if (alphaOverLife)
 		dstLayer->alphaOverLife.Set(alphaOverLife->Clone());
 	
-	if (frameOverLife)
-		dstLayer->frameOverLife.Set(frameOverLife->Clone());
+	if (angle)
+		dstLayer->angle.Set(angle->Clone());
 	
+	if (angleVariation)
+		dstLayer->angleVariation.Set(angleVariation->Clone());
+	
+	dstLayer->layerName = layerName;
 	dstLayer->alignToMotion = alignToMotion;
 	dstLayer->additive = additive;
 	dstLayer->startTime = startTime;
@@ -203,7 +206,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 	
 	dstLayer->frameStart = frameStart;
 	dstLayer->frameEnd = frameEnd;
-	
+
+	dstLayer->frameOverLifeEnabled = frameOverLifeEnabled;
+	dstLayer->frameOverLifeFPS = frameOverLifeFPS;
+
     dstLayer->isDisabled = isDisabled;
     
 	return dstLayer;
@@ -220,6 +226,8 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
     DeleteAllParticles();
 	SafeRelease(sprite);
 	sprite = SafeRetain(_sprite);
+	UpdateFrameTimeline();
+
 	if(sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
@@ -291,6 +299,13 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
+	if (this->isDisabled)
+	{
+		// Yuri Coder, 2013/02/15. Temporary code - the last particle layer frame
+		// is freezed in this case. Return to this code later.
+		return;
+	}
+
 	// increment timer	
 	layerTime += timeElapsed;
 
@@ -403,11 +418,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	}
 	
 	Particle * particle = ParticleSystem::Instance()->NewParticle();
-	
-    particle->forcesDirections.clear();
-	particle->forcesValues.clear();
-    particle->forcesOverLife.clear();
-    
+	particle->CleanupForces();
+
 	particle->next = 0;
 	particle->sprite = sprite;
 	particle->life = 0.0f;
@@ -454,7 +466,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	//particle->position = emitter->GetPosition();	
 	// parameters should be prepared inside prepare emitter parameters
 	emitter->PrepareEmitterParameters(particle, vel, emitIndex);
-	particle->angle += alignToMotion;
+	//particle->angle += alignToMotion;
+	if (angle)
+		particle->angle += DegToRad(angle->GetValue(layerTime));
+	if (angleVariation)
+		particle->angle += DegToRad(angleVariation->GetValue(layerTime) * randCoeff);
 
 	particle->sizeOverLife = 1.0f;
 	particle->velocityOverLife = 1.0f;
@@ -472,13 +488,20 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 //	{
 //		particle->force0 += forcesVariation[0]->GetValue(layerTime) * randCoeff;
 //	}
-	
-    int32 n = (int32)forces.size();
-    for(int i = 0; i < n; i++)
+
+	// Add the forces.
+    int32 forcesCount = (int32)particleForces.size();
+    for(int i = 0; i < forcesCount; i++)
 	{
-        if(forces[i].Get())
+		Vector3 toAddForceDirection;
+		float32 toAddForceValue = 0;
+		float32 toAddForceOverlife = 0;
+		bool toAddForceOvelifeEnabled = false;
+
+		RefPtr<PropertyLine<Vector3> > currentForce = particleForces[i]->GetForce();
+        if(currentForce && currentForce.Get())
 		{
-			const Vector3 & force = forces[i]->GetValue(layerTime);
+			const Vector3 & force = currentForce->GetValue(layerTime);
 			float32 forceValue = force.Length();
 			Vector3 forceDirection;
 			if(forceValue)
@@ -486,32 +509,32 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 				forceDirection = force/forceValue;
 			}
 
-			particle->forcesDirections.push_back(forceDirection);
-			particle->forcesValues.push_back(forceValue);
+			toAddForceDirection = forceDirection;
+			toAddForceValue = forceValue;
 		}
-	}
-    
-    n = Min((int32)particle->forcesDirections.size(), (int32)forcesVariation.size());
-    for(int i = 0; i < n; i++)
-	{
-        if(forcesVariation[i].Get())
+		
+		// Check the forces variations.
+		RefPtr<PropertyLine<Vector3> > currentForceVariation = particleForces[i]->GetForceVariation();
+        if(currentForceVariation && currentForceVariation.Get())
 		{
-			const Vector3 & force = forcesVariation[i]->GetValue(layerTime) * randCoeff;
+			const Vector3 & force = currentForceVariation->GetValue(layerTime) * randCoeff;
 			float32 forceValue = force.Length();
 			Vector3 forceDirection = force/forceValue;
 
-            particle->forcesDirections[i] += forceDirection;
-			particle->forcesValues[i] += forceValue;
+			toAddForceDirection += forceDirection;
+			toAddForceValue += forceValue;
 		}
-	}
-    
-    n = (int32)forcesOverLife.size();
-    for(int i = 0; i < n; i++)
-	{
-		if(forcesOverLife[i].Get())
+		
+		// Now check the overlife flag.
+		RefPtr<PropertyLine<float32> > currentForceOverlife = particleForces[i]->GetForceOverlife();
+		if(currentForceOverlife && currentForceOverlife.Get())
 		{
-			particle->forcesOverLife.push_back(forcesOverLife[i]->GetValue(layerTime));
+			toAddForceOverlife = currentForceOverlife->GetValue(layerTime);
+			toAddForceOvelifeEnabled = true;
 		}
+		
+		// All the data is calculated - can add the force data to particle.
+		particle->AddForce(toAddForceValue, toAddForceDirection, toAddForceOverlife, toAddForceOvelifeEnabled);
 	}
     
 	particle->frame = frameStart + (int32)(randCoeff * (float32)(frameEnd - frameStart));
@@ -546,20 +569,35 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 	{
 		particle->drawColor = particle->color*emitter->ambientColor;
 	}
-	
-	if (frameOverLife)
+
+	// Frame Overlife FPS defines how many frames should be displayed in a second.
+	// This property is cycled - if we reached the last frame, we'll update to the new one.
+	if (frameOverLifeEnabled && frameOverLifeFPS > 0)
 	{
-		int32 frame = (int32)frameOverLife->GetValue(t);
-		particle->frame = frame;
+		float32 timeElapsed = particle->life - particle->frameLastUpdateTime;
+		if (timeElapsed > (1 / frameOverLifeFPS))
+		{
+			particle->frame ++;
+			if (particle->frame >= this->sprite->GetFrameCount())
+			{
+				particle->frame = 0;
+			}
+
+			particle->frameLastUpdateTime = particle->life;
+		}
 	}
     
-    int32 n = (int32)forcesOverLife.size();
-    for(int i = 0; i < n; i++)
-        if(forcesOverLife[i].Get())
-            particle->forcesOverLife[i] = forcesOverLife[i]->GetValue(t);
+	int32 forcesCount = (int32)particleForces.size();
+    for(int i = 0; i < forcesCount; i++)
+	{
+        if (particleForces[i]->GetForceOverlife() && particleForces[i]->GetForceOverlife().Get())
+		{
+			particle->UpdateForceOverlife(i, particleForces[i]->GetForceOverlife()->GetValue(t));
+		}
+	}
 }
 
-void ParticleLayer::Draw()
+void ParticleLayer::Draw(Camera * camera)
 {
 	if (additive)
 	{
@@ -637,6 +675,12 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 			type = TYPE_SINGLE_PARTICLE;
 	}
 
+	YamlNode * nameNode = node->Get("name");
+	if (nameNode)
+	{
+		layerName = nameNode->AsString();
+	}
+	
 	YamlNode * spriteNode = node->Get("sprite");
 	if (spriteNode)
 	{
@@ -662,7 +706,17 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 	colorRandom = PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode(node, "colorRandom");
 	alphaOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "alphaOverLife");
 	
-	frameOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "frameOverLife");	
+	YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
+	if (frameOverLifeEnabledNode)
+	{
+		frameOverLifeEnabled = frameOverLifeEnabledNode->AsBool();
+	}
+
+	YamlNode* frameOverLifeFPSNode = node->Get("frameOverLifeFPS");
+	if (frameOverLifeFPSNode)
+	{
+		frameOverLifeFPS = frameOverLifeFPSNode->AsFloat();
+	}
 
 	life = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "life");	
 	lifeVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "lifeVariation");	
@@ -676,7 +730,10 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 
 	velocity = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocity");	
 	velocityVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityVariation");	
-	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");	
+	velocityOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "velocityOverLife");
+	
+	angle = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angle");
+	angleVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "angleVariation");
 	
 	int32 forceCount = 0;
 	YamlNode * forceCountNode = node->Get("forceCount");
@@ -685,21 +742,16 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 
 	for (int k = 0; k < forceCount; ++k)
 	{
-		RefPtr< PropertyLine<Vector3> > force = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("force%d", k) );	
-		RefPtr< PropertyLine<Vector3> > forceVariation = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("forceVariation%d", k));	
+        // Any of the Force Parameters might be NULL, and this is acceptable.
+		RefPtr< PropertyLine<Vector3> > force = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("force%d", k) );
+		RefPtr< PropertyLine<Vector3> > forceVariation = PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode(node, Format("forceVariation%d", k));
 		RefPtr< PropertyLine<float32> > forceOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, Format("forceOverLife%d", k));
-        
-        if(force.Get())
-            forces.push_back(force);
-        if(forceVariation.Get())
-            forcesVariation.push_back(forceVariation);
-        if(forceOverLife.Get())
-            forcesOverLife.push_back(forceOverLife);
+
+		ParticleForce* particleForce = new ParticleForce(force, forceVariation, forceOverLife);
+		AddParticleForce(particleForce);
 	}
 
-    DVASSERT(forces.size() == forcesOverLife.size());
-	
-	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");	
+	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
 	spinVariation = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinVariation");	
 	spinOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spinOverLife");	
 
@@ -745,7 +797,116 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 			frameEnd = frameNode->Get(1)->AsInt();
 		}
 	}
+
+	YamlNode * isDisabledNode = node->Get("isDisabled");
+	if (isDisabledNode)
+	{
+		isDisabled = isDisabledNode->AsBool();
+	}
 	
+	// Yuri Coder, 2013/01/31. After all the data is loaded, check the Frame Overlife timelines and
+	// synchronize them with the maximum available frames in the sprite. See also DF-573.
+	UpdateFrameTimeline();
+}
+
+void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
+{
+    YamlNode* layerNode = new YamlNode(YamlNode::TYPE_MAP);
+    String layerNodeName = Format("layer%d", layerIndex);
+    parentNode->AddNodeToMap(layerNodeName, layerNode);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
+                                                                 this->type == TYPE_SINGLE_PARTICLE ? "single" : "particles");
+    if (this->IsLong())
+    {
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isLong", true);
+    }
+    
+    if (this->sprite)
+    {
+        Vector2 pivotPoint(this->pivotPoint.x - (this->sprite->GetWidth() / 2.0f),
+                           this->pivotPoint.y - (this->sprite->GetHeight() / 2.0f));
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", pivotPoint);
+    }
+
+    // Truncate an extension of the sprite file.
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite",
+        this->relativeSpriteName.substr(0, this->relativeSpriteName.size()-4));
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "number", this->number);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "numberVariation", this->numberVariation);
+    
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "size", this->size);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector2>(layerNode, "sizeVariation", this->sizeVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "sizeOverLife", this->sizeOverLife);
+    
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocity", this->velocity);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityVariation", this->velocityVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "velocityOverLife", this->velocityOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spin", this->spin);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinVariation", this->spinVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "spinOverLife", this->spinOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandom", this->motionRandom);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandomVariation", this->motionRandomVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "motionRandomOverLife", this->motionRandomOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounce", this->bounce);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceVariation", this->bounceVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "bounceOverLife", this->bounceOverLife);
+	
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "angle", this->angle);
+	PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "angleVariation", this->angleVariation);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorRandom", this->colorRandom);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
+
+    PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(layerNode, "colorOverLife", this->colorOverLife);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "alignToMotion", this->alignToMotion);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "blend", this->additive ? "add" : "alpha");
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "startTime", this->startTime);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "endTime", this->endTime);
+
+	PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "isDisabled", this->isDisabled);
+
+    // Now write the forces.
+    SaveForcesToYamlNode(layerNode);
+}
+
+void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
+{
+    int32 forceCount = (int32)this->particleForces.size();
+    if (forceCount == 0)
+    {
+        // No forces to write.
+        return;
+    }
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "forceCount", forceCount);
+    for (int32 i = 0; i < forceCount; i ++)
+    {
+		ParticleForce* currentForce = this->particleForces[i];
+        String forceDataName = Format("force%d", i);
+		
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->GetForce());
+
+		// Force Variation and Force Overlife might be empty, so will not be stored in Yaml. This is handled
+		// by PropertyLineYamlWriter, no further changes should be done.
+        forceDataName = Format("forceVariation%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->GetForceVariation());
+
+        forceDataName = Format("forceOverLife%d", i);
+        PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, forceDataName, currentForce->GetForceOverlife());
+    }
 }
 
 Particle * ParticleLayer::GetHeadParticle()
@@ -756,6 +917,87 @@ Particle * ParticleLayer::GetHeadParticle()
 const String & ParticleLayer::GetRelativeSpriteName()
 {
 	return relativeSpriteName;
+}
+
+RenderBatch * ParticleLayer::GetRenderBatch()
+{
+	return renderBatch;
+}
+
+void ParticleLayer::ReloadSprite()
+{
+	if (this->sprite)
+	{
+		this->sprite->Reload();
+	}
+	
+	UpdateFrameTimeline();
+}
+
+void ParticleLayer::UpdateFrameTimeline()
+{
+	if (!this->frameOverLifeEnabled)
+	{
+		return;
+	}
+
+	if (!this->sprite)
+	{
+		this->frameOverLifeEnabled = false;
+		return;
+	}
+}
+	
+void ParticleLayer::SetAdditive(bool additive)
+{
+	this->additive = additive;
+}
+
+void ParticleLayer::AddParticleForce(ParticleForce* particleForce)
+{
+	this->particleForces.push_back(particleForce);
+}
+
+void ParticleLayer::UpdateParticleForce(int32 particleForceIndex, RefPtr< PropertyLine<Vector3> > force,
+										RefPtr< PropertyLine<Vector3> > forceVariation,
+										RefPtr< PropertyLine<float32> > forceOverLife)
+{
+	if (particleForceIndex <= (int32)this->particleForces.size())
+	{
+		this->particleForces[particleForceIndex]->Update(force, forceVariation, forceOverLife);
+	}
+}
+
+void ParticleLayer::RemoveParticleForce(ParticleForce* particleForce)
+{
+	Vector<ParticleForce*>::iterator iter = std::find(this->particleForces.begin(),
+													  this->particleForces.end(),
+													  particleForce);
+	if (iter != this->particleForces.end())
+	{
+		this->particleForces.erase(iter);
+		SafeDelete(*iter);
+	}
+}
+
+void ParticleLayer::RemoveParticleForce(int32 particleForceIndex)
+{
+	if (particleForceIndex <= (int32)this->particleForces.size())
+	{
+		SafeDelete(this->particleForces[particleForceIndex]);
+		this->particleForces.erase(this->particleForces.begin() + particleForceIndex);
+	}
+}
+
+void ParticleLayer::CleanupParticleForces()
+{
+	for (Vector<ParticleForce*>::iterator iter = this->particleForces.begin();
+		 iter != this->particleForces.end(); iter ++)
+	{
+		SafeDelete(*iter);
+	}
+	
+	this->particleForces.clear();
 }
 
 }

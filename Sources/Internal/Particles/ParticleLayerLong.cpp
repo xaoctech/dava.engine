@@ -2,14 +2,14 @@
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
 #include "Render/Material.h"
-#include "Scene3D/Camera.h"
+#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
 
 ParticleLayerLong::ParticleLayerLong()
 {
-	material->SetTwoSided(true);
+	renderBatch->GetMaterial()->SetTwoSided(true);
 }
 
 void ParticleLayerLong::Draw(Camera * camera)
@@ -22,7 +22,7 @@ void ParticleLayerLong::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		material->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	Vector3 direction = camera->GetDirection();
@@ -102,7 +102,7 @@ void ParticleLayerLong::Draw(Camera * camera)
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 		
 		RenderManager::Instance()->SetRenderData(renderData);
-		material->PrepareRenderState();
+		renderBatch->GetMaterial()->PrepareRenderState();
 
 		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 	}

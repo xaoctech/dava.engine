@@ -5,7 +5,7 @@
 
 #include "EditorSettings.h"
 #include "EditorConfig.h"
-
+#include "SceneNodePropertyNames.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
@@ -88,10 +88,10 @@ void NodesPropertyControl::WillAppear()
 
 void NodesPropertyControl::WillDisappear()
 {
-    LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-    if(lodNode)
+    LodComponent *lodComponent = GetLodComponent(currentSceneNode);
+    if(lodComponent)
     {
-        lodNode->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
+        lodComponent->SetForceDistance(LodComponent::INVALID_DISTANCE);
     }
     else
     {
@@ -101,9 +101,9 @@ void NodesPropertyControl::WillDisappear()
             RestoreChildLodDistances();
         }
         
-        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
         {
-            childLodNodes[i]->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
+            childLodComponents[i]->SetForceDistance(LodComponent::INVALID_DISTANCE);
         }
         
         ReleaseChildLodData();
@@ -127,10 +127,19 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddIntProperty("property.scenenode.retaincount", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.ptr", PropertyList::PROPERTY_IS_READ_ONLY);
+        
+//        for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
+//        {
+//            propertyList->AddStringProperty(Format("Component:%s", sceneNode->components sa M.  zz))
+//        }
+        
+        
         
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());
+        propertyList->SetStringPropertyValue("property.scenenode.ptr", Format("%p", sceneNode));
         
         AABBox3 unitBox = sceneNode->GetWTMaximumBoundingBoxSlow();
         if((-AABBOX_INFINITY != unitBox.max.x) && (AABBOX_INFINITY != unitBox.min.x))
@@ -139,26 +148,26 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
             Vector3 size = unitBox.max - unitBox.min;
             
-            propertyList->AddFloatProperty(String("X-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("X-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("X-Size"), size.x);
             
-            propertyList->AddFloatProperty(String("Y-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("Y-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("Y-Size"), size.y);
 
-            propertyList->AddFloatProperty(String("Z-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->AddFloatProperty(String("Z-Size"), PropertyList::PROPERTY_IS_READ_ONLY);
             propertyList->SetFloatPropertyValue(String("Z-Size"), size.z);
             
         }
     }
 
     propertyList->AddSection("property.scenenode.scenenode", GetHeaderState("property.scenenode.scenenode", true));
-    propertyList->AddStringProperty("property.scenenode.name", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetStringPropertyValue("property.scenenode.name", sceneNode->GetName());
+    propertyList->AddStringProperty(SCENE_NODE_NAME_PROPERTY_NAME, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetStringPropertyValue(SCENE_NODE_NAME_PROPERTY_NAME, sceneNode->GetName());
 
     if(!createNodeProperties)
     {
-        propertyList->AddBoolProperty("property.scenenode.isVisible", PropertyList::PROPERTY_IS_EDITABLE);
-		propertyList->SetBoolPropertyValue("property.scenenode.isVisible", sceneNode->GetVisible());
+        propertyList->AddBoolProperty(SCENE_NODE_IS_VISIBLE_PROPERTY_NAME, PropertyList::PROPERTY_IS_EDITABLE);
+		propertyList->SetBoolPropertyValue(SCENE_NODE_IS_VISIBLE_PROPERTY_NAME, sceneNode->GetVisible());
 		
         propertyList->AddSection("property.scenenode.matrixes", GetHeaderState("property.scenenode.matrixes", false));
         propertyList->AddMatrix4Property("property.scenenode.localmatrix", PropertyList::PROPERTY_IS_EDITABLE);
@@ -172,20 +181,20 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 	{ //static light
 		 propertyList->AddSection("Used in static lighting", GetHeaderState("Used in static lighting", true));
 
-		 propertyList->AddBoolProperty("Used in static lighting");
-		 propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
 
-		 propertyList->AddBoolProperty("Cast shadows");
-		 propertyList->SetBoolPropertyValue("Cast shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
 
-		 propertyList->AddBoolProperty("Receive shadows");
-		 propertyList->SetBoolPropertyValue("Receive shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.receiveshadows", true));
+		 propertyList->AddBoolProperty(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME);
+		 propertyList->SetBoolPropertyValue(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME, sceneNode->GetCustomProperties()->GetBool("editor.staticlight.receiveshadows", true));
 	}
     
     
-    { // LodNodes at Hierarchy        
-        LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
-        if(!lodNode)
+    { // LodNodes at Hierarchy
+        LodComponent *lodComponent = GetLodComponent(currentSceneNode);
+        if(!lodComponent)
         {
             AddChildLodSection();
         }        
@@ -252,12 +261,22 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
 void NodesPropertyControl::AddChildLodSection()
 {
-    DVASSERT(0 == childLodNodes.size());
+    DVASSERT(0 == childLodComponents.size());
     DVASSERT(0 == childDistances.size());
     
-    currentSceneNode->GetChildNodes(childLodNodes);
+    Vector<SceneNode *>nodes;
+    currentSceneNode->GetChildNodes(nodes);
+    nodes.push_back(currentSceneNode);
+    for(int32 i = 0; i < (int32)nodes.size(); ++i)
+    {
+        LodComponent *lodComponent = GetLodComponent(nodes[i]);
+        if(lodComponent)
+        {
+            childLodComponents.push_back(lodComponent);
+        }
+    }
     
-    if(0 < childLodNodes.size())
+    if(0 < childLodComponents.size())
     {
         propertyList->AddSection("LODs at hierarchy", GetHeaderState("LODs at hierarchy", true));
         
@@ -265,7 +284,7 @@ void NodesPropertyControl::AddChildLodSection()
         propertyList->SetBoolPropertyValue("property.lodnode.forcedistance", false);
         propertyList->AddSliderProperty("property.lodnode.distanceslider", false);
         propertyList->SetSliderPropertyValue("property.lodnode.distanceslider", 0, 
-                                             LodNode::MAX_LOD_DISTANCE, LodNode::MIN_LOD_DISTANCE);
+                                             LodComponent::MAX_LOD_DISTANCE, LodComponent::MIN_LOD_DISTANCE);
         
         
         
@@ -282,32 +301,32 @@ void NodesPropertyControl::AddChildLodSection()
                 triangles = 0;
             }
             
-        }lodInfo[LodNode::MAX_LOD_LAYERS];
+        }lodInfo[LodComponent::MAX_LOD_LAYERS];
         
-        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
         {
-            float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
+            float32 *distances = new float32[LodComponent::MAX_LOD_LAYERS];
             
             
-            List<LodNode::LodData*> lodLayers;
-            childLodNodes[i]->GetLodData(lodLayers);
-            List<LodNode::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            List<LodComponent::LodData*> lodLayers;
+            childLodComponents[i]->GetLodData(lodLayers);
+            List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
             
             int32 iLod = 0;
-            for(; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+            for(; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
             {
                 //TODO: calculate triangles
-                LodNode::LodData *layer = *lodLayerIt;
+                LodComponent::LodData *layer = *lodLayerIt;
                 lodInfo[iLod].triangles += GetTrianglesForLodLayer(layer);
                 ++lodLayerIt;
 
-                distances[iLod] = childLodNodes[i]->GetLodLayerDistance(iLod);
+                distances[iLod] = childLodComponents[i]->GetLodLayerDistance(iLod);
                 
-                lodInfo[iLod].distance += childLodNodes[i]->GetLodLayerDistance(iLod);
+                lodInfo[iLod].distance += childLodComponents[i]->GetLodLayerDistance(iLod);
                 lodInfo[iLod].count++;
             }
             
-            for(; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
+            for(; iLod < LodComponent::MAX_LOD_LAYERS; ++iLod)
             {
                 distances[iLod] = 0.0f;
             }
@@ -316,10 +335,10 @@ void NodesPropertyControl::AddChildLodSection()
         }
         
         propertyList->AddDistanceProperty("property.lodnode.distances");
-        float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
-        int32 *triangles = new int32[LodNode::MAX_LOD_LAYERS];
+        float32 *distances = new float32[LodComponent::MAX_LOD_LAYERS];
+        int32 *triangles = new int32[LodComponent::MAX_LOD_LAYERS];
         int32 count = 0;
-        for(int32 iLod = 0; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
+        for(int32 iLod = 0; iLod < LodComponent::MAX_LOD_LAYERS; ++iLod)
         {
             if(lodInfo[iLod].count)
             {
@@ -351,7 +370,7 @@ void NodesPropertyControl::ReleaseChildLodData()
         SafeDeleteArray(childDistances[i]);
     }
     childDistances.clear();
-    childLodNodes.clear();
+    childLodComponents.clear();
 }
 
 void NodesPropertyControl::ReadFrom(DataNode *dataNode)
@@ -382,20 +401,20 @@ void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const Strin
 {
     if("property.lodnode.distances" == forKey)
     {
-        LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
-        if(lodNode)
+        LodComponent *lodComponent = GetLodComponent(currentSceneNode);
+        if(lodComponent)
         {
-            lodNode->SetLodLayerDistance(index, newValue);
+            lodComponent->SetLodLayerDistance(index, newValue);
         }
         else 
         {
             if(propertyList->GetBoolPropertyValue("property.lodnode.forcedistance"))
             {
-                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
                 {
-                    if(index < childLodNodes[i]->GetLodLayersCount())
+                    if(index < childLodComponents[i]->GetLodLayersCount())
                     {
-                        childLodNodes[i]->SetLodLayerDistance(index, newValue);
+                        childLodComponents[i]->SetLodLayerDistance(index, newValue);
                     }
                 }
             }
@@ -404,7 +423,7 @@ void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const Strin
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -415,16 +434,16 @@ void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *, const String 
     {
         if(propertyList->GetBoolPropertyValue("property.lodnode.forcedistance"))
         {
-            LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
-            if(lodNode)
+            LodComponent *lodComponent = GetLodComponent(currentSceneNode);
+            if(lodComponent)
             {
-                lodNode->SetForceLodLayerDistance(newValue);
+                lodComponent->SetForceDistance(newValue);
             }
             else
             {
-                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
                 {
-                    childLodNodes[i]->SetForceLodLayerDistance(newValue);
+                    childLodComponents[i]->SetForceDistance(newValue);
                 }
             }     
         }
@@ -432,7 +451,7 @@ void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *, const String 
 
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -444,7 +463,7 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 
 void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
-    if(forKey == "property.scenenode.name") //SceneNode
+    if(forKey == SCENE_NODE_NAME_PROPERTY_NAME) //SceneNode
     {
         if(currentSceneNode)
         {
@@ -469,7 +488,7 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String 
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
@@ -489,7 +508,7 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &forKey, int newValue)
@@ -509,7 +528,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &fo
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -519,36 +538,36 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
         
-        if("Used in static lighting" == forKey)
+        if(SCENE_NODE_USED_IN_STATIC_LIGHTING_PROPERTY_NAME == forKey)
         {
             customProperties->SetBool("editor.staticlight.used", newValue);
         }
-		else if("Cast shadows" == forKey)
+		else if(SCENE_NODE_CAST_SHADOWS_PROPERTY_NAME == forKey)
 		{
 			customProperties->SetBool("editor.staticlight.castshadows", newValue);
 		}
-		else if("Receive shadows" == forKey)
+		else if(SCENE_NODE_RECEIVE_SHADOWS_PROPERTY_NAME == forKey)
 		{
 			customProperties->SetBool("editor.staticlight.receiveshadows", newValue);
 		}
         else if("property.lodnode.forcedistance" == forKey)
         {
             float32 forceDistance = (newValue)  ? propertyList->GetSliderPropertyValue("property.lodnode.distanceslider")
-                                                : LodNode::INVALID_DISTANCE;
+                                                : LodComponent::INVALID_DISTANCE;
             
-            LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-            if(lodNode)
+            LodComponent *lodComponent = GetLodComponent(currentSceneNode);
+            if(lodComponent)
             {
-                lodNode->SetForceLodLayerDistance(forceDistance);
+                lodComponent->SetForceDistance(forceDistance);
             }
             else 
             {
                 if(newValue)    SetChildLodDistances();
                 else            RestoreChildLodDistances();
                     
-                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
                 {
-                    childLodNodes[i]->SetForceLodLayerDistance(forceDistance);
+                    childLodComponents[i]->SetForceDistance(forceDistance);
                 }
             }
         }
@@ -560,7 +579,7 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
         if(!createNodeProperties)
         {
             KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-            if (forKey == "property.scenenode.isVisible")
+            if (forKey == SCENE_NODE_IS_VISIBLE_PROPERTY_NAME)
             {
                 currentSceneNode->SetVisible(newValue);
             }
@@ -583,14 +602,14 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
-void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &, const String &)
+void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &forKey, const String &)
 {
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
@@ -609,7 +628,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -626,7 +645,7 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *, const String &forKey
     
     if(nodesDelegate)
     {
-        nodesDelegate->NodesPropertyChanged();
+        nodesDelegate->NodesPropertyChanged(forKey);
     }
 }
 
@@ -822,9 +841,9 @@ void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
     if(currentSceneNode)
     {
-		SafeRetain(currentSceneNode);
+		currentSceneNode->Retain();
         ReadFrom(currentSceneNode);
-		SafeRelease(currentSceneNode);
+        currentSceneNode->Release();
     }
 }
 
@@ -855,11 +874,11 @@ void NodesPropertyControl::SetHeaderState(const String & headerName, bool newSta
 void NodesPropertyControl::OnSetDistancesForLodNodes(BaseObject * , void * , void * )
 {
     SetChildLodDistances();
-    for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+    for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
     {
-        for(int32 iLod = 0; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+        for(int32 iLod = 0; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
         {
-            childDistances[i][iLod] = childLodNodes[i]->GetLodLayerDistance(iLod);
+            childDistances[i][iLod] = childLodComponents[i]->GetLodLayerDistance(iLod);
         }
     }
 
@@ -876,11 +895,11 @@ void NodesPropertyControl::SetChildLodDistances()
             distances[i] = propertyList->GetDistancePropertyValue(String("property.lodnode.distances"), i);
         }
         
-        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
         {
-            for(int32 iLod = 0; iLod < count && iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+            for(int32 iLod = 0; iLod < count && iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
             {
-                childLodNodes[i]->SetLodLayerDistance(iLod, distances[iLod]);
+                childLodComponents[i]->SetLodLayerDistance(iLod, distances[iLod]);
             }
         }
         
@@ -890,11 +909,11 @@ void NodesPropertyControl::SetChildLodDistances()
 
 void NodesPropertyControl::RestoreChildLodDistances()
 {
-    for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+    for(int32 i = 0; i < (int32)childLodComponents.size(); ++i)
     {
-        for(int32 iLod = 0; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+        for(int32 iLod = 0; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
         {
-            childLodNodes[i]->SetLodLayerDistance(iLod, childDistances[i][iLod]);
+            childLodComponents[i]->SetLodLayerDistance(iLod, childDistances[i][iLod]);
         }
     }
 }
@@ -925,7 +944,7 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
 }
 
 
-int32 NodesPropertyControl::GetTrianglesForLodLayer(LodNode::LodData *lodData)
+int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodData)
 {
     int32 trianglesCount = 0;
     for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
@@ -943,5 +962,16 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodNode::LodData *lodData)
         }
     }
     return trianglesCount;
+}
+
+LodComponent *NodesPropertyControl::GetLodComponent(SceneNode *node)
+{
+    if(node)
+    {
+        LodComponent *lodComponent = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+        return lodComponent;
+    }
+
+    return NULL;
 }
 
