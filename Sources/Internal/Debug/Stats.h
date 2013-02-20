@@ -105,6 +105,7 @@ private:
     // Now it should work for single thread, but can be extended to multithreaded time measure
     struct ThreadTimeStamps
     {
+        List<FunctionMeasure*> topFunctions;
         HashMap<FastName, FunctionMeasure*> functions;
     };
     
@@ -115,6 +116,7 @@ public:
     ~TimeMeasure();
     
     static void Dump(FunctionMeasure * function = 0, uint32 level = 0);
+    static void ClearFunctions();
     
     static TimeMeasure * activeTimeMeasure;
     static FunctionMeasure * lastframeTopFunction;
@@ -154,7 +156,7 @@ private:
 };
     
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-#define TIME_MEASURE(name) TimeMeasure timeMeasure(FastName(name));
+#define TIME_MEASURE(name) static FastName fastName(name); TimeMeasure timeMeasure(fastName);
 #else
 #define TIME_MEASURE(name) 
 #endif
