@@ -75,6 +75,10 @@ public:
 
     void LogMessage(const String &message);
     
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	virtual void OnDeviceLocked() {}
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    
 protected:
     
     void RunTests();

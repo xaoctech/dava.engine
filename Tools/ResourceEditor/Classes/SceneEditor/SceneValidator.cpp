@@ -189,7 +189,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
 
 void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog)
 {
-    LodComponent *lodComponent = static_cast<LodComponent *>(ownerNode->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
 
 
