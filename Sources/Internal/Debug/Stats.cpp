@@ -43,6 +43,7 @@ TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
     
 TimeMeasure::TimeMeasure(const FastName & blockName)
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
     
     function = mainThread.functions.Value(blockName);
@@ -71,10 +72,12 @@ TimeMeasure::TimeMeasure(const FastName & blockName)
     
     function->timeStart = SystemTimer::Instance()->GetAbsoluteNano();
     activeTimeMeasure = this;
+#endif
 }
 
 TimeMeasure::~TimeMeasure()
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
 
     uint32 frameCounter = Core::Instance()->GetGlobalFrameIndex();
@@ -87,15 +90,19 @@ TimeMeasure::~TimeMeasure()
         function->frameCounter = frameCounter;
     }
     activeTimeMeasure = parent;
+#endif
 }
     
 void TimeMeasure::ClearFunctions()
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     mainThread.topFunctions.clear();
+#endif
 }
     
 void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (level == 0)
     {
         Logger::Debug("Stats for frame: %d", Core::Instance()->GetGlobalFrameIndex());
@@ -117,8 +124,7 @@ void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
                 Dump(childFunction, level + 1);
         }
     }
-    
-    
+#endif
 }
 
     
