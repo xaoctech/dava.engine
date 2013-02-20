@@ -671,7 +671,7 @@ Texture * Texture::PureCreate(const String & pathName)
     else
     {
         ImageFileFormat fileFormat = TextureDescriptor::GetFormatForExtension(extension);
-        if(IsLoadAvailable(fileFormat, descriptor))
+        if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(fileFormat, descriptor))
         {
             texture = CreateFromImage(pathName, descriptor);
             if(texture)
