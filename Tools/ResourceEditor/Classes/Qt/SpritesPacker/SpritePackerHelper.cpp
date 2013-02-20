@@ -1,15 +1,22 @@
-#include "ParticlesEditorSpritePackerHelper.h"
+#include "SpritePackerHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 
 #include "../SpritesPacker.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "./Scene/SceneDataManager.h"
 
+#include <QtConcurrentRun>
+
 using namespace DAVA;
 
-void ParticlesEditorSpritePackerHelper::UpdateParticleSprites()
+SpritePackerHelper::SpritePackerHelper()
 {
-    String projectPath = EditorSettings::Instance()->GetProjectPath();
+	QObject::connect(&watcher, SIGNAL(finished()), this, SLOT(threadRepackAllFinished()), Qt::QueuedConnection);
+}
+
+void SpritePackerHelper::UpdateParticleSprites()
+{
+	String projectPath = EditorSettings::Instance()->GetProjectPath();
     if(projectPath.empty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
@@ -35,7 +42,7 @@ void ParticlesEditorSpritePackerHelper::UpdateParticleSprites()
 	ParticlesEditorController::Instance()->RefreshSelectedNode();
 }
 
-void ParticlesEditorSpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
+void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 {
 	List<SceneNode*> particleEffects;
 	sceneData->GetAllParticleEffects(particleEffects);
@@ -69,4 +76,20 @@ void ParticlesEditorSpritePackerHelper::ReloadParticleSprites(SceneData* sceneDa
 
 		effectComponent->Start();
 	}
+}
+
+void SpritePackerHelper::UpdateParticleSpritesAsync()
+{
+	if(NULL == future)
+	{
+		future = new QFuture<void>;
+		*future = QtConcurrent::run(this, &SpritePackerHelper::UpdateParticleSprites);
+		watcher.setFuture(*future);
+	}
+}
+
+void SpritePackerHelper::threadRepackAllFinished()
+{
+	future = NULL;
+	emit readyAll();
 }
