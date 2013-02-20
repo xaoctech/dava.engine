@@ -3,10 +3,8 @@
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/LightComponent.h"
-#include "Scene3D/Components/CameraComponent.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/LandscapeNode.h"
-#include "Render/Highlevel/Camera.h"
 
 namespace DAVA
 {
@@ -61,16 +59,4 @@ LandscapeNode * GetLandscape( SceneNode * fromEntity )
 }
 
 
-Camera * GetCamera(SceneNode * fromEntity)
-{
-	CameraComponent * component = static_cast<CameraComponent*>(fromEntity->GetComponent(Component::CAMERA_COMPONENT));
-	if(component)
-	{
-		return component->GetCamera();
-	}
-    
-	return NULL;
-}
-
-    
 }
