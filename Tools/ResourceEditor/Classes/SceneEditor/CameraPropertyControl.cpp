@@ -101,5 +101,16 @@ void CameraPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const S
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
 
+Camera * CameraPropertyControl::GetCamera(SceneNode *node)
+{
+    CameraComponent *cc = static_cast<CameraComponent *>(node->GetComponent(Component::CAMERA_COMPONENT));
+    if(cc)
+    {
+        return cc->GetCamera();
+    }
+    
+    return NULL;
+}
+
 
 
