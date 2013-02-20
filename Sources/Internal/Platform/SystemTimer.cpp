@@ -77,7 +77,7 @@ uint64 SystemTimer::GetTickCount()
 
 	tickMutex->Lock();
 	struct timeval tv; 
-	gettimeofday(&tv,NULL); 
+	gettimeofday(&tv,NULL);
 
 	uint64 sec = tv.tv_sec - savedSec;
 	uint64 msec = tv.tv_usec;
@@ -249,6 +249,48 @@ float32 SystemTimer::ElapsedSec()
 	return 0;
 #endif //PLATFORMS
 }
+    
+uint64 SystemTimer::GetAbsoluteNano()
+{
+#if defined(__DAVAENGINE_WIN32__)
+	if (bHighTimerSupport)
+	{
+		LARGE_INTEGER liCounter;
+		QueryPerformanceCounter(&liCounter);
+		return (uint64)(((float64)(liCounter.QuadPart))/(float64)liFrequency.QuadPart * 1000000000.);
+	}
+	else
+	{
+		return 0;
+	}
+    
+#elif defined(__DAVAENGINE_ANDROID__)
+
+    //clock_gettime(
+
+    //TODO: Implement precision timer for Android using clock_gettime
+    DVASSERT(0 && "Implement precision timer for Android using clock_gettime");
+    return 0;
+
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+	uint64_t numer = timebase.numer;
+	uint64_t denom = timebase.denom;
+    
+	while(((numer % 10) == 0) && ((denom % 10) == 0))
+	{
+		numer /= 10;
+		denom /= 10;
+	}
+	uint64_t elapsed = mach_absolute_time();
+	elapsed *= numer;
+	elapsed /= denom;
+	return elapsed;
+#else //PLATFORMS
+	//other plaforms
+	return 0;
+#endif //PLATFORMS
+}
+
 
 uint64 SystemTimer::AbsoluteMS()
 {

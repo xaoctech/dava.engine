@@ -217,6 +217,8 @@ public:
 	//ParticleEmitter * Clone();
 
 	virtual RenderObject * Clone(RenderObject *newObject);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.

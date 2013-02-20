@@ -115,33 +115,36 @@ public:
 	template <typename K, typename V>
 	struct HashMapIterator
 	{
-		size_t szTable;
-		HashMapItem<TKey, TValue>* *table;
-
-		size_t current_index;
-		HashMapItem<K, V> *current_item;
-
-		HashMapIterator()
-			: szTable(0)
-			, table(NULL)
-			, current_index(-1)
-			, current_item(NULL)
-		{ }
+		friend class HashMap;
 
 		HashMapIterator(const HashMapIterator<K, V> &i)
 			: szTable(i.szTable)
 			, table(i.table)
 			, current_index(i.current_index)
-			, current_item(NULL)
+			, current_item(i.current_item)
 		{ }
 
 		HashMapIterator(const HashMap *map)
 			: szTable(map->szTable)
 			, table(map->table)
-			, current_index(-1)
+			, current_index(0)
 			, current_item(NULL)
 		{
-			this->operator++();
+			if(NULL != table && szTable > 0)
+			{
+                for (uint32 k = 0; k < szTable; ++k)
+                    if (table[k] != 0)
+                    {
+                        current_item = table[k];
+                        current_index = k;
+                        break;
+                    }
+                
+				if(NULL == current_item)
+				{
+					GoEnd();
+				}
+			}
 		}
 
 		bool operator==(const HashMapIterator<K, V> &i)
@@ -154,23 +157,31 @@ public:
 
 		bool operator!=(const HashMapIterator<K, V> &i)
 		{
-			return (szTable == i.szTable &&
-				table == i.table &&
-				current_index == i.current_index &&
-				current_item == i.current_item);
+			return !operator==(i);
 		}
 
 		HashMapIterator<K, V>& operator++()
 		{
-			if(NULL != current_item->next)
+			if(NULL != current_item)
 			{
-				current_item = current_item->next;
-			}
-			else
-			{
-				while(NULL == current_item && (-1 == current_index || current_index < szTable))
+				if(NULL != current_item->next)
 				{
-					current_item = table[++current_index];
+					current_item = current_item->next;
+				}
+				else
+				{
+					current_index++;
+
+                    current_item = 0;
+					while(current_index < szTable && current_item == 0)
+					{
+						current_item = table[current_index++];
+					}
+                    
+					if (current_item == 0)
+					{
+						GoEnd();
+					}
 				}
 			}
 
@@ -197,6 +208,21 @@ public:
 		V Value()
 		{
 			return current_item->value;
+		}
+
+	protected:
+		size_t szTable;
+		HashMapItem<TKey, TValue>* *table;
+
+		size_t current_index;
+		HashMapItem<K, V> *current_item;
+
+		HashMapIterator<K, V>& GoEnd()
+		{
+			current_item = NULL;
+			current_index = 0;
+
+			return *this;
 		}
 	};
 
@@ -350,11 +376,7 @@ public:
 	Iterator End()
 	{
 		Iterator i(this);
-
-		i.current_item = NULL;
-		i.current_index = szTable;
-
-		return i;
+		return i.GoEnd();
 	}
 };
 

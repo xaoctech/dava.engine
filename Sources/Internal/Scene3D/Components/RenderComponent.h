@@ -15,23 +15,18 @@ public:
     virtual ~RenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
-    virtual Component * Clone(SceneNode * toEntity);
 
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
     
-    /**
-     \brief This function should be implemented in each node that have data nodes inside it.
-     */
+	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-
     
 private:
     RenderObject * renderObject;
     
-	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
-
-
 public:
     INTROSPECTION_EXTEND(RenderComponent, Component,
         MEMBER(renderObject, "renderObject", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

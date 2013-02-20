@@ -27,48 +27,33 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Render/Highlevel/RenderPass.h"
-#include "Render/Highlevel/RenderLayer.h"
-#include "Render/Highlevel/Camera.h"
+#ifndef __DAVAENGINE_RENDER_FASTNAMES_H__
+#define	__DAVAENGINE_RENDER_FASTNAMES_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
 
 namespace DAVA
 {
-    
-RenderPass::RenderPass(const FastName & _name)
-    : name(_name)
-{
-    
-}
 
-RenderPass::~RenderPass()
-{
-    
-}
-const FastName & RenderPass::GetName()
-{
-    return name;
-}
-    
-void RenderPass::AddRenderLayer(RenderLayer * layer)
-{
-    renderLayers.push_back(layer);
-}
-    
-void RenderPass::RemoveRenderLayer(RenderLayer * layer)
-{
-    
-}
+// GLOBAL PASSES
+static FastName PASS_FORWARD("ForwardPass");
+static FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
+static FastName PASS_DEFERRED("DeferredPass");
 
-void RenderPass::Draw(Camera * camera)
-{
-    // Set Render Target
-    
-    // Draw all layers with their materials
-    uint32 size = (uint32)renderLayers.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        renderLayers[k]->Draw(camera);
-    }
-}
+// GLOBAL LAYERS
+static FastName LAYER_OPAQUE("OpaqueRenderLayer");
+static FastName LAYER_ALPHA_TEST_LAYER("AlphaTestLayer");
+static FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
 
-};
+static FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
+    
+static FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
+    
+static FastName INHERIT_FROM_MATERIAL("Inherit from material");
+
+} // ns
+
+#endif	/* __DAVAENGINE_RENDER_FASTNAMES_H__ */
+

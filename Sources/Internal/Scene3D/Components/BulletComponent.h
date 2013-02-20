@@ -16,17 +16,20 @@ public:
 
 	BulletComponent();
 	virtual ~BulletComponent();
-	virtual Component * Clone(SceneNode * toEntity);
 
 	void SetBulletObject(BaseObject * bulletObject);
 	BaseObject * GetBulletObject();
+
+	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 private:
 	BaseObject * bulletObject;
     
 public:
     INTROSPECTION_EXTEND(BulletComponent, Component,
-        MEMBER(bulletObject, "Bullet Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(bulletObject, "Bullet Object", GetBulletObject, SetBulletObject, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

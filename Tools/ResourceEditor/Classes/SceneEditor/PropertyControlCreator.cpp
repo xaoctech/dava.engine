@@ -32,57 +32,52 @@ PropertyControlCreator::~PropertyControlCreator()
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties)
 {
-	Light * light = dynamic_cast<Light *>(sceneNode);
-	if(light)
-	{
-        return CreateControlForNode(EPCID_LIGHT, rect, createNodeProperties);
-	}
+	return CreateControlForNode(DetectNodeType(sceneNode), rect, createNodeProperties);
     
-    Camera *camera = dynamic_cast<Camera *> (sceneNode);
-    if(camera)
-    {
-        return CreateControlForNode(EPCID_CAMERA, rect, createNodeProperties);
-    }
-
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *> (sceneNode);
-    if(landscape)
-    {
-        return CreateControlForNode(EPCID_LANDSCAPE, rect, createNodeProperties);
-    }
-    
-    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(sceneNode); //must be later children of MeshInstanceNode
-    if(mesh)
-    {
-        return CreateControlForNode(EPCID_MESH, rect, createNodeProperties);
-    }
-    
-    LodNode *lodNode = dynamic_cast<LodNode*>(sceneNode);
-    if(lodNode)
-    {
-        return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
-    }
-
-	ParticleEmitter * emitter = GetEmitter(sceneNode);
-    if (emitter)
-	{
-		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
-	}
-
-	SwitchNode * switchNode = dynamic_cast<SwitchNode*>(sceneNode);
-	if(switchNode)
-	{
-		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
-	}
-
-	Component *effectComponent = sceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
-	if(effectComponent)
-	{
-		return CreateControlForNode(EPCID_PARTICLE_EFFECT, rect, createNodeProperties);
-	}
-
-
-	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
+
+
+PropertyControlCreator::ePropertyControlIDs PropertyControlCreator::DetectNodeType(SceneNode *node)
+{
+    if(node->GetComponent(Component::LIGHT_COMPONENT))
+    {
+        return EPCID_LIGHT;
+    }
+    
+    if(node->GetComponent(Component::CAMERA_COMPONENT))
+    {
+        return EPCID_CAMERA;
+    }
+    
+    if(node->GetComponent(Component::SWITCH_COMPONENT))
+    {
+        return EPCID_SWITCH;
+    }
+    
+    if(GetEmitter(node))
+    {
+        return EPCID_PARTICLE_EMITTER;
+    }
+    
+    if(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+    {
+        return EPCID_PARTICLE_EFFECT;
+    }
+
+    if(node->GetComponent(Component::LOD_COMPONENT))
+    {
+        return EPCID_LODNODE;
+    }
+
+    if(GetLandscape(node))
+    {
+        return EPCID_LANDSCAPE;
+    }
+    
+    return EPCID_NODE;
+}
+
+
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * dataNode, const Rect & rect, bool createNodeProperties)
 {

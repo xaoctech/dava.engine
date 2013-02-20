@@ -47,6 +47,8 @@ class Camera;
 class Light;
 class ParticleEmitterSystem;
     
+
+    
 class RenderSystem
 {
 public:

@@ -41,6 +41,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Render/TextureDescriptor.h"
 #include "Platform/SystemTimer.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA 
 {
@@ -48,6 +49,9 @@ namespace DAVA
 REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
+    :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   texture0Shift(0.0f, 0.0f)
+
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
         lightNodes[k] = 0;
@@ -85,9 +89,70 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
     uvScale = _uvScale;
 }
 
+void InstanceMaterialState::ClearLightmap()
+{
+	SafeRelease(lightmapTexture);
+	lightmapName = String("");
+}
+
     
+void InstanceMaterialState::SetFlatColor(const Color & color)
+{
+    flatColor = color;
+}
+
+const Color & InstanceMaterialState::GetFlatColor()
+{
+    return flatColor;
+}
+
+
+void InstanceMaterialState::SetTextureShift(const Vector2 & speed)
+{
+    texture0Shift = speed;
+}
+
+const Vector2 & InstanceMaterialState::GetTextureShift()
+{
+    return texture0Shift;
+}
+
+void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		archive->SetVector2("ims.uvoffset", uvOffset);
+		archive->SetVector2("ims.uvscale", uvScale);
+		archive->SetString("ims.lightmapname", lightmapName);
+	}
+}
+
+void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("ims.uvoffset")) uvOffset = archive->GetVector2("ims.uvoffset");
+		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
+
+		String lName = archive->GetString("ims.lightmapname");
+
+		if(!lName.empty())
+		{
+			Texture* lTextute = Texture::CreateFromFile(lName);
+			SetLightmap(lTextute, lName);
+			lTextute->Release();
+		}
+	}
+}
+
+InstanceMaterialState * InstanceMaterialState::Clone()
+{
+	InstanceMaterialState * newState = new InstanceMaterialState();
+	return newState;
+}
+
+
 REGISTER_CLASS(Material);
-    
     
 UberShader * Material::uberShader = 0;
     
@@ -133,7 +198,7 @@ Material::Material()
     ,   ambientColor(0.2f, 0.2f, 0.2f, 1.0f)
     ,   emissiveColor(0.0f, 0.0f, 0.0f, 1.0f)
     ,   shininess(1.0f)
-    ,   isOpaque(false)
+    ,   isTranslucent(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
 	,	setupLightmapSize(32)
@@ -142,13 +207,13 @@ Material::Material()
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
 	,	isAlphablend(false)
     ,   isFlatColorEnabled(false)
-    ,   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock()
     ,   isWireframe(false)
     ,   isTexture0ShiftEnabled(false)
-    ,   texture0Shift(0.0f, 0.0f)
+    ,   isExportOwnerLayerEnabled(true)
+    ,   ownerLayerName(LAYER_OPAQUE)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
@@ -297,7 +362,7 @@ void Material::RebuildShader()
         default:
             break;
     };
-    if (isOpaque)
+    if (isTranslucent)
     {
         shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
     }
@@ -389,6 +454,9 @@ void Material::RebuildShader()
         DVASSERT(uniformTexture0Shift != -1);
     }
     
+    
+
+
     //RetrieveTextureSlotNames();
 }
     
@@ -460,7 +528,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.emission", emissiveColor);
     keyedArchive->SetFloat("mat.shininess", shininess);
 
-    keyedArchive->SetBool("mat.isOpaque", isOpaque);
+    keyedArchive->SetBool("mat.isOpaque", isTranslucent);
     keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
 
 	keyedArchive->SetBool("mat.isAlphablend", isAlphablend);
@@ -528,7 +596,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     emissiveColor = keyedArchive->GetByteArrayAsType("mat.emission", emissiveColor);
     shininess = keyedArchive->GetFloat("mat.shininess", shininess);
     
-    isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+    isTranslucent = keyedArchive->GetBool("mat.isOpaque", isTranslucent);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
 
 	isAlphablend = keyedArchive->GetBool("mat.isAlphablend", isAlphablend);
@@ -545,13 +613,13 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 void Material::SetOpaque(bool _isOpaque)
 {
-    isOpaque = _isOpaque;
+    isTranslucent = _isOpaque;
     RebuildShader();
 }
 
 bool Material::GetOpaque()
 {
-    return isOpaque;
+    return isTranslucent;
 }
 void Material::SetTwoSided(bool _isTwoSided)
 {
@@ -684,7 +752,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 //		}
 	}
 
-	if (isOpaque || isTwoSided)
+	if (isTranslucent || isTwoSided)
 	{
 		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
 	}
@@ -758,19 +826,20 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
         DVASSERT(uniformFogColor != -1)
         shader->SetUniformColor3(uniformFogColor, fogColor);
 	}
-    if (isFlatColorEnabled)
-    {
-        DVASSERT(uniformFlatColor != -1);
-        shader->SetUniformColor4(uniformFlatColor, flatColor);
-    }
-    if (isTexture0ShiftEnabled)
-    {
-        DVASSERT(uniformTexture0Shift != -1);
-        shader->SetUniformValue(uniformTexture0Shift, texture0Shift);
-    }
     
     if (instanceMaterialState)
     {
+        if (isFlatColorEnabled)
+        {
+            DVASSERT(uniformFlatColor != -1);
+            shader->SetUniformColor4(uniformFlatColor, instanceMaterialState->flatColor);
+        }
+        if (isTexture0ShiftEnabled)
+        {
+            DVASSERT(uniformTexture0Shift != -1);
+            shader->SetUniformValue(uniformTexture0Shift, instanceMaterialState->texture0Shift);
+        }
+
         Camera * camera = scene->GetCurrentCamera();
         Light * lightNode0 = instanceMaterialState->GetLight(0);
         if (lightNode0 && camera)
@@ -819,12 +888,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		return;
 	}
 
-	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
+	if(isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
 	{
 		return;
 	}
 
-	if(!isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	if(!isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
 	}
@@ -964,17 +1033,6 @@ const bool & Material::IsFlatColorEnabled()
     return isFlatColorEnabled;
 }
 
-void Material::SetFlatColor(const Color & color)
-{
-    flatColor = color;
-}
-    
-const Color & Material::GetFlatColor()
-{
-    return flatColor;
-}
-
-    
 void Material::EnableTextureShift(const bool & isEnabled)
 {
     isTexture0ShiftEnabled = isEnabled;
@@ -987,14 +1045,31 @@ const bool & Material::IsTextureShiftEnabled()
     return isTexture0ShiftEnabled;
 }
 
-void Material::SetTextureShift(const Vector2 & speed)
+    
+const FastName & Material::GetOwnerLayerName()
 {
-    texture0Shift = speed;
+    if(GetAlphablend())
+    {
+        SetOwnerLayerName(LAYER_TRANSLUCENT);
+    }
+    else SetOwnerLayerName(LAYER_OPAQUE);
+
+    return ownerLayerName;
 }
 
-const Vector2 & Material::GetTextureShift()
+void Material::SetOwnerLayerName(const FastName & fastname)
 {
-    return texture0Shift;
+    ownerLayerName = fastname;
+    
+}
+const bool & Material::IsExportOwnerLayerEnabled()
+{
+    return isExportOwnerLayerEnabled;
+}
+    
+void Material::SetExportOwnerLayer(const bool & isEnabled)
+{
+    isExportOwnerLayerEnabled = isEnabled;
 }
 
 

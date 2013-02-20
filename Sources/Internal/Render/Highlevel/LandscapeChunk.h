@@ -46,12 +46,14 @@ public:
     LandscapeChunk(LandscapeNode * node = 0);
     ~LandscapeChunk();
     
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
     virtual void Draw(Camera * camera);
+
 private:
     LandscapeNode * landscape;
     
 public:
-    
     INTROSPECTION_EXTEND(LandscapeChunk, RenderBatch,
         MEMBER(landscape, "landscape", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
