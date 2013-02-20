@@ -20,9 +20,6 @@ public:
 
 protected:
     Vector<String> types;
-    
-    Light *GetLight(SceneNode *node);
-
 };
 
 #endif //__LIGHT_PROPERTY_CONTROL_H__
