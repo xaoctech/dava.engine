@@ -16,39 +16,39 @@ void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-    LodNode *lodNode = dynamic_cast<LodNode*> (sceneNode);
-	DVASSERT(lodNode);
+    LodComponent *lodComponent = GetLodComponent(sceneNode);
+	DVASSERT(lodComponent);
 
     propertyList->AddSection("property.lodnode", GetHeaderState("property.lodnode", true));
     
     propertyList->AddBoolProperty("property.lodnode.forcedistance");
     propertyList->SetBoolPropertyValue("property.lodnode.forcedistance", false);
     propertyList->AddSliderProperty("property.lodnode.distanceslider", false);
-    propertyList->SetSliderPropertyValue("property.lodnode.distanceslider", 0, LodNode::MAX_LOD_DISTANCE, LodNode::MIN_LOD_DISTANCE);
+    propertyList->SetSliderPropertyValue("property.lodnode.distanceslider", 0, LodComponent::MAX_LOD_DISTANCE, LodComponent::MIN_LOD_DISTANCE);
 
-    int32 lodCount = lodNode->GetLodLayersCount();
+    int32 lodCount = lodComponent->GetLodLayersCount();
     if(1 < lodCount)
     {
         propertyList->AddDistanceProperty("property.lodnode.distances");
-        float32 *distances = new float32[lodNode->GetLodLayersCount()];
-        int32 *triangles = new int32[lodNode->GetLodLayersCount()];
+        float32 *distances = new float32[lodComponent->GetLodLayersCount()];
+        int32 *triangles = new int32[lodComponent->GetLodLayersCount()];
         
         
-        List<LodNode::LodData*> lodLayers;
-        lodNode->GetLodData(lodLayers);
+        List<LodComponent::LodData*> lodLayers;
+        lodComponent->GetLodData(lodLayers);
         
-        List<LodNode::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
-        for(int32 i = 0; i < lodNode->GetLodLayersCount(); ++i)
+        List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+        for(int32 i = 0; i < lodComponent->GetLodLayersCount(); ++i)
         {
-            distances[i] = lodNode->GetLodLayerDistance(i);
+            distances[i] = lodComponent->GetLodLayerDistance(i);
             
-            LodNode::LodData *layer = *lodLayerIt;
+            LodComponent::LodData *layer = *lodLayerIt;
             triangles[i] = GetTrianglesForLodLayer(layer);
 
             ++lodLayerIt;
         }
         
-        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, triangles, lodNode->GetLodLayersCount());
+        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, triangles, lodComponent->GetLodLayersCount());
         
         
         SafeDeleteArray(distances);

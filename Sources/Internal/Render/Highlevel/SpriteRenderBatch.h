@@ -16,9 +16,6 @@ public:
 
 	virtual void Draw(Camera * camera);
 
-	virtual const FastName & GetOwnerLayerName();
-
-
 protected:
     
 

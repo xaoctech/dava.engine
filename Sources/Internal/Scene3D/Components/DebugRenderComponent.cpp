@@ -30,5 +30,24 @@ Component * DebugRenderComponent::Clone(SceneNode * toEntity)
     return component;
 }
 
+void DebugRenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	Component::Serialize(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		archive->SetUInt32("drc.flags", debugFlags);
+	}
+}
+
+void DebugRenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("drc.flags")) debugFlags = archive->GetUInt32("drc.flags");
+	}
+
+	Component::Deserialize(archive, sceneFile);
+}
 
 };

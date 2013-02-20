@@ -42,7 +42,7 @@ class ShadowRect;
 class ShadowVolumeRenderPass : public RenderPass
 {
 public:
-    ShadowVolumeRenderPass(const char * name);
+    ShadowVolumeRenderPass(const FastName & name);
     virtual ~ShadowVolumeRenderPass();
     
     virtual void Draw(Camera * camera);

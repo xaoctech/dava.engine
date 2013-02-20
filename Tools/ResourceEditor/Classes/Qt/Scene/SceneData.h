@@ -45,8 +45,6 @@ public:
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void BakeScene();
-    
     void ToggleNotPassableLandscape();
     
     bool CanSaveScene();
