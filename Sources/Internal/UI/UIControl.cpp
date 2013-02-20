@@ -123,8 +123,8 @@ namespace DAVA
 		return parent;
 	}
 	
-	bool UIControl::GetExclusiveInput()
-	{
+    bool UIControl::GetExclusiveInput() const
+    {
 		return exclusiveInput;
 	}
 	
@@ -142,8 +142,8 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetMultiInput()
-	{
+    bool UIControl::GetMultiInput() const
+    {
 		return multiInput;
 	}
 	
@@ -205,8 +205,8 @@ namespace DAVA
 	}
 	
 
-	const List<UIControl*> &UIControl::GetChildren()
-	{
+    const List<UIControl*> & UIControl::GetChildren() const
+    {
 		return childs;
 	}
 
@@ -223,8 +223,8 @@ namespace DAVA
 		name = _name;
 	}
 	
-	const String & UIControl::GetName()
-	{
+    const String & UIControl::GetName() const
+    {
 		return name;
 	}
 	
@@ -233,8 +233,8 @@ namespace DAVA
 		tag = _tag;
 	}
 	
-	int32 UIControl::GetTag()
-	{
+    DAVA::int32 UIControl::GetTag() const
+    {
 		return tag;
 	}
 	
@@ -258,8 +258,8 @@ namespace DAVA
 
 	
 	
-	int32 UIControl::GetState()
-	{
+    DAVA::int32 UIControl::GetState() const
+    {
 		return controlState;
 	}
 	
@@ -272,16 +272,17 @@ namespace DAVA
 	{
 		return background->GetSprite();
 	}
-	int32 UIControl::GetFrame()
+
+	int32 UIControl::GetFrame() const
 	{
 		return background->GetFrame();
 	}
 	
-	UIControlBackground::eDrawType UIControl::GetSpriteDrawType()
+	UIControlBackground::eDrawType UIControl::GetSpriteDrawType() const
 	{
 		return background->GetDrawType();
 	}
-	int32 UIControl::GetSpriteAlign()
+	int32 UIControl::GetSpriteAlign() const
 	{
 		return background->GetAlign();
 	}
@@ -375,7 +376,7 @@ namespace DAVA
 		}
 	}
 	
-	const Vector2 &UIControl::GetSize()
+	const Vector2 &UIControl::GetSize() const
 	{
 		return size;
 	}
@@ -384,7 +385,7 @@ namespace DAVA
 		size = newSize;
 	}
 	
-	float32 UIControl::GetAngle()
+	float32 UIControl::GetAngle() const
 	{
 		return angle;
 	}
@@ -464,7 +465,7 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::GetVisible()
+	bool UIControl::GetVisible() const
 	{
 		return visible;
 	}
@@ -490,7 +491,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetInputEnabled()
+	bool UIControl::GetInputEnabled() const
 	{
 		return inputEnabled;
 	}
@@ -508,7 +509,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetDisabled()
+	bool UIControl::GetDisabled() const
 	{
 		return ((controlState & STATE_DISABLED) != 0);
 	}
@@ -534,7 +535,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetSelected()
+	bool UIControl::GetSelected() const
 	{
 		return ((controlState & STATE_SELECTED) != 0);
 	}
@@ -561,7 +562,7 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::GetClipContents()
+	bool UIControl::GetClipContents() const
 	{
 		return clipContents;
 	}
@@ -570,8 +571,8 @@ namespace DAVA
 		clipContents = isNeedToClipContents;
 	}
 
-	bool UIControl::GetHover()
-	{
+    bool UIControl::GetHover() const
+    {
 		return (controlState & STATE_HOVER) != 0;
 	}
 
@@ -837,8 +838,8 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::IsOnScreen()
-	{
+    bool UIControl::IsOnScreen() const
+    {
 		if(parent)
 		{
 			return parent->IsOnScreen();
@@ -1452,7 +1453,7 @@ namespace DAVA
 		}
 
 		//Color
-		Color color =  this->GetBackground()->color;
+		Color color =  this->GetBackground()->GetColor();
 		Vector4 colorVector4(color.r, color.g, color.b, color.a);
 		nodeValue->SetVector4(colorVector4);        
 		node->Set("color", nodeValue);
@@ -1523,7 +1524,7 @@ namespace DAVA
 		
 		if(colorNode)
 		{
-			GetBackground()->color = loader->GetColorFromYamlNode(colorNode);
+			GetBackground()->SetColor( loader->GetColorFromYamlNode(colorNode) );
 			if(!spriteNode)
 			{
 				GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -1775,7 +1776,7 @@ namespace DAVA
 		}
 	}
     
-    bool UIControl::IsLostFocusAllowed(UIControl *newFocus)
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
     {
         return true;
     }

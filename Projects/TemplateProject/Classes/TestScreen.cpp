@@ -65,11 +65,11 @@ void TestScreen::LoadResources()
 
 	smallCircle->AddObject(bigBoxEmitter.Get());
 	
-	ParticleEmitterObject* bigBoxEmitterClone = new ParticleEmitterObject();
-	bigBoxEmitterClone->SetEmitter(bigBoxEmitter->GetEmitter()->Clone());
-	bigBoxEmitterClone->SetPriority(10);
-	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
-	manager->AddObject(bigBoxEmitterClone);
+//	ParticleEmitterObject* bigBoxEmitterClone = new ParticleEmitterObject();
+//	bigBoxEmitterClone->SetEmitter(bigBoxEmitter->GetEmitter()->Clone());
+//	bigBoxEmitterClone->SetPriority(10);
+//	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
+//	manager->AddObject(bigBoxEmitterClone);
 
 	testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
 
