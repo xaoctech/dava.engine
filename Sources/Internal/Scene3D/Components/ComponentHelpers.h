@@ -12,6 +12,7 @@ class RenderObject;
 class Light;
 class LandscapeNode;
 class Camera;
+class LodComponent;
 
 ParticleEmitter * GetEmitter(SceneNode * fromEntity);
 RenderObject * GetRenerObject(SceneNode * fromEntity);
@@ -21,6 +22,8 @@ LandscapeNode *GetLandscape(SceneNode * fromEntity);
 
 Camera * GetCamera(SceneNode * fromEntity);
 
+LodComponent * GetLodComponent(SceneNode *fromEntity);
+    
 }
 
 #endif //__DAVAENGINE_COMPONENT_HELPERS_H__
