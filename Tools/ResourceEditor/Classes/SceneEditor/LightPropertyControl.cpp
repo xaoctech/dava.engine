@@ -198,13 +198,3 @@ void LightPropertyControl::OnColorPropertyChanged(PropertyList *forList, const S
     }
 }
 
-Light *LightPropertyControl::GetLight(SceneNode *node)
-{
-    LightComponent *lc = static_cast<LightComponent *>(node->GetComponent(Component::LIGHT_COMPONENT));
-    if(lc)
-    {
-        return lc->GetLightObject();
-    }
-    
-    return NULL;
-}

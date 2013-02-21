@@ -197,7 +197,7 @@ public:
 		userData = newData;
 	}
     
-    bool IsEmpty()
+    bool IsEmpty() const
     {
         return (messageBase==0);
     }

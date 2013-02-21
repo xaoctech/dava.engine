@@ -226,12 +226,12 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 void ParticleEmitter::Play()
 {
     Pause(false);
-    Restart(false);
+    DoRestart(false);
 }
     
 void ParticleEmitter::Stop()
 {
-    Restart(true);
+    DoRestart(true);
     Pause(true);
 }
     
@@ -242,6 +242,12 @@ bool ParticleEmitter::IsStopped()
 }
 
 void ParticleEmitter::Restart(bool isDeleteAllParticles)
+{
+	DoRestart(isDeleteAllParticles);
+	Pause(false);
+}
+	
+void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 {
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)

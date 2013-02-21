@@ -48,7 +48,7 @@ void LayerForceWidget::InitWidget(QWidget* widget)
 
 void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
 {	
-	if (!layer || layer->particleForces.size() <= forceIndex)
+	if (!layer || layer->forces.size() <= forceIndex)
 	{
 		return;
 	}
@@ -61,7 +61,7 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	
 	float32 emitterLifeTime = emitter->GetLifeTime();
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
-	ParticleForce* curForce = layer->particleForces[forceIndex];
+	ParticleForce* curForce = layer->forces[forceIndex];
 
 	Vector<QColor> colors;
 	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen); colors.push_back(Qt::red);
@@ -126,7 +126,7 @@ void LayerForceWidget::OnValueChanged()
 	PropLineWrapper<float32> propForceOverLife;
 	forceOverLifeTimeLine->GetValue(0, propForceOverLife.GetPropsPtr());
 
-	CommandUpdateParticleLayerForce* updateForceCmd = new CommandUpdateParticleLayerForce(layer, forceIndex);
+	CommandUpdateParticleForce* updateForceCmd = new CommandUpdateParticleForce(layer, forceIndex);
 	updateForceCmd->Init(propForce.GetPropLine(),
 						 propForceVariable.GetPropLine(),
 						 propForceOverLife.GetPropLine());

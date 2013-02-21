@@ -5,6 +5,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -30,6 +31,8 @@ void TransformSystem::UnlinkTransform(int32 childIndex)
 
 void TransformSystem::Process()
 {
+    TIME_MEASURE("TransformSystem::Process");
+    
 	passedNodes = 0;
 	multipliedNodes = 0;
 

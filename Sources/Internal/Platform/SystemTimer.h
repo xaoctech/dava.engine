@@ -68,6 +68,7 @@ public:
 	virtual ~SystemTimer();
 
     uint64 AbsoluteMS();
+    uint64 GetAbsoluteNano();
 
 	static void SetFrameDelta(float32 _delta); //for replay playback only
 	

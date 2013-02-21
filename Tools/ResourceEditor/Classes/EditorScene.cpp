@@ -556,7 +556,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SceneNode *n = node;
     
     do {
-        LodComponent *lc = static_cast<LodComponent *>(n->GetComponent(Component::LOD_COMPONENT));
+        LodComponent *lc = GetLodComponent(n);
         if(lc)
         {
             lc->SetForceLodLayer(layer);
@@ -570,7 +570,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
 
 void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 {
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
     {
         lc->SetForceLodLayer(layer);
@@ -588,7 +588,7 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 {
     if(!node)   return -1;
 
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
         return lc->GetForceLodLayer();
     

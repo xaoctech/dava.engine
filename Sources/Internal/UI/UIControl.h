@@ -229,19 +229,19 @@ public:
 		You can call this function directly for the controlBackgound.
 	 \returns Sprite frame used for draw.
 	 */
-	virtual int32 GetFrame();
+	virtual int32 GetFrame() const;
 	/**
 	 \brief Returns draw type used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
 	 \returns Draw type used for draw.
 	 */
-	virtual UIControlBackground::eDrawType GetSpriteDrawType();
+	virtual UIControlBackground::eDrawType GetSpriteDrawType() const;
 	/**
 	 \brief Returns Sprite align used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
 	 \returns Sprite eAlign bit mask used for draw.
 	 */
-	virtual int32 GetSpriteAlign();
+	virtual int32 GetSpriteAlign() const;
 	/**
 	 \brief Sets Sprite for the control UIControlBackground object.
 	 \param[in] spriteName Sprite path-name.
@@ -319,7 +319,7 @@ public:
 		geometric data received with GetGeometricData().
 	 \returns control size.
 	 */
-	virtual const Vector2 &GetSize();
+	virtual const Vector2 &GetSize() const;
 	/**
 	 \brief Sets the untransformed control size.
 	 \param[in] newSize new control size.
@@ -343,7 +343,7 @@ public:
 	 \brief Returns control rotation angle in radians.
 	 \returns control angle in radians.
 	 */
-	virtual float32 GetAngle();
+	virtual float32 GetAngle() const;
 	/**
 	 \brief Sets contol rotation angle in radians.
 		Control rotates around the pivot point.
@@ -359,7 +359,7 @@ public:
 		But this methods calls for their children.
 	 \returns control visibility.
 	 */
-	virtual bool GetVisible();
+	virtual bool GetVisible() const;
 	/**
 	 \brief Sets contol visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -377,7 +377,7 @@ public:
 		Be ware! Base control processing inputs by default.
 	 \returns true if control pocessing inputs.
 	 */
-	virtual bool GetInputEnabled();
+	virtual bool GetInputEnabled() const;
 	/**
 	 \brief Sets contol input processing ability.
 		If input is disabled control don't process any inputs. If input is disabled all inputs events would comes to the parent control.
@@ -397,7 +397,7 @@ public:
 		All controls is enabled by default.
 	 \returns true if control is disabled.
 	 */
-	virtual bool GetDisabled();
+	virtual bool GetDisabled() const;
 	/**
 	 \brief Sets the contol enabling/disabling.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -413,7 +413,7 @@ public:
 	 \brief Returns control selection state.
 	 \returns is control selected.
 	 */
-	virtual bool GetSelected();
+	virtual bool GetSelected() const;
 	/**
 	 \brief Sets contol selection state.
 		Selection state don't influence on any control activities.
@@ -427,7 +427,7 @@ public:
 		Clip contents is disabled by default.
 	 \returns true if control rect clips draw and input areas of his children.
 	 */
-	virtual bool GetClipContents();
+	virtual bool GetClipContents() const;
 	/**
 	 \brief Sets clip contents state.
 		If clip contents is enabled all incoming inputs for the control children processed only
@@ -442,7 +442,7 @@ public:
 		Only controlsa what processed inputs may be hovered.
 	 \returns control hover state is true if mouse placed over the control rect and no mous buttons is pressed.
 	 */
-	virtual bool GetHover();
+    virtual bool GetHover() const;
 
 	/**
 	 \brief Is exclusive input enabled.
@@ -452,7 +452,7 @@ public:
 		Exclusive input is disabled by default.
 	 \returns true if control supports exclusive input.
 	 */
-	virtual bool GetExclusiveInput();
+    virtual bool GetExclusiveInput() const;
 	/**
 	 \brief Enables or disables control exclusive input.
 		If control have exlusive input enabled and this control starts to process 
@@ -470,7 +470,7 @@ public:
 		Multiply input is disabled by default.
 	 \returns true if control supports multyple inputs.
 	 */
-	virtual bool GetMultiInput();
+    virtual bool GetMultiInput() const;
 	/**
 	 \brief Sets contol multi input processing.
 		If multiple input is enabled control can process all incoming inputs (Two or 
@@ -492,7 +492,7 @@ public:
 	 \brief Returns current name of the control.
 	 \returns control name.
 	 */
-	const String & GetName(); 
+    const String & GetName() const; 
 
 	/**
 	 \brief Sets the contol tag.
@@ -503,7 +503,7 @@ public:
 	 \brief Returns current control tag.
 	 \returns control tag.
 	 */
-	int32 GetTag();
+    int32 GetTag() const;
 
 	/**
 	 \brief Returns control with given name.
@@ -517,7 +517,7 @@ public:
 	 \brief Returns control state bit mask.
 	 \returns control state.
 	 */
-	int32 GetState();
+    int32 GetState() const;
 	/**
 	 \brief Sets control state bit mask.
 		Try to not use this method manually.
@@ -534,7 +534,7 @@ public:
 	 \brief Returns list of control children.
 	 \returns list of control children.
 	 */
-	const List<UIControl*> &GetChildren();
+    const List<UIControl*> &GetChildren() const;
 	/**
 	 \brief Returns list of control children without internal controls.
 	 \returns list of control children without internal controls.
@@ -953,7 +953,7 @@ public:
 	 \brief Returns control on screen status.
 	 \returns True if control in view hierarchy for now.
 	 */
-	bool IsOnScreen();
+    bool IsOnScreen() const;
 	/**
 	 \brief Returns point status realtive to control .
 	 \param[in] point Point to check.
@@ -964,7 +964,7 @@ public:
 
 
     
-    virtual bool IsLostFocusAllowed(UIControl *newFocus);
+    virtual bool IsLostFocusAllowed(UIControl *newFocus) const;
 
     virtual void SystemOnFocusLost(UIControl *newFocus);
 
