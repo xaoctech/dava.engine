@@ -44,7 +44,7 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 			this,
 			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*)),
+			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
 			SLOT(OnNodeSelected(SceneNode*)));
 	connect(ParticlesEditorController::Instance(),
