@@ -1035,6 +1035,11 @@ LandscapeEditorBase* EditorBodyControl::GetLandscapeEditor(int32 landscapeEditor
 	return editor;
 }
 
+LandscapeEditorBase* EditorBodyControl::GetCurrentLandscapeEditor()
+{
+	return currentLandscapeEditor;
+}
+
 void EditorBodyControl::LandscapeEditorStarted()
 {
     RemoveControl(sceneInfoControl);

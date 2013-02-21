@@ -46,6 +46,8 @@ public:
 	Image* StoreState();
 	void RestoreState(Image* image);
 
+	virtual void UpdateLandscapeTilemap(Texture* texture);
+
 protected:
 
     virtual void InputAction(int32 phase, bool intersects);
@@ -75,10 +77,8 @@ protected:
     void DrawCircle(Vector<Vector<bool> >& matrixForCircle) ;
     uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent);
 
-    EditorHeightmap *editedHeightmap;
-    Heightmap *savedHeightmap;
-
-
+	Map<LandscapeNode*, String> saveFileNamesMap;
+	
 	bool wasTileMaskToolUpdate;
     
     LandscapeEditorSettings *settings;

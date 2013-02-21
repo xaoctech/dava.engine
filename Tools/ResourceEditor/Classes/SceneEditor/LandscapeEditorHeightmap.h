@@ -38,8 +38,10 @@ public:
 
 	Heightmap* GetHeightmap();
 	void UpdateHeightmap(Heightmap* heightmap);
-    
+
+	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
+	void CreateUndoPoint();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
@@ -84,7 +86,8 @@ protected:
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
 
-	CommandDrawHeightmap* command;
+	Heightmap* oldHeightmap;
+	Image* oldTilemap;
 };
 
 

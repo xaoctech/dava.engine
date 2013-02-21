@@ -74,6 +74,8 @@ public:
 
 	virtual void ClearSceneResources();
 
+	virtual void UpdateLandscapeTilemap(Texture* texture) {};
+
 protected:
 
     virtual void SaveTexture();
