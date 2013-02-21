@@ -212,6 +212,8 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     {
         node->RemoveNodeFromMap("sprite");
     }
+	
+	UIStaticText *baseControl = new UIStaticText();	
 
     //Temp variable
     VariantType *nodeValue = new VariantType();
@@ -228,13 +230,23 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     nodeValue->SetWideString(GetText());
     node->Set("text", nodeValue);    
     //Multiline
-    node->Set("multiline", this->textBlock->GetMultiline());
+	if (baseControl->textBlock->GetMultiline() != this->textBlock->GetMultiline())
+	{
+    	node->Set("multiline", this->textBlock->GetMultiline());
+	}
     //multilineBySymbol
-    node->Set("multilineBySymbol", this->textBlock->GetMultilineBySymbol());
-    //fitting - STRING OF INT???  
-    node->Set("fitting", this->textBlock->GetFittingOption());
+	if (baseControl->textBlock->GetMultilineBySymbol() != this->textBlock->GetMultilineBySymbol())
+	{
+    	node->Set("multilineBySymbol", this->textBlock->GetMultilineBySymbol());
+	}
+    //fitting - STRING OF INT???
+	if (baseControl->textBlock->GetFittingOption() != this->textBlock->GetFittingOption())
+	{
+    	node->Set("fitting", this->textBlock->GetFittingOption());
+	}
     
     SafeDelete(nodeValue);
+	SafeRelease(baseControl);
     
     return node;
 }
