@@ -1,0 +1,10 @@
+/assets/
+/bin/
+/gen/
+/obj/
+/libs/
+/.settings/
+/.classpath
+/.cproject
+/.project
+/*.properties

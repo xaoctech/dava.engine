@@ -31,7 +31,7 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Platform/Android/CorePlatformAndroid.h"
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/ResourceArchive.h"
