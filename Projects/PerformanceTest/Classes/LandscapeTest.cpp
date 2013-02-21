@@ -68,11 +68,13 @@ void LandscapeTest::LoadResources()
     Scene *scene = new Scene();
     scene->AddNode(scene->GetRootNode(String("~res:/3d/LandscapeTest/landscapetest.sc2"))); 
 
-    Camera *cam = (Camera *)scene->FindByName(String("TestCamera"));
+    SceneNode *cameraHolder = scene->FindByName(String("TestCamera"));
+    Camera *cam = GetCamera(cameraHolder);
     scene->AddCamera(cam); 
     scene->SetCurrentCamera(cam);
-    
-    land = (LandscapeNode *)scene->FindByName(String("Landscape")); 
+  
+    SceneNode *landscapeHolder = scene->FindByName(String("Landscape"));
+    land = GetLandscape(landscapeHolder);
     if(land)
     {
         if(LandscapeNode::TILED_MODE_COUNT == shaderMode)

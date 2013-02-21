@@ -226,25 +226,25 @@ void CommandUpdateParticleLayerEnabled::Execute()
 	}
 }
 
-CommandUpdateParticleLayerForce::CommandUpdateParticleLayerForce(ParticleLayer* layer, uint32 forceId) :
+CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId) :
 	Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
 	this->layer = layer;
 	this->forceId = forceId;
 }
 
-void CommandUpdateParticleLayerForce::Init(RefPtr< PropertyLine<Vector3> > force,
-										   RefPtr< PropertyLine<Vector3> > forcesVariation,
-										   RefPtr< PropertyLine<float32> > forcesOverLife)
+void CommandUpdateParticleForce::Init(RefPtr< PropertyLine<Vector3> > force,
+									  RefPtr< PropertyLine<Vector3> > forcesVariation,
+									RefPtr< PropertyLine<float32> > forcesOverLife)
 {
 	this->force = force;
 	this->forcesVariation = forcesVariation;
 	this->forcesOverLife = forcesOverLife;
 }
 
-void CommandUpdateParticleLayerForce::Execute()
+void CommandUpdateParticleForce::Execute()
 {
-	layer->UpdateParticleForce(forceId, force, forcesVariation, forcesOverLife);
+	layer->UpdateForce(forceId, force, forcesVariation, forcesOverLife);
 }
 
 

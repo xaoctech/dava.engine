@@ -323,6 +323,9 @@ protected:
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
 	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong);
 
+	// Internal restart function.
+	void DoRestart(bool isDeleteAllParticles);
+
     String GetEmitterTypeName();
 
 	void CleanupLayers();

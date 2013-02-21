@@ -254,6 +254,7 @@ public:
 	virtual int32 GetDesirableResourceIndex();
 	virtual int32 GetBaseResourceIndex();
 	
+    virtual uint32 GetScreenDPI();
 	
 	/*
 		\brief Mouse cursor for the platforms where it make sense (Win32, MacOS X) 

@@ -15,11 +15,6 @@ public:
     
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
-    
-private:
-    
-    Camera * GetCamera(SceneNode *node);
-
 };
 
 #endif //__CAMERA_PROPERTY_CONTROL_H__
