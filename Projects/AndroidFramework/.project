@@ -1542,11 +1542,6 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleSystem.h</locationURI>
 		</link>
 		<link>
-			<name>src/Internal/Platform/.gitignore</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/.gitignore</locationURI>
-		</link>
-		<link>
 			<name>src/Internal/Platform/DPIHelper.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/DPIHelper.h</locationURI>
@@ -4290,11 +4285,6 @@
 			<name>bin/classes/Internal/Particles/ParticleSystem.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Particles/ParticleSystem.h</locationURI>
-		</link>
-		<link>
-			<name>bin/classes/Internal/Platform/.gitignore</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/.gitignore</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Platform/DPIHelper.h</name>
