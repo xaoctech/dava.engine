@@ -72,6 +72,7 @@ public:
 	
 	//! Get point array
 	inline Vector2 * GetPoints();
+    inline const Vector2 * GetPoints() const;
     inline int32 GetPointCount() const;
 	
 	//! Remove segment with index
@@ -84,19 +85,19 @@ public:
 	void RemovePointsInCircle(const Vector2 & center, float32 radius);
 	
 	//! Move by polyline and get position on polyline based on distance
-	void InterpolatePositionFromDistance(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex);
+	void InterpolatePositionFromDistance(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex) const;
 
 	//! Move by polyline and get position on polyline based on distance
-	void InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex);
+	void InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex) const;
 	
 	//! Check if point lays inside polygon
-	bool IsPointInside(const Vector2 & pt);
+	bool IsPointInside(const Vector2 & pt) const;
 	
 	//! Square length of poly segments
-	float32 SquareLength();
+	float32 SquareLength() const;
 
 	//! Length of poly segments
-	float32 Length();
+	float32 Length() const;
 
 	//! Translate whole polygon
 	void	Translate(const Vector2 & translatePos);
@@ -108,16 +109,16 @@ public:
 	void	Transform(const Matrix3 & matrix);
 	
 	//! Calculate center point for the polygon
-	void CalculateCenterPoint(Vector2 & center); 
+	void CalculateCenterPoint(Vector2 & center) const;
 
     //! Calculate size rect for the polygon
-    void CalculateSizeRect(Vector2 &size); 
+    void CalculateSizeRect(Vector2 &size) const;
 
 	//! Calculate center point and radius for polygon
-	float32 CalculateSquareRadius(const Vector2 & center);
+	float32 CalculateSquareRadius(const Vector2 & center) const;
 	
 	//! Merge all segments triangle's height of which bigger or equal than minTriangleHeight 
-	static void MergeFlatPolygonSegments(Polygon2 &srcPolygon, Polygon2 &destPolygon, float32 minTriangleHeight);
+	static void MergeFlatPolygonSegments(const Polygon2 &srcPolygon, Polygon2 &destPolygon, float32 minTriangleHeight);
 };
 
 
@@ -171,6 +172,11 @@ inline Vector2 * Polygon2::GetPoints()
 {
 	return &points.front();
 }
+inline const Vector2 * Polygon2::GetPoints() const
+{
+    return &points.front();
+}
+
 inline int32 Polygon2::GetPointCount() const
 {
 	return pointCount;
