@@ -10,6 +10,9 @@
 
 using namespace DAVA;
 
+
+float32 DPITest::AUTO_CLOSE_TIME = 30.f;
+
 DPITest::DPITest() :
  TestTemplate<DPITest>("DPITest")
 {
@@ -19,6 +22,8 @@ DPITest::DPITest() :
 	testFinished = false;
 	
 	RegisterFunction(this, &DPITest::TestFunction, Format("DPITest"), NULL);
+    
+    onScreenTime = 0.f;
 }
 
 void DPITest::LoadResources()
@@ -56,6 +61,23 @@ void DPITest::UnloadResources()
 
 	SafeRelease(testButton);
 	SafeRelease(staticText);
+}
+
+
+void DPITest::DidAppear()
+{
+    onScreenTime = 0.f;
+}
+
+void DPITest::Update(float32 timeElapsed)
+{
+    onScreenTime += timeElapsed;
+    if(onScreenTime > AUTO_CLOSE_TIME)
+    {
+        testFinished = true;
+    }
+    
+    TestTemplate<DPITest>::Update(timeElapsed);
 }
 
 void DPITest::TestFunction(PerfFuncData * data)
