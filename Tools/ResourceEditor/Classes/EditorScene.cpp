@@ -86,6 +86,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
 	}
+
 	//else if (userNode)
 	//{
 	//	if (userNode->GetUserData() == 0)
@@ -102,10 +103,34 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	//	}
 	//}
 
+	CheckDebugFlags(curr);
+
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{
 		CheckNodes(curr->GetChild(i));
+	}
+}
+
+void EditorScene::CheckDebugFlags(SceneNode * curr)
+{
+	DebugRenderComponent *dbgComp = NULL;
+
+	// create debug render component for all nodes
+	if(NULL != curr)
+	{
+		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(NULL == dbgComp)
+		{
+			dbgComp = new DebugRenderComponent();
+
+			if(NULL != curr->GetComponent(Component::CAMERA_COMPONENT))
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_CAMERA);
+			}
+
+			curr->AddComponent(dbgComp);
+		}
 	}
 }
 
