@@ -719,6 +719,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	SpritePackerHelper::Instance()->UpdateParticleSpritesAsync();
+	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
