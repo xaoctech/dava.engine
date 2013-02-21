@@ -67,8 +67,6 @@
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
-		17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
@@ -166,15 +164,6 @@
 				FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		17EACFAC16C3FF3600F6D3D2 /* DLCTest */ = {
-			isa = PBXGroup;
-			children = (
-				17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */,
-				17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */,
-			);
-			name = DLCTest;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
