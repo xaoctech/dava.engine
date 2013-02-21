@@ -964,14 +964,4 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
     return trianglesCount;
 }
 
-LodComponent *NodesPropertyControl::GetLodComponent(SceneNode *node)
-{
-    if(node)
-    {
-        LodComponent *lodComponent = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
-        return lodComponent;
-    }
-
-    return NULL;
-}
 

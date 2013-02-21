@@ -14,6 +14,8 @@ StatePropertyGridWidget::StatePropertyGridWidget(QWidget *parent) :
     ui->setupUi(this);
     SetPropertyBlockName(STATE_PROPERTY_BLOCK_NAME);
     ui->stateSelectComboBox->setItemDelegate(&stateComboboxItemDelegate);
+	
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 StatePropertyGridWidget::~StatePropertyGridWidget()

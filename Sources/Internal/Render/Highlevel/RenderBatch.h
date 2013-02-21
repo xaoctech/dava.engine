@@ -215,11 +215,6 @@ inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _remov
     removeIndex = _removeIndex;
 }
     
-inline void RenderBatch::SetSortingKey(uint32 _key)
-{
-    sortingKey = _key;
-}
-    
 inline uint32 RenderBatch::GetSortingKey()
 {
     return sortingKey;

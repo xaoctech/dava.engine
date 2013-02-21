@@ -94,6 +94,7 @@ void RenderLayer::Update(Camera * camera)
                 renderBatchArray[k] = item.renderBatch;
                 item.renderBatch->SetRemoveIndex(this, k);
             }
+            flags &= ~SORT_REQUIRED;
         }
         
         if (flags & SORT_BY_DISTANCE)
