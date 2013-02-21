@@ -36,8 +36,7 @@ public:
 	
 	void SetQtScreen(const QWidget* widget);
     
-	int GetWidth() const;
-	int GetHeight() const;
+	QRect GetRect() const;
 	void SetViewPos(int posX, int posY, const QRect& size);
 	void RequestViewMove(const Vector2& delta);
 	void RequestUpdateView();
