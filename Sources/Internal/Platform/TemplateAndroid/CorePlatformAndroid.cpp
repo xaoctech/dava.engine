@@ -34,7 +34,15 @@ namespace DAVA
 
 	Core::eDeviceFamily Core::GetDeviceFamily()
 	{
-		//TODO: need to create real function
+		float32 width = GetPhysicalScreenWidth();
+		float32 height = GetPhysicalScreenHeight();
+		float32 dpi = GetScreenDPI();
+
+		float32 inches = sqrt((width * width) + (height * height)) / dpi;
+
+		if (inches > 6.f)
+			return DEVICE_PAD;
+
 		return DEVICE_HANDSET;
 	}
 
