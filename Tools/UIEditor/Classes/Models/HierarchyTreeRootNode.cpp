@@ -24,6 +24,4 @@ void HierarchyTreeRootNode::Clear()
 void HierarchyTreeRootNode::SetProjectPath(const QString& projectPath)
 {
 	this->projectPath = projectPath;
-	QFileInfo fileInfo(projectPath);
-	projectFolder = fileInfo.absoluteDir().absolutePath() + "/";
 }

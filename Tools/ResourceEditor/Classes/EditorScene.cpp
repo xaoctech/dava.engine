@@ -86,6 +86,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
 	}
+
 	//else if (userNode)
 	//{
 	//	if (userNode->GetUserData() == 0)
@@ -102,10 +103,34 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	//	}
 	//}
 
+	CheckDebugFlags(curr);
+
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{
 		CheckNodes(curr->GetChild(i));
+	}
+}
+
+void EditorScene::CheckDebugFlags(SceneNode * curr)
+{
+	DebugRenderComponent *dbgComp = NULL;
+
+	// create debug render component for all nodes
+	if(NULL != curr)
+	{
+		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(NULL == dbgComp)
+		{
+			dbgComp = new DebugRenderComponent();
+
+			if(NULL != curr->GetComponent(Component::CAMERA_COMPONENT))
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_CAMERA);
+			}
+
+			curr->AddComponent(dbgComp);
+		}
 	}
 }
 
@@ -531,7 +556,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SceneNode *n = node;
     
     do {
-        LodComponent *lc = static_cast<LodComponent *>(n->GetComponent(Component::LOD_COMPONENT));
+        LodComponent *lc = GetLodComponent(n);
         if(lc)
         {
             lc->SetForceLodLayer(layer);
@@ -545,7 +570,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
 
 void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 {
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
     {
         lc->SetForceLodLayer(layer);
@@ -563,7 +588,7 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 {
     if(!node)   return -1;
 
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
         return lc->GetForceLodLayer();
     

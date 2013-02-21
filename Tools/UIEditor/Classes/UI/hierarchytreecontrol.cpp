@@ -118,7 +118,7 @@ void HierarchyTreeControl::dropEvent(QDropEvent *event)
 	else //Otherwise move item(s)
 	{
 		HierarchyTreeNode::HIERARCHYTREENODESIDLIST items = mimeData->GetItems();
-		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(parentNode, items);
+		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(parentNode->GetId(), items);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
 	}

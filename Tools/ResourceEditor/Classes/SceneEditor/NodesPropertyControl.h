@@ -111,8 +111,6 @@ protected:
     
     Vector<LodComponent *>childLodComponents;
     Vector<float32 *>childDistances;
-    
-    LodComponent *GetLodComponent(SceneNode *node);
 };
 
 

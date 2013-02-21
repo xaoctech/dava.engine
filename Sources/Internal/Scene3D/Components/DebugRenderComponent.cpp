@@ -4,7 +4,7 @@ namespace DAVA
 {
 
 DebugRenderComponent::DebugRenderComponent()
-    : debugFlags(0)
+    : curDebugFlags(DEBUG_DRAW_NONE)
 {
 }
 
@@ -12,42 +12,32 @@ DebugRenderComponent::~DebugRenderComponent()
 {
 }
     
-void DebugRenderComponent::SetDebugFlags(uint32 _debugFlags)
+void DebugRenderComponent::SetDebugFlags(uint32 debugFlags)
 {
-    debugFlags = _debugFlags;
+    curDebugFlags = debugFlags;
 }
     
 uint32 DebugRenderComponent::GetDebugFlags()
 {
-    return debugFlags;
+    return curDebugFlags;
 }
     
 Component * DebugRenderComponent::Clone(SceneNode * toEntity)
 {
     DebugRenderComponent * component = new DebugRenderComponent();
 	component->SetEntity(toEntity);
-    component->debugFlags = debugFlags;
+    component->curDebugFlags = curDebugFlags;
     return component;
 }
 
 void DebugRenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	Component::Serialize(archive, sceneFile);
-
-	if(NULL != archive)
-	{
-		archive->SetUInt32("drc.flags", debugFlags);
-	}
+	// Don't need to save
 }
 
 void DebugRenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	if(NULL != archive)
-	{
-		if(archive->IsKeyExists("drc.flags")) debugFlags = archive->GetUInt32("drc.flags");
-	}
-
-	Component::Deserialize(archive, sceneFile);
+	// Don't need to load
 }
 
 };
