@@ -364,10 +364,10 @@ ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(Layer
     // Add the new Force to the Layer.
 	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
 												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
-	layer->AddParticleForce(newForce);
+	layer->AddForce(newForce);
 
     // Create the node for the new layer.
-    int newLayerIndex = layer->particleForces.size() - 1;
+    int newLayerIndex = layer->forces.size() - 1;
     ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(layerNode, newLayerIndex);
     layerNode->AddChildNode(forceNode);
 
@@ -396,7 +396,7 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
 
     // Remove the force from the emitter...
     int forceIndex = forceNode->GetForceIndex();
-	layer->RemoveParticleForce(forceIndex);
+	layer->RemoveForce(forceIndex);
     
     // ...and from the tree.
     layerNode->RemoveChildNode(forceNode);

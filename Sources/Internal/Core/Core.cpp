@@ -43,6 +43,7 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
+#include "Platform/DPIHelper.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -734,5 +735,9 @@ void Core::EnableReloadResourceOnResize(bool enable)
     enabledReloadResourceOnResize = enable;
 }
     
+uint32 Core::GetScreenDPI()
+{
+	return DPIHelper::GetScreenDPI();
+}
 
 };

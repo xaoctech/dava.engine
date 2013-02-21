@@ -305,7 +305,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeLayerParticleEditorNode(LayerPa
     }
 
     // Synchronize the Forces.
-    int32 forcesCountInLayer = layer->particleForces.size();
+    int32 forcesCountInLayer = layer->forces.size();
     int32 forcesCountInLayerNode = node->GetForcesCount();
 
     if (forcesCountInLayer > 0 && forcesCountInLayerNode == 0)

@@ -60,6 +60,7 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
     uint32 GetRenderBatchCount();
+    inline void ForceLayerSort();
     
     void Update(Camera * camera);
     virtual void Draw(Camera * camera);
@@ -84,8 +85,13 @@ public:
         MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_EDITOR)
     );
-
 };
+    
+inline void RenderLayer::ForceLayerSort()
+{
+    flags |= SORT_REQUIRED;
+}
+
     
 } // ns
 
