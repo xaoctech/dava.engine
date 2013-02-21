@@ -390,6 +390,5 @@ void CoreWin32Platform::SetFocused(bool focused)
 	}
 }
 
-	
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)

@@ -167,19 +167,19 @@ public:
         \brief Draws 2D bounding box
         \param box given bounding box
      */
-	void DrawBox(const AABBox2 & box);
+	void DrawBox(const AABBox2 & box, float32 lineWidth = 1.f);
 
     /**
         \brief Draws 3D bounding box
         \param box given bounding box
      */
-	void DrawBox(const AABBox3 & box);
+	void DrawBox(const AABBox3 & box, float32 lineWidth = 1.f);
 	
     /**
 	 \brief Draws 3D bounding box with corners
 	 \param box given bounding box
      */
-	void DrawCornerBox(const AABBox3 & bbox);
+	void DrawCornerBox(const AABBox3 & bbox, float32 lineWidth = 1.f);
 	
 	void DrawSphere(float32 r);
 
