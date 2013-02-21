@@ -30,6 +30,7 @@ private:
     void ConnectToSignals();
     void InitializeTableView();
     void UpdateTableViewContents();
+	void UpdateDialogInformation();
 
 private slots:
     void OkButtonClicked();

@@ -31,23 +31,21 @@ void ScreenWrapper::SetQtScreen(const QWidget* widget)
 	this->qtScreen = widget;
 }
 
-
-int ScreenWrapper::GetWidth() const
+QRect ScreenWrapper::GetRect() const
 {
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
+	QRect rect;
 	HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-	if (activePlatform && activeScreen)
-		return activePlatform->GetWidth() * activeScreen->GetScale();
-	return 0;
-}
-
-int ScreenWrapper::GetHeight() const
-{
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
-	HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-	if (activePlatform && activeScreen)
-		return activePlatform->GetHeight() * activeScreen->GetScale();
-	return 0;
+	if (activeScreen)
+	{
+		float scale = GetScale();
+		Rect orgRect = activeScreen->GetRect();
+		orgRect.x *= scale;
+		orgRect.y *= scale;
+		orgRect.dx *= scale;
+		orgRect.dy *= scale;
+		rect = QRect(orgRect.x, orgRect.y, orgRect.dx, orgRect.dy);
+	}
+	return rect;
 }
 
 void ScreenWrapper::SetScale(float scale)
@@ -132,25 +130,27 @@ void ScreenWrapper::SetViewPos(int posX, int posY, const QRect& size)
 		screenNode->SetPosX(posX);
 		screenNode->SetPosY(posY);
 	}
-
-	if (GetWidth() < size.width())
+	
+	QRect screenRect = GetRect();
+	
+	if (screenRect.width() < size.width())
 	{
-		posX = size.width() - GetWidth();
-		posX *= 1/GetScale() * 0.5f;
+		posX = (size.width() - screenRect.width()) / 2 - screenRect.topLeft().x();
+		posX /= GetScale();
 	}
 	else
 	{
-		posX = -posX;
+		posX = -(screenRect.topLeft().x() + posX) / GetScale();
 	}
 
-	if (GetHeight() < size.height())
+	if (screenRect.height() < size.height())
 	{
-		posY =  size.height() - GetHeight();
-		posY *= 1/GetScale() * 0.5f;
+		posY = (size.height() - screenRect.height()) / 2 - screenRect.topLeft().y();
+		posY /= GetScale();
 	}
 	else
 	{
-		posY = -posY;
+		posY = -(screenRect.topLeft().y() + posY) / GetScale();
 	}
 	
 	activeScreen->SetPos(Vector2(posX, posY));
