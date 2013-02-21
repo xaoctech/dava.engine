@@ -82,6 +82,7 @@ public:
     
     bool ToggleLandscapeEditor(int32 landscapeEditorMode);
 	LandscapeEditorBase* GetLandscapeEditor(int32 landscapeEditorMode);
+	LandscapeEditorBase* GetCurrentLandscapeEditor();
     
     void RecreteFullTilingTexture();
 

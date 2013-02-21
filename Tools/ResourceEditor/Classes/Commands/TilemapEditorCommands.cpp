@@ -3,6 +3,11 @@
 #include "../Qt/Main/GUIState.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
+#include "SceneData.h"
+#include "SceneDataManager.h"
+#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "LandscapesController.h"
+
 //Show/Hide Tilemap Editor
 CommandTilemapEditor::CommandTilemapEditor()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
@@ -25,15 +30,15 @@ void CommandTilemapEditor::Execute()
 }
 
 
-CommandDrawTilemap::CommandDrawTilemap()
+CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, LandscapeNode* landscape)
 :	Command(COMMAND_UNDO_REDO)
+,	landscape(landscape)
 {
 	commandName = "Tilemap Draw";
-	redoImage = NULL;
 
-	LandscapeEditorColor* editor = GetEditor();
-	if (editor)
-		editor->StoreState(&undoImage);
+	savedPathname = FileSystem::Instance()->ReplaceExtension(pathname, ".png");;
+	undoImage = SafeRetain(originalImage);
+	redoImage = SafeRetain(newImage);
 }
 
 CommandDrawTilemap::~CommandDrawTilemap()
@@ -51,21 +56,46 @@ void CommandDrawTilemap::Execute()
 		return;
 	}
 
-	if (redoImage == NULL)
-	{
-		editor->StoreState(&redoImage);
-	}
-	else
-	{
-		editor->RestoreState(redoImage);
-	}
+	UpdateLandscapeTilemap(redoImage);
 }
 
 void CommandDrawTilemap::Cancel()
 {
-	LandscapeEditorColor* editor = GetEditor();
+	UpdateLandscapeTilemap(undoImage);
+}
+
+void CommandDrawTilemap::UpdateLandscapeTilemap(DAVA::Image *image)
+{
+	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+	texture->relativePathname = savedPathname;
+	texture->GenerateMipmaps();
+	texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+
+	LandscapeEditorBase* editor = GetActiveEditor();
 	if (editor)
-		editor->RestoreState(undoImage);
+	{
+		editor->UpdateLandscapeTilemap(texture);
+	}
+	else if (landscape)
+	{
+		landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+		landscape->UpdateFullTiledTexture();
+	}
+
+	SafeRelease(texture);
+}
+
+LandscapeEditorBase* CommandDrawTilemap::GetActiveEditor()
+{
+	LandscapeEditorBase* editor = NULL;
+	
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	if(screen)
+	{
+		editor = screen->FindCurrentBody()->bodyControl->GetCurrentLandscapeEditor();
+	}
+
+	return editor;
 }
 
 LandscapeEditorColor* CommandDrawTilemap::GetEditor()

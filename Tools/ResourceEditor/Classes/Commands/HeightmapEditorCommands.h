@@ -15,10 +15,22 @@ protected:
     virtual void Execute();
 };
 
-class CommandDrawHeightmap: public Command
+class HeightmapModificationCommand: public Command
 {
 public:
-	CommandDrawHeightmap();
+	HeightmapModificationCommand(Command::eCommandType type);
+
+protected:
+	static String TimeString();
+	static String SaveHeightmap(Heightmap* heightmap);
+	static LandscapeEditorHeightmap* GetEditor();
+	static void UpdateLandscapeHeightmap(String filename);
+};
+
+class CommandDrawHeightmap: public HeightmapModificationCommand
+{
+public:
+	CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap);
 	virtual ~CommandDrawHeightmap();
 	
 protected:
@@ -27,11 +39,29 @@ protected:
 
 	virtual void Execute();
 	virtual void Cancel();
+};
 
-	LandscapeEditorHeightmap* GetEditor();
+class CommandCopyPasteHeightmap: public HeightmapModificationCommand
+{
+public:
+	CommandCopyPasteHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, LandscapeNode* landscape, const String& tilemapSavedPath);
+	virtual ~CommandCopyPasteHeightmap();
 
-	String TimeString();
-	String SaveHeightmap(Heightmap* heightmap);
+protected:
+	String heightmapUndoFilename;
+	String heightmapRedoFilename;
+
+	Image* tilemapUndoImage;
+	Image* tilemapRedoImage;
+	String tilemapSavedPathname;
+
+	LandscapeNode* landscape;
+
+	virtual void Execute();
+	virtual void Cancel();
+
+	void UpdateLandscapeTilemap(Image* image);
+	LandscapeEditorBase* GetActiveEditor();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORCOMMANDS__) */

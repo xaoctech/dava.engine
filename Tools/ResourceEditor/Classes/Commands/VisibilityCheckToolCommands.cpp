@@ -90,14 +90,14 @@ void CommandChangeAreaSizeVisibilityTool::Execute()
 }
 
 
-CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint)
-:	Command(COMMAND_UNDO_REDO),
-	point(newVisibilityPoint)
+CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT)
+,	point(newVisibilityPoint)
+,	oldPoint(oldVisibilityPoint)
+,	oldPointIsSet(oldPointIsSet)
+,	oldImage(oldImage)
 {
 	commandName = "Place Visibility Point";
-	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
-	if (editor)
-		editor->StorePointState(&oldPoint, &oldPointIsSet, &oldImage);
 }
 
 CommandPlacePointVisibilityTool::~CommandPlacePointVisibilityTool()
@@ -134,15 +134,14 @@ LandscapeEditorVisibilityCheckTool* CommandPlacePointVisibilityTool::GetEditor()
 	return editor;
 }
 
-CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize)
-:	Command(COMMAND_UNDO_REDO),
+CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage)
+:	Command(COMMAND_WITHOUT_UNDO_EFFECT),
 	point(areaPoint),
-	size(areaSize)
+	size(areaSize),
+	oldImage(oldImage),
+	redoImage(NULL)
 {
 	commandName = "Place Visibility Area";
-	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
-	if (editor)
-		editor->StoreAreaState(&oldImage);
 }
 
 CommandPlaceAreaVisibilityTool::~CommandPlaceAreaVisibilityTool()
@@ -154,7 +153,15 @@ void CommandPlaceAreaVisibilityTool::Execute()
 {
 	LandscapeEditorVisibilityCheckTool* editor = GetEditor();
 	if (editor)
-		editor->SetVisibilityArea(point, size);
+	{
+		if (!redoImage)
+		{
+			editor->SetVisibilityArea(point, size);
+			redoImage = editor->StoreAreaState();
+		}
+		else
+			editor->RestoreAreaState(redoImage);
+	}
 	else
 		SetState(STATE_INVALID);
 }
