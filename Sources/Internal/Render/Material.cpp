@@ -591,9 +591,11 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             
             if(sceneFile->DebugLogEnabled())
-                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
+                //Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
+            	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetSourcePath().c_str());
             
-            textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
+            //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
+            textures[k] = Texture::CreateFromFile(names[k].GetSourcePath());
         }
     }
     
