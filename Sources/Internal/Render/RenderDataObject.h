@@ -48,13 +48,13 @@ public:
     RenderDataStream();
     virtual ~RenderDataStream();
     
-    void Set(eVertexDataType type, int32 size, int32 stride, void * pointer);
+    void Set(eVertexDataType type, int32 size, int32 stride, const void * pointer);
     
     eVertexFormat formatMark;
     eVertexDataType type;
     int32 size;
     int32 stride;
-    void * pointer;
+    const void * pointer;
 #if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     void * savedPointerData;
 #endif //#if defined (__DAVAENGINE_ANDROID__)
@@ -66,7 +66,7 @@ public:
     RenderDataObject();
     virtual ~RenderDataObject();
     
-    RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
+    RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer);
     uint32 GetResultFormat() const;
 
     uint32 GetStreamCount() const { return (uint32)streamArray.size(); };

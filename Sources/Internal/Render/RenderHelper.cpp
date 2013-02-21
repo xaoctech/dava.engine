@@ -195,7 +195,7 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
     DrawPolygon(pts, false);
 }
 
-void RenderHelper::DrawPolygonPoints(Polygon2 & polygon)
+void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 1)
@@ -213,7 +213,7 @@ void RenderHelper::DrawPolygonPoints(Polygon2 & polygon)
 	}
 }
 	
-void RenderHelper::DrawPolygonPoints(Polygon3 & polygon)
+void RenderHelper::DrawPolygonPoints(const Polygon3 & polygon)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 1)
@@ -232,7 +232,7 @@ void RenderHelper::DrawPolygonPoints(Polygon3 & polygon)
 	
 }
 	
-void RenderHelper::DrawPolygon(Polygon3 & polygon, bool closed)
+void RenderHelper::DrawPolygon(const Polygon3 & polygon, bool closed)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 2)
@@ -254,7 +254,7 @@ void RenderHelper::DrawPolygon(Polygon3 & polygon, bool closed)
 }
 
 
-void RenderHelper::DrawPolygon(Polygon2 & polygon, bool closed)
+void RenderHelper::DrawPolygon( const Polygon2 & polygon, bool closed)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 2)
@@ -273,7 +273,7 @@ void RenderHelper::DrawPolygon(Polygon2 & polygon, bool closed)
 	}
 }
     
-void RenderHelper::FillPolygon(Polygon2 & polygon)
+void RenderHelper::FillPolygon(const Polygon2 & polygon)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 3)
@@ -285,7 +285,7 @@ void RenderHelper::FillPolygon(Polygon2 & polygon)
     }
 }
 
-void RenderHelper::FillPolygon(Polygon3 & polygon)
+void RenderHelper::FillPolygon(const Polygon3 & polygon)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 3)
@@ -298,7 +298,7 @@ void RenderHelper::FillPolygon(Polygon3 & polygon)
 
 }
 
-void RenderHelper::DrawPolygonTransformed(Polygon2 & polygon, bool closed, const Matrix3 & transform)
+void RenderHelper::DrawPolygonTransformed(const Polygon2 & polygon, bool closed, const Matrix3 & transform)
 {
 	Polygon2 copyPoly = polygon;
 	copyPoly.Transform(transform);
