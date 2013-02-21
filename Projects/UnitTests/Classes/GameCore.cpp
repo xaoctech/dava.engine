@@ -46,6 +46,7 @@
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
+#include "DPITest.h"
 #include "eMailTest.h"
 #include "InputTest.h"
 
@@ -79,6 +80,7 @@ void GameCore::OnAppStarted()
 //    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
+    new DPITest();
 	new EMailTest();
 	new InputTest();
     new MaterialCompilerTest();
