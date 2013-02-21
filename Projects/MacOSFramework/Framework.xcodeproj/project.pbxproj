@@ -33,6 +33,7 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
+		C18046CC16D52EEC00DC24D8 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */; };
 		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -1299,6 +1300,7 @@
 		C151B1B416D4FF6A00E09BAF /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		C151B1B516D4FF6A00E09BAF /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
 		CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2416,6 +2418,7 @@
 		E8989C0116BD24E400732C04 /* TemplateMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */,
 				C151B17A16D3755000E09BAF /* WebViewControlMacOS.h */,
 				C151B17B16D3755000E09BAF /* WebViewControlMacOS.mm */,
 				E8989C0216BD24E400732C04 /* AppDelegate.h */,
@@ -3974,6 +3977,7 @@
 				C151B17D16D3755000E09BAF /* WebViewControlMacOS.mm in Sources */,
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
+				C18046CC16D52EEC00DC24D8 /* DPIHelperMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
