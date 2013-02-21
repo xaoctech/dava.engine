@@ -189,7 +189,6 @@ void QtMainWindow::SetupMainMenu()
     actionHandler->RegisterTextureFormatActions(FILE_FORMAT_COUNT, ui->actionReloadAsPNG, ui->actionReloadAsPVR, ui->actionReloadAsDXT);
 
 	//Modifications Options
-	connect(ui->menuModifications, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuModificationsWillShow()));
 	connect(ui->actionModifySelect, SIGNAL(triggered()), actionHandler, SLOT(ModificationSelect()));
 	connect(ui->actionModifyMove, SIGNAL(triggered()), actionHandler, SLOT(ModificationMove()));
 	connect(ui->actionModifyRotate, SIGNAL(triggered()), actionHandler, SLOT(ModificationRotate()));
