@@ -225,6 +225,13 @@ void UIScreenManager::StartGLAnimation()
     [view performSelector: @selector(startAnimation)];
 }
 
+void UIScreenManager::BlockDrawing()
+{
+	Screen & glController = screens[glControllerId];
+	UIViewController * controller = (UIViewController *)glController.value;
+	EAGLView * view = (EAGLView *)controller.view;
+    [view performSelector: @selector(blockDrawing)];
+}
 	
 }
 
