@@ -5,7 +5,9 @@ APP_CFLAGS = -marm -g
 
 #debug
 APP_CFLAGS += -DNDK_DEBUG=1 -O0
+APP_CFLAGS += -D__DAVAENGINE_DEBUG__
 APP_OPTIM := debug
+APP_CFLAGS += -DUSE_LOCAL_RESOURCES #use local resources
 
 #release
 #APP_CFLAGS += -O2

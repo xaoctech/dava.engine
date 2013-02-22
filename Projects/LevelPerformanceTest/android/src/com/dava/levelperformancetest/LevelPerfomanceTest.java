@@ -5,7 +5,7 @@ import android.view.Menu;
 import com.dava.framework.JNIActivity;
 import com.dava.framework.JNIGLSurfaceView;
 
-public class MainActivity extends JNIActivity {
+public class LevelPerfomanceTest extends JNIActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
