@@ -600,4 +600,22 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		}			
 	}
 
+	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to)
+	{
+		Vector3 n = from.CrossProduct(to);
+		Vector3 p1(to.x, to.y, to.z);
+		Vector3 p2(from.x, from.y + 5.0f, from.z);
+		Vector3 p3(from.x, from.y, from.z + 0.5);
+		Vector3 p4(from.x, from.y - 5.0f, from.z);
+		Vector3 p5(from.x, from.y, from.z - 0.5);
+
+		RenderHelper::Instance()->DrawLine(p2, p3);
+		RenderHelper::Instance()->DrawLine(p3, p4);
+		RenderHelper::Instance()->DrawLine(p4, p5);
+		RenderHelper::Instance()->DrawLine(p5, p2);
+		RenderHelper::Instance()->DrawLine(p2, p1);
+		RenderHelper::Instance()->DrawLine(p3, p1);
+		RenderHelper::Instance()->DrawLine(p4, p1);		
+		RenderHelper::Instance()->DrawLine(p5, p1);
+	}
 };

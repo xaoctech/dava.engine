@@ -81,6 +81,7 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
         default:
             ret = "DRAW_ALIGNED";
             break;
