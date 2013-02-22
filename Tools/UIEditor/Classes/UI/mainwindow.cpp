@@ -191,6 +191,15 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 	UpdateScreenPosition();
 }
 
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+	// Ask user to save the project before closing.
+	if (!CloseProject())
+	{
+		event->ignore();
+	}
+}
+
 void MainWindow::showEvent(QShowEvent * event)
 {
 	QMainWindow::showEvent(event);
