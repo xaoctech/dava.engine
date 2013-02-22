@@ -183,7 +183,7 @@ void BasePropertyGridWidget::RegisterCheckBoxWidgetForProperty(const PROPERTIESM
     UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
 
     // Register the signal for this widget.
-    connect(checkBoxWidget, SIGNAL(toggled(bool)), this, SLOT(OnCheckBoxStateChanged(bool)));
+    connect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnCheckBoxStateChanged(int)));
 }
 
 
@@ -385,7 +385,7 @@ void BasePropertyGridWidget::OnDoubleSpinBoxValueChanged(double value)
 	ProcessDoubleSpinBoxValueChanged(senderWidget, iter, value);
 }
 
-void BasePropertyGridWidget::OnCheckBoxStateChanged(bool value)
+void BasePropertyGridWidget::OnCheckBoxStateChanged(int state)
 {
     if (activeMetadata == NULL)
     {
@@ -411,13 +411,18 @@ void BasePropertyGridWidget::OnCheckBoxStateChanged(bool value)
     }
 
 	// Don't update the property if the text wasn't actually changed.
-    bool curValue = PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue == value)
+	bool isPropertyValueDiffers = false;
+    bool curValue = PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, iter->second.getProperty().name(),
+																 isPropertyValueDiffers);
+
+	// In case we have differences in property values for different widgets - force update the states too.
+	bool newValue = (state == Qt::Checked);
+	if ((curValue == newValue) && !isPropertyValueDiffers)
 	{
 		return;
 	}
-	
-    BaseCommand* command = new ChangePropertyCommand<bool>(activeMetadata, iter->second, value);
+
+    BaseCommand* command = new ChangePropertyCommand<bool>(activeMetadata, iter->second, newValue);
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
