@@ -13,6 +13,7 @@
 
 #include "MaterialPropertyControl.h"
 #include "EditorSettings.h"
+#include "../EditorScene.h"
 
 static const float32 materialListPart = 0.33f;
 static const float32 previewHeightPart = 0.5f;
@@ -494,15 +495,16 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
     
     if(workingScene)
     {
-        Vector<LandscapeNode *> landscapes;
-        workingScene->GetChildNodes(landscapes);
-
-        DVASSERT((landscapes.size() <= 1) && "Can't be nore than 1 landscape at level");
-        if(0 < landscapes.size())
+        EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
+        if(editorScene)
         {
-            landscapes[0]->SetFog(enabled);
-            landscapes[0]->SetFogDensity(dencity);
-            landscapes[0]->SetFogColor(newColor);
+            LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+            if (landscape)
+            {
+                landscape->SetFog(enabled);
+                landscape->SetFogDensity(dencity);
+                landscape->SetFogColor(newColor);
+            }
         }
     }
 }
