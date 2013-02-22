@@ -3,11 +3,7 @@ package com.dava.framework;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
-import android.text.method.MovementMethod;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.InputEvent;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 public class JNIGLSurfaceView extends GLSurfaceView 

@@ -24,8 +24,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_SRC_FILES := \
                    $(subst $(LOCAL_PATH)/,, \
                    $(wildcard $(LOCAL_PATH)/../../Classes/*.cpp) \
-                   $(wildcard $(LOCAL_PATH)/../../../../Sources/Internal/Platform/android/src/ExternC/*.cpp) )
-
+                   $(wildcard $(LOCAL_PATH)/../../../../Sources/Internal/Platform/TemplateAndroid/ExternC/*.cpp) )
 
 LOCAL_LDLIBS := -lz -lOpenSLES -landroid -fuse-ld=gold -fno-exceptions
 

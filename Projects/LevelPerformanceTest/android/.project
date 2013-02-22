@@ -96,9 +96,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>libs/framework.jar</name>
+			<name>libs/androidframework.jar</name>
 			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Sources/Internal/Platform/android/bin/framework.jar</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/AndroidFramework/bin/androidframework.jar</locationURI>
 		</link>
 		<link>
 			<name>src/Classes</name>
