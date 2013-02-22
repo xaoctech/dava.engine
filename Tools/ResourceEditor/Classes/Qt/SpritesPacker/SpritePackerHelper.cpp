@@ -8,6 +8,7 @@
 #include <QtConcurrentRun>
 
 #include "ResourcePackerScreen.h"
+#include "Platform/Qt/QtLayer.h"
 
 using namespace DAVA;
 
@@ -32,6 +33,7 @@ void SpritePackerHelper::UpdateParticleSprites()
 
 void SpritePackerHelper::Pack()
 {
+	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 	String projectPath = EditorSettings::Instance()->GetProjectPath();
 	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
 	String inputDir = projectPath+"DataSource/Gfx/Particles";
@@ -47,6 +49,7 @@ void SpritePackerHelper::Pack()
 	packer.SetInputDir(inputDir);
 	packer.SetOutputDir(outputDir);
 	packer.Pack();
+	DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 }
 
 void SpritePackerHelper::Reload()
