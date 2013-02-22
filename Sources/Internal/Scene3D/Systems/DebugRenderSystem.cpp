@@ -86,7 +86,13 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
 					RenderManager::Instance()->SetColor(camColor);
-					RenderHelper::Instance()->DrawBox(camBox, 3.5f);
+
+					//entityCamera->Set();
+					//camera->Set();
+					//entityCamera->GetFrustum()->DebugDraw();
+					
+					RenderHelper::Instance()->DrawCornerBox(camBox, 2.5f);
+
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
 				}
@@ -111,10 +117,10 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
 
 					RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-					RenderHelper::Instance()->DrawLine(lPosition, lPosition + lDirection * 20);
+					RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10);
 
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-					RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+					RenderManager::Instance()->ResetColor();
 				}
 			}
         }
