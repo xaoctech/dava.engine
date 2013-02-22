@@ -148,6 +148,14 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 InstanceMaterialState * InstanceMaterialState::Clone()
 {
 	InstanceMaterialState * newState = new InstanceMaterialState();
+
+	newState->lightmapTexture = SafeRetain(lightmapTexture);
+	newState->lightmapName = lightmapName;
+	newState->uvOffset = uvOffset;
+	newState->uvScale = uvScale;
+	newState->flatColor = flatColor;
+	newState->texture0Shift = texture0Shift;
+
 	return newState;
 }
 
