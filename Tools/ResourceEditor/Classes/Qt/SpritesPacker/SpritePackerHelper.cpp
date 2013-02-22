@@ -7,6 +7,8 @@
 
 #include <QtConcurrentRun>
 
+#include "Platform/Qt/QtLayer.h"
+
 using namespace DAVA;
 
 SpritePackerHelper::SpritePackerHelper()
@@ -16,6 +18,7 @@ SpritePackerHelper::SpritePackerHelper()
 
 void SpritePackerHelper::UpdateParticleSprites()
 {
+    void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 	String projectPath = EditorSettings::Instance()->GetProjectPath();
     if(projectPath.empty())
     {
@@ -40,6 +43,7 @@ void SpritePackerHelper::UpdateParticleSprites()
 	}
 
 	ParticlesEditorController::Instance()->RefreshSelectedNode();
+    DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
 }
 
 void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
