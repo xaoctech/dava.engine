@@ -322,34 +322,30 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 
 LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return land;
-	}
-	
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(!landscape)
     {
-        SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandscape(child);
-		if (result)
-			return result;
+        for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+        {
+            landscape = EditorScene::GetLandscape(node->GetChild(ci));
+            if(landscape)
+            {
+                break;
+            }
+        }
+
     }
-	return 0;
+	return landscape;
 }
 
 SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return node;
-	}
-	
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(landscape)
+    {
+        return node;
+    }
+    
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
@@ -357,6 +353,7 @@ SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 		if (result)
 			return result;
     }
+    
 	return NULL;
 }
 

@@ -1597,6 +1597,8 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, Matrix4::IDENTITY);
     Matrix4 projection;
     projection.glOrtho(0, (float32)TEXTURE_TILE_FULL_SIZE, 0, (float32)TEXTURE_TILE_FULL_SIZE, 0, 1);
+    
+    Matrix4 oldProjection = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
     
@@ -1612,6 +1614,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
 	RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
     
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, oldProjection);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 
