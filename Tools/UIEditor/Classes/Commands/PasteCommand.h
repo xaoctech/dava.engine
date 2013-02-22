@@ -22,6 +22,7 @@ namespace DAVA
 		
 		// Execute command.
 		virtual void Execute();
+		virtual bool IsUndoRedoSupported() {return false;};
 		
 	private:
         int PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeNode *parent);

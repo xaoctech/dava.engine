@@ -108,6 +108,11 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>platformNameLineEdit</tabstop>
+  <tabstop>screenWidthSpinBox</tabstop>
+  <tabstop>screenHeightSpinBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
