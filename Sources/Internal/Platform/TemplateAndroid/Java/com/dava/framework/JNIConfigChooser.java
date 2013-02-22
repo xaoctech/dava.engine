@@ -235,7 +235,7 @@ public class JNIConfigChooser implements GLSurfaceView.EGLConfigChooser
         for (int i = 0; i < attributes.length; i++) 
         {
             int attribute = attributes[i];
-            String name = names[i];
+            //String name = names[i];
             if ( egl.eglGetConfigAttrib(display, config, attribute, value)) 
             {
 //                Log.w(JNIConst.LOG_TAG, String.format("  %s: %d\n", name, value[0]));
