@@ -27,7 +27,7 @@ public:
 
     bool Load(const QString& projectPath);
 	bool Save(const QString& projectPath);
-	const QString& GetActiveProjectPath() const {return rootNode.GetProjectPath();}
+	const QString& GetActiveProjectPath() const {return rootNode.GetProjectDir();};
 	
 	void CreateProject();
 	void CloseProject();
