@@ -297,6 +297,8 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
+
+	connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(OnExitApplication()));
 	
 	connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(FileMenuTriggered(QAction *)));
@@ -490,6 +492,14 @@ void MainWindow::OnOpenProject()
 void MainWindow::OnCloseProject()
 {
 	CloseProject();
+}
+
+void MainWindow::OnExitApplication()
+{
+	if (CloseProject())
+	{
+		QCoreApplication::exit();
+	}
 }
 
 bool MainWindow::CloseProject()
