@@ -7,6 +7,8 @@
 
 #include <QtConcurrentRun>
 
+#include "ResourcePackerScreen.h"
+
 using namespace DAVA;
 
 SpritePackerHelper::SpritePackerHelper()
@@ -22,12 +24,33 @@ void SpritePackerHelper::UpdateParticleSprites()
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;
     }
-    
-	SpritesPacker packer;
-	packer.SetInputDir(projectPath+"DataSource/Gfx/Particles");
-	packer.SetOutputDir(projectPath+"Data/Gfx/Particles");
-	packer.Pack();
 
+	Pack();
+	
+	Reload();
+}
+
+void SpritePackerHelper::Pack()
+{
+	String projectPath = EditorSettings::Instance()->GetProjectPath();
+	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
+	String inputDir = projectPath+"DataSource/Gfx/Particles";
+	String outputDir = projectPath+"Data/Gfx/Particles";
+	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",
+		inputDir,"particles.md5",true);
+	if(!isChanged)
+	{
+		return;
+	}
+	
+	SpritesPacker packer;
+	packer.SetInputDir(inputDir);
+	packer.SetOutputDir(outputDir);
+	packer.Pack();
+}
+
+void SpritePackerHelper::Reload()
+{
 	for(int i = 0; i < SceneDataManager::Instance()->SceneCount(); ++i)
 	{
 		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
@@ -80,10 +103,17 @@ void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 
 void SpritePackerHelper::UpdateParticleSpritesAsync()
 {
+	String projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(projectPath.empty())
+    {
+        Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
+        return;
+    }
+
 	if(NULL == future)
 	{
 		future = new QFuture<void>;
-		*future = QtConcurrent::run(this, &SpritePackerHelper::UpdateParticleSprites);
+		*future = QtConcurrent::run(this, &SpritePackerHelper::Pack);
 		watcher.setFuture(*future);
 	}
 }
@@ -91,5 +121,8 @@ void SpritePackerHelper::UpdateParticleSpritesAsync()
 void SpritePackerHelper::threadRepackAllFinished()
 {
 	future = NULL;
+	
+	Reload();
+
 	emit readyAll();
 }
