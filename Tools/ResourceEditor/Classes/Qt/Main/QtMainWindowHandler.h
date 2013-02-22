@@ -98,7 +98,6 @@ public slots:
     void TilemapEditor();
     void RulerTool();
     void ShowSettings();
-    void BakeScene();
     void Beast();
     
     //ViewOptions
@@ -130,9 +129,6 @@ public slots:
     void ReloadTexturesFromFileSystem();
 
 	//particles editor
-	void OpenParticleEditorConfig();
-	void SaveParticleEditorConfig();
-	void OpenParticleEditorSprite();
 	void CreateParticleEmitterNode();
 	
 	//modification options

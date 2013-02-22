@@ -68,6 +68,12 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Sources\ResourcePacker">
+      <UniqueIdentifier>{79afd1d9-3d5b-4b12-856b-e49d8ec99780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ResourcePacker\TexturePacker">
+      <UniqueIdentifier>{6049015a-b339-4928-975b-f1a80805357a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\DefaultScreen.cpp">
@@ -487,6 +493,63 @@
     <ClCompile Include="GeneratedFiles\ReleaseQt\moc_ScreenManager.cpp">
       <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\EditorSettings.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UISliderMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_sliderpropertygridwidget.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_UISliderMetadata.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Controllers\UndoRedoController.cpp">
+      <Filter>Sources\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_icons.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\ResourcePacker.cpp">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\ImagePacker.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PngImage.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\PVRConverter.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ResourcePacker\TexturePacker\TexturePacker.cpp">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_alignspropertygridwidget.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_alignspropertygridwidget.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UISliderMetadata.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_sliderpropertygridwidget.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -631,6 +694,42 @@
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\UI\PropertyGridWidgets\PropertyGridWidgetsFactory.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\EditorSettings.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\UndoRedoController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\ResourcePacker.h">
+      <Filter>Sources\ResourcePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\CommandLineParser.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\DefinitionFile.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\ImagePacker.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PngImage.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\PVRConverter.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ResourcePacker\TexturePacker\TexturePacker.h">
+      <Filter>Sources\ResourcePacker\TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_alignspropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClInclude>
   </ItemGroup>
@@ -802,6 +901,24 @@
     </CustomBuild>
     <CustomBuild Include="Classes\ScreenManager.h">
       <Filter>Sources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\PropertyGridWidgets\sliderpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\Metadata\UISliderMetadata.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Data\icons.qrc">
+      <Filter>Resources</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

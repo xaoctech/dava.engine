@@ -13,7 +13,7 @@
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>120</height>
+    <height>125</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -98,6 +98,13 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>visibleCheckBox</tabstop>
+  <tabstop>enabledCheckBox</tabstop>
+  <tabstop>inputCheckBox</tabstop>
+  <tabstop>clipContentsCheckbox</tabstop>
+  <tabstop>selectedCheckBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

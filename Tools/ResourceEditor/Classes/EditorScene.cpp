@@ -10,7 +10,6 @@
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
 #include "SceneEditor/SceneValidator.h"
-#include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/HeightmapNode.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
@@ -87,6 +86,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
 		}
 	}
+
 	//else if (userNode)
 	//{
 	//	if (userNode->GetUserData() == 0)
@@ -103,10 +103,34 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	//	}
 	//}
 
+	CheckDebugFlags(curr);
+
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{
 		CheckNodes(curr->GetChild(i));
+	}
+}
+
+void EditorScene::CheckDebugFlags(SceneNode * curr)
+{
+	DebugRenderComponent *dbgComp = NULL;
+
+	// create debug render component for all nodes
+	if(NULL != curr)
+	{
+		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(NULL == dbgComp)
+		{
+			dbgComp = new DebugRenderComponent();
+
+			if(NULL != curr->GetComponent(Component::CAMERA_COMPONENT))
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_CAMERA);
+			}
+
+			curr->AddComponent(dbgComp);
+		}
 	}
 }
 
@@ -298,34 +322,30 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 
 LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return land;
-	}
-	
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(!landscape)
     {
-        SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandscape(child);
-		if (result)
-			return result;
+        for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+        {
+            landscape = EditorScene::GetLandscape(node->GetChild(ci));
+            if(landscape)
+            {
+                break;
+            }
+        }
+
     }
-	return 0;
+	return landscape;
 }
 
 SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return node;
-	}
-	
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(landscape)
+    {
+        return node;
+    }
+    
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
@@ -333,6 +353,7 @@ SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 		if (result)
 			return result;
     }
+    
 	return NULL;
 }
 
@@ -532,10 +553,10 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SceneNode *n = node;
     
     do {
-        LodNode *lodNode = dynamic_cast<LodNode *>(n);
-        if(lodNode)
+        LodComponent *lc = GetLodComponent(n);
+        if(lc)
         {
-            lodNode->SetForceLodLayer(layer);
+            lc->SetForceLodLayer(layer);
         }
         
         n = n->GetParent();
@@ -546,10 +567,10 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
 
 void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 {
-    LodNode *lodNode = dynamic_cast<LodNode *>(node);
-    if(lodNode)
+    LodComponent *lc = GetLodComponent(node);
+    if(lc)
     {
-        lodNode->SetForceLodLayer(layer);
+        lc->SetForceLodLayer(layer);
     }
     
     int32 count = node->GetChildrenCount();
@@ -564,9 +585,9 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 {
     if(!node)   return -1;
 
-    LodNode *lodNode = dynamic_cast<LodNode *>(node);
-    if(lodNode)
-        return lodNode->GetForceLodLayer();
+    LodComponent *lc = GetLodComponent(node);
+    if(lc)
+        return lc->GetForceLodLayer();
     
     int32 count = node->GetChildrenCount();
     for(int32 i = 0; i < count; ++i)

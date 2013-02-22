@@ -412,10 +412,6 @@ void QtMainWindowHandler::ShowSettings()
     Execute(new CommandSettings());
 }
 
-void QtMainWindowHandler::BakeScene()
-{
-    Execute(new CommandBakeScene());
-}
 
 void QtMainWindowHandler::Beast()
 {
@@ -441,21 +437,6 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 void QtMainWindowHandler::ReloadTexturesFromFileSystem()
 {
     Execute(new CommandReloadTextures());
-}
-
-void QtMainWindowHandler::OpenParticleEditorConfig()
-{
-	Execute(new CommandOpenParticleEditorConfig());
-}
-
-void QtMainWindowHandler::SaveParticleEditorConfig()
-{
-	Execute(new CommandSaveParticleEditorConfig());
-}
-
-void QtMainWindowHandler::OpenParticleEditorSprite()
-{
-	Execute(new CommandOpenParticleEditorSprite());
 }
 
 void QtMainWindowHandler::CreateParticleEmitterNode()

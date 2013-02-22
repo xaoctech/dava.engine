@@ -64,25 +64,6 @@ void CommandSettings::Execute()
     }
 }
 
-//Bake active scene
-CommandBakeScene::CommandBakeScene()
-:   Command(Command::COMMAND_UNDO_REDO)
-{
-	commandName = "Bake Scene";
-}
-
-
-void CommandBakeScene::Execute()
-{
-    SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
-    activeScene->BakeScene();
-}
-
-void CommandBakeScene::Cancel()
-{
-    //TODO: write code
-}
-
 
 //Beast
 CommandBeast::CommandBeast()

@@ -9,6 +9,7 @@
 #include "ParticlesEditorSceneModelHelper.h"
 #include "DockParticleEditor/ParticlesEditorController.h"
 
+#include "Commands/CommandsManager.h"
 #include "Commands/SceneGraphCommands.h"
 #include "Commands/ParticleEditorCommands.h"
 
@@ -599,5 +600,59 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemForParticlesLayer(G
 	}
 	
 	// Nothing is found...
+	return NULL;
+}
+
+void* ParticlesEditorSceneModelHelper::GetPersistentDataForModelIndex(const QModelIndex& modelIndex) const
+{
+	ExtraUserData* extraData = GetExtraUserDataByModelIndex(modelIndex);
+	if (!extraData)
+	{
+		// Not ours..
+		return NULL;
+	}
+	
+	return extraData;
+}
+
+bool ParticlesEditorSceneModelHelper::IsGraphItemCheckable(GraphItem* graphItem) const
+{
+	// Only Particle Editor Layers are checkable for now.
+	return (GetLayerEditorNodeByGraphItem(graphItem) != NULL);
+}
+
+bool ParticlesEditorSceneModelHelper::GetCheckableStateForGraphItem(GraphItem* graphItem) const
+{
+	LayerParticleEditorNode* layerEditorNode = GetLayerEditorNodeByGraphItem(graphItem);
+	if (!layerEditorNode || !layerEditorNode->GetLayer())
+	{
+		return false;
+	}
+	
+	return !layerEditorNode->GetLayer()->isDisabled;
+}
+
+void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* graphItem, bool value)
+{
+	LayerParticleEditorNode* layerEditorNode = GetLayerEditorNodeByGraphItem(graphItem);
+	if (!layerEditorNode || !layerEditorNode->GetLayer())
+	{
+		return;
+	}
+	
+	// Execute the appropriate command.
+	CommandUpdateParticleLayerEnabled* command = new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value);
+	CommandsManager::Instance()->Execute(command);
+}
+
+LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const
+{
+	SceneGraphItem* curItem = dynamic_cast<SceneGraphItem*>(graphItem);
+	if (curItem && curItem->GetExtraUserData())
+	{
+		LayerParticleEditorNode* editorNode = dynamic_cast<LayerParticleEditorNode*>(curItem->GetExtraUserData());
+		return editorNode;
+	}
+	
 	return NULL;
 }

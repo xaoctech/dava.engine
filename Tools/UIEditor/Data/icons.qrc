@@ -1,0 +1,12 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file>icons/068.png</file>
+     <file>icons/079.png</file>
+     <file>icons/101.png</file>
+     <file>icons/117.png</file>
+     <file>icons/118.png</file>
+     <file>icons/newscene.png</file>
+     <file>icons/openproject.png</file>
+     <file>icons/savescene.png</file>
+ </qresource>
+ </RCC>

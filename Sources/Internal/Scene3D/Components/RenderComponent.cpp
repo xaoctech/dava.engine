@@ -1,4 +1,5 @@
 #include "Scene3D/Components/RenderComponent.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA 
 {
@@ -29,6 +30,7 @@ Component * RenderComponent::Clone(SceneNode * toEntity)
     RenderComponent * component = new RenderComponent();
 	component->SetEntity(toEntity);
 
+    //TODO: Do not forget ot check what does it means.
     component->renderObject = renderObject->Clone(component->renderObject);
     return component;
 }
@@ -39,30 +41,47 @@ void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     for(uint32 i = 0; i < count; ++i)
     {
         RenderBatch *renderBatch = renderObject->GetRenderBatch(i);
-
-        Material *material = renderBatch->GetMaterial();
-        if(material)
-        {
-			InsertDataNode(material, dataNodes);
-        }
-        
-        PolygonGroup *pg = renderBatch->GetPolygonGroup();
-        if(pg)
-        {
-			InsertDataNode(pg, dataNodes);
-        }
+		if(NULL != renderBatch)
+		{
+			renderBatch->GetDataNodes(dataNodes);
+		}
     }
 }
 
-void RenderComponent::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
+void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
-	dataNodes.insert(node);
+	Component::Serialize(archive, sceneFile);
 
-	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	if(NULL != archive && NULL != renderObject)
 	{
-		InsertDataNode(node->GetChild(i), dataNodes);
+		KeyedArchive *roArch = new KeyedArchive();
+		renderObject->Save(roArch, sceneFile);
+		archive->SetArchive("rc.renderObj", roArch);
+		roArch->Release();
 	}
 }
 
+void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		KeyedArchive *roArch = archive->GetArchive("rc.renderObj");
+		if(NULL != roArch)
+		{
+			RenderObject* ro = (RenderObject *) ObjectFactory::Instance()->New(roArch->GetString("##name"));
+			if(NULL != ro)
+			{
+				ro->Load(roArch, sceneFile);
+				SetRenderObject(ro);
+			}
+			else
+			{
+				printf("1111\n");
+			}
+		}
+	}
+
+	Component::Deserialize(archive, sceneFile);
+}
 
 };

@@ -26,7 +26,7 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
     
     activeLodIndex = -1;
     
-    for(int32 iDist = 0; iDist < LodNode::MAX_LOD_LAYERS; ++iDist)
+    for(int32 iDist = 0; iDist < LodComponent::MAX_LOD_LAYERS; ++iDist)
     {
         distanceText[iDist] = new UIStaticText(Rect(0, (float32)((iDist+1) * ControlsFactory::BUTTON_HEIGHT), 
                                                     rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
@@ -70,7 +70,7 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
 
 LodDistanceControl::~LodDistanceControl()
 {
-    for(int32 iDist = 0; iDist < LodNode::MAX_LOD_LAYERS; ++iDist)
+    for(int32 iDist = 0; iDist < LodComponent::MAX_LOD_LAYERS; ++iDist)
     {
         SafeRelease(distanceText[iDist]);
         SafeRelease(distanceTextValues[iDist]);
@@ -162,9 +162,9 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles
         
         zones = new UIControl*[count];
         
-        maxDistance = (distances[count - 1] < LodNode::MAX_LOD_DISTANCE) 
-                                        ? LodNode::MAX_LOD_DISTANCE 
-                                        : (LodNode::MAX_LOD_DISTANCE * 1.1f);
+        maxDistance = (distances[count - 1] < LodComponent::MAX_LOD_DISTANCE) 
+                                        ? LodComponent::MAX_LOD_DISTANCE 
+                                        : (LodComponent::MAX_LOD_DISTANCE * 1.1f);
         
         Rect fullRect = GetRect();
         
@@ -214,7 +214,7 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles
     }
     
     float32 x = GetRect().dx / 2.f;
-    for(int32 iDist = 0; iDist < LodNode::MAX_LOD_LAYERS; ++iDist)
+    for(int32 iDist = 0; iDist < LodComponent::MAX_LOD_LAYERS; ++iDist)
     {
         RemoveControl(distanceText[iDist]);
         RemoveControl(distanceTextValues[iDist]);
@@ -372,7 +372,7 @@ void LodDistanceControl::TextFieldLostFocus(UITextField * textField)
             float32 newDistance = (float32)atof(WStringToString(textField->GetText()).c_str());
             
             newDistance = Max(newDistance, 0.f);
-            newDistance = Min(newDistance, (float32)LodNode::MAX_LOD_DISTANCE);
+            newDistance = Min(newDistance, (float32)LodComponent::MAX_LOD_DISTANCE);
             if(iText)
             {
                 newDistance = Max(newDistance, distances[iText-1]);

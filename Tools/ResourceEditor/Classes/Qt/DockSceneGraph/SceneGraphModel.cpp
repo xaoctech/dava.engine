@@ -6,6 +6,8 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
+#include "SceneGraphModelStateHelper.h"
+
 #include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/ArrowsNode.h"
@@ -157,14 +159,16 @@ void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
 		for (int32 i = 0; i < childrenToAddCount; i ++)
 		{
 			AddNodeToTree(graphItem, rootNode->GetChild(i), true);
+		}
 	}
-}
-
 }
 
 
 void SceneGraphModel::Rebuild()
 {
+	SceneGraphModelStateHelper stateHelper(this->attachedTreeView, this);
+	stateHelper.SaveTreeViewState();
+
     SafeRelease(rootItem);
 	rootItem = new SceneGraphItem();
 	rootItem->SetUserData(scene);
@@ -180,9 +184,10 @@ void SceneGraphModel::Rebuild()
         }
     }
     
-//    emit dataChanged(QModelIndex(), QModelIndex());
     this->reset();
 
+	stateHelper.RestoreTreeViewState();
+	
     if (HandleParticleEditorSelection())
     {
         // Custom node is selected and needs to be processed separately.
@@ -321,7 +326,13 @@ Qt::ItemFlags SceneGraphModel::flags(const QModelIndex &index) const
         return Qt::ItemIsEnabled;
     }
 
-    return (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | GraphModel::flags(index));
+	Qt::ItemFlags itemFlags = Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | GraphModel::flags(index);
+	if (IsItemCheckable(index))
+	{
+		itemFlags |= Qt::ItemIsUserCheckable;
+	}
+
+    return itemFlags;
 }
 
 bool SceneGraphModel::LandscapeEditorModeEnabled() const
@@ -412,9 +423,20 @@ bool SceneGraphModel::insertRows(int row, int count, const QModelIndex &parent/*
 bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, int role/* = Qt::EditRole*/)
 {
     GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
-    
+    if (role == Qt::CheckStateRole)
+	{
+		// Update the checkbox state for the particular model index.
+		SetItemCheckState(index, value.toBool());
+		return true;
+	}
+
     //TODO: change on real value
     GraphItem *newItem = PointerHolder<GraphItem *>::ToPointer(value);
+	if (!newItem)
+	{
+		return true;
+	}
+
     SceneNode *newNode = (SceneNode *)newItem->GetUserData();
     SafeRetain(newNode);
     
@@ -473,7 +495,12 @@ bool SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
 
 QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && (Qt::TextColorRole == role))
+    if(!index.isValid())
+	{
+		return GraphModel::data(index, role);
+	}
+
+	if (Qt::TextColorRole == role)
     {
         SceneNode *node = static_cast<SceneNode *>(ItemData(index));
         if(node && (node->GetFlags() & SceneNode::NODE_INVALID))
@@ -481,6 +508,12 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
             return QColor(255, 0, 0);
         }
     }
+	
+	// Some nodes might be checked - verify this separately.
+	if (role == Qt::CheckStateRole && index.column() == 0 && IsItemCheckable(index))
+	{
+		return GetItemCheckState(index);
+	}
     
     return GraphModel::data(index, role);
 }
@@ -494,4 +527,75 @@ void SceneGraphModel::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 		QModelIndex refreshIndex = createIndex(itemToRefresh->Row(), 0, itemToRefresh);
 		dataChanged(refreshIndex, refreshIndex);
 	}
+}
+
+void* SceneGraphModel::GetPersistentDataForModelIndex(const QModelIndex &modelIndex)
+{
+	// Firstly verify whether this index belongs to Particle Editor.
+	void* persistentData = particlesEditorSceneModelHelper.GetPersistentDataForModelIndex(modelIndex);
+	if (persistentData)
+	{
+		return persistentData;
+	}
+
+	// Then check for the generic model index.
+	GraphItem *item = static_cast<GraphItem*>(modelIndex.internalPointer());
+	if (item && item->GetUserData())
+	{
+		return item->GetUserData();
+	}
+
+	return NULL;
+}
+
+bool SceneGraphModel::IsItemCheckable(const QModelIndex &index) const
+{
+	GraphItem* graphItem = GetGraphItemByModelIndex(index);
+	if (!graphItem)
+	{
+		return false;
+	}
+	
+	// Currently only the Particle Editor Layers are checkable.
+	return particlesEditorSceneModelHelper.IsGraphItemCheckable(graphItem);
+}
+
+Qt::CheckState SceneGraphModel::GetItemCheckState(const QModelIndex& index) const
+{
+	if (!index.isValid())
+	{
+		return Qt::Unchecked;
+	}
+	
+	GraphItem* graphItem = GetGraphItemByModelIndex(index);
+	if (!graphItem)
+	{
+		return Qt::Unchecked;
+	}
+
+	// Currently only the Particle Editor Layers has checked state.
+	bool isItemChecked = particlesEditorSceneModelHelper.GetCheckableStateForGraphItem(graphItem);
+	return isItemChecked ? Qt::Checked : Qt::Unchecked;
+}
+
+void SceneGraphModel::SetItemCheckState(const QModelIndex& index, bool value)
+{
+	GraphItem* graphItem = GetGraphItemByModelIndex(index);
+	if (!graphItem)
+	{
+		return;
+	}
+	
+	// Currently only the Particle Editor Layers has checked state.
+	particlesEditorSceneModelHelper.SetCheckableStateForGraphItem(graphItem, value);
+}
+
+GraphItem* SceneGraphModel::GetGraphItemByModelIndex(const QModelIndex& index) const
+{
+	if (!index.isValid() || !index.internalPointer())
+	{
+		return NULL;
+	}
+	
+	return static_cast<GraphItem*>(index.internalPointer());
 }

@@ -592,19 +592,24 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     return dstNode;
 }
 
-void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
+void SceneNode::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-    if (_debugFlags != 0)
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+
+	if(!debugComponent)
+	{
+		AddComponent(new DebugRenderComponent());
+		debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
+	}
+
+    debugComponent->SetDebugFlags(debugFlags);
+	if(0 == debugFlags)
     {
-        if (GetComponent(Component::DEBUG_RENDER_COMPONENT) == 0)
-        {
-            AddComponent(new DebugRenderComponent());
-        }
-        DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
-        debugComponent->SetDebugFlags(_debugFlags);
-    }else
-    {
-        RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(debugComponent->GetDebugFlags() & DebugRenderComponent::DEBUG_AUTOCREATED)
+		{
+			RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+		}
     }
     
     if (isRecursive)
@@ -614,7 +619,7 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
         for(; it != childrenEnd; it++)
         {
             SceneNode *n = (*it);
-            n->SetDebugFlags(_debugFlags, isRecursive);
+            n->SetDebugFlags(debugFlags, isRecursive);
         }
     }
 }
@@ -738,6 +743,20 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         customProperties->SetString("editor.referenceToOwner", savedPath);
     }
+
+	KeyedArchive *compsArch = new KeyedArchive();
+	for(uint32 i = 0; i < components.size(); ++i)
+	{
+		if(NULL != components[i])
+		{
+			KeyedArchive *compArch = new KeyedArchive();
+			components[i]->Serialize(compArch, sceneFileV2);
+			compsArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), compArch);
+			compArch->Release();
+		}
+	}
+	archive->SetArchive("components", compsArch);
+	compsArch->Release();
 }
 
 void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
@@ -771,6 +790,28 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
             customProperties->SetString("editor.referenceToOwner", newPath);
         }
     }
+
+	KeyedArchive *compsArch = archive->GetArchive("components");
+	if(NULL != compsArch)
+	{
+		for(uint32 i = 0; i < components.size(); ++i)
+		{
+			KeyedArchive *compArch = compsArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+			if(NULL != compArch)
+			{
+				uint32 compType = compArch->GetUInt32("comp.type", 0xFFFFFFFF);
+				if(compType != 0xFFFFFFFF)
+				{
+					Component *comp = Component::CreateByType(compType);
+					if(NULL != comp)
+					{
+						comp->Deserialize(compArch, sceneFileV2);
+						AddComponent(comp);
+					}
+				}
+			}
+		}
+	}
 }
 
 KeyedArchive * SceneNode::GetCustomProperties()
@@ -800,7 +841,6 @@ void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
         }
     }
 
-    
     uint32 size = (uint32)children.size();
     for (uint32 c = 0; c < size; ++c)
     {
@@ -907,6 +947,7 @@ Matrix4 & SceneNode::ModifyLocalTransform()
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
+    TIME_MEASURE("SceneNode::SetLocalTransform");
     ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
 }
 

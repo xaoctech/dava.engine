@@ -29,6 +29,7 @@ public:
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
 	void CheckNodes(SceneNode * curr);
+	void CheckDebugFlags(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
 	bool TryIsTargetAccesible(Vector3 from, Vector3 target);

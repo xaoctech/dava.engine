@@ -42,7 +42,29 @@ namespace DAVA
 class FilePath: public BaseObject
 {
 public:
+	/*
 	
+	TODO: new interface
+
+	FilePath();
+	FilePath(const FilePath &path);
+	FilePath(const char* path);
+	FilePath(const String &path);
+	virtual ~FilePath();
+
+	FilePath& operator=(const FilePath &path);
+	String& operator()(const FilePath &path);
+
+	String AbsolutePath();
+	String RelativePath(const FilePath &path = String());
+	String AbsoluteDir();
+	String RelativeDir(const FilePath &path = String());
+	String Filename();
+	String Basename();
+	String Extension();
+	*/	
+
+
 	FilePath();
     FilePath(const FilePath &path);
 //    FilePath(const String &sourcePath); 

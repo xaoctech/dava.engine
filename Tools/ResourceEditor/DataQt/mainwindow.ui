@@ -232,6 +232,32 @@
         </property>
         <item>
          <widget class="PropertyEditor" name="propertyEditor">
+          <property name="styleSheet">
+           <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
+/*     border-image: url(:/QtImages/tree-vline.png) 0; */
+ }
+
+ QTreeView::branch:has-siblings:adjoins-item {
+/*     border-image: url(:/QtImages/tree-more.png) 0; */
+ }
+
+ QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+/*     border-image: url(:/QtImages/tree-end.png) 0; */
+ }
+
+ QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::AllEditTriggers</set>
           </property>
@@ -242,7 +268,7 @@
            <enum>QAbstractItemView::NoSelection</enum>
           </property>
           <property name="indentation">
-           <number>20</number>
+           <number>16</number>
           </property>
          </widget>
         </item>
@@ -347,7 +373,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -398,7 +424,6 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
-    <addaction name="actionBakeScene"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
@@ -722,11 +747,6 @@
   <action name="actionSceneInfo">
    <property name="text">
     <string>Scene Info</string>
-   </property>
-  </action>
-  <action name="actionBakeScene">
-   <property name="text">
-    <string>Bake Scene</string>
    </property>
   </action>
   <action name="actionShowSettings">

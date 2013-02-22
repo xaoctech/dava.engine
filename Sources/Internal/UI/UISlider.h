@@ -77,9 +77,17 @@ public:
     
     void SetThumb(UIControl *newThumb);
     inline UIControl *GetThumb();
+	
+	inline UIControlBackground *GetBgMin();
+	inline UIControlBackground *GetBgMax();
 
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
 	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+	/**
+	 \brief Returns list of control children without internal controls.
+	 \returns list of control children without internal controls.
+	 */
+	virtual List<UIControl* >& GetRealChildren();
 	
 protected:
 	bool isEventsContinuos;
@@ -112,6 +120,15 @@ inline UIControl *UISlider::GetThumb()
     return thumbButton;
 }
 
+inline UIControlBackground *UISlider::GetBgMin()
+{
+	return bgMin;
+}
+
+inline UIControlBackground *UISlider::GetBgMax()
+{
+	return bgMax;
+}
 
 inline bool UISlider::IsEventsContinuos()
 {
