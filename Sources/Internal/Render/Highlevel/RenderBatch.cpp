@@ -192,7 +192,7 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	rb->material = SafeRetain(material);
-    rb->materialInstance = SafeRetain(materialInstance);
+    rb->materialInstance = materialInstance->Clone();
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;
