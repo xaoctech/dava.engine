@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
 #include "ScreenWrapper.h"
 #include "EditorSettings.h"
 
@@ -20,6 +21,7 @@ public:
 protected:
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void showEvent(QShowEvent * event);
+	virtual void closeEvent(QCloseEvent * event);
 
 private slots:
     void on_scaleSpin_valueChanged(double arg1);
