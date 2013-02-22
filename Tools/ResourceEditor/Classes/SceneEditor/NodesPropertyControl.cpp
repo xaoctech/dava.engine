@@ -949,15 +949,24 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
     int32 trianglesCount = 0;
     for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
     {
-        Vector<MeshInstanceNode *> meshes;
+        Vector<SceneNode *> meshes;
         lodData->nodes[n]->GetChildNodes(meshes);
         
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {
-            Vector<PolygonGroupWithMaterial *> polygonGroups = meshes[m]->GetPolygonGroups();
-            for(int32 p = 0; p < (int32)polygonGroups.size(); ++p)
+            RenderObject *ro = GetRenerObject(meshes[m]);
+            if(!ro) continue;
+
+            uint32 count = ro->GetRenderBatchCount();
+            for(uint32 r = 0; r < count; ++r)
             {
-                trianglesCount += polygonGroups[p]->GetPolygonGroup()->GetIndexCount() / 3;
+                RenderBatch *batch = ro->GetRenderBatch(r);
+                
+                PolygonGroup *pg = batch->GetPolygonGroup();
+                if(pg)
+                {
+                    trianglesCount += pg->GetIndexCount() / 3;
+                }
             }
         }
     }
