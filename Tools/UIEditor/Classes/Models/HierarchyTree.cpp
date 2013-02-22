@@ -17,6 +17,7 @@
 #include "ResourcesManageHelper.h"
 
 #include <QFile>
+#include <QDir>
 
 #define PLATFORMS_NODE "platforms"
 #define LOCALIZATION_NODE "localization"
@@ -53,8 +54,11 @@ bool HierarchyTree::Load(const QString& projectPath)
     rootNode.AddTreeNode(platformNode);
 	
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);*/
-		
-	YamlParser* project = YamlParser::Create(projectPath.toStdString());
+	
+	// Get project file
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+
+	YamlParser* project = YamlParser::Create(projectFile.toStdString());
 	if (!project)
 		return false;
 	
@@ -89,6 +93,10 @@ bool HierarchyTree::Load(const QString& projectPath)
         // Remember the platform to load its localization later.
         loadedPlatforms.insert(std::make_pair(platformNode, platform));
 	}
+	
+	// If no platforms were loaded - interrupt loading sequence
+	if (loadedPlatforms.empty())
+		return false;
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens. The update direction is FROM Control TO Extra Data.
@@ -130,22 +138,28 @@ void HierarchyTree::CloseProject()
 	Clear();
 }
 
-void HierarchyTree::AddPlatform(const QString& name, const Vector2& size)
+HierarchyTreePlatformNode* HierarchyTree::AddPlatform(const QString& name, const Vector2& size)
 {
     HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, name);
 	platformNode->SetSize(size.dx, size.dy);
 	rootNode.AddTreeNode(platformNode);
+	
+	return platformNode;
 }
 
-bool HierarchyTree::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId)
+HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId)
 {
 	HierarchyTreeNode* baseNode = FindNode(&rootNode, platformId);
 	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(baseNode);
 	if (!platformNode)
-		return false;
+	{
+		return NULL;
+	}
 	
-	platformNode->AddTreeNode(new HierarchyTreeScreenNode(platformNode, name));
-	return true;
+	HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(platformNode, name);
+	platformNode->AddTreeNode(screenNode);
+
+	return screenNode;
 }
 
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
@@ -205,7 +219,7 @@ const HierarchyTreeNode::HIERARCHYTREENODESLIST& HierarchyTree::GetPlatforms() c
 	return rootNode.GetChildNodes();
 }
 
-void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory, bool deleteNodeFromScene)
 {
 	//copy id for safe delete
 	Set<HierarchyTreeControlNode::HIERARCHYTREENODEID> ids;
@@ -226,21 +240,21 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 		HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
 		if (controlNode)
 		{
-			controlNode->GetParent()->RemoveTreeNode(controlNode);
+			controlNode->GetParent()->RemoveTreeNode(controlNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
-			screenNode->GetPlatform()->RemoveTreeNode(screenNode);
+			screenNode->GetPlatform()->RemoveTreeNode(screenNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 		
 		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(node);
 		if (platformNode)
 		{
-			rootNode.RemoveTreeNode(platformNode);
+			rootNode.RemoveTreeNode(platformNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 	}
@@ -250,9 +264,10 @@ bool HierarchyTree::Save(const QString& projectPath)
 {
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
-	Map<String, YamlNode*> &rootMap = root.AsMap();
+	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
-	rootMap[PLATFORMS_NODE] = platforms;
+	rootMap.erase(PLATFORMS_NODE);
+	rootMap.insert(std::pair<String, YamlNode*>(PLATFORMS_NODE, platforms));
 
     // Prior to Save we need to put the Localization Keys FROM the ExtraData TO the
     // appropriate text controls to save the localization keys, and not values.
@@ -272,7 +287,14 @@ bool HierarchyTree::Save(const QString& projectPath)
 	}
 
 	YamlParser* parser = YamlParser::Create();
-	result &= parser->SaveToYamlFile(projectPath.toStdString(), &root, true);
+	// Create project sub-directories
+	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
+
+	// Get project file path
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+
+	// Save project file
+	result &= parser->SaveToYamlFile(projectFile.toStdString(), &root, true);
 	
     // Return the Localized Values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);

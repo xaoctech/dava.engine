@@ -14,6 +14,8 @@
 #include "UIStaticTextMetadata.h"
 #include "ResourcesManageHelper.h"
 
+#include "ResourcePacker.h"
+
 static const QString TEXT_PROPERTY_BLOCK_NAME = "Background";
 
 BackGroundPropertyGridWidget::BackGroundPropertyGridWidget(QWidget *parent) :
@@ -24,6 +26,8 @@ BackGroundPropertyGridWidget::BackGroundPropertyGridWidget(QWidget *parent) :
     ConnectToSignals();
 
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
+	
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 BackGroundPropertyGridWidget::~BackGroundPropertyGridWidget()
@@ -107,9 +111,17 @@ void BackGroundPropertyGridWidget::FillComboboxes()
 
 void BackGroundPropertyGridWidget::OpenSpriteDialog()
 {
-    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ), "/", tr( "Sprites (*.* *.txt)" ) );
+	// Pack all available sprites each time user open sprite dialog
+	ResourcePacker *resPacker = new ResourcePacker();
+	resPacker->PackResources(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+	 					 				ResourcesManageHelper::GetSpritesDirectory().toStdString());
+
+    QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
+															ResourcesManageHelper::GetSpritesDirectory(),
+															tr( "Sprites (*.txt)" ) );
     if( !spriteName.isNull() )
     {
+		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);
             
@@ -117,7 +129,13 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
             ui->spriteLineEdit->setText(PreprocessSpriteName(spriteName));
             HandleLineEditEditingFinished(ui->spriteLineEdit);
         }
+		else
+		{
+			ResourcesManageHelper::ShowErrorMessage(spriteName);
+		}
     }
+	
+	SafeDelete(resPacker);
 }
 
 void BackGroundPropertyGridWidget::RemoveSprite()
@@ -163,6 +181,14 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
 void BackGroundPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value)
 {
     BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, value);
+
+	// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }

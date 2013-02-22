@@ -19,7 +19,8 @@ public:
 	void SetDefaultPlatform(HierarchyTreeNode::HIERARCHYTREENODEID platformId);
 	QString GetScreenName() const;
 	HierarchyTreeNode::HIERARCHYTREENODEID GetPlatformId() const;
-	
+	// Reimplement accept signal to avoid dialog close if planform name was not entered
+	void virtual accept();
 	
 private:
     Ui::CreateScreenDlg *ui;
