@@ -3,10 +3,10 @@
 #include "../Qt/Main/GUIState.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
-#include "SceneData.h"
-#include "SceneDataManager.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
-#include "LandscapesController.h"
+#include "../LandscapeEditor/LandscapesController.h"
 
 //Show/Hide Tilemap Editor
 CommandTilemapEditor::CommandTilemapEditor()
@@ -80,6 +80,7 @@ void CommandDrawTilemap::UpdateLandscapeTilemap(DAVA::Image *image)
 	{
 		landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
 		landscape->UpdateFullTiledTexture();
+		ImageLoader::Save(image, savedPathname);
 	}
 
 	SafeRelease(texture);
