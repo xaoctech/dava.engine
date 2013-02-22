@@ -34,6 +34,7 @@
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
 
+
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"
 #endif
@@ -54,7 +55,7 @@ ApplicationCore::~ApplicationCore()
 void ApplicationCore::Update(float32 timeElapsed)
 {
 	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);
+	AnimationManager::Instance()->Update(timeElapsed);    
 	UIControlSystem::Instance()->Update();
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Update(timeElapsed);
@@ -71,7 +72,6 @@ void ApplicationCore::Draw()
 
 void ApplicationCore::BeginFrame()
 {
-    Stats::Instance()->BeginFrame();
 	RenderManager::Instance()->BeginFrame();
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
@@ -82,7 +82,6 @@ void ApplicationCore::EndFrame()
 {
 	RenderManager::Instance()->EndFrame();
     RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
 }
 
 void ApplicationCore::OnSuspend()

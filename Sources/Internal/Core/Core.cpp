@@ -43,6 +43,7 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
+#include "Platform/DPIHelper.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -100,7 +101,7 @@ void Core::CreateSingletons()
     
 	new FileSystem();
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
-        FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+    FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 
 	
 	new Logger();
@@ -170,7 +171,6 @@ void Core::ReleaseSingletons()
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
-
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Release();
 #endif
@@ -592,6 +592,9 @@ void Core::SystemAppFinished()
 
 void Core::SystemProcessFrame()
 {
+    Stats::Instance()->BeginFrame();
+    TIME_MEASURE("Core::SystemProcessFrame");
+    
 	if (!core) return;
 	if (!isActive)return;
 	
@@ -627,6 +630,7 @@ void Core::SystemProcessFrame()
 		}
 
 		float32 frameDelta = SystemTimer::Instance()->FrameDelta();
+        SystemTimer::Instance()->UpdateGlobalTime(frameDelta);
 
 		if(Replay::IsRecord())
 		{
@@ -651,16 +655,26 @@ void Core::SystemProcessFrame()
 // 		core->BeginFrame();
 // #endif
 	}
+    Stats::Instance()->EndFrame();
 	globalFrameIndex++;
 }
 
 	
-void Core::GoBackground()
+void Core::GoBackground(bool isLock)
 {
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	if (core)
-		core->OnBackground();
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
+    {
+        if(isLock)
+        {
+            core->OnDeviceLocked();
+        }
+        else
+        {
+            core->OnBackground();
+        }
+    }
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 }
 
 uint32 Core::GetGlobalFrameIndex()
@@ -721,5 +735,9 @@ void Core::EnableReloadResourceOnResize(bool enable)
     enabledReloadResourceOnResize = enable;
 }
     
+uint32 Core::GetScreenDPI()
+{
+	return DPIHelper::GetScreenDPI();
+}
 
 };

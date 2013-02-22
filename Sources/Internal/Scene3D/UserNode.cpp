@@ -38,7 +38,7 @@ REGISTER_CLASS(UserNode);
 UserNode::UserNode()
 	:drawBox(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f))
 {
-	SetDebugFlags(GetDebugFlags() | DEBUG_DRAW_USERNODE);
+//	SetDebugFlags(GetDebugFlags() | DEBUG_DRAW_USERNODE);
 }
 
 UserNode::~UserNode()
@@ -50,27 +50,7 @@ void UserNode::Draw()
 {    
 	SceneNode::Draw();
 	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
-	
-	if (debugFlags & DEBUG_DRAW_USERNODE)
-	{
-		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-		Matrix4 finalMatrix = worldTransform * prevMatrix;
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
-		
-        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
-		RenderManager::Instance()->SetColor(0, 0, 1.0f, 1.0f);
-		RenderHelper::Instance()->DrawBox(drawBox);
-		RenderManager::Instance()->SetColor(1.f, 1.f, 0, 1.0f);
-		RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(1.f, 0, 0));
-		RenderManager::Instance()->SetColor(1.f, 0, 1.f, 1.0f);
-		RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 1.f, 0));
-		RenderManager::Instance()->SetColor(0, 1.f, 1.f, 1.0f);
-		RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 0, 1.f));
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-	}
+
 }
 
 

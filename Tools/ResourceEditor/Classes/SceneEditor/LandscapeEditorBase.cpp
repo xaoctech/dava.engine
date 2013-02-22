@@ -6,6 +6,8 @@
 #include "EditorBodyControl.h"
 
 #include "../Qt/Main/QtUtils.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+
 
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
@@ -71,7 +73,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
     SafeRelease(workingScene);
     
-    workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
+    workingLandscape = SafeRetain(newScene->GetLandscape(newScene));
     if(!workingLandscape)
     {
         ShowErrorDialog(String("No landscape at level."));
@@ -131,7 +133,9 @@ void LandscapeEditorBase::Close()
 {
     HideAction();
     
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    // RETURN TO THIS CODE LATER
+    // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+    
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
@@ -290,14 +294,15 @@ void LandscapeEditorBase::OnShowGrid(bool show)
 {
     if(workingLandscape)
     {
-        if(show)
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
-        }
-        else 
-        {
-            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
-        }
+// RETURN TO THIS CODE LATER
+//        if(show)
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
+//        else 
+//        {
+//            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
+//        }
     }
     else 
     {
@@ -305,6 +310,13 @@ void LandscapeEditorBase::OnShowGrid(bool show)
     }
 }
 
+void LandscapeEditorBase::ClearSceneResources()
+{
+	if(IsActive())
+	{
+		HideAction();
+	}
+}
 
 void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {

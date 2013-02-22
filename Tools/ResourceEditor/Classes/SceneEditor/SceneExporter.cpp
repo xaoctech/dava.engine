@@ -2,6 +2,7 @@
 #include "SceneValidator.h"
 
 #include "PVRConverter.h"
+#include "DXTConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -155,15 +156,16 @@ void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
         }
 		else
 		{
-			LightNode * light = dynamic_cast<LightNode*>(node);
-			if(light)
-			{
-				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-				if(!isDynamic)
-				{
-					node->GetParent()->RemoveNode(node);
-				}
-			}
+            // LIGHT
+//			LightNode * light = dynamic_cast<LightNode*>(node);
+//			if(light)
+//			{
+//				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+//				if(!isDynamic)
+//				{
+//					node->GetParent()->RemoveNode(node);
+//				}
+//			}
 		}
     }
 }
@@ -458,8 +460,20 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				if(exportFormat == PVR_FILE)
 				{
 					PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
-					descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
-					descriptor->Save();
+					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+                    if(wasUpdated)
+                    {
+                        descriptor->Save();
+                    }
+				}
+				else if(exportFormat == DXT_FILE)
+				{
+					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
+					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+                    if(wasUpdated)
+                    {
+                        descriptor->Save();
+                    }
 				}
 
 				SafeRelease(descriptor);

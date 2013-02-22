@@ -24,10 +24,10 @@ void CommandsManager::ClearQueue()
 
 void CommandsManager::ClearQueueTail()
 {
-    if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
+    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
     {
         int32 newCount = currentCommandIndex + 1;
-		for_each(commandsQueue.begin(), commandsQueue.end(), SafeRelease<Command>);
+		for_each(commandsQueue.begin() + newCount, commandsQueue.end(), SafeRelease<Command>);
         
         commandsQueue.resize(newCount);
     }
@@ -79,7 +79,7 @@ void CommandsManager::Undo()
 
 void CommandsManager::Redo()
 {
-    if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
+    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
     {
         //TODO: need check state?
         ++currentCommandIndex;

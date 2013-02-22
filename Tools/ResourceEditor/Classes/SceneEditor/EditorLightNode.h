@@ -15,11 +15,9 @@ public:
 
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
-	static LightNode * CreateSceneAndEditorLight();
-
 private:
 
-	LightNode::eType type;
+	Light::eType type;
 
 	String GetSceneFile();
 };

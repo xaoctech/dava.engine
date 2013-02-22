@@ -150,6 +150,8 @@ void CommandSaveScene::Execute()
 			String normalizedPathname = PathnameToDAVAStyle(filePath);
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+
+			SaveParticleEmitterNodes(activeScene->GetScene());
             screen->SaveSceneToFile(normalizedPathname);
 
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
@@ -159,8 +161,60 @@ void CommandSaveScene::Execute()
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
+void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
+{
+	if (!scene)
+	{
+		return;
+	}
+
+	int32 childrenCount = scene->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(scene->GetChild(i));
+	}
+}
+
+void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
+{
+	bool needSaveThisLevelNode = true;
+	ParticleEmitter * emitter = GetEmitter(parentNode);
+	if (!emitter)
+	{
+		needSaveThisLevelNode = false;
+	}
+
+	if (needSaveThisLevelNode)
+	{
+		// Do we have file name? Ask for it, if not.
+		String yamlPath = emitter->GetConfigPath();
+		if (yamlPath.empty())
+		{
+			QString saveDialogCaption = QString("Save Particle Emitter \"%1\"").arg(QString::fromStdString(parentNode->GetName()));
+			QString saveDialogYamlPath = QFileDialog::getSaveFileName(NULL, saveDialogCaption, "", QString("Yaml File (*.yaml)"));
+
+			if (!saveDialogYamlPath.isEmpty())
+			{
+				yamlPath = PathnameToDAVAStyle(saveDialogYamlPath);
+			}
+		}
+
+		if (!yamlPath.empty())
+		{
+			emitter->SaveToYaml(yamlPath);
+		}
+	}
+
+	// Repeat for all children.
+	int32 childrenCount = parentNode->GetChildrenCount();
+	for (int32 i = 0; i < childrenCount; i ++)
+	{
+		SaveParticleEmitterNodeRecursive(parentNode->GetChild(i));
+	}
+}
+
 //Export
-CommandExport::CommandExport(ResourceEditor::eExportFormat fmt)
+CommandExport::CommandExport(ImageFileFormat fmt)
     :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
     ,   format(fmt)
 {

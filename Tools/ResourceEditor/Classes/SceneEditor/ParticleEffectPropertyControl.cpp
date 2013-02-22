@@ -1,5 +1,6 @@
 #include "ParticleEffectPropertyControl.h"
 #include "Scene3D/ParticleEffectNode.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 ParticleEffectPropertyControl::ParticleEffectPropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -15,8 +16,8 @@ void ParticleEffectPropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(sceneNode);
-	DVASSERT(particleEffect);
+	Component* component = sceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);
+	DVASSERT(component);
 
     propertyList->AddSection("Particle Effect", GetHeaderState("Particle Effect", true));
         
@@ -27,20 +28,23 @@ void ParticleEffectPropertyControl::ReadFrom(SceneNode * sceneNode)
 
 void ParticleEffectPropertyControl::OnStart(BaseObject * object, void * userData, void * callerData)
 {
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
-	particleEffect->Start();
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(currentSceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+	effectComponent->Start();
 
 }
 
 void ParticleEffectPropertyControl::OnStop(BaseObject * object, void * userData, void * callerData)
 {
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
-	particleEffect->Stop();
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(currentSceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+	effectComponent->Stop();
 }
 
 void ParticleEffectPropertyControl::OnRestart(BaseObject * object, void * userData, void * callerData)
 {
-	ParticleEffectNode * particleEffect = dynamic_cast<ParticleEffectNode *>(currentSceneNode);
-	particleEffect->Restart();
+	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(currentSceneNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+	DVASSERT(effectComponent);
+	effectComponent->Restart();
 }
 

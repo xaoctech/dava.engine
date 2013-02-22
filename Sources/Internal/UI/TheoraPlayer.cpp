@@ -29,6 +29,9 @@
  =====================================================================================*/
 
 #include "UI/TheoraPlayer.h"
+
+#if !defined(__DAVAENGINE_ANDROID__)
+
 #include <theora/theoradec.h>
 
 namespace DAVA
@@ -395,7 +398,7 @@ uint32 TheoraPlayer::binCeil(uint32 value)
 void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 {
     UIControl::LoadFromYamlNode(node, loader);
-    YamlNode * fileNode = node->AsMap()["file"];
+    YamlNode * fileNode = node->Get("file");
     
 	if(fileNode)
         OpenFile(fileNode->AsString());
@@ -424,3 +427,5 @@ void TheoraPlayer::Draw(const UIGeometricData &geometricData)
 }
     
 }
+
+#endif //#if !defined(__DAVAENGINE_ANDROID__)

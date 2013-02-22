@@ -51,7 +51,7 @@ RenderDataStream::~RenderDataStream()
 {
 }
 
-void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, void * _pointer)
+void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, const void * _pointer)
 {
     type = _type;
     size = _size;
@@ -109,7 +109,7 @@ RenderDataObject::~RenderDataObject()
     
 }
 
-RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer)
+RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer)
 {
     Map<eVertexFormat, RenderDataStream *>::iterator iter = streamMap.find(formatMark);
     RenderDataStream * stream = 0;
@@ -132,7 +132,7 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
     return stream;
 }
 
-uint32 RenderDataObject::GetResultFormat()
+uint32 RenderDataObject::GetResultFormat() const
 {
     return resultVertexFormat;
 }

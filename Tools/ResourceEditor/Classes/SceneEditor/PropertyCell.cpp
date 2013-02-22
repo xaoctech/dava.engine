@@ -254,6 +254,9 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     keyName->size.x = width/KEY_NAME_DEVIDER;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
 
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width - keyName->size.x);
@@ -703,6 +706,9 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
         maxValue = NULL;
     }
 
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
@@ -770,6 +776,9 @@ PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *pro
     keyName->SetVisible(false, false);
     
 
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     float32 checkBoxWidth = GetHeightForWidth(width)/2;

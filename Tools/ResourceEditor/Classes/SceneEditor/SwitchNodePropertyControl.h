@@ -13,6 +13,7 @@ public:
 	virtual void ReadFrom(SceneNode * sceneNode);
 
 	virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
+
 };
 
 #endif //__SWITCHNODE_PROPERTY_CONTROL_H__

@@ -25,8 +25,10 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
-#include "TextureBrowser/TextureConvertor.h"
+#include "ImageSplitter/ImageSplitterScreen.h"
 
+#include "TextureBrowser/TextureConvertor.h"
+#include "DockParticleEditor/ParticlesEditorController.h"
 
 using namespace DAVA;
 
@@ -51,8 +53,6 @@ void GameCore::OnAppStarted()
 
 	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
-    
-    Stats::Instance()->EnableStatsOutputEventNFrame(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");
@@ -76,21 +76,34 @@ void GameCore::OnAppStarted()
     sceneEditorScreenMain = new SceneEditorScreenMain();
     exporterScreen = new ExporterScreen();
 
+	new ParticlesEditorController();
+    imageSplitterScreen = new ImageSplitterScreen();
+
     Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
-    
     UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_IMAGE_SPLITTER, imageSplitterScreen);
 
+    
     if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_EXPORTER);
     }
-    else 
+    else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
+    {
+        UIScreenManager::Instance()->SetFirst(SCREEN_IMAGE_SPLITTER);
+    }
+    else
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
     }
+	
+	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using
+	// ParticleEffectNode and thus REGISTER_CLASS(ParticleEffectNode) must not be removed during optimization.
+	ParticleEffectNode* effectNode = new ParticleEffectNode();
+	delete effectNode;
 }
 
 void GameCore::OnAppFinished()
@@ -103,6 +116,7 @@ void GameCore::OnAppFinished()
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
     SafeRelease(exporterScreen);
+    SafeRelease(imageSplitterScreen);
 }
 
 void GameCore::OnSuspend()

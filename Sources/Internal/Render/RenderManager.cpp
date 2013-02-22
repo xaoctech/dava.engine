@@ -49,13 +49,13 @@ RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 
     
 RenderManager::RenderManager(Core::eRenderer _renderer)
-    : currentState(_renderer)
-    , hardwareState(_renderer)
-    , needGLScreenShot(false)
-    , screenShotIndex(0)
+:   renderer(_renderer),
+    currentState(),
+    hardwareState(),
+    needGLScreenShot(false),
+    screenShotIndex(0)
 {
 	Logger::Debug("[RenderManager] created");
-    renderer = _renderer;
 
     Texture::InitializePixelFormatDescriptors();
     
@@ -181,7 +181,7 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
     
 	Logger::Debug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
 }
-#endif //    #ifdef __DAVASOUND_ANDROID__    
+#endif //    #ifdef __DAVAENGINE_ANDROID__    
 
 
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)

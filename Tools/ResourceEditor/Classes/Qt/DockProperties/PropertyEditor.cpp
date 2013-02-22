@@ -1,0 +1,116 @@
+#include "DAVAEngine.h"
+#include "Scene/SceneDataManager.h"
+#include "Entity/Component.h"
+
+#include "DockProperties/PropertyEditor.h"
+#include "QtPropertyEditor/QtPropertyItem.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+
+#include "PropertyEditorStateHelper.h"
+
+PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
+	: QtPropertyEditor(parent)
+	, curNode(NULL)
+	, treeStateHelper(this, this->curModel)
+{
+	// global scene manager signals
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+}
+
+PropertyEditor::~PropertyEditor()
+{
+	SafeRelease(curNode);
+}
+
+void PropertyEditor::SetNode(DAVA::SceneNode *node)
+{
+	// Store the current Property Editor Tree state before switching to the new node.
+	// Do not clear the current states map - we are using one storage to share opened
+	// Property Editor nodes between the different Scene Nodes.
+	treeStateHelper.SaveTreeViewState(false);
+
+	SafeRelease(curNode);
+	curNode = SafeRetain(node);
+
+	RemovePropertyAll();
+	if(NULL != curNode)
+	{
+        AppendIntrospectionInfo(curNode, curNode->GetTypeInfo());
+
+		for(int32 i = 0; i < Component::COMPONENT_COUNT; ++i)
+        {
+            Component *component = curNode->GetComponent(i);
+            if(component)
+            {
+                AppendIntrospectionInfo(component, component->GetTypeInfo());
+            }
+        }
+	}
+
+	// Restore back the tree view state from the shared storage.
+	if (!treeStateHelper.IsTreeStateStorageEmpty())
+	{
+		treeStateHelper.RestoreTreeViewState();
+	}
+	else
+	{
+		// Expand the root elements as default value.
+		expandToDepth(0);
+	}
+}
+
+void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+{
+	if(NULL != info)
+	{
+		bool hasMembers = false;
+		const IntrospectionInfo *currentInfo = info;
+
+		// check if there are any memebers
+		while (NULL != currentInfo)
+		{
+			if(currentInfo->MembersCount() > 0)
+			{
+				hasMembers = true;
+				break;
+			}
+			currentInfo = currentInfo->BaseInfo();
+		}
+
+        //if(hasMembers)
+        {
+            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo));
+            
+            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+            prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+        }
+    }
+}
+
+void PropertyEditor::sceneChanged(SceneData *sceneData)
+{
+	if(NULL != sceneData)
+	{
+		SetNode(sceneData->GetSelectedNode());
+	}
+}
+
+void PropertyEditor::sceneActivated(SceneData *sceneData)
+{
+	if(NULL != sceneData)
+	{
+		SetNode(sceneData->GetSelectedNode());
+	}
+}
+
+void PropertyEditor::sceneReleased(SceneData *sceneData)
+{ }
+
+void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+{
+	SetNode(node);
+}

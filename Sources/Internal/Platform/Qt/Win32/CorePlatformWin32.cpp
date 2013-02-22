@@ -324,10 +324,22 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	case WM_MBUTTONDOWN:
 		//		case WM_XBUTTONDOWN:
             
-            if(!isFocused || needToSkipMouseUp)
+            if(!isFocused)
             {
                 break;
             }
+
+			if(needToSkipMouseUp)
+			{
+				if(message->message == WM_RBUTTONDOWN)
+				{
+					needToSkipMouseUp = false;
+				}
+				else
+				{
+					break;
+				}
+			}
 
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
@@ -368,13 +380,15 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
     
 void CoreWin32Platform::SetFocused(bool focused)
 {
-	isFocused = focused;
-	if(isFocused)
+	if(isFocused != focused)
 	{
-		needToSkipMouseUp = true;
+		isFocused = focused;
+		if(isFocused)
+		{
+			needToSkipMouseUp = true;
+		}
 	}
 }
 
-	
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)
