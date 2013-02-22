@@ -87,10 +87,12 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
 					RenderManager::Instance()->SetColor(camColor);
 
-					entityCamera->Set();
-					camera->Set();
+					//entityCamera->Set();
+					//camera->Set();
+					//entityCamera->GetFrustum()->DebugDraw();
+					
+					RenderHelper::Instance()->DrawCornerBox(camBox, 2.5f);
 
-					entityCamera->GetFrustum()->DebugDraw();
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
 				}
