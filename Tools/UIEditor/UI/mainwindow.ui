@@ -274,8 +274,11 @@
    <property name="toolTip">
     <string>Open project</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
    <property name="shortcutContext">
-    <enum>Qt::WindowShortcut</enum>
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
    <property name="visible">
     <bool>true</bool>
@@ -293,6 +296,12 @@
    </property>
    <property name="text">
     <string>New project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionHierarchy">
@@ -338,6 +347,12 @@
    <property name="toolTip">
     <string>Close project</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionLocalizationManager">
    <property name="text">
@@ -354,6 +369,12 @@
    </property>
    <property name="toolTip">
     <string>Save project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionHelpContents">
