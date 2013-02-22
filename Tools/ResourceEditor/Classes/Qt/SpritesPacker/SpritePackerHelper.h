@@ -29,6 +29,9 @@ protected:
 	
 	void ReloadParticleSprites(SceneData* sceneData);
 
+	void Pack();
+	void Reload();
+
 	QFuture<void> *future;
 	QFutureWatcher<void> watcher;
 

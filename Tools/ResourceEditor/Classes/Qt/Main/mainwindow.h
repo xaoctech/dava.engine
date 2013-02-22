@@ -38,7 +38,9 @@ private:
 	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
 
 public slots:
-	void TextureCheckConvetAndWait(bool forceConvertAll = false);
+	
+	//return true if conversion has been started
+	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 
