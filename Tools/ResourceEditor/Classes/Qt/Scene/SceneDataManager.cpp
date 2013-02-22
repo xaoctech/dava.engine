@@ -85,11 +85,11 @@ void SceneDataManager::AddScene(const String &scenePathname)
         mod.CreateTranslation(nodePos);
         rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
     }
+
 	
-	List<LandscapeNode *> landscapes;
-	rootNode->GetChildNodes(landscapes);
-	
-	bool needUpdateLandscapeController = !landscapes.empty();
+    LandscapeNode *landscape = scene->GetLandscape(scene);
+    bool needUpdateLandscapeController = (landscape != NULL);
+
 	
     SafeRelease(rootNode);
 	
@@ -624,8 +624,8 @@ void SceneDataManager::CompressTextures(const List<DAVA::Texture *> texturesForC
 // 
 // 			}
 // 
-// 			descriptor->UpdateDateAndCrcForFormat(fileFormat);
-// 			descriptor->Save();
+// 			bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(fileFormat);
+// 			if(wasUpdated) descriptor->Save();
 // 			SafeRelease(descriptor);
 // 		}
 // 	}

@@ -82,12 +82,11 @@ void UITextFieldMetadata::SetFontSize(float fontSize)
     }
     
     Font* font = GetActiveUITextField()->GetFont();
-    if (!font)
+    if (font)
     {
-        return;
+        font->SetSize(fontSize);
+        GetActiveUITextField()->SetFont(font);
     }
-
-    font->SetSize(fontSize);
 }
 
 QColor UITextFieldMetadata::GetTextColor() const

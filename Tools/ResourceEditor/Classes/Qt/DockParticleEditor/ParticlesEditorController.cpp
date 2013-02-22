@@ -150,7 +150,7 @@ void ParticlesEditorController::EmitNodeWillBeDeselected()
 	emit NodeDeselected(this->selectedNode);
 }
 
-void ParticlesEditorController::EmitSelectedNodeChanged()
+void ParticlesEditorController::EmitSelectedNodeChanged(bool forceRefresh)
 {
     if (this->selectedNode == NULL)
     {
@@ -177,7 +177,7 @@ void ParticlesEditorController::EmitSelectedNodeChanged()
     LayerParticleEditorNode* layerEditorNode = dynamic_cast<LayerParticleEditorNode*>(this->selectedNode);
     if (layerEditorNode)
     {
-        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode);
+        emit LayerSelected(layerEditorNode->GetEmitterNode(), layerEditorNode->GetLayer(), this->selectedNode, forceRefresh);
         return;
     }
     
@@ -362,15 +362,15 @@ ForceParticleEditorNode* ParticlesEditorController::AddParticleForceToNode(Layer
     }
     
     // Add the new Force to the Layer.
-    layer->forces.push_back(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))));
-    layer->forcesVariation.push_back(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))));
-    layer->forcesOverLife.push_back(RefPtr<PropertyLine<float32> >(new PropertyLineValue<float32>(1.0f)));
-    
+	ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))),
+												RefPtr<PropertyLine<Vector3> >(NULL), RefPtr<PropertyLine<float32> >(NULL));
+	layer->AddForce(newForce);
+
     // Create the node for the new layer.
     int newLayerIndex = layer->forces.size() - 1;
     ForceParticleEditorNode* forceNode = new ForceParticleEditorNode(layerNode, newLayerIndex);
     layerNode->AddChildNode(forceNode);
-    
+
     // Update the names for the forces.
     layerNode->UpdateForcesIndices();
     
@@ -396,8 +396,7 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
 
     // Remove the force from the emitter...
     int forceIndex = forceNode->GetForceIndex();
-    layer->forces.erase(layer->forces.begin() + forceIndex);
-    layer->forcesOverLife.erase(layer->forcesOverLife.begin() + forceIndex);
+	layer->RemoveForce(forceIndex);
     
     // ...and from the tree.
     layerNode->RemoveChildNode(forceNode);
@@ -582,11 +581,11 @@ bool ParticlesEditorController::PerformMoveBetweenEmitters(EmitterParticleEditor
 	return true;
 }
 
-void ParticlesEditorController::RefreshSelectedNode()
+void ParticlesEditorController::RefreshSelectedNode(bool forceRefresh)
 {
 	if (this->selectedNode)
 	{
-		EmitSelectedNodeChanged();
+		EmitSelectedNodeChanged(forceRefresh);
 	}
 }
 

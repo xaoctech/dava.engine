@@ -34,7 +34,7 @@
 
 namespace DAVA
 {
-RenderLayer::RenderLayer(const char * _name)
+RenderLayer::RenderLayer(const FastName & _name)
     : name(_name)
     , flags(0)
 {
@@ -66,7 +66,7 @@ void RenderLayer::RemoveRenderBatch(RenderBatch * batch)
     
 bool RenderLayer::MaterialCompareFunction(const RenderBatchSortItem & a, const RenderBatchSortItem & b)
 {
-    return a.sortingKey < b.sortingKey;
+    return a.sortingKey > b.sortingKey;
 }
 
 void RenderLayer::Update(Camera * camera)
@@ -83,7 +83,7 @@ void RenderLayer::Update(Camera * camera)
                 RenderBatchSortItem & item = sortArray[k];
                 RenderBatch * batch = renderBatchArray[k];;
                 item.renderBatch = batch;
-                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() << 4) | batch->GetSortingKey();
+                item.sortingKey = ((pointer_size)renderBatchArray[k]->GetMaterial() & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
             std::stable_sort(sortArray.begin(), sortArray.end(), MaterialCompareFunction);
@@ -94,6 +94,7 @@ void RenderLayer::Update(Camera * camera)
                 renderBatchArray[k] = item.renderBatch;
                 item.renderBatch->SetRemoveIndex(this, k);
             }
+            flags &= ~SORT_REQUIRED;
         }
         
         if (flags & SORT_BY_DISTANCE)
@@ -113,7 +114,7 @@ void RenderLayer::Update(Camera * camera)
                     Vector3 position = renderObject->GetBoundingBox().GetCenter();
                     float32 distance = (position - cameraPosition).Length();
                     
-                    item.sortingKey = ((uint32)distance) << 4 | batch->GetSortingKey();
+                    item.sortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 24);
                 }
             }
             

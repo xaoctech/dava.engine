@@ -31,11 +31,13 @@ CommandsController::CommandsController(QObject* parent/* = NULL*/) :
 void CommandsController::ExecuteCommand(BaseCommand* command)
 {
 	isLastChangeSaved = false;
-	
+
 	SafeRetain(command);
     command->Execute();
-    
-    // TODO: push the command to Undo/Redo stack.
+
+	undoRedoController.AddCommandToUndoStack(command);
+	emit UndoRedoAvailabilityChanged();
+
 	SafeRelease(command);
 }
 
@@ -62,4 +64,35 @@ bool CommandsController::IsLastChangeSaved() const
 void CommandsController::OnProjectSaved()
 {
 	isLastChangeSaved = true;
+}
+
+// Undo/Redo functionality.
+bool CommandsController::IsUndoAvailable()
+{
+	return undoRedoController.CanUndo();
+}
+
+bool CommandsController::IsRedoAvailable()
+{
+	return undoRedoController.CanRedo();
+}
+
+bool CommandsController::Undo()
+{
+	bool undoResult = undoRedoController.Undo();
+	emit UndoRedoAvailabilityChanged();
+	return undoResult;
+}
+
+bool CommandsController::Redo()
+{
+	bool redoResult = undoRedoController.Redo();
+	emit UndoRedoAvailabilityChanged();
+	return redoResult;
+}
+
+void CommandsController::CleanupUndoRedoStack()
+{
+	undoRedoController.Cleanup();
+	emit UndoRedoAvailabilityChanged();
 }

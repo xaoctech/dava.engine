@@ -104,8 +104,10 @@ void TextureDescriptor::SetDefaultValues()
     magFilter = Texture::FILTER_LINEAR;
 }
     
-void TextureDescriptor::UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const
+bool TextureDescriptor::UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const
 {
+    bool wasUpdated = false;
+    
     const Compression *compression = GetCompressionParams(fileFormat);
     
 	String filePathname = GetSourceTexturePathname();
@@ -113,15 +115,30 @@ void TextureDescriptor::UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) co
     if(date.empty())
     {
         Memset(compression->modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
-        Memset(compression->crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+
+        if(compression->crc[0] != 0)
+        {
+            Memset(compression->crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+            wasUpdated = true;
+        }
     }
     else
     {
         strncpy(compression->modificationDate, date.c_str(), DATE_BUFFER_SIZE-1);
         compression->modificationDate[DATE_BUFFER_SIZE-1] = 0;
         
-        MD5::ForFile(filePathname, compression->crc);
+        uint8 crc[MD5::DIGEST_SIZE];
+        MD5::ForFile(filePathname, crc);
+        
+        int32 cmpResult = Memcmp(crc, compression->crc, MD5::DIGEST_SIZE * sizeof(uint8));
+        if(0 != cmpResult)
+        {
+            Memcpy(compression->crc, crc, MD5::DIGEST_SIZE * sizeof(uint8));
+            wasUpdated = true;
+        }
     }
+    
+    return wasUpdated;
 }
 
     
@@ -264,7 +281,7 @@ void TextureDescriptor::Export(const String &filePathname)
 
 void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
 {
-    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
+//    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
     
     if(version == 2)
     {
@@ -548,6 +565,31 @@ String TextureDescriptor::GetPathnameForFormat(const String &pathname, ImageFile
     }
 
     return String("");
+}
+    
+ImageFileFormat TextureDescriptor::GetFormatForPathname(const String &pathname)
+{
+    String extension = FileSystem::GetExtension(pathname);
+    return GetFormatForExtension(extension);
+}
+    
+
+ImageFileFormat TextureDescriptor::GetFormatForExtension(const String &extension)
+{
+    if(0 == CompareCaseInsensitive(extension, ".png"))
+    {
+        return PNG_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(extension, ".pvr"))
+    {
+        return PVR_FILE;
+    }
+    else if(0 == CompareCaseInsensitive(extension, ".dds"))
+    {
+        return DXT_FILE;
+    }
+
+    return NOT_FILE;
 }
 
 

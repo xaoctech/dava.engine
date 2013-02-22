@@ -81,7 +81,7 @@ class Particle;
 class ParticleEmitter : public RenderObject, public IRenderUpdatable
 {
 public:
-	enum eEmitterType
+	enum eType
 	{
 		EMITTER_POINT,
 		EMITTER_LINE,
@@ -217,6 +217,8 @@ public:
 	//ParticleEmitter * Clone();
 
 	virtual RenderObject * Clone(RenderObject *newObject);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	
 	/**
 		\brief Function to get number of repeats for current particle emitter.
@@ -321,6 +323,9 @@ protected:
 	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
 	virtual void LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong);
 
+	// Internal restart function.
+	void DoRestart(bool isDeleteAllParticles);
+
     String GetEmitterTypeName();
 
 	void CleanupLayers();
@@ -349,7 +354,7 @@ public:
 	RefPtr< PropertyLine<Color> > colorOverLife;
 	RefPtr< PropertyLine<Vector3> > size;
     
-	eEmitterType	emitterType;
+	eType	emitterType;
 	Color currentColor;
 
 	bool GetCurrentColor(Color * currentColor);

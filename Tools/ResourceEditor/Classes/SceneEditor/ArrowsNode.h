@@ -29,7 +29,8 @@ protected:
 public:
 	ArrowsRenderBatch(ArrowsNode* node);
 
-	virtual void Draw(Camera* camera);
+	const FastName & GetOwnerLayerName();
+	virtual void Draw(Camera * camera);
 
 protected:
 	ArrowsNode* node;

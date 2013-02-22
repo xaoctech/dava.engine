@@ -294,6 +294,24 @@ void DefaultScreen::SmartGetSelectedControl(SmartSelection* list, const Hierarch
 	}
 }
 
+HierarchyTreeControlNode* DefaultScreen::GetSelectedControl(const Vector2& point)
+{
+	const HierarchyTreeController::SELECTEDCONTROLNODES &selectedNodes = HierarchyTreeController::Instance()->GetActiveControlNodes();
+	for (HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter = selectedNodes.begin();
+		 iter != selectedNodes.end();
+		 ++iter)
+	{
+		HierarchyTreeControlNode* control = (*iter);
+			
+		Rect controlRect = GetControlRect(control);
+		if (controlRect.PointInside(point) || GetResizeType(control, point) != ResizeTypeNoResize)
+		{
+			return control;
+		}
+	}
+	return NULL;
+}
+
 HierarchyTreeControlNode* DefaultScreen::SmartGetSelectedControl(const Vector2& point)
 {
 	SmartSelection* root = new SmartSelection(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
@@ -676,6 +694,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 		return;
 	
 	lastSelectedControl = NULL;
+	useMouseUpSelection = true;
 	
 #ifdef WIN32
 	Vector2 localPoint = event->point;
@@ -684,27 +703,14 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 #endif
 	Vector2 point = LocalToInternal(localPoint);
 
-	HierarchyTreeControlNode* selectedControlNode = NULL;
-	if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
-	{
-		const HierarchyTreeController::SELECTEDCONTROLNODES &selectedNodes = HierarchyTreeController::Instance()->GetActiveControlNodes();
-		for (HierarchyTreeController::SELECTEDCONTROLNODES::const_iterator iter = selectedNodes.begin();
-			 iter != selectedNodes.end();
-			 ++iter)
-		{
-			HierarchyTreeControlNode* control = (*iter);
-			
-			Rect controlRect = GetControlRect(control);
-			if (controlRect.PointInside(point) || GetResizeType(control, point) != ResizeTypeNoResize)
-			{
-				selectedControlNode = control;
-				break;
-			}
-		}
-	}
-
+	HierarchyTreeControlNode* selectedControlNode = GetSelectedControl(point);
+	
 	if (!selectedControlNode)
+	{
 		selectedControlNode = SmartGetSelectedControl(point);
+		//If smart selection was used - we don't need additional mouseUp selection
+		useMouseUpSelection = false;
+	}
 	
 	while (selectedControlNode)
 	{
@@ -727,9 +733,14 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 		{
 			if (HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
 			{
-				if (HierarchyTreeController::Instance()->GetActiveControlNodes().size() > 1 &&
+				//Don't check active controls size anymore - we have to be able to deselect any control
+				if (/*HierarchyTreeController::Instance()->GetActiveControlNodes().size() > 1 &&*/
 					InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+				{
 					lastSelectedControl = selectedControlNode;
+					//If controls was selected with SHIFT key pressed - we don't need mouseUp selection
+					useMouseUpSelection = false;
+				}
 			}
 			else
 			{
@@ -756,7 +767,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 
 void DefaultScreen::CopySelectedControls()
 {
-	//Set copu flag
+	//Set copy flag
 	copyControlsInProcess = true;
 	HierarchyTreeNode* parentConrol;
 	//Get current selected controls on screen
@@ -810,7 +821,6 @@ void DefaultScreen::MouseInputDrag(const DAVA::UIEvent* event)
 	
 	if (inputState == InputStateDrag)
 	{
-
 		//If control key is pressed - we are going to copy control(s)
 		if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL) && !copyControlsInProcess)
 		{
@@ -855,6 +865,32 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 		HierarchyTreeController::Instance()->ChangeItemSelection(lastSelectedControl);
 	}
 	
+	//Use additional control selection. This will allow to scroll through multiple contols
+	//located in the same area
+	if ((inputState == InputStateSelection) && useMouseUpSelection)
+	{		
+#ifdef WIN32
+		Vector2 localPoint = event->point;
+#else
+		Vector2 localPoint = ScreenWrapper::Instance()->TranslateScreenPoint(event->point);
+#endif
+		Vector2 point = LocalToInternal(localPoint);
+		
+		HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);
+		
+		if (selectedControlNode)
+		{
+			if (!HierarchyTreeController::Instance()->IsNodeActive(selectedControlNode))
+			{
+				if (!InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+					HierarchyTreeController::Instance()->ResetSelectedControl();
+
+					HierarchyTreeController::Instance()->SelectControl(selectedControlNode);
+			}
+			SaveControlsPostion();
+		}
+	}
+
 	lastSelectedControl = NULL;
 	inputState = InputStateSelection;
 	startControlPos.clear();

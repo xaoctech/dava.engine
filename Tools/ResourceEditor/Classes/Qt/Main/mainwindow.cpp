@@ -162,7 +162,6 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
     
     connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
-    connect(ui->actionBakeScene, SIGNAL(triggered()), actionHandler, SLOT(BakeScene()));
     connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
 
     

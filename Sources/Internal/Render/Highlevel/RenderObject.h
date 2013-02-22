@@ -97,6 +97,7 @@ public:
     
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
+    void RecalcBoundingBox();
     
     uint32 GetRenderBatchCount();
     RenderBatch * GetRenderBatch(uint32 batchIndex);
@@ -119,6 +120,8 @@ public:
     inline eEmitterType GetType() { return (eEmitterType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
     

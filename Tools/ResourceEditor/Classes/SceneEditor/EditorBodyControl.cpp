@@ -31,6 +31,7 @@
 
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
+#include "../Commands/CommandReloadTextures.h"
 
 #include "ArrowsNode.h"
 
@@ -724,6 +725,10 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	{
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
+
+		Command *reloadTextures = new CommandReloadTextures();
+		CommandsManager::Instance()->Execute(reloadTextures);
+		SafeRelease(reloadTextures);
 	}
 }
 
@@ -931,12 +936,10 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    Vector<LandscapeNode *>landscapes;
-    scene->GetChildNodes(landscapes);
-    
-    for(int32 i = 0; i < (int32)landscapes.size(); ++i)
+    LandscapeNode *landscape = scene->GetLandscape(scene);
+    if (landscape)
     {
-        landscapes[i]->UpdateFullTiledTexture();
+        landscape->UpdateFullTiledTexture();
     }
 }
 

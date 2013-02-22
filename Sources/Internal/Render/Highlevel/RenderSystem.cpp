@@ -39,45 +39,37 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
-    static FastName PASS_ZPRE_PASS("ZPrePass");
-    static FastName PASS_FORWARD_PASS("ForwardPass");
-    static FastName SHADOW_VOLUME_PASS("ShadowVolumePass");
-    static FastName PASS_DEFERRED_PASS("DeferredPass");
 
 RenderSystem::RenderSystem()
 {
-    // Build forward renderer.
-    renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
-    renderPassesMap.Insert("ForwardPass", new RenderPass("ForwardPass"));
-    renderPassesMap.Insert("ShadowVolumePass", new ShadowVolumeRenderPass("ShadowVolumePass"));
+    // Register available passes & layers
+    renderPassesMap.Insert(PASS_FORWARD, new RenderPass(PASS_FORWARD));
+    renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
 
+    renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE));
+    renderLayersMap.Insert(LAYER_ALPHA_TEST_LAYER, new RenderLayer(LAYER_ALPHA_TEST_LAYER));
     
-    // renderPasses.push_back(new RenderPass("GBufferPass"));
-    // renderPasses.push_back(new LightPrePass("LightPrePass"));
-    // renderPasses.push_back(new ShadowMapPass("ShadowMapPass")):
-
-    renderLayersMap.Insert("OpaqueRenderLayer", new RenderLayer("OpaqueRenderLayer"));
-    renderLayersMap.Insert("TransclucentRenderLayer", new RenderLayer("TransclucentRenderLayer"));
-    renderLayersMap.Insert("ShadowVolumeRenderLayer", new RenderLayer("ShadowVolumeRenderLayer"));
+    renderLayersMap.Insert(LAYER_TRANSLUCENT, new RenderLayer(LAYER_TRANSLUCENT));
+    renderLayersMap.Insert(LAYER_AFTER_TRANSLUCENT, new RenderLayer(LAYER_AFTER_TRANSLUCENT));
+    
+    renderLayersMap.Insert(LAYER_SHADOW_VOLUME, new RenderLayer(LAYER_SHADOW_VOLUME));
     
     
-    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD_PASS];
-    forwardPass->AddRenderLayer(renderLayersMap["OpaqueRenderLayer"]);
-    forwardPass->AddRenderLayer(renderLayersMap["TransclucentRenderLayer"]);
+    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE]);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT]);
 
-    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[SHADOW_VOLUME_PASS];
-    shadowVolumePass->AddRenderLayer(renderLayersMap["ShadowVolumeRenderLayer"]);
+    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
+    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME]);
 
-
-//    renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
-    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
-    renderPassOrder.push_back(renderPassesMap[SHADOW_VOLUME_PASS]);
+    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
+    renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
-
 }
 
 RenderSystem::~RenderSystem()

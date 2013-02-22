@@ -19,7 +19,7 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-	Light * light = dynamic_cast<Light *>(sceneNode);
+    Light *light = GetLight(sceneNode);
 	DVASSERT(light);
 
     propertyList->AddSection("property.lightnode.light", GetHeaderState("property.lightnode.light", true));
@@ -86,7 +86,7 @@ void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 {
     if("property.lightnode.type" == forKey)
     {
-        Light *light = dynamic_cast<Light *>(currentSceneNode);
+        Light *light = GetLight(currentSceneNode);
         light->SetType((Light::eType)newItemIndex);
         
         if(Light::TYPE_DIRECTIONAL == light->GetType())
@@ -183,19 +183,17 @@ void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
 
 void LightPropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
 {
+    Light *light = GetLight(currentSceneNode);
     if("property.lightnode.ambient.color" == forKey)
     {
-        Light *light = dynamic_cast<Light *>(currentSceneNode);
         light->SetAmbientColor(newColor);
     }
     if("property.lightnode.diffuse.color" == forKey)
     {
-        Light *light = dynamic_cast<Light *>(currentSceneNode);
         light->SetDiffuseColor(newColor);
     }
     if("property.lightnode.specular.color" == forKey)
     {
-        Light *light = dynamic_cast<Light *>(currentSceneNode);
         light->SetSpecularColor(newColor);
     }
 }

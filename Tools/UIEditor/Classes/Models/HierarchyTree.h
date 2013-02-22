@@ -31,9 +31,12 @@ public:
 	
 	void CreateProject();
 	void CloseProject();
-	void AddPlatform(const QString& name, const Vector2& size);
-	bool AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
-	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
+
+	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
+	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+
+	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory,
+					 bool deleteNodeFromScene);
  	
 	const HierarchyTreeRootNode& GetRootNode() const {return rootNode;};
    
