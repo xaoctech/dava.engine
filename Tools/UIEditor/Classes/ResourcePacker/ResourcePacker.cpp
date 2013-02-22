@@ -14,6 +14,7 @@
 #include "TexturePacker/DefinitionFile.h"
 #include "TexturePacker/TexturePacker.h"
 #include "TexturePacker/CommandLineParser.h"
+#include "FileSystem/FileSystem.h"
 
 ResourcePacker::ResourcePacker()
 {
@@ -38,10 +39,9 @@ void ResourcePacker::PackResources(const String & inputDir, const String & outpu
 	CommandLineParser::Instance()->ClearFlags();
 
 	clearProcessDirectory = true;
-	inputGfxDirectory = inputDir;
-	outputGfxDirectory = outputDir;
+	inputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(inputDir);
+	outputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(outputDir);
 	excludeDirectory = FileSystem::Instance()->RealPath(inputDir + "/../");
-	isLightmapsPacking = true;
 	
 	StartPacking();
 }

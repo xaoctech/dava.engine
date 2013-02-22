@@ -34,6 +34,8 @@
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/AnimatedMesh.h"
 #include "Render/Image.h"
+#include "Render/Highlevel/RenderSystem.h"
+
 
 #include "Platform/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
@@ -45,21 +47,33 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
-#include "Scene3D/ShadowRect.h"
-#include "Scene3D/LightNode.h"
+#include "Render/Highlevel/Light.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
-#include "Scene3D/LandscapeNode.h"
+#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/RenderSystem.h"
 
-#include "Entity/Entity.h"
-#include "Entity/EntityManager.h"
-#include "Entity/Components.h"
+#include "Entity/SceneSystem.h"
+#include "Scene3D/Systems/TransformSystem.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
+#include "Scene3D/Systems/LodSystem.h"
+#include "Scene3D/Systems/DebugRenderSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/ParticleEmitterSystem.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
+#include "Scene3D/Systems/UpdatableSystem.h"
+#include "Scene3D/Systems/LightUpdateSystem.h"
+#include "Scene3D/Systems/SwitchSystem.h"
 
-#include "Entity/VisibilityAABBoxSystem.h"
-#include "Entity/MeshInstanceDrawSystem.h"
-#include "Entity/LandscapeGeometrySystem.h"
+//#include "Entity/Entity.h"
+//#include "Entity/EntityManager.h"
+//#include "Entity/Components.h"
+//
+//#include "Entity/VisibilityAABBoxSystem.h"
+//#include "Entity/MeshInstanceDrawSystem.h"
+//#include "Entity/LandscapeGeometrySystem.h"
 
 namespace DAVA 
 {
@@ -71,7 +85,6 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
-	,	shadowRect(0)
 	,	imposterManager(0)
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
@@ -79,27 +92,45 @@ Scene::Scene()
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
 
-	entityManager = new EntityManager();
-	
+//	entityManager = new EntityManager();
+
 	CreateComponents();
 	CreateSystems();
-
-    Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
-    Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
-    Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
 }
 
 void Scene::CreateComponents()
 {
-	VisibilityAABBoxComponent::Create();
-	MeshInstanceComponent::Create();
-	LandscapeGeometryComponent::Create();
-	TransformComponent::Create();
+    
 }
 
 void Scene::CreateSystems()
 {
+	renderSystem = new RenderSystem();
+	eventSystem = new EventSystem();
 
+    transformSystem = new TransformSystem(this);
+    AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT));
+
+    renderUpdateSystem = new RenderUpdateSystem(this);
+    AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT));
+
+	lodSystem = new LodSystem(this);
+	AddSystem(lodSystem, (1 << Component::LOD_COMPONENT));
+
+    debugRenderSystem = new DebugRenderSystem(this);
+    AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT));
+
+	particleEffectSystem = new ParticleEffectSystem(this);
+	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
+
+	updatableSystem = new UpdatableSystem(this);
+	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
+    
+    lightUpdateSystem = new LightUpdateSystem(this);
+    AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
+
+	switchSystem = new SwitchSystem(this);
+	AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT));
 }
 
 Scene::~Scene()
@@ -131,21 +162,27 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
-	SafeRelease(shadowRect);
 	SafeRelease(bvHierarchy);
 
-	entityManager->Flush();
-	SafeRelease(entityManager);
+    transformSystem = 0;
+    renderUpdateSystem = 0;
+	lodSystem = 0;
+    uint32 size = (uint32)systems.size();
+    for (uint32 k = 0; k < size; ++k)
+        SafeDelete(systems[k]);
+    systems.clear();
+
+	SafeDelete(eventSystem);
+	SafeDelete(renderSystem);
 }
 
 void Scene::RegisterNode(SceneNode * node)
 {
     //Logger::Debug("Register node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
     {
         lights.insert(light);
-
     }
 
 	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
@@ -182,13 +219,40 @@ void Scene::RegisterNode(SceneNode * node)
 	//	entityManager->Flush();
 	//	node->entity->SetData("landscapeNode", landscapeNode);
 	//}
+    
+//    Drawable * drawable = dynamic_cast<Drawable*>(node);
+//    
+//    if (drawable)
+//    {
+//        drawArray.push_back(drawable);
+//    }
+    
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool needAdd = ((requiredComponents & node->componentFlags) == requiredComponents);
+        
+        if (needAdd)
+            systems[k]->AddEntity(node);
+    }
 }
 
 void Scene::UnregisterNode(SceneNode * node)
 {
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool needRemove = ((requiredComponents & node->componentFlags) == requiredComponents);
+        
+        if (needRemove)
+            systems[k]->RemoveEntity(node);
+    }
+    
     //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
 
-    LightNode * light = dynamic_cast<LightNode*>(node);
+    Light * light = dynamic_cast<Light*>(node);
     if (light)
         lights.erase(light);
 
@@ -207,6 +271,84 @@ void Scene::UnregisterNode(SceneNode * node)
 	//{
 	//	entityManager->DestroyEntity(node->entity);
 	//}
+    
+//    // Remove drawable remove
+//    Drawable * drawable = dynamic_cast<Drawable*>(node);
+//    
+//    if (drawable)
+//    {
+//        int32 size = (uint32)drawArray.size();
+//        uint32 pos = 0;
+//        for (pos = 0; pos < size; ++pos)
+//        {
+//            if (drawArray[pos] == drawable)
+//            {
+//                drawArray[pos] = drawArray[size - 1];
+//                drawArray.pop_back();
+//                break;
+//            }
+//        }
+//    }
+}
+    
+void Scene::AddComponent(SceneNode * entity, Component * component)
+{
+    uint32 oldComponentFlags = entity->componentFlags;
+    entity->componentFlags |= (1 << component->GetType());
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
+        bool needAdd = ((requiredComponents & entity->componentFlags) == requiredComponents);
+        
+        if ((!wasBefore) && (needAdd))
+            systems[k]->AddEntity(entity);
+    }
+}
+    
+void Scene::RemoveComponent(SceneNode * entity, Component * component)
+{
+    uint32 oldComponentFlags = entity->componentFlags;
+    entity->componentFlags &= ~(1 << component->GetType());
+    
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponents = systems[k]->GetRequiredComponents();
+        bool wasBefore = ((requiredComponents & oldComponentFlags) == requiredComponents);
+        bool shouldBeNow = ((requiredComponents & entity->componentFlags) == requiredComponents);
+        
+        if ((wasBefore) && (!shouldBeNow))
+            systems[k]->RemoveEntity(entity);
+    }
+}
+    
+void Scene::ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event)
+{
+    uint32 systemsCount = systems.size();
+    uint32 updatedComponentFlag = 1 << componentType;
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        uint32 requiredComponentFlags = systems[k]->GetRequiredComponents();
+        uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+        
+        if (((requiredComponentFlags & updatedComponentFlag) != 0) && ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags))
+        {
+			eventSystem->NotifySystem(systems[k], entity, event);
+        }
+    }
+}
+    
+void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+{
+    sceneSystem->SetRequiredComponents(componentFlags);
+    systems.push_back(sceneSystem);
+}
+    
+void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+{
+    DVASSERT(0 && "Need to write remove system function");
 }
 
 Scene * Scene::GetScene()
@@ -350,6 +492,7 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
+        //int32 nowCount = node->GetNode()->GetChildrenCountRecursive();
 		return node->GetNode();
 	}
     return 0;
@@ -433,22 +576,30 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
-
-	entityManager->Flush();
-
-    // lights 
-    flags &= ~SCENE_LIGHTS_MODIFIED;
+    TIME_MEASURE("Scene::Update");
     
+    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+    
+    
+	updatableSystem->UpdatePreTransform();
+
+    transformSystem->Process();
+
+	updatableSystem->UpdatePostTransform();
+
+	lodSystem->SetCamera(currentCamera);
+	lodSystem->Process();
+
+	switchSystem->Process();
+    
+//	entityManager->Flush();
+
 	int32 size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
 	{
 		SceneNodeAnimationList * anim = animations[animationIndex];
 		anim->Update(timeElapsed);
 	}
-	
-	SceneNode::Update(timeElapsed);
 
 	referenceNodeSuffixChanged = false;
 	
@@ -465,14 +616,12 @@ void Scene::Update(float timeElapsed)
 	}
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
-    Stats::Instance()->EndTimeMeasure("Scene.Update", this);
-}		
+}
 
 void Scene::Draw()
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
+    TIME_MEASURE("Scene::Draw");
 
-    
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
@@ -504,75 +653,26 @@ void Scene::Draw()
         currentCamera->Set();
     }
     
-	if(bvHierarchy)
-        bvHierarchy->Cull();
-	//VisibilityAABBoxSystem::Run(this);
+    Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    renderSystem->SetCamera(currentCamera);
+    renderUpdateSystem->Process();
+	particleEffectSystem->Process();
+    renderSystem->Render();
+    debugRenderSystem->SetCamera(currentCamera);
+    debugRenderSystem->Process();
 
-	//entityManager->Dump();
-
-    SceneNode::Draw();
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
     if(imposterManager)
 	{
 		imposterManager->Draw();
 	}
     
-	//LandscapeGeometrySystem::Run(this);
-	//MeshInstanceDrawSystem::Run(this);
 
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW) && shadowVolumes.size() > 0)
-	{
-		if(!shadowRect)
-		{
-			shadowRect = ShadowRect::Create();
-		}
-
-		//2nd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
-
-		RenderManager::Instance()->ClearStencilBuffer(0);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
-		
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
-		RenderManager::State()->SetStencilRef(1);
-		RenderManager::State()->SetStencilMask(0xFFFFFFFF);
-
-		RenderManager::State()->SetStencilPass(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT, STENCILOP_DECR_WRAP);
-
-		RenderManager::State()->SetStencilPass(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_BACK, STENCILOP_INCR_WRAP);
-		
-		RenderManager::Instance()->FlushState();
-		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
-		for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
-		{
-			(*it)->DrawShadow();
-		}
-
-		//3rd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
-		
-		RenderManager::State()->SetStencilRef(0);
-		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
-		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
-
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		shadowRect->Draw();
-	}
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
-    Stats::Instance()->EndTimeMeasure("Scene.Draw", this);
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
 	//RENDER_VERIFY(glReadPixels(0, 0, 512, 512, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image->data));
 	//image->Save("img.png");
@@ -695,11 +795,11 @@ void Scene::UpdateLights()
     
 }
     
-LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 position)
+Light * Scene::GetNearestDynamicLight(Light::eType type, Vector3 position)
 {
     switch(type)
     {
-        case LightNode::TYPE_DIRECTIONAL:
+        case Light::TYPE_DIRECTIONAL:
             
             break;
             
@@ -708,13 +808,13 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
     };
     
 	float32 squareMinDistance = 10000000.0f;
-	LightNode * nearestLight = 0;
+	Light * nearestLight = 0;
 
-	Set<LightNode*> & lights = GetLights();
-	const Set<LightNode*>::iterator & endIt = lights.end();
-	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
+	Set<Light*> & lights = GetLights();
+	const Set<Light*>::iterator & endIt = lights.end();
+	for (Set<Light*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
-		LightNode * node = *it;
+		Light * node = *it;
 		if(node->IsDynamic())
 		{
 			const Vector3 & lightPosition = node->GetPosition();
@@ -731,7 +831,7 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	return nearestLight;
 }
 
-Set<LightNode*> & Scene::GetLights()
+Set<Light*> & Scene::GetLights()
 {
     return lights;
 }
@@ -772,8 +872,15 @@ bool Scene::IsReferenceNodeSuffixChanged()
 	return referenceNodeSuffixChanged;
 }
 
+EventSystem * Scene::GetEventSystem()
+{
+	return eventSystem;
+}
 
-
+RenderSystem * Scene::GetRenderSystem()
+{
+	return renderSystem;
+}
 
 /*void Scene::Save(KeyedArchive * archive)
 {

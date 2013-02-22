@@ -2,7 +2,7 @@
 
 #include "ControlsFactory.h"
 
-#include "Scene3D/Heightmap.h"
+#include "Render/Highlevel/Heightmap.h"
 
 
 EditorSettings::EditorSettings()
@@ -58,6 +58,11 @@ String EditorSettings::GetProjectPath()
     return settings->GetString(String("ProjectPath"), String(""));
 }
 
+String EditorSettings::GetParticlesConfigsPath()
+{
+	return GetProjectPath() + "Data/Configs/Particles/";
+}
+
 float32 EditorSettings::GetCameraSpeed()
 {
     int32 index = settings->GetInt32("CameraSpeedIndex", 0);
@@ -75,7 +80,7 @@ void EditorSettings::SetCameraSpeedIndex(int32 camSpeedIndex)
 void EditorSettings::SetCameraSpeed(int32 camSpeedIndex, float32 speed)
 {
     DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
-    settings->SetFloat("CameraSpeedValue" + camSpeedIndex, speed);
+    settings->SetFloat(Format("CameraSpeedValue_%d", camSpeedIndex), speed);
 }
 
 float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
@@ -83,7 +88,7 @@ float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
     DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
     
     static const float32 speedConst[] = {35, 100, 250, 400};
-    return settings->GetFloat("CameraSpeedValue" + camSpeedIndex, speedConst[camSpeedIndex]);
+    return settings->GetFloat(Format("CameraSpeedValue_%d", camSpeedIndex), speedConst[camSpeedIndex]);
 }
 
 
@@ -157,13 +162,13 @@ void EditorSettings::SetRightPanelWidth(int32 width)
 
 float32 EditorSettings::GetLodLayerDistance(int32 layerNum)
 {
-    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
-    return settings->GetFloat(Format("LODLayer_%d", layerNum), LodNode::GetDefaultDistance(layerNum));
+    DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
+    return settings->GetFloat(Format("LODLayer_%d", layerNum), LodComponent::GetDefaultDistance(layerNum));
 }
 
 void EditorSettings::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
-    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
+    DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
     return settings->SetFloat(Format("LODLayer_%d", layerNum), distance);
 }
 
@@ -188,15 +193,12 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     for(int32 i = 0; i < count; ++i)
     {
         String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
-        if(path == pathToFile)
+        if(path != pathToFile)
         {
-            return;
+            filesList.push_back(path);
         }
-        
-        filesList.push_back(path);
     }
 
-    
     filesList.insert(filesList.begin(), pathToFile);
     count = 0;
     for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_COUNT); ++count)

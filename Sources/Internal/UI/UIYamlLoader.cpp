@@ -81,6 +81,7 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
         default:
             ret = "DRAW_ALIGNED";
             break;
@@ -246,7 +247,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
         return;
     }
 	
-	for (Map<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
 	{
 		YamlNode * node = t->second;
 		YamlNode * typeNode = node->Get("type");
@@ -368,7 +369,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathn
 	//save used fonts
 	const FontManager::TRACKED_FONTS& usedFonts = FontManager::Instance()->GetTrackedFont();
 	YamlNode fontsNode(YamlNode::TYPE_MAP);
-	Map<String, YamlNode*> &fontsMap = fontsNode.AsMap();
+	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
 	for (FontManager::TRACKED_FONTS::const_iterator iter = usedFonts.begin();
 		 iter != usedFonts.end();
 		 ++iter)
@@ -377,7 +378,8 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathn
 		if (!font)
 			continue;
 		
-		fontsMap[FontManager::Instance()->GetFontName(font)] = font->SaveToYamlNode();
+        String fontName = FontManager::Instance()->GetFontName(font);
+		fontsMap.insert(std::pair<String, YamlNode*>(fontName, font->SaveToYamlNode()));
 	}
 	//resultNode
 	parser->SaveToYamlFile(yamlPathname, &fontsNode, true, File::CREATE | File::WRITE);

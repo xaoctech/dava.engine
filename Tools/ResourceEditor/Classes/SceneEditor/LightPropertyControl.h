@@ -20,7 +20,6 @@ public:
 
 protected:
     Vector<String> types;
-
 };
 
 #endif //__LIGHT_PROPERTY_CONTROL_H__

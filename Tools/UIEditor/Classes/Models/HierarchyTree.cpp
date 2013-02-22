@@ -264,9 +264,10 @@ bool HierarchyTree::Save(const QString& projectPath)
 {
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
-	Map<String, YamlNode*> &rootMap = root.AsMap();
+	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
-	rootMap[PLATFORMS_NODE] = platforms;
+	rootMap.erase(PLATFORMS_NODE);
+	rootMap.insert(std::pair<String, YamlNode*>(PLATFORMS_NODE, platforms));
 
     // Prior to Save we need to put the Localization Keys FROM the ExtraData TO the
     // appropriate text controls to save the localization keys, and not values.

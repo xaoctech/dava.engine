@@ -32,6 +32,7 @@
 #include "Render/RenderBase.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "Platform/SystemTimer.h"
 
 namespace DAVA 
@@ -60,6 +61,11 @@ Vector<Image *> ImageLoader::CreateFromFile(File *file)
         return CreateFromPNG(file);
     }
     
+	if(IsDXTFile(file))
+    {
+        return CreateFromDXT(file);
+    }
+
     if(IsPVRFile(file))
     {
         return CreateFromPVR(file);
@@ -82,6 +88,13 @@ bool ImageLoader::IsPVRFile(DAVA::File *file)
     file->Seek(0, File::SEEK_FROM_START);
     return isPvr;
 }
+
+bool ImageLoader::IsDXTFile(DAVA::File *file)
+{
+    bool isDXT = LibDxtHelper::IsDxtFile(file);
+    file->Seek(0, File::SEEK_FROM_START);
+    return isDXT;
+}
     
     
 Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
@@ -101,6 +114,19 @@ Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
     }
     
     return Vector<Image *>();
+}
+
+Vector<Image *> ImageLoader::CreateFromDXT(DAVA::File *file)
+{
+    Vector<Image *> retObj;
+
+	bool res = LibDxtHelper::ReadDxtFile(file, retObj);
+	if(false == res)
+	{
+		for_each(retObj.begin(), retObj.end(),SafeRelease<Image>);
+		retObj.clear();
+	}
+	return retObj;
 }
 
 Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
@@ -129,12 +155,12 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         bool read = LibPVRHelper::ReadFile(file, imageSet);
         if(!read)
         {
-            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename());
+            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().c_str());
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
-        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename(), loadTime);
+//        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
         return imageSet;
     }
     return Vector<Image *>();

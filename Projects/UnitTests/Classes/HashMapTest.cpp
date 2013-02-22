@@ -29,6 +29,8 @@
 =====================================================================================*/
 
 #include "HashMapTest.h"
+#include "Utils/Random.h"
+#include "Base/HashMap.h"
 
 HashMapTest::HashMapTest()
 : TestTemplate<HashMapTest>("HashMapTest")
@@ -49,45 +51,53 @@ void HashMapTest::UnloadResources()
 
 void HashMapTest::HashMapInsertRemoveGetTest(PerfFuncData * data)
 {
-    
-//    HashMap<uint32*, uint32*> memoryHashMap(1024);
-//    uint32 *var1 = new uint32();
-//    uint32 *var2 = new uint32();
-//    uint32 *var3 = new uint32();
+	const int sz = 20000;
+	DAVA::int32 i;
+	DAVA::Vector<DAVA::uint32> vect;
+	DAVA::HashMap<DAVA::int32, DAVA::uint32> map;
+	
+	vect.resize(sz);
 
-//    memoryHashMap.Insert(var1, var1);
-//    memoryHashMap.Insert(var2, var2);
-//    memoryHashMap.Insert(var3, var3);
-//    //const void * var1ref = var1;
-//    
-//    HashMap<uint32*, uint32*>::Iterator find1 = memoryHashMap.Find(var1);
-//    TEST_VERIFY(find1 != memoryHashMap.End());
-//    TEST_VERIFY(*find1 == var1);
-//    
-//    HashMap<uint32*, uint32*>::Iterator find2 = memoryHashMap.Find(var2);
-//    TEST_VERIFY(find2 != memoryHashMap.End());
-//    TEST_VERIFY(*find2 == var2);
-//
-//    HashMap<uint32*, uint32*>::Iterator find3 = memoryHashMap.Find(var3);
-//    TEST_VERIFY(find3 != memoryHashMap.End());
-//    TEST_VERIFY(*find3 == var3);
-//    
-//    HashMap<uint32*, uint32*>::Iterator find4 = memoryHashMap.Find(0);
-//    TEST_VERIFY(find4 == memoryHashMap.End()); 
-//    
-//        
-//    const uint32 ITEM_COUNT = 5000;
-//    uint32 array[ITEM_COUNT];
-//    for (uint32 k = 0; k < ITEM_COUNT - 1; ++k)
-//    {
-//        memoryHashMap.Insert(&array[k], &array[k + 1]);
-//    }
-//    
-//    for (uint32 k = 0; k < ITEM_COUNT - 1; ++k)
-//    {
-//        HashMap<uint32*, uint32*>::Iterator findN = memoryHashMap.Find(&array[k]);
-//        TEST_VERIFY(findN != memoryHashMap.End());
-//        TEST_VERIFY(findN == &array[k + 1]);
-//    }    
-//    
+	for(i = 0; i < sz; ++i)
+	{
+		DAVA::uint32 v = (i + 1); // any value
+		vect[i] = v;
+		map.Insert(i, v);
+	}
+
+	// Get test
+	for(i = 0; i < sz; ++i)
+	{
+		TEST_VERIFY(vect[i] == map[i]);
+	}
+
+	// remove some items
+	for (int i = 0; i < sz/10; i++)
+	{
+		int index = DAVA::Random::Instance()->Rand(sz);
+		vect[i] = 0;
+		map.Remove(i);
+	}
+
+	// check get after remove
+	for (int i = 0; i < sz; i++)
+	{
+		if(0 != vect[i])
+		{
+			TEST_VERIFY(vect[i] == map[i]);
+		}
+	}
+
+	// iterator test
+	DAVA::HashMap<DAVA::int32, DAVA::uint32>::Iterator iter = map.Begin();
+	for(; iter != map.End(); ++iter)
+	{
+		TEST_VERIFY(vect[iter.Key()] == iter.Value());
+	}
+
+	// 0-size hash map iterator test
+	DAVA::HashMap<DAVA::int32, DAVA::uint32> map0;
+	iter = map0.Begin();
+	for (; iter != map0.End(); ++iter)
+	{}
 }

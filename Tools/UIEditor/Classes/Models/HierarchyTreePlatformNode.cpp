@@ -158,13 +158,16 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 	platform->Set(WIDTH_NODE, GetWidth());
 	platform->Set(HEIGHT_NODE, GetHeight());
 
-	Map<String, YamlNode*> &platformsMap = node->AsMap();
-	platformsMap[GetName().toStdString()] = platform;
+	MultiMap<String, YamlNode*> &platformsMap = node->AsMap();
+	platformsMap.erase(GetName().toStdString());
+	platformsMap.insert(std::pair<String, YamlNode*>(GetName().toStdString(), platform));
 	ActivatePlatform();
 	
-	Map<String, YamlNode*> &platformMap = platform->AsMap();
+	MultiMap<String, YamlNode*> &platformMap = platform->AsMap();
 	YamlNode* screens = new YamlNode(YamlNode::TYPE_ARRAY);
-	platformMap[SCREENS_NODE] = screens;
+
+	platformMap.erase(SCREENS_NODE);
+	platformMap.insert(std::pair<String, YamlNode*>(SCREENS_NODE, screens));
 
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);

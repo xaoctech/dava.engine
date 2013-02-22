@@ -62,7 +62,7 @@ public:
     
     
 	PolygonGroup();
-	~PolygonGroup();
+	virtual ~PolygonGroup();
 	
 	//! Getters
     inline int32 GetFormat(); 
@@ -95,7 +95,7 @@ public:
 	inline int32 GetVertexCount();
 	inline int32 GetIndexCount();
 	
-	inline AABBox3 & GetBoundingBox();
+	inline const AABBox3 & GetBoundingBox() const;
     
     
     inline void SetPrimitiveType(ePrimitiveType type);
@@ -184,10 +184,25 @@ public:
 
 private:	
     void    UpdateDataPointersAndStreams();
+    
+public:
+    
+    INTROSPECTION_EXTEND(PolygonGroup, DataNode,
+        MEMBER(vertexCount, "Vertex Count", INTROSPECTION_SERIALIZABLE)
+        MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
+        MEMBER(textureCoordCount, "Texture Coord Count", INTROSPECTION_SERIALIZABLE)
+        MEMBER(vertexStride, "Vertex Stride", INTROSPECTION_SERIALIZABLE)
+        MEMBER(vertexFormat, "Vertex Format", INTROSPECTION_SERIALIZABLE)
+        MEMBER(indexFormat, "Index Format", INTROSPECTION_SERIALIZABLE)
+        MEMBER(triangleCount, "Triangle Count", INTROSPECTION_SERIALIZABLE)
+//        MEMBER(primitiveType, "Primitive Type", INTROSPECTION_SERIALIZABLE)
 
+//        MEMBER(vertices, "Vertices", INTROSPECTION_SERIALIZABLE)
+//        MEMBER(indices, "Indices", INTROSPECTION_SERIALIZABLE)
+    );
 };
 
-// Static Mesh Implementation	
+// Static Mesh Implementation
 
 inline void	PolygonGroup::SetCoord(int32 i, const Vector3 & _v)
 {
@@ -310,7 +325,7 @@ inline int32 PolygonGroup::GetIndexCount()
 	return indexCount;
 }
 
-inline AABBox3 & PolygonGroup::GetBoundingBox()
+inline const AABBox3 & PolygonGroup::GetBoundingBox() const
 {
 	return aabbox;
 }

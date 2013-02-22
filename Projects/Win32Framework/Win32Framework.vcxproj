@@ -28,19 +28,23 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -85,7 +89,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;C:\Program Files\OpenAL 1.1 SDK\include;C:\Program Files (x86)\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -97,7 +101,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;libcurl.lib;ws2_32.lib;winmm.lib;wldap32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -118,7 +122,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;libtheora_win.lib;PVRTexLib32.lib;libdxtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -126,7 +130,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;C:\Program Files (x86)\OpenAL 1.1 SDK\include;C:\Program Files\OpenAL 1.1 SDK\include;./../../Libs/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -135,7 +139,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;PVRTexLib32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;libtheora_win.lib;PVRTexLib32.lib;libdxt.lib;libcurl.lib;ws2_32.lib;winmm.lib;wldap32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
@@ -153,7 +157,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;libtheora_win.lib;PVRTexLib32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;libtheora_win.lib;PVRTexLib32.lib;libdxt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
@@ -216,10 +220,17 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\HashMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Introspection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionBase.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionCollection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionFlags.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionProperty.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Meta.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Observer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Radix\Radix.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\ScopedPtr.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Serializable.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
@@ -227,6 +238,9 @@
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h" />
@@ -262,27 +276,13 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\SceneSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FileList.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FilePath.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchive.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.h" />
@@ -334,27 +334,14 @@
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -372,37 +359,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\SystemTimer.h" />
-    <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLView.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\EAGLViewController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES1Renderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ES2Renderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\ESRenderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateiOS\HelperAppDelegate.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\AppDelegate.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\MainWindowController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateMacOS\OpenGLView.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
@@ -411,6 +367,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\D3D9Helpers.h" />
@@ -420,14 +377,41 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
@@ -442,6 +426,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
@@ -471,17 +456,21 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.h" />
@@ -500,13 +489,23 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
@@ -550,8 +549,6 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
-    <ClInclude Include="..\..\Sources\Internal\Utils\Hash.h" />
-    <ClInclude Include="..\..\Sources\Internal\Utils\HashMap.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
@@ -611,7 +608,9 @@
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Radix\Radix.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
@@ -640,20 +639,16 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLCUnpacker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\FileDownloader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\SceneSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\FileList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FilePath.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchive.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.cpp" />
@@ -684,22 +679,17 @@
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -709,15 +699,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\SystemTimer.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateMacOS\CorePlatformMacOS.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\D3D9Helpers.cpp" />
@@ -727,11 +715,36 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowRect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolume.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ShadowVolumeRenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
@@ -776,17 +789,21 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\DebugRenderComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\LodComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEffectNode.cpp" />
@@ -805,12 +822,22 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
@@ -853,14 +880,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
-    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

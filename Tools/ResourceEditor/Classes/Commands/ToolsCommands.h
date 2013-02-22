@@ -25,26 +25,6 @@ protected:
     virtual void Execute();
 };
 
-class CommandHeightmapEditor: public Command
-{
-public:	
-	CommandHeightmapEditor();
-    
-protected:	
-    
-    virtual void Execute();
-};
-
-class CommandTilemapEditor: public Command
-{
-public:	
-	CommandTilemapEditor();
-    
-protected:	
-    
-    virtual void Execute();
-};
-
 
 class CommandSettings: public Command
 {
@@ -56,17 +36,6 @@ protected:
     virtual void Execute();
 };
 
-class CommandBakeScene: public Command
-{
-public:
-	CommandBakeScene();
-    
-protected:
-    
-    virtual void Execute();
-    virtual void Cancel();
-
-};
 
 class CommandBeast: public Command
 {

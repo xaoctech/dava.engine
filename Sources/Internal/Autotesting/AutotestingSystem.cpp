@@ -1308,7 +1308,7 @@ void AutotestingSystem::OnInput(const UIEvent &input)
             }
         }
         break;
-#ifndef __DAVAENGINE_IPHONE__
+#if !defined(__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_ANDROID__)
     case UIEvent::PHASE_MOVE:
         {
             mouseMove = input;

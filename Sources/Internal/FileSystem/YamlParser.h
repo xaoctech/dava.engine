@@ -78,7 +78,7 @@ public:
 	const String &	AsString();
 	const WideString & AsWString();
 	Vector<YamlNode*> & AsVector();
-	Map<String, YamlNode*> & AsMap();
+    MultiMap<String, YamlNode*> & AsMap();
 	
 	/*
 		These functions work only if type of node is array
@@ -101,6 +101,9 @@ public:
     void            Set(const String& name, float32 value);
     void            Set(const String& name, const char8* value);
     void            Set(const String& name, const String& value);
+    void            Set(const String& name, const Vector2& value);
+    void            Set(const String& name, const Vector3& value);
+    void            Set(const String& name, const Vector4& value);
     void            Set(const String& name, VariantType* varType);
 
     // Setters for Map/Array nodes.
@@ -111,6 +114,9 @@ public:
     void            AddValueToArray(int32 value);
     void            AddValueToArray(float32 value);
     void            AddValueToArray(const String& value);
+    void            AddValueToArray(const Vector2& value);
+    void            AddValueToArray(const Vector3& value);
+    void            AddValueToArray(const Vector4& value);
     void            AddValueToArray(VariantType* value);
     
     // Remove node value from map
@@ -135,10 +141,9 @@ private:
 	int						mapCount;
 	eType					type;
 	WideString				stringValue;
-	String					nwStringValue;
-	Vector<YamlNode*>		objectArray;
-	Map<String, YamlNode*>	objectMap;	
-
+	String					 nwStringValue;
+	Vector<YamlNode*>		 objectArray;
+    MultiMap<String, YamlNode*>	objectMap;
 	friend class YamlParser;
 };
 
@@ -151,6 +156,7 @@ class YamlParser : public BaseObject
 protected:
 	YamlParser();
 	virtual ~YamlParser();
+
 	bool Parse(const String & fileName);
 	
 public:
@@ -177,7 +183,7 @@ private:
 	bool                SaveNodeRecursive(File* fileToSave, const String& nodeName, YamlNode* currentNode, int16 depth);
 
     // Order the YAML node with type "Map" according to the depth.
-    Vector<YamlNodeKeyValuePair> OrderMapYamlNode(const Map<String, YamlNode*>& mapNodes);
+    Vector<YamlNodeKeyValuePair> OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes);
 
     // Write different Yaml node types to the file.
     bool WriteScalarNodeToYamlFile(File* fileToSave, const String& nodeName, const String& nodeValue, int16 depth);
@@ -185,6 +191,9 @@ private:
                                   YamlNode* currentNode, int16 depth);
     bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth);
     bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite);
+
+    // Recursively get the array node representation string.
+    String GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode, int16 depth, bool writeAsOuterNode = true);
 
     // Return the identation string of the appropriate depth.
     String PrepareIdentedString(int16 depth);

@@ -36,7 +36,8 @@ using namespace DAVA;
 EditorLandscapeNode::EditorLandscapeNode()
     : LandscapeNode()
 {
-    SetName(String("Landscape_EditorNode"));
+    // RETURN TO THIS CODE LATER
+    //SetName(String("Landscape_EditorNode"));
     
     landscapeRenderer = NULL;
     nestedLandscape = NULL;
@@ -61,15 +62,15 @@ void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
         editorLandscape->SetParentLandscape(this);
     }
     
-    
-    SetDebugFlags(nestedLandscape->GetDebugFlags());
+    // RETURN TO THIS CODE LATER
+    // SetDebugFlags(nestedLandscape->GetDebugFlags());
     
     SetHeightmap(nestedLandscape->GetHeightmap());
-    heightmapPath = nestedLandscape->GetHeightmapPathname();
+    heightmapPath.InitFromAbsolutePath(nestedLandscape->GetHeightmapPathname());
 
     SetTexture(TEXTURE_TILE_FULL, nestedLandscape->GetTexture(TEXTURE_TILE_FULL));
     
-    box = nestedLandscape->GetBoundingBox();
+    bbox = nestedLandscape->GetBoundingBox();
     CopyCursorData(nestedLandscape, this);
     
     SetDisplayedTexture();
@@ -96,29 +97,30 @@ void EditorLandscapeNode::SetRenderer(LandscapeRenderer *renderer)
 }
 
 
-void EditorLandscapeNode::Draw()
+void EditorLandscapeNode::Draw(Camera * camera)
 {
-    if (!(flags & NODE_VISIBLE)) return;
+    //if (!(flags & NODE_VISIBLE)) return;
     if(!landscapeRenderer) return;
     
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+	
     landscapeRenderer->BindMaterial(GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
     
     landscapeRenderer->DrawLandscape();
-
     
 #if defined(__DAVAENGINE_OPENGL__)
-    if (debugFlags & DEBUG_DRAW_GRID)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
-        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetShader(0);
-        RenderManager::Instance()->FlushState();
-
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
+//    if (debugFlags & DEBUG_DRAW_GRID)
+//    {
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
+//        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+//        RenderManager::Instance()->SetShader(0);
+//        RenderManager::Instance()->FlushState();
+//
+//        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
+//
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//    }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
     
@@ -214,7 +216,8 @@ void EditorLandscapeNode::FlushChanges()
     if(nestedLandscape)
     {
         CopyCursorData(this, nestedLandscape);
-        nestedLandscape->SetDebugFlags(GetDebugFlags());
+        // RETURN TO THIS CODE LATER
+        //nestedLandscape->SetDebugFlags(GetDebugFlags());
     }
 }
 
@@ -253,6 +256,17 @@ Texture * EditorLandscapeNode::GetTexture(eTextureLevel level)
 Texture * EditorLandscapeNode::GetDisplayedTexture()
 {
     return nestedLandscape->GetTexture(TEXTURE_TILE_FULL);
+}
+
+DAVA::RenderObject * EditorLandscapeNode::Clone( DAVA::RenderObject *newObject )
+{
+	if(!newObject)
+	{
+		DVASSERT_MSG(IsPointerToExactClass<EditorLandscapeNode>(this), "Can clone only EditorLandscapeNode");
+		newObject = new EditorLandscapeNode();
+	}
+
+	return LandscapeNode::Clone(newObject);
 }
 
 

@@ -348,6 +348,9 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     :   ExtendedDialog()
     ,   delegate(newDelegate)
 {
+    //Temporary fix for loading of UI Interface to avoid reloading of texrures to different formates.
+    // 1. Reset default format before loading of UI
+    // 2. Restore default format after loading of UI from stored settings.
     Texture::SetDefaultFileFormat(NOT_FILE);
 
     

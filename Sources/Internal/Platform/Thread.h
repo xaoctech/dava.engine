@@ -34,11 +34,6 @@
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
 
-#if defined (__DAVAENGINE_ANDROID__)
-	#include <EGL/eglplatform.h>
-	#include <EGL/egl.h>
-#endif //#if defined (__DAVAENGINE_ANDROID__)
-
 namespace DAVA
 {
 /**
@@ -49,6 +44,7 @@ namespace DAVA
 	\ingroup threads
 	\brief wrapper class to give us level of abstraction on thread implementation in particual OS. Now is supports Win32, MacOS, iPhone platforms.
 */
+    
 class Thread : public BaseObject
 {
 public:
@@ -139,14 +135,7 @@ private:
 	void		StartAndroid();
     
     static pid_t mainThreadId;
-
-	static EGLContext currentContext;
-	static EGLDisplay currentDisplay;
-	static EGLSurface currentDrawSurface;
-	static EGLSurface currentReadSurface;
-
-	EGLContext localContext;
-
+    
 public:
 
 	static void		InitMainThread();

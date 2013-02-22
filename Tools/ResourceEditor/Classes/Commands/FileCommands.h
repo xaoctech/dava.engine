@@ -3,6 +3,7 @@
 
 #include "Command.h"
 #include "../Constants.h"
+#include "EditorScene.h"
 
 /*
 class CommandOpenProject: public Command
@@ -49,20 +50,22 @@ public:
 protected:	
     
     virtual void Execute();
+	void SaveParticleEmitterNodes(EditorScene* scene);
+	void SaveParticleEmitterNodeRecursive(SceneNode* parentNode);
 };
 
 class CommandExport: public Command
 {
     
 public:	
-	CommandExport(ResourceEditor::eExportFormat fmt);
+	CommandExport(DAVA::ImageFileFormat fmt);
     
 protected:	
     
     virtual void Execute();
     
 protected:
-    ResourceEditor::eExportFormat format;
+    DAVA::ImageFileFormat format;
     
 };
 
