@@ -286,7 +286,13 @@ QString ResourcesManageHelper::GetPlatformRootPath(const QString& projectPath)
 }
 	
 QString ResourcesManageHelper::GetProjectFilePath(const QString& projectPath)
-{
+{	
+#if defined(__DAVAENGINE_WIN32__)
+	// Replace  backslash to simple slash for Windows
+	QString fixedProjectPath = projectPath;
+	fixedProjectPath.replace(QString("/") ,QString("\\"));
+	return QString(PROJECT_FILE_PATH).arg(fixedProjectPath);
+#endif	 //#if defined(__DAVAENGINE_WIN32__)
 	return QString(PROJECT_FILE_PATH).arg(projectPath);
 }
 
