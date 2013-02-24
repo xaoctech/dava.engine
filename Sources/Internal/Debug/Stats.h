@@ -156,9 +156,9 @@ private:
 };
     
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-#define TIME_MEASURE(name) static FastName fastName(name); TimeMeasure timeMeasure(fastName);
+#define TIME_PROFILE(name) static FastName fastName(name); TimeMeasure timeMeasure(fastName);
 #else
-#define TIME_MEASURE(name) 
+#define TIME_PROFILE(name) 
 #endif
 
 
