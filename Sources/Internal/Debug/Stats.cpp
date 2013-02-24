@@ -35,7 +35,21 @@
 
 namespace DAVA
 {
-
+// Immediate Time measure class
+    
+ImmediateTimeMeasure::ImmediateTimeMeasure(const FastName & _name)
+{
+    name = _name;
+    time = SystemTimer::Instance()->GetAbsoluteNano();
+}
+    
+ImmediateTimeMeasure::~ImmediateTimeMeasure()
+{
+    time = SystemTimer::Instance()->GetAbsoluteNano() - time;
+    Logger::Debug("%s %s %0.9llf seconds", name.c_str(), (double)time / 1e+9);
+}
+    
+// TimeMeasure class
 TimeMeasure * TimeMeasure::activeTimeMeasure = 0;
 TimeMeasure::FunctionMeasure * TimeMeasure::lastframeTopFunction = 0;
 TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;

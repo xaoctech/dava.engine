@@ -84,6 +84,16 @@ namespace DAVA
     
  
  */
+class ImmediateTimeMeasure
+{
+public:
+    ImmediateTimeMeasure(const FastName & name);
+    ~ImmediateTimeMeasure();
+    
+private:
+    FastName name;
+    uint64 time;
+};
     
 class TimeMeasure
 {
@@ -157,9 +167,12 @@ private:
     
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
 #define TIME_PROFILE(name) static FastName fastName(name); TimeMeasure timeMeasure(fastName);
+#define IMM_TIME_PROFILE(name) static FastName fastName(name); ImmediateTimeMeasure immTimeMeasure(fastName);
 #else
-#define TIME_PROFILE(name) 
+#define TIME_PROFILE(name)
+#define IMM_TIME_PROFILE(name)
 #endif
+
 
 
 };
