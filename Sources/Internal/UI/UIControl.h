@@ -281,8 +281,126 @@ public:
 	 \returns background used for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
-
-	
+	/**
+	 \brief Sets left align of control relative to its parent. 
+	 \param[in] align left align of control.
+	 */
+	virtual void SetLeftAlign(int32 align);
+	/**
+	 \brief Returns left align of control relative to its parent.
+	 \returns left align of control.
+	 */
+	virtual int32 GetLeftAlign();
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlign(int32 align);
+	/**
+	 \brief Returns horizontal central align of control relative to its parent.
+	 \returns horizontal central align of control.
+	 */
+	virtual int32 GetHCenterAlign();
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlign(int32 align);
+	/**
+	 \brief Returns right align of control relative to its parent.
+	 \returns right align of control.
+	 */
+	virtual int32 GetRightAlign();
+		/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlign(int32 align);
+	/**
+	 \brief Returns top align of control relative to its parent.
+	 \returns top align of control.
+	 */
+	virtual int32 GetTopAlign();
+		/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlign(int32 align);
+	/**
+	 \brief Returns vertical central align of control relative to its parent.
+	 \returns vertical central align of control.
+	 */
+	virtual int32 GetVCenterAlign();
+		/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlign(int32 align);
+	/**
+	 \brief Returns bottom align of control relative to its parent.
+	 \returns bottom align of control.
+	 */
+	virtual int32 GetBottomAlign();	
+	/**
+	 \brief Sets control ability to change left align.
+	 \param[in] isEnabled left align availability.
+	 */
+	virtual void SetLeftAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns availability of left align of control.
+	 \returns ability to change left align.
+	 */
+	virtual bool GetLeftAlignEnabled();
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns horizontal central align of control relative to its parent.
+	 \returns horizontal central align of control.
+	 */
+	virtual bool GetHCenterAlignEnabled();
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns right align of control relative to its parent.
+	 \returns right align of control.
+	 */
+	virtual bool GetRightAlignEnabled();
+		/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns top align of control relative to its parent.
+	 \returns top align of control.
+	 */
+	virtual bool GetTopAlignEnabled();
+		/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns vertical central align of control relative to its parent.
+	 \returns vertical central align of control.
+	 */
+	virtual bool GetVCenterAlignEnabled();
+		/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns bottom align of control relative to its parent.
+	 \returns bottom align of control.
+	 */
+	virtual bool GetBottomAlignEnabled();	
 	/**
 	 \brief Returns untransformed control rect.
 		To get control metrics that applies all control transformation you need to use 
@@ -1009,6 +1127,21 @@ protected:
 	int32 touchesInside;
 	int32 totalTouches;
 	
+	// Align options
+	int32 _leftAlign;
+	int32 _hcenterAlign;
+	int32 _rightAlign;
+	int32 _topAlign;
+	int32 _vcenterAlign;
+	int32 _bottomAlign;
+
+	// Enable align options
+	bool _leftAlignEnabled;
+	bool _hcenterAlignEnabled;
+	bool _rightAlignEnabled;
+	bool _topAlignEnabled;
+	bool _vcenterAlignEnabled;
+	bool _bottomAlignEnabled;
 	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
@@ -1032,7 +1165,21 @@ private:
 	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
-
+	
+	void RecalculateAlignProperties();
+	void RecalculateChildsSize();
+	
+	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
+	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
+	
+	float32 GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child);
+	float32 GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child);
+	
+	float32 GetRelativeX(UIControl *parent, int32 align);
+	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 GetRelativeY(UIControl *parent, int32 align);
+	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 Round(float32 value);
 };
 };
 

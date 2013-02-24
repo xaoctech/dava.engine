@@ -105,6 +105,11 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>classNameLineEdit</tabstop>
+  <tabstop>objectNameLineEdit</tabstop>
+  <tabstop>tagLineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
