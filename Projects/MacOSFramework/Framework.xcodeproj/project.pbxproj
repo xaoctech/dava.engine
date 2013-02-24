@@ -15,7 +15,6 @@
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
 		509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
-		50A7DCBA16CA814700B41A67 /* RenderFastNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A7DCB916CA814700B41A67 /* RenderFastNames.h */; };
 		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
