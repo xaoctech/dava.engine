@@ -49,7 +49,7 @@ void DebugRenderSystem::Process()
             RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
             RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderHelper::Instance()->DrawCornerBox(box, 2.5f);
+            RenderHelper::Instance()->DrawCornerBox(box, 1.5f);
             RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
             //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
@@ -60,7 +60,7 @@ void DebugRenderSystem::Process()
             RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
             RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
             RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-            RenderHelper::Instance()->DrawBox(box, 2.5f);
+            RenderHelper::Instance()->DrawBox(box, 1.5f);
             RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
@@ -77,7 +77,8 @@ void DebugRenderSystem::Process()
 				{
 					Color camColor(0.0f, 1.0f, 0.0f, 1.0f);
 					Vector3 camPos = entityCamera->GetPosition();
-					AABBox3 camBox(camPos, 2.0f);
+					Vector3 camDirect = entityCamera->GetDirection();
+					AABBox3 camBox(camPos, 2.5f);
 
 					// If this is clip camera - show it as red camera
 					if (entityCamera == entity->GetScene()->GetClipCamera()) camColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
@@ -85,7 +86,13 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
 					RenderManager::Instance()->SetColor(camColor);
-					RenderHelper::Instance()->DrawBox(camBox, 3.5f);
+
+					//entityCamera->Set();
+					//camera->Set();
+					//entityCamera->GetFrustum()->DebugDraw();
+					
+					RenderHelper::Instance()->DrawCornerBox(camBox, 2.5f);
+
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
 				}
@@ -110,10 +117,10 @@ void DebugRenderSystem::Process()
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
 
 					RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-					RenderHelper::Instance()->DrawLine(lPosition, lPosition + lDirection * 20);
+					RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10);
 
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-					RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+					RenderManager::Instance()->ResetColor();
 				}
 			}
         }

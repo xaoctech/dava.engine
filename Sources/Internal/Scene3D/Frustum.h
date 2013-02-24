@@ -79,10 +79,10 @@ public:
  
     //! \brief Set view frustum from matrix information
 	//! \param viewProjection view * projection matrix
-    void Set(const Matrix4 & viewProjection);
+    void Build(const Matrix4 & viewProjection);
     
     // from active model view projection
-    void Set();
+    void Build();
     
 	//! \brief Check axial aligned bounding box visibility
 	//! \param min bounding box minimum point

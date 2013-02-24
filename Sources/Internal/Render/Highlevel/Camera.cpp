@@ -491,7 +491,7 @@ void Camera::Set()
     
     if (currentFrustum)
     {
-        currentFrustum->Set();
+        currentFrustum->Build();
     }
 }
 

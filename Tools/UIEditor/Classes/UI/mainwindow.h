@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "ScreenWrapper.h"
+#include "EditorSettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -30,8 +31,7 @@ private slots:
 	
 	void OnNewProject();
 	void OnSaveProject();
-	void OnSaveAsProject();
-	void OnLoadProject();
+    void OnOpenProject();
 	void OnCloseProject();
 	void OnNewPlatform();
 	void OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
@@ -41,6 +41,15 @@ private slots:
 	
 	void OnUpdateScaleRequest(float scaleDelta);
 	void OnUpdateScreenPositionRequest(const QPoint& posDelta);
+	
+	void FileMenuTriggered(QAction *resentScene);
+	void MenuFileWillShow();
+
+	void OnUndoRequested();
+	void OnRedoRequested();
+	
+	void OnUndoRedoAvailabilityChanged();
+	void OnChangePropertySucceeded();
 
 private:
 	bool CloseProject();
@@ -50,9 +59,16 @@ private:
 	
 	void InitMenu();
 	void UpdateMenu();
+	void UpdateProjectSettings(const QString& filename);
+	// Save/restore positions of DockWidgets and main window geometry
+	void SaveMainWindowState();
+	void RestoreMainWindowState();
+	// Create toolbar for HierarchyTreeDockWidget
+	void CreateHierarchyDockWidgetToolbar();
 
 private:
     Ui::MainWindow *ui;
+	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
 	
 	bool screenChangeUpdate;
 };

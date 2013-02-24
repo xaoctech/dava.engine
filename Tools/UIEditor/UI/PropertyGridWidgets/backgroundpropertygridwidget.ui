@@ -220,6 +220,16 @@ inherit:</string>
    <header>qcolorbutton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>selectColorButton</tabstop>
+  <tabstop>spriteLineEdit</tabstop>
+  <tabstop>openSpriteButton</tabstop>
+  <tabstop>removeSpriteButton</tabstop>
+  <tabstop>frameSpinBox</tabstop>
+  <tabstop>drawTypeComboBox</tabstop>
+  <tabstop>colorInheritComboBox</tabstop>
+  <tabstop>alignComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
