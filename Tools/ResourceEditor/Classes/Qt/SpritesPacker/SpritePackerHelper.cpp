@@ -38,6 +38,11 @@ void SpritePackerHelper::Pack()
 	String inputDir = projectPath+"DataSource/Gfx/Particles";
 	String outputDir = projectPath+"Data/Gfx/Particles";
 
+	if(!FileSystem::Instance()->IsDirectory(inputDir))
+	{
+		return;
+	}
+
 	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
 	
 	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",inputDir,"particles.md5",true);
