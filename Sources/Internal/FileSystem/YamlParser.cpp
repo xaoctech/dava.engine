@@ -579,15 +579,25 @@ void YamlNode::Set(const String& name, float32 value)
     }
 }
 
-void YamlNode::Set(const String& name, const char8* value)
+void YamlNode::Set(const String& name, const char8* value, bool rewritePreviousValue)
 {
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+
     Set(name, (const String&)value);
 }
 
-void YamlNode::Set(const String& name, const String& value)
+void YamlNode::Set(const String& name, const String& value, bool rewritePreviousValue)
 {
     if (type == TYPE_MAP)
     {
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
