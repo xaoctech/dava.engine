@@ -88,6 +88,8 @@ public:
     
     void MarkForUpdate(RenderObject * renderObject);
     void MarkForUpdate(Light * lightNode);
+    //void MarkForMaterialSort(Material * material);
+    
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
