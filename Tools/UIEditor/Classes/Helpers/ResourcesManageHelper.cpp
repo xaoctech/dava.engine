@@ -48,32 +48,53 @@ static const String GRAPHICS_FONTS_RES_PATH = "~res:/Fontdef/";
 static const String BACKGROUND_IMAGE_PATH = "~res:/Images/buttonBg.png";
 // Help contents path
 #if defined(__DAVAENGINE_WIN32__)
-static const String HELP_CONTENTS_PATH = "/Data/Help/UIEditor.html";
+static const String HELP_CONTENTS_PATH = "\\Data\\Help\\UIEditor.html";
 #else
 static const String HELP_CONTENTS_PATH = "~res:/Help/UIEditor.html";
 #endif
 
 // Additional text constants
+#if defined(__DAVAENGINE_WIN32__)
+static const QString GFX = "\\Gfx\\";
+static const QString FONTS = "\\Fonts\\";
+#else
 static const QString GFX = "/Gfx/";
 static const QString FONTS = "/Fonts/";
+#endif
 
 // Project DATASOURCE folder
+#if defined(__DAVAENGINE_WIN32__)
+static const QString PROJECT_DATASOURCE = "%1\\DataSource";
+#else
 static const QString PROJECT_DATASOURCE = "%1/DataSource";
+#endif
 // Project GFX folder for sprites psd files
 static const QString PROJECT_DATASOURCE_GFX = PROJECT_DATASOURCE + GFX;
 // Project GFX folder for graphics fonts sprites psd files
 static const QString PROJECT_DATASOURCE_GRAPHICS_FONTS = PROJECT_DATASOURCE_GFX + FONTS;
 
 // Project DATA folder
+#if defined(__DAVAENGINE_WIN32__)
+static const QString PROJECT_DATA = "%1\\Data";
+#else
 static const QString PROJECT_DATA = "%1/Data";
+#endif
 // Project converted sprites folder
 static const QString PROJECT_DATA_GFX = PROJECT_DATA + GFX;
 // Project converted graphics fonts sprites folder
 static const QString PROJECT_DATA_GRAPHICS_FONTS = PROJECT_DATA_GFX + FONTS;
 // Platform directory path
+#if defined(__DAVAENGINE_WIN32__)
+static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "\\UI\\";
+#else
 static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "/UI/";
+#endif
 // Project file path
+#if defined(__DAVAENGINE_WIN32__)
+static const QString PROJECT_FILE_PATH = "%1\\ui.uieditor";
+#else
 static const QString PROJECT_FILE_PATH = "%1/ui.uieditor";
+#endif
 
 // Resource wrong location error message
 static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "File %1 is not located inside platform resource folder. It can't be linked with control!";

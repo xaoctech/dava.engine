@@ -351,7 +351,7 @@ YamlNode * Font::SaveToYamlNode()
     
     VariantType *nodeValue = new VariantType();
     //Type
-    node->Set("type", "Font");
+    node->Set("type", "Font", true);
     //Font size
     node->Set("size", this->GetSize());
     //Vertical Spacing
