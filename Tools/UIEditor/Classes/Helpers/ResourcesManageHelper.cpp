@@ -48,15 +48,15 @@ static const String GRAPHICS_FONTS_RES_PATH = "~res:/Fontdef/";
 static const String BACKGROUND_IMAGE_PATH = "~res:/Images/buttonBg.png";
 // Help contents path
 #if defined(__DAVAENGINE_WIN32__)
-static const String HELP_CONTENTS_PATH = "\Data\Help\UIEditor.html";
+static const String HELP_CONTENTS_PATH = "\\Data\\Help\\UIEditor.html";
 #else
 static const String HELP_CONTENTS_PATH = "~res:/Help/UIEditor.html";
 #endif
 
 // Additional text constants
 #if defined(__DAVAENGINE_WIN32__)
-static const QString GFX = "\Gfx\";
-static const QString FONTS = "\Fonts\";
+static const QString GFX = "\\Gfx\\";
+static const QString FONTS = "\\Fonts\\";
 #else
 static const QString GFX = "/Gfx/";
 static const QString FONTS = "/Fonts/";
@@ -64,7 +64,7 @@ static const QString FONTS = "/Fonts/";
 
 // Project DATASOURCE folder
 #if defined(__DAVAENGINE_WIN32__)
-static const QString PROJECT_DATASOURCE = "%1\DataSource";
+static const QString PROJECT_DATASOURCE = "%1\\DataSource";
 #else
 static const QString PROJECT_DATASOURCE = "%1/DataSource";
 #endif
@@ -75,7 +75,7 @@ static const QString PROJECT_DATASOURCE_GRAPHICS_FONTS = PROJECT_DATASOURCE_GFX 
 
 // Project DATA folder
 #if defined(__DAVAENGINE_WIN32__)
-static const QString PROJECT_DATA = "%1\Data";
+static const QString PROJECT_DATA = "%1\\Data";
 #else
 static const QString PROJECT_DATA = "%1/Data";
 #endif
@@ -85,13 +85,13 @@ static const QString PROJECT_DATA_GFX = PROJECT_DATA + GFX;
 static const QString PROJECT_DATA_GRAPHICS_FONTS = PROJECT_DATA_GFX + FONTS;
 // Platform directory path
 #if defined(__DAVAENGINE_WIN32__)
-static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "\UI\";
+static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "\\UI\\";
 #else
 static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "/UI/";
 #endif
 // Project file path
 #if defined(__DAVAENGINE_WIN32__)
-static const QString PROJECT_FILE_PATH = "%1\ui.uieditor";
+static const QString PROJECT_FILE_PATH = "%1\\ui.uieditor";
 #else
 static const QString PROJECT_FILE_PATH = "%1/ui.uieditor";
 #endif
@@ -308,12 +308,12 @@ QString ResourcesManageHelper::GetPlatformRootPath(const QString& projectPath)
 	
 QString ResourcesManageHelper::GetProjectFilePath(const QString& projectPath)
 {	
-/*#if defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_WIN32__)
 	// Replace  backslash to simple slash for Windows
 	QString fixedProjectPath = projectPath;
 	fixedProjectPath.replace(QString("/") ,QString("\\"));
 	return QString(PROJECT_FILE_PATH).arg(fixedProjectPath);
-#endif	 //#if defined(__DAVAENGINE_WIN32__)*/
+#endif	 //#if defined(__DAVAENGINE_WIN32__)
 	return QString(PROJECT_FILE_PATH).arg(projectPath);
 }
 
