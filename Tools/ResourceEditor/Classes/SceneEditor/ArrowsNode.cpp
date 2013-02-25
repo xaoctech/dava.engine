@@ -192,6 +192,7 @@ void ArrowsNode::SetActive(bool active)
 ArrowsRenderBatch::ArrowsRenderBatch(ArrowsNode* node)
 :	node(node)
 {
+	SetOwnerLayerName(LAYER_OPAQUE);
 }
 
 void ArrowsRenderBatch::DrawPrism(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4, const Vector3& p5)
@@ -391,4 +392,10 @@ void ArrowsRenderBatch::PrepareColors(Color *colors)
 				break;
 		}
 	}
+}
+
+const FastName & ArrowsRenderBatch::GetOwnerLayerName()
+{
+	static FastName translucentLayer("TransclucentRenderLayer");
+	return translucentLayer;
 }
