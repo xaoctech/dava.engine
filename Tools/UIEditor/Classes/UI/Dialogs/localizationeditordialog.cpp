@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include "PropertiesGridController.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "ResourcesManageHelper.h"
 
 using namespace DAVA;
 
@@ -17,9 +18,14 @@ LocalizationEditorDialog::LocalizationEditorDialog(QWidget *parent) :
     SetLocalizationDirectoryPath();
     
     HierarchyTreePlatformNode* platformNode = HierarchyTreeController::Instance()->GetActivePlatform();
-    QString platformName = platformNode ? platformNode->GetName() : "none";
-    QString windowTitle = QString("Localization settings for platform \"%1\"").arg(platformName);
-    setWindowTitle(windowTitle);
+	if (platformNode)
+	{
+    	QString platformName = platformNode ? platformNode->GetName() : "none";
+    	QString windowTitle = QString("Localization settings for platform \"%1\"").arg(platformName);
+    	setWindowTitle(windowTitle);
+		// Enable open localization dialog button only if platfrom is available
+		ui->openLocalizationFileButton->setEnabled(true);
+	}
 }
 
 LocalizationEditorDialog::~LocalizationEditorDialog()
@@ -29,24 +35,26 @@ LocalizationEditorDialog::~LocalizationEditorDialog()
 
 void LocalizationEditorDialog::FillLocaleComboBox()
 {
-    //Get count of supported languages
+    // Get count of supported languages
     int languagesCount = LocalizationSystemHelper::GetSupportedLanguagesCount();
     QString languageDescription;
-    //Fill combobox with language values
+    // Fill combobox with language values
     for (int i = 0; i < languagesCount; ++i) {
         languageDescription =  QString::fromStdString(LocalizationSystemHelper::GetSupportedLanguageDesc(i));
         ui->currentLocaleComboBox->addItem(languageDescription);
     }
-    //Setup default locale
+    // Setup default locale
     SetDefaultLanguage();
 }
 
 void LocalizationEditorDialog::ConnectToSignals()
 {
-    //Open locale directory button clicked event
+    // Open locale directory button clicked event
     connect(ui->openLocalizationFileButton, SIGNAL(clicked()), this, SLOT(OnOpenLocalizationFileButtonClicked()));
-    //Locale combobox value changed event
+    // Locale combobox value changed event
     connect(ui->currentLocaleComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnCurrentLocaleChanged(int)));
+    // Close dialog if ok button clicked
+    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
 void LocalizationEditorDialog::SetLocalizationDirectoryPath()
@@ -60,24 +68,33 @@ void LocalizationEditorDialog::SetLocalizationDirectoryPath()
 
 void LocalizationEditorDialog::SetDefaultLanguage()
 {
-    //Get description for current language ID
+    // Get description for current language ID
     String currentLanguageID = LocalizationSystem::Instance()->GetCurrentLocale();
     String languageDescription = LocalizationSystemHelper::GetLanguageDescByLanguageID(currentLanguageID);
 
-    //Setup combo box value
+    // Setup combo box value
     int index = ui->currentLocaleComboBox->findText(QString::fromStdString(languageDescription));
     ui->currentLocaleComboBox->setCurrentIndex(index);
 }
 
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
-    QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ), "/");
+    QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ),
+																ResourcesManageHelper::GetDefaultDirectory());
     if( !fileDirectory.isEmpty())
     {
-        //Update ui
-        ui->localizationFilePathLineEdit->setText(fileDirectory);
-
-        ReinitializeLocalizationSystem(fileDirectory);
+		if (ResourcesManageHelper::ValidateResourcePath(fileDirectory))
+        {
+			// Get localization relative path
+			QString localizationRelativePath = ResourcesManageHelper::GetResourceRelativePath(fileDirectory);
+      		// Update ui
+      		ui->localizationFilePathLineEdit->setText(localizationRelativePath);
+     		ReinitializeLocalizationSystem(localizationRelativePath);
+        }
+		else
+		{
+			ResourcesManageHelper::ShowErrorMessage(fileDirectory);
+		}
      }
 }
 
@@ -106,5 +123,4 @@ void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& loc
     }
     
     HierarchyTreeController::Instance()->UpdateLocalization(true);
-    
 }
