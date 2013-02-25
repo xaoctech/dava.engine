@@ -73,7 +73,7 @@ static const QString PROJECT_DATA_GRAPHICS_FONTS = PROJECT_DATA_GFX + FONTS;
 // Platform directory path
 static const QString PROJECT_PLATFORM_PATH = PROJECT_DATA + "/UI/";
 // Project file path
-static const QString PROJECT_FILE_PATH = PROJECT_PLATFORM_PATH + "ui.uieditor";
+static const QString PROJECT_FILE_PATH = "%1/ui.uieditor";
 
 // Resource wrong location error message
 static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "File %1 is not located inside platform resource folder. It can't be linked with control!";
@@ -202,7 +202,7 @@ QString ResourcesManageHelper::GetProjectPath()
 	if (!rootNode)
 		return QString();
 	
-	return rootNode->GetProjectPath();
+	return rootNode->GetProjectDir();
 }
 
 QString ResourcesManageHelper::GetProjectTitle()
@@ -213,9 +213,15 @@ QString ResourcesManageHelper::GetProjectTitle()
 	QString projectPath = GetProjectPath();
 	if (!projectPath.isNull() && !projectPath.isEmpty())
 	{
-		projectTitleString = QString("%1 - %2").arg(projectTitle).arg(projectPath);
+		QString projectFilePath = GetProjectFilePath(projectPath);
+		projectTitleString = QString("%1 - %2").arg(projectTitle).arg(projectFilePath);
 	}
 	return projectTitleString;
+}
+
+QString ResourcesManageHelper::GetProjectTitle(const QString& projectFilePath)
+{
+	return QString("%1 - %2").arg(projectTitle).arg(projectFilePath);
 }
 
 QString ResourcesManageHelper::GetDefaultDirectory()
@@ -280,7 +286,13 @@ QString ResourcesManageHelper::GetPlatformRootPath(const QString& projectPath)
 }
 	
 QString ResourcesManageHelper::GetProjectFilePath(const QString& projectPath)
-{
+{	
+#if defined(__DAVAENGINE_WIN32__)
+	// Replace  backslash to simple slash for Windows
+	QString fixedProjectPath = projectPath;
+	fixedProjectPath.replace(QString("/") ,QString("\\"));
+	return QString(PROJECT_FILE_PATH).arg(fixedProjectPath);
+#endif	 //#if defined(__DAVAENGINE_WIN32__)
 	return QString(PROJECT_FILE_PATH).arg(projectPath);
 }
 

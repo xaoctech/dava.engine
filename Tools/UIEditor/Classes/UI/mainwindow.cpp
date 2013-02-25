@@ -191,6 +191,15 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 	UpdateScreenPosition();
 }
 
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+	// Ask user to save the project before closing.
+	if (!CloseProject())
+	{
+		event->ignore();
+	}
+}
+
 void MainWindow::showEvent(QShowEvent * event)
 {
 	QMainWindow::showEvent(event);
@@ -278,7 +287,7 @@ void MainWindow::OnOpenLocalizationManager()
 void MainWindow::OnShowHelpContents()
 {
     //Get help contents file absolute path
-    QString helpPath = "file:///";
+    QString helpPath = "file://";
     helpPath += ResourcesManageHelper::GetHelpContentsPath();
     //Open help file in default browser new window
     QDesktopServices::openUrl(QUrl(helpPath));
@@ -297,6 +306,8 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
+
+	connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(OnExitApplication()));
 	
 	connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(FileMenuTriggered(QAction *)));
@@ -333,19 +344,14 @@ void MainWindow::OnNewProject()
 	if (!CloseProject())
 		return;
 	
-	QString projectPath = QFileDialog::getSaveFileName(this ,
-													tr("New project"),
-													ResourcesManageHelper::GetDefaultDirectory(),
-													"");
+	QString projectDir = QFileDialog::getExistingDirectory(this, tr("Choose new project folder"),
+											ResourcesManageHelper::GetDefaultDirectory());
+				
+	if (projectDir.isNull() || projectDir.isEmpty())
+		return;
 
-    if (projectPath.isNull() || projectPath.isEmpty())
-		return;
-	
-	// Attempt to create project directory
-	if (!QDir().mkpath(projectPath))
-		return;
 	CommandsController::Instance()->CleanupUndoRedoStack();
-	if (!HierarchyTreeController::Instance()->NewProject(projectPath))
+	if (!HierarchyTreeController::Instance()->NewProject(projectDir))
 	{
 		QMessageBox msgBox;
 		msgBox.setText(tr("Error while creating project"));
@@ -429,7 +435,7 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			if (HierarchyTreeController::Instance()->Load(projectPath))
 			{
 				// Update project title if project was successfully loaded
-				this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
+				this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
 			}
 			else
 			{
@@ -452,9 +458,9 @@ void MainWindow::OnSaveProject()
 		
 	if (HierarchyTreeController::Instance()->Save(projectPath))
 	{
-		// If project was successfully saved - we should save new project path
+		// If project was successfully saved - we should save new project file path
 		// and add this project to recent files list
-		UpdateProjectSettings(projectPath);
+		UpdateProjectSettings(ResourcesManageHelper::GetProjectFilePath(projectPath));
 	}
 	else
 	{
@@ -466,9 +472,9 @@ void MainWindow::OnSaveProject()
 
 void MainWindow::OnOpenProject()
 {
-    QString projectPath = QFileDialog::getExistingDirectory(this,
-                                                                 tr( "Select project directory" ),
-                                                                 ResourcesManageHelper::GetDefaultDirectory());
+	QString projectPath = QFileDialog::getOpenFileName(this, tr("Select a project file"),
+														ResourcesManageHelper::GetDefaultDirectory(),
+														tr( "Project (*.uieditor)"));
     if (projectPath.isNull() || projectPath.isEmpty())
         return;
         
@@ -490,6 +496,14 @@ void MainWindow::OnOpenProject()
 void MainWindow::OnCloseProject()
 {
 	CloseProject();
+}
+
+void MainWindow::OnExitApplication()
+{
+	if (CloseProject())
+	{
+		QCoreApplication::exit();
+	}
 }
 
 bool MainWindow::CloseProject()
@@ -518,14 +532,9 @@ void MainWindow::UpdateProjectSettings(const QString& projectPath)
 {
 	// Add file to recent project files list
 	EditorSettings::Instance()->AddLastOpenedFile(projectPath.toStdString());
-	
-	// Save current project absolute directory path
-	QFileInfo fileInfo(projectPath);
-	QString projectFolder = fileInfo.absoluteDir().absolutePath() + "/";
-	EditorSettings::Instance()->SetProjectPath(projectFolder.toStdString());
-	
-	// Set window title
-	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
+	EditorSettings::Instance()->SetProjectPath(projectPath.toStdString());
+	// Update window title
+	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
 }
 
 void MainWindow::OnUndoRequested()
