@@ -267,7 +267,7 @@ void BasePropertyGridWidget::UnregisterDoubleSpinBoxWidget(QDoubleSpinBox* spinB
 
 void BasePropertyGridWidget::UnregisterCheckBoxWidget(QCheckBox* checkBoxWidget)
 {
-    disconnect(checkBoxWidget, SIGNAL(toggled(bool)), this, SLOT(OnCheckBoxStateChanged(bool)));
+    disconnect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnCheckBoxStateChanged(int)));
 }
 
 void BasePropertyGridWidget::UnregisterComboBoxWidget(QComboBox* comboBoxWidget)
