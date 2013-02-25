@@ -21,7 +21,10 @@ void HierarchyTreeRootNode::Clear()
     Cleanup();
 }
 
-void HierarchyTreeRootNode::SetProjectPath(const QString& projectPath)
+void HierarchyTreeRootNode::SetProjectFilePath(const QString& projectFilePath)
 {
-	this->projectPath = projectPath;
+	this->projectFilePath = projectFilePath;
+	// Save project directory path
+	QFileInfo fileInfo(projectFilePath);
+	this->projectDir = fileInfo.absoluteDir().absolutePath();
 }

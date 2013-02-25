@@ -26,6 +26,7 @@ public:
 protected:
 	virtual void OnPropertiesChangedFromExternalSource();
 	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+	virtual void HandleChangePropertySucceeded(const QString& propertyName);
 
 	void UpdateCheckBoxSates();
 	void UpdateSpinBoxState(QCheckBox *buddyWidget);
