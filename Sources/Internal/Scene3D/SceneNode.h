@@ -79,13 +79,9 @@ public:
 	Component * GetOrCreateComponent(uint32 componentType);
     uint32 GetComponentCount();
     
-    
-    
     inline uint32 GetAvailableComponentFlags();
 
-    uint32 componentFlags;
-    uint32 componentUpdateMarks;
-    
+
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
     
@@ -359,6 +355,10 @@ protected:
     
 private:
 	Vector<Component *> components;
+    uint32 componentFlags;
+    uint32 componentUpdateMarks;
+    
+
     Matrix4 defaultLocalTransform;
    	friend class Scene;
     

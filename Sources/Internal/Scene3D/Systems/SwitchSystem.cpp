@@ -17,7 +17,7 @@ SwitchSystem::SwitchSystem(Scene * scene)
 
 void SwitchSystem::Process()
 {
-    TIME_MEASURE("SwitchSystem::Process");
+    TIME_PROFILE("SwitchSystem::Process");
 	Set<SceneNode*>::iterator it;
 	Set<SceneNode*>::const_iterator itEnd = updatableEntities.end();
 	for(it = updatableEntities.begin(); it != itEnd; ++it)
