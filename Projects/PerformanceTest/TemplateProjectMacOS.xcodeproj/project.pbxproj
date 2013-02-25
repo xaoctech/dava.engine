@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		50979DC616D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50979DC416D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp */; };
 		5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */; };
 		5C5EAC2415A5848B00279915 /* TreeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EAC2215A5848B00279915 /* TreeTest.cpp */; };
 		5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBC1F64157CD739009DAD1C /* CacheTest.cpp */; };
@@ -29,6 +30,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		50979DC116D9EF4C000E5E8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
 		FE93072A12C28C1100A33E69 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
@@ -51,6 +59,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		50979DC416D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryAllocationTraverseTest.cpp; path = Classes/MemoryAllocationTraverseTest.cpp; sourceTree = "<group>"; };
+		50979DC516D9EF95000E5E8E /* MemoryAllocationTraverseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryAllocationTraverseTest.h; path = Classes/MemoryAllocationTraverseTest.h; sourceTree = "<group>"; };
 		5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeTest.cpp; path = Classes/LandscapeTest.cpp; sourceTree = "<group>"; };
 		5C1066DE156D35AE00912A45 /* LandscapeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeTest.h; path = Classes/LandscapeTest.h; sourceTree = "<group>"; };
 		5C5EAC2215A5848B00279915 /* TreeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TreeTest.cpp; path = Classes/TreeTest.cpp; sourceTree = "<group>"; };
@@ -183,6 +193,8 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				50979DC416D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp */,
+				50979DC516D9EF95000E5E8E /* MemoryAllocationTraverseTest.h */,
 				5C19F4AF15A434DA0064E889 /* TreeTest */,
 				5CBC1F63157CD725009DAD1C /* CacheTest */,
 				5C1066D9156D357C00912A45 /* Landscape */,
@@ -268,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				FE98931811638F3C00500198 /* libFramework.a */,
+				50979DC216D9EF4C000E5E8E /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -339,6 +352,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		50979DC216D9EF4C000E5E8E /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = 50979DC116D9EF4C000E5E8E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FE98931811638F3C00500198 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -393,6 +413,7 @@
 				5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5C5EAC2415A5848B00279915 /* TreeTest.cpp in Sources */,
+				50979DC616D9EF95000E5E8E /* MemoryAllocationTraverseTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

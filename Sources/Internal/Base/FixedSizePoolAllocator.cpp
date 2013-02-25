@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Base/FixedSizePoolAllocator.h"
 
+
 namespace DAVA 
 {
 FixedSizePoolAllocator::FixedSizePoolAllocator(uint32 _blockSize, uint32 _blockArraySize)
@@ -46,7 +47,7 @@ void FixedSizePoolAllocator::CreateNewDataBlock()
 {
     DVASSERT(blockSize >= sizeof(uint8*));
     void * block = ::malloc(blockArraySize * blockSize + sizeof(uint8*));
-    Logger::Debug("Allocated new data block: %p pointer size: %d", block, sizeof(uint8*));
+    //Logger::Debug("Allocated new data block: %p pointer size: %d", block, sizeof(uint8*));
     // insert to list
     *(uint8**)block = (uint8*)allocatedBlockArrays;
     allocatedBlockArrays = block;
@@ -85,7 +86,7 @@ void FixedSizePoolAllocator::DeallocateMemory()
     {
         uint8 * next = *(uint8**)allocatedBlockArrays;
         ::free(allocatedBlockArrays);
-        Logger::Debug("Deallocated data block: %p pointer size: %d", allocatedBlockArrays, sizeof(uint8*));
+        //Logger::Debug("Deallocated data block: %p pointer size: %d", allocatedBlockArrays, sizeof(uint8*));
         allocatedBlockArrays = next;
     }
 }
@@ -100,13 +101,14 @@ void * FixedSizePoolAllocator::New()
     void * object = 0;
     if (nextFreeBlock == 0)
         CreateNewDataBlock();
-    
-    DVASSERT(nextFreeBlock != 0);
-    
-    object = nextFreeBlock; 
-    nextFreeBlock = *(uint8**)nextFreeBlock;
-    return object;
+        
+        //DVASSERT(nextFreeBlock != 0);
+        
+        object = nextFreeBlock;
+        nextFreeBlock = *(uint8**)nextFreeBlock;
+        return object;
 }
+
     
 bool FixedSizePoolAllocator::CheckIsPointerValid(void * blockvoid)
 {
@@ -137,7 +139,7 @@ bool FixedSizePoolAllocator::CheckIsPointerValid(void * blockvoid)
 
 void FixedSizePoolAllocator::Delete(void * block)
 {
-    DVASSERT(CheckIsPointerValid(block));
+    //DVASSERT(CheckIsPointerValid(block));
     *(uint8**)block = (uint8*)nextFreeBlock;
     nextFreeBlock = block;
 }	
