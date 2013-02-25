@@ -51,7 +51,7 @@ protected:
     virtual void UndoAction();
     virtual void RedoAction();
 
-    void CopyPasteBegin();
+    bool CopyPasteBegin();
     virtual void RecreateHeightmapNode();
 
     

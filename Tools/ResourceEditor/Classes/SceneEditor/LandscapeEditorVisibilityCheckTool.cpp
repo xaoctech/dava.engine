@@ -728,16 +728,16 @@ void LandscapeEditorVisibilityCheckTool::ClearSceneResources()
 
 void LandscapeEditorVisibilityCheckTool::UpdateLandscapeTilemap(Texture* texture)
 {
-	Image* image = texture->CreateImageFromMemory();
+	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texSurf);
+	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+	workingLandscape->UpdateFullTiledTexture();
+
+	Image* image = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 	ImageLoader::Save(image, texture->GetPathname());
 	SafeRelease(image);
 
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texSurf);
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
 	SafeRelease(texSurf);
 
-	workingLandscape->UpdateFullTiledTexture();
 	texSurf = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
-
 	wasTileMaskToolUpdate = true;
 }
