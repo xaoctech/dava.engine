@@ -91,7 +91,7 @@ void DebugRenderSystem::Process()
 					//camera->Set();
 					//entityCamera->GetFrustum()->DebugDraw();
 					
-					RenderHelper::Instance()->DrawCornerBox(camBox, 2.5f);
+					RenderHelper::Instance()->DrawBox(camBox, 2.5f);
 
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
@@ -111,13 +111,26 @@ void DebugRenderSystem::Process()
 				if(NULL != light)
 				{
 					Vector3 lPosition = light->GetPosition();
-					Vector3 lDirection = light->GetDirection();
 
 					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 					RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE);
+					RenderManager::Instance()->SetColor(1.0f, 1.0f, 0.0f, 1.0f);
 
-					RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-					RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10);
+					switch (light->GetType())
+					{
+					case Light::TYPE_DIRECTIONAL:
+						{
+							Vector3 lDirection = light->GetDirection();
+							RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10, 2.5f);
+						}
+						break;
+					default:
+						{
+							AABBox3 lightBox(lPosition, 2.5f);
+							RenderHelper::Instance()->DrawBox(lightBox, 2.5f);
+						}
+						break;
+					}
 
 					RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
