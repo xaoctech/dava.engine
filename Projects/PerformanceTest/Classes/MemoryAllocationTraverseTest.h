@@ -27,65 +27,76 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __BASESCREEN_H__
-#define __BASESCREEN_H__
+
+#ifndef __MEMORY_ALLOCATION_TRAVERSE_TEST_H__
+#define __MEMORY_ALLOCATION_TRAVERSE_TEST_H__
 
 #include "DAVAEngine.h"
 using namespace DAVA;
 
-#include "GameCore.h"
+#include "TestTemplate.h"
 
-class TestData
+class EntityDefaultAllocator : public BaseObject
 {
 public:
+    Component * components[Component::COMPONENT_COUNT];
+    Vector<EntityDefaultAllocator*> children;
+};
 
-    TestData()
+class EntityCustomAllocator : public BaseObject
+{
+public:
+    Component * components[Component::COMPONENT_COUNT];
+    Vector<EntityCustomAllocator*> children;
+    
+    void * operator new(size_t size)
     {
-        name = String("");
-        totalTime = minTime = maxTime = startTime = endTime = 0;
-        maxTimeIndex = runCount = 0;
-        userData = NULL;
+        return allocator.New();
     }
     
-    String name;
-    uint64 totalTime;
-    uint64 minTime;
-    uint64 maxTime;
-    int32 maxTimeIndex;
-    uint64 startTime;
-    uint64 endTime;
-    Vector<uint64> eachRunTime;
-    int32 runCount;
-    void * userData;
+    void operator delete(void * p)
+    {
+        return allocator.Delete(p);
+    }
+    
+    
+    
+    static FixedSizePoolAllocator allocator;
 };
 
-class BaseScreen: public UIScreen
+
+class MemoryAllocationTraverseTest: public TestTemplate<MemoryAllocationTraverseTest>
 {
 public:
+	MemoryAllocationTraverseTest(const String &testName);
+    
+	virtual void LoadResources();
+	virtual void UnloadResources();
+    
+    static const uint32 TEST_ITEM_COUNT = 10000;
+    
+    EntityDefaultAllocator * defaultEntityArray[TEST_ITEM_COUNT];
+    EntityCustomAllocator * customEntityArray[TEST_ITEM_COUNT];
+    
+    EntityDefaultAllocator * defaultTree;
+    EntityCustomAllocator * customTree;
+    
+protected:
+    void MemoryAllocationTest_Default(PerfFuncData * data);
+    void MemoryAllocationTest_Custom(PerfFuncData * data);
+    void MemoryAllocationDeallocationTest_Default(PerfFuncData * data);
+    void MemoryAllocationDeallocationTest_Custom(PerfFuncData * data);
+    void MemoryDeallocationTest(PerfFuncData * data);
+    
+    void MemoryTraverseTest_Default(PerfFuncData * data);
+    void MemoryTraverseTest_Custom(PerfFuncData * data);
+    
+    void TraverseDefault(EntityDefaultAllocator * node);
+    void TraverseCustom(EntityCustomAllocator * node);
+    
+    
 
-	BaseScreen();
-	BaseScreen(const String & screenName, int32 skipBeforeTests = 10);
-    int32 GetScreenId();
-
-    virtual void WillAppear();
-    virtual void DidAppear();
-    virtual void Update(float32 timeElapsed);
-    
-    bool ReadyForTests();
-    
-    virtual int32 GetTestCount() = 0;
-    virtual TestData * GetTestData(int32 iTest) = 0;
-    
-    virtual bool RunTest(int32 testNum) = 0;
-    
-private:
-    static int32 globalScreenId; // 1, on create of screen increment  
-    int32 currentScreenId;
-
-    int32 skipCount;
-    int32 skipCounter;
-    bool readyForTests;
 };
 
 
-#endif // __BASESCREEN_H__
+#endif // __CACHE_TEST_H__
