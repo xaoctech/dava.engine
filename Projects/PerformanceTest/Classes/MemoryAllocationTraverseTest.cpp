@@ -176,7 +176,6 @@ void MemoryAllocationTraverseTest::TraverseCustom(EntityCustomAllocator * node)
     }
 }
 
-
 void MemoryAllocationTraverseTest::MemoryTraverseTest_Default(PerfFuncData * data)
 {
     TraverseDefault(defaultTree);
