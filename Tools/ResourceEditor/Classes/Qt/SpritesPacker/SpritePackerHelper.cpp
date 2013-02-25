@@ -35,11 +35,14 @@ void SpritePackerHelper::Pack()
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 	String projectPath = EditorSettings::Instance()->GetProjectPath();
-	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
 	String inputDir = projectPath+"DataSource/Gfx/Particles";
 	String outputDir = projectPath+"Data/Gfx/Particles";
-	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",
-		inputDir,"particles.md5",true);
+
+	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
+	
+	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",inputDir,"particles.md5",true);
+	
+	SafeRelease(resourcePackerScreen);
 	if(!isChanged)
 	{
 		return;
