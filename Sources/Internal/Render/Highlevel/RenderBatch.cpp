@@ -153,7 +153,7 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
 }
     
     
-inline void RenderBatch::SetSortingKey(uint32 _key)
+void RenderBatch::SetSortingKey(uint32 _key)
 {
     sortingKey = _key;
     if (ownerLayer)ownerLayer->ForceLayerSort();
