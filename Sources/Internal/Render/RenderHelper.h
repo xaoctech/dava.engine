@@ -183,7 +183,7 @@ public:
 	
 	void DrawSphere(float32 r);
 
-	void DrawArrow(const Vector3 &from, const Vector3 &to);
+	void DrawArrow(const Vector3 &from, const Vector3 &to, float32 lineWidth = 1.f);
 
 	
     // Other debug functions  
