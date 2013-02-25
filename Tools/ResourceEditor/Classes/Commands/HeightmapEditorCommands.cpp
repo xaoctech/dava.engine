@@ -178,20 +178,30 @@ void CommandDrawHeightmap::Cancel()
 }
 
 
-CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, LandscapeNode* landscape, const String& tilemapSavedPath)
+CommandCopyPasteHeightmap::CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath)
 :	HeightmapModificationCommand(COMMAND_UNDO_REDO)
+,	heightmap(copyHeightmap)
+,	tilemap(copyTilemap)
 {
 	commandName = "Heightmap Copy/Paste";
 
-	if (originalHeightmap && newHeightmap)
+	heightmapUndoFilename = "";
+	heightmapRedoFilename = "";
+	tilemapUndoImage = NULL;
+	tilemapRedoImage = NULL;
+
+	if (copyHeightmap && originalHeightmap && newHeightmap)
 	{
 		heightmapUndoFilename = SaveHeightmap(originalHeightmap);
 		heightmapRedoFilename = SaveHeightmap(newHeightmap);
 	}
 
-	tilemapSavedPathname = FileSystem::Instance()->ReplaceExtension(tilemapSavedPath, ".png");;
-	tilemapUndoImage = SafeRetain(originalTilemap);
-	tilemapRedoImage = SafeRetain(newTilemap);
+	if (copyTilemap && originalTilemap && newTilemap)
+	{
+		tilemapSavedPathname = FileSystem::Instance()->ReplaceExtension(tilemapSavedPath, ".png");;
+		tilemapUndoImage = SafeRetain(originalTilemap);
+		tilemapRedoImage = SafeRetain(newTilemap);
+	}
 }
 
 CommandCopyPasteHeightmap::~CommandCopyPasteHeightmap()
@@ -206,44 +216,59 @@ void CommandCopyPasteHeightmap::Execute()
 {
 	LandscapeEditorHeightmap* editor = GetEditor();
 	if (!editor)
+	{
+		SetState(STATE_INVALID);
 		return;
+	}
 
 	// Apply new heightmap
-	if (editor->IsActive())
+	if (heightmap)
 	{
-		Heightmap* heightmap = editor->GetHeightmap();
-		heightmap->Load(heightmapRedoFilename);
-		editor->UpdateHeightmap(heightmap);
-	}
-	else
-	{
-		UpdateLandscapeHeightmap(heightmapRedoFilename);
+		if (editor->IsActive())
+		{
+			Heightmap* heightmap = editor->GetHeightmap();
+			heightmap->Load(heightmapRedoFilename);
+			editor->UpdateHeightmap(heightmap);
+		}
+		else
+		{
+			UpdateLandscapeHeightmap(heightmapRedoFilename);
+		}
 	}
 
 	// Apply new tilemap
-	UpdateLandscapeTilemap(tilemapRedoImage);
+	if (tilemap)
+	{
+		UpdateLandscapeTilemap(tilemapRedoImage);
+	}
 }
 
 void CommandCopyPasteHeightmap::Cancel()
 {
 	// Restore old heightmap
-	LandscapeEditorHeightmap* editor = GetEditor();
-	if (!editor)
-		return;
-	
-	if (editor->IsActive())
+	if (heightmap)
 	{
-		Heightmap* heightmap = editor->GetHeightmap();
-		heightmap->Load(heightmapUndoFilename);
-		editor->UpdateHeightmap(heightmap);
-	}
-	else
-	{
-		UpdateLandscapeHeightmap(heightmapUndoFilename);
+		LandscapeEditorHeightmap* editor = GetEditor();
+		if (!editor)
+			return;
+		
+		if (editor->IsActive())
+		{
+			Heightmap* heightmap = editor->GetHeightmap();
+			heightmap->Load(heightmapUndoFilename);
+			editor->UpdateHeightmap(heightmap);
+		}
+		else
+		{
+			UpdateLandscapeHeightmap(heightmapUndoFilename);
+		}
 	}
 
 	// Restore old tilemap
-	UpdateLandscapeTilemap(tilemapUndoImage);
+	if (tilemap)
+	{
+		UpdateLandscapeTilemap(tilemapUndoImage);
+	}
 }
 
 void CommandCopyPasteHeightmap::UpdateLandscapeTilemap(DAVA::Image *image)
@@ -260,8 +285,13 @@ void CommandCopyPasteHeightmap::UpdateLandscapeTilemap(DAVA::Image *image)
 	}
 	else
 	{
+		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+		EditorScene* scene = screen->FindCurrentBody()->bodyControl->GetScene();
+		LandscapeNode* landscape = scene->GetLandscape(scene);
+
 		landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
 		landscape->UpdateFullTiledTexture();
+		ImageLoader::Save(image, tilemapSavedPathname);
 	}
 
 	SafeRelease(texture);

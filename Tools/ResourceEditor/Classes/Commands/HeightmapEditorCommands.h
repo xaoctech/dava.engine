@@ -44,7 +44,7 @@ protected:
 class CommandCopyPasteHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandCopyPasteHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, LandscapeNode* landscape, const String& tilemapSavedPath);
+	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath);
 	virtual ~CommandCopyPasteHeightmap();
 
 protected:
@@ -56,6 +56,9 @@ protected:
 	String tilemapSavedPathname;
 
 	LandscapeNode* landscape;
+
+	bool heightmap;
+	bool tilemap;
 
 	virtual void Execute();
 	virtual void Cancel();
