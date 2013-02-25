@@ -59,11 +59,29 @@ public:
         return allocator.Delete(p);
     }
     
-    
-    
     static FixedSizePoolAllocator allocator;
 };
 
+
+class EntityCustomSmallAllocator : public BaseObject
+{
+public:
+    uint32 flags;
+    void * dataPtr;
+    Vector<EntityCustomAllocator*> children;
+    
+    void * operator new(size_t size)
+    {
+        return allocator.New();
+    }
+    
+    void operator delete(void * p)
+    {
+        return allocator.Delete(p);
+    }
+    
+    static FixedSizePoolAllocator allocator;
+};
 
 class MemoryAllocationTraverseTest: public TestTemplate<MemoryAllocationTraverseTest>
 {
@@ -80,6 +98,7 @@ public:
     
     EntityDefaultAllocator * defaultTree;
     EntityCustomAllocator * customTree;
+    EntityCustomSmallAllocator * customSmallTree;
     
 protected:
     void MemoryAllocationTest_Default(PerfFuncData * data);
@@ -90,9 +109,11 @@ protected:
     
     void MemoryTraverseTest_Default(PerfFuncData * data);
     void MemoryTraverseTest_Custom(PerfFuncData * data);
+    void MemoryTraverseTest_CustomSmall(PerfFuncData * data);
     
     void TraverseDefault(EntityDefaultAllocator * node);
     void TraverseCustom(EntityCustomAllocator * node);
+    void TraverseCustomSmall(EntityCustomAllocator * node);
     
     
 
