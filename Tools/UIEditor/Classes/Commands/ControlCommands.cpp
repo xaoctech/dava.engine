@@ -69,6 +69,9 @@ void ControlResizeCommand::Rollback()
 {
 	// Return the controls to the previous size.
 	ApplyResize(newRect, originalRect);
+	
+    // Notify the Grid some properties were changed.
+    CommandsController::Instance()->EmitUpdatePropertyValues();
 }
 
 void ControlResizeCommand::ApplyResize(const Rect& prevRect, const Rect& updatedRect)
