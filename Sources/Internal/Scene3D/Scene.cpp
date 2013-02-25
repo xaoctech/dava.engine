@@ -576,7 +576,7 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-    TIME_MEASURE("Scene::Update");
+    TIME_PROFILE("Scene::Update");
     
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
     
@@ -620,7 +620,7 @@ void Scene::Update(float timeElapsed)
 
 void Scene::Draw()
 {
-    TIME_MEASURE("Scene::Draw");
+    TIME_PROFILE("Scene::Draw");
 
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);

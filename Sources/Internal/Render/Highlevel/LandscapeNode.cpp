@@ -1136,7 +1136,7 @@ void LandscapeNode::UnbindMaterial()
     
 void LandscapeNode::Draw(Camera * camera)
 {
-    TIME_MEASURE("LandscapeNode.Draw");
+    TIME_PROFILE("LandscapeNode.Draw");
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
