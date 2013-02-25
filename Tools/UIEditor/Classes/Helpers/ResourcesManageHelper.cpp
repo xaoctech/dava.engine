@@ -97,7 +97,7 @@ static const QString PROJECT_FILE_PATH = "%1/ui.uieditor";
 #endif
 
 // Resource wrong location error message
-static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "File %1 is not located inside platform resource folder. It can't be linked with control!";
+static const QString RES_WRONG_LOCATION_ERROR_MESSAGE = "Resource %1 is not located inside project 'Data' folder. It can't be linked with project or control!";
 
 //Available fonts extensions
 static const QStringList FONTS_EXTENSIONS_FILTER = (QStringList() << "*.ttf" << "*.otf" << "*.fon" << "*.fnt" << "*.def");
