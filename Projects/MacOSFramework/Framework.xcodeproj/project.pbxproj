@@ -35,6 +35,12 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
+		CC247FD916D6987100183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD416D6987100183D40 /* DVAssertMessage.cpp */; };
+		CC247FDA16D6987100183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD416D6987100183D40 /* DVAssertMessage.cpp */; };
+		CC247FDB16D6987100183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FD516D6987100183D40 /* DVAssertMessage.h */; };
+		CC247FDC16D6987100183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FD516D6987100183D40 /* DVAssertMessage.h */; };
+		CC247FDD16D6987100183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */; };
+		CC247FDE16D6987100183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */; };
 		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -2186,6 +2192,9 @@
 				C151B17516D3747E00E09BAF /* DVAssertMessage.h */,
 				C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */,
 				E8989B2116BD24E400732C04 /* Backtrace.cpp */,
+				CC247FD416D6987100183D40 /* DVAssertMessage.cpp */,
+				CC247FD516D6987100183D40 /* DVAssertMessage.h */,
+				CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */,
 				E8989B2216BD24E400732C04 /* Backtrace.h */,
 				E8989B2316BD24E400732C04 /* DVAssert.h */,
 				E8989B2416BD24E400732C04 /* List.h */,
