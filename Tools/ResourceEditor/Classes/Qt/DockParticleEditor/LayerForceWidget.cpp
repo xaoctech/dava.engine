@@ -48,11 +48,10 @@ void LayerForceWidget::InitWidget(QWidget* widget)
 
 void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint32 forceIndex, bool updateMinimized)
 {	
-	if (!layer ||
-		layer->forces.size() <= forceIndex ||
-		layer->forcesOverLife.size() <= forceIndex ||
-		layer->forcesVariation.size() <= forceIndex)
+	if (!layer || layer->particleForces.size() <= forceIndex)
+	{
 		return;
+	}
 	
 	this->emitter = emitter;
 	this->layer = layer;
@@ -62,23 +61,24 @@ void LayerForceWidget::Init(ParticleEmitter* emitter, ParticleLayer* layer, uint
 	
 	float32 emitterLifeTime = emitter->GetLifeTime();
 	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
+	ParticleForce* curForce = layer->particleForces[forceIndex];
 
 	Vector<QColor> colors;
 	colors.push_back(Qt::blue); colors.push_back(Qt::darkGreen); colors.push_back(Qt::red);
 	Vector<QString> legends;
 	legends.push_back("force x"); legends.push_back("force y"); legends.push_back("force z");
 	forceTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
-	forceTimeLine->AddLines(PropLineWrapper<Vector3>(layer->forces[forceIndex]).GetProps(), colors, legends);
+	forceTimeLine->AddLines(PropLineWrapper<Vector3>(curForce->GetForce()).GetProps(), colors, legends);
 	forceTimeLine->EnableLock(true);
 
 	legends.clear();
 	legends.push_back("force variable x"); legends.push_back("force variable y"); legends.push_back("force variable z");
 	forceVariationTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
-	forceVariationTimeLine->AddLines(PropLineWrapper<Vector3>(layer->forcesVariation[forceIndex]).GetProps(), colors, legends);
+	forceVariationTimeLine->AddLines(PropLineWrapper<Vector3>(curForce->GetForceVariation()).GetProps(), colors, legends);
 	forceVariationTimeLine->EnableLock(true);
 
-	forceOverLifeTimeLine->Init(layer->startTime, lifeTime, updateMinimized, true, false);
-	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(layer->forcesOverLife[forceIndex]).GetProps(), Qt::blue, "forces over life");
+	forceOverLifeTimeLine->Init(0.0f, 1.0f, updateMinimized, true, false);
+	forceOverLifeTimeLine->AddLine(0, PropLineWrapper<float32>(curForce->GetForceOverlife()).GetProps(), Qt::blue, "forces over life");
 
 	blockSignals = false;
 }

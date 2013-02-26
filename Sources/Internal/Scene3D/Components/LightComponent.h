@@ -17,6 +17,8 @@ public:
     
     IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
     virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
     void SetLightObject(Light * _light);
     Light * GetLightObject();

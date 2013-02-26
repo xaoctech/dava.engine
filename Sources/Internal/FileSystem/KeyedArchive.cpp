@@ -46,7 +46,7 @@ KeyedArchive::KeyedArchive(const KeyedArchive &arc)
     const Map<String, VariantType*> &customMap = arc.GetArchieveData();
     for (Map<String, VariantType*>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
     {
-        SetVariant(it->first, it->second);
+        SetVariant(it->first, *it->second);
     }
 }
 
@@ -262,10 +262,10 @@ void KeyedArchive::SetByteArray(const String & key, const uint8 * value, int32 a
 	objectMap[key] = variantValue;
 }
 
-void KeyedArchive::SetVariant(const String & key, VariantType *value)
+void KeyedArchive::SetVariant(const String & key, const VariantType &value)
 {
     DeleteKey(key);
-	VariantType *variantValue = new VariantType(*value);
+	VariantType *variantValue = new VariantType(value);
 	objectMap[key] = variantValue;
 }
     
@@ -521,6 +521,18 @@ void KeyedArchive::DeleteAllKeys()
 	objectMap.clear();
 }
 
+uint32 KeyedArchive::Count(const String &key)
+{
+	if(key.empty())
+	{
+		return objectMap.size();
+	}
+	else
+	{
+		return objectMap.count(key);
+	}
+}
+
 	
 void KeyedArchive::Dump()
 {
@@ -582,7 +594,16 @@ const Map<String, VariantType*> & KeyedArchive::GetArchieveData() const
 {
     return objectMap;
 }
-    
+
+const char* KeyedArchive::GenKeyFromIndex(uint32 index)
+{
+	static char tmpKey[32];
+
+	sprintf(tmpKey, "%04u", index);
+	return tmpKey;
+}
+
+
 
 
 	

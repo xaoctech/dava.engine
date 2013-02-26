@@ -35,7 +35,7 @@
 namespace DAVA
 {
     
-ShadowVolumeRenderPass::ShadowVolumeRenderPass(const char * _name)
+ShadowVolumeRenderPass::ShadowVolumeRenderPass(const FastName & _name)
     :   RenderPass(_name)
     ,   shadowRect(0)
 {

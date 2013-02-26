@@ -30,16 +30,20 @@ public:
     virtual ~DebugRenderComponent();
     
     IMPLEMENT_COMPONENT_TYPE(DEBUG_RENDER_COMPONENT);
-    virtual Component * Clone(SceneNode * toEntity);
 
     void SetDebugFlags(uint32 debugFlags);
     uint32 GetDebugFlags();
+
+	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+
 private:
     uint32 debugFlags;
     
 public:
     INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-        MEMBER(debugFlags, "Debug Flags ", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(debugFlags, "Debug Flags ", GetDebugFlags, SetDebugFlags, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

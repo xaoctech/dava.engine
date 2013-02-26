@@ -47,8 +47,6 @@ public:
 
     virtual void Draw(Camera * camera);
 
-    virtual const FastName & GetOwnerLayerName();
-
 	void MakeShadowVolumeFromPolygonGroup(PolygonGroup * polygonGroup);
     void SetPolygonGroup(PolygonGroup * polygonGroup);
     PolygonGroup * GetPolygonGroup();

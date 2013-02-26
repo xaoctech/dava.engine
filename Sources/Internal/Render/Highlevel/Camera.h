@@ -37,8 +37,6 @@
 
 namespace DAVA
 {
-class SceneFileV2;
-
 /**
     \ingroup scene3d
     \brief this class is main class to perform camera transformations in our 3D engine.
@@ -318,8 +316,8 @@ public:
      */
     void Draw();
 
-    void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
-    void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    void Save(KeyedArchive * archive);
+    void Load(KeyedArchive * archive);
 
     /// Overwrites frustum data (not pointer) and other math data only, no SceneNode etc. stuff here.
     /// Added to support some math caching. Future versions of this library should provide a separate class

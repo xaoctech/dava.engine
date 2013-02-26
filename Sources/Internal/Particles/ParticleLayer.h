@@ -38,6 +38,7 @@
 
 #include "FileSystem/YamlParser.h"
 #include "Particles/Particle.h"
+#include "Particles/ParticleForce.h"
 #include "Particles/ParticlePropertyLine.h"
 
 namespace DAVA
@@ -146,6 +147,16 @@ public:
 	virtual void SetAdditive(bool additive);
 	bool GetAdditive() const {return additive;};
 
+
+	// Logic to work with Particle Forces.
+	void AddParticleForce(ParticleForce* particleForce);
+	void RemoveParticleForce(ParticleForce* particleForce);
+	void RemoveParticleForce(int32 particleForceIndex);
+
+	void UpdateParticleForce(int32 particleForceIndex, RefPtr< PropertyLine<Vector3> > force,
+							 RefPtr< PropertyLine<Vector3> > forceVariation,
+							 RefPtr< PropertyLine<float32> > forceOverLife);
+
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
@@ -162,6 +173,8 @@ protected:
     void SaveForcesToYamlNode(YamlNode* layerNode);
 
 	void UpdateFrameTimeline();
+	
+	void CleanupParticleForces();
 
 	// list of particles
 	Particle *	head;
@@ -203,9 +216,7 @@ public:
 	RefPtr< PropertyLine<float32> > velocityVariation;	
 	RefPtr< PropertyLine<float32> > velocityOverLife;
 	
-	Vector< RefPtr< PropertyLine<Vector3> > > forces;				// weight property from 
-	Vector< RefPtr< PropertyLine<Vector3> > > forcesVariation;
-	Vector< RefPtr< PropertyLine<float32> > > forcesOverLife;
+	Vector<ParticleForce*> particleForces;
 	
 	RefPtr< PropertyLine<float32> > spin;				// spin of angle / second
 	RefPtr< PropertyLine<float32> > spinVariation;
@@ -222,7 +233,6 @@ public:
 	RefPtr< PropertyLine<Color> > colorRandom;		
 	RefPtr< PropertyLine<float32> > alphaOverLife;	
 	RefPtr< PropertyLine<Color> > colorOverLife;	
-	RefPtr< PropertyLine<float32> > frameOverLife;				// in frame index
 
 	RefPtr< PropertyLine<float32> > angle;				// sprite angle in degrees
 	RefPtr< PropertyLine<float32> > angleVariation;		// variations in degrees
@@ -233,6 +243,9 @@ public:
 	int32		frameStart;
 	int32		frameEnd;
 	eType		type;
+
+	bool		frameOverLifeEnabled;
+	float32		frameOverLifeFPS;
 
     bool isDisabled;
     

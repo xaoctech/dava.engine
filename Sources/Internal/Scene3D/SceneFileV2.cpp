@@ -196,7 +196,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 5;
+    header.version = 6;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -555,7 +555,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->Load(archive, this);
         
         Camera * cameraObject = new Camera();
-        cameraObject->Load(archive, this);
+        cameraObject->Load(archive);
         
         node->AddComponent(new CameraComponent(cameraObject));
         parent->AddNode(node);
@@ -708,7 +708,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
 				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
 				{
-					newProperties->SetVariant(it->first, it->second);
+					newProperties->SetVariant(it->first, *it->second);
 				}
                 removedNodeCount++;
                 SafeRelease(childNode);
@@ -939,8 +939,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		spriteObject->SetSpriteType((SpriteObject::eSpriteType)spr->GetType());
 
 		newNode->AddComponent(new RenderComponent(spriteObject));
-		newNode->AddComponent(new TransformComponent());
-
 
 		SceneNode * parent = spr->GetParent();
 		DVASSERT(parent);

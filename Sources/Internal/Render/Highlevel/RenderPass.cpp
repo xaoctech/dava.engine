@@ -34,7 +34,7 @@
 namespace DAVA
 {
     
-RenderPass::RenderPass(const char * _name)
+RenderPass::RenderPass(const FastName & _name)
     : name(_name)
 {
     

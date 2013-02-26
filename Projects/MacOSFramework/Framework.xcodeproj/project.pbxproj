@@ -8,9 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
+		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
+		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
+		1799E52716CCEC030058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
 		509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
 		509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */; };
+		50A7DCBA16CA814700B41A67 /* RenderFastNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A7DCB916CA814700B41A67 /* RenderFastNames.h */; };
 		50D6C8EA16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		50D6C8EB16C107D500BB3F78 /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
@@ -1273,8 +1278,11 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
+		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		50A7DCB916CA814700B41A67 /* RenderFastNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderFastNames.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
@@ -2352,6 +2360,8 @@
 		E8989BC416BD24E400732C04 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				1799E52416CCEC030058061F /* ParticleForce.cpp */,
+				1799E52516CCEC030058061F /* ParticleForce.h */,
 				E8989BC516BD24E400732C04 /* Particle.cpp */,
 				E8989BC616BD24E400732C04 /* Particle.h */,
 				E8989BC716BD24E400732C04 /* ParticleEmitter.cpp */,
@@ -2550,13 +2560,13 @@
 		E8989C3F16BD24E400732C04 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				E8989C4616BD24E400732C04 /* IRenderUpdatable.h */,
 				E8989C4016BD24E400732C04 /* Camera.cpp */,
 				E8989C4116BD24E400732C04 /* Camera.h */,
 				E8989C4216BD24E400732C04 /* CullingSystem.cpp */,
 				E8989C4316BD24E400732C04 /* CullingSystem.h */,
 				E8989C4416BD24E400732C04 /* Heightmap.cpp */,
 				E8989C4516BD24E400732C04 /* Heightmap.h */,
-				E8989C4616BD24E400732C04 /* IRenderUpdatable.h */,
 				E8989C4716BD24E400732C04 /* LandscapeChunk.cpp */,
 				E8989C4816BD24E400732C04 /* LandscapeChunk.h */,
 				E8989C4916BD24E400732C04 /* LandscapeCursor.cpp */,
@@ -2567,31 +2577,32 @@
 				E8989C4E16BD24E400732C04 /* LandscapeNode.h */,
 				E8989C4F16BD24E400732C04 /* Light.cpp */,
 				E8989C5016BD24E400732C04 /* Light.h */,
-				E8989C5116BD24E400732C04 /* Mesh.cpp */,
-				E8989C5216BD24E400732C04 /* Mesh.h */,
 				E8989C5316BD24E400732C04 /* ParticleLayerBatch.cpp */,
 				E8989C5416BD24E400732C04 /* ParticleLayerBatch.h */,
 				E8989C5516BD24E400732C04 /* RenderBatch.cpp */,
 				E8989C5616BD24E400732C04 /* RenderBatch.h */,
+				E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */,
+				E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */,
 				E8989C5716BD24E400732C04 /* RenderDataSource.h */,
-				E8989C5816BD24E400732C04 /* RenderLayer.cpp */,
-				E8989C5916BD24E400732C04 /* RenderLayer.h */,
+				E8989C5116BD24E400732C04 /* Mesh.cpp */,
+				E8989C5216BD24E400732C04 /* Mesh.h */,
+				E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */,
+				E89CE91416C549F9006BEFF4 /* SpriteObject.h */,
+				E8989C6216BD24E400732C04 /* ShadowVolume.cpp */,
+				E8989C6316BD24E400732C04 /* ShadowVolume.h */,
 				E8989C5A16BD24E400732C04 /* RenderObject.cpp */,
 				E8989C5B16BD24E400732C04 /* RenderObject.h */,
+				E8989C5816BD24E400732C04 /* RenderLayer.cpp */,
+				E8989C5916BD24E400732C04 /* RenderLayer.h */,
 				E8989C5C16BD24E400732C04 /* RenderPass.cpp */,
 				E8989C5D16BD24E400732C04 /* RenderPass.h */,
+				E8989C6516BD24E400732C04 /* ShadowVolumeRenderPass.h */,
+				E8989C6416BD24E400732C04 /* ShadowVolumeRenderPass.cpp */,
 				E8989C5E16BD24E400732C04 /* RenderSystem.cpp */,
 				E8989C5F16BD24E400732C04 /* RenderSystem.h */,
 				E8989C6016BD24E400732C04 /* ShadowRect.cpp */,
 				E8989C6116BD24E400732C04 /* ShadowRect.h */,
-				E8989C6216BD24E400732C04 /* ShadowVolume.cpp */,
-				E8989C6316BD24E400732C04 /* ShadowVolume.h */,
-				E8989C6416BD24E400732C04 /* ShadowVolumeRenderPass.cpp */,
-				E8989C6516BD24E400732C04 /* ShadowVolumeRenderPass.h */,
-				E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */,
-				E89CE91416C549F9006BEFF4 /* SpriteObject.h */,
-				E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */,
-				E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */,
+				50A7DCB916CA814700B41A67 /* RenderFastNames.h */,
 			);
 			path = Highlevel;
 			sourceTree = "<group>";
@@ -3263,6 +3274,7 @@
 				CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */,
 				C7FBCFB516CD1FE5006F1B3F /* AutotestingSystemLua.h in Headers */,
 				C7FBCFB816CD1FE5006F1B3F /* AutotestingSystemYaml.h in Headers */,
+				1799E52716CCEC030058061F /* ParticleForce.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3591,6 +3603,7 @@
 				E89CE91A16C549F9006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */,
+				1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3967,6 +3980,7 @@
 				C7FBCFBC16CD1FE5006F1B3F /* UIControlSwig.cpp in Sources */,
 				C7FBCFBD16CD1FE5006F1B3F /* Vector_wrap.cxx in Sources */,
 				C7FBCFBE16CD1FE5006F1B3F /* VectorSwig.cpp in Sources */,
+				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4248,6 +4262,7 @@
 				E89CE91816C549F9006BEFF4 /* SpriteObject.cpp in Sources */,
 				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
+				1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
