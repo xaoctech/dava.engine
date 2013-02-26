@@ -64,6 +64,9 @@ public:
 	static void InitInternalResources();
 	// Show error message
 	static void ShowErrorMessage(const QString& messageParam);
+	// Reverse slash order in string
+	static QString ConvertPathToUnixStyle(const QString& inputString);
+
 private:
 	static QString buttonBackgroundImagePath;
 	static QString helpContentsPath;

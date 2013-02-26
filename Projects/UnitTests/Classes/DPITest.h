@@ -29,7 +29,6 @@ public:
 	virtual void DidAppear();
 	virtual void Update(float32 timeElapsed);
     
-    
     void TestFunction(PerfFuncData * data);
 	
 private:
