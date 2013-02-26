@@ -256,6 +256,12 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
 	}
 }
     
+//void RenderSystem::MarkForMaterialSort(Material * material)
+//{
+//    //for (FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != )
+//}
+
+    
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
     Light * nearestLight = 0;
