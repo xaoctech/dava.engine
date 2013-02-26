@@ -1,18 +1,15 @@
 #include "Debug/DVAssertMessage.h"
 
-using namespace DAVA;
-
 #if defined(__DAVAENGINE_MACOS__) 
 #import <Foundation/Foundation.h>
 #include <AppKit/NSAlert.h>
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/UIAlertView.h"
 #include "UI/UIScreenManager.h"
 #import "UIAlertView_Modal.h"
 #endif
 
 
-void DVAssertMessage::InnerShow(const char* content)
+void DAVA::DVAssertMessage::InnerShow(const char* content)
 {
 #if defined(__DAVAENGINE_MACOS__)
     NSString *contents = [NSString stringWithUTF8String:content];
