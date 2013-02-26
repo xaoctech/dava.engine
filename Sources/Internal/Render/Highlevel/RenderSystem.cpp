@@ -60,11 +60,11 @@ RenderSystem::RenderSystem()
     
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE]);
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT]);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
-    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME]);
+    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
 
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
@@ -338,6 +338,18 @@ void RenderSystem::Render()
     {
         renderPassOrder[k]->Draw(camera);
     }
+}
+
+RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer)
+{
+	DVASSERT(false == renderLayersMap.HasKey(layerName));
+
+	RenderLayer * newLayer = new RenderLayer(layerName);
+	renderLayersMap.Insert(layerName, newLayer);
+
+	inPass->AddRenderLayer(newLayer, afterLayer);
+
+	return newLayer;
 }
 
 
