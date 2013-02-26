@@ -441,6 +441,9 @@ void LandscapeEditorHeightmap::HideAction()
     // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
+
+	Texture* texture = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
+	texture->Reload();
 }
 
 void LandscapeEditorHeightmap::ShowAction()
@@ -669,6 +672,7 @@ void LandscapeEditorHeightmap::UpdateLandscapeTilemap(Texture* texture)
 	SafeRelease(tilemaskTexture);
 	SafeRelease(tilemaskImage);
 
+	workingLandscape->UpdateFullTiledTexture();
 	tilemaskTexture = SafeRetain(texture);
 	tilemaskImage = tilemaskTexture->CreateImageFromMemory();
 
