@@ -85,7 +85,7 @@ QString HierarchyTreePlatformNode::GetPlatformFolder() const
 	QString path;
 	if (rootNode)
 	{
-		path = ResourcesManageHelper::GetPlatformRootPath(rootNode->GetProjectPath());
+		path = ResourcesManageHelper::GetPlatformRootPath(rootNode->GetProjectDir());
 	}
 	path += GetName();
 
@@ -96,7 +96,7 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 {
 	if (rootNode)
 	{
-		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectPath()).toStdString();
+		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectDir()).toStdString();
 		FileSystem::Instance()->ReplaceBundleName(bundleName);
 	}
 }
