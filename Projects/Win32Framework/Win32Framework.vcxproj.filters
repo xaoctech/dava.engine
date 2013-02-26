@@ -1257,6 +1257,9 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\DVAssertMessage.h">
       <Filter>Internal\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2200,6 +2203,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp">
       <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
       <Filter>Internal\Debug</Filter>
