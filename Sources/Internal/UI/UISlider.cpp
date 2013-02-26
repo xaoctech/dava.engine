@@ -410,7 +410,7 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
     YamlNode *node = UIControl::SaveToYamlNode(loader);
     
     // Control Type
-    node->Set("type", "UISlider");
+    node->Set("type", "UISlider", true);
 	
 	// Sprite value
 	float32 value = this->GetValue();

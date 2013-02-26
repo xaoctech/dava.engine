@@ -202,13 +202,6 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 
 	rb->ownerLayerName = ownerLayerName;
 	rb->sortingKey = sortingKey;
-// TODO: Understand what this code means.
-// 
-//	rb->ownerLayer = ownerLayer;
-//	if(ownerLayer)
-//	{
-//		ownerLayer->AddRenderBatch(rb);
-//	}
 
 	return rb;
 }
