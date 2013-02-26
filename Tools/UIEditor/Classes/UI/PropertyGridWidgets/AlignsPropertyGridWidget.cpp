@@ -101,6 +101,16 @@ void AlignsPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* 
 	UpdateSpinBoxState(checkBoxWidget);
 }
 
+void AlignsPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
+{
+    BasePropertyGridWidget::HandleChangePropertySucceeded(propertyName);
+	// Each time aligns properties are changes we should notify all listeners
+	// (first of all in rect widget) to force recalculation of related properties
+	// In other words if we changed align option we should force change of related
+	// property in Rect Property Grid widget
+	CommandsController::Instance()->EmitUpdatePropertyValues();
+}
+
 void AlignsPropertyGridWidget::UpdateCheckBoxSates()
 {
 	// Horizontal align
@@ -144,11 +154,5 @@ void AlignsPropertyGridWidget::UpdateSpinBoxState(QCheckBox *buddyWidget)
 		{
 			spinBox->setValue(0);
 		}
-		/*else
-		{
-			int oldValue = spinBox->value();
-			spinBox->setValue(oldValue + 1);
-			spinBox->setValue(oldValue);
-		}*/
     }
 }

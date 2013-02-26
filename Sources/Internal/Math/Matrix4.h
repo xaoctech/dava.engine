@@ -194,7 +194,7 @@ inline Matrix4 & Matrix4::operator= (const Matrix4 & m)
 // 	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
 // 	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
 // 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
- 	std::memcpy(data, m.data, 16 * sizeof(float32));
+ 	Memcpy(data, m.data, 16 * sizeof(float32));
 	return *this;
 }
     
@@ -221,7 +221,7 @@ inline void	Matrix4::Zero()
 // 	data[4] = 0; data[5] = 0; data[6] = 0; data[7] = 0;
 // 	data[8] = 0; data[9] = 0; data[10] = 0; data[11] = 0;
 // 	data[12] = 0; data[13] = 0; data[14] = 0; data[15] = 0;
-    std::memset(data, 0, 16 * sizeof(float32));
+    Memset(data, 0, 16 * sizeof(float32));
 }
 
 inline void	Matrix4::BuildProjectionFovLH(float32 _fovY, float32 _aspect, float32 _zn, float32 _zf)

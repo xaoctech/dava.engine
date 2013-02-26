@@ -25,10 +25,7 @@ public:
 	
 	bool IsFinished() const {return isFinished;};
 	
-	Texture* GetLandscapeTexture()
-	{
-		return GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
-	};
+	Texture* GetLandscapeTexture();
 
 	const String GetFileName() const;
 
