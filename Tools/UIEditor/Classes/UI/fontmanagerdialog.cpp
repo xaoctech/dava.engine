@@ -30,8 +30,11 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable, QDialog *parent) :
     dialogResultFont = EditorFontManager::Instance()->GetDefaultFont()->Clone();
 	// Pack graphics fonts sprites each time sprite dialog is opened
 	ResourcePacker *resPacker = new ResourcePacker();
-	resPacker->PackResources(ResourcesManageHelper::GetFontSpritesDatasourceDirectory().toStdString(),
-									ResourcesManageHelper::GetFontSpritesDirectory().toStdString());
+
+	DAVA::String inDir = ResourcesManageHelper::GetFontSpritesDatasourceDirectory().toStdString();
+	DAVA::String outDir = ResourcesManageHelper::GetFontSpritesDirectory().toStdString();
+
+	resPacker->PackResources(inDir, outDir);
     // Initialize dialog
     ConnectToSignals();
     InitializeTableView();
@@ -113,6 +116,9 @@ void FontManagerDialog::OkButtonClicked()
              
             if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
             {
+				// Convert file path into Unix-style path
+				fontSpritePath = ResourcesManageHelper::ConvertPathToUnixStyle(fontSpritePath);
+
 				if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
 				{
 					// Get font definition relative path by it's name

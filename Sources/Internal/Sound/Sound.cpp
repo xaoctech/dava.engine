@@ -45,7 +45,7 @@
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 
 #ifdef __DAVAENGINE_ANDROID__
-#include "Platform/Android/CorePlatformAndroid.h"
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #endif //#ifdef __DAVAENGINE_ANDROID__
