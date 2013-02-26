@@ -81,6 +81,7 @@
     #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
 
         #include <signal.h>
+        #include <unistd.h>
         #define DebugBreak() { kill( getpid(), SIGINT ) ; }
 
     #else //PLATFORMS
