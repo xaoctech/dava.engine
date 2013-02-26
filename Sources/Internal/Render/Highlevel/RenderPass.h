@@ -46,15 +46,17 @@ public:
     
     const FastName & GetName();
     
-    void AddRenderLayer(RenderLayer * layer);
-    void RemoveRenderLayer(RenderLayer * layer);
-    
     virtual void Draw(Camera * camera);
     
 protected:
     Vector<RenderLayer*> renderLayers;
     FastName name;
-    
+
+private:
+	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
+	void RemoveRenderLayer(RenderLayer * layer);
+	
+
 public:
     
     INTROSPECTION(RenderPass,
@@ -62,6 +64,7 @@ public:
         MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
     );
 
+	friend class RenderSystem;
 };
     
 } // ns
