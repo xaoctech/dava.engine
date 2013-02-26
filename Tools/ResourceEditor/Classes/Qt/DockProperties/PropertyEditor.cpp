@@ -19,10 +19,14 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+
+	posSaver.Attach(this, "DocPropetyEditor");
+	posSaver.LoadState(this);
 }
 
 PropertyEditor::~PropertyEditor()
 {
+	posSaver.SaveState(this);
 	SafeRelease(curNode);
 }
 
