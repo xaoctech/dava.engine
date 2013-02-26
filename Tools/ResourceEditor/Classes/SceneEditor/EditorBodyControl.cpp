@@ -31,6 +31,7 @@
 
 #include "../Commands/CommandsManager.h"
 #include "../Commands/EditorBodyControlCommands.h"
+#include "../Commands/CommandReloadTextures.h"
 
 #include "ArrowsNode.h"
 
@@ -743,6 +744,10 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	{
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
+
+		Command *reloadTextures = new CommandReloadTextures();
+		CommandsManager::Instance()->Execute(reloadTextures);
+		SafeRelease(reloadTextures);
 	}
 }
 

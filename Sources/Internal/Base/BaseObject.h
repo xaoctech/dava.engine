@@ -61,7 +61,7 @@ namespace DAVA
 class IntrospectionInfo;
 class KeyedArchive;
 	
-class	BaseObject
+class BaseObject
 {
 public:
 	
@@ -129,14 +129,7 @@ public:
      */
     const String & GetClassName();
     
-    /**
-        \brief virtual function to save node to KeyedArchive
-     */
     virtual void Save(KeyedArchive * archive);
-    
-    /**
-        \brief virtual function to load node to KeyedArchive
-     */
 	virtual void Load(KeyedArchive * archive);
     
     static BaseObject * LoadFromArchive(KeyedArchive * archive);

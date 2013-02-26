@@ -80,8 +80,8 @@ public:
     RenderBatch();
     virtual ~RenderBatch();
     
-    // TEMPORARY
-    virtual const FastName & GetOwnerLayerName();
+    const FastName & GetOwnerLayerName();
+    void SetOwnerLayerName(const FastName & fastname);
     
     void SetPolygonGroup(PolygonGroup * _polygonGroup);
     inline PolygonGroup * GetPolygonGroup();
@@ -90,6 +90,7 @@ public:
     inline RenderDataObject * GetRenderDataObject();
     
     void SetMaterial(Material * _material);
+    
     inline Material * GetMaterial();
     inline InstanceMaterialState * GetMaterialInstance();
     
@@ -108,6 +109,8 @@ public:
     const AABBox3 & GetBoundingBox() const;
 
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
+	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
     
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
@@ -121,6 +124,7 @@ protected:
     Material * material;                    // Should be replaced to NMaterial
     InstanceMaterialState * materialInstance; // Should be replaced by NMaterialInstance
 	RenderObject * renderObject;
+    FastName ownerLayerName;
     
     uint32 startIndex;
     uint32 indexCount;
@@ -139,18 +143,18 @@ public:
     INTROSPECTION_EXTEND(RenderBatch, BaseObject,
         MEMBER(dataSource, "Data Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 //        MEMBER(renderDataObject, "Render Data Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(material, "Material", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
 //        MEMBER(renderObject, "Render Object", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
 
         MEMBER(startIndex, "Start Index", INTROSPECTION_SERIALIZABLE)
         MEMBER(indexCount, "Index Count", INTROSPECTION_SERIALIZABLE)
         MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-//        MEMBER(ownerLayer, "Owner Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY) 
-        MEMBER(removeIndex, "remove Index", INTROSPECTION_SERIALIZABLE)
-                         
         MEMBER(aabbox, "AABBox",  INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR )
         MEMBER(material, "Material", INTROSPECTION_EDITOR)
+                         
+        PROPERTY(ownerLayerName, "Owner Layer", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(sortingKey, "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
         MEMBER(materialInstance, "Material Instance", INTROSPECTION_EDITOR)
     );
 };
