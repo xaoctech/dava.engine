@@ -189,6 +189,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="maxSpriteLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>16</x>
@@ -228,6 +231,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="minSpriteLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>16</x>
@@ -267,6 +273,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="thumbSpriteLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>16</x>

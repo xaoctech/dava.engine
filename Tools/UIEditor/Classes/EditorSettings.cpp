@@ -60,7 +60,7 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
 	String _pathToFile = (pathToFile);
 // Replace  backslash to simple slash for Windows
 #if defined(__DAVAENGINE_WIN32__)
-	std::replace(_pathToFile.begin(), _pathToFile.end(),'/','\\');
+	std::replace(_pathToFile.begin(), _pathToFile.end(),'\\','/');
 #endif	 //#if defined(__DAVAENGINE_WIN32__)
 
     int32 count = GetLastOpenedCount();

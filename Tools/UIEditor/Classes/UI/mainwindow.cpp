@@ -349,6 +349,8 @@ void MainWindow::OnNewProject()
 				
 	if (projectDir.isNull() || projectDir.isEmpty())
 		return;
+	// Convert directory path into Unix-style path
+	projectDir = ResourcesManageHelper::ConvertPathToUnixStyle(projectDir);
 
 	CommandsController::Instance()->CleanupUndoRedoStack();
 	if (!HierarchyTreeController::Instance()->NewProject(projectDir))
@@ -477,6 +479,9 @@ void MainWindow::OnOpenProject()
 														tr( "Project (*.uieditor)"));
     if (projectPath.isNull() || projectPath.isEmpty())
         return;
+
+	// Convert file path into Unix-style path
+	projectPath = ResourcesManageHelper::ConvertPathToUnixStyle(projectPath);
         
 	CommandsController::Instance()->CleanupUndoRedoStack();
 	if (HierarchyTreeController::Instance()->Load(projectPath))
