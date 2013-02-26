@@ -468,6 +468,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
@@ -638,7 +639,6 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
@@ -803,6 +803,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
@@ -883,11 +884,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

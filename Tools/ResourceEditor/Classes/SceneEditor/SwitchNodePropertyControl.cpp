@@ -35,7 +35,7 @@ void SwitchNodePropertyControl::ReadFrom(SceneNode * sceneNode)
 void SwitchNodePropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
     SwitchComponent *switchComponent = static_cast<SwitchComponent *>(currentSceneNode->GetComponent(Component::SWITCH_COMPONENT));
-    if(switchComponent);
+    if(switchComponent)
     {
         if("Switch index" == forKey)
         {
