@@ -74,7 +74,7 @@ FilePath::~FilePath()
 void FilePath::InitFromAbsolutePath(const String &absolutePath)
 {
     sourcePathname = absolutePath;
-    absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
+    absolutePathname = absolutePath;//FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
 	
 	relativePathname = String("");
 	relativeFolder = String("");
