@@ -116,7 +116,7 @@ public:
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
      */
-    inline void SetSortingKey(uint32 key);
+    void SetSortingKey(uint32 key);
     inline uint32 GetSortingKey();
 
 protected:

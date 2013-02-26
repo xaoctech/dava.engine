@@ -37,32 +37,13 @@ void HierarchyTree::Clear()
 bool HierarchyTree::Load(const QString& projectPath)
 {
 	CreateProject();
-    
-/*	HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, "Platform1");
-	platformNode->SetSize(700, 500);
-	rootNode.AddTreeNode(platformNode);
-	HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(platformNode, "Screen1");
-	platformNode->AddTreeNode(screenNode);
-		
-	FileSystem::Instance()->ReplaceBundleName("/Users/adebt/Downloads/Project1/platform1/Data/");
-	screenNode->Load("/Users/adebt/Downloads/Project1/platform1/Data/UI/Intro.yaml");
-	
-	platformNode = new HierarchyTreePlatformNode(&rootNode, "Platform2");
-    screenNode = new HierarchyTreeScreenNode(platformNode, "Screen1");
-    platformNode->AddTreeNode(screenNode);
-	platformNode->SetSize(300, 200);
-    rootNode.AddTreeNode(platformNode);
-	
-	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);*/
-	
-	// Get project file
-	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
 
-	YamlParser* project = YamlParser::Create(projectFile.toStdString());
+	// Attempt to create a project
+	YamlParser* project = YamlParser::Create(projectPath.toStdString());
 	if (!project)
 		return false;
-	
-	rootNode.SetProjectPath(projectPath);
+	// Set current project file path
+	rootNode.SetProjectFilePath(projectPath);
 	
 	YamlNode* projectRoot = project->GetRootNode();
 	if (!projectRoot)
@@ -93,10 +74,6 @@ bool HierarchyTree::Load(const QString& projectPath)
         // Remember the platform to load its localization later.
         loadedPlatforms.insert(std::make_pair(platformNode, platform));
 	}
-	
-	// If no platforms were loaded - interrupt loading sequence
-	if (loadedPlatforms.empty())
-		return false;
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens. The update direction is FROM Control TO Extra Data.
@@ -116,12 +93,21 @@ bool HierarchyTree::Load(const QString& projectPath)
     // Localization File is loaded.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
 
-	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>((*rootNode.GetChildNodes().begin()));
-	HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>((*platformNode->GetChildNodes().begin()));
+	HierarchyTreePlatformNode* platformNode = NULL;
+	HierarchyTreeScreenNode* screenNode = NULL;
+	
+	if (!rootNode.GetChildNodes().empty())
+	{
+		platformNode = dynamic_cast<HierarchyTreePlatformNode*>((*rootNode.GetChildNodes().begin()));
+	}
+	
+	if (platformNode && !platformNode->GetChildNodes().empty())
+	{
+		screenNode = dynamic_cast<HierarchyTreeScreenNode*>((*platformNode->GetChildNodes().begin()));
+	}
     
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens.
-    
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);
 
 	return result;
@@ -273,8 +259,13 @@ bool HierarchyTree::Save(const QString& projectPath)
     // appropriate text controls to save the localization keys, and not values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_RAW);
 
-	QString oldPath = rootNode.GetProjectPath();
-	rootNode.SetProjectPath(projectPath);
+	QString oldPath = rootNode.GetProjectFilePath();
+	
+	// Get project file
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+	
+	rootNode.SetProjectFilePath(projectFile);
+
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();
 		 iter != rootNode.GetChildNodes().end();
 		 ++iter)
@@ -290,9 +281,6 @@ bool HierarchyTree::Save(const QString& projectPath)
 	// Create project sub-directories
 	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
 
-	// Get project file path
-	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
-
 	// Save project file
 	result &= parser->SaveToYamlFile(projectFile.toStdString(), &root, true);
 	
@@ -302,7 +290,7 @@ bool HierarchyTree::Save(const QString& projectPath)
 	if (!result)
 	{
 		//restore project path
-		rootNode.SetProjectPath(oldPath);
+		rootNode.SetProjectFilePath(oldPath);
 	}
 
 	return result;

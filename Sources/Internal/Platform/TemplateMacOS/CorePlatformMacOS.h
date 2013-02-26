@@ -46,6 +46,7 @@ public:
 	virtual DisplayMode GetCurrentDisplayMode();
 	virtual Vector2 GetMousePosition();
 	
+	virtual void* GetOpenGLView();
 };	
 };
 
