@@ -183,6 +183,8 @@ public:
 	
 	void DrawSphere(float32 r);
 
+	void DrawArrow(const Vector3 &from, const Vector3 &to, float32 lineWidth = 1.f);
+
 	
     // Other debug functions  
 	void DrawBSpline(BezierSpline3 * bSpline, int segments = 20, float ts = 0.0f, float te = 1.0f);

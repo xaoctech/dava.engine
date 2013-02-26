@@ -135,8 +135,8 @@
 		C10740FD163A94750069A640 /* moc_screenmanager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740EC163A94750069A640 /* moc_screenmanager.cpp */; };
 		C10740FF163A960D0069A640 /* BaseMetadataParams.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */; };
 		C1074160163E7B740069A640 /* ItemsCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C107415E163E7B740069A640 /* ItemsCommand.cpp */; };
+		C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C107916416D78C9E0081E58C /* libFrameworkQt.a */; };
 		C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C14FF9C0162EE4DF00F77F70 /* controllist.cpp */; };
-		C15C2FC8162AD20100818631 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C15C2FB1162AD0D800818631 /* libFrameworkQt.a */; };
 		C15C2FED162AD6E400818631 /* FrameworkMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */; };
 		C15C2FEE162AD6E400818631 /* GameCore.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE3162AD6E400818631 /* GameCore.cpp */; };
 		C15C2FEF162AD6E400818631 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE5162AD6E400818631 /* main.cpp */; };
@@ -160,18 +160,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C15C2FB0162AD0D800818631 /* PBXContainerItemProxy */ = {
+		C107916116D78C9E0081E58C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C15C2FA5162AD0D700818631 /* FrameworkQt.xcodeproj */;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 5CFB113C15AE0100008F64BB;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = Framework;
+		};
+		C107916316D78C9E0081E58C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
 			remoteInfo = FrameworkQt;
 		};
-		C15C2FC6162AD1E100818631 /* PBXContainerItemProxy */ = {
+		C107916516D78CC20081E58C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C15C2FA5162AD0D700818631 /* FrameworkQt.xcodeproj */;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 6832C0D4EDF3F8DB86EB0EE1;
+			remoteGlobalIDString = E898A05116BD265400732C04;
 			remoteInfo = FrameworkQt;
 		};
 /* End PBXContainerItemProxy section */
@@ -399,9 +406,9 @@
 		C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMetadataParams.cpp; path = Metadata/BaseMetadataParams.cpp; sourceTree = "<group>"; };
 		C107415E163E7B740069A640 /* ItemsCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ItemsCommand.cpp; path = Commands/ItemsCommand.cpp; sourceTree = "<group>"; };
 		C107415F163E7B740069A640 /* ItemsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemsCommand.h; path = Commands/ItemsCommand.h; sourceTree = "<group>"; };
+		C107915B16D78C9E0081E58C /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		C14FF9C0162EE4DF00F77F70 /* controllist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controllist.cpp; sourceTree = "<group>"; };
 		C14FF9C1162EE4DF00F77F70 /* controllist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = controllist.h; sourceTree = "<group>"; };
-		C15C2FA5162AD0D700818631 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
 		C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameworkMain.cpp; sourceTree = "<group>"; };
 		C15C2FE2162AD6E400818631 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameworkMain.h; sourceTree = "<group>"; };
 		C15C2FE3162AD6E400818631 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameCore.cpp; sourceTree = "<group>"; };
@@ -448,7 +455,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C15C2FC8162AD20100818631 /* libFrameworkQt.a in Frameworks & Libraries */,
+				C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */,
 				5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
@@ -469,9 +476,9 @@
 		05596AB53D8D521C69802C27 /* TemplateProjectQt */ = {
 			isa = PBXGroup;
 			children = (
+				C107915B16D78C9E0081E58C /* Framework.xcodeproj */,
 				5C190C9E15AEC6F9005731F8 /* Data */,
 				5C190CA015AEC704005731F8 /* Info.plist */,
-				C15C2FA5162AD0D700818631 /* FrameworkQt.xcodeproj */,
 				C15C2FDF162AD6E400818631 /* Classes */,
 				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
 				C15C2FC9162AD5DD00818631 /* GeneratedFiles */,
@@ -722,10 +729,11 @@
 			name = "Sources [qmake]";
 			sourceTree = "<group>";
 		};
-		C15C2FA6162AD0D700818631 /* Products */ = {
+		C107915C16D78C9E0081E58C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C15C2FB1162AD0D800818631 /* libFrameworkQt.a */,
+				C107916216D78C9E0081E58C /* libFramework.a */,
+				C107916416D78C9E0081E58C /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -921,7 +929,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				C15C2FC7162AD1E100818631 /* PBXTargetDependency */,
+				C107916616D78CC20081E58C /* PBXTargetDependency */,
 			);
 			name = UIEditor;
 			productName = TemplateProjectQt;
@@ -945,8 +953,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = C15C2FA6162AD0D700818631 /* Products */;
-					ProjectRef = C15C2FA5162AD0D700818631 /* FrameworkQt.xcodeproj */;
+					ProductGroup = C107915C16D78C9E0081E58C /* Products */;
+					ProjectRef = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -957,11 +965,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		C15C2FB1162AD0D800818631 /* libFrameworkQt.a */ = {
+		C107916216D78C9E0081E58C /* libFramework.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFramework.a;
+			remoteRef = C107916116D78C9E0081E58C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C107916416D78C9E0081E58C /* libFrameworkQt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFrameworkQt.a;
-			remoteRef = C15C2FB0162AD0D800818631 /* PBXContainerItemProxy */;
+			remoteRef = C107916316D78C9E0081E58C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1159,10 +1174,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C15C2FC7162AD1E100818631 /* PBXTargetDependency */ = {
+		C107916616D78CC20081E58C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FrameworkQt;
-			targetProxy = C15C2FC6162AD1E100818631 /* PBXContainerItemProxy */;
+			targetProxy = C107916516D78CC20081E58C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

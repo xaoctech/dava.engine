@@ -24,7 +24,7 @@ Frustum::~Frustum()
 
 //! \brief Set view frustum from matrix information
 //! \param viewProjection view * projection matrix
-void Frustum::Set(const Matrix4 & viewProjection)
+void Frustum::Build(const Matrix4 & viewProjection)
 {
 	planeArray.resize(6);
 	
@@ -86,10 +86,10 @@ void Frustum::Set(const Matrix4 & viewProjection)
 #undef SETUP_PLANE 
 }
 
-void Frustum::Set()
+void Frustum::Build()
 {
     const Matrix4 & viewProjection = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-    Set(viewProjection);
+    Build(viewProjection);
 }
 
 
@@ -274,9 +274,12 @@ bool Frustum::IsInside(const Vector3 & point, const float32 radius) const
 // 
 void Frustum::DebugDraw()
 {
-	if (planeArray.size() < 6)return;
-    Vector3 p[50];
-    
+	Vector3 p[50];
+
+	if (planeArray.size() < 6)
+	{
+		return;
+	}
 	
 	//for (int i = 0; i < )
 	p[0] = Plane3Intersection(	planeArray[EFP_LEFT],
