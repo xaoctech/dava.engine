@@ -884,11 +884,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.mm">
-      <FileType>Document</FileType>
-    </ClCompile>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
