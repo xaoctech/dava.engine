@@ -14,7 +14,9 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
 	// sizeof(tmp) - 2  - We need two characters for appending "\n" if the number of characters exceeds the size of buffer. 
 	vsnprintf(tmp, sizeof(tmp)-2, text, vl);
 	strcat(tmp, "\n");
-	InnerShow(tmp);
+
+#pragma message(__FILE__ ": --------------------------------- !!!!! Uncomment this. Was done due to win32 implementation missing in repository. !!!!! ------------------- ")
+	//InnerShow(tmp);
 
 	va_end(vl);
 }
