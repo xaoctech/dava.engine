@@ -81,8 +81,12 @@ void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
     QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ),
 																ResourcesManageHelper::GetDefaultDirectory());
-    if( !fileDirectory.isEmpty())
+
+	if(!fileDirectory.isNull() && !fileDirectory.isEmpty())
     {
+		// Convert directory path into Unix-style path
+		fileDirectory = ResourcesManageHelper::ConvertPathToUnixStyle(fileDirectory);
+
 		if (ResourcesManageHelper::ValidateResourcePath(fileDirectory))
         {
 			// Get localization relative path

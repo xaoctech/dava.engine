@@ -250,7 +250,9 @@ void SliderPropertyGridWidget::OnOpenSpriteDialog()
     // Exit if sprite name is empty
     if( spriteName.isNull() || spriteName.isEmpty())
         return;
-		
+	// Convert file path into Unix-style path
+	spriteName = ResourcesManageHelper::ConvertPathToUnixStyle(spriteName);
+
 	if (ResourcesManageHelper::ValidateResourcePath(spriteName))
 	{
 		// Sprite name should be pre-processed to use relative path.
