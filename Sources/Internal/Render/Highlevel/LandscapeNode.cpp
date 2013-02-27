@@ -96,7 +96,9 @@ LandscapeNode::LandscapeNode()
     fogDensity = 0.006f;
     fogColor = Color::White();
     
-    AddRenderBatch(new LandscapeChunk(this));
+    LandscapeChunk * chunk = new LandscapeChunk(this);
+    AddRenderBatch(chunk);
+    SafeRelease(chunk);
 }
 
 LandscapeNode::~LandscapeNode()

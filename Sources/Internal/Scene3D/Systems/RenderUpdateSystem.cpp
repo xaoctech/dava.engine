@@ -79,12 +79,6 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
 {
     RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
-
-    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
-    if (node)
-    {
-        node = 0;
-    }
     
     entityObjectMap.Insert(entity, renderObject);
 	GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
@@ -98,11 +92,6 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 		return;
 	}
     
-    LandscapeNode * node = dynamic_cast<LandscapeNode*>(renderObject);
-    if (node)
-    {
-        node = 0;
-    }
     GetScene()->GetRenderSystem()->RemoveFromRender(renderObject);
 
 	entityObjectMap.Remove(entity);
