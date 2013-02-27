@@ -35,12 +35,10 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
-		CC247FD916D6987100183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD416D6987100183D40 /* DVAssertMessage.cpp */; };
-		CC247FDA16D6987100183D40 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD416D6987100183D40 /* DVAssertMessage.cpp */; };
-		CC247FDB16D6987100183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FD516D6987100183D40 /* DVAssertMessage.h */; };
-		CC247FDC16D6987100183D40 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = CC247FD516D6987100183D40 /* DVAssertMessage.h */; };
-		CC247FDD16D6987100183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */; };
-		CC247FDE16D6987100183D40 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */; };
+		CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
+		CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
+		CC24800A16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
+		CC24800B16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
 		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -1314,6 +1312,8 @@
 		C151B1B416D4FF6A00E09BAF /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		C151B1B516D4FF6A00E09BAF /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		CC24800616DD174E00183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
+		CC24800716DD174E00183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
 		CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2192,9 +2192,6 @@
 				C151B17516D3747E00E09BAF /* DVAssertMessage.h */,
 				C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */,
 				E8989B2116BD24E400732C04 /* Backtrace.cpp */,
-				CC247FD416D6987100183D40 /* DVAssertMessage.cpp */,
-				CC247FD516D6987100183D40 /* DVAssertMessage.h */,
-				CC247FD616D6987100183D40 /* DVAssertMessageApple.mm */,
 				E8989B2216BD24E400732C04 /* Backtrace.h */,
 				E8989B2316BD24E400732C04 /* DVAssert.h */,
 				E8989B2416BD24E400732C04 /* List.h */,
@@ -2739,6 +2736,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				CC24800616DD174E00183D40 /* UserComponent.cpp */,
+				CC24800716DD174E00183D40 /* UserComponent.h */,
 				CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */,
 				CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */,
 				E8989CC916BD24E500732C04 /* BulletComponent.cpp */,
@@ -3293,6 +3292,7 @@
 				C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */,
 				C151B17C16D3755000E09BAF /* WebViewControlMacOS.h in Headers */,
 				C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */,
+				CC24800A16DD174E00183D40 /* UserComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3624,6 +3624,7 @@
 				1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */,
 				17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */,
 				E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */,
+				CC24800B16DD174E00183D40 /* UserComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3998,6 +3999,7 @@
 				C151B17D16D3755000E09BAF /* WebViewControlMacOS.mm in Sources */,
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
+				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4283,6 +4285,7 @@
 				E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */,
 				E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */,
 				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
+				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

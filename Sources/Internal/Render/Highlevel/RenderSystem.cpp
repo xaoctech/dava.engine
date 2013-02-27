@@ -149,7 +149,7 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
-    FastName name = renderBatch->GetOwnerLayerName();
+    const FastName & name = renderBatch->GetOwnerLayerName();
 
     RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
     if (oldLayer != 0)
@@ -342,7 +342,7 @@ void RenderSystem::Render()
 
 RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)
 {
-	DVASSERT(false == renderLayersMap.HasKey(layerName));
+	DVASSERT(false == renderLayersMap.IsKey(layerName));
 
 	RenderLayer * newLayer = new RenderLayer(layerName);
 	renderLayersMap.Insert(layerName, newLayer);
