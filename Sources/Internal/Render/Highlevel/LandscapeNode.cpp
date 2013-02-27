@@ -96,7 +96,9 @@ LandscapeNode::LandscapeNode()
     fogDensity = 0.006f;
     fogColor = Color::White();
     
-    AddRenderBatch(new LandscapeChunk(this));
+    LandscapeChunk * chunk = new LandscapeChunk(this);
+    AddRenderBatch(chunk);
+    SafeRelease(chunk);
 }
 
 LandscapeNode::~LandscapeNode()
@@ -277,7 +279,7 @@ bool LandscapeNode::BuildHeightmap()
     String extension = heightmapPath.GetExtension();
     if(".png" == extension)
     {
-        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetAbsolutePath());
+        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetSourcePath());
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -296,7 +298,7 @@ bool LandscapeNode::BuildHeightmap()
     }
     else if(Heightmap::FileExtension() == extension)
     {
-        retValue = heightmap->Load(heightmapPath.GetAbsolutePath());
+        retValue = heightmap->Load(heightmapPath.GetSourcePath());
     }
     else 
     {
@@ -1136,7 +1138,7 @@ void LandscapeNode::UnbindMaterial()
     
 void LandscapeNode::Draw(Camera * camera)
 {
-    TIME_MEASURE("LandscapeNode.Draw");
+    TIME_PROFILE("LandscapeNode.Draw");
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
@@ -1597,6 +1599,8 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, Matrix4::IDENTITY);
     Matrix4 projection;
     projection.glOrtho(0, (float32)TEXTURE_TILE_FULL_SIZE, 0, (float32)TEXTURE_TILE_FULL_SIZE, 0, 1);
+    
+    Matrix4 oldProjection = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
     
@@ -1612,6 +1616,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
 	RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
     
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, oldProjection);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 

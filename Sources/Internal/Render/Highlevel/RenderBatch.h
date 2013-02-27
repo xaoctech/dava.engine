@@ -116,7 +116,7 @@ public:
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
      */
-    inline void SetSortingKey(uint32 key);
+    void SetSortingKey(uint32 key);
     inline uint32 GetSortingKey();
 
 protected:
@@ -213,11 +213,6 @@ inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _remov
 {
     ownerLayer = _ownerLayer;
     removeIndex = _removeIndex;
-}
-    
-inline void RenderBatch::SetSortingKey(uint32 _key)
-{
-    sortingKey = _key;
 }
     
 inline uint32 RenderBatch::GetSortingKey()

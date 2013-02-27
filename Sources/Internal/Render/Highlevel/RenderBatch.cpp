@@ -151,6 +151,14 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
 {
     return aabbox;
 }
+    
+    
+void RenderBatch::SetSortingKey(uint32 _key)
+{
+    sortingKey = _key;
+    if (ownerLayer)ownerLayer->ForceLayerSort();
+}
+
 
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
@@ -184,7 +192,7 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 	rb->dataSource = SafeRetain(dataSource);
 	rb->renderDataObject = SafeRetain(renderDataObject);
 	rb->material = SafeRetain(material);
-    rb->materialInstance = SafeRetain(materialInstance);
+    rb->materialInstance = materialInstance->Clone();
 
 	rb->startIndex = startIndex;
 	rb->indexCount = indexCount;
@@ -194,13 +202,6 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 
 	rb->ownerLayerName = ownerLayerName;
 	rb->sortingKey = sortingKey;
-// TODO: Understand what this code means.
-// 
-//	rb->ownerLayer = ownerLayer;
-//	if(ownerLayer)
-//	{
-//		ownerLayer->AddRenderBatch(rb);
-//	}
 
 	return rb;
 }

@@ -28,6 +28,12 @@
      <height>179</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>299</width>
+     <height>179</height>
+    </size>
+   </property>
    <property name="title">
     <string/>
    </property>
@@ -42,6 +48,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="localizationKeyTextLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -141,6 +150,14 @@
    <header>qcolorbutton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>localizationKeyNameLineEdit</tabstop>
+  <tabstop>localizationKeyTextLineEdit</tabstop>
+  <tabstop>textForAllStatesCheckBox</tabstop>
+  <tabstop>fontSelectButton</tabstop>
+  <tabstop>fontSizeSpinBox</tabstop>
+  <tabstop>fontColorButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

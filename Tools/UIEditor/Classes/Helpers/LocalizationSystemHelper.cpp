@@ -14,6 +14,7 @@ using namespace DAVA;
 const LocalizationSystemHelper::LocalizationSystemHelperData LocalizationSystemHelper::helperData[] =
 {
     {"en", "English"},
+	{"ru", "Russian"},
     {"fr", "French"},
     {"de", "German"},
     {"it", "Italian"},

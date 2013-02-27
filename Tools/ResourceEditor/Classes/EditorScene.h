@@ -25,6 +25,7 @@ public:
     ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
+	void UpdateBullet(SceneNode * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;

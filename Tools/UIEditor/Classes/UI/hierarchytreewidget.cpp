@@ -31,9 +31,6 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)));
 	
 	connect(ui->treeWidget, SIGNAL(ShowCustomMenu(const QPoint&)), this, SLOT(OnShowCustomMenu(const QPoint&)));
-	
-	
-	
 	internalSelectionChanged = false;
 }
 

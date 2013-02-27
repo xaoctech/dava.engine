@@ -35,7 +35,21 @@
 
 namespace DAVA
 {
-
+// Immediate Time measure class
+    
+ImmediateTimeMeasure::ImmediateTimeMeasure(const FastName & _name)
+{
+    name = _name;
+    time = SystemTimer::Instance()->GetAbsoluteNano();
+}
+    
+ImmediateTimeMeasure::~ImmediateTimeMeasure()
+{
+    time = SystemTimer::Instance()->GetAbsoluteNano() - time;
+    Logger::Debug("%s %s %0.9llf seconds", name.c_str(), (double)time / 1e+9);
+}
+    
+// TimeMeasure class
 TimeMeasure * TimeMeasure::activeTimeMeasure = 0;
 TimeMeasure::FunctionMeasure * TimeMeasure::lastframeTopFunction = 0;
 TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
@@ -43,9 +57,10 @@ TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
     
 TimeMeasure::TimeMeasure(const FastName & blockName)
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
     
-    function = mainThread.functions.Value(blockName);
+    function = mainThread.functions.GetValue(blockName);
     if (!function)
     {
         FunctionMeasure * newFunctionMeasure = new FunctionMeasure();
@@ -71,10 +86,12 @@ TimeMeasure::TimeMeasure(const FastName & blockName)
     
     function->timeStart = SystemTimer::Instance()->GetAbsoluteNano();
     activeTimeMeasure = this;
+#endif
 }
 
 TimeMeasure::~TimeMeasure()
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
 
     uint32 frameCounter = Core::Instance()->GetGlobalFrameIndex();
@@ -87,15 +104,19 @@ TimeMeasure::~TimeMeasure()
         function->frameCounter = frameCounter;
     }
     activeTimeMeasure = parent;
+#endif
 }
     
 void TimeMeasure::ClearFunctions()
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     mainThread.topFunctions.clear();
+#endif
 }
     
 void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (level == 0)
     {
         Logger::Debug("Stats for frame: %d", Core::Instance()->GetGlobalFrameIndex());
@@ -112,13 +133,12 @@ void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
         for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
              it != function->children.End(); ++it)
         {
-            FunctionMeasure * childFunction = it.Value();
+            FunctionMeasure * childFunction = it.GetValue();
             if (childFunction->frameCounter == Core::Instance()->GetGlobalFrameIndex())
                 Dump(childFunction, level + 1);
         }
     }
-    
-    
+#endif
 }
 
     

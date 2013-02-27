@@ -148,6 +148,14 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 InstanceMaterialState * InstanceMaterialState::Clone()
 {
 	InstanceMaterialState * newState = new InstanceMaterialState();
+
+	newState->lightmapTexture = SafeRetain(lightmapTexture);
+	newState->lightmapName = lightmapName;
+	newState->uvOffset = uvOffset;
+	newState->uvScale = uvScale;
+	newState->flatColor = flatColor;
+	newState->texture0Shift = texture0Shift;
+
 	return newState;
 }
 
@@ -183,7 +191,9 @@ const char8 * Material::GetTypeName(eType format)
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
-			return "VERTEX_COLOR";
+			return "VERTEX_COLOR_ALPHABLEND";
+		case MATERIAL_FLAT_COLOR:
+			return "FLAT_COLOR";
         default:
             break;
     };
@@ -324,7 +334,7 @@ void Material::RebuildShader()
     uniformFlatColor = -1;
     uniformTexture0Shift = -1;
     
-    String shaderCombileCombo = "MATERIAL_TEXTURE";
+    String shaderCombileCombo = "";
     
     switch (type) 
     {
@@ -332,17 +342,17 @@ void Material::RebuildShader()
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-			shaderCombileCombo = "MATERIAL_LIGHTMAP";
+			shaderCombileCombo = "MATERIAL_TEXTURE; MATERIAL_LIGHTMAP";
 			if(isSetupLightmap)
 			{
 				shaderCombileCombo = shaderCombileCombo + ";SETUP_LIGHTMAP";
 			}
 			break;
         case MATERIAL_UNLIT_TEXTURE_DECAL:
-            shaderCombileCombo = "MATERIAL_DECAL";
+            shaderCombileCombo = "MATERIAL_TEXTURE;MATERIAL_DECAL";
             break;
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
-            shaderCombileCombo = "MATERIAL_DETAIL";
+            shaderCombileCombo = "MATERIAL_TEXTURE;MATERIAL_DETAIL";
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
@@ -359,27 +369,34 @@ void Material::RebuildShader()
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 			shaderCombileCombo = "MATERIAL_TEXTURE;ALPHABLEND;VERTEX_COLOR";
 			break;
+        case MATERIAL_FLAT_COLOR:
+            isFlatColorEnabled = true;
+            break;
         default:
             break;
     };
     if (isTranslucent)
     {
-        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "OPAQUE";
     }
 
 	if(isAlphablend)
 	{
-		shaderCombileCombo = shaderCombileCombo + ";ALPHABLEND";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+		shaderCombileCombo = shaderCombileCombo + "ALPHABLEND";
 	}
     
     if (isFlatColorEnabled)
     {
-        shaderCombileCombo = shaderCombileCombo + ";FLATCOLOR";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "FLATCOLOR";
     }
     
     if (isTexture0ShiftEnabled)
     {
-        shaderCombileCombo = shaderCombileCombo + ";TEXTURE0_SHIFT_ENABLED";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "TEXTURE0_SHIFT_ENABLED";
     }
     
     
@@ -583,9 +600,11 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             }
             
             if(sceneFile->DebugLogEnabled())
-                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
+                //Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].GetAbsolutePath().c_str());
+            	Logger::Debug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetSourcePath().c_str());
             
-            textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
+            //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
+            textures[k] = Texture::CreateFromFile(names[k].GetSourcePath());
         }
     }
     

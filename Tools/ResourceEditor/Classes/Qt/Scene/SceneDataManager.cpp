@@ -6,7 +6,7 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
-#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
+#include "./Qt/SpritesPacker/SpritePackerHelper.h"
 
 using namespace DAVA;
 
@@ -85,11 +85,11 @@ void SceneDataManager::AddScene(const String &scenePathname)
         mod.CreateTranslation(nodePos);
         rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
     }
+
 	
-	List<LandscapeNode *> landscapes;
-	rootNode->GetChildNodes(landscapes);
-	
-	bool needUpdateLandscapeController = !landscapes.empty();
+    LandscapeNode *landscape = scene->GetLandscape(scene);
+    bool needUpdateLandscapeController = (landscape != NULL);
+
 	
     SafeRelease(rootNode);
 	
@@ -711,6 +711,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 
