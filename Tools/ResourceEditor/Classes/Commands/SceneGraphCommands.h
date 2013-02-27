@@ -65,7 +65,7 @@ protected:
     virtual void Execute();
     virtual void Cancel();
 
-	DAVA::uint32 GetNodeIndex(DAVA::SceneNode* node);
+	DAVA::int32 GetNodeIndex(DAVA::SceneNode* node);
 };
 
 

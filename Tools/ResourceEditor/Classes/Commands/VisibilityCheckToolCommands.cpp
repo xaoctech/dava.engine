@@ -98,6 +98,8 @@ CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& 
 ,	oldImage(oldImage)
 {
 	commandName = "Place Visibility Point";
+
+	this->oldImage = SafeRetain(oldImage);
 }
 
 CommandPlacePointVisibilityTool::~CommandPlacePointVisibilityTool()
@@ -142,6 +144,8 @@ CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& ar
 	redoImage(NULL)
 {
 	commandName = "Place Visibility Area";
+
+	this->oldImage = SafeRetain(oldImage);
 }
 
 CommandPlaceAreaVisibilityTool::~CommandPlaceAreaVisibilityTool()

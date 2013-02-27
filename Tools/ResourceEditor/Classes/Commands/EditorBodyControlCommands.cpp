@@ -90,7 +90,7 @@ void CommandCloneObject::UpdateCollision(DAVA::SceneNode *node)
 																	 node->GetWorldTransform())));
 	}
 	
-	for(uint32 i = 0; i < node->GetChildrenCount(); ++i)
+	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
 	{
 		UpdateCollision(node->GetChild(i));
 	}
