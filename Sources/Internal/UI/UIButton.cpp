@@ -786,9 +786,11 @@ namespace DAVA
 				node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
 			}
 			//State align
-			if (baseControl->GetStateAlign(stateArray[i]) != this->GetStateAlign(stateArray[i]))
+			int32 stateAlign = this->GetStateAlign(stateArray[i]);
+			int32 baseStateAlign = baseControl->GetStateAlign(stateArray[i]);
+			if (baseStateAlign != stateAlign)
 			{
-				node->Set(Format("stateAlign%s", statePostfix[i].c_str()), this->GetStateAlign(stateArray[i]));
+				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
 			}			
 			//State font
 			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
