@@ -60,11 +60,11 @@ RenderSystem::RenderSystem()
     
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE]);
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT]);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
-    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME]);
+    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
 
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
@@ -149,7 +149,7 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
-    FastName name = renderBatch->GetOwnerLayerName();
+    const FastName & name = renderBatch->GetOwnerLayerName();
 
     RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
     if (oldLayer != 0)
@@ -256,6 +256,12 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
 	}
 }
     
+//void RenderSystem::MarkForMaterialSort(Material * material)
+//{
+//    //for (FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != )
+//}
+
+    
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
     Light * nearestLight = 0;
@@ -332,6 +338,18 @@ void RenderSystem::Render()
     {
         renderPassOrder[k]->Draw(camera);
     }
+}
+
+RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer)
+{
+	DVASSERT(false == renderLayersMap.IsKey(layerName));
+
+	RenderLayer * newLayer = new RenderLayer(layerName);
+	renderLayersMap.Insert(layerName, newLayer);
+
+	inPass->AddRenderLayer(newLayer, afterLayer);
+
+	return newLayer;
 }
 
 
