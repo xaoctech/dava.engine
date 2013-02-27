@@ -145,7 +145,7 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node, 
 
 CommandInternalRemoveSceneNode::~CommandInternalRemoveSceneNode()
 {
-	for (int32 i = 0; i < nodesForDeletion.size(); ++i)
+	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
 	{
 		SafeRelease(nodesForDeletion[i].node);
 	}
@@ -160,7 +160,7 @@ void CommandInternalRemoveSceneNode::Execute()
 		return;
 	}
 
-	for (int32 i = 0; i < nodesForDeletion.size(); ++i)
+	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
 	{
 		nodesForDeletion[i].nodeParent->RemoveNode(nodesForDeletion[i].node);
 	}
