@@ -284,7 +284,7 @@ void DLCSystem::SaveOldDlcs() const
         return;
     }
     
-    uint16 size[1] = { dlcs.size() };
+    uint16 size[1] = { (uint16)dlcs.size() };
     file->Write( size, sizeof(uint16) );
     
     for ( uint16 dlcInd = 0; dlcInd < dlcs.size(); ++dlcInd )

@@ -236,19 +236,15 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     Logger::Debug("[ExportLandscape]");
 
-    Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
-    
-    if(0 < landscapes.size())
+    EditorScene *editorScene = dynamic_cast<EditorScene *>(scene);
+    if(editorScene)
     {
-        if(1 < landscapes.size())
+        LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+        if (landscape)
         {
-            errorLog.insert(String("There are more than one landscapes at level."));
+            ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
+            ExportLandscapeFullTiledTexture(landscape, errorLog);
         }
-        
-        LandscapeNode *landscape = landscapes[0];
-        ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
-        ExportLandscapeFullTiledTexture(landscape, errorLog);
     }
 }
 

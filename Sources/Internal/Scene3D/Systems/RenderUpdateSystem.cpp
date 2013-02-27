@@ -92,7 +92,7 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
 
 void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
-    RenderObject * renderObject = entityObjectMap.Value(entity);
+    RenderObject * renderObject = entityObjectMap.GetValue(entity);
     if (!renderObject)
 	{
 		return;
@@ -110,7 +110,7 @@ void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
     
 void RenderUpdateSystem::Process()
 {
-    TIME_MEASURE("RenderUpdateSystem::Process");
+    TIME_PROFILE("RenderUpdateSystem::Process");
     float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
     GetScene()->GetRenderSystem()->Update(timeElapsed);
 }

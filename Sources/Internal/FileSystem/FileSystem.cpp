@@ -47,7 +47,7 @@
 #include <sys/stat.h>
 #include <Shlobj.h>
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Android/CorePlatformAndroid.h"
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -349,7 +349,17 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 	if(String::npos != find)
 	{
+#ifdef __DAVAENGINE_DEBUG__
+//#define USE_LOCAL_RESOURCES
+#endif
+#ifdef USE_LOCAL_RESOURCES
+		String path;
+		path = "/mnt/sdcard/DavaProject";
+		path += frameworkPath.c_str() + 5;
+		return File::CreateFromSystemPath(SystemPathForFrameworkPath(path), attributes);
+#else
 		return APKFile::CreateFromAssets(SystemPathForFrameworkPath(frameworkPath), attributes);
+#endif
 	}
 	else
 	{

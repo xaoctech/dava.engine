@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/Camera.h"
 
@@ -48,15 +49,35 @@ const FastName & RenderPass::GetName()
 {
     return name;
 }
-    
-void RenderPass::AddRenderLayer(RenderLayer * layer)
+
+void RenderPass::AddRenderLayer(RenderLayer * layer, const FastName & afterLayer)
 {
-    renderLayers.push_back(layer);
+	if(LAST_LAYER != afterLayer)
+	{
+		uint32 size = renderLayers.size();
+		for(uint32 i = 0; i < size; ++i)
+		{
+			const FastName & name = renderLayers[i]->GetName();
+			if(afterLayer == name)
+			{
+				renderLayers.insert(renderLayers.begin() +i+1, layer);
+				return;
+			}
+		}
+		DVASSERT(0 && "RenderPass::AddRenderLayer afterLayer not found");
+	}
+	else
+	{
+		renderLayers.push_back(layer);
+	}
 }
     
 void RenderPass::RemoveRenderLayer(RenderLayer * layer)
 {
-    
+	Vector<RenderLayer*>::iterator it = std::find(renderLayers.begin(), renderLayers.end(), layer);
+	DVASSERT(it != renderLayers.end());
+
+	renderLayers.erase(it);
 }
 
 void RenderPass::Draw(Camera * camera)

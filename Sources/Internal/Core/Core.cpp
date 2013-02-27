@@ -593,7 +593,7 @@ void Core::SystemAppFinished()
 void Core::SystemProcessFrame()
 {
     Stats::Instance()->BeginFrame();
-    TIME_MEASURE("Core::SystemProcessFrame");
+    TIME_PROFILE("Core::SystemProcessFrame");
     
 	if (!core) return;
 	if (!isActive)return;

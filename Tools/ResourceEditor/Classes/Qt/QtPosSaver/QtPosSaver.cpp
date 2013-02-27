@@ -1,4 +1,5 @@
 #include "QtPosSaver/QtPosSaver.h"
+#include <QHeaderView>
 
 bool QtPosSaver::settingsArchiveIsLoaded = false;
 DAVA::KeyedArchive QtPosSaver::settingsArchive;
@@ -37,13 +38,21 @@ QtPosSaver::~QtPosSaver()
 	}
 }
 
-void QtPosSaver::Attach(QWidget *widget)
+void QtPosSaver::Attach(QWidget *widget, const QString &name)
 {
 	attachedWidget = widget;
 
 	if(NULL != attachedWidget)
 	{
-		attachedWidgetName = attachedWidget->objectName();
+		if(name.isEmpty())
+		{
+			attachedWidgetName = attachedWidget->objectName();
+		}
+		else
+		{
+			attachedWidgetName = name;
+		}
+
 		LoadGeometry(attachedWidget);
 	}
 }
@@ -110,6 +119,26 @@ void QtPosSaver::LoadState(QMainWindow *mainwindow)
 	{
 		QString key = attachedWidgetName + "-mainwindow-" + mainwindow->objectName();
 		mainwindow->restoreState(Load(key));
+	}
+}
+
+void QtPosSaver::SaveState(QTreeView *treeView)
+{
+	if(NULL != treeView && !attachedWidgetName.isEmpty())
+	{
+		QString key = attachedWidgetName + "-treeview-header" + treeView->objectName();
+		QByteArray arr = treeView->header()->saveState();
+		Save(key, arr);
+	}
+}
+
+void QtPosSaver::LoadState(QTreeView *treeView)
+{
+	if(NULL != treeView && !attachedWidgetName.isEmpty())
+	{
+		QString key = attachedWidgetName + "-treeview-header" + treeView->objectName();
+		QByteArray arr = Load(key);
+		treeView->header()->restoreState(arr);
 	}
 }
 

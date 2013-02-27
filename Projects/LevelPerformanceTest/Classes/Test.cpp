@@ -282,5 +282,23 @@ inline Camera* Test::GetCamera()
 inline LandscapeNode* Test::GetLandscape()
 {
 	SettingsManager* settings = SettingsManager::Instance();
-	return (LandscapeNode *)GetScene()->FindByName(settings->GetLandscapeNodeName());
+	SceneNode* landscapeNode = GetScene()->FindByName(settings->GetLandscapeNodeName());
+	LandscapeNode* landscape = NULL;
+	if (landscapeNode)
+	{
+		RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(landscapeNode->GetComponent(Component::RENDER_COMPONENT));
+		if (renderComponent)
+		{
+			landscape = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		}
+	}
+
+	return landscape;
 }
+
+Texture* Test::GetLandscapeTexture()
+{
+	LandscapeNode* landscape = GetLandscape();
+	return landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+};
+

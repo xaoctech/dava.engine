@@ -35,6 +35,9 @@
 #include "UI/UIYamlLoader.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/FontManager.h"
+#ifdef __DAVAENGINE_ANDROID__
+#include "UITextFieldAndroid.h"
+#endif
 
 extern void CreateTextField(DAVA::UITextField *);
 extern void ReleaseTextField();
@@ -56,6 +59,10 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
         textFont(NULL),
         staticText(NULL)
 {
+#ifdef __DAVAENGINE_ANDROID__
+	textFieldAndroid = new UITextFieldAndroid(this);
+#endif
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone = new UITextFieldiPhone(this);
 #else
@@ -72,6 +79,10 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
         textFont(NULL), staticText(NULL)
 {
+#ifdef __DAVAENGINE_ANDROID__
+	textFieldAndroid = new UITextFieldAndroid(this);
+#endif
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone = new UITextFieldiPhone(this);
 #else
@@ -105,6 +116,9 @@ UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
 UITextField::~UITextField()
 {
     SafeRelease(textFont);
+#ifdef __DAVAENGINE_ANDROID__
+	SafeDelete(textFieldAndroid);
+#endif
 #ifdef __DAVAENGINE_IPHONE__
 	SafeDelete(textFieldiPhone);
 #else
@@ -201,6 +215,8 @@ void UITextField::OnFocused()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
 }
     
@@ -208,7 +224,9 @@ void UITextField::OnFocusLost(UIControl *newFocus)
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
-#endif    
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
+#endif
     if (delegate) 
     {
         delegate->TextFieldLostFocus(this);
@@ -304,7 +322,7 @@ const WideString & UITextField::GetText()
 
 void UITextField::Input(UIEvent *currentInput)
 {
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     // nothing to do
 #else
 
