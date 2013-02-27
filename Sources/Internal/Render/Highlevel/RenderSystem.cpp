@@ -340,19 +340,17 @@ void RenderSystem::Render()
     }
 }
 
-RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer)
+RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)
 {
 	DVASSERT(false == renderLayersMap.HasKey(layerName));
 
 	RenderLayer * newLayer = new RenderLayer(layerName);
 	renderLayersMap.Insert(layerName, newLayer);
 
+	RenderPass * inPass = renderPassesMap[passName];
 	inPass->AddRenderLayer(newLayer, afterLayer);
 
 	return newLayer;
 }
 
-
-
-    
 };
