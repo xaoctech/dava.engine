@@ -121,33 +121,48 @@ HierarchyTreeControlNode* HierarchyTreeControlNode::GetControlNode() const
 	return NULL;
 }
 
-void HierarchyTreeControlNode::SetParent(HierarchyTreeNode* node)
+void HierarchyTreeControlNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
 {
-	if (node == parent)
+	if (this == insertAfter)
 		return;
+	
+	if (parent)
+		parent->RemoveTreeNode(this, false, false);
 	
 	HierarchyTreeControlNode* newParentControl = dynamic_cast<HierarchyTreeControlNode* >(node);
 	HierarchyTreeScreenNode* newParentScreen = dynamic_cast<HierarchyTreeScreenNode* >(node);
 	DVASSERT(newParentControl || newParentScreen);
 	if (!newParentControl && !newParentScreen)
 		return;
+
+	UIControl* afterControl = NULL;
+	HierarchyTreeControlNode* insertAfterControl = dynamic_cast<HierarchyTreeControlNode* >(insertAfter);
+	if (insertAfterControl)
+		afterControl = insertAfterControl->GetUIObject();
 	
+	UIControl* newParentUI = NULL;
 	if (newParentControl)
-	{
-		newParentControl->AddTreeNode(this);
-		if (uiObject && newParentControl->GetUIObject())
-			newParentControl->GetUIObject()->AddControl(uiObject);
-	}
+		newParentUI = newParentControl->GetUIObject();
 	else if (newParentScreen)
-	{
-		newParentScreen->AddTreeNode(this);
-		if (uiObject && newParentScreen->GetScreen())
-			newParentScreen->GetScreen()->AddControl(uiObject);
-	}
+		newParentUI = newParentScreen->GetScreen();
 	
-	if (parent)
+	node->AddTreeNode(this, insertAfter);
+	if (newParentUI && uiObject)
 	{
-		parent->RemoveTreeNode(this, false, false);
+		if (insertAfter != node)
+		{
+			newParentUI->InsertChildAbove(uiObject, afterControl);
+		}
+		else
+		{
+			UIControl* belowControl = NULL;
+			const List<UIControl*> & controls = newParentUI->GetChildren();
+			if (controls.size())
+			{
+				belowControl = *controls.begin();
+			}
+			newParentUI->InsertChildBelow(uiObject, belowControl);
+		}
 	}
 	
 	parent = node;
