@@ -102,7 +102,7 @@ public:
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
 
-	RenderLayer * AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer);
+	RenderLayer * AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer);
     
 private:
     void ProcessClipping();
