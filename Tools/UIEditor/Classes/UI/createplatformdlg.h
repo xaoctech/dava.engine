@@ -18,6 +18,8 @@ public:
 	QString GetPlatformName() const;
 	int GetWidth() const;
 	int GetHeight() const;
+	// Reimplement accept signal to avoid dialog close if planform name was not entered
+	void virtual accept();
 
 private:
     Ui::CreatePlatformDlg *ui;

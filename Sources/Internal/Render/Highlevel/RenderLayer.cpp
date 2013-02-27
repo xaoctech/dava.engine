@@ -38,7 +38,7 @@ RenderLayer::RenderLayer(const FastName & _name)
     : name(_name)
     , flags(0)
 {
-    flags = SORT_ENABLED | SORT_BY_MATERIAL;
+    flags = SORT_ENABLED | SORT_BY_MATERIAL | VISIBLE;
 }
     
 RenderLayer::~RenderLayer()
@@ -94,6 +94,7 @@ void RenderLayer::Update(Camera * camera)
                 renderBatchArray[k] = item.renderBatch;
                 item.renderBatch->SetRemoveIndex(this, k);
             }
+            flags &= ~SORT_REQUIRED;
         }
         
         if (flags & SORT_BY_DISTANCE)
@@ -141,15 +142,40 @@ uint32 RenderLayer::GetRenderBatchCount()
 
 void RenderLayer::Draw(Camera * camera)
 {
-    Update(camera);
-    uint32 size = (uint32)renderBatchArray.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        renderBatchArray[k]->Draw(camera);
-    }
+	if(flags & VISIBLE)
+	{
+		Update(camera);
+		uint32 size = (uint32)renderBatchArray.size();
+		for (uint32 k = 0; k < size; ++k)
+		{
+			renderBatchArray[k]->Draw(camera);
+		}
 #if 0
-    Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
+		Logger::Debug("Layer: %s Objects: %d", name.c_str(), renderBatchArray.size());
 #endif
+	}
+}
+
+const FastName & RenderLayer::GetName()
+{
+	return name;
+}
+
+void RenderLayer::SetVisible(bool visible)
+{
+	if(visible)
+	{
+		flags |= VISIBLE;
+	}
+	else
+	{
+		flags &= ~VISIBLE;
+	}
+}
+
+bool RenderLayer::GetVisible()
+{
+	return (0 != (flags & VISIBLE));
 }
 
 };

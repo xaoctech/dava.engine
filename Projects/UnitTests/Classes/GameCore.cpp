@@ -46,6 +46,8 @@
 #include "KeyedArchiveYamlTest.h"
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
+#include "DPITest.h"
+#include "eMailTest.h"
 
 using namespace DAVA;
 
@@ -77,6 +79,8 @@ void GameCore::OnAppStarted()
     new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
+    new DPITest();
+	new EMailTest();
     new MaterialCompilerTest();
     new CloneTest();
     new PVRTest();

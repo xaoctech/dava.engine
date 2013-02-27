@@ -69,8 +69,12 @@ void DXTTest::TestFunction(PerfFuncData * data)
     {
         ReloadSprites();
 
-        TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, dxtSprite, formats[currentTest]);
-        float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+		float32 differencePersentage = 100.f;
+		if (decompressedPNGSprite->GetSize() == dxtSprite->GetSize())
+		{
+			TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, dxtSprite, formats[currentTest]);
+			differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+		}
         
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
         data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
@@ -109,7 +113,11 @@ bool DXTTest::IsCurrentTestAccepted()
 
 
 	PixelFormatDescriptor pixelFormat = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-	if(		(pixelFormat.format == FORMAT_DXT1A || pixelFormat.format == FORMAT_DXT5NM)
+	
+	if (pixelFormat.format == 0)
+		return false;
+	
+	if ((pixelFormat.format == FORMAT_DXT1A || pixelFormat.format == FORMAT_DXT5NM)
 		 && (deviceCaps.isDXTSupported && 0 == pixelFormat.internalformat))
 	{
 		return false;
@@ -120,6 +128,8 @@ bool DXTTest::IsCurrentTestAccepted()
 		//not all DXT formats are supported 
 		return false;
 	}
+	
+
 	
 	return true;
 }

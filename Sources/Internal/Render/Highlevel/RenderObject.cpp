@@ -30,6 +30,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Base/ObjectFactory.h"
 #include "Debug/DVAssert.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -42,6 +43,7 @@ RenderObject::RenderObject()
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
+	,	renderSystem(0)
 {
     
 }
@@ -63,7 +65,8 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
     renderBatchArray.push_back(batch);
     if (removeIndex != -1)
     {
-        
+        DVASSERT(renderSystem);
+		renderSystem->AddRenderBatch(batch);
     }
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
@@ -78,6 +81,20 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
     batch->SetRenderObject(0);
 	batch->Release();
+
+    FindAndRemoveExchangingWithLast(renderBatchArray, batch);
+    RecalcBoundingBox();
+}
+    
+void RenderObject::RecalcBoundingBox()
+{
+    bbox = AABBox3();
+    
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        bbox.AddAABBox(renderBatchArray[k]->GetBoundingBox());
+    }
 }
     
 uint32 RenderObject::GetRenderBatchCount()
@@ -175,6 +192,16 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 	}
 
 	AnimatedObject::Load(archive);
+}
+
+void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
+{
+	DVASSERT(renderSystem == 0);
+}
+
+RenderSystem * RenderObject::GetRenderSystem()
+{
+	return renderSystem;
 }
 
 

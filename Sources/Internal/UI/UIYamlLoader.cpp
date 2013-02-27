@@ -81,6 +81,7 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_STRETCH_BOTH:
             ret = "DRAW_STRETCH_BOTH";
+			break;
         default:
             ret = "DRAW_ALIGNED";
             break;
@@ -377,9 +378,14 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathn
 		if (!font)
 			continue;
 		
+		// The font should be stored once only.
         String fontName = FontManager::Instance()->GetFontName(font);
-		fontsMap.insert(std::pair<String, YamlNode*>(fontName, font->SaveToYamlNode()));
+		if (fontsMap.find(fontName) == fontsMap.end())
+		{
+			fontsMap.insert(std::pair<String, YamlNode*>(fontName, font->SaveToYamlNode()));
+		}
 	}
+
 	//resultNode
 	parser->SaveToYamlFile(yamlPathname, &fontsNode, true, File::CREATE | File::WRITE);
 	fileAttr = File::APPEND | File::WRITE;

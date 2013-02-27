@@ -126,7 +126,7 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
     //EndOfTODO
     
     
-    Camera * cam = dynamic_cast<Camera*>(node);
+    Camera * cam = GetCamera(node);
     if (cam)
     {
         if (IsKeyModificatorPressed(DVKEY_ALT))

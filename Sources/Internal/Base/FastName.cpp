@@ -21,7 +21,7 @@ FastName::FastName(const char *name)
 	FastNameDB *db = FastNameDB::Instance();
 
 	// search if that name is already in hash
-	if(db->namesHash.HasKey(name))
+	if(db->namesHash.IsKey(name))
 	{
 		// already exist, so we just need to set the same index to this object
 		index = db->namesHash[name];

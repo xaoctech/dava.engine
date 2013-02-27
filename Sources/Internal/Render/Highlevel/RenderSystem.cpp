@@ -60,11 +60,11 @@ RenderSystem::RenderSystem()
     
     
     RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE]);
-    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT]);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
     ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
-    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME]);
+    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
 
     renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
     renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
@@ -139,17 +139,19 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
 	particleEmitterSystem->AddIfEmitter(renderObject);
+	renderObject->SetRenderSystem(this);
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
     particleEmitterSystem->RemoveIfEmitter(renderObject);
+	renderObject->SetRenderSystem(0);
 }
 
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
-    FastName name = renderBatch->GetOwnerLayerName();
+    const FastName & name = renderBatch->GetOwnerLayerName();
 
     RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
     if (oldLayer != 0)
@@ -256,6 +258,12 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
 	}
 }
     
+//void RenderSystem::MarkForMaterialSort(Material * material)
+//{
+//    //for (FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != )
+//}
+
+    
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
     Light * nearestLight = 0;
@@ -334,7 +342,17 @@ void RenderSystem::Render()
     }
 }
 
+RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)
+{
+	DVASSERT(false == renderLayersMap.IsKey(layerName));
 
+	RenderLayer * newLayer = new RenderLayer(layerName);
+	renderLayersMap.Insert(layerName, newLayer);
 
-    
+	RenderPass * inPass = renderPassesMap[passName];
+	inPass->AddRenderLayer(newLayer, afterLayer);
+
+	return newLayer;
+}
+
 };

@@ -39,7 +39,9 @@ private:
 	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
 
 public slots:
-	void TextureCheckConvetAndWait(bool forceConvertAll = false);
+	
+	//return true if conversion has been started
+	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 
@@ -57,6 +59,8 @@ private slots:
 	void ConvertWaitDone(QObject *destroyed);
 	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
 
+	void RepackSpritesWaitDone(QObject *destroyed);
+
 signals:
 	// Library File Types.
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
@@ -66,6 +70,7 @@ private:
 	QtPosSaver posSaver;
 
 	QProgressDialog *convertWaitDialog;
+	QProgressDialog *repackSpritesWaitDialog;
     
     //LibraryModel *libraryModel;
 	
