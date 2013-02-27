@@ -412,7 +412,13 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
 
-			TextureCheckConvetAndWait();
+			bool convertionStarted = TextureCheckConvetAndWait();
+			if(!convertionStarted)
+			{
+				// conversion hasn't been started, run repack immediately 
+				// in another case repack will be invoked in finishing callback (ConvertWaitDone)
+				UpdateParticleSprites();
+			}
 			
         }
         else if(QEvent::ApplicationDeactivate == event->type())
@@ -453,8 +459,9 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateLibraryFileTypes();
 }
 
-void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
+bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
+	bool ret = false;
 	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
@@ -462,6 +469,7 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 		// signal 'readyAll' will be emited when convention finishes
 		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
 		{
+			ret = true;
 			convertWaitDialog = new QProgressDialog(this);
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
@@ -473,11 +481,12 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 			convertWaitDialog->show();
 		}
 	}
+	return ret;
 }
 
 void QtMainWindow::UpdateParticleSprites()
 {
-	if(convertWaitDialog != NULL)
+	if(repackSpritesWaitDialog != NULL)
 	{
 		return;
 	}
