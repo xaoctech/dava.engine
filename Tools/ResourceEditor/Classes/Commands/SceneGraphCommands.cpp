@@ -149,7 +149,7 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node)
 		{
 			insertBeforeNode = NULL;
 
-			uint32 i = GetNodeIndex(node);
+			int32 i = GetNodeIndex(node);
 			if (i < nodeParent->GetChildrenCount() - 1)
 				insertBeforeNode = nodeParent->GetChild(i + 1);
 		}
@@ -182,7 +182,7 @@ void CommandInternalRemoveSceneNode::Cancel()
 
 	if (insertBeforeNode)
 	{
-		uint32 i = GetNodeIndex(insertBeforeNode);
+		int32 i = GetNodeIndex(insertBeforeNode);
 		if (i < nodeParent->GetChildrenCount())
 			nodeParent->InsertBeforeNode(node, insertBeforeNode);
 		else
@@ -197,12 +197,12 @@ void CommandInternalRemoveSceneNode::Cancel()
 	activeScene->SelectNode(node);
 }
 
-uint32 CommandInternalRemoveSceneNode::GetNodeIndex(SceneNode* node)
+int32 CommandInternalRemoveSceneNode::GetNodeIndex(SceneNode* node)
 {
 	if (!node || !nodeParent)
-		return (uint32)-1;
+		return -1;
 
-	uint32 i = 0;
+	int32 i = 0;
 	for (; i < nodeParent->GetChildrenCount(); ++i)
 	{
 		if (nodeParent->GetChild(i) == node)
