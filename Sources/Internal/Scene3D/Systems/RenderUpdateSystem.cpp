@@ -92,7 +92,7 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
 
 void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
 {
-    RenderObject * renderObject = entityObjectMap.Value(entity);
+    RenderObject * renderObject = entityObjectMap.GetValue(entity);
     if (!renderObject)
 	{
 		return;
