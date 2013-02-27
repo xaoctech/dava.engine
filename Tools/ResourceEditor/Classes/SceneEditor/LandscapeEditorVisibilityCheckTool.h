@@ -58,6 +58,8 @@ public:
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 
 protected:
+	void CreatePointUndoAction();
+	void CreateAreaUndoAction();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();

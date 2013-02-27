@@ -218,9 +218,7 @@ bool LandscapeEditorVisibilityCheckTool::SetPointInputAction(int32 phase)
 		Rect landRect(0, 0, visibilityAreaSprite->GetWidth(), visibilityAreaSprite->GetHeight());
 		if (landRect.PointInside(landscapePoint))
 		{
-			CommandPlacePointVisibilityTool* command = new CommandPlacePointVisibilityTool(landscapePoint, visibilityPoint, isVisibilityPointSet, visibilityAreaSprite->GetTexture()->CreateImageFromMemory());
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
+			CreatePointUndoAction();
 
 			SetState(VCT_STATE_NORMAL);
 		}
@@ -271,9 +269,7 @@ bool LandscapeEditorVisibilityCheckTool::SetAreaInputAction(int32 phase)
 
 			if(landRect.PointInside(visibilityAreaCenter))
 			{
-				CommandPlaceAreaVisibilityTool* command = new CommandPlaceAreaVisibilityTool(landscapePoint, visibilityAreaSize, visibilityAreaSprite->GetTexture()->CreateImageFromMemory());
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
+				CreateAreaUndoAction();
 			}
 		}
 		else
@@ -740,4 +736,22 @@ void LandscapeEditorVisibilityCheckTool::UpdateLandscapeTilemap(Texture* texture
 
 	texSurf = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 	wasTileMaskToolUpdate = true;
+}
+
+void LandscapeEditorVisibilityCheckTool::CreatePointUndoAction()
+{
+	Image* areaImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
+	CommandPlacePointVisibilityTool* command = new CommandPlacePointVisibilityTool(landscapePoint, visibilityPoint, isVisibilityPointSet, areaImage);
+	CommandsManager::Instance()->Execute(command);
+	SafeRelease(command);
+	SafeRelease(areaImage);
+}
+
+void LandscapeEditorVisibilityCheckTool::CreateAreaUndoAction()
+{
+	Image* areaImage = visibilityAreaSprite->GetTexture()->CreateImageFromMemory();
+	CommandPlaceAreaVisibilityTool* command = new CommandPlaceAreaVisibilityTool(landscapePoint, visibilityAreaSize, areaImage);
+	CommandsManager::Instance()->Execute(command);
+	SafeRelease(command);
+	SafeRelease(areaImage);
 }
