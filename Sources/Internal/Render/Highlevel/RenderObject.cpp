@@ -196,7 +196,7 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
 {
-	DVASSERT(renderSystem == 0);
+	renderSystem = _renderSystem;
 }
 
 RenderSystem * RenderObject::GetRenderSystem()

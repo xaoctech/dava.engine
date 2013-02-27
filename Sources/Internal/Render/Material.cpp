@@ -859,43 +859,46 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
             shader->SetUniformValue(uniformTexture0Shift, instanceMaterialState->texture0Shift);
         }
 
-        Camera * camera = scene->GetCurrentCamera();
-        Light * lightNode0 = instanceMaterialState->GetLight(0);
-        if (lightNode0 && camera)
-        {
-            if (uniformLightPosition0 != -1)
-            {
-                const Matrix4 & matrix = camera->GetMatrix();
-                Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+		if(scene)
+		{
+			Camera * camera = scene->GetCurrentCamera();
+			Light * lightNode0 = instanceMaterialState->GetLight(0);
+			if (lightNode0 && camera)
+			{
+				if (uniformLightPosition0 != -1)
+				{
+					const Matrix4 & matrix = camera->GetMatrix();
+					Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
                 
-                shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
-            }
-            if (uniformMaterialLightAmbientColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
-            }
-            if (uniformMaterialLightDiffuseColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
-            }
-            if (uniformMaterialLightSpecularColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
-            }
-            if (uniformMaterialSpecularShininess != -1)
-            {
-                shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
-            }
+					shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
+				}
+				if (uniformMaterialLightAmbientColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
+				}
+				if (uniformMaterialLightDiffuseColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+				}
+				if (uniformMaterialLightSpecularColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+				}
+				if (uniformMaterialSpecularShininess != -1)
+				{
+					shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+				}
             
-            if (uniformLightIntensity0 != -1)
-            {
-                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
-            }
-            if (uniformLightAttenuationQ != -1)
-            {
-                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
-            }
-        }
+				if (uniformLightIntensity0 != -1)
+				{
+					shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+				}
+				if (uniformLightAttenuationQ != -1)
+				{
+					//shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
+				}
+			}
+		}
     }
 
 }
