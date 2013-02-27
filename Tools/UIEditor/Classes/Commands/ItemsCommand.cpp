@@ -242,13 +242,13 @@ void ChangeNodeHeirarchy::StorePreviousParents()
 		HierarchyTreeNode::HIERARCHYTREENODEID addAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 		HierarchyTreeNode::HIERARCHYTREENODEID lastId = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 		const HierarchyTreeNode::HIERARCHYTREENODESLIST& childs = parentNode->GetChildNodes();
-		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = childs.begin();
-			 iter != childs.end();
-			 ++iter)
+		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator citer = childs.begin();
+			 citer != childs.end();
+			 ++citer)
 		{
-			if (node == (*iter))
+			if (node == (*citer))
 				addAfter = lastId;
-			lastId = (*iter)->GetId();
+			lastId = (*citer)->GetId();
 		}
 		
 		// The Previous Parents are stored in the "item ID - parent ID" map.
