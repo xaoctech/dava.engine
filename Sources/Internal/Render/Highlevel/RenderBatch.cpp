@@ -153,7 +153,7 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
 }
     
     
-inline void RenderBatch::SetSortingKey(uint32 _key)
+void RenderBatch::SetSortingKey(uint32 _key)
 {
     sortingKey = _key;
     if (ownerLayer)ownerLayer->ForceLayerSort();
@@ -202,13 +202,6 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
 
 	rb->ownerLayerName = ownerLayerName;
 	rb->sortingKey = sortingKey;
-// TODO: Understand what this code means.
-// 
-//	rb->ownerLayer = ownerLayer;
-//	if(ownerLayer)
-//	{
-//		ownerLayer->AddRenderBatch(rb);
-//	}
 
 	return rb;
 }

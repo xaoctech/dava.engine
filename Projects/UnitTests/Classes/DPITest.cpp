@@ -10,7 +10,6 @@
 
 using namespace DAVA;
 
-
 float32 DPITest::AUTO_CLOSE_TIME = 30.f;
 
 DPITest::DPITest() :

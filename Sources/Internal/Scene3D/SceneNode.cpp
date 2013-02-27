@@ -947,7 +947,7 @@ Matrix4 & SceneNode::ModifyLocalTransform()
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
-    TIME_MEASURE("SceneNode::SetLocalTransform");
+    TIME_PROFILE("SceneNode::SetLocalTransform");
     ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
 }
 
