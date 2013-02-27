@@ -141,7 +141,7 @@ void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
         
         UpdatePropertyPanel();
         
-        Camera * cam = dynamic_cast<Camera*>(workingNode);
+        Camera * cam = GetCamera(workingNode);
         if (cam)
         {
             if (IsKeyModificatorPressed(DVKEY_ALT))

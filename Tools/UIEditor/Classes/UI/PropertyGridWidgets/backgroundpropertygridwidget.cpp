@@ -119,8 +119,11 @@ void BackGroundPropertyGridWidget::OpenSpriteDialog()
     QString spriteName = QFileDialog::getOpenFileName( this, tr( "Choose a sprite file file" ),
 															ResourcesManageHelper::GetSpritesDirectory(),
 															tr( "Sprites (*.txt)" ) );
-    if( !spriteName.isNull() )
+	if( !spriteName.isNull() && !spriteName.isEmpty())
     {
+		// Convert file path into Unix-style path
+		spriteName = ResourcesManageHelper::ConvertPathToUnixStyle(spriteName);
+
 		if (ResourcesManageHelper::ValidateResourcePath(spriteName))
         {
             WidgetSignalsBlocker blocker(ui->spriteLineEdit);

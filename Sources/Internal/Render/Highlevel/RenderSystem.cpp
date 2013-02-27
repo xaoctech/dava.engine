@@ -149,7 +149,7 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
-    FastName name = renderBatch->GetOwnerLayerName();
+    const FastName & name = renderBatch->GetOwnerLayerName();
 
     RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
     if (oldLayer != 0)

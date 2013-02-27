@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -60,9 +60,6 @@
     </Filter>
     <Filter Include="Sources\Collada">
       <UniqueIdentifier>{83d66565-68f1-4270-8114-dc58d0b65dac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\ParticlesEditor">
-      <UniqueIdentifier>{f1630cbe-f779-443b-8383-743fc89bb7d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\SceneEditor">
       <UniqueIdentifier>{104129b4-952b-46a2-b374-99a4f77c47e6}</UniqueIdentifier>
@@ -239,18 +236,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
       <Filter>Sources\Collada</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp">
-      <Filter>Sources\ParticlesEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
       <Filter>Sources\SceneEditor</Filter>
@@ -1497,8 +1482,11 @@
     <ClCompile Include="Classes\SceneEditor\ArrowsNode.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\EditCommands.cpp">
-      <Filter>Sources\Commands</Filter>
+    <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp">
+      <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1552,18 +1540,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Collada\stdafx.h">
       <Filter>Sources\Collada</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h">
-      <Filter>Sources\ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h">
-      <Filter>Sources\ParticlesEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraController.h">
       <Filter>Sources\SceneEditor</Filter>
@@ -2666,8 +2642,14 @@
     <ClInclude Include="Classes\SceneEditor\ArrowsNode.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands\EditCommands.h">
-      <Filter>Sources\Commands</Filter>
+    <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
