@@ -120,7 +120,12 @@ void UIStaticText::SetAlign(int32 _align)
 {
 	textBlock->SetAlign(_align);
 }
-	
+
+int32 UIStaticText::GetAlign() const
+{
+	return textBlock->GetAlign();
+}
+
 const Vector2 &UIStaticText::GetTextSize()
 {
 	if (textBlock->IsSpriteReady())
