@@ -342,7 +342,7 @@ void RenderSystem::Render()
 
 RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer)
 {
-	DVASSERT(false == renderLayersMap.HasKey(layerName));
+	DVASSERT(false == renderLayersMap.IsKey(layerName));
 
 	RenderLayer * newLayer = new RenderLayer(layerName);
 	renderLayersMap.Insert(layerName, newLayer);
