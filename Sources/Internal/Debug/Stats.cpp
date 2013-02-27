@@ -60,7 +60,7 @@ TimeMeasure::TimeMeasure(const FastName & blockName)
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
     
-    function = mainThread.functions.Value(blockName);
+    function = mainThread.functions.GetValue(blockName);
     if (!function)
     {
         FunctionMeasure * newFunctionMeasure = new FunctionMeasure();
@@ -133,7 +133,7 @@ void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
         for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
              it != function->children.End(); ++it)
         {
-            FunctionMeasure * childFunction = it.Value();
+            FunctionMeasure * childFunction = it.GetValue();
             if (childFunction->frameCounter == Core::Instance()->GetGlobalFrameIndex())
                 Dump(childFunction, level + 1);
         }
