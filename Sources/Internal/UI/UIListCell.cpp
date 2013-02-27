@@ -106,7 +106,7 @@ namespace DAVA
         YamlNode *node = UIControl::SaveToYamlNode(loader);
         
         //Control Type
-        node->Set("type", "UIListCell");
+        node->Set("type", "UIListCell", true);
         //Identifier
         node->Set("identifier", this->GetIdentifier());
         
