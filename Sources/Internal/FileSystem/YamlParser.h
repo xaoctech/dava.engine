@@ -107,7 +107,7 @@ public:
     void            Set(const String& name, VariantType* varType);
 
     // Setters for Map/Array nodes.
-    void            AddNodeToMap(const String& name, YamlNode* node);
+    void            AddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue = false);
     void            AddNodeToArray(YamlNode* node);
 
     // Add the values to the current node of type Array.
