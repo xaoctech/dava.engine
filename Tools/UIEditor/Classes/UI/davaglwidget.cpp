@@ -79,6 +79,7 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 	
 	//YZ fix load resource
 	Core::Instance()->RegisterAvailableResourceSize((int32)e->size().width(), (int32)e->size().height(), "Gfx");
+	ScreenWrapper::Instance()->RequestUpdateView();
 }
 
 void DavaGLWidget::FpsTimerDone()
