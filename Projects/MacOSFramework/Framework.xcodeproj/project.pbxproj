@@ -1288,6 +1288,8 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
+		171F938916CE779A007038AB /* WebViewControlMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControlMacOS.mm; sourceTree = "<group>"; };
+		171F938A16CE779A007038AB /* WebViewControlMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewControlMacOS.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
@@ -4283,6 +4285,7 @@
 				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
 				1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */,
 				E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */,
+				171F938D16CE7AB2007038AB /* WebViewControlMacOS.mm in Sources */,
 				E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */,
 				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
 				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
