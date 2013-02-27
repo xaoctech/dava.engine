@@ -204,7 +204,9 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	{
 		SetText(LocalizedString(textNode->AsWString()));
 	}
-    
+
+	YamlNode * alignNode = node->Get("align");
+	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
@@ -250,6 +252,9 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     	node->Set("fitting", this->textBlock->GetFittingOption());
 	}
     
+	// Align
+	node->AddNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()), true);
+
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);
     

@@ -664,9 +664,14 @@ void YamlNode::Set(const String& name, const Vector4& value)
     }
 }
 
-void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
+void  YamlNode::AddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
 {
     DVASSERT(this->type == TYPE_MAP);
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+
     objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
 
