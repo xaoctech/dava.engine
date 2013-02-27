@@ -15,8 +15,7 @@ void DVAssertMessage::ShowMessage(const char8 * text, ...)
 	vsnprintf(tmp, sizeof(tmp)-2, text, vl);
 	strcat(tmp, "\n");
 
-#pragma message(__FILE__ ": --------------------------------- !!!!! Uncomment this. Was done due to win32 implementation missing in repository. !!!!! ------------------- ")
-	//InnerShow(tmp);
+	InnerShow(tmp);
 
 	va_end(vl);
 }
