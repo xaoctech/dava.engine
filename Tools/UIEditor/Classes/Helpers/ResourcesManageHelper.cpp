@@ -47,7 +47,12 @@ static const String GRAPHICS_FONTS_RES_PATH = "~res:/Fontdef/";
 // Button background image path
 static const String BACKGROUND_IMAGE_PATH = "~res:/Images/buttonBg.png";
 // Help contents path
+// Help contents path
+#if defined(__DAVAENGINE_WIN32__)
+static const String HELP_CONTENTS_PATH = "/Data/Help/UIEditor.html";
+#else
 static const String HELP_CONTENTS_PATH = "~res:/Help/UIEditor.html";
+#endif
 // Additional text constants
 static const QString GFX = "/Gfx/";
 static const QString FONTS = "/Fonts/";
@@ -157,7 +162,7 @@ void ResourcesManageHelper::InitInternalResources()
 
 #if defined(__DAVAENGINE_WIN32__)
 	String currentFolder = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	helpContentsPath = QString::fromStdString(currentFolder + HELP_CONTENTS_PATH);
+	helpContentsPath = ConvertPathToUnixStyle(QString::fromStdString(currentFolder + HELP_CONTENTS_PATH));
 #else
     helpContentsPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(HELP_CONTENTS_PATH));
 #endif
