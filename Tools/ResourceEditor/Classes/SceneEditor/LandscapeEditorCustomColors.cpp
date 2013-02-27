@@ -300,14 +300,7 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = false;
 
-				if (originalTexture)
-				{
-					CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
-					CommandsManager::Instance()->Execute(command);
-					SafeRelease(command);
-					SafeRelease(originalTexture);
-					unsavedChanges = true;
-				}
+				CreateUndoPoint();
             }
             else if(!editingIsEnabled && intersects)
             {
@@ -323,14 +316,7 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = false;
 
-			if (originalTexture)
-			{
-				CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
-				SafeRelease(originalTexture);
-				unsavedChanges = true;
-			}
+			CreateUndoPoint();
             break;
         }
             
@@ -378,6 +364,8 @@ void LandscapeEditorCustomColors::RestoreState(DAVA::Image *image)
 
 	if (IsActive())
 		PerformLandscapeDraw();
+
+	unsavedChanges = true;
 }
 
 void LandscapeEditorCustomColors::HideAction()
@@ -493,14 +481,7 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 
 		StoreSaveFileName(pathToFile);
 
-		if (originalTexture)
-		{
-			CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture);
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
-			SafeRelease(originalTexture);
-			unsavedChanges = true;
-		}
+		CreateUndoPoint();
 	}
 }
 
@@ -653,4 +634,18 @@ void LandscapeEditorCustomColors::UpdateLandscapeTilemap(Texture* texture)
 	
 	texSurf = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
 	wasTileMaskToolUpdate = true;
+}
+
+void LandscapeEditorCustomColors::CreateUndoPoint()
+{
+	if (originalTexture)
+	{
+		Image* newTexture = StoreState();
+		CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture, newTexture);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
+		SafeRelease(originalTexture);
+		SafeRelease(newTexture);
+	}
+	unsavedChanges = true;
 }

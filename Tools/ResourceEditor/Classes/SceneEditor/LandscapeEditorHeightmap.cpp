@@ -563,13 +563,7 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
         Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
         landscapeSize = heightmap->Size();
 
-		if (oldHeightmap)
-		{
-			CommandDrawHeightmap* command = new CommandDrawHeightmap(oldHeightmap, GetHeightmap());
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
-			SafeRelease(oldHeightmap);
-		}
+		CreateHeightmapUndo();
     }
     else if("property.landscape.texture.tilemask" == forKey)
     {
@@ -634,36 +628,42 @@ void LandscapeEditorHeightmap::RecreateHeightmapNode()
 void LandscapeEditorHeightmap::CreateUndoPoint()
 {
 	if (LandscapeTool::TOOL_COPYPASTE == currentTool->type)
-	{
-		if (oldHeightmap && oldTilemap)
-		{
-			workingLandscape->UpdateFullTiledTexture();
-			Texture* texture = tilemaskTexture;
-			Image* image = texture->CreateImageFromMemory();
-
-			CommandCopyPasteHeightmap* command = new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
-																			   currentTool->copyTilemask,
-																			   oldHeightmap,
-																			   GetHeightmap(),
-																			   oldTilemap,
-																			   image,
-																			   tilemaskPathname);
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
-			SafeRelease(oldHeightmap);
-			SafeRelease(oldTilemap);
-			SafeRelease(image);
-		}
-	}
+		CreateCopyPasteUndo();
 	else
+		CreateHeightmapUndo();
+}
+
+void LandscapeEditorHeightmap::CreateHeightmapUndo()
+{
+	if (oldHeightmap)
 	{
-		if (oldHeightmap)
-		{
-			CommandDrawHeightmap* command = new CommandDrawHeightmap(oldHeightmap, GetHeightmap());
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
-			SafeRelease(oldHeightmap);
-		}
+		CommandDrawHeightmap* command = new CommandDrawHeightmap(oldHeightmap, GetHeightmap());
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
+		SafeRelease(oldHeightmap);
+	}
+}
+
+void LandscapeEditorHeightmap::CreateCopyPasteUndo()
+{
+	if (oldHeightmap && oldTilemap)
+	{
+		workingLandscape->UpdateFullTiledTexture();
+		Texture* texture = tilemaskTexture;
+		Image* image = texture->CreateImageFromMemory();
+
+		CommandCopyPasteHeightmap* command = new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
+																		   currentTool->copyTilemask,
+																		   oldHeightmap,
+																		   GetHeightmap(),
+																		   oldTilemap,
+																		   image,
+																		   tilemaskPathname);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
+		SafeRelease(oldHeightmap);
+		SafeRelease(oldTilemap);
+		SafeRelease(image);
 	}
 }
 

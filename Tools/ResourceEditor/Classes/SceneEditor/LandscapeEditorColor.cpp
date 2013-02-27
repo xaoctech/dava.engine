@@ -241,15 +241,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = false;
 
-				if (originalImage)
-				{
-					Image* newImage = StoreState();
-					CommandDrawTilemap* command = new CommandDrawTilemap(originalImage, newImage, savedPath, workingLandscape);
-					CommandsManager::Instance()->Execute(command);
-					SafeRelease(command);
-					SafeRelease(originalImage);
-					SafeRelease(newImage);
-				}
+				CreateUndoPoint();
             }
             else if(!editingIsEnabled && intersects)
             {
@@ -265,15 +257,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = false;
 
-			if (originalImage)
-			{
-				Image* newImage = StoreState();
-				CommandDrawTilemap* command = new CommandDrawTilemap(originalImage, newImage, savedPath, workingLandscape);
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
-				SafeRelease(originalImage);
-				SafeRelease(newImage);
-			}
+			CreateUndoPoint();
 
             break;
         }
@@ -432,4 +416,17 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 void LandscapeEditorColor::UpdateLandscapeTilemap(Texture* texture)
 {
 	RestoreState(texture);
+}
+
+void LandscapeEditorColor::CreateUndoPoint()
+{
+	if (originalImage)
+	{
+		Image* newImage = StoreState();
+		CommandDrawTilemap* command = new CommandDrawTilemap(originalImage, newImage, savedPath, workingLandscape);
+		CommandsManager::Instance()->Execute(command);
+		SafeRelease(command);
+		SafeRelease(originalImage);
+		SafeRelease(newImage);
+	}
 }

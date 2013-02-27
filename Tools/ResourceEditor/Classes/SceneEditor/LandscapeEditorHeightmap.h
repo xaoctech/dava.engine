@@ -42,6 +42,8 @@ public:
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
 	void CreateUndoPoint();
+	void CreateHeightmapUndo();
+	void CreateCopyPasteUndo();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();

@@ -58,6 +58,8 @@ protected:
     virtual void UndoAction();
     virtual void RedoAction();
 
+	void CreateUndoPoint();
+
 	String GetScenePath();
 	String GetRelativePathToScenePath(const String& absolutePath);
 	String GetAbsolutePathFromScenePath(const String& relativePath);
