@@ -35,7 +35,21 @@
 
 namespace DAVA
 {
-
+// Immediate Time measure class
+    
+ImmediateTimeMeasure::ImmediateTimeMeasure(const FastName & _name)
+{
+    name = _name;
+    time = SystemTimer::Instance()->GetAbsoluteNano();
+}
+    
+ImmediateTimeMeasure::~ImmediateTimeMeasure()
+{
+    time = SystemTimer::Instance()->GetAbsoluteNano() - time;
+    Logger::Debug("%s %s %0.9llf seconds", name.c_str(), (double)time / 1e+9);
+}
+    
+// TimeMeasure class
 TimeMeasure * TimeMeasure::activeTimeMeasure = 0;
 TimeMeasure::FunctionMeasure * TimeMeasure::lastframeTopFunction = 0;
 TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
@@ -46,7 +60,7 @@ TimeMeasure::TimeMeasure(const FastName & blockName)
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     if (!Thread::IsMainThread())return;
     
-    function = mainThread.functions.Value(blockName);
+    function = mainThread.functions.GetValue(blockName);
     if (!function)
     {
         FunctionMeasure * newFunctionMeasure = new FunctionMeasure();
@@ -119,7 +133,7 @@ void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
         for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
              it != function->children.End(); ++it)
         {
-            FunctionMeasure * childFunction = it.Value();
+            FunctionMeasure * childFunction = it.GetValue();
             if (childFunction->frameCounter == Core::Instance()->GetGlobalFrameIndex())
                 Dump(childFunction, level + 1);
         }

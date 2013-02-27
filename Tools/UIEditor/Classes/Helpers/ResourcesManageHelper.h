@@ -49,7 +49,9 @@ public:
 	
 	// Get project title string
 	static QString GetProjectTitle();
-	// Get the folder wehere palforms are located
+	// Get project title string
+	static QString GetProjectTitle(const QString& projectFilePath);
+	// Get the folder wehere project is located
 	static QString GetProjectPath();
 	// Get folder with resource data for specified project path
 	static QString GetDataPath(const QString& projectPath);
@@ -62,6 +64,9 @@ public:
 	static void InitInternalResources();
 	// Show error message
 	static void ShowErrorMessage(const QString& messageParam);
+	// Reverse slash order in string
+	static QString ConvertPathToUnixStyle(const QString& inputString);
+
 private:
 	static QString buttonBackgroundImagePath;
 	static QString helpContentsPath;

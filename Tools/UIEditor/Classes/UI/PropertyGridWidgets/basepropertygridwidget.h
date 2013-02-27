@@ -185,7 +185,7 @@ protected slots:
     void OnSpinBoxValueChanged(int value);
 	void OnDoubleSpinBoxValueChanged(double value);
     void OnLineEditEditingFinished();
-    void OnCheckBoxStateChanged(bool value);
+    void OnCheckBoxStateChanged(int state);
     void OnComboBoxValueChanged(QString value);
     
     void OnColorButtonClicked();

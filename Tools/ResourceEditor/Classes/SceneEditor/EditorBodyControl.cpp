@@ -955,12 +955,10 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    Vector<LandscapeNode *>landscapes;
-    scene->GetChildNodes(landscapes);
-    
-    for(int32 i = 0; i < (int32)landscapes.size(); ++i)
+    LandscapeNode *landscape = scene->GetLandscape(scene);
+    if (landscape)
     {
-        landscapes[i]->UpdateFullTiledTexture();
+        landscape->UpdateFullTiledTexture();
     }
 }
 

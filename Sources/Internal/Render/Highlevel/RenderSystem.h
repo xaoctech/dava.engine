@@ -88,6 +88,8 @@ public:
     
     void MarkForUpdate(RenderObject * renderObject);
     void MarkForUpdate(Light * lightNode);
+    //void MarkForMaterialSort(Material * material);
+    
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
@@ -100,6 +102,7 @@ public:
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
 
+	RenderLayer * AddRenderLayer(const FastName & layerName, RenderPass * inPass, const FastName & afterLayer);
     
 private:
     void ProcessClipping();

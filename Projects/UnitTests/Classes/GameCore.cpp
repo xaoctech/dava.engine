@@ -47,6 +47,8 @@
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
 #include "DPITest.h"
+#include "eMailTest.h"
+#include "InputTest.h"
 
 using namespace DAVA;
 
@@ -79,6 +81,8 @@ void GameCore::OnAppStarted()
 //    new SoundTest();
 //    new SplitTest();
     new DPITest();
+	new EMailTest();
+	new InputTest();
     new MaterialCompilerTest();
     new CloneTest();
     new PVRTest();
