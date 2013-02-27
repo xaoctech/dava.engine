@@ -10,14 +10,8 @@ class CommandRemoveRootNodes: public Command
 public:	
 	CommandRemoveRootNodes();
 
-protected:	
-    
-    virtual void Execute();
-    virtual void Cancel();
-    
-private:
-    
-    SceneData * activeScene;
+protected:
+	virtual void Execute();
 };
 
 
@@ -54,18 +48,30 @@ protected:
 class CommandInternalRemoveSceneNode: public Command
 {
 public:
-	CommandInternalRemoveSceneNode(DAVA::SceneNode* node);
+	CommandInternalRemoveSceneNode(DAVA::SceneNode* node, bool removeSimilar = false);
 	virtual ~CommandInternalRemoveSceneNode();
 	
 protected:
-	DAVA::SceneNode* node;
-	DAVA::SceneNode* nodeParent;
-	DAVA::SceneNode* insertBeforeNode;
-	
+	struct RemoveNodeRec
+	{
+		DAVA::SceneNode* node;
+		DAVA::SceneNode* insertBeforeNode;
+		DAVA::SceneNode* nodeParent;
+
+		RemoveNodeRec()
+		:	node(NULL)
+		,	insertBeforeNode(NULL)
+		,	nodeParent(NULL)
+		{}
+	};
+
+	DAVA::Vector<RemoveNodeRec> nodesForDeletion;
+	DAVA::SceneNode* selectedNode;
+
     virtual void Execute();
     virtual void Cancel();
 
-	DAVA::int32 GetNodeIndex(DAVA::SceneNode* node);
+	DAVA::int32 GetNodeIndex(const RemoveNodeRec& nodeRec);
 };
 
 
