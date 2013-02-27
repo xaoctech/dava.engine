@@ -124,9 +124,13 @@ public:
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+
+	void SetRenderSystem(RenderSystem * renderSystem);
+	RenderSystem * GetRenderSystem();
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
+	RenderSystem * renderSystem;
     uint32 type;
 
     uint32 flags;
