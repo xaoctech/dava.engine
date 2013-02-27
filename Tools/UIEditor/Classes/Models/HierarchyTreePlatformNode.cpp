@@ -209,8 +209,7 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
 
 void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
 {
-    // Normalize the path, if needed.
-    this->localizationPath = ResourcesManageHelper::GetResourceRelativePath(QString::fromStdString(localizationPath)).toStdString();
+    this->localizationPath = localizationPath;
 }
 
 void HierarchyTreePlatformNode::SetLocale(const String& locale)

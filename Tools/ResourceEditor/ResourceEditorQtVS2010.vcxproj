@@ -362,10 +362,6 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
-    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
-    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
-    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
-    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
@@ -840,10 +836,6 @@
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
-    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
-    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
-    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
-    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />

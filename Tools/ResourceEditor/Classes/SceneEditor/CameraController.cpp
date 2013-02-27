@@ -309,10 +309,7 @@ void WASDCameraController::LookAtSelection()
     Camera * camera = currScene->GetCurrentCamera();
     if (!camera)return;
 
-    if (    !selection
-        ||  dynamic_cast<Camera*>(selection)
-        ||  dynamic_cast<LandscapeNode *>(selection)
-        )
+    if ( !selection || GetCamera(selection) || GetLandscape(selection))
     {
         return;
     }

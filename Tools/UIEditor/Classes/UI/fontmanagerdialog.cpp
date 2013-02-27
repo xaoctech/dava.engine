@@ -116,6 +116,9 @@ void FontManagerDialog::OkButtonClicked()
              
             if (!fontSpritePath.isNull() && !fontSpritePath.isEmpty())
             {
+				// Convert file path into Unix-style path
+				fontSpritePath = ResourcesManageHelper::ConvertPathToUnixStyle(fontSpritePath);
+
 				if (ResourcesManageHelper::ValidateResourcePath(fontSpritePath))
 				{
 					// Get font definition relative path by it's name
