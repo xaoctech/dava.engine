@@ -38,12 +38,8 @@ class Heightmap: public BaseObject
 {
 public:
 
-    enum eHightmapConst
-    {
-        MAX_VALUE = 65535,   //(2^16 - 1)
-        IMAGE_CORRECTION = MAX_VALUE / 255 //(2^8 - 1)
-    };
-
+    static const int32 MAX_VALUE = 65535;
+    static const int32 IMAGE_CORRECTION = MAX_VALUE / 255;
     
     Heightmap();
 	virtual ~Heightmap();

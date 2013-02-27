@@ -42,10 +42,11 @@ namespace DAVA
 template <typename K, typename V>
 class HashMap
 {
-public:
-	struct HashMapItem;
-	struct HashMapIterator;
+protected:
+    struct HashMapItem;
 
+public:
+	struct HashMapIterator;
 	typedef HashMapIterator Iterator;
 
 	HashMap(size_t hashSize = 128, V defaulV = V());
@@ -67,6 +68,32 @@ public:
 
 	Iterator Begin();
 	Iterator End();
+    
+public:
+	struct HashMapIterator
+	{
+		friend class HashMap<K, V>;
+        
+		HashMapIterator(const HashMapIterator &i);
+		HashMapIterator(const HashMap *map);
+        
+		bool operator==(const HashMapIterator &i);
+		bool operator!=(const HashMapIterator &i);
+		HashMapIterator& operator++();
+		HashMapIterator operator++(int count);
+        
+		K GetKey();
+		V GetValue();
+        
+	protected:
+		size_t szTable;
+		size_t current_index;
+        
+		HashMapItem **table;
+		HashMapItem *current_item;
+        
+		HashMapIterator& GoEnd();
+	};
 
 protected:
 	size_t sz;
@@ -97,31 +124,6 @@ protected:
 			key = k;
 			value = v;
 		}
-	};
-
-	struct HashMapIterator
-	{
-		friend class HashMap<K, V>;
-
-		HashMapIterator(const HashMapIterator &i);
-		HashMapIterator(const HashMap *map);
-
-		bool operator==(const HashMapIterator &i);
-		bool operator!=(const HashMapIterator &i);
-		HashMapIterator& operator++();
-		HashMapIterator operator++(int count);
-
-		K GetKey();
-		V GetValue();
-
-	protected:
-		size_t szTable;
-		size_t current_index;
-
-		HashMapItem **table;
-		HashMapItem *current_item;
-
-		HashMapIterator& GoEnd();
 	};
 };
 
@@ -418,7 +420,7 @@ typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operato
 template <typename K, typename V>
 typename HashMap<K, V>::HashMapIterator HashMap<K, V>::HashMapIterator::operator++(int count)
 {
-	HashMapIterator<K, V> tmp = *this;
+	HashMap<K, V>::HashMapIterator tmp = *this;
 
 	while(0 < count--)
 	{
