@@ -21,6 +21,26 @@ Component * SwitchComponent::Clone(SceneNode * toEntity)
 	return newComponent;
 }
 
+void SwitchComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	Component::Serialize(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		archive->SetInt32("sc.switchindex", newSwitchIndex);
+	}
+}
+
+void SwitchComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("sc.switchindex")) SetSwitchIndex(archive->GetInt32("sc.switchindex"));
+	}
+
+	Component::Deserialize(archive, sceneFile);
+}
+
 void SwitchComponent::SetSwitchIndex(const int32 & _switchIndex)
 {
 	newSwitchIndex = _switchIndex;

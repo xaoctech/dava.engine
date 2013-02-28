@@ -579,15 +579,25 @@ void YamlNode::Set(const String& name, float32 value)
     }
 }
 
-void YamlNode::Set(const String& name, const char8* value)
+void YamlNode::Set(const String& name, const char8* value, bool rewritePreviousValue)
 {
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+
     Set(name, (const String&)value);
 }
 
-void YamlNode::Set(const String& name, const String& value)
+void YamlNode::Set(const String& name, const String& value, bool rewritePreviousValue)
 {
     if (type == TYPE_MAP)
     {
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
         // For Maps just add the new String node.
         YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
         stringNode->Set(name, value);
@@ -654,9 +664,14 @@ void YamlNode::Set(const String& name, const Vector4& value)
     }
 }
 
-void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
+void  YamlNode::AddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
 {
     DVASSERT(this->type == TYPE_MAP);
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+
     objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
 
@@ -1526,11 +1541,11 @@ bool YamlParser::SaveNodeRecursive(File* fileToSave, const String& nodeName,
                 YamlNode* childNode = t->second;
                 if (childNode->GetType() == YamlNode::TYPE_MAP)
                 {
-                    mapNodes.insert(std::make_pair<String, YamlNode*>(t->first, childNode));
+                    mapNodes.insert(std::make_pair<String, YamlNode*>((String)t->first, (YamlNode*)childNode));
                 }
                 else
                 {
-                    nonMapNodes.insert(std::make_pair<String, YamlNode*>(t->first, childNode));
+                    nonMapNodes.insert(std::make_pair<String, YamlNode*>((String)t->first, (YamlNode *)childNode));
                 }
             }
             

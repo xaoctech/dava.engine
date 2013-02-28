@@ -36,6 +36,7 @@
 #include "Render/RenderStateBlock.h"
 
 #include "FileSystem/FilePath.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -58,6 +59,9 @@ class InstanceMaterialState : public BaseObject
 public:
     InstanceMaterialState();
     virtual ~InstanceMaterialState();
+
+	virtual void Save(KeyedArchive * archive, SceneFileV2 *sceneFile);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 *sceneFile);
     
     void SetLight(int32 lightIndex, Light * lightNode);
     Light * GetLight(int32 lightIndex);
@@ -67,12 +71,25 @@ public:
     
     inline Texture * GetLightmap() const;
 	inline const String & GetLightmapName() const;
+    
+    void SetFlatColor(const Color & color);
+    const Color & GetFlatColor();
+    
+    void SetTextureShift(const Vector2 & speed);
+    const Vector2 & GetTextureShift();
+
+	void ClearLightmap();
+	
+	InstanceMaterialState * Clone();
 
 private:
     Texture * lightmapTexture;
     String lightmapName;
     Vector2 uvOffset;
     Vector2 uvScale;
+    Color flatColor;
+    Vector2 texture0Shift;
+
     
     Light * lightNodes[LIGHT_NODE_MAX_COUNT];
     
@@ -83,6 +100,10 @@ public:
                          MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
+                         
+                         PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+                         
                          //MEMBER(aabbox, "AABBox", INTROSPECTION_EDITOR)
                          );
 };
@@ -109,6 +130,7 @@ public:
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
 
 		MATERIAL_VERTEX_COLOR_ALPHABLENDED,
+        MATERIAL_FLAT_COLOR, 
         
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
@@ -166,9 +188,6 @@ public:
     void EnableFlatColor(const bool & isEnabled);
     const bool & IsFlatColorEnabled();
     
-    void SetFlatColor(const Color & color);
-    const Color & GetFlatColor();
-    
     void SetWireframe(bool isWireframe);
     bool GetWireframe();
     
@@ -204,8 +223,6 @@ public:
     void EnableTextureShift(const bool & isEnabled);
     const bool & IsTextureShiftEnabled();
 
-    void SetTextureShift(const Vector2 & speed);
-    const Vector2 & GetTextureShift();
 
     /**
         \brief Bind material to render system.
@@ -215,11 +232,12 @@ public:
 	void PrepareRenderState(InstanceMaterialState * instanceMaterialState = 0);
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
-    /**
-        \brief Unbind material. 
-        Restore some default properties that can influence to rendering in the future.
-     */
-    //void UnbindMaterial();
+    // TODO: remove const &
+    const bool & IsExportOwnerLayerEnabled();
+    void SetExportOwnerLayer(const bool & isEnabled);
+    const FastName & GetOwnerLayerName();
+    void SetOwnerLayerName(const FastName & fastname);
+
     
     
 //    eType   type; //TODO: waiting for enums at introspection
@@ -293,7 +311,7 @@ private:
 
     void RebuildShader();
     
-    bool    isOpaque;  
+    bool    isTranslucent;
     bool    isTwoSided;
 
 	bool	isSetupLightmap;
@@ -313,10 +331,8 @@ private:
 
 	bool isAlphablend;
     bool isFlatColorEnabled;
-    Color flatColor;
     
     bool isTexture0ShiftEnabled;
-    Vector2 texture0Shift;
     
     bool isWireframe;
     
@@ -344,15 +360,15 @@ private:
     /*
         TODO: Uniform array, with set of all uniforms, with one set.
      */
-    
-    
+    bool isExportOwnerLayerEnabled;
+    FastName ownerLayerName;
     
     static UberShader * uberShader;
     
 public:
     
     INTROSPECTION_EXTEND(Material, DataNode,
-        MEMBER(isOpaque, "Is Opaque", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(isTranslucent, "Is Translucent", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isTwoSided, "Is Two Sided", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(isSetupLightmap, "Is Setup Lightmap", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(setupLightmapSize, "Setup Lightmap Size", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
@@ -370,11 +386,12 @@ public:
         MEMBER(isAlphablend, "Is Alphablended", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         
         PROPERTY(isFlatColorEnabled, "Is flat color enabled", IsFlatColorEnabled, EnableFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(flatColor, "Flat Color (works only if flat color enabled)", GetFlatColor, SetFlatColor, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-         PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-         PROPERTY(texture0Shift, "Texture Shift", GetTextureShift, SetTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(isTexture0ShiftEnabled, "Is texture shift enabled", IsTextureShiftEnabled, EnableTextureShift, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
+        PROPERTY(isExportOwnerLayerEnabled, "Is export owner layer enabled. (Export layer settings to render batch on set)", IsExportOwnerLayerEnabled, SetExportOwnerLayer, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(ownerLayerName, "Owner layer name", GetOwnerLayerName, SetOwnerLayerName, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        
                          
         MEMBER(blendSrc, "Blend Source", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(blendDst, "Blend Destination", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

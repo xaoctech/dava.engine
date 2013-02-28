@@ -37,7 +37,7 @@ namespace DAVA
 {
 
 //! Check if point lays inside polygon (polygon must be in one plane)
-bool Polygon2::IsPointInside(const Vector2 & pt)
+bool Polygon2::IsPointInside(const Vector2 & pt) const
 {
 	// Do not check if this is not a polygon
 	if (pointCount <= 2)return false;
@@ -111,7 +111,7 @@ int Polygon2::RemoveSmallSegments(float32 removalSize)
 }
 
 //! Move by polyline and get position on polyline based on distance
-void Polygon2::InterpolatePositionFromDistance(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex)
+void Polygon2::InterpolatePositionFromDistance(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex) const
 {
 	float32 currentDistance = distance;
 	
@@ -140,7 +140,7 @@ void Polygon2::InterpolatePositionFromDistance(float32 distance, int startSegmen
 }
 	
 //! Move by polyline and get position on polyline based on distance
-void Polygon2::InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex)
+void Polygon2::InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector2 & resultPosition, int & resultSegmentIndex) const
 {
 	float32 currentDistance = distance;
 	
@@ -184,7 +184,7 @@ void Polygon2::RemovePointsInCircle(const Vector2 & center, float32 radius)
 }
 	
 //! Square length of poly segments
-float32 Polygon2::SquareLength()
+float32 Polygon2::SquareLength() const
 {
 	float32 squareLength = 0.0f;
 	for(int32 i = 0; i < pointCount - 1;++i)
@@ -196,7 +196,7 @@ float32 Polygon2::SquareLength()
 }
 
 //! Length
-float32 Polygon2::Length()
+float32 Polygon2::Length() const
 {
 	float32 length = 0.0f;
 	for(int32 i = 0; i < pointCount - 1;++i)
@@ -236,7 +236,7 @@ void Polygon2::Transform(const Matrix3 & matrix)
 	
 }
 
-void Polygon2::CalculateCenterPoint(Vector2 & center)
+void Polygon2::CalculateCenterPoint(Vector2 & center) const
 {
 	center.Set(0.0f, 0.0f);
 	for (int p = 0; p < pointCount; ++p)
@@ -246,7 +246,7 @@ void Polygon2::CalculateCenterPoint(Vector2 & center)
 	center /= (float32)pointCount;
 }
 
-void Polygon2::CalculateSizeRect( Vector2 &size )
+void Polygon2::CalculateSizeRect( Vector2 &size ) const
 {
     Vector2 min(points[0]);
     size = min;
@@ -265,7 +265,7 @@ void Polygon2::CalculateSizeRect( Vector2 &size )
     size -= min;
 }
 
-float32 Polygon2::CalculateSquareRadius(const Vector2 & center)
+float32 Polygon2::CalculateSquareRadius(const Vector2 & center) const
 {
 	float32 radius = 0.0f;
 	for (int p = 0; p < pointCount; ++p)
@@ -279,7 +279,7 @@ float32 Polygon2::CalculateSquareRadius(const Vector2 & center)
 	
 //! Merge all segments triangle's height of which bigger or equal than minTriangleHeight 
 // http://www.math.ru/dic/276
-void Polygon2::MergeFlatPolygonSegments(Polygon2 &srcPolygon, Polygon2 &destPolygon, float32 minTriangleHeight)
+void Polygon2::MergeFlatPolygonSegments(const Polygon2 &srcPolygon, Polygon2 &destPolygon, float32 minTriangleHeight)
 {
 	float mh2	= minTriangleHeight * minTriangleHeight;
 	

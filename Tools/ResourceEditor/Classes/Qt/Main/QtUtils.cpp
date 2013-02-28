@@ -5,6 +5,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include "mainwindow.h"
 #include "QtMainWindowHandler.h"
 
 
@@ -97,10 +98,7 @@ void ShowErrorDialog(const DAVA::String &errorMessage)
 					||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
 	if(!forceMode)
 	{
-		QMessageBox msgBox;
-		msgBox.setText(QString(errorMessage.c_str()));
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.exec();
+		QMessageBox::critical(QtMainWindow::Instance(), "Error", errorMessage.c_str());
 	}
 }
 

@@ -92,6 +92,123 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 	return newLod;
 }
 
+void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	Component::Serialize(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		uint32 i;
+
+		archive->SetUInt32("lc.flags", flags);
+		archive->SetFloat("lc.forceDistance", forceDistance);
+		archive->SetFloat("lc.forceDistanceSq", forceDistanceSq);
+		archive->SetInt32("lc.forceLodLayer", forceLodLayer);
+
+		KeyedArchive *lodDistArch = new KeyedArchive();
+		for (i = 0; i < MAX_LOD_LAYERS; ++i)
+		{
+			KeyedArchive *lodDistValuesArch = new KeyedArchive();
+			lodDistValuesArch->SetFloat("ld.distance", lodLayersArray[i].distance);
+			lodDistValuesArch->SetFloat("ld.neardist", lodLayersArray[i].nearDistance);
+			lodDistValuesArch->SetFloat("ld.fardist", lodLayersArray[i].farDistance);
+			lodDistValuesArch->SetFloat("ld.neardistsq", lodLayersArray[i].nearDistanceSq);
+			lodDistValuesArch->SetFloat("ld.fardistsq", lodLayersArray[i].farDistanceSq);
+
+			lodDistArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), lodDistValuesArch);
+			lodDistValuesArch->Release();
+		}
+		archive->SetArchive("lc.loddist", lodDistArch);
+		lodDistArch->Release();
+
+		i = 0;
+		KeyedArchive *lodDataArch = new KeyedArchive();
+		List<LodData>::iterator it = lodLayers.begin();
+		for(; it != lodLayers.end(); ++it)
+		{
+			KeyedArchive *lodDataValuesArch = new KeyedArchive();
+			KeyedArchive *lodDataIndexesArch = new KeyedArchive();
+
+			for(uint32 j = 0; j < it->indexes.size(); ++j)
+			{
+				lodDataIndexesArch->SetInt32(KeyedArchive::GenKeyFromIndex(j), it->indexes[j]);
+			}
+
+			lodDataValuesArch->SetArchive("indexes", lodDataIndexesArch);
+			lodDataValuesArch->SetInt32("layer", it->layer);
+			lodDataValuesArch->SetBool("isdummy", it->isDummy);
+			lodDataValuesArch->SetUInt32("indexescount", it->indexes.size());
+
+			lodDataArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), lodDataValuesArch);
+
+			lodDataIndexesArch->Release();
+			lodDataValuesArch->Release();
+			++i;
+		}
+		archive->SetUInt32("lc.loddatacount", lodLayers.size());
+		archive->SetArchive("lc.loddata", lodDataArch);
+		lodDataArch->Release();
+	}
+}
+
+void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("lc.flags")) flags = archive->GetUInt32("lc.flags");
+		if(archive->IsKeyExists("lc.forceDistance")) forceDistance = archive->GetFloat("lc.forceDistance");
+		if(archive->IsKeyExists("lc.forceDistanceSq")) forceDistanceSq = archive->GetFloat("lc.forceDistanceSq");
+		if(archive->IsKeyExists("lc.forceLodLayer")) forceLodLayer = archive->GetInt32("lc.forceLodLayer");
+
+		KeyedArchive *lodDistArch = archive->GetArchive("lc.loddist");
+		if(NULL != lodDistArch)
+		{
+			for(uint32 i = 0; i < MAX_LOD_LAYERS; ++i)
+			{
+				KeyedArchive *lodDistValuesArch = lodDistArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+				if(NULL != lodDistValuesArch)
+				{
+					lodLayersArray[i].distance = lodDistValuesArch->GetFloat("ld.distance");
+					lodLayersArray[i].nearDistance = lodDistValuesArch->GetFloat("ld.neardist");
+					lodLayersArray[i].farDistance = lodDistValuesArch->GetFloat("ld.fardist");
+					lodLayersArray[i].nearDistanceSq = lodDistValuesArch->GetFloat("ld.neardistsq");
+					lodLayersArray[i].farDistanceSq = lodDistValuesArch->GetFloat("ld.fardistsq");
+				}
+			}
+		}
+
+		KeyedArchive *lodDataArch = archive->GetArchive("lc.loddata");
+		if(NULL != lodDataArch)
+		{
+			for(uint32 i = 0; i < archive->GetUInt32("lc.loddatacount"); ++i)
+			{
+				KeyedArchive *lodDataValuesArch = lodDataArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+				if(NULL != lodDataValuesArch)
+				{
+					LodData data;
+
+					if(lodDataValuesArch->IsKeyExists("layer")) data.layer = lodDataValuesArch->GetInt32("layer");
+					if(lodDataValuesArch->IsKeyExists("isdummy")) data.isDummy = lodDataValuesArch->GetBool("isdummy");
+
+					KeyedArchive *lodDataIndexesArch = lodDataValuesArch->GetArchive("indexes");
+					if(NULL != lodDataIndexesArch)
+					{
+						for(uint32 j = 0; j < lodDataValuesArch->GetUInt32("indexescount"); ++j)
+						{
+							data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
+						}
+					}
+
+					lodLayers.push_back(data);
+				}
+			}
+		}
+	}
+
+	flags |= NEED_UPDATE_AFTER_LOAD;
+	Component::Deserialize(archive, sceneFile);
+}
+
 LodComponent::LodComponent()
 :	forceLodLayer(INVALID_LOD_LAYER),
 	forceDistance(INVALID_DISTANCE),
@@ -159,7 +276,6 @@ void LodComponent::GetLodData(List<LodData*> &retLodLayers)
 		retLodLayers.push_back(ld);
 	}
 }
-
     
 void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
@@ -186,6 +302,32 @@ void LodComponent::SetLodLayerDistance(int32 layerNum, float32 distance)
     {
         lodLayersArray[layerNum].SetDistance(distance);
     }
+}
+
+void LodComponent::SetForceLodLayer(int32 layer)
+{
+    forceLodLayer = layer;
+}
+    
+int32 LodComponent::GetForceLodLayer()
+{
+    return forceLodLayer;
+}
+
+int32 LodComponent::GetMaxLodLayer()
+{
+	int32 ret = -1;
+	const List<LodData>::const_iterator &end = lodLayers.end();
+	for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+	{
+		LodData & ld = *it;
+		if(ld.layer > ret)
+		{
+			ret = ld.layer;
+		}
+	}
+
+	return ret;
 }
 
     

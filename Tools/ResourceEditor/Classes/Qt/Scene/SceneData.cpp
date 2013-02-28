@@ -126,7 +126,7 @@ void SceneData::SceneNodeSelectedInGraph(SceneNode *node)
     //EndOfTODO
     
     
-    Camera * cam = dynamic_cast<Camera*>(node);
+    Camera * cam = GetCamera(node);
     if (cam)
     {
         if (IsKeyModificatorPressed(DVKEY_ALT))
@@ -266,7 +266,6 @@ void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
         if(
            (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
            &&   (typeid(SceneNode) == typeid(*removedChild))
-           &&   (typeid(LodNode) != typeid(*node))
            &&   (removedChild->GetChildrenCount() == 1))
         {
             //SceneNode *child = SafeRetain(removedChild->GetChild(0));
@@ -302,19 +301,6 @@ void SceneData::FindIdentityNodes(DAVA::SceneNode *node)
     }
 }
 
-
-void SceneData::BakeScene()
-{
-    if(scene)
-    {
-        SelectNode(NULL);
-        
-        BakeNode(scene);
-        FindIdentityNodes(scene);
-        
-        RebuildSceneGraph();
-    }
-}
 
 void SceneData::ToggleNotPassableLandscape()
 {

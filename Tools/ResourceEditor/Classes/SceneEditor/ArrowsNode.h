@@ -19,6 +19,7 @@ class ArrowsRenderBatch: public RenderBatch
 public:
 	ArrowsRenderBatch(ArrowsNode* node);
 
+	const FastName & GetOwnerLayerName();
 	virtual void Draw(Camera * camera);
 
 protected:

@@ -33,6 +33,8 @@
 namespace DAVA
 {
 
+REGISTER_CLASS(Mesh);
+
 Mesh::Mesh()
 {
     type = TYPE_MESH;
@@ -78,7 +80,14 @@ RenderObject * Mesh::Clone( RenderObject *newObject )
 	return RenderObject::Clone(newObject);
 }
 
+void Mesh::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Save(archive, sceneFile);
+}
 
-
+void Mesh::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Load(archive, sceneFile);
+}
 
 };

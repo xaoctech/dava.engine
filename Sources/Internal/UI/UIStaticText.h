@@ -59,7 +59,7 @@ public:
 	void SetAlign(int32 _align);
 	virtual void SetSpriteAlign(int32 align);
 
-	
+	int32 GetAlign() const;
 	const Vector2 &GetTextSize();
 	
 	inline void PrepareSprite()

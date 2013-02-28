@@ -57,6 +57,7 @@ LOCAL_SRC_FILES := \
 
 # set build flags
 LOCAL_CFLAGS := -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
+LOCAL_CFLAGS += -Wno-invalid-offsetof
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)

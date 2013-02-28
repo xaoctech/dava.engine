@@ -86,7 +86,7 @@ int HierarchyTreeScreenNode::GetPosY() const
 	return posY;
 }
 
-void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node)
+void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
 {
 	HierarchyTreePlatformNode* newPlatform = dynamic_cast<HierarchyTreePlatformNode*>(node);
 	DVASSERT(newPlatform);
@@ -96,12 +96,17 @@ void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node)
 	HierarchyTreePlatformNode* oldPlatform = GetPlatform();
 	if (oldPlatform)
 	{
-		oldPlatform->RemoveTreeNode(this, false);
+		oldPlatform->RemoveTreeNode(this, false, false);
 	}
 	
 	parent = newPlatform;
 	GetScreen()->SetRect(Rect(0, 0, newPlatform->GetWidth(), newPlatform->GetHeight()));
-	newPlatform->AddTreeNode(this);
+	newPlatform->AddTreeNode(this, insertAfter);
+}
+
+HierarchyTreeNode* HierarchyTreeScreenNode::GetParent()
+{
+	return this->parent;
 }
 
 String HierarchyTreeScreenNode::GetNewControlName(const String& baseName) const
@@ -166,4 +171,34 @@ bool HierarchyTreeScreenNode::Save(const QString& path)
 {
 	FontManager::Instance()->PrepareToSaveFonts();
 	return UIYamlLoader::Save(screen, path.toStdString(), true);
+}
+
+void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
+{
+	if (!this->redoParentNode)
+	{
+		return;
+	}
+	
+	// Need to recover the node previously deleted, taking position into account.
+	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
+}
+
+Rect HierarchyTreeScreenNode::GetRect() const
+{
+	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
+	
+	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
+	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+	{
+		const HierarchyTreeControlNode* control = dynamic_cast<const HierarchyTreeControlNode*>(*iter);
+		if (!control)
+			continue;
+		
+		Rect controlRect = control->GetRect();
+		
+		rect = rect.Combine(controlRect);
+	}
+	
+	return rect;
 }

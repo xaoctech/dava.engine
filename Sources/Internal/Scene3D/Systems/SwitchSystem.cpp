@@ -4,6 +4,7 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -16,6 +17,7 @@ SwitchSystem::SwitchSystem(Scene * scene)
 
 void SwitchSystem::Process()
 {
+    TIME_PROFILE("SwitchSystem::Process");
 	Set<SceneNode*>::iterator it;
 	Set<SceneNode*>::const_iterator itEnd = updatableEntities.end();
 	for(it = updatableEntities.begin(); it != itEnd; ++it)

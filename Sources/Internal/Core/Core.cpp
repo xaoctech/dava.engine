@@ -592,6 +592,9 @@ void Core::SystemAppFinished()
 
 void Core::SystemProcessFrame()
 {
+    Stats::Instance()->BeginFrame();
+    TIME_PROFILE("Core::SystemProcessFrame");
+    
 	if (!core) return;
 	if (!isActive)return;
 	
@@ -652,6 +655,7 @@ void Core::SystemProcessFrame()
 // 		core->BeginFrame();
 // #endif
 	}
+    Stats::Instance()->EndFrame();
 	globalFrameIndex++;
 }
 

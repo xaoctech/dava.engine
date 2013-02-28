@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class JNIConst
 {
-	public static String LOG_TAG = "UnitTests";
+	public static String LOG_TAG = "DAVA";
 	public static String PACKAGE_NAME = "com.dava.framework";
 	
 	public static void checkEglError(String prompt, EGL10 egl) 

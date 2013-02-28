@@ -20,13 +20,13 @@ public:
 	HierarchyTreeRootNode();
     void Clear();
 	
-	const QString& GetProjectFolder() const {return projectFolder;};
-	const QString& GetProjectPath() const {return projectPath;};
-	void SetProjectPath(const QString& projectPath);
+	const QString& GetProjectDir() const {return projectDir;};
+	const QString& GetProjectFilePath() const {return projectFilePath;};
+	void SetProjectFilePath(const QString& projectFilePath);
 	
 private:
-	QString projectPath;
-	QString projectFolder;
+	QString projectFilePath;
+	QString projectDir;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeRootNode__) */

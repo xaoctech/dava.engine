@@ -9,6 +9,9 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/UserComponent.h"
 
 namespace DAVA
 {
@@ -34,11 +37,19 @@ Component * Component::CreateByType(uint32 componentType)
 	case CAMERA_COMPONENT:
 		return new CameraComponent();
 		break;
+	case LIGHT_COMPONENT:
+		return new LightComponent();
+		break;
+	case SWITCH_COMPONENT:
+		return new SwitchComponent();
+		break;
+	case USER_COMPONENT:
+		return new UserComponent();
+		break;
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case ACTION_COMPONENT:
 	case SCRIPT_COMPONENT:
-	case LIGHT_COMPONENT:
 	default:
 		DVASSERT(0);
 		return 0;
@@ -52,15 +63,39 @@ Component::Component()
 
 }
 
+Component::~Component()
+{ }
+
 void Component::SetEntity(SceneNode * _entity)
 {
 	entity = _entity;
 }
+
+SceneNode* Component::GetEntity() 
+{ 
+	return entity;
+};
 
 void Component::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
 {
     //Empty as default
 }
 
+void Component::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive) archive->SetUInt32("comp.type", GetType());
+}
+
+void Component::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		uint32 type = 0xFFFFFFFF;
+
+		if(archive->IsKeyExists("comp.type")) type = archive->GetUInt32("comp.type");
+
+		DVASSERT(type == GetType());
+	}
+}
 
 }

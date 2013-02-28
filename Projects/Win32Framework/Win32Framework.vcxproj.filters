@@ -1242,8 +1242,26 @@
     <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h">
       <Filter>Internal\DLC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Serializable.h">
+      <Filter>Internal\Base</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssertMessage.h">
+      <Filter>Internal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Network\MailSender.h">
+      <Filter>Internal\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2179,6 +2197,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp">
+      <Filter>Internal\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp">
+      <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
+      <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp">
+      <Filter>Internal\Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

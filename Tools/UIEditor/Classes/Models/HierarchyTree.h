@@ -27,15 +27,18 @@ public:
 
     bool Load(const QString& projectPath);
 	bool Save(const QString& projectPath);
-	const QString& GetActiveProjectPath() const {return rootNode.GetProjectPath();}
+	const QString& GetActiveProjectPath() const {return rootNode.GetProjectDir();};
 	
 	void CreateProject();
 	void CloseProject();
-	void AddPlatform(const QString& name, const Vector2& size);
-	bool AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
-	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
+
+	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
+	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+
+	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory,
+					 bool deleteNodeFromScene);
  	
-	const HierarchyTreeRootNode& GetRootNode() const {return rootNode;};
+	const HierarchyTreeRootNode* GetRootNode() const {return &rootNode;};
    
 	HierarchyTreeNode* GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const;
 	HierarchyTreeNode* GetNode(const UIControl* control) const;
