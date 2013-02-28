@@ -30,7 +30,7 @@
 #include "Base/BaseTypes.h"
 #include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 #include "Platform/Qt/QtLayer.h"
-
+#include "Platform/Qt/MacOS/QTLayerMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 
@@ -133,6 +133,11 @@ Vector2 CoreMacOSPlatform::GetMousePosition()
     mouseLocation.y = Core::Instance()->GetPhysicalScreenHeight() - 0.f;
 
     return mouseLocation;
+}
+
+void* CoreMacOSPlatform::GetOpenGLView()
+{
+	return QtLayerMacOS::Instance()->GetOpenGLView();
 }
 
 //=======================
