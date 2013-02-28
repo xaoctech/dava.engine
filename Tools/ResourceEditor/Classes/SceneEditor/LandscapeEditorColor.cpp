@@ -325,16 +325,6 @@ void LandscapeEditorColor::ShowAction()
 	workingLandscape->CursorEnable();
 }
 
-void LandscapeEditorColor::UndoAction()
-{
-	CommandsManager::Instance()->Undo();
-}
-
-void LandscapeEditorColor::RedoAction()
-{
-	CommandsManager::Instance()->Redo();
-}
-
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 {
     if(maskSprite)

@@ -23,6 +23,7 @@ public:
 	DAVA::String GetRedoCommandName();
 
 	void ChangeQueue(void* scene);
+	void SceneReleased(void* scene);
 
 private:
 	struct UndoQueue
@@ -37,13 +38,13 @@ private:
 		{ commands.reserve(UNDO_QUEUE_SIZE); };
 	};
 
-	typedef DAVA::Map<void*, UndoQueue*> QUEUE_LIST;
+	typedef DAVA::Map<void*, UndoQueue*> QUEUE_MAP;
 
     void ClearQueue(UndoQueue* queue = NULL);
     void ClearQueueTail();
 	void ClearAllQueues();
 
-	QUEUE_LIST queueList;
+	QUEUE_MAP queueMap;
 	UndoQueue* activeQueue;
 };
 

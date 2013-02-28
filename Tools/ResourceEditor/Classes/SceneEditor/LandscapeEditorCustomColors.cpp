@@ -415,14 +415,6 @@ void LandscapeEditorCustomColors::ShowAction()
 	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
 }
 
-void LandscapeEditorCustomColors::UndoAction()
-{
-}
-
-void LandscapeEditorCustomColors::RedoAction()
-{
-}
-
 void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
 {
 	if(pathToFile.empty())

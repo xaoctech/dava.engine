@@ -580,14 +580,6 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 	QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(true);
 }
 
-void LandscapeEditorVisibilityCheckTool::UndoAction()
-{
-}
-
-void LandscapeEditorVisibilityCheckTool::RedoAction()
-{
-}
-
 void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToFile)
 {
     if(visibilityAreaSprite)

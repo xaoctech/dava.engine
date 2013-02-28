@@ -20,7 +20,6 @@
 
 ArrowsNode::ArrowsNode():
 	selected(AXIS_NONE),
-	visible(false),
 	active(false)
 {
 	collisionConfiguration = new btDefaultCollisionConfiguration();

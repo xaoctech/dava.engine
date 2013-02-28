@@ -72,7 +72,6 @@ private:
 	btCollisionWorld* collisionWorld;
 
 	uint32 selected;
-	bool visible;
 	bool active;
 };
 
