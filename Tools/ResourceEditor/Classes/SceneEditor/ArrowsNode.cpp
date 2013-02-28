@@ -31,11 +31,15 @@ ArrowsNode::ArrowsNode():
 
 	RenderComponent* renderComponent = new RenderComponent();
 	RenderObject* renderObject = new RenderObject();
-	renderObject->AddRenderBatch(new ArrowsRenderBatch(this));
+	ArrowsRenderBatch* renderBatch = new ArrowsRenderBatch(this);
+	renderObject->AddRenderBatch(renderBatch);
 	renderComponent->SetRenderObject(renderObject);
 	AddComponent(renderComponent);
 
 	AddComponent(new TransformComponent());
+
+	SafeRelease(renderBatch);
+	SafeRelease(renderObject);
 }
 
 ArrowsNode::~ArrowsNode()
