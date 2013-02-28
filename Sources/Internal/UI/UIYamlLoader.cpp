@@ -33,6 +33,7 @@
 #include "UI/UIControl.h"
 #include "FileSystem/YamlParser.h"
 #include "Render/2D/GraphicsFont.h"
+#include "Render/2D/FontManager.h"
 
 namespace DAVA 
 {
@@ -56,6 +57,38 @@ int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
     return ret;
 }
 
+String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
+{
+    String ret;
+    switch (drawType) {
+        case UIControlBackground::DRAW_ALIGNED:
+            ret = "DRAW_ALIGNED";
+            break;
+        case UIControlBackground::DRAW_SCALE_TO_RECT:
+            ret = "DRAW_SCALE_TO_RECT";
+            break;
+        case UIControlBackground::DRAW_SCALE_PROPORTIONAL:
+            ret = "DRAW_SCALE_PROPORTIONAL";
+            break;
+        case UIControlBackground::DRAW_FILL:
+            ret = "DRAW_FILL";
+            break;
+        case UIControlBackground::DRAW_STRETCH_HORIZONTAL:
+            ret = "DRAW_STRETCH_HORIZONTAL";
+            break;
+        case UIControlBackground::DRAW_STRETCH_VERTICAL:
+            ret = "DRAW_STRETCH_VERTICAL";
+            break;
+        case UIControlBackground::DRAW_STRETCH_BOTH:
+            ret = "DRAW_STRETCH_BOTH";
+			break;
+        default:
+            ret = "DRAW_ALIGNED";
+            break;
+    }
+    return ret;
+}
+    
 int32 UIYamlLoader::GetColorInheritTypeFromNode(YamlNode * colorInheritNode)
 {
 	int32 ret = UIControlBackground::COLOR_IGNORE_PARENT;
@@ -72,6 +105,35 @@ int32 UIYamlLoader::GetColorInheritTypeFromNode(YamlNode * colorInheritNode)
 	if("COLOR_REPLACE_ALPHA_ONLY" == type) ret = UIControlBackground::COLOR_REPLACE_ALPHA_ONLY;
 
 	return ret;
+}
+	
+String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType)
+{
+    String ret;    
+    switch (colorInheritType) {
+        case UIControlBackground::COLOR_MULTIPLY_ON_PARENT:
+            ret = "COLOR_MULTIPLY_ON_PARENT";
+            break;
+        case UIControlBackground::COLOR_ADD_TO_PARENT:
+            ret = "COLOR_ADD_TO_PARENT";
+            break;
+        case UIControlBackground::COLOR_REPLACE_TO_PARENT:
+            ret = "COLOR_REPLACE_TO_PARENT";
+            break;
+        case UIControlBackground::COLOR_IGNORE_PARENT:
+            ret = "COLOR_IGNORE_PARENT";
+            break;
+        case UIControlBackground::COLOR_MULTIPLY_ALPHA_ONLY:
+            ret = "COLOR_MULTIPLY_ALPHA_ONLY";
+            break;
+        case UIControlBackground::COLOR_REPLACE_ALPHA_ONLY:
+            ret = "COLOR_REPLACE_ALPHA_ONLY";
+            break;
+        default:
+            ret = "COLOR_IGNORE_PARENT";
+            break;
+    }
+    return ret;
 }
 	
 int32 UIYamlLoader::GetAlignFromYamlNode(YamlNode * alignNode)
@@ -94,6 +156,45 @@ int32 UIYamlLoader::GetAlignFromYamlNode(YamlNode * alignNode)
 	else if (vertAlign == "BOTTOM")align |= ALIGN_BOTTOM;
 	
 	return align;
+}
+
+//Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
+YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
+{
+	YamlNode *alignNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	String horzAlign = "HCENTER";
+	String vertAlign = "VCENTER";
+	
+	if (align & ALIGN_LEFT)
+	{
+		horzAlign = "LEFT";
+	}
+	else if (align & ALIGN_HCENTER)
+	{
+		horzAlign = "HCENTER";
+	}
+	else if (align & ALIGN_RIGHT)
+	{
+		horzAlign = "RIGHT";
+	}
+	
+	if (align & ALIGN_TOP)
+	{
+		vertAlign = "TOP";
+	}
+	else if (align & ALIGN_VCENTER)
+	{
+		vertAlign = "VCENTER";
+	}
+	else if (align & ALIGN_BOTTOM)
+	{
+		vertAlign = "BOTTOM";
+	}
+	
+	alignNode->AddValueToArray(horzAlign);
+	alignNode->AddValueToArray(vertAlign);
+	
+	return alignNode;
 }
 	
 bool UIYamlLoader::GetBoolFromYamlNode(YamlNode * node, bool defaultValue)
@@ -157,6 +258,16 @@ void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname)
 	loader->Release();
 }
 
+bool UIYamlLoader::Save(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+{
+	UIYamlLoader * loader = new UIYamlLoader();
+
+	bool savedOK = loader->ProcessSave(rootControl, yamlPathname, skipRootNode);
+
+	loader->Release();
+	return savedOK;
+}
+
 void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathname)
 {
 	uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
@@ -168,8 +279,14 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	}
 	
 	YamlNode * rootNode = parser->GetRootNode();
+    if (!rootNode)
+    {
+        // Empty YAML file.
+        Logger::Warning("yaml file: %s is empty", yamlPathname.c_str());
+        return;
+    }
 	
-	for (Map<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
+	for (MultiMap<String, YamlNode*>::iterator t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
 	{
 		YamlNode * node = t->second;
 		YamlNode * typeNode = node->Get("type");
@@ -187,6 +304,11 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 			if (fontSizeNode)fontSize = fontSizeNode->AsFloat();
 			
 			FTFont * font = FTFont::Create(fontNameNode->AsString());
+            if (!font)
+            {
+                continue;
+            }
+
 			font->SetSize(fontSize);
 			
 			
@@ -204,6 +326,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
             }
             
 			fontMap[t->first] = font;
+			FontManager::Instance()->SetFontName(font, t->first);
 		}
 		else if(type == "GraphicsFont")
 		{
@@ -215,6 +338,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 			if (!definitionNode)continue;
 
 			GraphicsFont * font = GraphicsFont::Create(definitionNode->AsString(), fontNameNode->AsString());
+            if (!font)
+            {
+                continue;
+            }
 
 			YamlNode * fontSizeNode = node->Get("size");
 			if (fontSizeNode)
@@ -246,6 +373,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
             }
 
 			fontMap[t->first] = font;
+			FontManager::Instance()->SetFontName(font, t->first);
 		}
 	}
 	
@@ -260,6 +388,57 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
 	Logger::Debug("Load of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+}
+	
+bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+{
+    uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
+    YamlParser * parser = YamlParser::Create();
+
+    if (!parser)
+    {
+        Logger::Error("ProcessSave: error while creating YAML parser!");
+        return false;
+    }
+    
+    DVASSERT(rootControl);
+    YamlNode* resultNode = SaveToNode(rootControl, NULL);
+
+	uint32 fileAttr = File::CREATE | File::WRITE;
+	//save used fonts
+	const FontManager::TRACKED_FONTS& usedFonts = FontManager::Instance()->GetTrackedFont();
+	YamlNode fontsNode(YamlNode::TYPE_MAP);
+	MultiMap<String, YamlNode*> &fontsMap = fontsNode.AsMap();
+	for (FontManager::TRACKED_FONTS::const_iterator iter = usedFonts.begin();
+		 iter != usedFonts.end();
+		 ++iter)
+	{
+		Font* font = (*iter);
+		if (!font)
+			continue;
+		
+		// The font should be stored once only.
+        String fontName = FontManager::Instance()->GetFontName(font);
+		if (fontsMap.find(fontName) == fontsMap.end())
+		{
+			fontsMap.insert(std::pair<String, YamlNode*>(fontName, font->SaveToYamlNode()));
+		}
+	}
+
+	//resultNode
+	parser->SaveToYamlFile(yamlPathname, &fontsNode, true, File::CREATE | File::WRITE);
+	fileAttr = File::APPEND | File::WRITE;
+	
+    // Save the resulting YAML file to the path passed.
+    bool savedOK = parser->SaveToYamlFile(yamlPathname, resultNode, skipRootNode, fileAttr);
+    SafeRelease(parser);
+    
+    SafeRelease(resultNode);
+    
+    uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("Save of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+
+    return savedOK;
 }
 	
 void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, bool needParentCallback)
@@ -296,4 +475,33 @@ void UIYamlLoader::LoadFromNode(UIControl * parentControl, YamlNode * rootNode, 
         parentControl->LoadFromYamlNodeCompleted();   
     }
 }
+
+YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode,
+                                   int relativeDepth)
+{
+    // Save ourselves and all children.
+    YamlNode* childNode = parentControl->SaveToYamlNode(this);
+    if (parentNode && parentNode->GetType() == YamlNode::TYPE_MAP)
+    {
+        parentNode->AddNodeToMap(parentControl->GetName(), childNode);
+    }
+
+    // "Relative Depth" is needed to save the order of the nodes - it is important!
+    childNode->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
+
+    int currentDepth = 0;
+//  const List<UIControl*>& children = parentControl->GetChildren();
+//  for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
+
+	const List<UIControl*>& children = parentControl->GetRealChildren();
+	for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
+    {
+        UIControl* childControl = (*childIter);
+        SaveToNode(childControl, childNode, currentDepth);
+        currentDepth ++;
+    }
+
+    return childNode;
+}
+	
 }

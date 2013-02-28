@@ -30,13 +30,25 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
+#ifdef __DAVAENGINE_ANDROID__
+#include "Debug/DVAssert.h"
+#endif
+
 #define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
-#include <signal.h>
-#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+	#if defined(__DAVAENGINE_WIN32__)
+		#define OGLDebugBreak() { __debugbreak(); }
+	#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
+		#include <signal.h>
+		#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+	#else //PLATFORMS
+		//other platforms
+	#endif //PLATFORMS
 #else
 #define OGLDebugBreak()
 #endif
+
+
 
 #if defined(__DAVAENGINE_OPENGL__)
 namespace DAVA
@@ -54,6 +66,7 @@ namespace DAVA
 	if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        OGLDebugBreak(); \
     }\
 }
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -64,7 +77,8 @@ namespace DAVA
     if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        OGLDebugBreak(); \
+        DVASSERT(false);\
+		OGLDebugBreak(); \
     }\
 }
 #else

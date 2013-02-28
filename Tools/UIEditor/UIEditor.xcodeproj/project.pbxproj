@@ -1,0 +1,1487 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
+		1700E418162EB2C20069650D /* basepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E416162EB2C20069650D /* basepropertygridwidget.cpp */; };
+		1700E41D162EB8C60069650D /* rectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */; };
+		17112B45163920BC0017E713 /* CommandsController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B43163920BC0017E713 /* CommandsController.cpp */; };
+		17112B481639214D0017E713 /* BaseCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B461639214D0017E713 /* BaseCommand.cpp */; };
+		17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */; };
+		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
+		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
+		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
+		173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */; };
+		173AC3441630285B00A773F5 /* PropertyGridWidgetsFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3421630285A00A773F5 /* PropertyGridWidgetsFactory.cpp */; };
+		173AC3471631458000A773F5 /* PropertyGridWidgetData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */; };
+		17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */; };
+		17607FEF16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */; };
+		1767C4301636C8F5008D25BD /* UIStaticTextMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */; };
+		176834A616510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */; };
+		176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */; };
+		176834AB16510910004800D7 /* uitextfieldpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */; };
+		176D3944162C2F7C0099AACF /* HierarchyTreeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3942162C2F7C0099AACF /* HierarchyTreeNode.cpp */; };
+		176D3947162C2F960099AACF /* HierarchyTreeRootNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3945162C2F960099AACF /* HierarchyTreeRootNode.cpp */; };
+		176D394A162C2FAE0099AACF /* HierarchyTreePlatformNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3948162C2FAE0099AACF /* HierarchyTreePlatformNode.cpp */; };
+		176D3950162C2FE50099AACF /* HierarchyTreeControlNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D394E162C2FE50099AACF /* HierarchyTreeControlNode.cpp */; };
+		176D3954162C396A0099AACF /* HierarchyTreeController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3952162C396A0099AACF /* HierarchyTreeController.cpp */; };
+		176D3957162C397F0099AACF /* HierarchyTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3955162C397E0099AACF /* HierarchyTree.cpp */; };
+		176D395B162C3CAA0099AACF /* BaseMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3959162C3CAA0099AACF /* BaseMetadata.cpp */; };
+		176D395E162C3DF90099AACF /* UIButtonMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D395C162C3DF90099AACF /* UIButtonMetadata.cpp */; };
+		176D3961162C3E890099AACF /* UIControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D395F162C3E890099AACF /* UIControlMetadata.cpp */; };
+		178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178F303C165677BF008678AD /* StringUtils.cpp */; };
+		17AFA3E9163EDCE400F6CB5B /* moc_CommandsController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */; };
+		17CD342416397D600061A467 /* moc_backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD340C16397D600061A467 /* moc_backgroundpropertygridwidget.cpp */; };
+		17CD342516397D600061A467 /* moc_BaseMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD340D16397D600061A467 /* moc_BaseMetadata.cpp */; };
+		17CD342616397D600061A467 /* moc_basepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD340E16397D600061A467 /* moc_basepropertygridwidget.cpp */; };
+		17CD342716397D600061A467 /* moc_controllist.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD340F16397D600061A467 /* moc_controllist.cpp */; };
+		17CD342816397D600061A467 /* moc_controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341016397D600061A467 /* moc_controlpropertygridwidget.cpp */; };
+		17CD342916397D600061A467 /* moc_davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341116397D600061A467 /* moc_davaglwidget.cpp */; };
+		17CD342A16397D600061A467 /* moc_flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341216397D600061A467 /* moc_flagspropertygridwidget.cpp */; };
+		17CD342B16397D600061A467 /* moc_HierarchyTreeController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341316397D600061A467 /* moc_HierarchyTreeController.cpp */; };
+		17CD342C16397D600061A467 /* moc_hierarchytreewidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341416397D600061A467 /* moc_hierarchytreewidget.cpp */; };
+		17CD342D16397D600061A467 /* moc_librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341516397D600061A467 /* moc_librarywidget.cpp */; };
+		17CD342E16397D600061A467 /* moc_mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341616397D600061A467 /* moc_mainwindow.cpp */; };
+		17CD342F16397D600061A467 /* moc_PlatformMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341716397D600061A467 /* moc_PlatformMetadata.cpp */; };
+		17CD343016397D600061A467 /* moc_platformpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341816397D600061A467 /* moc_platformpropertygridwidget.cpp */; };
+		17CD343116397D600061A467 /* moc_PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341916397D600061A467 /* moc_PropertiesGridController.cpp */; };
+		17CD343216397D600061A467 /* moc_propertygridcontainerwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341A16397D600061A467 /* moc_propertygridcontainerwidget.cpp */; };
+		17CD343316397D600061A467 /* moc_rectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341B16397D600061A467 /* moc_rectpropertygridwidget.cpp */; };
+		17CD343416397D600061A467 /* moc_ScreenMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341C16397D600061A467 /* moc_ScreenMetadata.cpp */; };
+		17CD343516397D600061A467 /* moc_screenpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341D16397D600061A467 /* moc_screenpropertygridwidget.cpp */; };
+		17CD343616397D600061A467 /* moc_ScreenWrapper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341E16397D600061A467 /* moc_ScreenWrapper.cpp */; };
+		17CD343716397D600061A467 /* moc_textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD341F16397D600061A467 /* moc_textpropertygridwidget.cpp */; };
+		17CD343816397D600061A467 /* moc_UIButtonMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD342016397D600061A467 /* moc_UIButtonMetadata.cpp */; };
+		17CD343916397D600061A467 /* moc_UIControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD342116397D600061A467 /* moc_UIControlMetadata.cpp */; };
+		17CD343A16397D600061A467 /* moc_UIStaticTextMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD342216397D600061A467 /* moc_UIStaticTextMetadata.cpp */; };
+		17CD343B16397D600061A467 /* moc_UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CD342316397D600061A467 /* moc_UITextControlMetadata.cpp */; };
+		17CED76C163ABD3B00F9B02D /* propertygridcontainerwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CED76B163ABD3B00F9B02D /* propertygridcontainerwidget.cpp */; };
+		17CED799163E822F00F9B02D /* moc_statepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CED797163E822F00F9B02D /* moc_statepropertygridwidget.cpp */; };
+		17CED79C163E829600F9B02D /* statepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17CED79A163E829600F9B02D /* statepropertygridwidget.cpp */; };
+		17DF04D916368040001F7ED2 /* PlatformMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04D51636803F001F7ED2 /* PlatformMetadata.cpp */; };
+		17DF04DA16368040001F7ED2 /* ScreenMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04D716368040001F7ED2 /* ScreenMetadata.cpp */; };
+		17DF04EB1636850C001F7ED2 /* platformpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */; };
+		17DF04EC1636850C001F7ED2 /* screenpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */; };
+		17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */; };
+		17F6F49E1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */; };
+		17FBCE46163A7ED100FD96C0 /* UIControlStateHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */; };
+		17FD40371663D57B00BE42A2 /* moc_EditorFontManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */; };
+		17FF15E016400160001B130F /* createplatformdlg.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DD16400160001B130F /* createplatformdlg.ui */; };
+		17FF15E116400160001B130F /* createscreendlg.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DE16400160001B130F /* createscreendlg.ui */; };
+		17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15DF16400160001B130F /* fontmanagerdialog.ui */; };
+		17FF15EE1640021E001B130F /* backgroundpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E41640021E001B130F /* backgroundpropertygridwidget.ui */; };
+		17FF15EF1640021E001B130F /* basepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E51640021E001B130F /* basepropertygridwidget.ui */; };
+		17FF15F01640021E001B130F /* controlpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E61640021E001B130F /* controlpropertygridwidget.ui */; };
+		17FF15F11640021E001B130F /* flagspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E71640021E001B130F /* flagspropertygridwidget.ui */; };
+		17FF15F21640021E001B130F /* platformpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E81640021E001B130F /* platformpropertygridwidget.ui */; };
+		17FF15F31640021E001B130F /* propertygridcontainerwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15E91640021E001B130F /* propertygridcontainerwidget.ui */; };
+		17FF15F41640021E001B130F /* rectpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15EA1640021E001B130F /* rectpropertygridwidget.ui */; };
+		17FF15F51640021E001B130F /* screenpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15EB1640021E001B130F /* screenpropertygridwidget.ui */; };
+		17FF15F61640021E001B130F /* statepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15EC1640021E001B130F /* statepropertygridwidget.ui */; };
+		17FF15F71640021E001B130F /* textpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15ED1640021E001B130F /* textpropertygridwidget.ui */; };
+		17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17FF15F81640069E001B130F /* localizationeditordialog.ui */; };
+		17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF15FE16400A75001B130F /* localizationeditordialog.cpp */; };
+		17FF160516400CCA001B130F /* moc_localizationeditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17FF160416400CCA001B130F /* moc_localizationeditordialog.cpp */; };
+		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
+		5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E615B460BF00DA83EB /* libz.dylib */; };
+		5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E815B460C900DA83EB /* libbz2.dylib */; };
+		740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 740F353316832022003B35E7 /* EditorSettings.cpp */; };
+		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
+		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
+		74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F20169F1435000FE4B1 /* CommandLineParser.cpp */; };
+		74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F22169F1435000FE4B1 /* DefinitionFile.cpp */; };
+		74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F24169F1435000FE4B1 /* ImagePacker.cpp */; };
+		74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F26169F1435000FE4B1 /* PngImage.cpp */; };
+		74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F28169F1435000FE4B1 /* TexturePacker.cpp */; };
+		74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F33169F1493000FE4B1 /* ResourcePacker.cpp */; };
+		74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74819F35169F1946000FE4B1 /* PVRConverter.cpp */; };
+		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
+		7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */; };
+		7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */; };
+		7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */; };
+		7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */; };
+		7484342B1648024700920BBD /* StateComboBoxItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */; };
+		7484342D1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */; };
+		74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */; };
+		748955FD1641620200070AE1 /* QColorButton.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748955FB1641620200070AE1 /* QColorButton.cpp */; };
+		748955FF164162B000070AE1 /* moc_qcolorbutton.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748955FE164162B000070AE1 /* moc_qcolorbutton.cpp */; };
+		748E2E5C1649684300C77EB8 /* UITextFieldMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */; };
+		748E2E5E16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748E2E5D16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp */; };
+		748EF24016AE97EF00AC647E /* qrc_icons.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 748EF23F16AE97EF00AC647E /* qrc_icons.cpp */; };
+		7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */; };
+		7492E0F216394A4E00DF883A /* moc_fontmanagerdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7492E0F016394A4E00DF883A /* moc_fontmanagerdialog.cpp */; };
+		749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 749D71251636920600C99861 /* textpropertygridwidget.cpp */; };
+		74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */; };
+		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
+		74EED63416B18D5500262D63 /* moc_alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */; };
+		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
+		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
+		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
+		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
+		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
+		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
+		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		C10740DE163A94360069A640 /* createplatformdlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740DA163A94360069A640 /* createplatformdlg.cpp */; };
+		C10740DF163A94360069A640 /* createscreendlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740DC163A94360069A640 /* createscreendlg.cpp */; };
+		C10740E4163A94450069A640 /* ScreenControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740E0163A94440069A640 /* ScreenControl.cpp */; };
+		C10740E5163A94450069A640 /* ScreenManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740E2163A94450069A640 /* ScreenManager.cpp */; };
+		C10740FB163A94750069A640 /* moc_createplatformdlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740EA163A94750069A640 /* moc_createplatformdlg.cpp */; };
+		C10740FC163A94750069A640 /* moc_createscreendlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740EB163A94750069A640 /* moc_createscreendlg.cpp */; };
+		C10740FD163A94750069A640 /* moc_screenmanager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740EC163A94750069A640 /* moc_screenmanager.cpp */; };
+		C10740FF163A960D0069A640 /* BaseMetadataParams.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */; };
+		C1074160163E7B740069A640 /* ItemsCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C107415E163E7B740069A640 /* ItemsCommand.cpp */; };
+		C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C107916416D78C9E0081E58C /* libFrameworkQt.a */; };
+		C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C14FF9C0162EE4DF00F77F70 /* controllist.cpp */; };
+		C15C2FED162AD6E400818631 /* FrameworkMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */; };
+		C15C2FEE162AD6E400818631 /* GameCore.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE3162AD6E400818631 /* GameCore.cpp */; };
+		C15C2FEF162AD6E400818631 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE5162AD6E400818631 /* main.cpp */; };
+		C15C2FF1162AD6E400818631 /* davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE9162AD6E400818631 /* davaglwidget.cpp */; };
+		C15C2FF2162AD6E400818631 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FEB162AD6E400818631 /* mainwindow.cpp */; };
+		C15C2FF6162AD71C00818631 /* davaglwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C15C2FF4162AD71C00818631 /* davaglwidget.ui */; };
+		C15C2FF7162AD71C00818631 /* mainwindow.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C15C2FF5162AD71C00818631 /* mainwindow.ui */; };
+		C15D3E5116415A3600161684 /* ControlCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15D3E4F16415A3600161684 /* ControlCommands.cpp */; };
+		C161DCEB16400E9F00068417 /* hierarchytreecontrol.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C161DCE916400E9F00068417 /* hierarchytreecontrol.cpp */; };
+		C161DCED16400F4E00068417 /* moc_hierarchytreecontrol.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C161DCEC16400F4E00068417 /* moc_hierarchytreecontrol.cpp */; };
+		C17246121637E18900709AAF /* EditorFontManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C17246101637E18900709AAF /* EditorFontManager.cpp */; };
+		C1BBE3531647C74100EF3CA9 /* CopyPasteController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1BBE3511647C74100EF3CA9 /* CopyPasteController.cpp */; };
+		C1BBE3561647DAC300EF3CA9 /* PasteCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1BBE3541647DAC300EF3CA9 /* PasteCommand.cpp */; };
+		C1C62A24162C33FC000C1B32 /* ScreenWrapper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */; };
+		C1C62A39162D370E000C1B32 /* HierarchyTreeScreenNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A37162D370D000C1B32 /* HierarchyTreeScreenNode.cpp */; };
+		C1C62A3C162D371E000C1B32 /* DefaultScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */; };
+		C1C62A41162D4991000C1B32 /* hierarchytreewidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A3F162D4991000C1B32 /* hierarchytreewidget.cpp */; };
+		C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */; };
+		C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A6F162EC800000C1B32 /* librarywidget.ui */; };
+		C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A71162EC809000C1B32 /* librarywidget.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C107916116D78C9E0081E58C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = Framework;
+		};
+		C107916316D78C9E0081E58C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
+		C107916516D78CC20081E58C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E898A05116BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00BD80432B2C7B49A27A3DC5 /* UIEditor.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = UIEditor.pro; sourceTree = "<group>"; };
+		1700E416162EB2C20069650D /* basepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basepropertygridwidget.cpp; path = PropertyGridWidgets/basepropertygridwidget.cpp; sourceTree = "<group>"; };
+		1700E417162EB2C20069650D /* basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basepropertygridwidget.h; path = PropertyGridWidgets/basepropertygridwidget.h; sourceTree = "<group>"; };
+		1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rectpropertygridwidget.cpp; path = PropertyGridWidgets/rectpropertygridwidget.cpp; sourceTree = "<group>"; };
+		1700E41C162EB8C60069650D /* rectpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rectpropertygridwidget.h; path = PropertyGridWidgets/rectpropertygridwidget.h; sourceTree = "<group>"; };
+		17112B43163920BC0017E713 /* CommandsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandsController.cpp; path = Controllers/CommandsController.cpp; sourceTree = "<group>"; };
+		17112B44163920BC0017E713 /* CommandsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandsController.h; path = Controllers/CommandsController.h; sourceTree = "<group>"; };
+		17112B461639214D0017E713 /* BaseCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseCommand.cpp; path = Commands/BaseCommand.cpp; sourceTree = "<group>"; };
+		17112B471639214D0017E713 /* BaseCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseCommand.h; path = Commands/BaseCommand.h; sourceTree = "<group>"; };
+		17112B51163921700017E713 /* ChangePropertyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChangePropertyCommand.h; path = Commands/ChangePropertyCommand.h; sourceTree = "<group>"; };
+		17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WidgetSignalsBlocker.cpp; path = Helpers/WidgetSignalsBlocker.cpp; sourceTree = "<group>"; };
+		17112B5816392EA80017E713 /* WidgetSignalsBlocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WidgetSignalsBlocker.h; path = Helpers/WidgetSignalsBlocker.h; sourceTree = "<group>"; };
+		17112B5B16392EC60017E713 /* PropertiesHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesHelper.h; path = Helpers/PropertiesHelper.h; sourceTree = "<group>"; };
+		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
+		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
+		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
+		173AC330162FFFC300A773F5 /* PropertiesGridController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesGridController.h; path = Controllers/PropertiesGridController.h; sourceTree = "<group>"; };
+		173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = controlpropertygridwidget.cpp; path = PropertyGridWidgets/controlpropertygridwidget.cpp; sourceTree = "<group>"; };
+		173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = flagspropertygridwidget.cpp; path = PropertyGridWidgets/flagspropertygridwidget.cpp; sourceTree = "<group>"; };
+		173AC33C1630137C00A773F5 /* controlpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = controlpropertygridwidget.h; path = PropertyGridWidgets/controlpropertygridwidget.h; sourceTree = "<group>"; };
+		173AC33D1630137C00A773F5 /* flagspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = flagspropertygridwidget.h; path = PropertyGridWidgets/flagspropertygridwidget.h; sourceTree = "<group>"; };
+		173AC3421630285A00A773F5 /* PropertyGridWidgetsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyGridWidgetsFactory.cpp; path = PropertyGridWidgets/PropertyGridWidgetsFactory.cpp; sourceTree = "<group>"; };
+		173AC3431630285A00A773F5 /* PropertyGridWidgetsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetsFactory.h; path = PropertyGridWidgets/PropertyGridWidgetsFactory.h; sourceTree = "<group>"; };
+		173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyGridWidgetData.cpp; path = PropertyGridWidgets/PropertyGridWidgetData.cpp; sourceTree = "<group>"; };
+		173AC3461631458000A773F5 /* PropertyGridWidgetData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyGridWidgetData.h; path = PropertyGridWidgets/PropertyGridWidgetData.h; sourceTree = "<group>"; };
+		175313CF16381155000B08FD /* BaseMetadataParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMetadataParams.h; path = Metadata/BaseMetadataParams.h; sourceTree = "<group>"; };
+		1759BE26164A89A80067F498 /* PropertyNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyNames.h; path = Metadata/PropertyNames.h; sourceTree = "<group>"; };
+		17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalizationSystemHelper.cpp; path = Helpers/LocalizationSystemHelper.cpp; sourceTree = "<group>"; };
+		17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalizationSystemHelper.h; path = Helpers/LocalizationSystemHelper.h; sourceTree = "<group>"; };
+		17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BackgroundGridWidgetHelper.cpp; path = Helpers/BackgroundGridWidgetHelper.cpp; sourceTree = "<group>"; };
+		17607FEE16415B7C004E36DE /* BackgroundGridWidgetHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BackgroundGridWidgetHelper.h; path = Helpers/BackgroundGridWidgetHelper.h; sourceTree = "<group>"; };
+		1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIStaticTextMetadata.cpp; path = Metadata/UIStaticTextMetadata.cpp; sourceTree = "<group>"; };
+		1767C42F1636C8F5008D25BD /* UIStaticTextMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIStaticTextMetadata.h; path = Metadata/UIStaticTextMetadata.h; sourceTree = "<group>"; };
+		176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_uitextfieldpropertygridwidget.cpp; sourceTree = "<group>"; };
+		176834A516510759004800D7 /* ui_uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
+		176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = uitextfieldpropertygridwidget.ui; path = PropertyGridWidgets/uitextfieldpropertygridwidget.ui; sourceTree = "<group>"; };
+		176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uitextfieldpropertygridwidget.cpp; path = PropertyGridWidgets/uitextfieldpropertygridwidget.cpp; sourceTree = "<group>"; };
+		176834AA16510910004800D7 /* uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uitextfieldpropertygridwidget.h; path = PropertyGridWidgets/uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
+		176D3942162C2F7C0099AACF /* HierarchyTreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeNode.cpp; path = Models/HierarchyTreeNode.cpp; sourceTree = "<group>"; };
+		176D3943162C2F7C0099AACF /* HierarchyTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeNode.h; path = Models/HierarchyTreeNode.h; sourceTree = "<group>"; };
+		176D3945162C2F960099AACF /* HierarchyTreeRootNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeRootNode.cpp; path = Models/HierarchyTreeRootNode.cpp; sourceTree = "<group>"; };
+		176D3946162C2F960099AACF /* HierarchyTreeRootNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeRootNode.h; path = Models/HierarchyTreeRootNode.h; sourceTree = "<group>"; };
+		176D3948162C2FAE0099AACF /* HierarchyTreePlatformNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreePlatformNode.cpp; path = Models/HierarchyTreePlatformNode.cpp; sourceTree = "<group>"; };
+		176D3949162C2FAE0099AACF /* HierarchyTreePlatformNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreePlatformNode.h; path = Models/HierarchyTreePlatformNode.h; sourceTree = "<group>"; };
+		176D394E162C2FE50099AACF /* HierarchyTreeControlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeControlNode.cpp; path = Models/HierarchyTreeControlNode.cpp; sourceTree = "<group>"; };
+		176D394F162C2FE50099AACF /* HierarchyTreeControlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeControlNode.h; path = Models/HierarchyTreeControlNode.h; sourceTree = "<group>"; };
+		176D3952162C396A0099AACF /* HierarchyTreeController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeController.cpp; path = Controllers/HierarchyTreeController.cpp; sourceTree = "<group>"; };
+		176D3953162C396A0099AACF /* HierarchyTreeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeController.h; path = Controllers/HierarchyTreeController.h; sourceTree = "<group>"; };
+		176D3955162C397E0099AACF /* HierarchyTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTree.cpp; path = Models/HierarchyTree.cpp; sourceTree = "<group>"; };
+		176D3956162C397F0099AACF /* HierarchyTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTree.h; path = Models/HierarchyTree.h; sourceTree = "<group>"; };
+		176D3959162C3CAA0099AACF /* BaseMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMetadata.cpp; path = Metadata/BaseMetadata.cpp; sourceTree = "<group>"; };
+		176D395A162C3CAA0099AACF /* BaseMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMetadata.h; path = Metadata/BaseMetadata.h; sourceTree = "<group>"; };
+		176D395C162C3DF90099AACF /* UIButtonMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIButtonMetadata.cpp; path = Metadata/UIButtonMetadata.cpp; sourceTree = "<group>"; };
+		176D395D162C3DF90099AACF /* UIButtonMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIButtonMetadata.h; path = Metadata/UIButtonMetadata.h; sourceTree = "<group>"; };
+		176D395F162C3E890099AACF /* UIControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIControlMetadata.cpp; path = Metadata/UIControlMetadata.cpp; sourceTree = "<group>"; };
+		176D3960162C3E890099AACF /* UIControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlMetadata.h; path = Metadata/UIControlMetadata.h; sourceTree = "<group>"; };
+		178F303C165677BF008678AD /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtils.cpp; sourceTree = "<group>"; };
+		178F303D165677BF008678AD /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
+		17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_CommandsController.cpp; sourceTree = "<group>"; };
+		17CD340C16397D600061A467 /* moc_backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD340D16397D600061A467 /* moc_BaseMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_BaseMetadata.cpp; sourceTree = "<group>"; };
+		17CD340E16397D600061A467 /* moc_basepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_basepropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD340F16397D600061A467 /* moc_controllist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_controllist.cpp; sourceTree = "<group>"; };
+		17CD341016397D600061A467 /* moc_controlpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_controlpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD341116397D600061A467 /* moc_davaglwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_davaglwidget.cpp; sourceTree = "<group>"; };
+		17CD341216397D600061A467 /* moc_flagspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_flagspropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD341316397D600061A467 /* moc_HierarchyTreeController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_HierarchyTreeController.cpp; sourceTree = "<group>"; };
+		17CD341416397D600061A467 /* moc_hierarchytreewidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_hierarchytreewidget.cpp; sourceTree = "<group>"; };
+		17CD341516397D600061A467 /* moc_librarywidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_librarywidget.cpp; sourceTree = "<group>"; };
+		17CD341616397D600061A467 /* moc_mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_mainwindow.cpp; sourceTree = "<group>"; };
+		17CD341716397D600061A467 /* moc_PlatformMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PlatformMetadata.cpp; sourceTree = "<group>"; };
+		17CD341816397D600061A467 /* moc_platformpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_platformpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD341916397D600061A467 /* moc_PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PropertiesGridController.cpp; sourceTree = "<group>"; };
+		17CD341A16397D600061A467 /* moc_propertygridcontainerwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_propertygridcontainerwidget.cpp; sourceTree = "<group>"; };
+		17CD341B16397D600061A467 /* moc_rectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_rectpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD341C16397D600061A467 /* moc_ScreenMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ScreenMetadata.cpp; sourceTree = "<group>"; };
+		17CD341D16397D600061A467 /* moc_screenpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_screenpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD341E16397D600061A467 /* moc_ScreenWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ScreenWrapper.cpp; sourceTree = "<group>"; };
+		17CD341F16397D600061A467 /* moc_textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_textpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CD342016397D600061A467 /* moc_UIButtonMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UIButtonMetadata.cpp; sourceTree = "<group>"; };
+		17CD342116397D600061A467 /* moc_UIControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UIControlMetadata.cpp; sourceTree = "<group>"; };
+		17CD342216397D600061A467 /* moc_UIStaticTextMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UIStaticTextMetadata.cpp; sourceTree = "<group>"; };
+		17CD342316397D600061A467 /* moc_UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UITextControlMetadata.cpp; sourceTree = "<group>"; };
+		17CED76B163ABD3B00F9B02D /* propertygridcontainerwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = propertygridcontainerwidget.cpp; path = PropertyGridWidgets/propertygridcontainerwidget.cpp; sourceTree = "<group>"; };
+		17CED797163E822F00F9B02D /* moc_statepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_statepropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CED798163E822F00F9B02D /* ui_statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_statepropertygridwidget.h; sourceTree = "<group>"; };
+		17CED79A163E829600F9B02D /* statepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = statepropertygridwidget.cpp; path = PropertyGridWidgets/statepropertygridwidget.cpp; sourceTree = "<group>"; };
+		17CED79B163E829600F9B02D /* statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = statepropertygridwidget.h; path = PropertyGridWidgets/statepropertygridwidget.h; sourceTree = "<group>"; };
+		17DF04D51636803F001F7ED2 /* PlatformMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformMetadata.cpp; path = Metadata/PlatformMetadata.cpp; sourceTree = "<group>"; };
+		17DF04D61636803F001F7ED2 /* PlatformMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformMetadata.h; path = Metadata/PlatformMetadata.h; sourceTree = "<group>"; };
+		17DF04D716368040001F7ED2 /* ScreenMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScreenMetadata.cpp; path = Metadata/ScreenMetadata.cpp; sourceTree = "<group>"; };
+		17DF04D816368040001F7ED2 /* ScreenMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenMetadata.h; path = Metadata/ScreenMetadata.h; sourceTree = "<group>"; };
+		17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platformpropertygridwidget.cpp; path = PropertyGridWidgets/platformpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17DF04E81636850C001F7ED2 /* platformpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platformpropertygridwidget.h; path = PropertyGridWidgets/platformpropertygridwidget.h; sourceTree = "<group>"; };
+		17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenpropertygridwidget.cpp; path = PropertyGridWidgets/screenpropertygridwidget.cpp; sourceTree = "<group>"; };
+		17DF04EA1636850C001F7ED2 /* screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screenpropertygridwidget.h; path = PropertyGridWidgets/screenpropertygridwidget.h; sourceTree = "<group>"; };
+		17E897C9162EE92C00A2A946 /* propertygridcontainerwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = propertygridcontainerwidget.h; path = PropertyGridWidgets/propertygridcontainerwidget.h; sourceTree = "<group>"; };
+		17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetadataFactory.cpp; path = Metadata/MetadataFactory.cpp; sourceTree = "<group>"; };
+		17E897F2162FEB3600A2A946 /* MetadataFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetadataFactory.h; path = Metadata/MetadataFactory.h; sourceTree = "<group>"; };
+		17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_alignspropertygridwidget.h; sourceTree = "<group>"; };
+		17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeNodeExtraData.cpp; path = Models/HierarchyTreeNodeExtraData.cpp; sourceTree = "<group>"; };
+		17F6F49D1647B234003FFA0E /* HierarchyTreeNodeExtraData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeNodeExtraData.h; path = Models/HierarchyTreeNodeExtraData.h; sourceTree = "<group>"; };
+		17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIControlStateHelper.cpp; path = Helpers/UIControlStateHelper.cpp; sourceTree = "<group>"; };
+		17FBCE45163A7ED100FD96C0 /* UIControlStateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlStateHelper.h; path = Helpers/UIControlStateHelper.h; sourceTree = "<group>"; };
+		17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_EditorFontManager.cpp; sourceTree = "<group>"; };
+		17FF15DD16400160001B130F /* createplatformdlg.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = createplatformdlg.ui; path = Dialogs/createplatformdlg.ui; sourceTree = "<group>"; };
+		17FF15DE16400160001B130F /* createscreendlg.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = createscreendlg.ui; path = Dialogs/createscreendlg.ui; sourceTree = "<group>"; };
+		17FF15DF16400160001B130F /* fontmanagerdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = fontmanagerdialog.ui; path = Dialogs/fontmanagerdialog.ui; sourceTree = "<group>"; };
+		17FF15E41640021E001B130F /* backgroundpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = backgroundpropertygridwidget.ui; path = PropertyGridWidgets/backgroundpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15E51640021E001B130F /* basepropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = basepropertygridwidget.ui; path = PropertyGridWidgets/basepropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15E61640021E001B130F /* controlpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = controlpropertygridwidget.ui; path = PropertyGridWidgets/controlpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15E71640021E001B130F /* flagspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = flagspropertygridwidget.ui; path = PropertyGridWidgets/flagspropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15E81640021E001B130F /* platformpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = platformpropertygridwidget.ui; path = PropertyGridWidgets/platformpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15E91640021E001B130F /* propertygridcontainerwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = propertygridcontainerwidget.ui; path = PropertyGridWidgets/propertygridcontainerwidget.ui; sourceTree = "<group>"; };
+		17FF15EA1640021E001B130F /* rectpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = rectpropertygridwidget.ui; path = PropertyGridWidgets/rectpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15EB1640021E001B130F /* screenpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = screenpropertygridwidget.ui; path = PropertyGridWidgets/screenpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15EC1640021E001B130F /* statepropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = statepropertygridwidget.ui; path = PropertyGridWidgets/statepropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15ED1640021E001B130F /* textpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = textpropertygridwidget.ui; path = PropertyGridWidgets/textpropertygridwidget.ui; sourceTree = "<group>"; };
+		17FF15F81640069E001B130F /* localizationeditordialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = localizationeditordialog.ui; path = Dialogs/localizationeditordialog.ui; sourceTree = "<group>"; };
+		17FF15FE16400A75001B130F /* localizationeditordialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = localizationeditordialog.cpp; path = Dialogs/localizationeditordialog.cpp; sourceTree = "<group>"; };
+		17FF15FF16400A75001B130F /* localizationeditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = localizationeditordialog.h; path = Dialogs/localizationeditordialog.h; sourceTree = "<group>"; };
+		17FF160216400AE9001B130F /* ui_localizationeditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_localizationeditordialog.h; sourceTree = "<group>"; };
+		17FF160416400CCA001B130F /* moc_localizationeditordialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_localizationeditordialog.cpp; sourceTree = "<group>"; };
+		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../dava.framework/Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
+		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
+		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../dava.framework/Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
+		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
+		5C190C9515AEC58B005731F8 /* UIEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
+		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5CCC10E615B460BF00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5CCC10E815B460C900DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
+		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
+		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
+		740F35311683200F003B35E7 /* EditorSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorSettings.h; sourceTree = "<group>"; };
+		740F353316832022003B35E7 /* EditorSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorSettings.cpp; sourceTree = "<group>"; };
+		747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = backgroundpropertygridwidget.cpp; path = PropertyGridWidgets/backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
+		747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = backgroundpropertygridwidget.h; path = PropertyGridWidgets/backgroundpropertygridwidget.h; sourceTree = "<group>"; };
+		747FA17D1636A8A3000CEEDA /* moc_backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
+		747FA17E1636A8A3000CEEDA /* ui_backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_backgroundpropertygridwidget.h; sourceTree = "<group>"; };
+		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
+		747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextControlMetadata.h; path = Metadata/UITextControlMetadata.h; sourceTree = "<group>"; };
+		74819F20169F1435000FE4B1 /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineParser.cpp; sourceTree = "<group>"; };
+		74819F21169F1435000FE4B1 /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLineParser.h; sourceTree = "<group>"; };
+		74819F22169F1435000FE4B1 /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefinitionFile.cpp; sourceTree = "<group>"; };
+		74819F23169F1435000FE4B1 /* DefinitionFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionFile.h; sourceTree = "<group>"; };
+		74819F24169F1435000FE4B1 /* ImagePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePacker.cpp; sourceTree = "<group>"; };
+		74819F25169F1435000FE4B1 /* ImagePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePacker.h; sourceTree = "<group>"; };
+		74819F26169F1435000FE4B1 /* PngImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PngImage.cpp; sourceTree = "<group>"; };
+		74819F27169F1435000FE4B1 /* PngImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PngImage.h; sourceTree = "<group>"; };
+		74819F28169F1435000FE4B1 /* TexturePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePacker.cpp; sourceTree = "<group>"; };
+		74819F29169F1435000FE4B1 /* TexturePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturePacker.h; sourceTree = "<group>"; };
+		74819F32169F147B000FE4B1 /* ResourcePacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePacker.h; sourceTree = "<group>"; };
+		74819F33169F1493000FE4B1 /* ResourcePacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourcePacker.cpp; sourceTree = "<group>"; };
+		74819F35169F1946000FE4B1 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
+		74819F36169F1946000FE4B1 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
+		7482C8C51688AA9100435155 /* UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISliderMetadata.cpp; path = Metadata/UISliderMetadata.cpp; sourceTree = "<group>"; };
+		7482C8C61688AA9100435155 /* UISliderMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderMetadata.h; path = Metadata/UISliderMetadata.h; sourceTree = "<group>"; };
+		7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sliderpropertygridwidget.cpp; path = PropertyGridWidgets/sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
+		7482C8C91688AA9F00435155 /* sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sliderpropertygridwidget.h; path = PropertyGridWidgets/sliderpropertygridwidget.h; sourceTree = "<group>"; };
+		7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = sliderpropertygridwidget.ui; path = PropertyGridWidgets/sliderpropertygridwidget.ui; sourceTree = "<group>"; };
+		7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_sliderpropertygridwidget.cpp; sourceTree = "<group>"; };
+		7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UISliderMetadata.cpp; sourceTree = "<group>"; };
+		7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_sliderpropertygridwidget.h; sourceTree = "<group>"; };
+		748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateComboBoxItemDelegate.cpp; sourceTree = "<group>"; };
+		7484342A1648024700920BBD /* StateComboBoxItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateComboBoxItemDelegate.h; sourceTree = "<group>"; };
+		7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_statecomboboxitemdelegate.cpp; sourceTree = "<group>"; };
+		74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourcesManageHelper.cpp; path = Helpers/ResourcesManageHelper.cpp; sourceTree = "<group>"; };
+		74893AD3165A8E8F006B2762 /* ResourcesManageHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourcesManageHelper.h; path = Helpers/ResourcesManageHelper.h; sourceTree = "<group>"; };
+		748955FB1641620200070AE1 /* QColorButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QColorButton.cpp; sourceTree = "<group>"; };
+		748955FC1641620200070AE1 /* QColorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QColorButton.h; sourceTree = "<group>"; };
+		748955FE164162B000070AE1 /* moc_qcolorbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_qcolorbutton.cpp; sourceTree = "<group>"; };
+		748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextFieldMetadata.cpp; path = Metadata/UITextFieldMetadata.cpp; sourceTree = "<group>"; };
+		748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UITextFieldMetadata.h; path = Metadata/UITextFieldMetadata.h; sourceTree = "<group>"; };
+		748E2E5D16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UITextFieldMetadata.cpp; sourceTree = "<group>"; };
+		748EF23F16AE97EF00AC647E /* qrc_icons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qrc_icons.cpp; sourceTree = "<group>"; };
+		7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fontmanagerdialog.cpp; sourceTree = "<group>"; };
+		7492E0E91639445D00DF883A /* fontmanagerdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontmanagerdialog.h; sourceTree = "<group>"; };
+		7492E0F016394A4E00DF883A /* moc_fontmanagerdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_fontmanagerdialog.cpp; sourceTree = "<group>"; };
+		7492E0F116394A4E00DF883A /* ui_fontmanagerdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_fontmanagerdialog.h; sourceTree = "<group>"; };
+		749D71251636920600C99861 /* textpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = textpropertygridwidget.cpp; path = PropertyGridWidgets/textpropertygridwidget.cpp; sourceTree = "<group>"; };
+		749D71261636920600C99861 /* textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textpropertygridwidget.h; path = PropertyGridWidgets/textpropertygridwidget.h; sourceTree = "<group>"; };
+		74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = alignspropertygridwidget.ui; path = PropertyGridWidgets/alignspropertygridwidget.ui; sourceTree = "<group>"; };
+		74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = alignspropertygridwidget.cpp; path = PropertyGridWidgets/alignspropertygridwidget.cpp; sourceTree = "<group>"; };
+		74EED63116B18C7600262D63 /* alignspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alignspropertygridwidget.h; path = PropertyGridWidgets/alignspropertygridwidget.h; sourceTree = "<group>"; };
+		74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_alignspropertygridwidget.cpp; sourceTree = "<group>"; };
+		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../dava.framework/Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
+		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
+		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../dava.framework/Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<group>"; };
+		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<group>"; };
+		C10740DA163A94360069A640 /* createplatformdlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = createplatformdlg.cpp; sourceTree = "<group>"; };
+		C10740DB163A94360069A640 /* createplatformdlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = createplatformdlg.h; sourceTree = "<group>"; };
+		C10740DC163A94360069A640 /* createscreendlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = createscreendlg.cpp; sourceTree = "<group>"; };
+		C10740DD163A94360069A640 /* createscreendlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = createscreendlg.h; sourceTree = "<group>"; };
+		C10740E0163A94440069A640 /* ScreenControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenControl.cpp; sourceTree = "<group>"; };
+		C10740E1163A94450069A640 /* ScreenControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenControl.h; sourceTree = "<group>"; };
+		C10740E2163A94450069A640 /* ScreenManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenManager.cpp; sourceTree = "<group>"; };
+		C10740E3163A94450069A640 /* ScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenManager.h; sourceTree = "<group>"; };
+		C10740EA163A94750069A640 /* moc_createplatformdlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_createplatformdlg.cpp; sourceTree = "<group>"; };
+		C10740EB163A94750069A640 /* moc_createscreendlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_createscreendlg.cpp; sourceTree = "<group>"; };
+		C10740EC163A94750069A640 /* moc_screenmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_screenmanager.cpp; sourceTree = "<group>"; };
+		C10740ED163A94750069A640 /* ui_basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_basepropertygridwidget.h; sourceTree = "<group>"; };
+		C10740EE163A94750069A640 /* ui_controlpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_controlpropertygridwidget.h; sourceTree = "<group>"; };
+		C10740EF163A94750069A640 /* ui_createplatformdlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_createplatformdlg.h; sourceTree = "<group>"; };
+		C10740F0163A94750069A640 /* ui_createscreendlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_createscreendlg.h; sourceTree = "<group>"; };
+		C10740F1163A94750069A640 /* ui_davaglwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_davaglwidget.h; sourceTree = "<group>"; };
+		C10740F2163A94750069A640 /* ui_flagspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_flagspropertygridwidget.h; sourceTree = "<group>"; };
+		C10740F3163A94750069A640 /* ui_hierarchytreewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_hierarchytreewidget.h; sourceTree = "<group>"; };
+		C10740F4163A94750069A640 /* ui_librarywidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_librarywidget.h; sourceTree = "<group>"; };
+		C10740F5163A94750069A640 /* ui_mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_mainwindow.h; sourceTree = "<group>"; };
+		C10740F6163A94750069A640 /* ui_platformpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_platformpropertygridwidget.h; sourceTree = "<group>"; };
+		C10740F7163A94750069A640 /* ui_propertygridcontainerwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_propertygridcontainerwidget.h; sourceTree = "<group>"; };
+		C10740F8163A94750069A640 /* ui_rectpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_rectpropertygridwidget.h; sourceTree = "<group>"; };
+		C10740F9163A94750069A640 /* ui_screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_screenpropertygridwidget.h; sourceTree = "<group>"; };
+		C10740FA163A94750069A640 /* ui_textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_textpropertygridwidget.h; sourceTree = "<group>"; };
+		C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMetadataParams.cpp; path = Metadata/BaseMetadataParams.cpp; sourceTree = "<group>"; };
+		C107415E163E7B740069A640 /* ItemsCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ItemsCommand.cpp; path = Commands/ItemsCommand.cpp; sourceTree = "<group>"; };
+		C107415F163E7B740069A640 /* ItemsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemsCommand.h; path = Commands/ItemsCommand.h; sourceTree = "<group>"; };
+		C107915B16D78C9E0081E58C /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
+		C14FF9C0162EE4DF00F77F70 /* controllist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controllist.cpp; sourceTree = "<group>"; };
+		C14FF9C1162EE4DF00F77F70 /* controllist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = controllist.h; sourceTree = "<group>"; };
+		C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameworkMain.cpp; sourceTree = "<group>"; };
+		C15C2FE2162AD6E400818631 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameworkMain.h; sourceTree = "<group>"; };
+		C15C2FE3162AD6E400818631 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameCore.cpp; sourceTree = "<group>"; };
+		C15C2FE4162AD6E400818631 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCore.h; sourceTree = "<group>"; };
+		C15C2FE5162AD6E400818631 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C15C2FE9162AD6E400818631 /* davaglwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = davaglwidget.cpp; sourceTree = "<group>"; };
+		C15C2FEA162AD6E400818631 /* davaglwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = davaglwidget.h; sourceTree = "<group>"; };
+		C15C2FEB162AD6E400818631 /* mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
+		C15C2FEC162AD6E400818631 /* mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mainwindow.h; sourceTree = "<group>"; };
+		C15C2FF4162AD71C00818631 /* davaglwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = davaglwidget.ui; sourceTree = "<group>"; };
+		C15C2FF5162AD71C00818631 /* mainwindow.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = "<group>"; };
+		C15D3E4F16415A3600161684 /* ControlCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControlCommands.cpp; path = Commands/ControlCommands.cpp; sourceTree = "<group>"; };
+		C15D3E5016415A3600161684 /* ControlCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlCommands.h; path = Commands/ControlCommands.h; sourceTree = "<group>"; };
+		C161DCE916400E9F00068417 /* hierarchytreecontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hierarchytreecontrol.cpp; sourceTree = "<group>"; };
+		C161DCEA16400E9F00068417 /* hierarchytreecontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hierarchytreecontrol.h; sourceTree = "<group>"; };
+		C161DCEC16400F4E00068417 /* moc_hierarchytreecontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_hierarchytreecontrol.cpp; sourceTree = "<group>"; };
+		C17246101637E18900709AAF /* EditorFontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorFontManager.cpp; sourceTree = "<group>"; };
+		C17246111637E18900709AAF /* EditorFontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorFontManager.h; sourceTree = "<group>"; };
+		C1BBE3511647C74100EF3CA9 /* CopyPasteController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CopyPasteController.cpp; path = Controllers/CopyPasteController.cpp; sourceTree = "<group>"; };
+		C1BBE3521647C74100EF3CA9 /* CopyPasteController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CopyPasteController.h; path = Controllers/CopyPasteController.h; sourceTree = "<group>"; };
+		C1BBE3541647DAC300EF3CA9 /* PasteCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PasteCommand.cpp; path = Commands/PasteCommand.cpp; sourceTree = "<group>"; };
+		C1BBE3551647DAC300EF3CA9 /* PasteCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PasteCommand.h; path = Commands/PasteCommand.h; sourceTree = "<group>"; };
+		C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScreenWrapper.cpp; sourceTree = "<group>"; };
+		C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenWrapper.h; sourceTree = "<group>"; };
+		C1C62A37162D370D000C1B32 /* HierarchyTreeScreenNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeScreenNode.cpp; path = Models/HierarchyTreeScreenNode.cpp; sourceTree = "<group>"; };
+		C1C62A38162D370D000C1B32 /* HierarchyTreeScreenNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeScreenNode.h; path = Models/HierarchyTreeScreenNode.h; sourceTree = "<group>"; };
+		C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultScreen.cpp; sourceTree = "<group>"; };
+		C1C62A3B162D371E000C1B32 /* DefaultScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultScreen.h; sourceTree = "<group>"; };
+		C1C62A3F162D4991000C1B32 /* hierarchytreewidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hierarchytreewidget.cpp; sourceTree = "<group>"; };
+		C1C62A40162D4991000C1B32 /* hierarchytreewidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hierarchytreewidget.h; sourceTree = "<group>"; };
+		C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = hierarchytreewidget.ui; sourceTree = "<group>"; };
+		C1C62A6F162EC800000C1B32 /* librarywidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = librarywidget.ui; sourceTree = "<group>"; };
+		C1C62A71162EC809000C1B32 /* librarywidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = librarywidget.cpp; sourceTree = "<group>"; };
+		C1C62A72162EC809000C1B32 /* librarywidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = librarywidget.h; sourceTree = "<group>"; };
+		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
+		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
+		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A1043669E6E5A7426EA502A /* Frameworks & Libraries */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */,
+				5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */,
+				5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */,
+				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
+				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
+				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
+				A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */,
+				A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */,
+				77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */,
+				BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */,
+				0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */,
+			);
+			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05596AB53D8D521C69802C27 /* TemplateProjectQt */ = {
+			isa = PBXGroup;
+			children = (
+				C107915B16D78C9E0081E58C /* Framework.xcodeproj */,
+				5C190C9E15AEC6F9005731F8 /* Data */,
+				5C190CA015AEC704005731F8 /* Info.plist */,
+				C15C2FDF162AD6E400818631 /* Classes */,
+				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
+				C15C2FC9162AD5DD00818631 /* GeneratedFiles */,
+				5C190C9615AEC58B005731F8 /* Products */,
+				C90923F6A2E654060C34742C /* Source [bundle data] */,
+				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
+				C15C2FF3162AD71C00818631 /* UI */,
+			);
+			name = TemplateProjectQt;
+			sourceTree = "<group>";
+		};
+		1700E40B162EAD760069650D /* PropertyGridWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */,
+				74EED63116B18C7600262D63 /* alignspropertygridwidget.h */,
+				7482C8C81688AA9F00435155 /* sliderpropertygridwidget.cpp */,
+				7482C8C91688AA9F00435155 /* sliderpropertygridwidget.h */,
+				176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */,
+				176834AA16510910004800D7 /* uitextfieldpropertygridwidget.h */,
+				17CED79A163E829600F9B02D /* statepropertygridwidget.cpp */,
+				17CED79B163E829600F9B02D /* statepropertygridwidget.h */,
+				17CED76B163ABD3B00F9B02D /* propertygridcontainerwidget.cpp */,
+				747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */,
+				747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */,
+				749D71251636920600C99861 /* textpropertygridwidget.cpp */,
+				749D71261636920600C99861 /* textpropertygridwidget.h */,
+				17DF04E71636850C001F7ED2 /* platformpropertygridwidget.cpp */,
+				17DF04E81636850C001F7ED2 /* platformpropertygridwidget.h */,
+				17DF04E91636850C001F7ED2 /* screenpropertygridwidget.cpp */,
+				17DF04EA1636850C001F7ED2 /* screenpropertygridwidget.h */,
+				173AC33C1630137C00A773F5 /* controlpropertygridwidget.h */,
+				173AC33D1630137C00A773F5 /* flagspropertygridwidget.h */,
+				173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */,
+				173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */,
+				17E897C9162EE92C00A2A946 /* propertygridcontainerwidget.h */,
+				1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */,
+				1700E41C162EB8C60069650D /* rectpropertygridwidget.h */,
+				1700E416162EB2C20069650D /* basepropertygridwidget.cpp */,
+				1700E417162EB2C20069650D /* basepropertygridwidget.h */,
+				173AC3421630285A00A773F5 /* PropertyGridWidgetsFactory.cpp */,
+				173AC3431630285A00A773F5 /* PropertyGridWidgetsFactory.h */,
+				173AC3451631457F00A773F5 /* PropertyGridWidgetData.cpp */,
+				173AC3461631458000A773F5 /* PropertyGridWidgetData.h */,
+			);
+			name = PropertyGridWidgets;
+			sourceTree = "<group>";
+		};
+		17112B5616392E880017E713 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */,
+				74893AD3165A8E8F006B2762 /* ResourcesManageHelper.h */,
+				17607FED16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp */,
+				17607FEE16415B7C004E36DE /* BackgroundGridWidgetHelper.h */,
+				17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */,
+				17112B5816392EA80017E713 /* WidgetSignalsBlocker.h */,
+				17112B5B16392EC60017E713 /* PropertiesHelper.h */,
+				17FBCE44163A7ED100FD96C0 /* UIControlStateHelper.cpp */,
+				17FBCE45163A7ED100FD96C0 /* UIControlStateHelper.h */,
+				17607FC0164121FB004E36DE /* LocalizationSystemHelper.cpp */,
+				17607FC1164121FB004E36DE /* LocalizationSystemHelper.h */,
+				178F303C165677BF008678AD /* StringUtils.cpp */,
+				178F303D165677BF008678AD /* StringUtils.h */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		176D3941162C2F5D0099AACF /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C1C62A37162D370D000C1B32 /* HierarchyTreeScreenNode.cpp */,
+				C1C62A38162D370D000C1B32 /* HierarchyTreeScreenNode.h */,
+				176D3942162C2F7C0099AACF /* HierarchyTreeNode.cpp */,
+				176D3943162C2F7C0099AACF /* HierarchyTreeNode.h */,
+				176D3945162C2F960099AACF /* HierarchyTreeRootNode.cpp */,
+				176D3946162C2F960099AACF /* HierarchyTreeRootNode.h */,
+				176D3948162C2FAE0099AACF /* HierarchyTreePlatformNode.cpp */,
+				176D3949162C2FAE0099AACF /* HierarchyTreePlatformNode.h */,
+				176D394E162C2FE50099AACF /* HierarchyTreeControlNode.cpp */,
+				176D394F162C2FE50099AACF /* HierarchyTreeControlNode.h */,
+				176D3955162C397E0099AACF /* HierarchyTree.cpp */,
+				176D3956162C397F0099AACF /* HierarchyTree.h */,
+				17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */,
+				17F6F49D1647B234003FFA0E /* HierarchyTreeNodeExtraData.h */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		176D3951162C38FF0099AACF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				C1BBE3511647C74100EF3CA9 /* CopyPasteController.cpp */,
+				C1BBE3521647C74100EF3CA9 /* CopyPasteController.h */,
+				173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */,
+				173AC330162FFFC300A773F5 /* PropertiesGridController.h */,
+				176D3952162C396A0099AACF /* HierarchyTreeController.cpp */,
+				176D3953162C396A0099AACF /* HierarchyTreeController.h */,
+				17112B43163920BC0017E713 /* CommandsController.cpp */,
+				17112B44163920BC0017E713 /* CommandsController.h */,
+				173339E51694472600E98820 /* UndoRedoController.cpp */,
+				173339E61694472600E98820 /* UndoRedoController.h */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		176D3958162C3C8C0099AACF /* Metadata */ = {
+			isa = PBXGroup;
+			children = (
+				7482C8C51688AA9100435155 /* UISliderMetadata.cpp */,
+				7482C8C61688AA9100435155 /* UISliderMetadata.h */,
+				748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */,
+				748E2E5B1649684300C77EB8 /* UITextFieldMetadata.h */,
+				17DF04D51636803F001F7ED2 /* PlatformMetadata.cpp */,
+				17DF04D716368040001F7ED2 /* ScreenMetadata.cpp */,
+				176D395C162C3DF90099AACF /* UIButtonMetadata.cpp */,
+				176D395F162C3E890099AACF /* UIControlMetadata.cpp */,
+				176D3960162C3E890099AACF /* UIControlMetadata.h */,
+				1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */,
+				1767C42F1636C8F5008D25BD /* UIStaticTextMetadata.h */,
+				747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */,
+				747FA19B1636DBED000CEEDA /* UITextControlMetadata.h */,
+				176D3959162C3CAA0099AACF /* BaseMetadata.cpp */,
+				176D395A162C3CAA0099AACF /* BaseMetadata.h */,
+				C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */,
+				175313CF16381155000B08FD /* BaseMetadataParams.h */,
+				17E897F1162FEB3600A2A946 /* MetadataFactory.cpp */,
+				17E897F2162FEB3600A2A946 /* MetadataFactory.h */,
+				17DF04D61636803F001F7ED2 /* PlatformMetadata.h */,
+				17DF04D816368040001F7ED2 /* ScreenMetadata.h */,
+				176D395D162C3DF90099AACF /* UIButtonMetadata.h */,
+				1759BE26164A89A80067F498 /* PropertyNames.h */,
+			);
+			name = Metadata;
+			sourceTree = "<group>";
+		};
+		17F2EF2916355E1000DEE054 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				C15D3E4F16415A3600161684 /* ControlCommands.cpp */,
+				C15D3E5016415A3600161684 /* ControlCommands.h */,
+				17112B51163921700017E713 /* ChangePropertyCommand.h */,
+				17112B461639214D0017E713 /* BaseCommand.cpp */,
+				17112B471639214D0017E713 /* BaseCommand.h */,
+				C107415E163E7B740069A640 /* ItemsCommand.cpp */,
+				C107415F163E7B740069A640 /* ItemsCommand.h */,
+				C1BBE3541647DAC300EF3CA9 /* PasteCommand.cpp */,
+				C1BBE3551647DAC300EF3CA9 /* PasteCommand.h */,
+			);
+			name = Commands;
+			sourceTree = "<group>";
+		};
+		17FF15DC16400155001B130F /* Dialogs */ = {
+			isa = PBXGroup;
+			children = (
+				17FF15F81640069E001B130F /* localizationeditordialog.ui */,
+				17FF15DD16400160001B130F /* createplatformdlg.ui */,
+				17FF15DE16400160001B130F /* createscreendlg.ui */,
+				17FF15DF16400160001B130F /* fontmanagerdialog.ui */,
+			);
+			name = Dialogs;
+			sourceTree = "<group>";
+		};
+		17FF15E316400207001B130F /* PropertyGridWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */,
+				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
+				176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */,
+				17FF15E41640021E001B130F /* backgroundpropertygridwidget.ui */,
+				17FF15E51640021E001B130F /* basepropertygridwidget.ui */,
+				17FF15E61640021E001B130F /* controlpropertygridwidget.ui */,
+				17FF15E71640021E001B130F /* flagspropertygridwidget.ui */,
+				17FF15E81640021E001B130F /* platformpropertygridwidget.ui */,
+				17FF15E91640021E001B130F /* propertygridcontainerwidget.ui */,
+				17FF15EA1640021E001B130F /* rectpropertygridwidget.ui */,
+				17FF15EB1640021E001B130F /* screenpropertygridwidget.ui */,
+				17FF15EC1640021E001B130F /* statepropertygridwidget.ui */,
+				17FF15ED1640021E001B130F /* textpropertygridwidget.ui */,
+			);
+			name = PropertyGridWidgets;
+			sourceTree = "<group>";
+		};
+		17FF15FD16400A41001B130F /* Dialogs */ = {
+			isa = PBXGroup;
+			children = (
+				7492E0E91639445D00DF883A /* fontmanagerdialog.h */,
+				7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */,
+				17FF15FE16400A75001B130F /* localizationeditordialog.cpp */,
+				17FF15FF16400A75001B130F /* localizationeditordialog.h */,
+			);
+			name = Dialogs;
+			sourceTree = "<group>";
+		};
+		17FF160616401361001B130F /* CustomContols */ = {
+			isa = PBXGroup;
+			children = (
+				748434291648024700920BBD /* StateComboBoxItemDelegate.cpp */,
+				7484342A1648024700920BBD /* StateComboBoxItemDelegate.h */,
+				748955FC1641620200070AE1 /* QColorButton.h */,
+				748955FB1641620200070AE1 /* QColorButton.cpp */,
+			);
+			name = CustomContols;
+			sourceTree = "<group>";
+		};
+		5C190C9615AEC58B005731F8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C190C9515AEC58B005731F8 /* UIEditor.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		74819F17169F1435000FE4B1 /* ResourcePacker */ = {
+			isa = PBXGroup;
+			children = (
+				74819F1F169F1435000FE4B1 /* TexturePacker */,
+				74819F32169F147B000FE4B1 /* ResourcePacker.h */,
+				74819F33169F1493000FE4B1 /* ResourcePacker.cpp */,
+			);
+			path = ResourcePacker;
+			sourceTree = "<group>";
+		};
+		74819F1F169F1435000FE4B1 /* TexturePacker */ = {
+			isa = PBXGroup;
+			children = (
+				74819F35169F1946000FE4B1 /* PVRConverter.cpp */,
+				74819F36169F1946000FE4B1 /* PVRConverter.h */,
+				74819F20169F1435000FE4B1 /* CommandLineParser.cpp */,
+				74819F21169F1435000FE4B1 /* CommandLineParser.h */,
+				74819F22169F1435000FE4B1 /* DefinitionFile.cpp */,
+				74819F23169F1435000FE4B1 /* DefinitionFile.h */,
+				74819F24169F1435000FE4B1 /* ImagePacker.cpp */,
+				74819F25169F1435000FE4B1 /* ImagePacker.h */,
+				74819F26169F1435000FE4B1 /* PngImage.cpp */,
+				74819F27169F1435000FE4B1 /* PngImage.h */,
+				74819F28169F1435000FE4B1 /* TexturePacker.cpp */,
+				74819F29169F1435000FE4B1 /* TexturePacker.h */,
+			);
+			path = TexturePacker;
+			sourceTree = "<group>";
+		};
+		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
+			isa = PBXGroup;
+			children = (
+				00BD80432B2C7B49A27A3DC5 /* UIEditor.pro */,
+			);
+			name = "Sources [qmake]";
+			sourceTree = "<group>";
+		};
+		C107915C16D78C9E0081E58C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C107916216D78C9E0081E58C /* libFramework.a */,
+				C107916416D78C9E0081E58C /* libFrameworkQt.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
+			isa = PBXGroup;
+			children = (
+				17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */,
+				74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */,
+				748EF23F16AE97EF00AC647E /* qrc_icons.cpp */,
+				7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */,
+				7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */,
+				7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */,
+				17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */,
+				176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */,
+				176834A516510759004800D7 /* ui_uitextfieldpropertygridwidget.h */,
+				748E2E5D16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp */,
+				7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */,
+				748955FE164162B000070AE1 /* moc_qcolorbutton.cpp */,
+				C161DCEC16400F4E00068417 /* moc_hierarchytreecontrol.cpp */,
+				17FF160416400CCA001B130F /* moc_localizationeditordialog.cpp */,
+				17FF160216400AE9001B130F /* ui_localizationeditordialog.h */,
+				17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */,
+				17CED797163E822F00F9B02D /* moc_statepropertygridwidget.cpp */,
+				17CED798163E822F00F9B02D /* ui_statepropertygridwidget.h */,
+				747FA17D1636A8A3000CEEDA /* moc_backgroundpropertygridwidget.cpp */,
+				17CD340D16397D600061A467 /* moc_BaseMetadata.cpp */,
+				17CD340E16397D600061A467 /* moc_basepropertygridwidget.cpp */,
+				17CD340F16397D600061A467 /* moc_controllist.cpp */,
+				17CD341016397D600061A467 /* moc_controlpropertygridwidget.cpp */,
+				C10740EA163A94750069A640 /* moc_createplatformdlg.cpp */,
+				C10740EB163A94750069A640 /* moc_createscreendlg.cpp */,
+				17CD341116397D600061A467 /* moc_davaglwidget.cpp */,
+				17CD341216397D600061A467 /* moc_flagspropertygridwidget.cpp */,
+				7492E0F016394A4E00DF883A /* moc_fontmanagerdialog.cpp */,
+				17CD341316397D600061A467 /* moc_HierarchyTreeController.cpp */,
+				17CD341416397D600061A467 /* moc_hierarchytreewidget.cpp */,
+				17CD341516397D600061A467 /* moc_librarywidget.cpp */,
+				17CD341616397D600061A467 /* moc_mainwindow.cpp */,
+				17CD341716397D600061A467 /* moc_PlatformMetadata.cpp */,
+				17CD341816397D600061A467 /* moc_platformpropertygridwidget.cpp */,
+				17CD341916397D600061A467 /* moc_PropertiesGridController.cpp */,
+				17CD341A16397D600061A467 /* moc_propertygridcontainerwidget.cpp */,
+				17CD341B16397D600061A467 /* moc_rectpropertygridwidget.cpp */,
+				C10740EC163A94750069A640 /* moc_screenmanager.cpp */,
+				17CD341C16397D600061A467 /* moc_ScreenMetadata.cpp */,
+				17CD341D16397D600061A467 /* moc_screenpropertygridwidget.cpp */,
+				17CD341E16397D600061A467 /* moc_ScreenWrapper.cpp */,
+				17CD341F16397D600061A467 /* moc_textpropertygridwidget.cpp */,
+				17CD342016397D600061A467 /* moc_UIButtonMetadata.cpp */,
+				17CD342116397D600061A467 /* moc_UIControlMetadata.cpp */,
+				17CD342216397D600061A467 /* moc_UIStaticTextMetadata.cpp */,
+				17CD342316397D600061A467 /* moc_UITextControlMetadata.cpp */,
+				747FA17E1636A8A3000CEEDA /* ui_backgroundpropertygridwidget.h */,
+				C10740ED163A94750069A640 /* ui_basepropertygridwidget.h */,
+				C10740EE163A94750069A640 /* ui_controlpropertygridwidget.h */,
+				C10740EF163A94750069A640 /* ui_createplatformdlg.h */,
+				C10740F0163A94750069A640 /* ui_createscreendlg.h */,
+				C10740F1163A94750069A640 /* ui_davaglwidget.h */,
+				C10740F2163A94750069A640 /* ui_flagspropertygridwidget.h */,
+				7492E0F116394A4E00DF883A /* ui_fontmanagerdialog.h */,
+				C10740F3163A94750069A640 /* ui_hierarchytreewidget.h */,
+				C10740F4163A94750069A640 /* ui_librarywidget.h */,
+				C10740F5163A94750069A640 /* ui_mainwindow.h */,
+				C10740F6163A94750069A640 /* ui_platformpropertygridwidget.h */,
+				C10740F7163A94750069A640 /* ui_propertygridcontainerwidget.h */,
+				C10740F8163A94750069A640 /* ui_rectpropertygridwidget.h */,
+				C10740F9163A94750069A640 /* ui_screenpropertygridwidget.h */,
+				C10740FA163A94750069A640 /* ui_textpropertygridwidget.h */,
+				17CD340C16397D600061A467 /* moc_backgroundpropertygridwidget.cpp */,
+			);
+			path = GeneratedFiles;
+			sourceTree = "<group>";
+		};
+		C15C2FDF162AD6E400818631 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C1C62A3A162D371E000C1B32 /* DefaultScreen.cpp */,
+				C17246101637E18900709AAF /* EditorFontManager.cpp */,
+				740F353316832022003B35E7 /* EditorSettings.cpp */,
+				C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */,
+				C15C2FE3162AD6E400818631 /* GameCore.cpp */,
+				C15C2FE5162AD6E400818631 /* main.cpp */,
+				C10740E0163A94440069A640 /* ScreenControl.cpp */,
+				C10740E2163A94450069A640 /* ScreenManager.cpp */,
+				C1C62A22162C33FC000C1B32 /* ScreenWrapper.cpp */,
+				C1C62A3B162D371E000C1B32 /* DefaultScreen.h */,
+				C17246111637E18900709AAF /* EditorFontManager.h */,
+				740F35311683200F003B35E7 /* EditorSettings.h */,
+				C15C2FE2162AD6E400818631 /* FrameworkMain.h */,
+				C15C2FE4162AD6E400818631 /* GameCore.h */,
+				C10740E1163A94450069A640 /* ScreenControl.h */,
+				C10740E3163A94450069A640 /* ScreenManager.h */,
+				C1C62A23162C33FC000C1B32 /* ScreenWrapper.h */,
+				17F2EF2916355E1000DEE054 /* Commands */,
+				176D3951162C38FF0099AACF /* Controllers */,
+				17112B5616392E880017E713 /* Helpers */,
+				176D3958162C3C8C0099AACF /* Metadata */,
+				176D3941162C2F5D0099AACF /* Models */,
+				74819F17169F1435000FE4B1 /* ResourcePacker */,
+				C15C2FE8162AD6E400818631 /* UI */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		C15C2FE8162AD6E400818631 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C161DCE916400E9F00068417 /* hierarchytreecontrol.cpp */,
+				C161DCEA16400E9F00068417 /* hierarchytreecontrol.h */,
+				17FF160616401361001B130F /* CustomContols */,
+				17FF15FD16400A41001B130F /* Dialogs */,
+				1700E40B162EAD760069650D /* PropertyGridWidgets */,
+				C14FF9C0162EE4DF00F77F70 /* controllist.cpp */,
+				C10740DA163A94360069A640 /* createplatformdlg.cpp */,
+				C10740DC163A94360069A640 /* createscreendlg.cpp */,
+				C15C2FE9162AD6E400818631 /* davaglwidget.cpp */,
+				C1C62A3F162D4991000C1B32 /* hierarchytreewidget.cpp */,
+				C1C62A71162EC809000C1B32 /* librarywidget.cpp */,
+				C15C2FEB162AD6E400818631 /* mainwindow.cpp */,
+				C14FF9C1162EE4DF00F77F70 /* controllist.h */,
+				C10740DB163A94360069A640 /* createplatformdlg.h */,
+				C10740DD163A94360069A640 /* createscreendlg.h */,
+				C15C2FEA162AD6E400818631 /* davaglwidget.h */,
+				C1C62A40162D4991000C1B32 /* hierarchytreewidget.h */,
+				C1C62A72162EC809000C1B32 /* librarywidget.h */,
+				C15C2FEC162AD6E400818631 /* mainwindow.h */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C15C2FF3162AD71C00818631 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				17FF15E316400207001B130F /* PropertyGridWidgets */,
+				17FF15DC16400155001B130F /* Dialogs */,
+				C1C62A6F162EC800000C1B32 /* librarywidget.ui */,
+				C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */,
+				C15C2FF4162AD71C00818631 /* davaglwidget.ui */,
+				C15C2FF5162AD71C00818631 /* mainwindow.ui */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C90923F6A2E654060C34742C /* Source [bundle data] */ = {
+			isa = PBXGroup;
+			children = (
+				FAC1F4E071D49CE850E70770 /* Data/ */,
+			);
+			name = "Source [bundle data]";
+			sourceTree = "<group>";
+		};
+		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				5CCC10E815B460C900DA83EB /* libbz2.dylib */,
+				5CCC10E615B460BF00DA83EB /* libz.dylib */,
+				336CB11D929F5E35FA69020F /* Cocoa.framework */,
+				52F4216CE5F81A8073DE30C0 /* OpenAL.framework */,
+				8157E7438190A1EEF4A4D363 /* mongodb_macos */,
+				548C5E52292D4DA256C12EBD /* png_macos */,
+				6C21256244E578A9DE07EE60 /* xml_macos */,
+				CBE0854C74E7E8A8F67923BE /* yaml_macos */,
+				5B2DE73738F678B7C6177179 /* curl_ios_mac */,
+				29FF4FD1BCB9408020402F99 /* theora_macos */,
+				81BBDA0F1849B4A35FAB7D00 /* freetype_macos */,
+				F7C12D3D2FE75302773F34BB /* vorbisfile_macos */,
+				8159B90213E2E13CB65C75B4 /* vorbis_macos */,
+				2A689518AF9C22C7AA97C9EF /* ogg_macos */,
+				6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */,
+				9B8EE51E126C761F3F797428 /* QtGui.framework */,
+				419FFB6CDDEB353FF0A4F469 /* QtCore.framework */,
+				82153068A36B6EA46DD82A06 /* QtNetwork.framework */,
+				DA18A6831232F53228631AD1 /* OpenGL.framework */,
+				C6766F86E49E9C8701C8E637 /* AGL.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C44821495B0959249FEE50BE /* UIEditor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "UIEditor" */;
+			buildPhases = (
+				5C42E09515B42E1C00F71425 /* Qt Qmake */,
+				5C42E09615B42E2E00F71425 /* Qt Preprocessors */,
+				C29B8785722055ED95EF7B57 /* Build Sources */,
+				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
+				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C107916616D78CC20081E58C /* PBXTargetDependency */,
+			);
+			name = UIEditor;
+			productName = TemplateProjectQt;
+			productReference = 5C190C9515AEC58B005731F8 /* UIEditor.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91B15E841AA80083484172DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "UIEditor" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 05596AB53D8D521C69802C27 /* TemplateProjectQt */;
+			productRefGroup = 5C190C9615AEC58B005731F8 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C107915C16D78C9E0081E58C /* Products */;
+					ProjectRef = C107915B16D78C9E0081E58C /* Framework.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				C44821495B0959249FEE50BE /* UIEditor */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C107916216D78C9E0081E58C /* libFramework.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFramework.a;
+			remoteRef = C107916116D78C9E0081E58C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C107916416D78C9E0081E58C /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = C107916316D78C9E0081E58C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3787F99312C85FF0073FD7BA /* Bundle Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */,
+				C15C2FF6162AD71C00818631 /* davaglwidget.ui in Bundle Resources */,
+				C15C2FF7162AD71C00818631 /* mainwindow.ui in Bundle Resources */,
+				C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */,
+				C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */,
+				17FF15E016400160001B130F /* createplatformdlg.ui in Bundle Resources */,
+				17FF15E116400160001B130F /* createscreendlg.ui in Bundle Resources */,
+				17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */,
+				17FF15EE1640021E001B130F /* backgroundpropertygridwidget.ui in Bundle Resources */,
+				17FF15EF1640021E001B130F /* basepropertygridwidget.ui in Bundle Resources */,
+				17FF15F01640021E001B130F /* controlpropertygridwidget.ui in Bundle Resources */,
+				17FF15F11640021E001B130F /* flagspropertygridwidget.ui in Bundle Resources */,
+				17FF15F21640021E001B130F /* platformpropertygridwidget.ui in Bundle Resources */,
+				17FF15F31640021E001B130F /* propertygridcontainerwidget.ui in Bundle Resources */,
+				17FF15F41640021E001B130F /* rectpropertygridwidget.ui in Bundle Resources */,
+				17FF15F51640021E001B130F /* screenpropertygridwidget.ui in Bundle Resources */,
+				17FF15F61640021E001B130F /* statepropertygridwidget.ui in Bundle Resources */,
+				17FF15F71640021E001B130F /* textpropertygridwidget.ui in Bundle Resources */,
+				17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */,
+				176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */,
+				7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */,
+				74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */,
+			);
+			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5C42E09515B42E1C00F71425 /* Qt Qmake */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Qt Qmake";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C $PROJECT_DIR -f 'UIEditor.xcodeproj/qt_makeqmake.mak'";
+		};
+		5C42E09615B42E2E00F71425 /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Qt Preprocessors";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -d GeneratedFiles ]; then\n    mkdir GeneratedFiles\nfi\n\nmake -C $PROJECT_DIR -f 'UIEditor.xcodeproj/qt_preprocess.mak'";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C29B8785722055ED95EF7B57 /* Build Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C15C2FED162AD6E400818631 /* FrameworkMain.cpp in Build Sources */,
+				C15C2FEE162AD6E400818631 /* GameCore.cpp in Build Sources */,
+				C15C2FEF162AD6E400818631 /* main.cpp in Build Sources */,
+				C15C2FF1162AD6E400818631 /* davaglwidget.cpp in Build Sources */,
+				C15C2FF2162AD6E400818631 /* mainwindow.cpp in Build Sources */,
+				176D3944162C2F7C0099AACF /* HierarchyTreeNode.cpp in Build Sources */,
+				176D3947162C2F960099AACF /* HierarchyTreeRootNode.cpp in Build Sources */,
+				176D394A162C2FAE0099AACF /* HierarchyTreePlatformNode.cpp in Build Sources */,
+				176D3950162C2FE50099AACF /* HierarchyTreeControlNode.cpp in Build Sources */,
+				176D3954162C396A0099AACF /* HierarchyTreeController.cpp in Build Sources */,
+				176D3957162C397F0099AACF /* HierarchyTree.cpp in Build Sources */,
+				176D395B162C3CAA0099AACF /* BaseMetadata.cpp in Build Sources */,
+				176D395E162C3DF90099AACF /* UIButtonMetadata.cpp in Build Sources */,
+				176D3961162C3E890099AACF /* UIControlMetadata.cpp in Build Sources */,
+				C1C62A24162C33FC000C1B32 /* ScreenWrapper.cpp in Build Sources */,
+				C1C62A39162D370E000C1B32 /* HierarchyTreeScreenNode.cpp in Build Sources */,
+				C1C62A3C162D371E000C1B32 /* DefaultScreen.cpp in Build Sources */,
+				C1C62A41162D4991000C1B32 /* hierarchytreewidget.cpp in Build Sources */,
+				1700E418162EB2C20069650D /* basepropertygridwidget.cpp in Build Sources */,
+				1700E41D162EB8C60069650D /* rectpropertygridwidget.cpp in Build Sources */,
+				C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */,
+				C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */,
+				17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */,
+				173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */,
+				173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */,
+				173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */,
+				173AC3441630285B00A773F5 /* PropertyGridWidgetsFactory.cpp in Build Sources */,
+				173AC3471631458000A773F5 /* PropertyGridWidgetData.cpp in Build Sources */,
+				749D71271636920600C99861 /* textpropertygridwidget.cpp in Build Sources */,
+				17DF04D916368040001F7ED2 /* PlatformMetadata.cpp in Build Sources */,
+				17DF04DA16368040001F7ED2 /* ScreenMetadata.cpp in Build Sources */,
+				17DF04EB1636850C001F7ED2 /* platformpropertygridwidget.cpp in Build Sources */,
+				17DF04EC1636850C001F7ED2 /* screenpropertygridwidget.cpp in Build Sources */,
+				747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */,
+				1767C4301636C8F5008D25BD /* UIStaticTextMetadata.cpp in Build Sources */,
+				747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */,
+				C17246121637E18900709AAF /* EditorFontManager.cpp in Build Sources */,
+				7492E0EA1639445D00DF883A /* fontmanagerdialog.cpp in Build Sources */,
+				7492E0F216394A4E00DF883A /* moc_fontmanagerdialog.cpp in Build Sources */,
+				17112B45163920BC0017E713 /* CommandsController.cpp in Build Sources */,
+				17112B481639214D0017E713 /* BaseCommand.cpp in Build Sources */,
+				17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */,
+				17CD342416397D600061A467 /* moc_backgroundpropertygridwidget.cpp in Build Sources */,
+				17CD342516397D600061A467 /* moc_BaseMetadata.cpp in Build Sources */,
+				17CD342616397D600061A467 /* moc_basepropertygridwidget.cpp in Build Sources */,
+				17CD342716397D600061A467 /* moc_controllist.cpp in Build Sources */,
+				17CD342816397D600061A467 /* moc_controlpropertygridwidget.cpp in Build Sources */,
+				17CD342916397D600061A467 /* moc_davaglwidget.cpp in Build Sources */,
+				17CD342A16397D600061A467 /* moc_flagspropertygridwidget.cpp in Build Sources */,
+				17CD342B16397D600061A467 /* moc_HierarchyTreeController.cpp in Build Sources */,
+				17CD342C16397D600061A467 /* moc_hierarchytreewidget.cpp in Build Sources */,
+				17CD342D16397D600061A467 /* moc_librarywidget.cpp in Build Sources */,
+				17CD342E16397D600061A467 /* moc_mainwindow.cpp in Build Sources */,
+				17CD342F16397D600061A467 /* moc_PlatformMetadata.cpp in Build Sources */,
+				17CD343016397D600061A467 /* moc_platformpropertygridwidget.cpp in Build Sources */,
+				17CD343116397D600061A467 /* moc_PropertiesGridController.cpp in Build Sources */,
+				17CD343216397D600061A467 /* moc_propertygridcontainerwidget.cpp in Build Sources */,
+				17CD343316397D600061A467 /* moc_rectpropertygridwidget.cpp in Build Sources */,
+				17CD343416397D600061A467 /* moc_ScreenMetadata.cpp in Build Sources */,
+				17CD343516397D600061A467 /* moc_screenpropertygridwidget.cpp in Build Sources */,
+				17CD343616397D600061A467 /* moc_ScreenWrapper.cpp in Build Sources */,
+				17CD343716397D600061A467 /* moc_textpropertygridwidget.cpp in Build Sources */,
+				17CD343816397D600061A467 /* moc_UIButtonMetadata.cpp in Build Sources */,
+				17CD343916397D600061A467 /* moc_UIControlMetadata.cpp in Build Sources */,
+				17CD343A16397D600061A467 /* moc_UIStaticTextMetadata.cpp in Build Sources */,
+				17CD343B16397D600061A467 /* moc_UITextControlMetadata.cpp in Build Sources */,
+				C10740DE163A94360069A640 /* createplatformdlg.cpp in Build Sources */,
+				C10740DF163A94360069A640 /* createscreendlg.cpp in Build Sources */,
+				C10740E4163A94450069A640 /* ScreenControl.cpp in Build Sources */,
+				C10740E5163A94450069A640 /* ScreenManager.cpp in Build Sources */,
+				C10740FB163A94750069A640 /* moc_createplatformdlg.cpp in Build Sources */,
+				C10740FC163A94750069A640 /* moc_createscreendlg.cpp in Build Sources */,
+				C10740FD163A94750069A640 /* moc_screenmanager.cpp in Build Sources */,
+				C10740FF163A960D0069A640 /* BaseMetadataParams.cpp in Build Sources */,
+				17CED76C163ABD3B00F9B02D /* propertygridcontainerwidget.cpp in Build Sources */,
+				C1074160163E7B740069A640 /* ItemsCommand.cpp in Build Sources */,
+				17FBCE46163A7ED100FD96C0 /* UIControlStateHelper.cpp in Build Sources */,
+				17CED799163E822F00F9B02D /* moc_statepropertygridwidget.cpp in Build Sources */,
+				17CED79C163E829600F9B02D /* statepropertygridwidget.cpp in Build Sources */,
+				17AFA3E9163EDCE400F6CB5B /* moc_CommandsController.cpp in Build Sources */,
+				C161DCEB16400E9F00068417 /* hierarchytreecontrol.cpp in Build Sources */,
+				C161DCED16400F4E00068417 /* moc_hierarchytreecontrol.cpp in Build Sources */,
+				17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */,
+				17FF160516400CCA001B130F /* moc_localizationeditordialog.cpp in Build Sources */,
+				17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */,
+				C15D3E5116415A3600161684 /* ControlCommands.cpp in Build Sources */,
+				748955FD1641620200070AE1 /* QColorButton.cpp in Build Sources */,
+				748955FF164162B000070AE1 /* moc_qcolorbutton.cpp in Build Sources */,
+				17607FEF16415B7C004E36DE /* BackgroundGridWidgetHelper.cpp in Build Sources */,
+				7484342B1648024700920BBD /* StateComboBoxItemDelegate.cpp in Build Sources */,
+				7484342D1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp in Build Sources */,
+				17F6F49E1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp in Build Sources */,
+				C1BBE3531647C74100EF3CA9 /* CopyPasteController.cpp in Build Sources */,
+				C1BBE3561647DAC300EF3CA9 /* PasteCommand.cpp in Build Sources */,
+				748E2E5C1649684300C77EB8 /* UITextFieldMetadata.cpp in Build Sources */,
+				748E2E5E16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp in Build Sources */,
+				176834A616510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp in Build Sources */,
+				176834AB16510910004800D7 /* uitextfieldpropertygridwidget.cpp in Build Sources */,
+				178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */,
+				74893AD4165A8E90006B2762 /* ResourcesManageHelper.cpp in Build Sources */,
+				17FD40371663D57B00BE42A2 /* moc_EditorFontManager.cpp in Build Sources */,
+				740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */,
+				7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */,
+				7482C8CA1688AA9F00435155 /* sliderpropertygridwidget.cpp in Build Sources */,
+				7482C8D01688AB7C00435155 /* moc_sliderpropertygridwidget.cpp in Build Sources */,
+				7482C8D11688AB7C00435155 /* moc_UISliderMetadata.cpp in Build Sources */,
+				173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */,
+				74819F2D169F1435000FE4B1 /* CommandLineParser.cpp in Build Sources */,
+				74819F2E169F1435000FE4B1 /* DefinitionFile.cpp in Build Sources */,
+				74819F2F169F1435000FE4B1 /* ImagePacker.cpp in Build Sources */,
+				74819F30169F1435000FE4B1 /* PngImage.cpp in Build Sources */,
+				74819F31169F1435000FE4B1 /* TexturePacker.cpp in Build Sources */,
+				74819F34169F1493000FE4B1 /* ResourcePacker.cpp in Build Sources */,
+				74819F37169F1946000FE4B1 /* PVRConverter.cpp in Build Sources */,
+				748EF24016AE97EF00AC647E /* qrc_icons.cpp in Build Sources */,
+				74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */,
+				74EED63416B18D5500262D63 /* moc_alignspropertygridwidget.cpp in Build Sources */,
+			);
+			name = "Build Sources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C107916616D78CC20081E58C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FrameworkQt;
+			targetProxy = C107916516D78CC20081E58C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4B72B24813252891014BCF61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../dava.framework/Sources/Internal,
+					../dava.framework/Sources/External,
+					../dava.framework/Sources/External/Freetype,
+					../dava.framework/Libs/oggvorbis/include,
+					../dava.framework/Sources/Libs/include,
+					Classes,
+					../dava.framework/Libs/libs,
+					../dava.framework/Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
+				);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_OPENGL_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_OPENGL_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+					"-lMagickCore",
+					"-lMagick++",
+					"-lMagickWand",
+				);
+				PRODUCT_NAME = TemplateProjectQt;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8C7174830A1E4DCBA0332EC1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = DAVA_SAVE_TO_YAML;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					./Classes,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"../../Libs/ImageMagick-6.7.4/",
+					"../../Libs/ImageMagick-6.7.4/delegates/include",
+					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					../../Libs/libpng/include/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"../../Libs/ImageMagick-6.7.4/lib/",
+					"../../Libs/ImageMagick-6.7.4/delegates/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = UIEditor;
+				SDKROOT = macosx10.7;
+			};
+			name = Release;
+		};
+		BEC09A62E69C3553534FF35E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DAVA_DEBUG,
+					DAVA_SAVE_TO_YAML,
+				);
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../../Sources/Internal,
+					../../Sources/External,
+					../../Sources/External/Freetype,
+					../../Libs/oggvorbis/include,
+					../../Sources/Libs/include,
+					./Classes,
+					../../Libs/libs,
+					../../Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"../../Libs/ImageMagick-6.7.4/",
+					"../../Libs/ImageMagick-6.7.4/delegates/include",
+					"../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					../../Libs/libpng/include/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"../../Libs/ImageMagick-6.7.4/lib/",
+					"../../Libs/ImageMagick-6.7.4/delegates/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = UIEditor;
+				SDKROOT = macosx10.7;
+			};
+			name = Debug;
+		};
+		D70590BEB531B51029F711BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtNetwork",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtGui",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework/Versions/4/Headers",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtOpenGL",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include",
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/mkspecs/macx-xcode",
+					../dava.framework/Sources/Internal,
+					../dava.framework/Sources/External,
+					../dava.framework/Sources/External/Freetype,
+					../dava.framework/Libs/oggvorbis/include,
+					../dava.framework/Sources/Libs/include,
+					Classes,
+					../dava.framework/Libs/libs,
+					../dava.framework/Libs/freetype/include,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					/System/Library/Frameworks/,
+					../dava.framework/Libs/libs/,
+					../dava.framework/Libs/freetype/lib/,
+					../dava.framework/Libs/oggvorbis/lib/,
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
+				);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_OPENGL_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_OPENGL_LIB",
+					"-DQT_GUI_LIB",
+					"-DQT_NETWORK_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
+					"-lz",
+					"-L../../Libs/libs/",
+					"-L../../Libs/freetype/lib/",
+					"-L../../Libs/oggvorbis/lib/",
+					"-lMagickCore",
+					"-lMagick++",
+					"-lMagickWand",
+				);
+				PRODUCT_NAME = TemplateProjectQt;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "UIEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BEC09A62E69C3553534FF35E /* Debug */,
+				8C7174830A1E4DCBA0332EC1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CC82A9286117DFED018F418F /* Build configuration list for PBXProject "UIEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B72B24813252891014BCF61 /* Debug */,
+				D70590BEB531B51029F711BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91B15E841AA80083484172DE /* Project object */;
+}

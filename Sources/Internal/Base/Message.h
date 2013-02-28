@@ -42,8 +42,8 @@ class MessageBase : public BaseObject
 public:
 	virtual ~MessageBase() {};
 	virtual void operator () (BaseObject *, void *, void *) = 0;
-	virtual MessageBase * Clone() = 0;
-	virtual bool IsEqual(MessageBase * message) = 0;
+	virtual MessageBase * Clone() const = 0;
+	virtual bool IsEqual(const MessageBase * message) const = 0;
 
 };
 
@@ -64,14 +64,14 @@ public:
 		(targetObject->*targetFunction)(callerObject, userData, callerData);
 	}
 	
-	virtual MessageBase * Clone()
+	virtual MessageBase * Clone() const
 	{
 		return new MessageBaseClassFunctionImpl(targetObject, targetFunction);
 	}
 	
-	virtual bool IsEqual(MessageBase * messageBase)
+	virtual bool IsEqual(const MessageBase * messageBase) const
 	{
-		MessageBaseClassFunctionImpl<T> * t = dynamic_cast<MessageBaseClassFunctionImpl<T>*> (messageBase);
+		const MessageBaseClassFunctionImpl<T> * t = dynamic_cast<const MessageBaseClassFunctionImpl<T>*> (messageBase);
 		if (t != 0)
 		{
 			if (targetObject == t->targetObject && targetFunction == t->targetFunction)return true;
@@ -94,14 +94,14 @@ public:
 		(*targetFunction)(callerObject, userData, callerData);
 	}
 	
-	virtual MessageBase * Clone()
+	virtual MessageBase * Clone() const
 	{
 		return new MessageBaseStaticFunctionImpl(targetFunction);
 	}
 	
-	virtual bool IsEqual(MessageBase * messageBase)
+	virtual bool IsEqual(const MessageBase * messageBase) const
 	{
-		MessageBaseStaticFunctionImpl * t = dynamic_cast<MessageBaseStaticFunctionImpl*> (messageBase);
+		const MessageBaseStaticFunctionImpl * t = dynamic_cast<const MessageBaseStaticFunctionImpl*> (messageBase);
 		if (t != 0)
 		{
 			if (targetFunction == t->targetFunction)return true;
@@ -186,6 +186,7 @@ public:
 	
 	Message & operator =(const Message & msg)
 	{
+		SafeRelease(messageBase);
 		messageBase = SafeRetain(msg.messageBase);
 		userData = msg.userData;
 		return *this;
@@ -196,7 +197,7 @@ public:
 		userData = newData;
 	}
     
-    bool IsEmpty()
+    bool IsEmpty() const
     {
         return (messageBase==0);
     }

@@ -24,22 +24,30 @@ namespace DAVA
 class AndroidSystemDelegate
 {
 public:
+	AndroidSystemDelegate(JavaVM *vm);
+
 	virtual void ShowKeyboard() = 0;
 	virtual void HideKeyboard() = 0;
 	virtual bool DownloadHttpFile(const String & url, const String & documentsPathname) = 0;
     
     virtual GLint RenderBuffer() = 0;
 	virtual GLint FrameBuffer() = 0;
+
+	JNIEnv* GetEnvironment() const {return environment;};
+	JavaVM* GetVM() const {return vm;};
+protected:
+	JNIEnv* environment;
+	JavaVM* vm;
 };
 
 
 
 class Thread;
-class CoreAndroidPlatform: public Core
+class CorePlatformAndroid: public Core
 {
 public:
 
-	CoreAndroidPlatform();
+	CorePlatformAndroid();
 
 	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate);
 
@@ -68,7 +76,11 @@ public:
 
 	AAssetManager * GetAssetManager();
 	void SetAssetManager(AAssetManager * mngr);
+
+	const String& GetExternalStoragePathname() const {return externalStorage;};
 	
+	AndroidSystemDelegate* GetAndroidSystemDelegate() const;
+
 private:
 
 	void QuitAction();
@@ -87,13 +99,15 @@ private:
 
 	bool foreground;
 
-    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
-    
+	UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+
 	Vector<DAVA::UIEvent> totalTouches;
 	int32 touchPhase;
 
 	AndroidSystemDelegate *androidDelegate;
 	AAssetManager * assetMngr;
+
+	String externalStorage;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

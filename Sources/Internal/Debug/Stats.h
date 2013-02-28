@@ -34,6 +34,8 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/File.h"
 #include "Base/DynamicObjectCache.h"
+#include "Base/FastNameMap.h"
+//#include "Base/HashMap.h"
 
 namespace DAVA
 {
@@ -82,32 +84,63 @@ namespace DAVA
     
  
  */
+class ImmediateTimeMeasure
+{
+public:
+    ImmediateTimeMeasure(const FastName & name);
+    ~ImmediateTimeMeasure();
+    
+private:
+    FastName name;
+    uint64 time;
+};
+    
+class TimeMeasure
+{
+private:
+    struct FunctionMeasure
+    {
+		FunctionMeasure()
+		:	parent(0)
+		{
+		}
+        FastName name;
+        uint32 frameCounter;
+        uint64 timeStart;
+        uint64 timeSpent;
+        HashMap<FunctionMeasure *, FunctionMeasure *> children;
+        FunctionMeasure * parent;
+    };
+    
+    // Now it should work for single thread, but can be extended to multithreaded time measure
+    struct ThreadTimeStamps
+    {
+        List<FunctionMeasure*> topFunctions;
+        HashMap<FastName, FunctionMeasure*> functions;
+    };
+    
+    static ThreadTimeStamps mainThread;
+
+public:
+    TimeMeasure(const FastName & blockName);
+    ~TimeMeasure();
+    
+    static void Dump(FunctionMeasure * function = 0, uint32 level = 0);
+    static void ClearFunctions();
+    
+    static TimeMeasure * activeTimeMeasure;
+    static FunctionMeasure * lastframeTopFunction;
+    
+    TimeMeasure * parent;
+    FunctionMeasure * function;
+    
+};
+    
 class Stats : public StaticSingleton<Stats>
 {
 public:
     Stats();
     virtual ~Stats();
-    
-    /**
-        \brief Register name of tracking event, and it's description.
-        \param[in] eventName name of the tracking event.
-        \param[in] eventDescription description of the tracking event. 
-     */
-    void RegisterEvent(const String & eventName, const String & eventDescription);
-    
-    /**
-        \brief Begin time measure for the particular event and object instance. 
-        \param[in] eventName name of event we want to begin tracking for.
-        \param[in] owner pointer to instance we want to begin tracking for. 
-    */
-    void BeginTimeMeasure(const String & eventName, BaseObject * owner);
-    
-    /**
-        \brief End time measure for the particular event and object instance. 
-        \param[in] eventName name of event we want to begin tracking for.
-        \param[in] owner pointer to instance we want to begin tracking for. 
-     */
-    void EndTimeMeasure(const String & eventName, BaseObject * owner);
     
     /**
         \brief Function enables automatic output of measured values to log, every N frames. 
@@ -127,41 +160,19 @@ public:
     
 private:
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    struct Event
-    {
-        enum eEventType
-        {
-            TYPE_EVENT_BEGIN = 0,
-            TYPE_EVENT_END,
-        };
-        uint32 type;
-        uint32 id;
-        uint64 time;
-        BaseObject * owner;
-    };
     int32 frame;
     int32 skipFrameCount;
-    
-    uint32 globalId;
-    
-    struct EventDescription
-    {
-        uint32 id;
-        String name;
-        String description;
-        uint32 parent;
-        List<uint32> childs;
-        uint32 time;
-    };
-        
-    Map<String, uint32> eventIds;
-    Map<uint32, EventDescription> eventMap;
-    Vector<std::pair<String, uint32> > sortedNames;
-    
-    DynamicObjectCacheData<Event> cache;
-    List<Event*> events;
 #endif
 };
+    
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+#define TIME_PROFILE(name) static FastName fastName(name); TimeMeasure timeMeasure(fastName);
+#define IMM_TIME_PROFILE(name) static FastName fastName(name); ImmediateTimeMeasure immTimeMeasure(fastName);
+#else
+#define TIME_PROFILE(name)
+#define IMM_TIME_PROFILE(name)
+#endif
+
 
 
 };

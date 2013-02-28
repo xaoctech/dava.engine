@@ -12,9 +12,6 @@ public:
 	virtual ~ParticleEmitterPropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-
-protected:
-	void OnOpenEditor(BaseObject * object, void * userData, void * callerData);
 };
 
 #endif //__PARTCLEEMITTER_PROPERTY_CONTROL_H__

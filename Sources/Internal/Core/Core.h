@@ -48,6 +48,8 @@ namespace DAVA
 	
 #if defined(__DAVAENGINE_WIN32__)
 	typedef HINSTANCE AppHandle;
+#elif defined(__DAVAENGINE_ANDROID__)
+    typedef struct android_app* AppHandle;
 #else
 	typedef uint32 AppHandle;
 #endif 
@@ -248,6 +250,7 @@ public:
 	virtual int32 GetDesirableResourceIndex();
 	virtual int32 GetBaseResourceIndex();
 	
+    virtual uint32 GetScreenDPI();
 	
 	/*
 		\brief Mouse cursor for the platforms where it make sense (Win32, MacOS X) 
@@ -302,7 +305,7 @@ public:
     inline bool IsActive();
 	void SetIsActive(bool isActive);
 	
-	virtual void GoBackground();	
+	virtual void GoBackground(bool isLock);
 	
 	
 	/**
@@ -316,9 +319,14 @@ public:
     eDeviceFamily GetDeviceFamily();
     
     void EnableReloadResourceOnResize(bool enable);
+	
+	// Needs to be overriden for the platforms where it has sence (MacOS, iOS).
+	virtual void* GetOpenGLView() { return NULL; };
+	
+protected:
+	int32 screenOrientation;
 
 private:
-	int32 screenOrientation;
 	float32 screenWidth;
 	float32 screenHeight;
 	

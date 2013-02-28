@@ -89,27 +89,27 @@ Sprite*	UIControlBackground::GetSprite()
 {
 	return spr;	
 }
-int32	UIControlBackground::GetFrame()
+int32	UIControlBackground::GetFrame() const
 {
 	return frame;
 }
-int32	UIControlBackground::GetAlign()
+int32	UIControlBackground::GetAlign() const
 {
 	return align;
 }
 
-int32	UIControlBackground::GetModification()
+int32	UIControlBackground::GetModification() const
 {
 	return spriteModification;
 }
 
-UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType()
+UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType() const
 {
 	return (eColorInheritType)colorInheritType;
 }
 
 
-UIControlBackground::eDrawType	UIControlBackground::GetDrawType()
+UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 {
 	return (UIControlBackground::eDrawType)type;
 }
@@ -159,12 +159,12 @@ void UIControlBackground::SetPerPixelAccuracyType(ePerPixelAccuracyType accuracy
     perPixelAccuracyType = accuracyType;
 }
     
-UIControlBackground::ePerPixelAccuracyType UIControlBackground::GetPerPixelAccuracyType()
+UIControlBackground::ePerPixelAccuracyType UIControlBackground::GetPerPixelAccuracyType() const
 {
     return perPixelAccuracyType;
 }
 	
-const Color &UIControlBackground::GetDrawColor()
+const Color &UIControlBackground::GetDrawColor() const
 {
 	return drawColor;
 }
@@ -723,6 +723,14 @@ void UIControlBackground::SetTopBottomStretchCap(float32 _topStretchCap)
 	topStretchCap = _topStretchCap;
 }
 	
+float32 UIControlBackground::GetLeftRightStretchCap() const
+{
+    return leftStretchCap;
+}
 	
+float32 UIControlBackground::GetTopBottomStretchCap() const
+{
+    return topStretchCap;
+}	
 
 };

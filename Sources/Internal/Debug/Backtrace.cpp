@@ -13,6 +13,89 @@ namespace DAVA
 {
 //namespace Backtrace 
 //{
+class BacktraceTree
+{
+public:
+    class BacktraceTreeNode
+    {
+    public:
+        BacktraceTreeNode(void * _pointer, BacktraceTreeNode *parent)
+        {
+            pointer = _pointer;
+        }
+        ~BacktraceTreeNode()
+        {
+            for (uint32 k = 0; k < children.size(); ++k)
+            {
+                delete children[k];
+                children[k] = 0;
+            }
+            children.clear();
+        }
+        
+        void Insert(void * ptr)
+        {
+            BacktraceTreeNode * newNode = new BacktraceTreeNode(ptr, this);
+            children.push_back(newNode);
+            std::sort(children.begin(), children.end());
+        }
+        BacktraceTreeNode * parent;
+        void * pointer;
+        Vector<BacktraceTreeNode*> children;
+    };
+    
+    BacktraceTreeNode * head;
+    
+    BacktraceTree()
+    {
+        head = new BacktraceTreeNode(0, 0);
+    }
+    
+    ~BacktraceTree()
+    {
+        delete head;
+        head = 0;
+    }
+    
+    void Insert(Backtrace * backtrace)
+    {
+        Insert(head, backtrace, backtrace->size - 1);
+    }
+    
+    void Insert(BacktraceTreeNode * head, Backtrace * backtrace, uint32 depth)
+    {
+        uint32 size = (uint32)head->children.size();
+        for (uint32 k = 0; k < size; ++k)
+        {
+            if (head->children[k]->pointer == backtrace->array[depth])
+            {
+                Insert(head->children[k], backtrace, depth - 1);
+            }
+        }
+        
+        head->Insert(backtrace->array[depth]);
+        Insert(head->children[(uint32)head->children.size() - 1], backtrace, depth - 1);
+    }
+        
+    Backtrace* GetBacktraceByTreeNode(BacktraceTreeNode * node)
+    {
+        Backtrace * backtrace = (Backtrace*) malloc(sizeof(Backtrace));
+        
+        backtrace->size = 0;
+        while(1)
+        {
+            backtrace->array[backtrace->size] = node->pointer;
+            backtrace->size++;
+            node = node->parent;
+            if (node->pointer == 0)break;
+        }
+        return 0;
+    }
+};
+
+    
+    
+    
     Backtrace * CreateBacktrace()
     {
         Backtrace * bt = (Backtrace*) malloc(sizeof(Backtrace));

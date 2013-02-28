@@ -83,7 +83,6 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     }
 
     
-    
     propertyList->AddBoolProperty("property.material.isopaque");
     propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
     

@@ -5,6 +5,7 @@
 */
 
 #include "FastName.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
@@ -20,11 +21,11 @@ FastName::FastName(const char *name)
 	FastNameDB *db = FastNameDB::Instance();
 
 	// search if that name is already in hash
-	if(db->namesHash.HasKey(name))
+	if(db->namesHash.IsKey(name))
 	{
 		// already exist, so we just need to set the same index to this object
 		index = db->namesHash[name];
-		db->namesRefCounts[index]++;
+		AddRef(index);
 	}
 	else
 	{
@@ -59,38 +60,33 @@ FastName::FastName(const char *name)
 }
 
 FastName::FastName(const FastName &_name)
+    : index(-1)
 {
+	RemRef(index);
 	index = _name.index;
-	FastNameDB::Instance()->namesRefCounts[index]++;
+	AddRef(index);
 }
 
 FastName::~FastName()
 {
-	FastNameDB *db = FastNameDB::Instance();
+	RemRef(index);
+}
 
-	db->namesRefCounts[index]--;
-	const char *tmp = db->namesTable[index];
-
-	if(0 == db->namesRefCounts[index])
+const char* FastName::c_str() const
+{
+	if(index > 0)
 	{
-		// remove name and index from hash
-		db->namesHash.Remove(db->namesTable[index]);
-
-		// delete allocated memory for this string
-		free((void *) db->namesTable[index]);
-
-		// remove name from names table
-		db->namesTable[index] = NULL;
-
-		// remember that this index is empty already
-		db->namesEmptyIndexes.push_back(index);
+        return FastNameDB::Instance()->namesTable[index];
 	}
+    
+	return NULL;
 }
 
 FastName& FastName::operator=(const FastName &_name)
 {
+	RemRef(index);
 	index = _name.index;
-	FastNameDB::Instance()->namesRefCounts[index]++;
+	AddRef(index);
 	return *this;
 }
 
@@ -104,9 +100,46 @@ bool FastName::operator!=(const FastName &_name) const
 	return index != _name.index;
 }
 
+const char* FastName::operator*() const
+{
+    return c_str();
+}
+
 int FastName::Index() const
 {
 	return index;
+}
+
+void FastName::AddRef(int i) const
+{
+	if(i > 0)
+	{
+		FastNameDB *db = FastNameDB::Instance();
+		db->namesRefCounts[i]++;
+	}
+}
+
+void FastName::RemRef(int i) const
+{
+	if(i > 0)
+	{
+		FastNameDB *db = FastNameDB::Instance();
+		db->namesRefCounts[i]--;
+		if(0 == db->namesRefCounts[i])
+		{
+			// remove name and index from hash
+			db->namesHash.Remove(db->namesTable[i]);
+
+			// delete allocated memory for this string
+			free((void *) db->namesTable[i]);
+
+			// remove name from names table
+			db->namesTable[i] = NULL;
+
+			// remember that this index is empty already
+			db->namesEmptyIndexes.push_back(i);
+		}
+	}
 }
 
 };

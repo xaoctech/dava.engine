@@ -70,6 +70,7 @@ WASDCameraController::WASDCameraController(float32 newSpeed)
     : CameraController(newSpeed)
     , viewZAngle(0)
     , viewYAngle(0)
+	, lastCamera(NULL)
 {
 
 }
@@ -85,6 +86,13 @@ void WASDCameraController::Update(float32 timeElapsed)
 		return;
     UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
 	Camera * camera = currScene->GetCurrentCamera();
+
+	if(camera != lastCamera)
+	{
+		lastCamera = camera;
+		UpdateAngels(camera);
+	}
+
 	if(!tf && camera)
     {
         float32 moveSpeed = speed * timeElapsed;        
@@ -158,30 +166,16 @@ void WASDCameraController::Update(float32 timeElapsed)
 
 void WASDCameraController::SetScene(Scene *_scene)
 {
+	Camera *camera = NULL;
+
 	CameraController::SetScene(_scene);
 
-	if (currScene == 0)
-		return;
-	Camera * camera = currScene->GetCurrentCamera();	
-    if (!camera)return;
+	if(NULL != currScene)
+	{
+		camera = currScene->GetCurrentCamera();
+	}
 
-	Vector3 dir = camera->GetDirection();
-	
- 	Vector2 dirXY(dir.x, dir.y);
- 	dirXY.Normalize();
- 	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
-	
-	Vector3 dirXY0(dir.x, dir.y, 0.0f);
-	dirXY0.Normalize();
-
-	float32 cosA = dirXY0.DotProduct(dir);
-	viewYAngle = RadToDeg(acos(cosA));
- 
- 	if(viewYAngle > MAX_ANGLE)
- 		viewYAngle -= 360;
- 
- 	if(viewYAngle < -MAX_ANGLE)
- 		viewYAngle += 360;
+	UpdateAngels(camera);
 }
 	
 void WASDCameraController::Input(UIEvent * event)
@@ -315,10 +309,7 @@ void WASDCameraController::LookAtSelection()
     Camera * camera = currScene->GetCurrentCamera();
     if (!camera)return;
 
-    if (    !selection
-        ||  dynamic_cast<Camera*>(selection)
-        ||  dynamic_cast<LandscapeNode *>(selection)
-        )
+    if ( !selection || GetCamera(selection) || GetLandscape(selection))
     {
         return;
     }
@@ -338,7 +329,35 @@ void WASDCameraController::LookAtSelection()
     camera->SetTarget(c);
     camera->SetPosition(c - (dir * (boxSize + camera->GetZNear() * 1.5f)));
 }
-    
+
+void WASDCameraController::UpdateAngels(Camera * camera)
+{
+	if(NULL != camera)
+	{
+		Vector3 dir = camera->GetDirection();
+
+		Vector2 dirXY(dir.x, dir.y);
+		dirXY.Normalize();
+		viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
+
+		Vector3 dirXY0(dir.x, dir.y, 0.0f);
+		dirXY0.Normalize();
+
+		float32 cosA = dirXY0.DotProduct(dir);
+		viewYAngle = RadToDeg(acos(cosA));
+
+		if(viewYAngle > MAX_ANGLE)
+			viewYAngle -= 360;
+
+		if(viewYAngle < -MAX_ANGLE)
+			viewYAngle += 360;
+	}
+	else
+	{
+		viewYAngle = 0;
+		viewZAngle = 0;
+	}
+}
 
 void WASDCameraController::UpdateCam2But(Camera * camera)
 {
@@ -359,7 +378,7 @@ void WASDCameraController::UpdateCam2But(Camera * camera)
     mt2 *= mt;
     
     Vector3 dir = Vector3(0.f, 10.f, 0.f) * mt2;
-    camera->SetDirection(dir);		
+    camera->SetDirection(dir);
 }
 
 void WASDCameraController::UpdateCamAlt3But(Camera * camera)

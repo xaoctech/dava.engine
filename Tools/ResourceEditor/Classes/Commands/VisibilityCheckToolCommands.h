@@ -3,6 +3,7 @@
 
 #include "Command.h"
 #include "DAVAEngine.h"
+#include "../SceneEditor/LandscapeEditorVisibilityCheckTool.h"
 
 using namespace DAVA;
 
@@ -51,6 +52,44 @@ protected:
 	uint32 size;
 	
 	virtual void Execute();
+};
+
+class CommandPlacePointVisibilityTool: public Command
+{
+public:
+	CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint);
+	virtual ~CommandPlacePointVisibilityTool();
+
+protected:
+	Vector2 point;
+	LandscapeEditorVisibilityCheckTool* editor;
+
+	Vector2 oldPoint;
+	bool oldPointIsSet;
+	Image* oldImage;
+
+	LandscapeEditorVisibilityCheckTool* GetEditor();
+
+	virtual void Execute();
+	virtual void Cancel();
+};
+
+class CommandPlaceAreaVisibilityTool: public Command
+{
+public:
+	CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize);
+	virtual ~CommandPlaceAreaVisibilityTool();
+
+protected:
+	Vector2 point;
+	uint32 size;
+
+	Image* oldImage;
+
+	LandscapeEditorVisibilityCheckTool* GetEditor();
+
+	virtual void Execute();
+	virtual void Cancel();
 };
 
 #endif

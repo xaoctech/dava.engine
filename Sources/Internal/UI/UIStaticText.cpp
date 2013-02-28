@@ -34,6 +34,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "Render/2D/FontManager.h"
 
 namespace DAVA 
 {
@@ -96,6 +97,13 @@ void UIStaticText::SetFont(Font * _font)
 	PrepareSprite();
 }
 
+void UIStaticText::SetFontColor(const Color& fontColor)
+{
+    textBlock->SetRectSize(size);
+	textBlock->SetFontColor(fontColor);
+	PrepareSprite();
+}
+    
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 {
 	textBlock->SetRectSize(size);
@@ -112,7 +120,12 @@ void UIStaticText::SetAlign(int32 _align)
 {
 	textBlock->SetAlign(_align);
 }
-	
+
+int32 UIStaticText::GetAlign() const
+{
+	return textBlock->GetAlign();
+}
+
 const Vector2 &UIStaticText::GetTextSize()
 {
 	if (textBlock->IsSpriteReady())
@@ -191,7 +204,61 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	{
 		SetText(LocalizedString(textNode->AsWString()));
 	}
+
+	YamlNode * alignNode = node->Get("align");
+	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
+}
+
+YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
+{
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+
+    // Sprite node is not needed for UITextField.
+    YamlNode *spriteNode = node->Get("sprite");
+    if (spriteNode)
+    {
+        node->RemoveNodeFromMap("sprite");
+    }
+	
+	UIStaticText *baseControl = new UIStaticText();	
+
+    //Temp variable
+    VariantType *nodeValue = new VariantType();
     
+    //Control Type
+    node->Set("type", "UIStaticText", true);
+
+    //Font
+    //Get font name and put it here
+    nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
+    node->Set("font", nodeValue);
+
+    //Text
+    nodeValue->SetWideString(GetText());
+    node->Set("text", nodeValue);    
+    //Multiline
+	if (baseControl->textBlock->GetMultiline() != this->textBlock->GetMultiline())
+	{
+    	node->Set("multiline", this->textBlock->GetMultiline());
+	}
+    //multilineBySymbol
+	if (baseControl->textBlock->GetMultilineBySymbol() != this->textBlock->GetMultilineBySymbol())
+	{
+    	node->Set("multilineBySymbol", this->textBlock->GetMultilineBySymbol());
+	}
+    //fitting - STRING OF INT???
+	if (baseControl->textBlock->GetFittingOption() != this->textBlock->GetFittingOption())
+	{
+    	node->Set("fitting", this->textBlock->GetFittingOption());
+	}
+    
+	// Align
+	node->AddNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()), true);
+
+    SafeDelete(nodeValue);
+	SafeRelease(baseControl);
+    
+    return node;
 }
 
 };

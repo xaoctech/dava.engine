@@ -53,8 +53,7 @@ int alphasortAndroid(const dirent **a, const dirent **b)
 
 FileList::FileList(const String & filepath)
 {
-	path = FileSystem::Instance()->GetCanonicalPath(filepath);
-	path = FileSystem::Instance()->SystemPathForFrameworkPath(path);
+	path = FileSystem::Instance()->SystemPathForFrameworkPath(filepath);
 
 // Windows version
 #if defined(__DAVAENGINE_WIN32__)

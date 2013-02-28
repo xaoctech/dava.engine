@@ -67,7 +67,7 @@ void TouchAction::TouchMove(const Vector2 &point)
     }
     else
     {
-#ifdef __DAVAENGINE_IPHONE__        
+#if defштув(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)        
         Logger::Warning("TouchAction::TouchMove point=(%f, %f) ignored no touch down found", point.x, point.y);
 #else
         touchMove.phase = UIEvent::PHASE_MOVE;

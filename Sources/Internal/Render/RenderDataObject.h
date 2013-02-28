@@ -48,13 +48,13 @@ public:
     RenderDataStream();
     virtual ~RenderDataStream();
     
-    void Set(eVertexDataType type, int32 size, int32 stride, void * pointer);
+    void Set(eVertexDataType type, int32 size, int32 stride, const void * pointer);
     
     eVertexFormat formatMark;
     eVertexDataType type;
     int32 size;
     int32 stride;
-    void * pointer;
+    const void * pointer;
 #if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     void * savedPointerData;
 #endif //#if defined (__DAVAENGINE_ANDROID__)
@@ -66,10 +66,10 @@ public:
     RenderDataObject();
     virtual ~RenderDataObject();
     
-    RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
-    uint32 GetResultFormat();
+    RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer);
+    uint32 GetResultFormat() const;
 
-    uint32 GetStreamCount() { return (uint32)streamArray.size(); };
+    uint32 GetStreamCount() const { return (uint32)streamArray.size(); };
     RenderDataStream * GetStream(uint32 index) { return streamArray[index]; }
     /*
         We think that render data object can pack data automatically. 
@@ -88,7 +88,7 @@ public:
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
     void BuildIndexBuffer();
-    uint32 GetIndexBufferID() { return indexBuffer; };
+    uint32 GetIndexBufferID() const { return indexBuffer; };
 
     
 private:

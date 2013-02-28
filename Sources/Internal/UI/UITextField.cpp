@@ -34,6 +34,10 @@
 #include "Input/KeyboardDevice.h"
 #include "UI/UIYamlLoader.h"
 #include "UI/UIControlSystem.h"
+#include "Render/2D/FontManager.h"
+#ifdef __DAVAENGINE_ANDROID__
+#include "UITextFieldAndroid.h"
+#endif
 
 extern void CreateTextField(DAVA::UITextField *);
 extern void ReleaseTextField();
@@ -55,6 +59,10 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
         textFont(NULL),
         staticText(NULL)
 {
+#ifdef __DAVAENGINE_ANDROID__
+	textFieldAndroid = new UITextFieldAndroid(this);
+#endif
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone = new UITextFieldiPhone(this);
 #else
@@ -71,6 +79,10 @@ UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= fal
 UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
         textFont(NULL), staticText(NULL)
 {
+#ifdef __DAVAENGINE_ANDROID__
+	textFieldAndroid = new UITextFieldAndroid(this);
+#endif
+
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone = new UITextFieldiPhone(this);
 #else
@@ -104,6 +116,9 @@ UITextField::UITextField() : delegate(NULL), cursorBlinkingTime(0.f),
 UITextField::~UITextField()
 {
     SafeRelease(textFont);
+#ifdef __DAVAENGINE_ANDROID__
+	SafeDelete(textFieldAndroid);
+#endif
 #ifdef __DAVAENGINE_IPHONE__
 	SafeDelete(textFieldiPhone);
 #else
@@ -200,6 +215,8 @@ void UITextField::OnFocused()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->OpenKeyboard();
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->ShowField();
 #endif
 }
     
@@ -207,7 +224,9 @@ void UITextField::OnFocusLost(UIControl *newFocus)
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->CloseKeyboard();
-#endif    
+#elif defined(__DAVAENGINE_ANDROID__)
+	textFieldAndroid->HideField();
+#endif
     if (delegate) 
     {
         delegate->TextFieldLostFocus(this);
@@ -264,6 +283,15 @@ void UITextField::SetSpriteAlign(int32 align)
 #endif
 }
 
+void UITextField::SetSize(const DAVA::Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+#ifdef __DAVAENGINE_IPHONE__
+#else
+    staticText->SetSize(newSize);
+#endif
+}
+    
 void UITextField::SetText(const WideString & _text)
 {
 	text = _text;
@@ -294,7 +322,7 @@ const WideString & UITextField::GetText()
 
 void UITextField::Input(UIEvent *currentInput)
 {
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     // nothing to do
 #else
 
@@ -437,11 +465,70 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 #endif
 }
 
+YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
+{
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
 
+    // Sprite node is not needed for UITextField.
+    YamlNode *spriteNode = node->Get("sprite");
+    if (spriteNode)
+    {
+        node->RemoveNodeFromMap("sprite");
+    }
 
+    //Temp variable
+    VariantType *nodeValue = new VariantType();
 
+    //Control Type
+    node->Set("type", "UITextField", true);
+    //Text
+    nodeValue->SetWideString(this->GetText());
+    node->Set("text", nodeValue);
 
+    //Font
+    //Get font name and put it here
+    nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
+    node->Set("font", nodeValue);
 
+    SafeDelete(nodeValue);
+    
+    return node;
+}
+
+List<UIControl* >& UITextField::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(staticText);
+	return realChildren;
+}
+
+UIControl* UITextField::Clone()
+{
+	UITextField *t = new UITextField();
+	t->CopyDataFrom(this);
+	return t;
+}
+	
+void UITextField::CopyDataFrom(UIControl *srcControl)
+{
+	UIControl::CopyDataFrom(srcControl);
+	UITextField* t = (UITextField*) srcControl;
+		
+	cursorTime = t->cursorTime;
+    showCursor = t->showCursor;
+	SetText(t->text);
+	SetRect(t->GetRect());
+	
+	cursorBlinkingTime = t->cursorBlinkingTime;
+	if (t->staticText)
+	{
+		staticText = (UIStaticText*)t->staticText->Clone();
+		AddControl(staticText);
+	}
+	if (t->textFont)
+		SetFont(t->textFont);
+}
+	
 }; // namespace
 
 

@@ -29,10 +29,13 @@
 =====================================================================================*/
 #include "Render/ImageLoader.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 #include "Render/RenderBase.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 #include "Platform/SystemTimer.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
@@ -60,6 +63,11 @@ Vector<Image *> ImageLoader::CreateFromFile(File *file)
         return CreateFromPNG(file);
     }
     
+	if(IsDXTFile(file))
+    {
+        return CreateFromDXT(file);
+    }
+
     if(IsPVRFile(file))
     {
         return CreateFromPVR(file);
@@ -82,6 +90,13 @@ bool ImageLoader::IsPVRFile(DAVA::File *file)
     file->Seek(0, File::SEEK_FROM_START);
     return isPvr;
 }
+
+bool ImageLoader::IsDXTFile(DAVA::File *file)
+{
+    bool isDXT = LibDxtHelper::IsDxtFile(file);
+    file->Seek(0, File::SEEK_FROM_START);
+    return isDXT;
+}
     
     
 Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
@@ -101,6 +116,19 @@ Vector<Image *> ImageLoader::CreateFromPNG(DAVA::File *file)
     }
     
     return Vector<Image *>();
+}
+
+Vector<Image *> ImageLoader::CreateFromDXT(DAVA::File *file)
+{
+    Vector<Image *> retObj;
+
+	bool res = LibDxtHelper::ReadDxtFile(file, retObj);
+	if(false == res)
+	{
+		for_each(retObj.begin(), retObj.end(),SafeRelease<Image>);
+		retObj.clear();
+	}
+	return retObj;
 }
 
 Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
@@ -129,12 +157,12 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         bool read = LibPVRHelper::ReadFile(file, imageSet);
         if(!read)
         {
-            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename());
+            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().c_str());
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
         loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
-        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename(), loadTime);
+//        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
         return imageSet;
     }
     return Vector<Image *>();
@@ -142,6 +170,9 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 
 void ImageLoader::Save(DAVA::Image *image, const String &pathname)
 {
+    String extension = FileSystem::Instance()->GetExtension(pathname);
+    DVASSERT_MSG( 0 != CompareCaseInsensitive(extension, ".tex") , "Need to save image to PNG file");
+    
     DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
     LibPngWrapper::WritePngFile(pathname.c_str(), image->width, image->height, image->data, image->format);
 }

@@ -54,6 +54,7 @@ public:
     int32 maxTimeIndex;
     uint64 startTime;
     uint64 endTime;
+    Vector<uint64> eachRunTime;
     int32 runCount;
     void * userData;
 };

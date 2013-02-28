@@ -29,17 +29,122 @@
 =====================================================================================*/
 #include "Debug/Stats.h"
 #include "Platform/SystemTimer.h"
+#include "Core/Core.h"
+#include "Utils/StringFormat.h"
+#include "Platform/Thread.h"
 
 namespace DAVA
 {
+// Immediate Time measure class
+    
+ImmediateTimeMeasure::ImmediateTimeMeasure(const FastName & _name)
+{
+    name = _name;
+    time = SystemTimer::Instance()->GetAbsoluteNano();
+}
+    
+ImmediateTimeMeasure::~ImmediateTimeMeasure()
+{
+    time = SystemTimer::Instance()->GetAbsoluteNano() - time;
+    Logger::Debug("%s %s %0.9llf seconds", name.c_str(), (double)time / 1e+9);
+}
+    
+// TimeMeasure class
+TimeMeasure * TimeMeasure::activeTimeMeasure = 0;
+TimeMeasure::FunctionMeasure * TimeMeasure::lastframeTopFunction = 0;
+TimeMeasure::ThreadTimeStamps TimeMeasure::mainThread;
 
-Stats::Stats()
-#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    : cache(500)
-#endif
+    
+TimeMeasure::TimeMeasure(const FastName & blockName)
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    globalId = 0;
+    if (!Thread::IsMainThread())return;
+    
+    function = mainThread.functions.GetValue(blockName);
+    if (!function)
+    {
+        FunctionMeasure * newFunctionMeasure = new FunctionMeasure();
+        mainThread.functions.Insert(blockName, newFunctionMeasure);
+        function = newFunctionMeasure;
+        function->name = blockName;
+    }
+    if (lastframeTopFunction == 0)
+        lastframeTopFunction = function;
+    
+    parent = activeTimeMeasure;
+    
+    if (parent &&  function->parent == 0)
+    {
+        parent->function->children.Insert(function, function);
+        function->parent = parent->function;
+    }
+    
+    if (activeTimeMeasure == 0)
+    {
+        mainThread.topFunctions.push_back(function);
+    }
+    
+    function->timeStart = SystemTimer::Instance()->GetAbsoluteNano();
+    activeTimeMeasure = this;
+#endif
+}
+
+TimeMeasure::~TimeMeasure()
+{
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+    if (!Thread::IsMainThread())return;
+
+    uint32 frameCounter = Core::Instance()->GetGlobalFrameIndex();
+    if (frameCounter == function->frameCounter)
+    {
+        function->timeSpent += SystemTimer::Instance()->GetAbsoluteNano() - function->timeStart;
+    }else
+    {
+        function->timeSpent = SystemTimer::Instance()->GetAbsoluteNano() - function->timeStart;
+        function->frameCounter = frameCounter;
+    }
+    activeTimeMeasure = parent;
+#endif
+}
+    
+void TimeMeasure::ClearFunctions()
+{
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+    mainThread.topFunctions.clear();
+#endif
+}
+    
+void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
+{
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+    if (level == 0)
+    {
+        Logger::Debug("Stats for frame: %d", Core::Instance()->GetGlobalFrameIndex());
+    
+        for (List<FunctionMeasure*>::iterator it = mainThread.topFunctions.begin(); it != mainThread.topFunctions.end(); ++it)
+        {
+            FunctionMeasure * function = *it;
+            if (function->frameCounter == Core::Instance()->GetGlobalFrameIndex())
+                Dump(function, level + 1);
+        }
+    }else
+    {
+        Logger::Debug("%s %s %0.9llf seconds", GetIndentString('-', level + 1), function->name.c_str(), (double)function->timeSpent / 1e+9);
+        for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
+             it != function->children.End(); ++it)
+        {
+            FunctionMeasure * childFunction = it.GetValue();
+            if (childFunction->frameCounter == Core::Instance()->GetGlobalFrameIndex())
+                Dump(childFunction, level + 1);
+        }
+    }
+#endif
+}
+
+    
+Stats::Stats()
+{
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     skipFrameCount = -1;
     frame = 0;
 #endif
@@ -49,104 +154,7 @@ Stats::~Stats()
 {
     
 }
-    
-bool CompareFunc(std::pair<String, uint32> & a, std::pair<String, uint32> & b)
-{
-    if (a.first < b.first)
-        return true;
-    else return false;
-}
-    
-void Stats::RegisterEvent(const String & eventName, const String & eventDescription)
-{
-#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    
-    Map<String, uint32>::iterator it = eventIds.find(eventName);
-    if (it != eventIds.end())
-    {
-        // if event already exists return.
-        return;
-    }
 
-    EventDescription eventDesc;
-    
-    eventDesc.name = eventName;
-    eventDesc.description = eventDescription;
-    eventDesc.id = globalId++;
-    
-    eventMap[eventDesc.id] = eventDesc;
-    eventIds[eventName] = eventDesc.id;
-    
-    // recalc parent map
-    const Map<String, uint32>::iterator & end = eventIds.end();
-    for (Map<String, uint32>::iterator parent = eventIds.begin(); parent != end; ++parent)
-    {
-        eventMap[parent->second].parent = (uint32)-1;
-        eventMap[parent->second].childs.clear();
-    }
-    
-//    Logger::Debug("start");
-    for (Map<String, uint32>::iterator parent = eventIds.begin(); parent != end; ++parent)
-    {
-        const String & parentName = parent->first;
-        for (Map<String, uint32>::iterator child = eventIds.begin(); child != end; ++child)
-        {
-            const String & childName = child->first;
-            
-//            Logger::Debug("compare: %s - %s", parentName.c_str(), childName.c_str());
-            
-            if ((childName.find(parentName) == 0) && (childName != parentName))
-            {
-//                Logger::Debug("found");
-                eventMap[parent->second].childs.push_back(child->second);
-                eventMap[child->second].parent = parent->second;
-                //break;
-            }
-        }
-    }
-    
-    int32 cnt = 0;
-    sortedNames.resize(eventIds.size());
-    for (Map<String, uint32>::iterator it = eventIds.begin(); it != end; ++it)
-    {
-        sortedNames[cnt++] = std::pair<String, uint32>(it->first, it->second);
-    }
-    std::sort(sortedNames.begin(), sortedNames.end());
-#endif
-}
-    
-void Stats::BeginTimeMeasure(const String & eventName, BaseObject * owner)
-{
-#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    Map<String, uint32>::iterator it = eventIds.find(eventName);
-    if (it != eventIds.end())
-    {
-        Event * event = cache.New();
-        event->type = Event::TYPE_EVENT_BEGIN;
-        event->id = it->second;
-        event->time = SystemTimer::Instance()->AbsoluteMS();
-        event->owner = owner;
-        events.push_back(event);
-    }
-#endif
-}
-    
-void Stats::EndTimeMeasure(const String & eventName, BaseObject * owner)
-{
-#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    Map<String, uint32>::iterator it = eventIds.find(eventName);
-    if (it != eventIds.end())
-    {
-        Event * event = cache.New();
-        event->type = Event::TYPE_EVENT_END;
-        event->id = it->second;
-        event->time = SystemTimer::Instance()->AbsoluteMS();
-        event->owner = owner;
-        events.push_back(event);
-    } 
-#endif
-}
-    
 void Stats::EnableStatsOutputEventNFrame(int32 _skipFrameCount)
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
@@ -156,44 +164,18 @@ void Stats::EnableStatsOutputEventNFrame(int32 _skipFrameCount)
 
 void Stats::BeginFrame()
 {
-    
+    TimeMeasure::ClearFunctions();
 }
     
 
 void Stats::EndFrame()
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
-    
-    
-    Map<uint32, uint64> timeForEvent;
-    for (List<Event*>::reverse_iterator it = events.rbegin(); it != events.rend(); ++it)
-    {
-        Event * event = *it;
-        if (event->type == Event::TYPE_EVENT_BEGIN)
-        {
-            timeForEvent[event->id] -= event->time;
-            if (eventMap[event->id].parent != (uint32)-1)
-                timeForEvent[eventMap[event->id].parent] -= event->time;
-        }else if (event->type == Event::TYPE_EVENT_END)
-        {
-            timeForEvent[event->id] += event->time;
-            if (eventMap[event->id].parent != (uint32)-1)
-                timeForEvent[eventMap[event->id].parent] += event->time;
-        }
-    }
-    events.clear();
-    
-    
     if (skipFrameCount != -1)
     {
         if (frame > skipFrameCount)
         {
-            int32 size = sortedNames.size();
-            for (int32 k = 0; k < size; ++k)
-            {
-                uint32 eventId = sortedNames[k].second;
-                Logger::Debug("%s - %lld ms", sortedNames[k].first.c_str(), timeForEvent[eventId]);
-            }
+            TimeMeasure::Dump();
             frame = 0;
         }
     }   

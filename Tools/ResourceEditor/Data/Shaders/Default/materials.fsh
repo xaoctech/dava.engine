@@ -10,15 +10,19 @@ precision highp float;
 //#define MATERIAL_TEXTURE
 //#define VERTEX_COLOR
 //#define ALPHABLEND
+//#define FLATCOLOR
+//#define VERTEX_FOG
 
 // DECLARATIONS
+#if defined(MATERIAL_TEXTURE)
 uniform sampler2D texture0;
 varying mediump vec2 varTexCoord0;
+#endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 uniform sampler2D texture1;
 varying mediump vec2 varTexCoord1;
-#endif 
+#endif
 
 #if defined(PIXEL_LIT)
 uniform sampler2D normalMapTexture;
@@ -57,21 +61,29 @@ varying lowp float varLightmapSize;
 varying lowp vec4 varVertexColor;
 #endif
 
+#if defined(FLATCOLOR)
+uniform lowp vec4 flatColor;
+#endif
+
 void main()
 {
     // FETCH PHASE
+#if defined(MATERIAL_TEXTURE)
 #if defined(GLOSS) || defined(OPAQUE) || defined(ALPHABLEND)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #endif
+#endif
 
+#if defined(MATERIAL_TEXTURE)
 #if defined(OPAQUE)
     float alpha = textureColor0.a;
     #if defined(VERTEX_COLOR)
         alpha *= varVertexColor.a;
     #endif
     if (alpha < 0.5)discard;
+#endif
 #endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
@@ -146,15 +158,28 @@ void main()
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #elif defined(MATERIAL_DETAIL)
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+#else
+	vec3 color = vec3(1.0);
 #endif
 
-#if defined(VERTEX_COLOR)
-	gl_FragColor = vec4(textureColor0*varVertexColor);
-#elif defined(VERTEX_FOG)
-    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
-#elif defined(ALPHABLEND)
+#if defined(ALPHABLEND) && defined(MATERIAL_TEXTURE)
 	gl_FragColor = vec4(color, textureColor0.a);
 #else
     gl_FragColor = vec4(color, 1.0);
 #endif
+
+#if defined(VERTEX_COLOR)
+	gl_FragColor *= varVertexColor;
+#endif
+
+#if defined(FLATCOLOR)
+    gl_FragColor *= flatColor;
+#endif
+	
+#if defined(VERTEX_FOG)
+    gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+#endif
+
+    
+
 }
