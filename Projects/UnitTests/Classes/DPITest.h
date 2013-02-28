@@ -17,6 +17,8 @@ using namespace DAVA;
 
 class DPITest: public TestTemplate<DPITest>
 {
+    static float32 AUTO_CLOSE_TIME;
+    
 public:
 	DPITest();
 
@@ -24,7 +26,10 @@ public:
 	virtual void UnloadResources();
 	virtual bool RunTest(int32 testNum);
 	
-	void TestFunction(PerfFuncData * data);
+	virtual void DidAppear();
+	virtual void Update(float32 timeElapsed);
+    
+    void TestFunction(PerfFuncData * data);
 	
 private:
 	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
@@ -34,6 +39,8 @@ private:
 	UIButton* testButton;
 	
     bool testFinished;
+
+    float32 onScreenTime;
 };
 
 #endif /* defined(__TemplateProjectMacOS__InputTest__) */

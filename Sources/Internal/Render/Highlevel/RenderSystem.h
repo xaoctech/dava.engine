@@ -47,6 +47,8 @@ class Camera;
 class Light;
 class ParticleEmitterSystem;
     
+
+    
 class RenderSystem
 {
 public:
@@ -86,6 +88,8 @@ public:
     
     void MarkForUpdate(RenderObject * renderObject);
     void MarkForUpdate(Light * lightNode);
+    //void MarkForMaterialSort(Material * material);
+    
     /**
         \brief This is required for objects that needs permanent update every frame like 
         Landscape and Particles.
@@ -98,6 +102,10 @@ public:
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
 
+	RenderLayer * AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer);
+
+	void AddRenderBatch(RenderBatch * renderBatch);
+	void RemoveRenderBatch(RenderBatch * renderBatch);
     
 private:
     void ProcessClipping();
@@ -106,8 +114,7 @@ private:
     void AddRenderObject(RenderObject * renderObject);
     
     void RemoveRenderObject(RenderObject * renderObject);
-    void AddRenderBatch(RenderBatch * renderBatch);
-    void RemoveRenderBatch(RenderBatch * renderBatch);
+    
     void ImmediateUpdateRenderBatch(RenderBatch * renderBatch);
     
     

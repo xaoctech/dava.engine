@@ -99,15 +99,15 @@ public:
     void            Set(const String& name, bool value);
     void            Set(const String& name, int32 value);
     void            Set(const String& name, float32 value);
-    void            Set(const String& name, const char8* value);
-    void            Set(const String& name, const String& value);
+    void            Set(const String& name, const char8* value, bool rewritePreviousValue = false);
+    void            Set(const String& name, const String& value, bool rewritePreviousValue = false);
     void            Set(const String& name, const Vector2& value);
     void            Set(const String& name, const Vector3& value);
     void            Set(const String& name, const Vector4& value);
     void            Set(const String& name, VariantType* varType);
 
     // Setters for Map/Array nodes.
-    void            AddNodeToMap(const String& name, YamlNode* node);
+    void            AddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue = false);
     void            AddNodeToArray(YamlNode* node);
 
     // Add the values to the current node of type Array.

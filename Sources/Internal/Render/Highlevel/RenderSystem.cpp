@@ -39,45 +39,37 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA
 {
-    static FastName PASS_ZPRE_PASS("ZPrePass");
-    static FastName PASS_FORWARD_PASS("ForwardPass");
-    static FastName SHADOW_VOLUME_PASS("ShadowVolumePass");
-    static FastName PASS_DEFERRED_PASS("DeferredPass");
 
 RenderSystem::RenderSystem()
 {
-    // Build forward renderer.
-    renderPassesMap.Insert("ZPrePass", new RenderPass("ZPrePass"));
-    renderPassesMap.Insert("ForwardPass", new RenderPass("ForwardPass"));
-    renderPassesMap.Insert("ShadowVolumePass", new ShadowVolumeRenderPass("ShadowVolumePass"));
+    // Register available passes & layers
+    renderPassesMap.Insert(PASS_FORWARD, new RenderPass(PASS_FORWARD));
+    renderPassesMap.Insert(PASS_SHADOW_VOLUME, new ShadowVolumeRenderPass(PASS_SHADOW_VOLUME));
 
+    renderLayersMap.Insert(LAYER_OPAQUE, new RenderLayer(LAYER_OPAQUE));
+    renderLayersMap.Insert(LAYER_ALPHA_TEST_LAYER, new RenderLayer(LAYER_ALPHA_TEST_LAYER));
     
-    // renderPasses.push_back(new RenderPass("GBufferPass"));
-    // renderPasses.push_back(new LightPrePass("LightPrePass"));
-    // renderPasses.push_back(new ShadowMapPass("ShadowMapPass")):
-
-    renderLayersMap.Insert("OpaqueRenderLayer", new RenderLayer("OpaqueRenderLayer"));
-    renderLayersMap.Insert("TransclucentRenderLayer", new RenderLayer("TransclucentRenderLayer"));
-    renderLayersMap.Insert("ShadowVolumeRenderLayer", new RenderLayer("ShadowVolumeRenderLayer"));
+    renderLayersMap.Insert(LAYER_TRANSLUCENT, new RenderLayer(LAYER_TRANSLUCENT));
+    renderLayersMap.Insert(LAYER_AFTER_TRANSLUCENT, new RenderLayer(LAYER_AFTER_TRANSLUCENT));
+    
+    renderLayersMap.Insert(LAYER_SHADOW_VOLUME, new RenderLayer(LAYER_SHADOW_VOLUME));
     
     
-    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD_PASS];
-    forwardPass->AddRenderLayer(renderLayersMap["OpaqueRenderLayer"]);
-    forwardPass->AddRenderLayer(renderLayersMap["TransclucentRenderLayer"]);
+    RenderPass * forwardPass = renderPassesMap[PASS_FORWARD];
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_OPAQUE], LAST_LAYER);
+    forwardPass->AddRenderLayer(renderLayersMap[LAYER_TRANSLUCENT], LAST_LAYER);
 
-    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[SHADOW_VOLUME_PASS];
-    shadowVolumePass->AddRenderLayer(renderLayersMap["ShadowVolumeRenderLayer"]);
+    ShadowVolumeRenderPass * shadowVolumePass = (ShadowVolumeRenderPass*)renderPassesMap[PASS_SHADOW_VOLUME];
+    shadowVolumePass->AddRenderLayer(renderLayersMap[LAYER_SHADOW_VOLUME], LAST_LAYER);
 
-
-//    renderPassOrder.push_back(renderPassesMap[PASS_ZPRE_PASS]);
-    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD_PASS]);
-    renderPassOrder.push_back(renderPassesMap[SHADOW_VOLUME_PASS]);
+    renderPassOrder.push_back(renderPassesMap[PASS_FORWARD]);
+    renderPassOrder.push_back(renderPassesMap[PASS_SHADOW_VOLUME]);
 
 	particleEmitterSystem = new ParticleEmitterSystem();
-
 }
 
 RenderSystem::~RenderSystem()
@@ -147,17 +139,19 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
 	particleEmitterSystem->AddIfEmitter(renderObject);
+	renderObject->SetRenderSystem(this);
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
     particleEmitterSystem->RemoveIfEmitter(renderObject);
+	renderObject->SetRenderSystem(0);
 }
 
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)
 {
     // Get Layer Name
-    FastName name = renderBatch->GetOwnerLayerName();
+    const FastName & name = renderBatch->GetOwnerLayerName();
 
     RenderLayer * oldLayer = renderBatch->GetOwnerLayer();
     if (oldLayer != 0)
@@ -264,6 +258,12 @@ void RenderSystem::UnregisterFromUpdate(IRenderUpdatable * updatable)
 	}
 }
     
+//void RenderSystem::MarkForMaterialSort(Material * material)
+//{
+//    //for (FastNameMap<RenderLayer*>::Iterator it = renderLayersMap.Begin(); it != )
+//}
+
+    
 void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
     Light * nearestLight = 0;
@@ -342,7 +342,17 @@ void RenderSystem::Render()
     }
 }
 
+RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const FastName & passName, const FastName & afterLayer)
+{
+	DVASSERT(false == renderLayersMap.IsKey(layerName));
 
+	RenderLayer * newLayer = new RenderLayer(layerName);
+	renderLayersMap.Insert(layerName, newLayer);
 
-    
+	RenderPass * inPass = renderPassesMap[passName];
+	inPass->AddRenderLayer(newLayer, afterLayer);
+
+	return newLayer;
+}
+
 };

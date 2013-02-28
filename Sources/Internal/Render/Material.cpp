@@ -41,6 +41,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Render/TextureDescriptor.h"
 #include "Platform/SystemTimer.h"
+#include "Render/Highlevel/RenderFastNames.h"
 
 namespace DAVA 
 {
@@ -48,6 +49,9 @@ namespace DAVA
 REGISTER_CLASS(InstanceMaterialState)
     
 InstanceMaterialState::InstanceMaterialState()
+    :   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   texture0Shift(0.0f, 0.0f)
+
 {
     for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
         lightNodes[k] = 0;
@@ -85,9 +89,78 @@ void InstanceMaterialState::SetUVOffsetScale(const Vector2 & _uvOffset, const Ve
     uvScale = _uvScale;
 }
 
+void InstanceMaterialState::ClearLightmap()
+{
+	SafeRelease(lightmapTexture);
+	lightmapName = String("");
+}
+
     
+void InstanceMaterialState::SetFlatColor(const Color & color)
+{
+    flatColor = color;
+}
+
+const Color & InstanceMaterialState::GetFlatColor()
+{
+    return flatColor;
+}
+
+
+void InstanceMaterialState::SetTextureShift(const Vector2 & speed)
+{
+    texture0Shift = speed;
+}
+
+const Vector2 & InstanceMaterialState::GetTextureShift()
+{
+    return texture0Shift;
+}
+
+void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		archive->SetVector2("ims.uvoffset", uvOffset);
+		archive->SetVector2("ims.uvscale", uvScale);
+		archive->SetString("ims.lightmapname", lightmapName);
+	}
+}
+
+void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
+{
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("ims.uvoffset")) uvOffset = archive->GetVector2("ims.uvoffset");
+		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
+
+		String lName = archive->GetString("ims.lightmapname");
+
+		if(!lName.empty())
+		{
+			Texture* lTextute = Texture::CreateFromFile(lName);
+			SetLightmap(lTextute, lName);
+			lTextute->Release();
+		}
+	}
+}
+
+InstanceMaterialState * InstanceMaterialState::Clone()
+{
+	InstanceMaterialState * newState = new InstanceMaterialState();
+
+	newState->lightmapTexture = SafeRetain(lightmapTexture);
+	newState->lightmapName = lightmapName;
+	newState->uvOffset = uvOffset;
+	newState->uvScale = uvScale;
+	newState->flatColor = flatColor;
+	newState->texture0Shift = texture0Shift;
+
+	return newState;
+}
+
+
 REGISTER_CLASS(Material);
-    
     
 UberShader * Material::uberShader = 0;
     
@@ -118,7 +191,9 @@ const char8 * Material::GetTypeName(eType format)
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
-			return "VERTEX_COLOR";
+			return "VERTEX_COLOR_ALPHABLEND";
+		case MATERIAL_FLAT_COLOR:
+			return "FLAT_COLOR";
         default:
             break;
     };
@@ -133,7 +208,7 @@ Material::Material()
     ,   ambientColor(0.2f, 0.2f, 0.2f, 1.0f)
     ,   emissiveColor(0.0f, 0.0f, 0.0f, 1.0f)
     ,   shininess(1.0f)
-    ,   isOpaque(false)
+    ,   isTranslucent(false)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
 	,	setupLightmapSize(32)
@@ -142,13 +217,13 @@ Material::Material()
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
 	,	isAlphablend(false)
     ,   isFlatColorEnabled(false)
-    ,   flatColor(1.0f, 1.0f, 1.0f, 1.0f)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock()
     ,   isWireframe(false)
     ,   isTexture0ShiftEnabled(false)
-    ,   texture0Shift(0.0f, 0.0f)
+    ,   isExportOwnerLayerEnabled(true)
+    ,   ownerLayerName(LAYER_OPAQUE)
 {
     //Reserve memory for Collection
     names.resize(TEXTURE_COUNT);
@@ -259,7 +334,7 @@ void Material::RebuildShader()
     uniformFlatColor = -1;
     uniformTexture0Shift = -1;
     
-    String shaderCombileCombo = "MATERIAL_TEXTURE";
+    String shaderCombileCombo = "";
     
     switch (type) 
     {
@@ -267,17 +342,17 @@ void Material::RebuildShader()
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-			shaderCombileCombo = "MATERIAL_LIGHTMAP";
+			shaderCombileCombo = "MATERIAL_TEXTURE; MATERIAL_LIGHTMAP";
 			if(isSetupLightmap)
 			{
 				shaderCombileCombo = shaderCombileCombo + ";SETUP_LIGHTMAP";
 			}
 			break;
         case MATERIAL_UNLIT_TEXTURE_DECAL:
-            shaderCombileCombo = "MATERIAL_DECAL";
+            shaderCombileCombo = "MATERIAL_TEXTURE;MATERIAL_DECAL";
             break;
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
-            shaderCombileCombo = "MATERIAL_DETAIL";
+            shaderCombileCombo = "MATERIAL_TEXTURE;MATERIAL_DETAIL";
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
@@ -294,27 +369,34 @@ void Material::RebuildShader()
 		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
 			shaderCombileCombo = "MATERIAL_TEXTURE;ALPHABLEND;VERTEX_COLOR";
 			break;
+        case MATERIAL_FLAT_COLOR:
+            isFlatColorEnabled = true;
+            break;
         default:
             break;
     };
-    if (isOpaque)
+    if (isTranslucent)
     {
-        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "OPAQUE";
     }
 
 	if(isAlphablend)
 	{
-		shaderCombileCombo = shaderCombileCombo + ";ALPHABLEND";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+		shaderCombileCombo = shaderCombileCombo + "ALPHABLEND";
 	}
     
     if (isFlatColorEnabled)
     {
-        shaderCombileCombo = shaderCombileCombo + ";FLATCOLOR";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "FLATCOLOR";
     }
     
     if (isTexture0ShiftEnabled)
     {
-        shaderCombileCombo = shaderCombileCombo + ";TEXTURE0_SHIFT_ENABLED";
+        if (shaderCombileCombo.size() > 0)shaderCombileCombo += ";";
+        shaderCombileCombo = shaderCombileCombo + "TEXTURE0_SHIFT_ENABLED";
     }
     
     
@@ -389,6 +471,9 @@ void Material::RebuildShader()
         DVASSERT(uniformTexture0Shift != -1);
     }
     
+    
+
+
     //RetrieveTextureSlotNames();
 }
     
@@ -460,7 +545,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.emission", emissiveColor);
     keyedArchive->SetFloat("mat.shininess", shininess);
 
-    keyedArchive->SetBool("mat.isOpaque", isOpaque);
+    keyedArchive->SetBool("mat.isOpaque", isTranslucent);
     keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
 
 	keyedArchive->SetBool("mat.isAlphablend", isAlphablend);
@@ -530,7 +615,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     emissiveColor = keyedArchive->GetByteArrayAsType("mat.emission", emissiveColor);
     shininess = keyedArchive->GetFloat("mat.shininess", shininess);
     
-    isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+    isTranslucent = keyedArchive->GetBool("mat.isOpaque", isTranslucent);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
 
 	isAlphablend = keyedArchive->GetBool("mat.isAlphablend", isAlphablend);
@@ -547,13 +632,13 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 void Material::SetOpaque(bool _isOpaque)
 {
-    isOpaque = _isOpaque;
+    isTranslucent = _isOpaque;
     RebuildShader();
 }
 
 bool Material::GetOpaque()
 {
-    return isOpaque;
+    return isTranslucent;
 }
 void Material::SetTwoSided(bool _isTwoSided)
 {
@@ -686,7 +771,7 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 //		}
 	}
 
-	if (isOpaque || isTwoSided)
+	if (isTranslucent || isTwoSided)
 	{
 		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
 	}
@@ -760,56 +845,60 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
         DVASSERT(uniformFogColor != -1)
         shader->SetUniformColor3(uniformFogColor, fogColor);
 	}
-    if (isFlatColorEnabled)
-    {
-        DVASSERT(uniformFlatColor != -1);
-        shader->SetUniformColor4(uniformFlatColor, flatColor);
-    }
-    if (isTexture0ShiftEnabled)
-    {
-        DVASSERT(uniformTexture0Shift != -1);
-        shader->SetUniformValue(uniformTexture0Shift, texture0Shift);
-    }
     
     if (instanceMaterialState)
     {
-        Camera * camera = scene->GetCurrentCamera();
-        Light * lightNode0 = instanceMaterialState->GetLight(0);
-        if (lightNode0 && camera)
+        if (isFlatColorEnabled)
         {
-            if (uniformLightPosition0 != -1)
-            {
-                const Matrix4 & matrix = camera->GetMatrix();
-                Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
-                
-                shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
-            }
-            if (uniformMaterialLightAmbientColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
-            }
-            if (uniformMaterialLightDiffuseColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
-            }
-            if (uniformMaterialLightSpecularColor != -1)
-            {
-                shader->SetUniformColor3(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
-            }
-            if (uniformMaterialSpecularShininess != -1)
-            {
-                shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
-            }
-            
-            if (uniformLightIntensity0 != -1)
-            {
-                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
-            }
-            if (uniformLightAttenuationQ != -1)
-            {
-                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
-            }
+            DVASSERT(uniformFlatColor != -1);
+            shader->SetUniformColor4(uniformFlatColor, instanceMaterialState->flatColor);
         }
+        if (isTexture0ShiftEnabled)
+        {
+            DVASSERT(uniformTexture0Shift != -1);
+            shader->SetUniformValue(uniformTexture0Shift, instanceMaterialState->texture0Shift);
+        }
+
+		if(scene)
+		{
+			Camera * camera = scene->GetCurrentCamera();
+			Light * lightNode0 = instanceMaterialState->GetLight(0);
+			if (lightNode0 && camera)
+			{
+				if (uniformLightPosition0 != -1)
+				{
+					const Matrix4 & matrix = camera->GetMatrix();
+					Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+                
+					shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace);
+				}
+				if (uniformMaterialLightAmbientColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
+				}
+				if (uniformMaterialLightDiffuseColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+				}
+				if (uniformMaterialLightSpecularColor != -1)
+				{
+					shader->SetUniformColor3(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+				}
+				if (uniformMaterialSpecularShininess != -1)
+				{
+					shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+				}
+            
+				if (uniformLightIntensity0 != -1)
+				{
+					shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+				}
+				if (uniformLightAttenuationQ != -1)
+				{
+					//shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
+				}
+			}
+		}
     }
 
 }
@@ -821,12 +910,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		return;
 	}
 
-	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
+	if(isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
 	{
 		return;
 	}
 
-	if(!isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	if(!isTranslucent && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
 	}
@@ -966,17 +1055,6 @@ const bool & Material::IsFlatColorEnabled()
     return isFlatColorEnabled;
 }
 
-void Material::SetFlatColor(const Color & color)
-{
-    flatColor = color;
-}
-    
-const Color & Material::GetFlatColor()
-{
-    return flatColor;
-}
-
-    
 void Material::EnableTextureShift(const bool & isEnabled)
 {
     isTexture0ShiftEnabled = isEnabled;
@@ -989,14 +1067,31 @@ const bool & Material::IsTextureShiftEnabled()
     return isTexture0ShiftEnabled;
 }
 
-void Material::SetTextureShift(const Vector2 & speed)
+    
+const FastName & Material::GetOwnerLayerName()
 {
-    texture0Shift = speed;
+    if(GetAlphablend())
+    {
+        SetOwnerLayerName(LAYER_TRANSLUCENT);
+    }
+    else SetOwnerLayerName(LAYER_OPAQUE);
+
+    return ownerLayerName;
 }
 
-const Vector2 & Material::GetTextureShift()
+void Material::SetOwnerLayerName(const FastName & fastname)
 {
-    return texture0Shift;
+    ownerLayerName = fastname;
+    
+}
+const bool & Material::IsExportOwnerLayerEnabled()
+{
+    return isExportOwnerLayerEnabled;
+}
+    
+void Material::SetExportOwnerLayer(const bool & isEnabled)
+{
+    isExportOwnerLayerEnabled = isEnabled;
 }
 
 

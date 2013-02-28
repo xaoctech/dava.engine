@@ -1,9 +1,6 @@
 package com.dava.framework;
 
 import android.app.Application;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
@@ -23,23 +20,14 @@ public class JNIApplication extends Application
 	{
 		app = this;
 		super.onCreate();
+	}
+	
+	
+	protected void CreateApplication(String apkFilePath)
+	{
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] start"); 
 		
 		String docDir = this.getExternalFilesDir(STORAGE_SERVICE).getAbsolutePath();
-		
-		String apkFilePath = null;
-		ApplicationInfo appInfo = null;
-		PackageManager packMgmr = getPackageManager();
-		try 
-		{
-			appInfo = packMgmr.getApplicationInfo(JNIConst.PACKAGE_NAME, 0);
-		} 
-		catch (NameNotFoundException e) 
-		{
-			e.printStackTrace();
-			throw new RuntimeException("Unable to locate assets, aborting...");
-		}
-		apkFilePath = appInfo.sourceDir;
 		
 		Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", apkFilePath)); 
 		OnCreateApplication(docDir, apkFilePath, JNIConst.LOG_TAG, JNIConst.PACKAGE_NAME);
@@ -48,7 +36,6 @@ public class JNIApplication extends Application
 
 		Log.i(JNIConst.LOG_TAG, "[Application::onCreate] finish"); 
 	}
-	
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)

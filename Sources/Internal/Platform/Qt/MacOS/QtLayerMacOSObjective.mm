@@ -29,10 +29,13 @@
 =====================================================================================*/
 #include "QtLayerMacOS.h"
 
+
 #if defined(__DAVAENGINE_MACOS__)
 
 #import "AppKit/NSView.h"
 #include "OpenGLView.h"
+
+#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 
 extern void FrameworkWillTerminate();
 
@@ -42,6 +45,11 @@ namespace DAVA
 
 NSView *qtNSView = NULL;
 OpenGLView *openGLView = NULL;
+    
+void* CoreMacOSPlatform::GetOpenGLView()
+{
+    return openGLView;
+}
     
 void QtLayerMacOS::InitializeGlWindow(void *qtView, int32 width, int32 height)
 {

@@ -18,7 +18,7 @@
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
 
-#define SCREEN_PATH "%1UI/%2.yaml"
+#define SCREEN_PATH "%1/%2.yaml"
 
 HierarchyTreePlatformNode::HierarchyTreePlatformNode(HierarchyTreeRootNode* rootNode, const QString& name) :
 	HierarchyTreeNode(name)
@@ -74,19 +74,31 @@ int HierarchyTreePlatformNode::GetHeight() const
 	return height;
 }
 
-QString HierarchyTreePlatformNode::GetResourceFolder() const
+HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
+{
+	// Root Node is the parent for the Platform.
+	return this->rootNode;
+}
+
+QString HierarchyTreePlatformNode::GetPlatformFolder() const
 {
 	QString path;
 	if (rootNode)
-		path += rootNode->GetProjectFolder();
+	{
+		path = ResourcesManageHelper::GetPlatformRootPath(rootNode->GetProjectDir());
+	}
 	path += GetName();
-	path += "/Data/";
+
 	return path;
 }
 
 void HierarchyTreePlatformNode::ActivatePlatform()
 {
-	FileSystem::Instance()->ReplaceBundleName(GetResourceFolder().toStdString());
+	if (rootNode)
+	{
+		String bundleName = ResourcesManageHelper::GetDataPath(rootNode->GetProjectDir()).toStdString();
+		FileSystem::Instance()->ReplaceBundleName(bundleName);
+	}
 }
 
 bool HierarchyTreePlatformNode::Load(YamlNode* platform)
@@ -110,7 +122,7 @@ bool HierarchyTreePlatformNode::Load(YamlNode* platform)
 				continue;
 			String screenName = screen->AsString();
 			
-			QString screenPath = QString(SCREEN_PATH).arg(GetResourceFolder()).arg(QString::fromStdString(screenName));
+			QString screenPath = QString(SCREEN_PATH).arg(GetPlatformFolder()).arg(QString::fromStdString(screenName));
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
 			result &= screenNode->Load(screenPath);
 			AddTreeNode(screenNode);
@@ -146,21 +158,24 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 	platform->Set(WIDTH_NODE, GetWidth());
 	platform->Set(HEIGHT_NODE, GetHeight());
 
-	Map<String, YamlNode*> &platformsMap = node->AsMap();
-	platformsMap[GetName().toStdString()] = platform;
+	MultiMap<String, YamlNode*> &platformsMap = node->AsMap();
+	platformsMap.erase(GetName().toStdString());
+	platformsMap.insert(std::pair<String, YamlNode*>(GetName().toStdString(), platform));
 	ActivatePlatform();
 	
-	Map<String, YamlNode*> &platformMap = platform->AsMap();
+	MultiMap<String, YamlNode*> &platformMap = platform->AsMap();
 	YamlNode* screens = new YamlNode(YamlNode::TYPE_ARRAY);
-	platformMap[SCREENS_NODE] = screens;
+
+	platformMap.erase(SCREENS_NODE);
+	platformMap.insert(std::pair<String, YamlNode*>(SCREENS_NODE, screens));
 
     // Add the Localization info - specific for each Platform.
     SaveLocalization(platform);
 
-	QString projectFolder = GetResourceFolder();
-	projectFolder += "UI";
+	QString platformFolder = GetPlatformFolder();
+
 	QDir dir;
-	dir.mkpath(projectFolder);
+	dir.mkpath(platformFolder);
 	
 	bool result = true;
 	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();
@@ -171,7 +186,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node)
 		if (!screenNode)
 			continue;
 		
-		QString screenPath = QString(SCREEN_PATH).arg(GetResourceFolder()).arg(screenNode->GetName());
+		QString screenPath = QString(SCREEN_PATH).arg(platformFolder).arg(screenNode->GetName());
 		result &= screenNode->Save(screenPath);
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
@@ -194,11 +209,30 @@ bool HierarchyTreePlatformNode::SaveLocalization(YamlNode* platform)
 
 void HierarchyTreePlatformNode::SetLocalizationPath(const String& localizationPath)
 {
-    // Normalize the path, if needed.
-    this->localizationPath = ResourcesManageHelper::GetResourceRelativePath(QString::fromStdString(localizationPath)).toStdString();
+    this->localizationPath = localizationPath;
 }
 
 void HierarchyTreePlatformNode::SetLocale(const String& locale)
 {
     this->locale = locale;
+}
+
+void HierarchyTreePlatformNode::ReturnTreeNodeToScene()
+{
+	if (!this->redoParentNode)
+	{
+		return;
+	}
+	
+	// Need to recover the node previously deleted, taking position into account.
+	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
+}
+
+void HierarchyTreePlatformNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
+{
+	if (!node)
+		return;
+	
+	node->RemoveTreeNode(this, false, false);
+	node->AddTreeNode(this, insertAfter);
 }

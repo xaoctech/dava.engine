@@ -78,6 +78,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="classNameLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>52</x>
@@ -105,6 +108,11 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>classNameLineEdit</tabstop>
+  <tabstop>objectNameLineEdit</tabstop>
+  <tabstop>tagLineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -25,6 +25,8 @@
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
+		840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
+		840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
@@ -33,11 +35,18 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
-		C18046CC16D52EEC00DC24D8 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */; };
+		CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
+		CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24800616DD174E00183D40 /* UserComponent.cpp */; };
+		CC24800A16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
+		CC24800B16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
 		CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
+		E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
+		E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
+		E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
+		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
 		E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */; };
 		E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */; };
 		E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */; };
@@ -1284,6 +1293,7 @@
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
+		50A7DCB916CA814700B41A67 /* RenderFastNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderFastNames.h; sourceTree = "<group>"; };
 		50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		50D6C8E716C107D500BB3F78 /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
@@ -1291,6 +1301,8 @@
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
+		840ED3E016D5089E00D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
+		840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
 		C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DVAssertMessage.cpp; sourceTree = "<group>"; };
 		C151B17516D3747E00E09BAF /* DVAssertMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVAssertMessage.h; sourceTree = "<group>"; };
 		C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DVAssertMessageApple.mm; sourceTree = "<group>"; };
@@ -1300,7 +1312,8 @@
 		C151B1B416D4FF6A00E09BAF /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		C151B1B516D4FF6A00E09BAF /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
-		C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperMacOS.mm; sourceTree = "<group>"; };
+		CC24800616DD174E00183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
+		CC24800716DD174E00183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
 		CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2378,6 +2391,7 @@
 		E8989BD716BD24E400732C04 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				840ED3E016D5089E00D2BA6C /* DPIHelper.h */,
 				E8989BE016BD24E400732C04 /* Mutex.cpp */,
 				E8989BE116BD24E400732C04 /* Mutex.h */,
 				E8989BE216BD24E400732C04 /* Qt */,
@@ -2418,7 +2432,7 @@
 		E8989C0116BD24E400732C04 /* TemplateMacOS */ = {
 			isa = PBXGroup;
 			children = (
-				C18046CB16D52EEC00DC24D8 /* DPIHelperMacOS.mm */,
+				840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */,
 				C151B17A16D3755000E09BAF /* WebViewControlMacOS.h */,
 				C151B17B16D3755000E09BAF /* WebViewControlMacOS.mm */,
 				E8989C0216BD24E400732C04 /* AppDelegate.h */,
@@ -2554,13 +2568,13 @@
 		E8989C3F16BD24E400732C04 /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
+				E8989C4616BD24E400732C04 /* IRenderUpdatable.h */,
 				E8989C4016BD24E400732C04 /* Camera.cpp */,
 				E8989C4116BD24E400732C04 /* Camera.h */,
 				E8989C4216BD24E400732C04 /* CullingSystem.cpp */,
 				E8989C4316BD24E400732C04 /* CullingSystem.h */,
 				E8989C4416BD24E400732C04 /* Heightmap.cpp */,
 				E8989C4516BD24E400732C04 /* Heightmap.h */,
-				E8989C4616BD24E400732C04 /* IRenderUpdatable.h */,
 				E8989C4716BD24E400732C04 /* LandscapeChunk.cpp */,
 				E8989C4816BD24E400732C04 /* LandscapeChunk.h */,
 				E8989C4916BD24E400732C04 /* LandscapeCursor.cpp */,
@@ -2571,31 +2585,32 @@
 				E8989C4E16BD24E400732C04 /* LandscapeNode.h */,
 				E8989C4F16BD24E400732C04 /* Light.cpp */,
 				E8989C5016BD24E400732C04 /* Light.h */,
-				E8989C5116BD24E400732C04 /* Mesh.cpp */,
-				E8989C5216BD24E400732C04 /* Mesh.h */,
 				E8989C5316BD24E400732C04 /* ParticleLayerBatch.cpp */,
 				E8989C5416BD24E400732C04 /* ParticleLayerBatch.h */,
 				E8989C5516BD24E400732C04 /* RenderBatch.cpp */,
 				E8989C5616BD24E400732C04 /* RenderBatch.h */,
+				E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */,
+				E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */,
 				E8989C5716BD24E400732C04 /* RenderDataSource.h */,
-				E8989C5816BD24E400732C04 /* RenderLayer.cpp */,
-				E8989C5916BD24E400732C04 /* RenderLayer.h */,
+				E8989C5116BD24E400732C04 /* Mesh.cpp */,
+				E8989C5216BD24E400732C04 /* Mesh.h */,
+				E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */,
+				E89CE91416C549F9006BEFF4 /* SpriteObject.h */,
+				E8989C6216BD24E400732C04 /* ShadowVolume.cpp */,
+				E8989C6316BD24E400732C04 /* ShadowVolume.h */,
 				E8989C5A16BD24E400732C04 /* RenderObject.cpp */,
 				E8989C5B16BD24E400732C04 /* RenderObject.h */,
+				E8989C5816BD24E400732C04 /* RenderLayer.cpp */,
+				E8989C5916BD24E400732C04 /* RenderLayer.h */,
 				E8989C5C16BD24E400732C04 /* RenderPass.cpp */,
 				E8989C5D16BD24E400732C04 /* RenderPass.h */,
+				E8989C6516BD24E400732C04 /* ShadowVolumeRenderPass.h */,
+				E8989C6416BD24E400732C04 /* ShadowVolumeRenderPass.cpp */,
 				E8989C5E16BD24E400732C04 /* RenderSystem.cpp */,
 				E8989C5F16BD24E400732C04 /* RenderSystem.h */,
 				E8989C6016BD24E400732C04 /* ShadowRect.cpp */,
 				E8989C6116BD24E400732C04 /* ShadowRect.h */,
-				E8989C6216BD24E400732C04 /* ShadowVolume.cpp */,
-				E8989C6316BD24E400732C04 /* ShadowVolume.h */,
-				E8989C6416BD24E400732C04 /* ShadowVolumeRenderPass.cpp */,
-				E8989C6516BD24E400732C04 /* ShadowVolumeRenderPass.h */,
-				E89CE91316C549F9006BEFF4 /* SpriteObject.cpp */,
-				E89CE91416C549F9006BEFF4 /* SpriteObject.h */,
-				E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */,
-				E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */,
+				50A7DCB916CA814700B41A67 /* RenderFastNames.h */,
 			);
 			path = Highlevel;
 			sourceTree = "<group>";
@@ -2721,6 +2736,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				CC24800616DD174E00183D40 /* UserComponent.cpp */,
+				CC24800716DD174E00183D40 /* UserComponent.h */,
 				CCB4C41816CBC5B200F2B085 /* ComponentHelpers.cpp */,
 				CCB4C41916CBC5B200F2B085 /* ComponentHelpers.h */,
 				E8989CC916BD24E500732C04 /* BulletComponent.cpp */,
@@ -3269,11 +3286,13 @@
 				E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C41B16CBC5B200F2B085 /* ComponentHelpers.h in Headers */,
 				1799E52716CCEC030058061F /* ParticleForce.h in Headers */,
+				840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */,
 				171F938616CE6F28007038AB /* UIWebView.h in Headers */,
 				17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */,
 				C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */,
 				C151B17C16D3755000E09BAF /* WebViewControlMacOS.h in Headers */,
 				C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */,
+				CC24800A16DD174E00183D40 /* UserComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3604,6 +3623,8 @@
 				E8974E2D16CBCBB000A78091 /* ComponentHelpers.h in Headers */,
 				1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */,
 				17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */,
+				E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */,
+				CC24800B16DD174E00183D40 /* UserComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3971,13 +3992,14 @@
 				E89CE91B16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				CCB4C41A16CBC5B200F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */,
+				840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */,
 				171F938516CE6F28007038AB /* UIWebView.cpp in Sources */,
 				C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */,
 				C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */,
 				C151B17D16D3755000E09BAF /* WebViewControlMacOS.mm in Sources */,
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
-				C18046CC16D52EEC00DC24D8 /* DPIHelperMacOS.mm in Sources */,
+				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4260,6 +4282,10 @@
 				E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */,
 				E8974E2C16CBCBB000A78091 /* ComponentHelpers.cpp in Sources */,
 				1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */,
+				E83F10A116D6721D00C6ED39 /* DVAssertMessage.cpp in Sources */,
+				E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */,
+				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
+				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

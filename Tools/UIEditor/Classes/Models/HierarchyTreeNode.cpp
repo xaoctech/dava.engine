@@ -15,6 +15,9 @@ HierarchyTreeNode::HierarchyTreeNode(const QString& name)
 {
 	this->id = nextId++;
 	this->name = name;
+	
+	this->redoParentNode = NULL;
+	this->redoPreviousNode = NULL;
 }
 
 HierarchyTreeNode::HierarchyTreeNode(const HierarchyTreeNode* node)
@@ -47,8 +50,46 @@ void HierarchyTreeNode::AddTreeNode(HierarchyTreeNode* treeNode)
 	//childNodes.insert(treeNode);
 }
 
+// Add the node to the list after the particular node.
+void HierarchyTreeNode::AddTreeNode(HierarchyTreeNode* treeNode, HierarchyTreeNode* nodeToAddAfter)
+{
+    if (treeNode == NULL)
+        return;
+	
+	HIERARCHYTREENODESITER iter = std::find(childNodes.begin(), childNodes.end(), treeNode);
+    if (iter != childNodes.end())
+		return;
+
+	if (nodeToAddAfter == NULL)
+	{
+		AddTreeNode(treeNode);
+		return;
+	}
+	
+	if (nodeToAddAfter == this)
+	{
+		childNodes.push_front(treeNode);
+		return;
+	}
+
+	// Look for the "nodeToAddAfter" to insert the tree node after it.
+    HIERARCHYTREENODESITER nodeAfterIter = std::find(childNodes.begin(), childNodes.end(), nodeToAddAfter);
+    if (nodeAfterIter == childNodes.end())
+    {
+		return AddTreeNode(treeNode);
+    }
+
+	nodeAfterIter ++;
+	if (nodeAfterIter == childNodes.end())
+    {
+		return AddTreeNode(treeNode);
+    }
+	
+	childNodes.insert(nodeAfterIter, treeNode);
+}
+
 // Remove the node from the list, return TRUE if succeeded.
-bool HierarchyTreeNode::RemoveTreeNode(HierarchyTreeNode* treeNode, bool needDelete/* = true*/)
+bool HierarchyTreeNode::RemoveTreeNode(HierarchyTreeNode* treeNode, bool needDelete, bool needRemoveFromScene)
 {
     if (treeNode == NULL)
     {
@@ -61,8 +102,17 @@ bool HierarchyTreeNode::RemoveTreeNode(HierarchyTreeNode* treeNode, bool needDel
     {
         //childNodes.remove(treeNode);
 		childNodes.erase(iterToDelete);
+
+		if (needRemoveFromScene)
+		{
+			treeNode->RemoveTreeNodeFromScene();
+		}
+
 		if (needDelete)
+		{
 			delete treeNode;
+		}
+		
         return true;
     }
 
@@ -98,4 +148,31 @@ bool HierarchyTreeNode::IsHasChild(const HierarchyTreeNode* node) const
 			return true;
 	}
 	return false;
+}
+
+void HierarchyTreeNode::PrepareRemoveFromSceneInformation()
+{
+	if (!GetParent())
+	{
+		this->redoParentNode = NULL;
+		this->redoPreviousNode = NULL;
+		return;
+	}
+
+	this->redoParentNode = GetParent();
+	this->redoPreviousNode = NULL;
+
+	HierarchyTreeNode* parentNode = GetParent();
+	// Look for the Redo Node in the Children List, and remember the previous one.
+	// This is needed to restore the previous node position in case of Redo.
+	for (List<HierarchyTreeNode*>::const_iterator iter = parentNode->GetChildNodes().begin();
+		 iter != parentNode->GetChildNodes().end(); iter ++)
+	{
+		if ((*iter == this) && (iter != parentNode->GetChildNodes().begin()))
+		{
+			iter --;
+			this->redoPreviousNode = (*iter);
+			break;
+		}
+	}
 }

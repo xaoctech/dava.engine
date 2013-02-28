@@ -133,6 +133,9 @@ inherit:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="spriteLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>81</x>
@@ -220,6 +223,16 @@ inherit:</string>
    <header>qcolorbutton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>selectColorButton</tabstop>
+  <tabstop>spriteLineEdit</tabstop>
+  <tabstop>openSpriteButton</tabstop>
+  <tabstop>removeSpriteButton</tabstop>
+  <tabstop>frameSpinBox</tabstop>
+  <tabstop>drawTypeComboBox</tabstop>
+  <tabstop>colorInheritComboBox</tabstop>
+  <tabstop>alignComboBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

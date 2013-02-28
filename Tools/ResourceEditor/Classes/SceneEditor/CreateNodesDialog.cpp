@@ -12,12 +12,6 @@
 #include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
 
-#include "Render/Highlevel/Camera.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/LightComponent.h"
-
-
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
 {
@@ -112,7 +106,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
             sceneNode = new SceneNode();
-            sceneNode->AddComponent(new RenderComponent(new LandscapeNode()));
+            sceneNode->AddComponent(new RenderComponent(ScopedPtr<LandscapeNode>(new LandscapeNode())));
             sceneNode->SetName("Landscape");
             break;
 
@@ -172,16 +166,26 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		}
 
 		case ResourceEditor::NODE_USER_NODE:
+        {
 			SetHeader(LocalizedString(L"createnode.usernode"));
-			sceneNode = new UserNode();
+			sceneNode = new SceneNode();
 			sceneNode->SetName("UserNode");
+            
+            RenderObject *ro = new RenderObject();
+            ro->SetAABBox(AABBox3(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f)));
+            
+            sceneNode->AddComponent(new RenderComponent(ro));
+            ro->Release();
 			break;
+        }
 
 		case ResourceEditor::NODE_SWITCH_NODE:
 		{
 			SetHeader(LocalizedString(L"createnode.switchnode"));
-			sceneNode = new SwitchNode();
+            sceneNode = new SceneNode();
 			sceneNode->SetName("SwitchNode");
+            sceneNode->AddComponent(new SwitchComponent());
+            
 			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
 			customProperties->SetBool(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
 		}

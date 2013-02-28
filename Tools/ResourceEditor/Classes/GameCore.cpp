@@ -46,15 +46,8 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-	String ss("    ");
-	const char8 * uu = ss.c_str();
-	String cc = "\r\n" + ss + "{ ";
-	const char8 * vv = cc.c_str();
-
 	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
-    
-    Stats::Instance()->EnableStatsOutputEventNFrame(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");

@@ -201,7 +201,7 @@ YamlNode * GraphicsFont::SaveToYamlNode()
     YamlNode *node = Font::SaveToYamlNode();
     
     //Type
-    node->Set("type", "GraphicsFont");
+    node->Set("type", "GraphicsFont", true);
     //horizontalSpacing
     node->Set("horizontalSpacing", this->GetHorizontalSpacing());
     //Sprite    

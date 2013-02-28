@@ -54,6 +54,8 @@ APKFile::~APKFile()
 
 File * APKFile::CreateFromAssets(const String &filePath, uint32 attributes)
 {
+//	Logger::Debug("[APKFile::CreateFromAssets] wan't to create file %s", filePath.c_str());
+//
     FileSystem * fileSystem = FileSystem::Instance();
 	for (List<FileSystem::ResourceArchiveItem>::iterator ai = fileSystem->resourceArchiveList.begin();
          ai != fileSystem->resourceArchiveList.end(); ++ai)
