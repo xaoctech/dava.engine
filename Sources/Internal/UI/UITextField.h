@@ -191,6 +191,9 @@ public:
 	 \returns list of control children without internal controls.
 	 */
 	virtual List<UIControl* >& GetRealChildren();
+	
+	virtual UIControl *Clone();
+	virtual void CopyDataFrom(UIControl *srcControl);
 
 protected:
     bool needRedraw;

@@ -144,3 +144,23 @@ void UIStaticTextMetadata::SetFontColor(const QColor& value)
 
     GetActiveStaticText()->SetFontColor(QTColorToDAVAColor(value));
 }
+
+int UIStaticTextMetadata::GetAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return ALIGN_LEFT;
+    }
+    
+    return (int)GetActiveStaticText()->GetAlign();
+}
+
+void UIStaticTextMetadata::SetAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveStaticText()->SetAlign((eAlign)value);
+}
