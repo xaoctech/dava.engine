@@ -23,16 +23,16 @@
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
      <property name="dragEnabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="dragDropOverwriteMode">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
+      <enum>QAbstractItemView::InternalMove</enum>
      </property>
      <property name="defaultDropAction">
-      <enum>Qt::IgnoreAction</enum>
+      <enum>Qt::MoveAction</enum>
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>

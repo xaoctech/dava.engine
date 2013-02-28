@@ -1,6 +1,9 @@
 #include "Debug/DVAssertMessage.h"
 
-using namespace DAVA;
+#if defined (__DAVAENGINE_WIN32__)
+
+namespace DAVA
+{
 
 WideString s2ws(const String& s)
 {
@@ -18,3 +21,8 @@ void DVAssertMessage::InnerShow(const char* content)
 {
 	MessageBox(HWND_DESKTOP, s2ws(content).c_str(), L"Assert", MB_OK | MB_ICONEXCLAMATION);
 }
+
+};
+
+#endif //#if defined (__DAVAENGINE_WIN32__)
+

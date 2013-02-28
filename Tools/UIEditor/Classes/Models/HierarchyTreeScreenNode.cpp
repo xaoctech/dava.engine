@@ -86,7 +86,7 @@ int HierarchyTreeScreenNode::GetPosY() const
 	return posY;
 }
 
-void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node)
+void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
 {
 	HierarchyTreePlatformNode* newPlatform = dynamic_cast<HierarchyTreePlatformNode*>(node);
 	DVASSERT(newPlatform);
@@ -101,7 +101,7 @@ void HierarchyTreeScreenNode::SetParent(HierarchyTreeNode* node)
 	
 	parent = newPlatform;
 	GetScreen()->SetRect(Rect(0, 0, newPlatform->GetWidth(), newPlatform->GetHeight()));
-	newPlatform->AddTreeNode(this);
+	newPlatform->AddTreeNode(this, insertAfter);
 }
 
 HierarchyTreeNode* HierarchyTreeScreenNode::GetParent()

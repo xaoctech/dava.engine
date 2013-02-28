@@ -18,7 +18,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/CommandLineTool.h"
-#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
+#include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
+#include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
 #include <QApplication>
 #include <QPixmap>
@@ -32,6 +33,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, convertWaitDialog(NULL)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
+	, repackSpritesWaitDialog(NULL)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -423,8 +425,14 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
 
-			TextureCheckConvetAndWait();
-			UpdateParticleSprites();
+			bool convertionStarted = TextureCheckConvetAndWait();
+			if(!convertionStarted)
+			{
+				// conversion hasn't been started, run repack immediately 
+				// in another case repack will be invoked in finishing callback (ConvertWaitDone)
+				UpdateParticleSprites();
+			}
+			
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -464,8 +472,9 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateLibraryFileTypes();
 }
 
-void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
+bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
+	bool ret = false;
 	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
@@ -473,6 +482,7 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 		// signal 'readyAll' will be emited when convention finishes
 		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
 		{
+			ret = true;
 			convertWaitDialog = new QProgressDialog(this);
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
@@ -484,16 +494,42 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 			convertWaitDialog->show();
 		}
 	}
+	return ret;
 }
 
 void QtMainWindow::UpdateParticleSprites()
 {
-	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+	if(repackSpritesWaitDialog != NULL)
+	{
+		return;
+	}
+
+	repackSpritesWaitDialog = new QResourceEditorProgressDialog(this, 0, true);
+
+	SpritePackerHelper::Instance()->UpdateParticleSpritesAsync();
+	
+	QObject::connect(SpritePackerHelper::Instance(), SIGNAL(readyAll()), repackSpritesWaitDialog, SLOT(close()));
+	QObject::connect(repackSpritesWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(RepackSpritesWaitDone(QObject *)));
+
+	repackSpritesWaitDialog->setModal(true);
+	repackSpritesWaitDialog->setCancelButton(NULL);
+	repackSpritesWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
+	repackSpritesWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+	repackSpritesWaitDialog->setLabelText("Repack sprites...");
+	repackSpritesWaitDialog->setRange(0, 100);
+	repackSpritesWaitDialog->setValue(0);
+	repackSpritesWaitDialog->show();
 }
 
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 {
 	convertWaitDialog = NULL;
+	UpdateParticleSprites();
+}
+
+void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
+{
+	repackSpritesWaitDialog = NULL;
 }
 
 void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)

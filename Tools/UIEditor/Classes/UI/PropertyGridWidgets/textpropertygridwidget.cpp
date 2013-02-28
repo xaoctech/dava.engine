@@ -1,6 +1,5 @@
 #include "textpropertygridwidget.h"
 #include "ui_textpropertygridwidget.h"
-#include <QFileDialog>
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
