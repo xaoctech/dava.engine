@@ -290,8 +290,6 @@ void LandscapeEditorHeightmap::UpdateCursor()
 
 void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
-	bool skipUndoPointCreation = false;
-
     bool dropper = IsKeyModificatorPressed(DVKEY_CTRL);
     if(dropper)
     {
@@ -320,14 +318,12 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                     currentTool->height = GetDropperHeight();
                 }
                 
+				bool skipUndoPointCreation = false;
                 if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
                 {
 					//CopyPasteBegin returns true when copyFrom point is set
 					//no need to create undo point in this case
-					if (CopyPasteBegin())
-					{
-						skipUndoPointCreation = true;
-					}
+					skipUndoPointCreation = CopyPasteBegin();
 					
 					if (!skipUndoPointCreation)
 					{
@@ -490,16 +486,6 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskTexture);
     workingLandscape->UpdateFullTiledTexture();
 }
-
-void LandscapeEditorHeightmap::UndoAction()
-{
-}
-
-void LandscapeEditorHeightmap::RedoAction()
-{
-}
-
-
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {

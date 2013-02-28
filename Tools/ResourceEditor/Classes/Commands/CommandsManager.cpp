@@ -17,37 +17,34 @@ CommandsManager::~CommandsManager()
 
 void CommandsManager::ClearAllQueues()
 {
-	for (QUEUE_LIST::iterator it = queueList.begin(); it != queueList.end(); ++it)
+	for (QUEUE_MAP::iterator it = queueMap.begin(); it != queueMap.end(); ++it)
 	{
 		ClearQueue((*it).second);
 		SafeDelete((*it).second);
 	}
-	queueList.clear();
+	queueMap.clear();
 }
 
 void CommandsManager::ChangeQueue(void *scene)
 {
 	DVASSERT(scene);
 
-	QUEUE_LIST::iterator it = queueList.find(scene);
+	QUEUE_MAP::iterator it = queueMap.find(scene);
 
-	if (it != queueList.end())
+	if (it != queueMap.end())
 	{
 		activeQueue = (*it).second;
 	}
 	else
 	{
 		UndoQueue* newQueue = new UndoQueue(scene);
-		queueList[scene] = newQueue;
+		queueMap[scene] = newQueue;
 		activeQueue = newQueue;
 	}
 }
 
 void CommandsManager::ClearQueue(UndoQueue* queue)
 {
-	if (!queue)
-		return;
-
 	UndoQueue* q = queue;
 	if (!q)
 		q = activeQueue;
@@ -57,6 +54,18 @@ void CommandsManager::ClearQueue(UndoQueue* queue)
 			 q->commands.end(),
 			 SafeRelease<Command>);
 	q->commands.clear();
+}
+
+void CommandsManager::SceneReleased(void *scene)
+{
+	QUEUE_MAP::iterator it = queueMap.find(scene);
+
+	if (it != queueMap.end())
+	{
+		ClearQueue((*it).second);
+		SafeDelete((*it).second);
+		queueMap.erase(it);
+	}
 }
 
 void CommandsManager::ClearQueueTail()

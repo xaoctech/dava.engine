@@ -67,6 +67,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 
 	SceneDataManager* sceneDataManager = SceneDataManager::Instance();
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
+	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -819,4 +820,9 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 
 	UpdateUndoActionsState();
 	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
+{
+	CommandsManager::Instance()->SceneReleased(scene);
 }
