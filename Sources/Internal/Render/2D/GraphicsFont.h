@@ -58,7 +58,15 @@ public:
     virtual void    SetHorizontalSpacing(int32 horizontalSpacing);
     
 	virtual Font	* Clone();
-
+	/**
+	\brief Tests if two fonts are the same.
+	*/
+	virtual bool IsEqual(Font *font);
+	/* Put font properties into YamlNode */
+	virtual YamlNode * SaveToYamlNode();
+	//Additional functions which allow return needed values of protected properties
+	Sprite *GetFontSprite();
+	String GetFontDefinitionName();
 	
 protected:
 	GraphicsFont();
@@ -71,6 +79,9 @@ protected:
 	Sprite * fontSprite;
 	GraphicsFontDefinition * fdef;
 	float32 fontScaleCoeff;
+
+	//Additional variable to keep font definition
+	String fontDefinitionName;
 };
 		
 class GraphicsFontDefinition : public BaseObject

@@ -45,6 +45,15 @@ public:
 	void SetState(eVisibilityCheckToolState newState);
 	void SetVisibilityAreaSize(uint32 size);
 	void SaveColorLayer(const String &pathName);
+	void ClearSceneResources();
+
+	void StorePointState(Vector2* point, bool* pointIsSet, Image** image);
+	void RestorePointState(const Vector2& point, bool pointIsSet, Image* image);
+	void SetVisibilityPoint(const Vector2& point);
+
+	void StoreAreaState(Image** image);
+	void RestoreAreaState(Image* image);
+	void SetVisibilityArea(const Vector2& visibilityAreaCenter, uint32 visibilityAreaSize);
 
 protected:
 

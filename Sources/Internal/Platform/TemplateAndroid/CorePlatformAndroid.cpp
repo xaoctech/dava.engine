@@ -11,7 +11,6 @@
 
 //#include "Core/Core.h"
 
-
 #if defined(__DAVAENGINE_ANDROID__)
 
 extern void FrameworkDidLaunched();
@@ -19,21 +18,38 @@ extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
 
-
 namespace DAVA
 {
-    
-    Core::eDeviceFamily Core::GetDeviceFamily()
-    {
-        //TODO: need to create real function
-        return DEVICE_HANDSET;
-    }
-
-    
-	CoreAndroidPlatform::CoreAndroidPlatform()
-		:	Core()
+	AndroidSystemDelegate::AndroidSystemDelegate(JavaVM *vm)
 	{
-//		Logger::Debug("[CoreAndroidPlatform::CoreAndroidPlatform]");
+		Logger::Debug("AndroidSystemDelegate::AndroidSystemDelegate()");
+
+		this->vm = vm;
+		environment = NULL;
+		if (vm->GetEnv((void**)&environment, JNI_VERSION_1_4) != JNI_OK)
+		{
+			Logger::Debug("Failed to get the environment using GetEnv()");
+		}
+	}
+
+	Core::eDeviceFamily Core::GetDeviceFamily()
+	{
+		float32 width = GetPhysicalScreenWidth();
+		float32 height = GetPhysicalScreenHeight();
+		float32 dpi = GetScreenDPI();
+
+		float32 inches = sqrt((width * width) + (height * height)) / dpi;
+
+		if (inches > 6.f)
+			return DEVICE_PAD;
+
+		return DEVICE_HANDSET;
+	}
+
+	CorePlatformAndroid::CorePlatformAndroid()
+	: Core()
+	{
+//		Logger::Debug("[CorePlatformAndroid::CorePlatformAndroid]");
 
 		wasCreated = false;
 		renderIsActive = false;
@@ -59,20 +75,20 @@ namespace DAVA
 
 	}
 
-	void CoreAndroidPlatform::Quit()
+	void CorePlatformAndroid::Quit()
 	{
-		Logger::Debug("[CoreAndroidPlatform::Quit]");
+		Logger::Debug("[CorePlatformAndroid::Quit]");
 		QuitAction();
 	}
 
-	void CoreAndroidPlatform::QuitAction()
+	void CorePlatformAndroid::QuitAction()
 	{
-		Logger::Debug("[CoreAndroidPlatform::QuitAction]");
+		Logger::Debug("[CorePlatformAndroid::QuitAction]");
 
-        if(Core::Instance())
-        {
-            Core::Instance()->SystemAppFinished();
-        }
+		if(Core::Instance())
+		{
+			Core::Instance()->SystemAppFinished();
+		}
 
 		FrameworkWillTerminate();
 
@@ -83,23 +99,22 @@ namespace DAVA
 		}
 #endif
 
-		Logger::Debug("[CoreAndroidPlatform::QuitAction] done");
+		Logger::Debug("[CorePlatformAndroid::QuitAction] done");
 	}
 
-
-	void CoreAndroidPlatform::RepaintView()
+	void CorePlatformAndroid::RepaintView()
 	{
-        if(renderIsActive)
-        {
-            DAVA::RenderManager::Instance()->Lock();
-            Core::SystemProcessFrame();
-            DAVA::RenderManager::Instance()->Unlock();
-        }
+		if(renderIsActive)
+		{
+			DAVA::RenderManager::Instance()->Lock();
+			Core::SystemProcessFrame();
+			DAVA::RenderManager::Instance()->Unlock();
+		}
 	}
 
-	void CoreAndroidPlatform::ResizeView(int32 w, int32 h)
+	void CorePlatformAndroid::ResizeView(int32 w, int32 h)
 	{
-//		if(oldWidth != w || oldHeight != h)
+		if(oldWidth != w || oldHeight != h)
 		{
 			oldWidth = w;
 			oldHeight = h;
@@ -109,141 +124,128 @@ namespace DAVA
 
 			UpdateScreenMode();
 		}
-
 	}
 
-	void CoreAndroidPlatform::UpdateScreenMode()
+	void CorePlatformAndroid::UpdateScreenMode()
 	{
+		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] start");
 		UIControlSystem::Instance()->SetInputScreenAreaSize(windowedMode.width, windowedMode.height);
 		Core::Instance()->SetPhysicalScreenSize(windowedMode.width, windowedMode.height);
 
-        RenderManager::Instance()->InitFBSize(windowedMode.width, windowedMode.height);
-//        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
+		RenderManager::Instance()->InitFBSize(windowedMode.width, windowedMode.height);
+        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
 
-        Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] done");
-    }
+		Logger::Debug("[CorePlatformAndroid::] w = %d, h = %d", windowedMode.width, windowedMode.height);
+		Logger::Debug("[CorePlatformAndroid::UpdateScreenMode] done");
+	}
 
-	void CoreAndroidPlatform::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
+	void CorePlatformAndroid::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
 	{
 		androidDelegate = sysDelegate;
 
 		Core::CreateSingletons();
 
-        Logger::SetTag(logTag);
-//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] docpath = %s", docPath);
-//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] assets = %s", assets);
+		externalStorage = docPath;
 
-		FileSystem::Instance()->SetPath(docPath, assets);
+		Logger::SetTag(logTag);
+//		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] docpath = %s", docPath);
+//		Logger::Debug("[CorePlatformAndroid::CreateAndroidWindow] assets = %s", assets);
+
+		//FileSystem::Instance()->SetPath(docPath, assets);
 
 		//////////////////////////////////////////////////////////////////////////
 		windowedMode = DisplayMode(480, 320, 16, 0);
 	}
-    
-    void CoreAndroidPlatform::RenderRecreated()
+
+	void CorePlatformAndroid::RenderRecreated()
 	{
-		Logger::Debug("[CoreAndroidPlatform::RenderRecreated] start");
-        
-        renderIsActive = true;
-        
-        Thread::InitMainThread();
-        
-        if(wasCreated)
+		Logger::Debug("[CorePlatformAndroid::RenderRecreated] start");
+
+		renderIsActive = true;
+
+		Thread::InitMainThread();
+
+		if(wasCreated)
 		{
-            RenderResource::InvalidateAllResources();   
-        }
-        else
-        {
-            wasCreated = true;
-            
-            Logger::Debug("[CoreAndroidPlatform::] before create renderer");
-            RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
-	        RenderManager::Instance()->Init(0, 0);
+			RenderResource::InvalidateAllResources();
+		}
+		else
+		{
+			wasCreated = true;
 
-            RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
-            Logger::Debug("[CoreAndroidPlatform::] after create renderer");
-            
-            FrameworkDidLaunched();
-            
-            KeyedArchive * options = Core::GetOptions();
-            
-            if (options)
-            {
-                windowedMode.width = options->GetInt32("width");
-                windowedMode.height = options->GetInt32("height");
-                windowedMode.bpp = options->GetInt32("bpp");
-            }
-            
-            Logger::Debug("[CoreAndroidPlatform::] w = %d, h = %d", windowedMode.width, windowedMode.height);
-            
-            RenderManager::Instance()->SetFPS(60);
-            
-            UpdateScreenMode();
-            
-            //////////////////////////////////////////////////////////////////////////
-            Core::Instance()->SystemAppStarted();
-            
-            StartForeground();
-        }
-        
-        Logger::Debug("[CoreAndroidPlatform::RenderRecreated] end");
+			Logger::Debug("[CorePlatformAndroid::] before create renderer");
+			RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
+
+			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
+			Logger::Debug("[CorePlatformAndroid::] after create renderer");
+
+			FrameworkDidLaunched();
+			screenOrientation = Core::SCREEN_ORIENTATION_PORTRAIT; //no need rotate GL for Android
+
+			RenderManager::Instance()->SetFPS(60);
+
+			//////////////////////////////////////////////////////////////////////////
+			Core::Instance()->SystemAppStarted();
+
+			StartForeground();
+		}
+
+		Logger::Debug("[CorePlatformAndroid::RenderRecreated] end");
 	}
 
-    
-    void CoreAndroidPlatform::OnCreateActivity()
+	void CorePlatformAndroid::OnCreateActivity()
 	{
-//		Logger::Debug("[CoreAndroidPlatform::OnCreateActivity]");
+//		Logger::Debug("[CorePlatformAndroid::OnCreateActivity]");
 	}
 
-
-    void CoreAndroidPlatform::OnDestroyActivity()
+	void CorePlatformAndroid::OnDestroyActivity()
 	{
-//		Logger::Debug("[CoreAndroidPlatform::OnDestroyActivity]");
-        
-        renderIsActive = false;
+//		Logger::Debug("[CorePlatformAndroid::OnDestroyActivity]");
+
+		renderIsActive = false;
 	}
 
-
-	void CoreAndroidPlatform::StartVisible()
+	void CorePlatformAndroid::StartVisible()
 	{
-//		Logger::Debug("[CoreAndroidPlatform::StartVisible]");
+//		Logger::Debug("[CorePlatformAndroid::StartVisible]");
 	}
 
-	void CoreAndroidPlatform::StopVisible()
+	void CorePlatformAndroid::StopVisible()
 	{
-//		Logger::Debug("[CoreAndroidPlatform::StopVisible]");
+//		Logger::Debug("[CorePlatformAndroid::StopVisible]");
 	}
 
-	void CoreAndroidPlatform::StartForeground()
+	void CorePlatformAndroid::StartForeground()
 	{
-		Logger::Debug("[CoreAndroidPlatform::StartForeground] start");
+		Logger::Debug("[CorePlatformAndroid::StartForeground] start");
 		//TODO: VK: add code for handling
 
-        if(wasCreated)
-        {
-            ApplicationCore * core = Core::Instance()->GetApplicationCore();
-            if(core)
-            {
-                core->OnResume();
-            }
-            
-            foreground = true;
-        }
-		Logger::Debug("[CoreAndroidPlatform::StartForeground] end");
+		if(wasCreated)
+		{
+			ApplicationCore * core = Core::Instance()->GetApplicationCore();
+			if(core)
+			{
+				core->OnResume();
+			}
+
+			foreground = true;
+		}
+		Logger::Debug("[CorePlatformAndroid::StartForeground] end");
 	}
 
-	void CoreAndroidPlatform::StopForeground()
+	void CorePlatformAndroid::StopForeground()
 	{
-		Logger::Debug("[CoreAndroidPlatform::StopForeground]");
+		Logger::Debug("[CorePlatformAndroid::StopForeground]");
 		//TODO: VK: add code for handling
 
 		RenderResource::SaveAllResourcesToSystemMem();
 		RenderResource::LostAllResources();
 
-        ApplicationCore * core = Core::Instance()->GetApplicationCore();
-        if(core)
-        {
-            core->OnSuspend();
-        }
+		ApplicationCore * core = Core::Instance()->GetApplicationCore();
+		if(core)
+		{
+			core->OnSuspend();
+		}
 
 		foreground = false;
 
@@ -252,7 +254,7 @@ namespace DAVA
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;
-	void CoreAndroidPlatform::KeyUp(int32 keyCode)
+	void CorePlatformAndroid::KeyUp(int32 keyCode)
 	{
 		Vector<DAVA::UIEvent> touches;
 		Vector<DAVA::UIEvent> emptyTouches;
@@ -275,100 +277,103 @@ namespace DAVA
 		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 	}
 
-	void CoreAndroidPlatform::KeyDown(int32 keyCode)
+	void CorePlatformAndroid::KeyDown(int32 keyCode)
 	{
 	}
 
-
-    
-    UIEvent CoreAndroidPlatform::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time)
-    {
+	UIEvent CorePlatformAndroid::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time)
+	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
 		{
-            case 5: //ACTION_POINTER_DOWN
-            case 0: //ACTION_DOWN
-                phase = DAVA::UIEvent::PHASE_BEGAN;
-                break;
-                
-            case 6: //ACTION_POINTER_UP
-            case 1: //ACTION_UP
-                phase = DAVA::UIEvent::PHASE_ENDED;
-                break;
-            case 2: //ACTION_MOVE
-                phase = DAVA::UIEvent::PHASE_DRAG;
-                break;
-                
-            case 3: //ACTION_CANCEL
-                phase = DAVA::UIEvent::PHASE_CANCELLED;
-                break;
-                
-            case 4: //ACTION_OUTSIDE
-                break;
+			case 5: //ACTION_POINTER_DOWN
+			case 0://ACTION_DOWN
+			phase = DAVA::UIEvent::PHASE_BEGAN;
+			break;
+
+			case 6://ACTION_POINTER_UP
+			case 1://ACTION_UP
+			phase = DAVA::UIEvent::PHASE_ENDED;
+			break;
+			case 2://ACTION_MOVE
+			phase = DAVA::UIEvent::PHASE_DRAG;
+			break;
+
+			case 3://ACTION_CANCEL
+			phase = DAVA::UIEvent::PHASE_CANCELLED;
+			break;
+
+			case 4://ACTION_OUTSIDE
+			break;
 		}
-        
-        UIEvent newTouch;
-        newTouch.tid = id;
-        newTouch.physPoint.x = x;
-        newTouch.physPoint.y = y;
-        newTouch.phase = phase;
-        newTouch.tapCount = 1;
-        
-        return newTouch;
-    }
-	AAssetManager * CoreAndroidPlatform::GetAssetManager()
+
+		UIEvent newTouch;
+		newTouch.tid = id;
+		newTouch.physPoint.x = x;
+		newTouch.physPoint.y = y;
+		newTouch.point.x = x;
+		newTouch.point.y = y;
+		newTouch.phase = phase;
+		newTouch.tapCount = 1;
+		newTouch.timestamp = time;
+
+		return newTouch;
+	}
+
+	AAssetManager * CorePlatformAndroid::GetAssetManager()
 	{
 		return assetMngr;
 	}
-	void CoreAndroidPlatform::SetAssetManager(AAssetManager * mngr)
+
+	void CorePlatformAndroid::SetAssetManager(AAssetManager * mngr)
 	{
 		assetMngr = mngr;
 	}
-	void CoreAndroidPlatform::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
-	{
-//		Logger::Debug("[CoreAndroidPlatform::OnTouch] IN totalTouches.size = %d", totalTouches.size());
-//		Logger::Debug("[CoreAndroidPlatform::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
-        
-        UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
-        Vector<DAVA::UIEvent> activeTouches;
-        activeTouches.push_back(touchEvent);
-        
 
-        bool isFound = false;
-        for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
+	void CorePlatformAndroid::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
+	{
+//		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
+//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
+
+		UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
+		Vector<DAVA::UIEvent> activeTouches;
+		activeTouches.push_back(touchEvent);
+
+		bool isFound = false;
+		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
 		{
-            if((*it).tid == touchEvent.tid)
-            {
-                (*it).physPoint.x = touchEvent.physPoint.x;
-                (*it).physPoint.y = touchEvent.physPoint.y;
-                (*it).phase = touchEvent.phase;
-                (*it).tapCount = touchEvent.tapCount;
-                
-                isFound = true;
-            }
+			if((*it).tid == touchEvent.tid)
+			{
+				(*it).physPoint.x = touchEvent.physPoint.x;
+				(*it).physPoint.y = touchEvent.physPoint.y;
+				(*it).phase = touchEvent.phase;
+				(*it).tapCount = touchEvent.tapCount;
+
+				isFound = true;
+			}
 		}
-        if(!isFound)
-        {
-            totalTouches.push_back(touchEvent);
-        }
+		if(!isFound)
+		{
+			totalTouches.push_back(touchEvent);
+		}
 
 		UIControlSystem::Instance()->OnInput(touchEvent.phase, activeTouches, totalTouches);
 
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
 		{
-            if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase))
-            {
-                it = totalTouches.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
+			if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase))
+			{
+				it = totalTouches.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
-//		Logger::Debug("[CoreAndroidPlatform::OnTouch] OUT totalTouches.size = %d", totalTouches.size());
+//		Logger::Debug("[CorePlatformAndroid::OnTouch] OUT totalTouches.size = %d", totalTouches.size());
 	}
 
-	bool CoreAndroidPlatform::DownloadHttpFile(const String & url, const String & documentsPathname)
+	bool CorePlatformAndroid::DownloadHttpFile(const String & url, const String & documentsPathname)
 	{
 		if(androidDelegate)
 		{
@@ -377,6 +382,11 @@ namespace DAVA
 		}
 
 		return false;
+	}
+
+	AndroidSystemDelegate* CorePlatformAndroid::GetAndroidSystemDelegate() const
+	{
+		return androidDelegate;
 	}
 }
 #endif // #if defined(__DAVAENGINE_ANDROID__)

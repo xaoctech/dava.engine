@@ -35,7 +35,8 @@ using namespace DAVA;
 NotPassableTerrain::NotPassableTerrain()
     : EditorLandscapeNode()
 {
-    SetName(String("Landscape_NotPassable"));
+    // RETURN TO THIS CODE LATER
+    //SetName(String("Landscape_NotPassable"));
     LoadColorsArray();
 
     notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));

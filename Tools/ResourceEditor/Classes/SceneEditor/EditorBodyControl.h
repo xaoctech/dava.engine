@@ -28,6 +28,8 @@ class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
 class LandscapeEditorCustomColors;
 class LandscapeEditorVisibilityCheckTool;
+class Command;
+class ArrowsNode;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -79,6 +81,7 @@ public:
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
     bool ToggleLandscapeEditor(int32 landscapeEditorMode);
+	LandscapeEditorBase* GetLandscapeEditor(int32 landscapeEditorMode);
     
     void RecreteFullTilingTexture();
 
@@ -88,6 +91,8 @@ public:
     
     //ModificationsPanelDelegate
     virtual void OnPlaceOnLandscape();
+	void RestoreOriginalTransform();
+	void ApplyTransform(float32 x, float32 y, float32 z);
 
     //GraphBaseDelegate
     virtual bool LandscapeEditorActive();
@@ -107,6 +112,11 @@ public:
 
     bool RulerToolIsActive();
     bool RulerToolTriggered();
+
+	bool CustomColorIsActive();
+	bool VisibilityToolIsActive();
+	bool ColorIsActive();
+	bool HightMapIsActive();
     
 	void UpdateModificationPanel(void);
 
@@ -124,7 +134,15 @@ public:
 	void VisibilityToolSetAreaSize(uint32 size);
 
     void ProcessIsSolidChanging();
-    
+
+	void RemoveNode(SceneNode* node);
+	void SelectNode(SceneNode* node);
+
+	ResourceEditor::eModificationActions GetModificationMode();
+	void SetModificationMode(ResourceEditor::eModificationActions mode);
+	bool IsLandscapeRelative();
+	void SetLandscapeRelative(bool isLandscapeRelative);
+
 protected:
 
     void InitControls();
@@ -198,7 +216,14 @@ protected:
     SceneInfoControl *sceneInfoControl;
 
 	void PackLightmaps();
-    
+
+	//modification options
+	ResourceEditor::eModificationActions modificationMode;
+	bool landscapeRelative;
+	ArrowsNode* GetArrowsNode(bool createIfNotExist);
+	void UpdateArrowsNode(SceneNode* node);
+	bool InModificationMode();
+
     //Landscape Editor
     bool savedModificatioMode;
     void CreateLandscapeEditor();
@@ -217,6 +242,9 @@ protected:
     ePropertyShowState propertyShowState;
     
     RulerTool *landscapeRulerTool;
+
+	SceneNode* modifiedNode;
+	Matrix4 transformBeforeModification;
 };
 
 

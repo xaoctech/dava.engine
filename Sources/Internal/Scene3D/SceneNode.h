@@ -35,7 +35,8 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
-#include <deque>
+#include "Entity/Component.h"
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA
 {
@@ -43,10 +44,11 @@ namespace DAVA
 class Scene;
 class SceneNodeAnimation;
 class SceneNodeAnimationKey;
-class KeyedArchive;
 class SceneFileV2;
 class DataNode;
 class Entity;
+class RenderComponent;
+class TransformComponent;
 
 /**
     \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
@@ -69,8 +71,17 @@ public:
         \returns pointer to the scene that holds this node. 
      */
     virtual Scene * GetScene();
-
     
+    void AddComponent(Component * component);
+    void RemoveComponent(Component * component);
+    void RemoveComponent(uint32 componentType);
+    Component * GetComponent(uint32 componentType);
+	Component * GetOrCreateComponent(uint32 componentType);
+    uint32 GetComponentCount();
+    
+    inline uint32 GetAvailableComponentFlags();
+
+
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
     
@@ -79,6 +90,7 @@ public:
 	virtual void	RemoveNode(SceneNode * node);
 	virtual SceneNode * GetChild(int32 index);
 	virtual int32   GetChildrenCount();
+    virtual int32   GetChildrenCountRecursive();
 	virtual void	RemoveAllChildren();
         
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
@@ -133,15 +145,16 @@ public:
 
 	
 	// virtual updates
-	virtual void	Update(float32 timeElapsed);
-	virtual void	UpdateTransformNow();
+	//virtual void	Update(float32 timeElapsed);
 	virtual void	Draw();
 	
 	// properties
-	inline void SetVisible(bool isVisible);
-	inline bool GetVisible(void);
+	void SetVisible(bool isVisible);
+	inline bool GetVisible();
+	void SetLodVisible(bool isLodVisible);
+	void SetSwitchVisible(bool isSwitchVisible);
 	inline SceneNode * GetParent();
-	inline void SetUpdatable(bool isUpdatable);
+	void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);
 	inline bool IsLodPart(void);
     virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
@@ -149,25 +162,21 @@ public:
 	// extract data from current node to use it in animations
 	void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & resultKey);
 	
-    inline const Matrix4 & GetLocalTransform(); 
+    const Matrix4 & GetLocalTransform(); 
 
     /**
-     \brief Accamulates local transform from the requested parent to this node.
-     */
-    Matrix4 AccamulateLocalTransform(SceneNode *fromParent);
-
-    /**
-     \brief This method means that you always modify geted matrix. 
+     \brief This method means that you always modify matrix you get. 
         If you dont want to modify matrix call GetLocalTransform().
      */
-    inline Matrix4 & ModifyLocalTransform(); 
-    inline const Matrix4 & GetWorldTransform();
-    inline const Matrix4 & GetDefaultLocalTransform(); 
+	Matrix4 & ModifyLocalTransform(); 
+    const Matrix4 & GetWorldTransform();
+    const Matrix4 & GetDefaultLocalTransform(); 
     
-    inline void SetLocalTransform(const Matrix4 & newMatrix);
+    void SetLocalTransform(const Matrix4 & newMatrix);
     //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
-    inline void InvalidateLocalTransform();
+    //inline void InvalidateLocalTransform();
+	Matrix4 AccamulateLocalTransform(SceneNode * fromParent);
     
     /*
         \brief Go down by hierarchy and bake all transforms.
@@ -198,6 +207,10 @@ public:
         NODE_CLIPPED_PREV_FRAME = 1 << 8, // 
         NODE_CLIPPED_THIS_FRAME = 1 << 9, // 
         NODE_INVALID = 1 << 10,  // THIS NODE not passed some of verification stages and marked as invalid. Such nodes shouldn't be drawn.
+
+		TRANSFORM_NEED_UPDATE = 1 << 11,
+		TRANSFORM_DIRTY = 1 << 12,
+		NODE_DELETED = 1 << 13,
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
         SCENE_LIGHTS_MODIFIED = 1 << 31,
@@ -221,19 +234,17 @@ public:
     // Do not use variables 
     std::deque<SceneNodeAnimation *> nodeAnimations;
 
-	enum
-	{
-		DEBUG_DRAW_NONE = 0,
-		DEBUG_DRAW_AABBOX = 1,              
-		DEBUG_DRAW_LOCAL_AXIS = 2,
-		DEBUG_DRAW_AABOX_CORNERS = 4,
-		DEBUG_DRAW_LIGHT_NODE = 8,
-        DEBUG_DRAW_NORMALS = 16,
-        DEBUG_DRAW_GRID = 32,
-		DEBUG_DRAW_USERNODE = 64,
-		DEBUG_DRAW_RED_AABBOX = 128,
-        DEBUG_DRAW_ALL = 0xFFFFFFFF,
-	};
+    // Do we need enum, or we can use virtual functions? 
+    enum
+    {
+        EVENT_CREATE_ENTITY = 1,
+        EVENT_DELETE_ENTITY,
+        EVENT_ADD_COMPONENT,
+        EVENT_DELETE_COMPONENT,
+        EVENT_NOTIFY_UPDATE,
+    };
+    
+    
 	/**
         \brief function to enable or disable debug drawing for particular node.
         By default it's not recursive. Some objects may support flags only partially.
@@ -254,18 +265,6 @@ public:
     	
     void SetSolid(bool isSolid);
     bool GetSolid();
-    
-	inline void SetUserData(BaseObject * newData)
-	{
-		SafeRelease(userData);
-		userData = newData;
-		SafeRetain(userData);
-	}
-
-	inline BaseObject * GetUserData(void)
-	{
-		return userData;
-	}
 	
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
@@ -333,65 +332,51 @@ public:
     
     void SetFog_Kostil(float32 density, const Color &color);
     
-    
+	// Property names.
+	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+   
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
-	virtual void UpdateTransform();
 
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 	void SetParent(SceneNode * node);
-	BaseObject * userData;
 
 	Scene * scene;
 	SceneNode * parent;
 	Vector<SceneNode*> children;
-	Deque<SceneNode*> removedCache;
-    bool inUpdate;
 
 	String	name;
 	int32	tag;
 
     uint32 flags;
-    uint32 debugFlags;
-
-	Matrix4 worldTransform;
 
     KeyedArchive *customProperties;
     
 private:
-    Matrix4 localTransform;
-    Matrix4 defaultLocalTransform;
+	Vector<Component *> components;
+    uint32 componentFlags;
+    uint32 componentUpdateMarks;
     
-};
 
-inline void SceneNode::SetVisible(bool isVisible)
-{
-    if (isVisible) 
-    {
-        AddFlag(NODE_VISIBLE);
-    }
-    else 
-    {
-        RemoveFlag(NODE_VISIBLE);
-    }
-}
+    Matrix4 defaultLocalTransform;
+   	friend class Scene;
+    
+public:
+	INTROSPECTION_EXTEND(SceneNode, BaseObject,
+		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+
+		COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE)
+    );
+};
 	
 inline bool SceneNode::GetVisible(void)
 {
 	return (flags & NODE_VISIBLE) != 0;
-}
-	
-inline void SceneNode::SetUpdatable(bool isUpdatable)
-{
-    if (isUpdatable) 
-    {
-        AddFlag(NODE_UPDATABLE);
-    }
-    else 
-    {
-        RemoveFlag(NODE_UPDATABLE);
-    }
 }
     
 inline bool SceneNode::GetUpdatable(void)
@@ -433,36 +418,13 @@ inline const String & SceneNode::GetName()
 inline const int32 SceneNode::GetTag() 
 { 
     return tag; 
-}
-    
-inline const Matrix4 & SceneNode::GetLocalTransform() 
-{ 
-    return localTransform; 
-}; 
-
-inline const Matrix4 & SceneNode::GetWorldTransform() 
-{ 
-    return worldTransform; 
-};
+};;
     
 inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
 {
     return defaultLocalTransform;
 }
     
-inline Matrix4 & SceneNode::ModifyLocalTransform()
-{
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-    return localTransform;
-}
-
-inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
-{
-    localTransform = newMatrix;
-    flags &= ~NODE_WORLD_MATRIX_ACTUAL;
-    if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
-    else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
-}
 //
 //inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
 //{
@@ -470,10 +432,10 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 //}
 //
     
-inline void SceneNode::InvalidateLocalTransform()
-{
-    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
-}
+//inline void SceneNode::InvalidateLocalTransform()
+//{
+//    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
+//}
 
     
 inline void SceneNode::SetDefaultLocalTransform(const Matrix4 & newMatrix)
@@ -484,11 +446,6 @@ inline void SceneNode::SetDefaultLocalTransform(const Matrix4 & newMatrix)
 inline void SceneNode::SetTag(int32 _tag)
 {
     tag = _tag;
-}
-    
-inline uint32 SceneNode::GetDebugFlags() const
-{
-    return debugFlags;
 }
     
 template<template <typename> class Container, class T>
@@ -526,6 +483,10 @@ void SceneNode::GetChildNodes(Container<T> & container)
     }	
 }
 
+uint32 SceneNode::GetAvailableComponentFlags()
+{
+    return componentFlags;
+}
 
 };
 

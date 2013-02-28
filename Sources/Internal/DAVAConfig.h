@@ -47,9 +47,12 @@
 //#define __DAVAENGINE_DIRECTX9__
 #define __DAVAENGINE_OPENGL__
 
-// This flag allow to enable debug stats 
-//#define __DAVAENGINE_ENABLE_DEBUG_STATS__
+// This flag allow to enable profiling stats 
+#define __DAVAENGINE_ENABLE_DEBUG_STATS__
 
+// Switch on/off messege box in assertion situation. In case this flag is
+// enabled the assertion message will be displayed even in release builds.
+#define ENABLE_ASSERT_MESSAGE
 #include "Autotesting/Config.h"
 
 

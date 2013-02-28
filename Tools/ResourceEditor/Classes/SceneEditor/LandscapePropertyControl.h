@@ -31,15 +31,7 @@ protected:
     
     void AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level);
     
-    void SetChannelsNames();
-    
-    
-    void OnSaveChannels(BaseObject * object, void * userData, void * callerData);
-    void OnLoadChannels(BaseObject * object, void * userData, void * callerData);
-    
-    void SaveChannels();
-    void LoadChannels();
-
+	LandscapeNode* GetLandscape() const;
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__

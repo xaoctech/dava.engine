@@ -49,6 +49,7 @@ namespace DAVA
 	\ingroup threads
 	\brief wrapper class to give us level of abstraction on thread implementation in particual OS. Now is supports Win32, MacOS, iPhone platforms.
 */
+    
 class Thread : public BaseObject
 {
 public:
@@ -139,7 +140,7 @@ private:
 	void		StartAndroid();
     
     static pid_t mainThreadId;
-
+    
 	static EGLContext currentContext;
 	static EGLDisplay currentDisplay;
 	static EGLSurface currentDrawSurface;

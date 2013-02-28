@@ -40,6 +40,7 @@ typedef struct FT_LibraryRec_  *FT_Library;
 namespace DAVA
 {
 	
+class Font;
 class FTFont;
 class FTInternalFont;
 class Sprite;
@@ -55,6 +56,55 @@ public:
 	virtual ~FontManager();
 	
 	FT_Library		GetFTLibrary() { return library; }
+	
+	/**
+	 \brief Register font.
+	 */
+	void RegisterFont(Font* font);
+	/**
+	 \brief Unregister font.
+	 */
+	void UnregisterFont(Font *font);
+	/**
+	 \brief Set font name.
+	 */
+	void SetFontName(Font* font, const String& name);
+
+	/**
+	 \brief Get traked font name. Add font to track list.
+	 */
+	String GetFontName(Font *font);
+
+	typedef Set<Font*> TRACKED_FONTS;
+	
+	/**
+	 \brief Reset tracked fonts added by GetFontName().
+	 */
+	void PrepareToSaveFonts();
+	/**
+	 \brief Get tracked fonts added by GetFontName().
+	 */
+	const TRACKED_FONTS& GetTrackedFont() const;
+	
+private:
+	void Clear();
+	
+private:
+	uint32 trackedFontId;
+	
+	typedef Map<Font*, String> REGISTERED_FONTS;
+	REGISTERED_FONTS registeredFonts;
+
+	struct FONT_NAME
+	{
+		String name;
+		TRACKED_FONTS fonts;
+	};
+	typedef Set<FONT_NAME*> FONTS_NAME;
+	FONTS_NAME fontsName;
+	
+	TRACKED_FONTS trackedFonts;
+	
 };
 	
 };

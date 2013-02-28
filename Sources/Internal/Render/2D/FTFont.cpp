@@ -35,6 +35,7 @@
 #include "FileSystem/File.h"
 #include "Core/Core.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/YamlParser.h"
 
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
@@ -120,6 +121,7 @@ FTFont * FTFont::Create(const String& path)
 	}
 	
 	FTFont * font = new FTFont(iFont);
+	font->fontPath = path;
 	
 	return font;
 }
@@ -132,8 +134,9 @@ FTFont *	FTFont::Clone()
 
 	retFont->verticalSpacing =	verticalSpacing;
 
-	return retFont;
+	retFont->fontPath = fontPath;
 	
+	return retFont;
 }
 
 bool FTFont::IsEqual(Font *font)
@@ -142,6 +145,7 @@ bool FTFont::IsEqual(Font *font)
 	{
 		return false;
 	}
+
 	return true;
 }
 	
@@ -170,6 +174,20 @@ bool FTFont::IsCharAvaliable(char16 ch)
 	return internalFont->IsCharAvaliable(ch);
 }
 
+String FTFont::GetFontPath()
+{
+	return internalFont->fontPath;
+}
+
+YamlNode * FTFont::SaveToYamlNode()
+{
+	YamlNode *node = Font::SaveToYamlNode();
+	//Type
+	node->Set("type", "FTFont", true);
+	node->Set("name", internalFont->fontPath, true);
+
+	return node;
+}
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

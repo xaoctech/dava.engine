@@ -66,14 +66,14 @@ public:
 	Image();
 	virtual ~Image();
 	
-	static Image * Create(int32 width, int32 height, PixelFormat format);
+	static Image * Create(uint32 width, uint32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
 	static Vector2 GetImageSize(const String & pathName);
 	
-	inline int32 GetWidth();
-	inline int32 GetHeight();
-	inline uint8 * GetData();
-	inline PixelFormat GetPixelFormat();
+	inline uint32 GetWidth() const;
+	inline uint32 GetHeight() const;
+	inline uint8 * GetData() const;
+	inline PixelFormat GetPixelFormat() const;
 
     
 #ifdef __DAVAENGINE_IPHONE__
@@ -81,10 +81,10 @@ public:
 #endif
     
     // changes size of image canvas to required size, if new size is bigger, sets 0 to all new pixels
-    void ResizeCanvas(int32 newWidth, int32 newHeight);
+    void ResizeCanvas(uint32 newWidth, uint32 newHeight);
     
 	// changes size of image to required size (without any filtration)
-	void ResizeImage(int32 newWidth, int32 newHeight);
+	void ResizeImage(uint32 newWidth, uint32 newHeight);
 
 	/*
      //	void ConvertToFormat(PixelFormat format);
@@ -103,25 +103,25 @@ public:
 
 	uint8 * data;
     uint32 dataSize;
-	int32	width;
-	int32	height;
+	uint32	width;
+	uint32	height;
 	PixelFormat format;
 };
 	
 // Implementation of inline functions
-int32 Image::GetWidth()
+uint32 Image::GetWidth() const
 {
 	return width;
 }
-int32 Image::GetHeight()
+uint32 Image::GetHeight() const
 {
 	return height;
 }
-uint8 * Image::GetData()
+uint8 * Image::GetData() const
 {
 	return data;
 }
-PixelFormat Image::GetPixelFormat()
+PixelFormat Image::GetPixelFormat() const
 {
 	return format;
 }

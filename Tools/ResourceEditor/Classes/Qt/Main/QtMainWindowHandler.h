@@ -21,6 +21,7 @@ class QStatusBar;
 class QPushButton;
 class QSlider;
 class QComboBox;
+class ModificationWidget;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -34,6 +35,7 @@ public:
     void RegisterViewportActions(DAVA::int32 count, ...);
     void RegisterDockActions(DAVA::int32 count, ...);
     void RegisterTextureFormatActions(DAVA::int32 count, ...);
+	void RegisterModificationActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
     void SetResentAncorAction(QAction *ancorAction);
@@ -89,7 +91,6 @@ public slots:
     void TilemapEditor();
     void RulerTool();
     void ShowSettings();
-    void BakeScene();
     void Beast();
     
     //ViewOptions
@@ -121,9 +122,18 @@ public slots:
     void ReloadTexturesFromFileSystem();
 
 	//particles editor
-	void OpenParticleEditorConfig();
-	void SaveParticleEditorConfig();
-	void OpenParticleEditorSprite();
+	void CreateParticleEmitterNode();
+	
+	//modification options
+	void ModificationSelect();
+	void ModificationMove();
+	void ModificationRotate();
+	void ModificationScale();
+	void ModificationPlaceOnLand();
+	void ModificationSnapToLand();
+	void OnApplyModification(double x, double y, double z);
+	void OnResetModification();
+	void SetModificationMode(ResourceEditor::eModificationActions mode);
 	
 signals:
 
@@ -140,7 +150,9 @@ private:
     void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
     
     void ClearActions(int32 count, QAction **actions);
-    
+
+	void UpdateModificationActions();
+
 private:
 	//custom colors
 	QPushButton* customColorsToggleButton;
@@ -161,6 +173,7 @@ private:
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
     QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
+	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
 
     
     QMenu *menuResentScenes;

@@ -100,4 +100,16 @@ namespace DAVA
         }
         UIButton::LoadFromYamlNode(node, loader);
     }
+    
+    YamlNode * UIListCell::SaveToYamlNode(UIYamlLoader * loader)
+    {
+        YamlNode *node = UIControl::SaveToYamlNode(loader);
+        
+        //Control Type
+        node->Set("type", "UIListCell", true);
+        //Identifier
+        node->Set("identifier", this->GetIdentifier());
+        
+        return node;
+    }
 };

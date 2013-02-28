@@ -60,11 +60,23 @@ public:
 	 */
 	static void Load(UIControl * rootControl, const String & yamlPathname);
 
-
-	//Internal function that does actual loading
+	//Internal functions that do actual loading and saving.
 	void ProcessLoad(UIControl * rootControl, const String & yamlPathname);
-
 	void LoadFromNode(UIControl * rootControl, YamlNode * node, bool needParentCallback);
+	
+	/**
+     \brief	This function saves the UIControl's hierarchy to the YAML file passed.
+     rootControl.
+     
+     \param[in, out]	rootControl		is used to take the configuration from
+     \param[in]			yamlPathName	path to store hierarchy too
+     \return            true if the save was successful
+	 */
+	static bool Save(UIControl * rootControl, const String & yamlPathname, bool skipRootNode);
+	
+    YamlNode* SaveToNode(UIControl * parentControl, YamlNode * rootNode, int relativeDepth = 0);
+	bool ProcessSave(UIControl * rootControl, const String & yamlPathname, bool skipRootNode);
+
 	Font * GetFontByName(const String & fontName);
 	
     int32 GetDrawTypeFromNode(YamlNode * drawTypeNode);
@@ -73,6 +85,10 @@ public:
 	Rect GetRectFromYamlNode(YamlNode * rect);
 	bool GetBoolFromYamlNode(YamlNode * node, bool defaultValue);
 	Color GetColorFromYamlNode(YamlNode * node);
+	
+    String GetColorInheritTypeNodeValue(int32 colorInheritType);
+    String GetDrawTypeNodeValue(int32 drawType);
+	YamlNode * GetAlignNodeValue(int32 align);
 	
 	Map<String, Font*> fontMap;
 };

@@ -101,7 +101,7 @@ void ParticleEmitterObject::Update(float32 timeElapsed)
 void ParticleEmitterObject::Draw()
 {
 	//if (!visible)return;
-	emitter->Draw();
+	//emitter->Draw();
 }
 
 }

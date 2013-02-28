@@ -314,8 +314,7 @@ bool ResourceArchive::PackResource(const String & resourceToPack, int32 * resour
 		//printf("\n");
 
 
-		delete [] data;
-		data = 0;
+        SafeDeleteArray(data);
 //		delete [] packedData;
 //		packedData = 0;
 	}

@@ -154,16 +154,18 @@ struct Matrix4
 };
 
 inline Vector3 operator * (const Vector3 & _v, const Matrix4 & _m);
-
+// Function to perform matrix multiplication without creation of Matrix3
+inline Vector3 MultiplyVectorMat3x3(const Vector3 & _v, const Matrix4 & _m);
 
 // Implementation of matrix4
 
 inline Matrix4::Matrix4()
 {
-	_00 = 0; _01 = 0; _02 = 0; _03 = 0;
-	_10 = 0; _11 = 0; _12 = 0; _13 = 0;
-	_20 = 0; _21 = 0; _22 = 0; _23 = 0;
-	_30 = 0; _31 = 0; _32 = 0; _33 = 0;
+// 	_00 = 0; _01 = 0; _02 = 0; _03 = 0;
+// 	_10 = 0; _11 = 0; _12 = 0; _13 = 0;
+// 	_20 = 0; _21 = 0; _22 = 0; _23 = 0;
+// 	_30 = 0; _31 = 0; _32 = 0; _33 = 0;
+    Zero();
 }
 
 inline Matrix4::Matrix4(	float32 _D00, float32 _D01, float32 _D02, float32 _D03,
@@ -179,18 +181,20 @@ inline Matrix4::Matrix4(	float32 _D00, float32 _D01, float32 _D02, float32 _D03,
 
 inline Matrix4::Matrix4(const Matrix4 & m)
 {
-	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
-	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
-	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
-	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
+// 	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
+// 	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
+// 	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
+// 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
+    *this = m;
 }
 
 inline Matrix4 & Matrix4::operator= (const Matrix4 & m)
 {
-	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
-	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
-	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
-	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
+// 	_00 = m._00; _01 = m._01; _02 = m._02; _03 = m._03;
+// 	_10 = m._10; _11 = m._11; _12 = m._12; _13 = m._13;
+// 	_20 = m._20; _21 = m._21; _22 = m._22; _23 = m._23;
+// 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
+ 	Memcpy(data, m.data, 16 * sizeof(float32));
 	return *this;
 }
     
@@ -203,8 +207,6 @@ inline Matrix4::operator Matrix3 () const
     return m;
 }
 
-
-
 inline void	Matrix4::Identity()
 {
 	data[0] = 1.0f; data[1] = 0.0f; data[2] = 0.0f; data[3] = 0.0f;
@@ -215,10 +217,11 @@ inline void	Matrix4::Identity()
 
 inline void	Matrix4::Zero()
 {
-	data[0] = 0; data[1] = 0; data[2] = 0; data[3] = 0;
-	data[4] = 0; data[5] = 0; data[6] = 0; data[7] = 0;
-	data[8] = 0; data[9] = 0; data[10] = 0; data[11] = 0;
-	data[12] = 0; data[13] = 0; data[14] = 0; data[15] = 0;
+// 	data[0] = 0; data[1] = 0; data[2] = 0; data[3] = 0;
+// 	data[4] = 0; data[5] = 0; data[6] = 0; data[7] = 0;
+// 	data[8] = 0; data[9] = 0; data[10] = 0; data[11] = 0;
+// 	data[12] = 0; data[13] = 0; data[14] = 0; data[15] = 0;
+    Memset(data, 0, 16 * sizeof(float32));
 }
 
 inline void	Matrix4::BuildProjectionFovLH(float32 _fovY, float32 _aspect, float32 _zn, float32 _zf)
@@ -434,6 +437,16 @@ inline Vector4 operator * (const Vector4 & _v, const Matrix4 & _m)
 	res.w = _v.x * _m._03 + _v.y * _m._13 + _v.z * _m._23 + _m._33;
 	
 	return res;
+}
+
+inline Vector3 MultiplyVectorMat3x3(const Vector3 & _v, const Matrix4 & _m)
+{
+    Vector3 res;
+	res.x = _v.x * _m._00 + _v.y * _m._10 + _v.z * _m._20;
+	res.y = _v.x * _m._01 + _v.y * _m._11 + _v.z * _m._21;
+	res.z = _v.x * _m._02 + _v.y * _m._12 + _v.z * _m._22;
+    return res;
+
 }
 
 

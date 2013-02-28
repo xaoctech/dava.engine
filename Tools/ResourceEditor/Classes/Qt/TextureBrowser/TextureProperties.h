@@ -30,9 +30,10 @@ public:
 	typedef enum PropertiesType
 	{
 		TYPE_COMMON,
+		TYPE_COMMON_MIPMAP,
 		TYPE_PVR,
 		TYPE_DXT
-	};
+	} PropertiesType;
 
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setOriginalImageSize(const QSize &size);
@@ -111,6 +112,7 @@ private:
 	enumPropertiesHelper<int> helperWrapModes;
 	enumPropertiesHelper<int> helperMinGLModes;
 	enumPropertiesHelper<int> helperMagGLModes;
+	enumPropertiesHelper<int> helperMinGLModesWithMipmap;
 	enumPropertiesHelper<QSize> helperMipMapSizes;
 
 	DAVA::Texture *curTexture;
@@ -145,6 +147,7 @@ private:
 
 	void Save();
 
+	void MinFilterCustomSetup();
 	void MipMapSizesInit(int baseWidth, int baseHeight);
 	void MipMapSizesReset();
 };

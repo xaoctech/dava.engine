@@ -482,7 +482,7 @@ void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, Varia
         if(key == "_id") return; // ignore _id
 
         //TODO: bool, uint32 and WideString have no corresponding types in mongoDB
-        switch (value->type) 
+        switch (value->GetType())
         {
             case VariantType::TYPE_BOOLEAN:
             {
@@ -536,7 +536,7 @@ void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, Varia
             default:
             {
                 DVASSERT(false);
-                Logger::Error("[MongodbUpdateObject::WriteData] Not implemented type: %d", value->type);
+                Logger::Error("[MongodbUpdateObject::WriteData] Not implemented type: %d", value->GetType());
             }
                 break;
         }

@@ -161,7 +161,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
             // Load prev states
             LoadOldDlcs();
 
-            for ( int curInd = 0; curInd  < dlcs.size(); ++curInd )
+            for ( int32 curInd = 0; curInd  < (int32)dlcs.size(); ++curInd )
             {
                 DLCSource * dlc = dlcs[curInd];
                 // 
@@ -172,7 +172,7 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
                 dlc->fullPath = fullSavePath;
                 bool isDlcFound = false;
                 
-                for ( int oldInd = 0; oldInd  < oldDlcs.size(); ++oldInd )
+                for ( int32 oldInd = 0; oldInd  < (int32)oldDlcs.size(); ++oldInd )
                 {
                     DLCSource * oldDlc = oldDlcs[oldInd];
                     
@@ -284,7 +284,7 @@ void DLCSystem::SaveOldDlcs() const
         return;
     }
     
-    uint16 size[1] = { dlcs.size() };
+    uint16 size[1] = { (uint16)dlcs.size() };
     file->Write( size, sizeof(uint16) );
     
     for ( uint16 dlcInd = 0; dlcInd < dlcs.size(); ++dlcInd )
@@ -302,7 +302,7 @@ void DLCSystem::CheckFileStructureDLC(const std::string& path, DLCSource * _dlc)
     uint32 size = archive->GetUInt32("size");
     bool isFileStructureOk = true;
     
-    for ( int i = 0; i < size; ++i )
+    for ( uint32 i = 0; i < size; ++i )
     {
         std::string key = "";
         std::stringstream stream;
@@ -499,7 +499,7 @@ void DLCSource::Save(File * file) const
     archive->SetString("pathOnServer", pathOnServer);
     archive->SetFloat("curVersion", curVersion);
     archive->SetFloat("lastVersion", lastVersion);
-    archive->SetUInt32("size", size);
+    archive->SetUInt32("size", (uint32)size);
 
     archive->Save(file);
     SafeRelease(archive);

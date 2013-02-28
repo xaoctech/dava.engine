@@ -34,6 +34,7 @@
 #include "Base/BaseMath.h"
 #include "Math/Vector.h"
 #include "Math/Ray.h"
+#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -99,7 +100,7 @@ public:
 	inline bool IsInside(const AABBox3 & testBox) const;
 	
 	//! \brief get center
-	inline Vector3 GetCenter();
+	inline Vector3 GetCenter() const;
 
 	//! \brief copy operator of bounding box class
 	inline AABBox3 & operator =(const AABBox3 & _bbox);
@@ -110,6 +111,13 @@ public:
 
     void GetTransformedBox(const Matrix4 & transform, AABBox3 & result) const;
     void GetCorners(Vector3 * cornersArray) const;
+    
+public:
+	//Dizz: introspection changes    
+    //INTROSPECTION(AABBox3,
+    //    MEMBER(min, "Min", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    //    MEMBER(max, "Max", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+    //);
 };
 
 //! \brief construct empty bounding box
@@ -158,8 +166,19 @@ inline void AABBox3::AddPoint(const Vector3 & pt)
 	
 inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 {
-	AddPoint(bbox.min);
-	AddPoint(bbox.max);
+	if (bbox.min.x < min.x)
+		min.x = bbox.min.x;
+	if (bbox.min.y < min.y)
+		min.y = bbox.min.y;
+	if (bbox.min.z < min.z)
+		min.z = bbox.min.z;
+
+	if (bbox.max.x > max.x)
+		max.x = bbox.max.x;
+	if (bbox.max.y > max.y)
+		max.y = bbox.max.y;
+	if (bbox.max.z > max.z)
+		max.z = bbox.max.z;
 }
 
 //! \brief check if bounding box intersect other bounding box
@@ -167,6 +186,7 @@ inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 //! \return true if intersect, false otherwise
 inline bool AABBox3::IsIntersect(const AABBox3 & box)
 {
+	DVASSERT(0);
 	// TODO: implement this function
 	return false;
 };	
@@ -234,7 +254,7 @@ inline AABBox3 & AABBox3::operator =(const AABBox3 & _bbox)
 }
 
 //! \brief get center
-inline Vector3 AABBox3::GetCenter()
+inline Vector3 AABBox3::GetCenter() const
 {
 	return (min + max) / 2.0f;
 }

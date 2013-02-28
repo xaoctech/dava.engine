@@ -33,6 +33,9 @@
 #include "FileSystem/File.h"
 #include "Debug/DVAssert.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/YamlParser.h"
+#include "FontManager.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -64,12 +67,26 @@ GraphicsFont::GraphicsFont()
 	fdef = 0;
 	fontScaleCoeff = 1.0f;
     horizontalSpacing = 0;
+    
+	FontManager::Instance()->RegisterFont(this);
+}
+    
+bool GraphicsFont::IsEqual(Font *font)
+{
+    if (!Font::IsEqual(font) ||
+        fontDefinitionName != ((GraphicsFont*)font)->fontDefinitionName ||
+        fontSprite != ((GraphicsFont*)font)->fontSprite)
+    {
+        return false;
+    }
+    return true;
 }
 
 GraphicsFont::~GraphicsFont()
 {
 	SafeRelease(fdef);
 	SafeRelease(fontSprite);
+	FontManager::Instance()->UnregisterFont(this);
 }	
 
 int32 GraphicsFont::GetHorizontalSpacing()
@@ -88,6 +105,7 @@ Font * GraphicsFont::Clone()
 	cloneFont->SetVerticalSpacing(this->GetVerticalSpacing());
     cloneFont->SetHorizontalSpacing(this->GetHorizontalSpacing());
 	cloneFont->SetSize(this->GetSize());
+    cloneFont->fontDefinitionName = this->GetFontDefinitionName();
 	
 	return cloneFont;
 }
@@ -95,6 +113,9 @@ Font * GraphicsFont::Clone()
 Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *charSizes)
 {
 	uint32 length = (uint32)string.length();
+	if (length == 0)
+		return Size2i(0, 0); //YZ: return size (0,0) for empty string
+	
 	uint16 prevChIndex = GraphicsFontDefinition::INVALID_CHARACTER_INDEX;
 	Sprite::DrawState state;
 	
@@ -175,6 +196,37 @@ void GraphicsFont::SetSize(float32 _size)
 	fontScaleCoeff = size / (fdef->fontAscent + fdef->fontDescent);	
 }
 
+YamlNode * GraphicsFont::SaveToYamlNode()
+{
+    YamlNode *node = Font::SaveToYamlNode();
+    
+    //Type
+    node->Set("type", "GraphicsFont", true);
+    //horizontalSpacing
+    node->Set("horizontalSpacing", this->GetHorizontalSpacing());
+    //Sprite    
+    Sprite *sprite = this->fontSprite;
+    if (sprite)
+    {
+        //Truncate sprite ".txt" extension before save       
+        node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+    }    
+    //Font Definition
+    node->Set("definition", this->GetFontDefinitionName());
+
+    return node;
+}
+
+
+Sprite *GraphicsFont::GetFontSprite()
+{
+    return fontSprite;
+}
+    
+String GraphicsFont::GetFontDefinitionName()
+{
+    return fontDefinitionName;
+}
 
 bool GraphicsFontDefinition::LoadFontDefinition(const String & fontDefName)
 {
@@ -308,6 +360,8 @@ GraphicsFont * GraphicsFont::Create(const String & fontDefName, const String & s
 {
 	GraphicsFont * font = new GraphicsFont();
 	font->fdef = new GraphicsFontDefinition();
+    //Set font Definition path
+    font->fontDefinitionName = fontDefName;
 	if (!font->fdef->LoadFontDefinition(fontDefName))
 	{
 		Logger::Error("Failed to create font from definition: %s", fontDefName.c_str());

@@ -38,6 +38,7 @@
 #include "CacheTest.h"
 #include "LandscapeTest.h"
 #include "TreeTest.h"
+#include "MemoryAllocationTraverseTest.h"
 
 using namespace DAVA;
 
@@ -61,13 +62,13 @@ void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(60);
 
-    if(ConnectToDB())
-    {
+    bool isConnected = ConnectToDB();
+    
         //TODO: test only
 //        dbClient->DropCollection();
 //        dbClient->DropDatabase();
         //TODO: test only
-        
+    
         new SpriteTest(String("Sprite"));
         new CacheTest(String("Cache Test"));
         new LandscapeTest(String("Landscape Textures Test"), LandscapeNode::TILED_MODE_COUNT);
@@ -75,8 +76,10 @@ void GameCore::OnAppStarted()
         new LandscapeTest(String("Landscape Tiled Mode"), LandscapeNode::TILED_MODE_TILEMASK);
         new LandscapeTest(String("Landscape Texture Mode"), LandscapeNode::TILED_MODE_TEXTURE);
         
-        new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
-        new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
+        new MemoryAllocationTraverseTest("Memory Test");
+        
+//        new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
+//        new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
         
 #if defined (SINGLE_MODE)
         RunTestByName(SINGLE_TEST_NAME);
@@ -84,12 +87,12 @@ void GameCore::OnAppStarted()
         RunAllTests();
 #endif //#if defined (SINGLE_MODE)
         
-    }
-    else 
-    {
-        LogMessage(String("Can't connect to DB"));
-        Core::Instance()->Quit();
-    }
+//    }
+//    else 
+//    {
+//        LogMessage(String("Can't connect to DB"));
+//        Core::Instance()->Quit();
+//    }
 }
 
 void GameCore::RegisterScreen(BaseScreen *screen)
@@ -120,7 +123,7 @@ bool GameCore::CreateLogFile()
     }
 
 	time_t logStartTime = time(0);
-	logFile = File::Create(Format("~doc:/Reports/%lld.report", logStartTime), File::CREATE | File::WRITE);
+	logFile = File::Create(Format("~doc:/Reports/%lld.report.txt", logStartTime), File::CREATE | File::WRITE);
 
     return (NULL != logFile);
 }
@@ -300,6 +303,32 @@ void GameCore::ProcessTests()
 
 void GameCore::FlushTestResults()
 {
+    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    {
+        int32 count = screens[iScr]->GetTestCount();
+
+#if defined (SINGLE_MODE)
+        if(screens[iScr]->GetName() == SINGLE_TEST_NAME)
+#endif //#if defined (SINGLE_MODE)
+            for(int32 iTest = 0; iTest < count; ++iTest)
+            {
+                TestData * td = screens[iScr]->GetTestData(iTest);
+            
+                LogMessage(Format("%s total time: %.9f minTime: %0.9f maxTime: %0.9f runCount: %d", td->name.c_str(),
+                                  (float64)td->totalTime / 1e+9,
+                                  (float64)td->minTime / 1e+9,
+                                  (float64)td->maxTime / 1e+9,
+                                  td->runCount));
+                
+                for (uint32 run = 0; run < (uint32)td->eachRunTime.size(); ++run)
+                {
+                    LogMessage(Format("run:%d = %.9f", run,
+                                      (float64)td->eachRunTime[run] / 1e+9));
+                
+                }
+            }
+    };
+    
     if(!dbClient) return;
 
     MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
