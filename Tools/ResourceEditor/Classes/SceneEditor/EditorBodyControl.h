@@ -82,6 +82,7 @@ public:
     
     bool ToggleLandscapeEditor(int32 landscapeEditorMode);
 	LandscapeEditorBase* GetLandscapeEditor(int32 landscapeEditorMode);
+	LandscapeEditorBase* GetCurrentLandscapeEditor();
     
     void RecreteFullTilingTexture();
 
@@ -142,6 +143,8 @@ public:
 	void SetModificationMode(ResourceEditor::eModificationActions mode);
 	bool IsLandscapeRelative();
 	void SetLandscapeRelative(bool isLandscapeRelative);
+
+	Matrix4 GetLandscapeOffset(const Matrix4& transform);
 
 protected:
 

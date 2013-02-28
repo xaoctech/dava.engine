@@ -16,6 +16,7 @@
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
+#include "../Commands/EditCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -63,6 +64,10 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
+
+	SceneDataManager* sceneDataManager = SceneDataManager::Instance();
+	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
+	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -78,6 +83,7 @@ QtMainWindowHandler::~QtMainWindowHandler()
     ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     ClearActions(FILE_FORMAT_COUNT, textureFileFormatActions);
 	ClearActions(ResourceEditor::MODIFY_COUNT, modificationActions);
+	ClearActions(ResourceEditor::EDIT_COUNT, editActions);
 
     CommandsManager::Instance()->Release();
 }
@@ -355,6 +361,17 @@ void QtMainWindowHandler::RegisterModificationActions(DAVA::int32 count, ...)
 	va_start(vl, count);
 
 	RegisterActions(modificationActions, count, vl);
+
+	va_end(vl);
+}
+
+void QtMainWindowHandler::RegisterEditActions(DAVA::int32 count, ...)
+{
+	DVASSERT((count == ResourceEditor::EDIT_COUNT) && "Wrong count of actions");
+	va_list vl;
+	va_start(vl, count);
+
+	RegisterActions(editActions, count, vl);
 
 	va_end(vl);
 }
@@ -699,7 +716,8 @@ void QtMainWindowHandler::ModificationSnapToLand()
 void QtMainWindowHandler::UpdateModificationActions()
 {
 	SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	DVASSERT(screen);
+	if (!screen || !screen->FindCurrentBody())
+		return;
 
 	EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
 	ResourceEditor::eModificationActions modificationMode = bodyControl->GetModificationMode();
@@ -748,4 +766,63 @@ void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 void QtMainWindowHandler::OnResetModification()
 {
 	Execute(new ModificationResetCommand());
+}
+
+void QtMainWindowHandler::UndoAction()
+{
+	Execute(new UndoCommand());
+	UpdateUndoActionsState();
+}
+
+void QtMainWindowHandler::RedoAction()
+{
+	Execute(new RedoCommand());
+	UpdateUndoActionsState();
+}
+
+void QtMainWindowHandler::UpdateUndoActionsState()
+{
+	CommandsManager* commandsManager = CommandsManager::Instance();
+
+	bool isEnabled;
+	String commandName;
+
+	isEnabled = false;
+	commandName = "";
+	if (commandsManager->GetUndoQueueLength())
+	{
+		isEnabled = true;
+		commandName = commandsManager->GetUndoCommandName();
+	}
+	QString str = tr("Undo");
+	if (isEnabled)
+		str += " " + tr(commandName.c_str());
+	editActions[ResourceEditor::EDIT_UNDO]->setText(str);
+	editActions[ResourceEditor::EDIT_UNDO]->setEnabled(isEnabled);
+
+	isEnabled = false;
+	commandName = "";
+	if (commandsManager->GetRedoQueueLength())
+	{
+		isEnabled = true;
+		commandName = commandsManager->GetRedoCommandName();
+	}
+	str = tr("Redo");
+	if (isEnabled)
+		str += " " + tr(commandName.c_str());
+	editActions[ResourceEditor::EDIT_REDO]->setText(str);
+	editActions[ResourceEditor::EDIT_REDO]->setEnabled(isEnabled);
+}
+
+void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
+{
+	CommandsManager::Instance()->ChangeQueue(scene);
+
+	UpdateUndoActionsState();
+	UpdateModificationActions();
+}
+
+void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
+{
+	CommandsManager::Instance()->SceneReleased(scene);
 }

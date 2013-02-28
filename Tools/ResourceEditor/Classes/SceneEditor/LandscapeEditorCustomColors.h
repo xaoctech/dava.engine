@@ -43,8 +43,10 @@ public:
 
 	void ClearSceneResources();
 
-	void StoreState(Image** image);
+	Image* StoreState();
 	void RestoreState(Image* image);
+
+	virtual void UpdateLandscapeTilemap(Texture* texture);
 
 protected:
 
@@ -53,8 +55,8 @@ protected:
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
-    virtual void UndoAction();
-    virtual void RedoAction();
+
+	void CreateUndoPoint();
 
 	String GetScenePath();
 	String GetRelativePathToScenePath(const String& absolutePath);
@@ -75,10 +77,8 @@ protected:
     void DrawCircle(Vector<Vector<bool> >& matrixForCircle) ;
     uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent);
 
-    EditorHeightmap *editedHeightmap;
-    Heightmap *savedHeightmap;
-
-
+	Map<LandscapeNode*, String> saveFileNamesMap;
+	
 	bool wasTileMaskToolUpdate;
     
     LandscapeEditorSettings *settings;
@@ -96,7 +96,9 @@ protected:
 	bool		isCursorTransparent;
 	bool		isFogEnabled;
 
-	CommandDrawCustomColors* command;
+	bool unsavedChanges;
+
+	Image* originalTexture;
 };
 
 
