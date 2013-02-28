@@ -1260,6 +1260,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Network\MailSender.h">
+      <Filter>Internal\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2209,6 +2212,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
       <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp">
+      <Filter>Internal\Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

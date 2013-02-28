@@ -21,6 +21,7 @@
     <ClCompile Include="Classes\DLCSystemTests.cpp" />
     <ClCompile Include="Classes\MaterialCompilerTest.cpp" />
     <ClCompile Include="Classes\DPITest.cpp" />
+    <ClCompile Include="Classes\eMailTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -43,5 +44,6 @@
     <ClInclude Include="Classes\DLCSystemTests.h" />
     <ClInclude Include="Classes\MaterialCompilerTest.h" />
     <ClInclude Include="Classes\DPITest.h" />
+    <ClInclude Include="Classes\eMailTest.h" />
   </ItemGroup>
 </Project>
