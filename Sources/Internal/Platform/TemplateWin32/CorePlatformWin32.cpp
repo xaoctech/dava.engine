@@ -126,6 +126,8 @@ namespace DAVA
 
 	bool CoreWin32Platform::CreateWin32Window(HINSTANCE hInstance)
 	{	
+		this->hInstance = hInstance;
+
 		//single instance check
 		TCHAR fileName[MAX_PATH];
 		GetModuleFileName(NULL, fileName, MAX_PATH);
@@ -177,7 +179,7 @@ namespace DAVA
 		clientSize.right = currentMode.width;
 		clientSize.bottom = currentMode.height;
 
-		ULONG style = WINDOWED_STYLE;
+		ULONG style = WINDOWED_STYLE | WS_CLIPCHILDREN;
 
 		// Create the rendering window
 		if (isFullscreen)

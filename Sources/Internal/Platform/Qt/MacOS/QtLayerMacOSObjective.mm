@@ -131,6 +131,10 @@ void QtLayerMacOS::ReleaseAutoreleasePool(void *pool)
     [autoreleasePool release];
 }
 
+void* QtLayerMacOS::GetOpenGLView()
+{
+	return openGLView;
+}
 
 };
 
