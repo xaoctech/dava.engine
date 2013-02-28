@@ -20,21 +20,18 @@
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E76D2F16DF69370041ED9A /* AutotestingSystem_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */; };
-		C7E76D3016DF69370041ED9A /* AutotestingSystem.i in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2016DF69370041ED9A /* AutotestingSystem.i */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
 		C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */; };
 		C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */; };
 		C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */; };
 		C7E76D3516DF69370041ED9A /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */; };
 		C7E76D3616DF69370041ED9A /* Rect_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */; };
-		C7E76D3716DF69370041ED9A /* Rect.i in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2716DF69370041ED9A /* Rect.i */; };
 		C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2816DF69370041ED9A /* RectSwig.cpp */; };
 		C7E76D3916DF69370041ED9A /* UIControl_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */; };
-		C7E76D3A16DF69370041ED9A /* UIControl.i in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2A16DF69370041ED9A /* UIControl.i */; };
 		C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */; };
 		C7E76D3C16DF69370041ED9A /* Vector_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */; };
-		C7E76D3D16DF69370041ED9A /* Vector.i in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2D16DF69370041ED9A /* Vector.i */; };
 		C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */; };
+		C7E76D4316DF6CC70041ED9A /* liblua_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7E76D4216DF6CC70041ED9A /* liblua_ios.a */; };
 		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
@@ -678,21 +675,19 @@
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem_wrap.cxx; sourceTree = "<group>"; };
-		C7E76D2016DF69370041ED9A /* AutotestingSystem.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = AutotestingSystem.i; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
 		C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
 		C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
 		C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
 		C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect_wrap.cxx; sourceTree = "<group>"; };
-		C7E76D2716DF69370041ED9A /* Rect.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = Rect.i; sourceTree = "<group>"; };
 		C7E76D2816DF69370041ED9A /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControl_wrap.cxx; sourceTree = "<group>"; };
-		C7E76D2A16DF69370041ED9A /* UIControl.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = UIControl.i; sourceTree = "<group>"; };
 		C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector_wrap.cxx; sourceTree = "<group>"; };
-		C7E76D2D16DF69370041ED9A /* Vector.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; path = Vector.i; sourceTree = "<group>"; };
 		C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
+		C7E76D4016DF6CB50041ED9A /* dava.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = dava.framework; path = ../..; sourceTree = "<group>"; };
+		C7E76D4216DF6CC70041ED9A /* liblua_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_ios.a; path = ../../Libs/libs/liblua_ios.a; sourceTree = "<group>"; };
 		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1313,6 +1308,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7E76D4316DF6CC70041ED9A /* liblua_ios.a in Frameworks */,
 				E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */,
 				496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */,
 				0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */,
@@ -1342,6 +1338,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				C7E76D4216DF6CC70041ED9A /* liblua_ios.a */,
+				C7E76D4016DF6CB50041ED9A /* dava.framework */,
 				E81F2B0416BFF65700C4545E /* libcurl_ios.a */,
 				496526CF167F173400107C70 /* libdxt_ios.a */,
 				E80D2FB2164D51A100C13D70 /* libbz2.dylib */,
@@ -1406,20 +1404,16 @@
 			isa = PBXGroup;
 			children = (
 				C7E76D1F16DF69370041ED9A /* AutotestingSystem_wrap.cxx */,
-				C7E76D2016DF69370041ED9A /* AutotestingSystem.i */,
 				C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */,
 				C7E76D2216DF69370041ED9A /* AutotestingSystemLua.h */,
 				C7E76D2316DF69370041ED9A /* AutotestingSystemSwig.cpp */,
 				C7E76D2416DF69370041ED9A /* AutotestingSystemYaml.cpp */,
 				C7E76D2516DF69370041ED9A /* AutotestingSystemYaml.h */,
 				C7E76D2616DF69370041ED9A /* Rect_wrap.cxx */,
-				C7E76D2716DF69370041ED9A /* Rect.i */,
 				C7E76D2816DF69370041ED9A /* RectSwig.cpp */,
 				C7E76D2916DF69370041ED9A /* UIControl_wrap.cxx */,
-				C7E76D2A16DF69370041ED9A /* UIControl.i */,
 				C7E76D2B16DF69370041ED9A /* UIControlSwig.cpp */,
 				C7E76D2C16DF69370041ED9A /* Vector_wrap.cxx */,
-				C7E76D2D16DF69370041ED9A /* Vector.i */,
 				C7E76D2E16DF69370041ED9A /* VectorSwig.cpp */,
 				E8B3C7B216B9326D002BD35F /* Action.cpp */,
 				E8B3C7B316B9326D002BD35F /* Action.h */,
@@ -2970,18 +2964,14 @@
 				CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */,
 				1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */,
 				C7E76D2F16DF69370041ED9A /* AutotestingSystem_wrap.cxx in Sources */,
-				C7E76D3016DF69370041ED9A /* AutotestingSystem.i in Sources */,
 				C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */,
 				C7E76D3316DF69370041ED9A /* AutotestingSystemSwig.cpp in Sources */,
 				C7E76D3416DF69370041ED9A /* AutotestingSystemYaml.cpp in Sources */,
 				C7E76D3616DF69370041ED9A /* Rect_wrap.cxx in Sources */,
-				C7E76D3716DF69370041ED9A /* Rect.i in Sources */,
 				C7E76D3816DF69370041ED9A /* RectSwig.cpp in Sources */,
 				C7E76D3916DF69370041ED9A /* UIControl_wrap.cxx in Sources */,
-				C7E76D3A16DF69370041ED9A /* UIControl.i in Sources */,
 				C7E76D3B16DF69370041ED9A /* UIControlSwig.cpp in Sources */,
 				C7E76D3C16DF69370041ED9A /* Vector_wrap.cxx in Sources */,
-				C7E76D3D16DF69370041ED9A /* Vector.i in Sources */,
 				C7E76D3E16DF69370041ED9A /* VectorSwig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3002,6 +2992,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3020,6 +3014,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3036,6 +3031,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3053,6 +3052,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3196,6 +3196,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3213,6 +3217,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3271,6 +3276,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../..\"",
+				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
@@ -3288,6 +3297,7 @@
 					./../../Sources/External,
 					./../../Libs/freetype/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
