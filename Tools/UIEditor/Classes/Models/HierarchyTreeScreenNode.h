@@ -34,7 +34,7 @@ public:
 	void SetPosY(int y);
 	int GetPosY() const;
 	
-	virtual void SetParent(HierarchyTreeNode* node);
+	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
 	virtual HierarchyTreeNode* GetParent();
 	
 	String GetNewControlName(const String& baseName) const;

@@ -38,7 +38,7 @@ public:
 	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory,
 					 bool deleteNodeFromScene);
  	
-	const HierarchyTreeRootNode& GetRootNode() const {return rootNode;};
+	const HierarchyTreeRootNode* GetRootNode() const {return &rootNode;};
    
 	HierarchyTreeNode* GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const;
 	HierarchyTreeNode* GetNode(const UIControl* control) const;

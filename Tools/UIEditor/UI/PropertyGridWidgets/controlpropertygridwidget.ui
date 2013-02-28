@@ -78,6 +78,9 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="classNameLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>52</x>
