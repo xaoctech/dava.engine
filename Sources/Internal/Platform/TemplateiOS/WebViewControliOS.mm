@@ -12,22 +12,23 @@
 #import <UIKit/UIKit.h>
 #import <HelperAppDelegate.h>
 
-using namespace DAVA;
+namespace DAVA
+{
 
 
 WebViewControl::WebViewControl()
 {
 	CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-	webViewPtr = [[UIWebView alloc] initWithFrame:emptyRect];
+	webViewPtr = [[::UIWebView alloc] initWithFrame:emptyRect];
 
-	UIWebView* localWebView = (UIWebView*)webViewPtr;
+	::UIWebView* localWebView = (::UIWebView*)webViewPtr;
 	HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
 	[[[appDelegate glController] view] addSubview:localWebView];
 }
 
 WebViewControl::~WebViewControl()
 {
-	UIWebView* innerWebView = (UIWebView*)webViewPtr;
+	::UIWebView* innerWebView = (::UIWebView*)webViewPtr;
 
 	[innerWebView removeFromSuperview];
 	[innerWebView release];
@@ -46,12 +47,12 @@ void WebViewControl::OpenURL(const String& urlToOpen)
 	NSURL* url = [NSURL URLWithString:nsURLPathToOpen];
 	
 	NSURLRequest* requestObj = [NSURLRequest requestWithURL:url];
-	[(UIWebView*)webViewPtr loadRequest:requestObj];
+	[(::UIWebView*)webViewPtr loadRequest:requestObj];
 }
 
 void WebViewControl::SetRect(const Rect& rect)
 {
-	CGRect webViewRect = [(UIWebView*)webViewPtr frame];
+	CGRect webViewRect = [(::UIWebView*)webViewPtr frame];
 
 	Core::eScreenOrientation screenOrientation = Core::Instance()->GetScreenOrientation();
 	switch (screenOrientation)
@@ -69,7 +70,7 @@ void WebViewControl::SetRect(const Rect& rect)
 			webViewRect.size.width = rect.dy * DAVA::Core::GetVirtualToPhysicalFactor();
 			webViewRect.size.height = rect.dx * DAVA::Core::GetVirtualToPhysicalFactor();
 			
-			((UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
+			((::UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
 			break;
 		}
 
@@ -83,7 +84,7 @@ void WebViewControl::SetRect(const Rect& rect)
 			webViewRect.size.width = rect.dy * DAVA::Core::GetVirtualToPhysicalFactor();
 			webViewRect.size.height = rect.dx * DAVA::Core::GetVirtualToPhysicalFactor();
 			
-			((UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(90.0f));
+			((::UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(90.0f));
 			break;
 		}
 
@@ -116,12 +117,12 @@ void WebViewControl::SetRect(const Rect& rect)
 	webViewRect.size.height /= scaleDivider;
 	webViewRect.size.width /= scaleDivider;
 
-	[(UIWebView*)webViewPtr setFrame: webViewRect];
+	[(::UIWebView*)webViewPtr setFrame: webViewRect];
 }
 
 void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 {
-	[(UIWebView*)webViewPtr setHidden:!isVisible];
+	[(::UIWebView*)webViewPtr setHidden:!isVisible];
 }
 
 float WebViewControl::GetScaleDivider()
@@ -138,3 +139,5 @@ float WebViewControl::GetScaleDivider()
 
 	return scaleDivider;
 }
+    
+};

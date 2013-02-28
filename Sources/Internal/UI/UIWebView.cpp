@@ -17,7 +17,6 @@
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "../Platform/TemplateAndroid/WebViewControl.h"
 #else
-#else
 #pragma error UIWEbView control is not implemented for this platform yet!
 #endif
 
