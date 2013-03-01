@@ -33,6 +33,7 @@
 		CC247FF516D69F1700183D40 /* UIAlertView_Modal.m in Sources */ = {isa = PBXBuildFile; fileRef = CC247FF016D69F1700183D40 /* UIAlertView_Modal.m */; };
 		CC24801516DD17F300183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24801316DD17F300183D40 /* UserComponent.cpp */; };
 		CC24801616DD17F300183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24801416DD17F300183D40 /* UserComponent.h */; };
+		CC24804616E0E34300183D40 /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */; };
 		CCB4C44616CBC65D00F2B085 /* ComponentHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */; };
 		CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */; };
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
@@ -694,6 +695,7 @@
 		CC247FF016D69F1700183D40 /* UIAlertView_Modal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAlertView_Modal.m; sourceTree = "<group>"; };
 		CC24801316DD17F300183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
 		CC24801416DD17F300183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
+		CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorSpinnerAdapter.h; sourceTree = "<group>"; };
 		CCB4C44416CBC65D00F2B085 /* ComponentHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentHelpers.cpp; sourceTree = "<group>"; };
 		CCB4C44516CBC65D00F2B085 /* ComponentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentHelpers.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2206,6 +2208,7 @@
 				E8B3CA6716B9326E002BD35F /* UISlider.h */,
 				E95B4C5A16DF78EE00880713 /* UISpinner.cpp */,
 				E95B4C5B16DF78EE00880713 /* UISpinner.h */,
+				CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */,
 				E8B3CA6816B9326E002BD35F /* UIStaticText.cpp */,
 				E8B3CA6916B9326E002BD35F /* UIStaticText.h */,
 				E8B3CA6A16B9326E002BD35F /* UITextField.cpp */,
@@ -2632,6 +2635,7 @@
 				CC24801616DD17F300183D40 /* UserComponent.h in Headers */,
 				E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */,
 				E95B4C5D16DF78EE00880713 /* UISpinner.h in Headers */,
+				CC24804616E0E34300183D40 /* VectorSpinnerAdapter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
