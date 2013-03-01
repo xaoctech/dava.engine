@@ -9,20 +9,20 @@ REGISTER_CLASS(UISpinner);
 static const String BUTTON_NEXT_NAME = "buttonNext";
 static const String BUTTON_PREVIOUS_NAME = "buttonPrevious";
 
-void SpinnerAdapter::AddDelegate(SelectionDelegate* aDelegate)
+void SpinnerAdapter::AddObserver(SelectionObserver* anObserver)
 {
-    delegates.insert(aDelegate);
+    observers.insert(anObserver);
 }
 
-void SpinnerAdapter::RemoveDelegate(SelectionDelegate* aDelegate)
+void SpinnerAdapter::RemoveObserver(SelectionObserver* anObserver)
 {
-    delegates.erase(aDelegate);
+    observers.erase(anObserver);
 }
 
-void SpinnerAdapter::NotifyDelegates(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged)
+void SpinnerAdapter::NotifyObservers(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged)
 {
-    Set<SelectionDelegate*>::const_iterator end = delegates.end();
-    for (Set<SelectionDelegate*>::iterator it = delegates.begin(); it != end; ++it)
+    Set<SelectionObserver*>::const_iterator end = observers.end();
+    for (Set<SelectionObserver*>::iterator it = observers.begin(); it != end; ++it)
     {
         (*it)->OnSelectedChanged(isSelectedFirst, isSelectedLast, isSelectedChanged);
     }
@@ -32,7 +32,7 @@ bool SpinnerAdapter::Next()
 {
     bool completedOk = SelectNext();
     if (completedOk)
-        NotifyDelegates(false /*as we selected next it can't be first*/, IsSelectedLast(), true);
+        NotifyObservers(false /*as we selected next it can't be first*/, IsSelectedLast(), true);
     return completedOk;
 }
 
@@ -40,7 +40,7 @@ bool SpinnerAdapter::Previous()
 {
     bool completedOk = SelectPrevious();
     if (completedOk)
-        NotifyDelegates(IsSelectedFirst(), false /*as we selected previous it can't be last*/, true);
+        NotifyObservers(IsSelectedFirst(), false /*as we selected previous it can't be last*/, true);
     return completedOk;
 }
 
@@ -62,7 +62,7 @@ UISpinner::~UISpinner()
 {
     ReleaseButtons();
     if (adapter)
-        adapter->RemoveDelegate(this);
+        adapter->RemoveObserver(this);
     SafeRelease(adapter);
 }
 
@@ -106,7 +106,7 @@ void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)
 {
     if (adapter)
     {
-        adapter->RemoveDelegate(this);
+        adapter->RemoveObserver(this);
     }
     SafeRelease(adapter);
 
@@ -116,7 +116,7 @@ void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)
         buttonNext->SetDisabled(adapter->IsSelectedLast());
         buttonPrevious->SetDisabled(adapter->IsSelectedFirst());
         adapter->DisplaySelectedData(this);
-        adapter->AddDelegate(this);
+        adapter->AddObserver(this);
     }
     else
     {

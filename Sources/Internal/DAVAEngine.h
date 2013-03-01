@@ -159,6 +159,7 @@
 #include "UI/UIFileSystemDialog.h"
 #include "UI/UIWebView.h"
 #include "UI/UISpinner.h"
+#include "UI/VectorSpinnerAdapter.h"
 
 #include "UI/UIYamlLoader.h"
 
