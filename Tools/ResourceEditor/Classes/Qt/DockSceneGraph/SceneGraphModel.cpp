@@ -10,6 +10,7 @@
 
 #include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/ArrowsNode.h"
 
 #include "DockParticleEditor/ParticlesEditorController.h"
 
@@ -42,8 +43,23 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     Rebuild();
 }
 
+bool SceneGraphModel::IsAcceptNode(DAVA::SceneNode *node)
+{
+	//Check whether current node is ArrowsNode.
+	//ArrowsNode should not be displayed in SceneGraph tree
+	ArrowsNode* arrowsNode = dynamic_cast<ArrowsNode*>(node);
+	if (arrowsNode)
+		return false;
+
+	return true;
+}
+
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
 {
+	if (!IsAcceptNode(node))
+	{
+		return;
+	}
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
     node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
 
