@@ -32,9 +32,15 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     rectWidget = new RectPropertyGridWidget();
     registeredWidgets.push_back(rectWidget);
+	
+	alignWidget = new AlignsPropertyGridWidget();
+	registeredWidgets.push_back(alignWidget);
   
     stateWidget = new StatePropertyGridWidget();
     registeredWidgets.push_back(stateWidget);
+	
+	sliderWidget = new SliderPropertyGridWidget();
+	registeredWidgets.push_back(sliderWidget);
 
     textWidget = new TextPropertyGridWidget();
     registeredWidgets.push_back(textWidget);
@@ -44,12 +50,6 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 
     backgroundWidget = new BackGroundPropertyGridWidget();
     registeredWidgets.push_back(backgroundWidget);
-
-	sliderWidget = new SliderPropertyGridWidget();
-	registeredWidgets.push_back(sliderWidget);
-	
-	alignWidget = new AlignsPropertyGridWidget();
-	registeredWidgets.push_back(alignWidget);
 	    
     flagsWidget = new FlagsPropertyGridWidget();
     registeredWidgets.push_back(flagsWidget);
