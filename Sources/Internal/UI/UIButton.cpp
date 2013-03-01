@@ -714,7 +714,7 @@ namespace DAVA
 		UIButton *baseControl = new UIButton();
 		
 		//Control Type
-		node->Set("type", "UIButton", true);
+		node->Set("type", "UIButton");
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
