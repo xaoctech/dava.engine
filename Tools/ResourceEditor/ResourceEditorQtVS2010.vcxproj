@@ -1004,7 +1004,7 @@
     <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
-    <None Include="DataQt\texturedialog.ui" />
+    <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>

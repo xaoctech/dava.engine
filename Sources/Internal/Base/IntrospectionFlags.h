@@ -13,6 +13,7 @@ enum eIntrospectionFlags
     INTROSPECTION_EDITOR = 0x02,
     INTROSPECTION_EDITOR_READONLY = 0x04,
     
+	INTROSPECTION_ALL = 0xFFFFFFFF
 };
     
 };

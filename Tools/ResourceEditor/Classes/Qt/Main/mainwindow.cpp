@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
@@ -83,6 +82,11 @@ QtMainWindow::~QtMainWindow()
 	ProjectManager::Instance()->Release();
 
     //SafeDelete(libraryModel);
+}
+
+Ui::MainWindow* QtMainWindow::GetUI()
+{
+	return ui;
 }
 
 void QtMainWindow::SetupMainMenu()

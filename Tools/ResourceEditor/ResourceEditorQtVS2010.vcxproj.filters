@@ -2856,9 +2856,6 @@
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\texturedialog.ui">
-      <Filter>QtData</Filter>
-    </None>
     <None Include="MakefileQt">
       <Filter>Sources</Filter>
     </None>
@@ -2872,6 +2869,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ParticleProperty.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\texturebrowser.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
