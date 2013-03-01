@@ -56,6 +56,7 @@ RenderBatch::RenderBatch()
 	renderObject = 0;
     materialInstance = new InstanceMaterialState();
     ownerLayerName = INHERIT_FROM_MATERIAL;
+	visiblityCriteria = RenderObject::VISIBILITY_CRITERIA;
 }
     
 RenderBatch::~RenderBatch()
@@ -99,7 +100,7 @@ void RenderBatch::Draw(Camera * camera)
     }
     
     uint32 flags = renderObject->GetFlags();
-    if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
+    if ((flags & visiblityCriteria) != visiblityCriteria)
         return;
 	
     Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
@@ -250,5 +251,11 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 	BaseObject::Load(archive);
 }
+
+void RenderBatch::SetVisibilityCriteria(uint32 criteria)
+{
+	visiblityCriteria = criteria;
+}
+
 
 };
