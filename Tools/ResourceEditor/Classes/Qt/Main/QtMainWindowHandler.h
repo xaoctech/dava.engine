@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QVector>
 #include <QAbstractButton>
+#include <QRadioButton.h>
 
 #include "DAVAEngine.h"
 #include "../Constants.h"
@@ -54,7 +55,11 @@ public:
 	//custom colors
 	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
-	
+
+	//set switch index
+	void RegisterSetSwitchIndexWidgets(QLineEdit*, QRadioButton*, QRadioButton*, QPushButton*);
+    void SetSwitchIndexWidgetsState(bool state);
+
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
 	void SetWidgetsStateVisibilityTool(bool state);
@@ -104,6 +109,9 @@ public slots:
     //scene graph
     void RefreshSceneGraph();
     
+	//set switch index
+	void ToggleSetSwitchIndex(DAVA::int32  value, bool isSelection);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
@@ -154,6 +162,12 @@ private:
 	void UpdateModificationActions();
 
 private:
+	//set switch index
+	QPushButton*	setSwitchIndexToggleButton;
+	QLineEdit*		editSwitchIndexValue;
+	QRadioButton*	rBtnSelection;
+	QRadioButton*	rBtnScene;
+
 	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;
