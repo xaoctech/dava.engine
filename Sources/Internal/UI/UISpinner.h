@@ -20,7 +20,7 @@ class SpinnerAdapter : public BaseObject
 {
 
 public:
-    class SelectionDelegate
+    class SelectionObserver
     {
     public:
 
@@ -45,12 +45,12 @@ public:
     virtual void DisplaySelectedData(UISpinner * spinner) const = 0;
 
     /*
-     * Select next element. Returns 'true' and calls OnSelectedChanged for all delegates if next element selected successfully. Returns 'false' otherwise.
+     * Select next element. Returns 'true' and calls OnSelectedChanged for all observers if next element selected successfully. Returns 'false' otherwise.
      */
     bool Next();
 
     /*
-     * Select previous element. Returns 'true' and calls OnSelectedChanged for all delegates if previous element selected successfully. Returns 'false' otherwise.
+     * Select previous element. Returns 'true' and calls OnSelectedChanged for all observers if previous element selected successfully. Returns 'false' otherwise.
      */
     bool Previous();
    
@@ -58,77 +58,19 @@ public:
     virtual bool IsSelectedLast() const = 0;
     virtual bool IsSelectedFirst() const = 0;
 
-    void AddDelegate(SelectionDelegate* aDelegate);
-    void RemoveDelegate(SelectionDelegate* aDelegate);
+    void AddObserver(SelectionObserver* anObserver);
+    void RemoveObserver(SelectionObserver* anObserver);
 
 protected:
-    Set<SelectionDelegate*> delegates;
+    Set<SelectionObserver*> observers;
          
     //For next two implementation depends on a type of data set, not on a kind of controls used to display data element.
     //See description for Next() and Previous()
     virtual bool SelectNext() = 0;
     virtual bool SelectPrevious() = 0;
 
-    void NotifyDelegates(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged);
+    void NotifyObservers(bool isSelectedFirst, bool isSelectedLast, bool isSelectedChanged);
 
-};
-
-template<typename T> class VectorSpinnerAdapter : public SpinnerAdapter
-{
-public:
-    VectorSpinnerAdapter(Vector<T> aCollection, int32 aSelectedIndex = 0)
-        : data(aCollection)
-        , selectedIndex(aSelectedIndex)
-    {};
-
-    virtual ~VectorSpinnerAdapter() {};
-
-    virtual bool IsSelectedLast() const
-    {
-        return selectedIndex == data.size() - 1;
-    }
-
-    virtual bool IsSelectedFirst() const
-    {
-        return selectedIndex == 0;
-    }
-
-    void GetSelected() {return selectedIndex;}
-
-    void SetSelected(int aSelectedIndex)
-    {
-        selectedIndex = aSelectedIndex;
-        NotifyDelegates(IsSelectedFirst(), IsSelectedLast(), true);
-    }
-    /*
-     * Call it after you made changes to dataset via 'data' field.
-     * You should specify if selected element data was changed with 'isSelectedChanged' argument.
-     */
-    void NotifyDataSetChange(bool isSelectedChanged)
-    {
-        NotifyDelegates(IsSelectedFirst(), IsSelectedLast(), isSelectedChanged);
-    }
-
-    Vector<T> data;
-
-protected:
-    virtual bool SelectNext()
-    {
-        bool isSelectedLast = IsSelectedLast();
-        if (!isSelectedLast)
-            selectedIndex++;
-        return !isSelectedLast;
-    }
-
-    virtual bool SelectPrevious()
-    {
-        bool isSelectedFirst = IsSelectedFirst();
-        if (!isSelectedFirst)
-            selectedIndex--;
-        return !isSelectedFirst;
-    }
-
-    int32 selectedIndex;
 };
 
 /*
@@ -136,7 +78,7 @@ protected:
  * To display selected element UISpinner itself (as UIControl) or its children should be used:
  * use SpinnerAdapter with your custom DisplaySelectedData implementation of display logic.
  */
-class UISpinner : public UIControl, SpinnerAdapter::SelectionDelegate
+class UISpinner : public UIControl, SpinnerAdapter::SelectionObserver
 {
 public:
     UISpinner(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
