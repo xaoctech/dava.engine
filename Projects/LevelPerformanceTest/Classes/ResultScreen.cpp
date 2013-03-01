@@ -60,6 +60,21 @@ void ResultScreen::Input(UIEvent * event)
                 String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
                 saveFileName += filename + ".png";
                 ImageLoader::Save(image, saveFileName);
+
+				//TODO: discuss where exaclty store these results.
+				// Currenty they are stored in a plain text file in user documents dir
+				String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
+				String folderPathname = documentsPath + "PerformanceTestResult";
+				FileSystem::Instance()->CreateDirectory(folderPathname);
+				String statFileName = folderPathname + "/" + filename + ".txt";
+				File* file = File::Create(statFileName, File::CREATE | File::WRITE);
+				if (file)
+				{
+					file->WriteLine(Format("Texture memory size: %d", testData.GetTextureMemorySize()));
+					file->WriteLine(Format("Scene file size: %d", testData.GetSceneFileSize()));
+					SafeRelease(file);
+				}
+
                 state = RESULT_STATE_FINISHED;
             }
 		}

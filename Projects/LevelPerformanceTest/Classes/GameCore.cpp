@@ -53,8 +53,7 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
 	String dirPath = "~res:/Maps/";
-	Vector<String> v = FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2");
-	v.push_back("a_level.sc2");
+	Vector<String> v = FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2", 1);
 
 	for(Vector<String>::const_iterator it = v.begin(); it != v.end(); ++it)
     {
@@ -149,7 +148,7 @@ void GameCore::Update(float32 timeElapsed)
 	}
     else
     {
-		exit(0);
+		Core::Instance()->Quit();
 	}
 }
 
