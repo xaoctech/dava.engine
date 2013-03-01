@@ -644,6 +644,8 @@
 		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */; };
 		E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */; };
+		E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95B4C5A16DF78EE00880713 /* UISpinner.cpp */; };
+		E95B4C5D16DF78EE00880713 /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E95B4C5B16DF78EE00880713 /* UISpinner.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
@@ -1305,6 +1307,8 @@
 		E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
+		E95B4C5A16DF78EE00880713 /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
+		E95B4C5B16DF78EE00880713 /* UISpinner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpinner.h; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -2200,6 +2204,8 @@
 				E8B3CA6516B9326E002BD35F /* UIScrollBar.h */,
 				E8B3CA6616B9326E002BD35F /* UISlider.cpp */,
 				E8B3CA6716B9326E002BD35F /* UISlider.h */,
+				E95B4C5A16DF78EE00880713 /* UISpinner.cpp */,
+				E95B4C5B16DF78EE00880713 /* UISpinner.h */,
 				E8B3CA6816B9326E002BD35F /* UIStaticText.cpp */,
 				E8B3CA6916B9326E002BD35F /* UIStaticText.h */,
 				E8B3CA6A16B9326E002BD35F /* UITextField.cpp */,
@@ -2625,6 +2631,7 @@
 				CC247FF416D69F1700183D40 /* UIAlertView_Modal.h in Headers */,
 				CC24801616DD17F300183D40 /* UserComponent.h in Headers */,
 				E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */,
+				E95B4C5D16DF78EE00880713 /* UISpinner.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2987,6 +2994,7 @@
 				CC24801516DD17F300183D40 /* UserComponent.cpp in Sources */,
 				E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */,
 				E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */,
+				E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
