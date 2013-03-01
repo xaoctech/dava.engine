@@ -554,6 +554,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\VectorSpinnerAdapter.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
