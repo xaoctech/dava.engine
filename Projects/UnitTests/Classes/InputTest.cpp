@@ -10,6 +10,8 @@
 
 using namespace DAVA;
 
+static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
+
 InputTest::InputTest() :
  TestTemplate<InputTest>("InputTest")
 {
@@ -17,6 +19,7 @@ InputTest::InputTest() :
 	staticText = NULL;
 	testButton = NULL;
 	
+	onScreenTime = 0.0f;
 	testFinished = false;
 	
 	RegisterFunction(this, &InputTest::TestFunction, Format("InputTest"), NULL);
@@ -94,6 +97,22 @@ void InputTest::UnloadResources()
 void InputTest::TestFunction(PerfFuncData * data)
 {
 	return;
+}
+
+void InputTest::DidAppear()
+{
+    onScreenTime = 0.f;
+}
+
+void InputTest::Update(float32 timeElapsed)
+{
+    onScreenTime += timeElapsed;
+    if(onScreenTime > INPUT_TEST_AUTO_CLOSE_TIME)
+    {
+        testFinished = true;
+    }
+
+    TestTemplate<InputTest>::Update(timeElapsed);
 }
 
 bool InputTest::RunTest(int32 testNum)

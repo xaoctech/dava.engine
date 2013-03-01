@@ -21,6 +21,7 @@
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 499922FA16CBC5A500313367 /* EditCommands.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
@@ -469,6 +470,8 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		499922FA16CBC5A500313367 /* EditCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditCommands.cpp; path = Classes/Commands/EditCommands.cpp; sourceTree = "<group>"; };
+		499922FB16CBC5A500313367 /* EditCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditCommands.h; path = Classes/Commands/EditCommands.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -2021,6 +2024,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				499922FA16CBC5A500313367 /* EditCommands.cpp */,
+				499922FB16CBC5A500313367 /* EditCommands.h */,
 				49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */,
 				49C89A3E16C3AC14008AA6F0 /* ModificationOptionsCommands.h */,
 				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
@@ -3237,6 +3242,7 @@
 				49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */,
 				49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */,
 				49C89A3F16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp in Build Sources */,
+				499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */,
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */,
