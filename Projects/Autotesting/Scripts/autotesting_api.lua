@@ -1,3 +1,5 @@
+require "logger"
+
 print("autotesting_api start")
 
 TIMEOUT = 10.0
