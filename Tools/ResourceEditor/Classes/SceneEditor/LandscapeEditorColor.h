@@ -37,6 +37,7 @@ public:
 	void RestoreState(Texture* texture);
 
 protected:
+	void StoreOriginalTexture();
 	void CreateUndoPoint();
 
     virtual void InputAction(int32 phase, bool intersects);

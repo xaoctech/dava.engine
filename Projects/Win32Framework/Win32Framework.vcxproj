@@ -548,11 +548,13 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UISpinner.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\VectorSpinnerAdapter.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
@@ -882,6 +884,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp" />

@@ -53,6 +53,7 @@ LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
 {
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
+	SafeRelease(originalTexture);
 }
 
 
@@ -288,8 +289,7 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = true;
 
-			DVASSERT(originalTexture == NULL);
-			originalTexture = StoreState();
+			StoreOriginalState();
 
             break;
         }
@@ -306,8 +306,7 @@ void LandscapeEditorCustomColors::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = true;
 
-				DVASSERT(originalTexture == NULL);
-				originalTexture = StoreState();
+				StoreOriginalState();
             }
             break;
         }
@@ -455,8 +454,7 @@ void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
 												   image->GetHeight(),
 												   false);
 
-		DVASSERT(originalTexture == NULL);
-		originalTexture = StoreState();
+		StoreOriginalState();
 
 		SafeRelease(colorSprite);
 		colorSprite = Sprite::CreateAsRenderTarget(texSurf->GetWidth(), texSurf->GetHeight(), FORMAT_RGBA8888);
@@ -640,4 +638,10 @@ void LandscapeEditorCustomColors::CreateUndoPoint()
 		SafeRelease(newTexture);
 	}
 	unsavedChanges = true;
+}
+
+void LandscapeEditorCustomColors::StoreOriginalState()
+{
+	DVASSERT(originalTexture == NULL);
+	originalTexture = StoreState();
 }
