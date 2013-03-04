@@ -56,6 +56,7 @@ protected:
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
 
+	void StoreOriginalState();
 	void CreateUndoPoint();
 
 	String GetScenePath();

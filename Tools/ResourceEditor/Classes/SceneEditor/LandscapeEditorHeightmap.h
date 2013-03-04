@@ -41,6 +41,7 @@ public:
 
 	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
+	void StoreOriginalHeightmap();
 	void CreateUndoPoint();
 	void CreateHeightmapUndo();
 	void CreateCopyPasteUndo();
