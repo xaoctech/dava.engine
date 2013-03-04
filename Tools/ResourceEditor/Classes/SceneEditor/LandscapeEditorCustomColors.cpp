@@ -53,6 +53,7 @@ LandscapeEditorCustomColors::~LandscapeEditorCustomColors()
 {
 	SafeRelease(texSurf);
 	SafeRelease(colorSprite);
+	SafeRelease(originalTexture);
 }
 
 

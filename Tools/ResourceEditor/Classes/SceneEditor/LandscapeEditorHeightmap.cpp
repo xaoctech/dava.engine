@@ -60,6 +60,8 @@ LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
     SafeRelease(toolImage);
     
     SafeRelease(landscapesController);
+	SafeRelease(oldHeightmap);
+	SafeRelease(oldTilemap);
 }
 
 void LandscapeEditorHeightmap::Update(float32 timeElapsed)

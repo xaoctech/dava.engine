@@ -51,6 +51,7 @@ LandscapeEditorColor::~LandscapeEditorColor()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+	SafeRelease(originalImage);
 }
 
 
