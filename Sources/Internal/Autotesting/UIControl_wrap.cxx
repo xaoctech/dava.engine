@@ -2236,6 +2236,106 @@ static int _wrap_new_UIControl(lua_State* L) {
 }
 
 
+static int _wrap_UIControl_GetRect__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool arg2 ;
+  DAVA::Rect *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetRect",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetRect",1,"DAVA::UIControl *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("DAVA::UIControl::GetRect",2,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetRect",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  result = (DAVA::Rect *) &(arg1)->GetRect(arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Rect,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetRect__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::Rect *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetRect",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetRect",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetRect",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::Rect *) &(arg1)->GetRect();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Rect,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetRect(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__UIControl, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_UIControl_GetRect__SWIG_1(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__UIControl, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isboolean(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_UIControl_GetRect__SWIG_0(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'UIControl_GetRect'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::UIControl::GetRect(bool)\n"
+    "    DAVA::UIControl::GetRect()\n");
+  lua_error(L);return 0;
+}
+
+
 static int _wrap_UIControl_GetPosition__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
@@ -2336,6 +2436,30 @@ static int _wrap_UIControl_GetPosition(lua_State* L) {
 }
 
 
+static int _wrap_UIControl_GetSize(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::Vector2 *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetSize",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetSize",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetSize",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::Vector2 *) &(arg1)->GetSize();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Vector2,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_UIControl_GetGeometricData(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
@@ -2360,9 +2484,301 @@ fail:
 }
 
 
+static int _wrap_UIControl_GetVisible(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetVisible",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetVisible",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetVisible",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (bool)(arg1)->GetVisible();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetInputEnabled(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetInputEnabled",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetInputEnabled",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetInputEnabled",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (bool)(arg1)->GetInputEnabled();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_SetInputEnabled__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool arg2 ;
+  bool arg3 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::SetInputEnabled",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::SetInputEnabled",1,"DAVA::UIControl *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("DAVA::UIControl::SetInputEnabled",2,"bool");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::UIControl::SetInputEnabled",3,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_SetInputEnabled",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  arg3 = (lua_toboolean(L, 3)!=0);
+  (arg1)->SetInputEnabled(arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_SetInputEnabled__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool arg2 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::SetInputEnabled",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::SetInputEnabled",1,"DAVA::UIControl *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("DAVA::UIControl::SetInputEnabled",2,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_SetInputEnabled",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  (arg1)->SetInputEnabled(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_SetInputEnabled(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__UIControl, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isboolean(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_UIControl_SetInputEnabled__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__UIControl, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isboolean(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isboolean(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_UIControl_SetInputEnabled__SWIG_0(L);
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'UIControl_SetInputEnabled'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::UIControl::SetInputEnabled(bool,bool)\n"
+    "    DAVA::UIControl::SetInputEnabled(bool)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_UIControl_GetDisabled(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetDisabled",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetDisabled",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetDisabled",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (bool)(arg1)->GetDisabled();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetSelected(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetSelected",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetSelected",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetSelected",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (bool)(arg1)->GetSelected();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetName(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::String *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetName",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetName",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetName",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::String *) &(arg1)->GetName();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_std__string,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetTag(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::int32 result;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetTag",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetTag",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetTag",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::int32)(arg1)->GetTag();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_UIControl_GetParent(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::UIControl *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetParent",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetParent",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetParent",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::UIControl *)(arg1)->GetParent();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__UIControl,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_method swig_DAVA_UIControl_methods[] = {
+    {"GetRect", _wrap_UIControl_GetRect}, 
     {"GetPosition", _wrap_UIControl_GetPosition}, 
+    {"GetSize", _wrap_UIControl_GetSize}, 
     {"GetGeometricData", _wrap_UIControl_GetGeometricData}, 
+    {"GetVisible", _wrap_UIControl_GetVisible}, 
+    {"GetInputEnabled", _wrap_UIControl_GetInputEnabled}, 
+    {"SetInputEnabled", _wrap_UIControl_SetInputEnabled}, 
+    {"GetDisabled", _wrap_UIControl_GetDisabled}, 
+    {"GetSelected", _wrap_UIControl_GetSelected}, 
+    {"GetName", _wrap_UIControl_GetName}, 
+    {"GetTag", _wrap_UIControl_GetTag}, 
+    {"GetParent", _wrap_UIControl_GetParent}, 
     {0,0}
 };
 static swig_lua_attribute swig_DAVA_UIControl_attributes[] = {
@@ -2400,6 +2816,7 @@ static swig_lua_const_info swig_constants[] = {
     {SWIG_LUA_CONSTTAB_INT("UIControl_EVENT_HOVERED_REMOVED", DAVA::UIControl::EVENT_HOVERED_REMOVED)},
     {SWIG_LUA_CONSTTAB_INT("UIControl_EVENT_FOCUS_SET", DAVA::UIControl::EVENT_FOCUS_SET)},
     {SWIG_LUA_CONSTTAB_INT("UIControl_EVENT_FOCUS_LOST", DAVA::UIControl::EVENT_FOCUS_LOST)},
+    {SWIG_LUA_CONSTTAB_INT("UIControl_EVENT_TOUCH_UP_OUTSIDE", DAVA::UIControl::EVENT_TOUCH_UP_OUTSIDE)},
     {SWIG_LUA_CONSTTAB_INT("UIControl_EVENTS_COUNT", DAVA::UIControl::EVENTS_COUNT)},
     {0,0,0,0,0,0}
 };
