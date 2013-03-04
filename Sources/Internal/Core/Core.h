@@ -229,8 +229,9 @@ public:
 	virtual void CalculateScaleMultipliers();
 	
 	virtual void SetPhysicalScreenSize(int32 width, int32 height);//!< May be used only by the system
-	virtual void SetVirtualScreenSize(int32 width, int32 height);// Sets virtual screen size. You need to set size what takes into account screen orientation modifier
-	virtual void RegisterAvailableResourceSize(int32 width, int32 height, const String &resourcesFolderName);// Registers available sizes of resources. Can be called many times.
+	virtual void SetVirtualScreenSize(int32 width, int32 height);//!< Sets virtual screen size. You need to set size what takes into account screen orientation modifier
+	virtual void SetProportionsIsFixed(bool needFixed);
+	virtual void RegisterAvailableResourceSize(int32 width, int32 height, const String &resourcesFolderName);//!< Registers available sizes of resources. Can be called many times.
 	
 
 	virtual float32 GetPhysicalScreenWidth();//returns physical size what don't take intpo account screen orientation
@@ -337,6 +338,9 @@ private:
 	
 	float32 virtualScreenWidth;
 	float32 virtualScreenHeight;
+	float32 requestedVirtualScreenWidth;
+	float32 requestedVirtualScreenHeight;
+	bool fixedProportions;
 	
 	Vector<AvailableSize> allowedSizes;
 	bool needTorecalculateMultipliers;
