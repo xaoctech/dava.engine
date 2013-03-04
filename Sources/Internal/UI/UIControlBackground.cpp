@@ -168,6 +168,11 @@ const Color &UIControlBackground::GetDrawColor() const
 {
 	return drawColor;
 }
+
+void UIControlBackground::SetDrawColor(const Color &c)
+{
+	drawColor = c;
+}
 	
 void UIControlBackground::SetParentColor(const Color &parentColor)
 {

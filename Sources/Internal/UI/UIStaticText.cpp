@@ -43,7 +43,10 @@ REGISTER_CLASS(UIStaticText);
 
 UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/) 
 :	UIControl(rect, rectInAbsoluteCoordinates)
-	,tempSize(0, 0)
+	, textColor(1.0f, 1.0f, 1.0f, 1.0f)
+	, tempSize(0, 0)
+	, shadowOffset(0, 0)
+	, shadowColor(0, 0, 0, 0)
 {
 	inputEnabled = false;
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
@@ -97,11 +100,19 @@ void UIStaticText::SetFont(Font * _font)
 	PrepareSprite();
 }
 
-void UIStaticText::SetFontColor(const Color& fontColor)
+void UIStaticText::SetTextColor(const Color& color)
 {
-    textBlock->SetRectSize(size);
-	textBlock->SetFontColor(fontColor);
-	PrepareSprite();
+	textColor = color;
+}
+
+void UIStaticText::SetShadowOffset(const Vector2 &offset)
+{
+	shadowOffset = offset;
+}
+
+void UIStaticText::SetShadowColor(const Color &color)
+{
+	shadowColor = color;
 }
     
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
@@ -145,7 +156,20 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	textBlock->SetRectSize(size);
 	PrepareSprite();
 	textBlock->PreDraw();
-	UIControl::Draw(geometricData);	
+
+	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
+	{
+		UIGeometricData shadowGeomData = geometricData;
+
+		shadowGeomData.position += shadowOffset;
+		shadowGeomData.unrotatedRect += shadowOffset;
+
+		background->SetDrawColor(shadowColor);
+		UIControl::Draw(shadowGeomData);
+	}
+
+	background->SetDrawColor(textColor);
+	UIControl::Draw(geometricData);
 }
     
 const Vector<WideString> & UIStaticText::GetMultilineStrings()

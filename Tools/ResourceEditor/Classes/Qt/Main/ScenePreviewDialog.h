@@ -27,11 +27,6 @@ protected:
     void OnClose(BaseObject *, void *, void *);
 
     ScenePreviewControl *preview;
-    
-    // general
-    Font *fontLight;
-    Font *fontDark;
-    
     UIStaticText *errorMessage;
 };
 

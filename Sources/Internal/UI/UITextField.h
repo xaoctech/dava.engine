@@ -142,7 +142,7 @@ public:
 	void OpenKeyboard();
 	void CloseKeyboard();
 	
-	void SetFontColor(float r, float g, float b, float a);
+	void SetTextColor(float r, float g, float b, float a);
 	void SetFontSize(float size);
 
 	virtual void SetSpriteAlign(int32 align);
@@ -179,9 +179,9 @@ public:
 		staticText->SetFont(textFont);
     }
 
-    void SetFontColor(const Color& fontColor)
+    void SetTextColor(const Color& fontColor)
     {
-        staticText->SetFontColor(fontColor);
+        staticText->SetTextColor(fontColor);
     }
 
     virtual void SetSize(const DAVA::Vector2 &newSize);

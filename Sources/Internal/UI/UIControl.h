@@ -115,7 +115,7 @@ public:
 		return unrotatedRect;
 	}
 	
-private:
+//private:
 	Rect unrotatedRect;
 	float32 oldAngle;
 

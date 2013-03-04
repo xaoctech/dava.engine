@@ -261,10 +261,10 @@ UITextFieldDelegate * UITextField::GetDelegate()
 	return delegate;
 }
 	
-void UITextField::SetFontColor(float r, float g, float b, float a)
+void UITextField::SetTextColor(float r, float g, float b, float a)
 {
 #ifdef __DAVAENGINE_IPHONE__
-	textFieldiPhone->SetFontColor(r, g, b, a);
+	textFieldiPhone->SetTextColor(r, g, b, a);
 #endif
 }
 	

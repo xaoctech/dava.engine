@@ -66,10 +66,10 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     Font *f = FTFont::Create(fontPath);
     f->SetSize((float32)cellH * 2 / 3);
-    f->SetColor(Color(1.f, 1.f, 1.f, 1.f));
     
     title = new UIStaticText(Rect((float32)border, (float32)border/2, (float32)size.x - border*2, (float32)cellH));
     title->SetFont(f);
+	title->SetTextColor(Color(1.f, 1.f, 1.f, 1.f));
     title->SetFittingOption(TextBlock::FITTING_REDUCE);
     title->SetText(L"Select file:");
     AddControl(title);
@@ -483,8 +483,8 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
         text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
         Font *f = FTFont::Create(fontPath);
         f->SetSize((float32)cellH * 2 / 3);
-        f->SetColor(Color(1,1,1,1));
         text->SetFont(f);
+		text->SetTextColor(Color(1.f, 1.f, 1.f, 1.f));
         SafeRelease(f);
         c->GetBackground()->SetColor(Color(0.75, 0.75, 0.75, 0.5));
     }
