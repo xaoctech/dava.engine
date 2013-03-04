@@ -77,7 +77,7 @@ protected:
 	GraphItem* GetGraphItemByModelIndex(const QModelIndex& index) const;
 
 	//Nodes which should not be displayed in SceneGraph tree must return false when passed to this function
-	bool IsAcceptNode(DAVA::SceneNode* node);
+	bool IsNodeAccepted(DAVA::SceneNode* node);
 protected:
 
     EditorScene *scene;
