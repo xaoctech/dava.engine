@@ -116,6 +116,8 @@ void HeightmapModificationCommand::UpdateLandscapeHeightmap(String filename)
 	
 	landscapeNode->SetHeightmap(heightmap);
 	heightmap->Save(landscapeNode->GetHeightmapPathname());
+
+	SafeRelease(heightmap);
 }
 
 
