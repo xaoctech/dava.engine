@@ -16,8 +16,6 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
-#include "UNDOManager.h"
-
 #include "SceneExporter.h"
 
 #include "../Qt/Scene/SceneData.h"
@@ -37,7 +35,6 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 void SceneEditorScreenMain::LoadResources()
 {
     new HintManager();
-    new UNDOManager();
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
@@ -85,7 +82,6 @@ void SceneEditorScreenMain::UnloadResources()
 
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
-    UNDOManager::Instance()->Release();
 }
 
 
