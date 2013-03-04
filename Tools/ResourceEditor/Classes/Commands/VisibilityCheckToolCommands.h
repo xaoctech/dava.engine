@@ -57,7 +57,7 @@ protected:
 class CommandPlacePointVisibilityTool: public Command
 {
 public:
-	CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint);
+	CommandPlacePointVisibilityTool(const Vector2& newVisibilityPoint, const Vector2& oldVisibilityPoint, bool oldPointIsSet, Image* oldImage);
 	virtual ~CommandPlacePointVisibilityTool();
 
 protected:
@@ -77,7 +77,7 @@ protected:
 class CommandPlaceAreaVisibilityTool: public Command
 {
 public:
-	CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize);
+	CommandPlaceAreaVisibilityTool(const Vector2& areaPoint, uint32 areaSize, Image* oldImage);
 	virtual ~CommandPlaceAreaVisibilityTool();
 
 protected:
@@ -85,6 +85,7 @@ protected:
 	uint32 size;
 
 	Image* oldImage;
+	Image* redoImage;
 
 	LandscapeEditorVisibilityCheckTool* GetEditor();
 

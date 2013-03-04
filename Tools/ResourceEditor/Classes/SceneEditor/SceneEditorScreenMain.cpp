@@ -757,7 +757,8 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->SelectNodeQt(node);
+	if (iBody)
+	    iBody->bodyControl->SelectNodeQt(node);
 }
 
 void SceneEditorScreenMain::OnReloadRootNodesQt()

@@ -22,6 +22,7 @@
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\HashMapTest.h" />
+    <ClInclude Include="Classes\InputTest.h" />
     <ClInclude Include="Classes\KeyedArchiveTest.h" />
     <ClInclude Include="Classes\KeyedArchiveYamlTest.h" />
     <ClInclude Include="Classes\MaterialCompilerTest.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\HashMapTest.cpp" />
+    <ClCompile Include="Classes\InputTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveTest.cpp" />
     <ClCompile Include="Classes\KeyedArchiveYamlTest.cpp" />
     <ClCompile Include="Classes\MaterialCompilerTest.cpp" />

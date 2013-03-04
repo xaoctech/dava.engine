@@ -43,6 +43,8 @@ protected:
     
     eCommandType commandType;
     eCommandState commandState;
+
+	DAVA::String commandName;
 };
 
 #include "../Qt/Main/PointerHolder.h"
