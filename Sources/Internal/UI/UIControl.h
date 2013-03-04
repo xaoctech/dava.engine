@@ -74,7 +74,7 @@ public:
 	
 	float32 cosA;
 	float32 sinA;
-#ifndef SWIG
+#if !defined(SWIG)
 	void AddToGeometricData(const UIGeometricData &data)
 	{
 		position.x = data.position.x - data.pivotPoint.x * data.scale.x + position.x * data.scale.x;
@@ -115,7 +115,7 @@ public:
 		return unrotatedRect;
 	}
 	
-#ifndef SWIG
+#if !defined(SWIG)
 private:
 	Rect unrotatedRect;
 	float32 oldAngle;
@@ -173,11 +173,11 @@ private:
 		just overload Draw() method for the custom drawing.
 	 */
 class UIControl
-#ifndef SWIG
+#if !defined(SWIG)
     : public AnimatedObject
 #endif
 {
-#ifndef SWIG
+#if !defined(SWIG)
 	friend class UIControlSystem;
 #endif //SWIG
 public:
@@ -225,7 +225,7 @@ public:
 	 */
 	UIControl(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 	
-#ifndef SWIG
+#if !defined(SWIG)
 	/**
 	 \brief Returns Sprite used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
@@ -289,7 +289,7 @@ public:
 	 \returns background used for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
-
+#endif //SWIG
 	
 	/**
 	 \brief Returns untransformed control rect.
@@ -299,6 +299,7 @@ public:
 	 \returns control rect.
 	 */
 	virtual const Rect & GetRect(bool absoluteCoordinates = false);
+#if !defined(SWIG)    
 	/**
 	 \brief Sets the untransformed control rect.
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
@@ -306,7 +307,7 @@ public:
 	 */
 	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 
-#endif
+#endif //SWIG
     
     
 	/**
@@ -318,13 +319,14 @@ public:
 	 */
 	virtual const Vector2 &GetPosition(bool absoluteCoordinates = false);
 	
-#ifndef SWIG
+#if !defined(SWIG)
     /**
 	 \brief Sets the untransformed control position.
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
 	 \param[in] position new control position.
 	 */
 	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
+#endif //SWIG
 	/**
 	 \brief Returns untransformed control size.
 		To get control metrics that applies all control transformation you need to use 
@@ -332,6 +334,7 @@ public:
 	 \returns control size.
 	 */
 	virtual const Vector2 &GetSize();
+#if !defined(SWIG)    
 	/**
 	 \brief Sets the untransformed control size.
 	 \param[in] newSize new control size.
@@ -343,7 +346,7 @@ public:
 	 \returns control geometric data.
 	 */
 	virtual const UIGeometricData &GetGeometricData();
-#ifndef SWIG
+#if !defined(SWIG)
 	/**
 	 \brief Sets the scaled control rect.
 		This method didn't apply any changes to the control size, but recalculate control scale.
@@ -364,7 +367,7 @@ public:
 	 */
 	virtual void SetAngle(float32 angleInRad);
 	
-	
+#endif //SWIG
 	/**
 	 \brief Returns control visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -373,6 +376,7 @@ public:
 	 \returns control visibility.
 	 */
 	virtual bool GetVisible();
+#if !defined(SWIG)   
 	/**
 	 \brief Sets contol visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -384,13 +388,14 @@ public:
 	 \param[in] hierarchic use true if you want to all control children change visiblity.
 	 */
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
+#endif //SWIG
 	/**
 	 \brief Returns control input processing ability.
 		Be ware! Base control processing inputs by default.
 	 \returns true if control pocessing inputs.
 	 */
 	virtual bool GetInputEnabled();
+#if !defined(SWIG)     
 	/**
 	 \brief Sets contol input processing ability.
 		If input is disabled control don't process any inputs. If input is disabled all inputs events would comes to the parent control.
@@ -400,6 +405,7 @@ public:
 	 \param[in] isEnabled is control should process inputs?
 	 \param[in] hierarchic use true if you want to all control children change input ability.
 	 */
+#endif
 	virtual void SetInputEnabled(bool isEnabled, bool hierarchic = true);
 	
 	/**
@@ -411,6 +417,7 @@ public:
 	 \returns true if control is disabled.
 	 */
 	virtual bool GetDisabled();
+#if !defined(SWIG)     
 	/**
 	 \brief Sets the contol enabling/disabling.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -421,12 +428,13 @@ public:
 	 \param[in] hierarchic use true if you want to all control children change enabling/disabling.
 	 */
 	virtual void SetDisabled(bool isDisabled, bool hierarchic = true);
-	
+#endif //SWIG
 	/**
 	 \brief Returns control selection state.
 	 \returns is control selected.
 	 */
 	virtual bool GetSelected();
+#if !defined(SWIG)     
 	/**
 	 \brief Sets contol selection state.
 		Selection state don't influence on any control activities.
@@ -501,23 +509,27 @@ public:
 	 \param[in] _name new control name.
 	 */
 	void SetName(const String & _name);
+#endif //SWIG
 	/**
 	 \brief Returns current name of the control.
 	 \returns control name.
 	 */
-	const String & GetName(); 
+	const String & GetName();
+#if !defined(SWIG)     
 
 	/**
 	 \brief Sets the contol tag.
 	 \param[in] tag new control tag.
 	 */
 	void SetTag(int32 tag);
+#endif
 	/**
 	 \brief Returns current control tag.
 	 \returns control tag.
 	 */
 	int32 GetTag();
-
+    
+#if !defined(SWIG)     
 	/**
 	 \brief Returns control with given name.
 	 \param[in] name requested control name.
@@ -537,12 +549,13 @@ public:
 	 \param[in] state new control bit mask.
 	 */
 	void SetState(int32 state);
-
+#endif //SWIG
 	/**
 	 \brief Returns control parent.
 	 \returns if contorl hasn't parent returns NULL.
 	 */
 	UIControl *GetParent();
+#if !defined(SWIG)
 	/**
 	 \brief Returns list of control children.
 	 \returns list of control children.
@@ -1000,7 +1013,7 @@ public:
 	
 #endif //SWIG
 protected:
-#ifndef SWIG
+#if !defined(SWIG)
 	
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
 
@@ -1037,7 +1050,7 @@ protected:
 #endif //SWIG
 	virtual ~UIControl();
 
-#ifndef SWIG
+#if !defined(SWIG)
     
 #ifdef ENABLE_CONTROL_EDIT
 	Vector2	__touchStart;
