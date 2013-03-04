@@ -294,9 +294,6 @@
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp">
       <Filter>Sources\TexturePacker</Filter>
     </ClCompile>
@@ -1509,6 +1506,9 @@
     <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp">
       <Filter>QtGenerated\QResourceEditorProgressDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands\EditCommands.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1608,9 +1608,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UNDOManager.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h">
@@ -2675,6 +2672,9 @@
     <ClInclude Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h">
       <Filter>Sources\Qt\QResourceEditorProgressDialog</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands\EditCommands.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2856,9 +2856,6 @@
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\texturedialog.ui">
-      <Filter>QtData</Filter>
-    </None>
     <None Include="MakefileQt">
       <Filter>Sources</Filter>
     </None>
@@ -2872,6 +2869,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ParticleProperty.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\texturebrowser.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

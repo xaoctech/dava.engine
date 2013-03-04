@@ -5,10 +5,7 @@
 #include <QProgressDialog>
 #include "Base/Singleton.h"
 #include "QtPosSaver/QtPosSaver.h"
-
-namespace Ui {
-class MainWindow;
-}
+#include "ui_mainwindow.h"
 
 class LibraryModel;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
@@ -16,11 +13,12 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
     Q_OBJECT
     
 public:
-   explicit QtMainWindow(QWidget *parent = 0);
-   ~QtMainWindow();
+	explicit QtMainWindow(QWidget *parent = 0);
+	~QtMainWindow();
+
+	Ui::MainWindow* GetUI();
     
     virtual bool eventFilter(QObject *, QEvent *);
-
     
 private:
 	void OpenLastProject();

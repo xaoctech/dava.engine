@@ -120,7 +120,12 @@ void UIStaticText::SetAlign(int32 _align)
 {
 	textBlock->SetAlign(_align);
 }
-	
+
+int32 UIStaticText::GetAlign() const
+{
+	return textBlock->GetAlign();
+}
+
 const Vector2 &UIStaticText::GetTextSize()
 {
 	if (textBlock->IsSpriteReady())
@@ -199,7 +204,9 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	{
 		SetText(LocalizedString(textNode->AsWString()));
 	}
-    
+
+	YamlNode * alignNode = node->Get("align");
+	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
@@ -219,7 +226,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     VariantType *nodeValue = new VariantType();
     
     //Control Type
-    node->Set("type", "UIStaticText", true);
+    node->Set("type", "UIStaticText");
 
     //Font
     //Get font name and put it here
@@ -245,6 +252,9 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     	node->Set("fitting", this->textBlock->GetFittingOption());
 	}
     
+	// Align
+	node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()));
+
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);
     

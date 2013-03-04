@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/edit_redo.png</file>
+    <file>QtIcons/edit_undo.png</file>
     <file>QtIcons/modify_select.png</file>
     <file>QtIcons/modify_reset.png</file>
     <file>QtIcons/modify_move.png</file>

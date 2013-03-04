@@ -33,22 +33,23 @@ public:
     virtual void TextureWillChanged(const String &forKey);
     virtual void TextureDidChanged(const String &forKey);
 
-	void StoreState(Image** image);
-	void RestoreState(Image* image);
+	Image* StoreState();
+	void RestoreState(Texture* texture);
 
 protected:
+	void StoreOriginalTexture();
+	void CreateUndoPoint();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
-    virtual void UndoAction();
-    virtual void RedoAction();
 
     virtual void RecreateHeightmapNode();
 
-    
+	virtual void UpdateLandscapeTilemap(Texture* texture);
+
     void CreateMaskTexture();
     void CreateMaskFromTexture(Texture *tex);
 
@@ -60,10 +61,6 @@ protected:
 	Sprite *toolSprite;
     
     Texture *savedTexture;
-    
-    EditorHeightmap *editedHeightmap;
-    Heightmap *savedHeightmap;
-
 
 	bool wasTileMaskToolUpdate;
     
@@ -76,7 +73,7 @@ protected:
 	Shader * tileMaskEditorShader;
     bool editingIsEnabled;
 
-	CommandDrawTilemap* command;
+	Image* originalImage;
 };
 
 

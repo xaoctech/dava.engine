@@ -46,10 +46,6 @@ namespace DAVA
 NSView *qtNSView = NULL;
 OpenGLView *openGLView = NULL;
     
-void* CoreMacOSPlatform::GetOpenGLView()
-{
-    return openGLView;
-}
     
 void QtLayerMacOS::InitializeGlWindow(void *qtView, int32 width, int32 height)
 {
@@ -131,6 +127,10 @@ void QtLayerMacOS::ReleaseAutoreleasePool(void *pool)
     [autoreleasePool release];
 }
 
+void* QtLayerMacOS::GetOpenGLView()
+{
+	return openGLView;
+}
 
 };
 

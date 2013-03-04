@@ -19,6 +19,8 @@ public:
     UITextFieldMetadata(QObject* parent = 0);
 
 protected:
+	virtual QString GetUIControlClassName() { return "UITextField"; };
+	
     // Initialization.
     void InitializeControl(const String& controlName, const Vector2& position);
 

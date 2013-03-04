@@ -320,7 +320,7 @@ public:
     
     void EnableReloadResourceOnResize(bool enable);
 	
-	// Needs to be overriden for the platforms where it has sence (MacOS, iOS).
+	// Needs to be overriden for the platforms where it has sence (MacOS only for now).
 	virtual void* GetOpenGLView() { return NULL; };
 	
 protected:

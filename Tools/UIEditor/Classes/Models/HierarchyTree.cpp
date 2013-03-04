@@ -150,6 +150,9 @@ HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, Hierarchy
 
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
 {
+	if (rootNode.GetId() == id)
+		return (HierarchyTreeNode*)&rootNode;
+		
 	return FindNode(&rootNode, id);
 }
 

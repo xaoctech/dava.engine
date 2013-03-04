@@ -287,7 +287,7 @@ void MainWindow::OnOpenLocalizationManager()
 void MainWindow::OnShowHelpContents()
 {
     //Get help contents file absolute path
-    QString helpPath = "file://";
+    QString helpPath = "file:///";
     helpPath += ResourcesManageHelper::GetHelpContentsPath();
     //Open help file in default browser new window
     QDesktopServices::openUrl(QUrl(helpPath));

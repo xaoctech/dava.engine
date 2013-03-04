@@ -6,6 +6,8 @@
 #include "ParticlesEditorQT/Helpers/ParticlesEditorSceneModelHelper.h"
 
 #include <QObject>
+#include <QMap>
+#include <QIcon>
 
 class EditorScene;
 class SceneGraphItem;
@@ -52,7 +54,9 @@ Q_SIGNALS:
     void SceneNodeSelected(DAVA::SceneNode *node);
     
 protected:
-    
+    void InitDecorationIcons();
+	QIcon GetDecorationIcon(DAVA::SceneNode *node) const;
+
     void SelectNode(DAVA::SceneNode *node, bool selectAtGraph);
     void SelectItem(GraphItem *item, bool needExpand = false);
     
@@ -76,6 +80,8 @@ protected:
 	// Get the graph model by Model Index (or NULL if no Graph Model attached).
 	GraphItem* GetGraphItemByModelIndex(const QModelIndex& index) const;
 
+	//Nodes which should not be displayed in SceneGraph tree must return false when passed to this function
+	bool IsNodeAccepted(DAVA::SceneNode* node);
 protected:
 
     EditorScene *scene;
@@ -85,6 +91,8 @@ protected:
     
     // Selected Scene Graph item for Particle Editor.
     SceneGraphItem* selectedGraphItemForParticleEditor;
+
+	QMap<QString, QIcon> decorationIcons;
 };
 
 #endif // __SCENE_GRAPH_MODEL_H__

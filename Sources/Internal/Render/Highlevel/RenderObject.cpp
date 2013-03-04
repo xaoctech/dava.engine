@@ -43,6 +43,7 @@ RenderObject::RenderObject()
     ,   removeIndex(-1)
     ,   debugFlags(0)
     ,   worldTransform(0)
+	,	renderSystem(0)
 {
     
 }
@@ -64,7 +65,8 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
     renderBatchArray.push_back(batch);
     if (removeIndex != -1)
     {
-        
+        DVASSERT(renderSystem);
+		renderSystem->AddRenderBatch(batch);
     }
     
     const AABBox3 & boundingBox = batch->GetBoundingBox();
@@ -190,6 +192,16 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 	}
 
 	AnimatedObject::Load(archive);
+}
+
+void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
+{
+	renderSystem = _renderSystem;
+}
+
+RenderSystem * RenderObject::GetRenderSystem()
+{
+	return renderSystem;
 }
 
 

@@ -1201,8 +1201,9 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
-        
+
         tag = srcControl->GetTag();
+        name = srcControl->name;
 
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
@@ -1883,9 +1884,10 @@ namespace DAVA
 			node->Set("rect", nodeValue);
 		}
 		// Align
-		if (baseControl->GetSpriteAlign() != this->GetSpriteAlign())
+		int32 align = this->GetSpriteAlign();
+		if (baseControl->GetSpriteAlign() != align)
 		{
-			node->Set("align", this->GetSpriteAlign());
+			node->AddNodeToMap("align", loader->GetAlignNodeValue(align));
 		}
 		// Left Align
 		if (this->GetLeftAlignEnabled())

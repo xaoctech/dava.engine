@@ -525,149 +525,106 @@ YamlNode * YamlNode::Get(const String & name)
 	return 0;
 }
 
+// "Adders" for different types.
+void YamlNode::Add(const String& name, bool value)
+{
+	InternalSet(name, value, false);
+}
+	
+void YamlNode::Add(const String& name, int32 value)
+{
+	InternalSet(name, value, false);
+}
+	
+void YamlNode::Add(const String& name, float32 value)
+{
+	InternalSet(name, value, false);
+}
+
+void YamlNode::Add(const String& name, const char8* value)
+{
+	InternalSet(name, value, false);
+}
+
+void YamlNode::Add(const String& name, const String& value)
+{
+	InternalSet(name, value, false);
+}
+
+void YamlNode::Add(const String& name, const Vector2& value)
+{
+	InternalSet(name, value, false);
+}
+
+void YamlNode::Add(const String& name, const Vector3& value)
+{
+	InternalSet(name, value, false);
+}
+
+void YamlNode::Add(const String& name, const Vector4& value)
+{
+	InternalSet(name, value, false);
+}
+	
+void YamlNode::Add(const String& name, VariantType* varType)
+{
+	InternalSet(name, varType, false);
+}
+
+void YamlNode::AddNodeToMap(const String& name, YamlNode* node)
+{
+	InternalSetNodeToMap(name, node, false);
+}
+
+// "Setters" for different types.
 void YamlNode::Set(const String& name, bool value)
 {
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        String strValue = (value == true) ? "true" : "false";
-        stringNode->Set(name, strValue);
-        objectMap.insert(std::pair<String, YamlNode*>(name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetBool(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
 }
-
+	
 void YamlNode::Set(const String& name, int32 value)
 {
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*>(name,stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetInt32(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
 }
-
+	
 void YamlNode::Set(const String& name, float32 value)
 {
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetFloat(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
+}
+	
+void YamlNode::Set(const String& name, const char8* value)
+{
+	InternalSet(name, value, true);
 }
 
-void YamlNode::Set(const String& name, const char8* value, bool rewritePreviousValue)
+void YamlNode::Set(const String& name, const String& value)
 {
-	if (rewritePreviousValue)
-	{
-		RemoveNodeFromMap(name);
-	}
-
-    Set(name, (const String&)value);
-}
-
-void YamlNode::Set(const String& name, const String& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-		if (rewritePreviousValue)
-		{
-			RemoveNodeFromMap(name);
-		}
-
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetString(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
 }
 
 void YamlNode::Set(const String& name, const Vector2& value)
 {
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        VariantType variantValue;
-        variantValue.SetVector2(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
 }
-    
+
 void YamlNode::Set(const String& name, const Vector3& value)
 {
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetVector3(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
 }
 
 void YamlNode::Set(const String& name, const Vector4& value)
 {
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetVector4(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+	InternalSet(name, value, true);
+}
+	
+void YamlNode::Set(const String& name, VariantType* varType)
+{
+	InternalSet(name, varType, true);
 }
 
-void  YamlNode::AddNodeToMap(const String& name, YamlNode* node)
+void YamlNode::SetNodeToMap(const String& name, YamlNode* node)
 {
-    DVASSERT(this->type == TYPE_MAP);
-    objectMap.insert(std::pair<String, YamlNode*> (name, node));
+	InternalSetNodeToMap(name, node, true);
 }
 
 void  YamlNode::AddNodeToArray(YamlNode* node)
@@ -759,21 +716,6 @@ void  YamlNode::InitFromVariantType(VariantType* varType)
     YamlNode* valueNode = new YamlNode(YamlNode::TYPE_STRING);
     valueNode->FillContentAccordingToVariantTypeValue(varType);
     objectMap.insert(std::pair<String, YamlNode*>(variantName, valueNode));
-}
-    
-void YamlNode::Set(const String& name, VariantType* varType)
-{
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, varType);
-        objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
-    }
-    else if (type == TYPE_STRING)
-    {
-    	FillContentAccordingToVariantTypeValue(varType);
-    }
 }
     
 void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
@@ -1632,5 +1574,200 @@ YamlNode * YamlParser::GetRootNode()
 	return rootObject;
 }
 
+void YamlNode::InternalSet(const String& name, bool value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		String strValue = (value == true) ? "true" : "false";
+		stringNode->Set(name, strValue);
+		objectMap.insert(std::pair<String, YamlNode*>(name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetBool(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+	
+void YamlNode::InternalSet(const String& name, int32 value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*>(name,stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetInt32(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+	
+void YamlNode::InternalSet(const String& name, float32 value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetFloat(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+	
+void YamlNode::InternalSet(const String& name, const char8* value, bool rewritePreviousValue)
+{
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+	
+	Set(name, (const String&)value);
+}
+	
+void YamlNode::InternalSet(const String& name, const String& value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		// For Maps just add the new String node.
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetString(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+	
+void YamlNode::InternalSet(const String& name, const Vector2& value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		VariantType variantValue;
+		variantValue.SetVector2(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+    
+void YamlNode::InternalSet(const String& name, const Vector3& value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetVector3(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+	
+void YamlNode::InternalSet(const String& name, const Vector4& value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetVector4(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+
+void YamlNode::InternalSet(const String& name, VariantType* varType, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		// For Maps just add the new String node.
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, varType);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		FillContentAccordingToVariantTypeValue(varType);
+	}
+}
+
+void  YamlNode::InternalSetNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
+{
+	DVASSERT(this->type == TYPE_MAP);
+	if (rewritePreviousValue)
+	{
+		RemoveNodeFromMap(name);
+	}
+
+	objectMap.insert(std::pair<String, YamlNode*> (name, node));
+}
 
 }
