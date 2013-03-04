@@ -95,7 +95,6 @@ CommandPlacePointVisibilityTool::CommandPlacePointVisibilityTool(const Vector2& 
 ,	point(newVisibilityPoint)
 ,	oldPoint(oldVisibilityPoint)
 ,	oldPointIsSet(oldPointIsSet)
-,	oldImage(oldImage)
 {
 	commandName = "Place Visibility Point";
 
@@ -140,7 +139,6 @@ CommandPlaceAreaVisibilityTool::CommandPlaceAreaVisibilityTool(const Vector2& ar
 :	Command(COMMAND_WITHOUT_UNDO_EFFECT),
 	point(areaPoint),
 	size(areaSize),
-	oldImage(oldImage),
 	redoImage(NULL)
 {
 	commandName = "Place Visibility Area";
