@@ -622,9 +622,7 @@ void LandscapeEditorHeightmap::CreateHeightmapUndo()
 {
 	if (oldHeightmap)
 	{
-		CommandDrawHeightmap* command = new CommandDrawHeightmap(oldHeightmap, GetHeightmap());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap()));
 		SafeRelease(oldHeightmap);
 	}
 }
@@ -637,15 +635,13 @@ void LandscapeEditorHeightmap::CreateCopyPasteUndo()
 		Texture* texture = tilemaskTexture;
 		Image* image = texture->CreateImageFromMemory();
 
-		CommandCopyPasteHeightmap* command = new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
-																		   currentTool->copyTilemask,
-																		   oldHeightmap,
-																		   GetHeightmap(),
-																		   oldTilemap,
-																		   image,
-																		   tilemaskPathname);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
+																					 currentTool->copyTilemask,
+																					 oldHeightmap,
+																					 GetHeightmap(),
+																					 oldTilemap,
+																					 image,
+																					 tilemaskPathname));
 		SafeRelease(oldHeightmap);
 		SafeRelease(oldTilemap);
 		SafeRelease(image);

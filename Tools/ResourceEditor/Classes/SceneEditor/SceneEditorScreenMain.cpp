@@ -281,9 +281,7 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()));
     }
 }
 
