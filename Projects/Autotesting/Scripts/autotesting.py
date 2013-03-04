@@ -38,8 +38,18 @@ projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
+# Set env variable LUA_PATH to make avaliable access to LUA modules
+os.environ["LUA_PATH"] = projectDir + "/Data/Autotesting/Actions/?.lua;;";
+print "set LUA_PATH: " + os.environ["LUA_PATH"]
+
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
+
+# Remove log file
+autotestingLogFilePath = os.path.realpath(projectDir + "/test_log.txt")
+if os.path.exists(autotestingLogFilePath): 
+    print "delete log file: " + autotestingLogFilePath
+    os.remove(autotestingLogFilePath)		
 
 executableName = ""
 executableBuildPath = ""

@@ -22,6 +22,15 @@ if len(arguments) < 2 or 3 < len(arguments):
     print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
     exit(1)
 
+def copy_file(srcFolder, destFolder, fileName):
+    fileSrcPath = os.path.realpath(srcFolder + "/" + fileName)
+    fileDestPath = os.path.realpath(destFolder + "/" + fileName)
+    if os.path.exists(fileDestPath):
+        print "delete " + fileDestPath
+        os.remove(fileDestPath)
+    print "copy " + fileSrcPath + " to " + fileDestPath
+    shutil.copy(fileSrcPath, fileDestPath)
+    
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
 projectName = arguments[1]
@@ -97,14 +106,9 @@ os.mkdir(autotestingDestFolder)
 luaScriptDestFolder = os.path.realpath(autotestingDestFolder + "/Scripts")
 os.mkdir(luaScriptDestFolder)
 
-luaScriptName = "/autotesting_api.lua"
-luaScriptSrcPath = os.path.realpath(currentDir + luaScriptName)
-luaScriptDestPath = os.path.realpath(luaScriptDestFolder + luaScriptName)
-if os.path.exists(luaScriptDestPath):
-    print "delete " + luaScriptDestPath
-    os.remove(luaScriptDestPath)
-print "copy " + luaScriptSrcPath + " to " + luaScriptDestPath
-shutil.copy(luaScriptSrcPath, luaScriptDestPath)
+luaScriptName = 
+copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
+copy_file(currentDir, luaScriptDestFolder, "logger.lua")
 
 os.chdir(autotestingSrcFolder)
 
