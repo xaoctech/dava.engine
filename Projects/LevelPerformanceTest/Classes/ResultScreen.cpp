@@ -9,9 +9,8 @@ ResultScreen::ResultScreen(const LandscapeTestData& testData, const String& file
 	this->filename = filename;
 	
 	texture = SafeRetain(landscapeTexture);
-	Vector2 spriteSize((float32)texture->GetWidth(), (float32)texture->GetHeight());
-	textureSprite = Sprite::CreateFromTexture(texture, 0, 0, spriteSize.x, spriteSize.y);
-	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x, spriteSize.y, FORMAT_RGBA8888);
+	textureSprite = NULL;
+	resultSprite = NULL;
 }
 
 ResultScreen::~ResultScreen()
@@ -29,6 +28,9 @@ ResultScreen::~ResultScreen()
 
 void ResultScreen::LoadResources()
 {
+	Vector2 spriteSize((float32)texture->GetWidth(), (float32)texture->GetHeight());
+	textureSprite = Sprite::CreateFromTexture(texture, 0, 0, spriteSize.x, spriteSize.y);
+	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x, spriteSize.y, FORMAT_RGBA8888, true);
 }
 
 void ResultScreen::UnloadResources()
