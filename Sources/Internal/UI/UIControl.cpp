@@ -804,8 +804,9 @@ namespace DAVA
 		angle = srcControl->angle;
 		SafeRelease(background);
 		background = srcControl->background->Clone();
-        
+
         tag = srcControl->GetTag();
+        name = srcControl->name;
 
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
