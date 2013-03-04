@@ -54,7 +54,10 @@ void GameCore::OnAppStarted()
 
 	String dirPath = "~res:/Maps/";
 	Vector<String> v = FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2");
-	v.push_back("a_level.sc2");
+
+#ifdef __DAVAENGINE_ANDROID__
+	v.push_back("d_level.sc2");
+#endif
 
 	for(Vector<String>::const_iterator it = v.begin(); it != v.end(); ++it)
     {
