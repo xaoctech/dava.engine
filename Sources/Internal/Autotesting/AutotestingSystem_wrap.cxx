@@ -2322,6 +2322,76 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_CheckText(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::UIControl *arg2 = (DAVA::UIControl *) 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp3 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::CheckText",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckText",1,"DAVA::AutotestingSystemLua *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckText",2,"DAVA::UIControl *");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckText",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_CheckText",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_CheckText",2,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  result = (bool)(arg1)->CheckText(arg2,(DAVA::String const &)*arg3);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_CheckMsgText(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::UIControl *arg2 = (DAVA::UIControl *) 0 ;
+  DAVA::String *arg3 = 0 ;
+  DAVA::String temp3 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::CheckMsgText",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckMsgText",1,"DAVA::AutotestingSystemLua *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckMsgText",2,"DAVA::UIControl *");
+  if(!lua_isstring(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::CheckMsgText",3,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_CheckMsgText",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_CheckMsgText",2,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  temp3.assign(lua_tostring(L,3),lua_rawlen(L,3)); arg3=&temp3;
+  result = (bool)(arg1)->CheckMsgText(arg2,(DAVA::String const &)*arg3);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_AutotestingSystemLua(void *obj) {
 DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) obj;
 delete arg1;
@@ -2338,6 +2408,8 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"TouchMove", _wrap_AutotestingSystemLua_TouchMove}, 
     {"TouchUp", _wrap_AutotestingSystemLua_TouchUp}, 
     {"SetText", _wrap_AutotestingSystemLua_SetText}, 
+    {"CheckText", _wrap_AutotestingSystemLua_CheckText}, 
+    {"CheckMsgText", _wrap_AutotestingSystemLua_CheckMsgText}, 
     {0,0}
 };
 static swig_lua_attribute swig_DAVA_AutotestingSystemLua_attributes[] = {
