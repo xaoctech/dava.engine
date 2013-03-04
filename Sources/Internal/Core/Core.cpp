@@ -75,6 +75,7 @@ Core::Core()
 	firstRun = true;
 	isConsoleMode = false;
 	options = new KeyedArchive();
+	fixedProportions = true;
     
     EnableReloadResourceOnResize(true);
 }
@@ -223,23 +224,6 @@ bool Core::IsAutodetectContentScaleFactor()
 }
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
-//void Core::SetContentScaleFactor(float scaleFactor)
-//{
-//	Logger::Info("Sets content scale to %1.2f", scaleFactor);
-//	contentScaleFactor = scaleFactor;
-//	contentInverseScaleFactor = 1.0f / scaleFactor;
-//}
-//
-//float Core::GetContentScaleFactor()
-//{
-//	return contentScaleFactor;
-//}
-//	
-//float Core::GetInverseContentScaleFactor()
-//{
-//	return contentInverseScaleFactor;
-//}
-
 	
 float32 Core::GetVirtualToPhysicalFactor()
 {
@@ -259,8 +243,7 @@ Core::eScreenOrientation Core::GetScreenOrientation()
 void Core::CalculateScaleMultipliers()
 {
 	needTorecalculateMultipliers = false;
-	UIControlSystem::Instance()->CalculateScaleMultipliers();
-	float width, height;
+	float32 width, height;
 	if (screenOrientation == SCREEN_ORIENTATION_PORTRAIT || screenOrientation == SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
 	{
 		width = screenWidth;
@@ -274,6 +257,9 @@ void Core::CalculateScaleMultipliers()
 	rotatedScreenWidth = width;
 	rotatedScreenHeight = height;
 
+	virtualScreenWidth = requestedVirtualScreenWidth;
+	virtualScreenHeight = requestedVirtualScreenHeight;
+
 	float32 w, h;
 	w = (float32)virtualScreenWidth / (float32)width;
 	h = (float32)virtualScreenHeight / (float32)height;
@@ -283,7 +269,14 @@ void Core::CalculateScaleMultipliers()
 	{
 		physicalToVirtual = w;
 		virtualToPhysical = (float32)width / (float32)virtualScreenWidth;
-		drawOffset.y = 0.5f * ((float32)height - (float32)Core::Instance()->GetVirtualScreenHeight() * virtualToPhysical);
+		if (fixedProportions)
+		{
+			drawOffset.y = 0.5f * ((float32)height - (float32)Core::Instance()->GetVirtualScreenHeight() * virtualToPhysical);
+		}
+		else
+		{
+			virtualScreenHeight = height * physicalToVirtual;
+		}
 		for (int i = 0; i < (int)allowedSizes.size(); i++) 
 		{
 			allowedSizes[i].toVirtual = (float32)virtualScreenWidth / (float32)allowedSizes[i].width;
@@ -299,7 +292,14 @@ void Core::CalculateScaleMultipliers()
 	{
 		physicalToVirtual = h;
 		virtualToPhysical = (float32)height / (float32)virtualScreenHeight;
-		drawOffset.x = 0.5f * ((float32)width - (float32)Core::Instance()->GetVirtualScreenWidth() * virtualToPhysical);
+		if (fixedProportions)
+		{
+			drawOffset.x = 0.5f * ((float32)width - (float32)Core::Instance()->GetVirtualScreenWidth() * virtualToPhysical);
+		}
+		else
+		{
+			virtualScreenWidth = width * physicalToVirtual;
+		}
 		for (int i = 0; i < (int)allowedSizes.size(); i++) 
 		{
 			allowedSizes[i].toVirtual = (float32)virtualScreenHeight / (float32)allowedSizes[i].height;
@@ -314,7 +314,9 @@ void Core::CalculateScaleMultipliers()
 	
 	drawOffset.y = floorf(drawOffset.y);
 	drawOffset.x = floorf(drawOffset.x);
-	
+
+	UIControlSystem::Instance()->CalculateScaleMultipliers();
+
     if(enabledReloadResourceOnResize)
     {
         Sprite::ValidateForSize();
@@ -367,10 +369,17 @@ void Core::SetPhysicalScreenSize(int32 width, int32 height)
 	
 void Core::SetVirtualScreenSize(int32 width, int32 height)
 {
-	virtualScreenWidth = (float32)width;
-	virtualScreenHeight = (float32)height;
+	requestedVirtualScreenWidth = virtualScreenWidth = (float32)width;
+	requestedVirtualScreenHeight = virtualScreenHeight = (float32)height;
 	needTorecalculateMultipliers = true;
 }
+
+void Core::SetProportionsIsFixed( bool needFixed )
+{
+	fixedProportions = needFixed;
+	needTorecalculateMultipliers = true;
+}
+
 
 void Core::RegisterAvailableResourceSize(int32 width, int32 height, const String &resourcesFolderName)
 {
@@ -729,6 +738,8 @@ void Core::EnableReloadResourceOnResize(bool enable)
 {
     enabledReloadResourceOnResize = enable;
 }
-    
+
+
+
 
 };
