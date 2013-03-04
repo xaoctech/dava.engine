@@ -226,7 +226,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     VariantType *nodeValue = new VariantType();
     
     //Control Type
-    node->Set("type", "UIStaticText", true);
+    node->Set("type", "UIStaticText");
 
     //Font
     //Get font name and put it here
@@ -253,7 +253,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	}
     
 	// Align
-	node->AddNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()), true);
+	node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()));
 
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);

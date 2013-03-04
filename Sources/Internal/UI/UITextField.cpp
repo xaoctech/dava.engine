@@ -480,7 +480,7 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
     VariantType *nodeValue = new VariantType();
 
     //Control Type
-    node->Set("type", "UITextField", true);
+    node->Set("type", "UITextField");
     //Text
     nodeValue->SetWideString(this->GetText());
     node->Set("text", nodeValue);
