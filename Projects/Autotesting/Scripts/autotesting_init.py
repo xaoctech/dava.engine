@@ -106,7 +106,6 @@ os.mkdir(autotestingDestFolder)
 luaScriptDestFolder = os.path.realpath(autotestingDestFolder + "/Scripts")
 os.mkdir(luaScriptDestFolder)
 
-luaScriptName = 
 copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
 copy_file(currentDir, luaScriptDestFolder, "logger.lua")
 
