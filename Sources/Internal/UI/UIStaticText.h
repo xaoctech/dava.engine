@@ -52,7 +52,10 @@ public:
 	//if requested size in <0 - rect creates for the all text size	
 	void SetText(const WideString & string, const Vector2 &requestedTextRectSize = Vector2(0,0));
 	void SetFont(Font * font);
-    void SetFontColor(const Color& fontColor);
+    void SetTextColor(const Color& color);
+
+	void SetShadowColor(const Color &color);
+	void SetShadowOffset(const Vector2 &offset);
 
 	void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
@@ -89,9 +92,11 @@ public:
 	TextBlock * GetTextBlock() { return textBlock; }
 	
 protected:
-	
+	Color textColor;
 	TextBlock *textBlock;
 	Vector2 tempSize;
+	Vector2 shadowOffset;
+	Color shadowColor;
 	
 	virtual void Draw(const UIGeometricData &geometricData);
 	

@@ -77,21 +77,6 @@ public:
 	static int32 GetDPI();
 	
 	/**
-		\brief Set color.
-	*/
-	virtual void SetColor(float32 r, float32 g, float32 b, float32 a);
-
-	/**
-		\brief Set color.
-	*/
-	virtual void SetColor(const Color & color);
-
-	/**
-		\brief Get color.
-	*/
-	virtual const Color & GetColor() const;
-	
-	/**
 		\brief Set size.
 		\param[in] size in points
 	*/
@@ -207,7 +192,6 @@ protected:
 	static int32 globalFontDPI;
 	
 	float32	size;
-	Color color;
 	int32 verticalSpacing;
 	
 	eFontType fontType;

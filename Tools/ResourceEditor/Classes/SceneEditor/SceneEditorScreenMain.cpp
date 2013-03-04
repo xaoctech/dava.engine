@@ -42,7 +42,8 @@ void SceneEditorScreenMain::LoadResources()
     
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::GetFontLight();
+    font12 = ControlsFactory::GetFont12();
+	font12Color = ControlsFactory::GetColorLight();
 
     helpDialog = new HelpDialog();
     

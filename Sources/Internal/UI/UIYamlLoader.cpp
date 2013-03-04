@@ -311,14 +311,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 
 			font->SetSize(fontSize);
 			
-			
-			YamlNode * fontColorNode = node->Get("color");
-			if (fontColorNode)
-			{
-				Color color = GetColorFromYamlNode(fontColorNode);
-				font->SetColor(color);
-			}
-            
             YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
@@ -348,17 +340,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 			{
 				font->SetSize(fontSizeNode->AsFloat());
 			}
-            
-            YamlNode * fontColorNode = node->Get("color");
-			if (fontColorNode)
-			{
-				Color color = GetColorFromYamlNode(fontColorNode);
-				font->SetColor(color);
-			}
-            else
-            {
-                font->SetColor(1.f, 1.f, 1.f, 1.f);
-            }
             
             YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)

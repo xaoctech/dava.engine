@@ -16,7 +16,8 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     AddControl(dialogPanel);
 
     UIStaticText * header = new UIStaticText(Rect(0, 0, dialogRect.dx, ControlsFactory::BUTTON_HEIGHT));
-    header->SetFont(ControlsFactory::GetFontLight());
+    header->SetFont(ControlsFactory::GetFont12());
+	header->SetTextColor(ControlsFactory::GetColorLight());
     header->SetText(LocalizedString(L"settings.header"));
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     dialogPanel->AddControl(header);

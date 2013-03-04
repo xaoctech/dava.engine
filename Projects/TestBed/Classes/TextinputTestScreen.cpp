@@ -55,7 +55,6 @@ void TextinputTestScreen::CreateFont()
 {
 	font = FTFont::Create("~res:/Fonts/yikes.ttf");
 	font->SetSize(20.f);
-	font->SetColor(0.f, 0.f, 0.f, 1.f);
 }
 
 void TextinputTestScreen::CreateHeader()
@@ -64,7 +63,7 @@ void TextinputTestScreen::CreateHeader()
 	AddControl(header);
 	header->Release();
 	header->SetFont(font);
-	header->GetFont()->SetColor(Color::White());
+	header->SetTextColor(Color::White());
 	header->SetText(headerText);
 }
 

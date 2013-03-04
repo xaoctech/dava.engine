@@ -224,7 +224,7 @@ void ParticleTestScreen::Draw(const UIGeometricData &geometricData)
 	
 	for (int32 pi = 0; pi < particleEmittersCount; ++pi)
 	{
-		particleEmitters[pi]->Draw();	
+//		particleEmitters[pi]->Draw();	
 //		Rect r(particleEmitters[pi]->GetPosition().x - 125, particleEmitters[pi]->GetPosition().y - 125, 250, 250);
 //		RenderManager::Instance()->DrawRect(r);	
 //

@@ -63,8 +63,6 @@ public:
 	static TextBlock * Create(const Vector2 & size);
 	
 	virtual void SetFont(Font * font);
-    virtual void SetFontColor(const Color& color);
-
 	virtual void SetRectSize(const Vector2 & size);
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();

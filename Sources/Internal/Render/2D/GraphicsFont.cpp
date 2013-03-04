@@ -62,7 +62,6 @@ GraphicsFontDefinition::~GraphicsFontDefinition()
 GraphicsFont::GraphicsFont()
 	:fontSprite(0)
 {
-	color = Color::White();
 	fontType = TYPE_GRAPHICAL;
 	fdef = 0;
 	fontScaleCoeff = 1.0f;
@@ -100,8 +99,6 @@ Font * GraphicsFont::Clone()
 
 	cloneFont->fdef = SafeRetain(this->fdef);	
 	cloneFont->fontSprite = SafeRetain(this->fontSprite);
-
-	cloneFont->SetColor(this->GetColor());
 	cloneFont->SetVerticalSpacing(this->GetVerticalSpacing());
     cloneFont->SetHorizontalSpacing(this->GetHorizontalSpacing());
 	cloneFont->SetSize(this->GetSize());
@@ -409,8 +406,10 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 	float32 currentX = x;
 	float32 currentY = y;
 	float32 sizeFix = 0.0f;
+
 	//Logger::Debug("%S startX:%f", string.c_str(), currentX);
-    RenderManager::Instance()->SetColor(color);
+
+    RenderManager::Instance()->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 	for (uint32 indexInString = 0; indexInString < length; ++indexInString)
 	{
 		char16 c = string[indexInString];

@@ -48,7 +48,7 @@ public:
 	void SetText(const WideString & string);
 	void UpdateRect(const Rect & rect);
 
-	void SetFontColor(float r, float g, float b, float a);
+	void SetTextColor(float r, float g, float b, float a);
 	void SetFontSize(float size);
 
 	void ShowField();
