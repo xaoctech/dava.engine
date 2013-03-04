@@ -24,10 +24,8 @@ void CommandRemoveRootNodes::Execute()
 {
 	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
 	SceneNode *node = activeScene->GetSelectedNode();
-	
-	CommandInternalRemoveSceneNode* command = new CommandInternalRemoveSceneNode(node, true);
-	CommandsManager::Instance()->Execute(command);
-	SafeRelease(command);
+
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, true));
 }
 
 
@@ -76,9 +74,7 @@ void CommandRemoveSceneNode::Execute()
 	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
 	SceneNode *node = activeScene->GetSelectedNode();
 
-	CommandInternalRemoveSceneNode* command = new CommandInternalRemoveSceneNode(node, false);
-	CommandsManager::Instance()->Execute(command);
-	SafeRelease(command);
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, false));
 }
 
 

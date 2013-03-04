@@ -57,7 +57,6 @@ protected:
 
 	// Context Menu Action Support.
 	void ProcessContextMenuAction(QAction *action);
-	void ExecuteCommand(Command *command);
 
 	// Our model.
     SceneGraphModel *sceneGraphModel;
