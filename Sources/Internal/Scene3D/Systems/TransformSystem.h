@@ -35,10 +35,10 @@ private:
     
 	Vector<SceneNode*> updatableEntities;
 
-	void HierahicNeedUpdate(SceneNode * entity);
+	void EntityNeedUpdate(SceneNode * entity);
 	void HierahicAddToUpdate(SceneNode * entity);
 
-	void HierahicFindUpdatableTransform(SceneNode * entity);
+	void HierahicFindUpdatableTransform(SceneNode * entity, bool forcedUpdate = false);
 
 	int32 passedNodes;
 	int32 multipliedNodes;

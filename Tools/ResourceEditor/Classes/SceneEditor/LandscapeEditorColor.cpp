@@ -51,6 +51,7 @@ LandscapeEditorColor::~LandscapeEditorColor()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+	SafeRelease(originalImage);
 }
 
 
@@ -229,8 +230,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = true;
 
-			DVASSERT(originalImage == NULL);
-			originalImage = StoreState();
+			StoreOriginalTexture();
 
             break;
         }
@@ -247,8 +247,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = true;
 
-				DVASSERT(originalImage == NULL);
-				originalImage = StoreState();
+				StoreOriginalTexture();
             }
             break;
         }
@@ -419,4 +418,10 @@ void LandscapeEditorColor::CreateUndoPoint()
 		SafeRelease(originalImage);
 		SafeRelease(newImage);
 	}
+}
+
+void LandscapeEditorColor::StoreOriginalTexture()
+{
+	DVASSERT(originalImage == NULL);
+	originalImage = StoreState();
 }
