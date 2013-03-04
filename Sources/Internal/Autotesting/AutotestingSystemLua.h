@@ -46,13 +46,13 @@ struct lua_State;
 namespace DAVA
 {
     
-#ifndef SWIG
+#if !defined(SWIG)
 class AutotestingSystemLuaDelegate
 {
 public:
     virtual void LoadWrappedLuaObjects() = 0;
 };
-#endif
+#endif //SWIG
 
 class AutotestingSystemLua : public Singleton<AutotestingSystemLua>
 {
@@ -60,7 +60,7 @@ public:
     AutotestingSystemLua();
     ~AutotestingSystemLua();
     
-#ifndef SWIG
+#if !defined(SWIG)
     void SetDelegate(AutotestingSystemLuaDelegate *_delegate);
 
     void InitFromFile(const String &luaFilePath);
@@ -68,7 +68,7 @@ public:
     void StartTest();
 
     void Update(float32 timeElapsed);
-#endif
+#endif //SWIG
     
     // autotesting system api
     void WaitForMaster();
@@ -88,9 +88,11 @@ public:
     
     // helpers
     bool SetText(const String &path, const String &text); // lua uses ansi strings
+    bool CheckText(UIControl *control, const String &expectedText);
+    bool CheckMsgText(UIControl *control, const String &key);
     
 protected:
-#ifndef SWIG
+#if !defined(SWIG)
     void ParsePath(const String &path, Vector<String> &parsedPath);
     
     bool LoadScript(const String &luaScript);
@@ -103,7 +105,7 @@ protected:
     
     AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
-#endif
+#endif //SWIG
 };
 
 };
