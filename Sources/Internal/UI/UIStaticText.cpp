@@ -255,6 +255,9 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	// Align
 	node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()));
 
+	// Draw type. Must be overriden for UITextControls.
+	node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);
     
