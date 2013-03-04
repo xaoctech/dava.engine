@@ -140,6 +140,42 @@ bool AutotestingSystemLua::SetText(const String &path, const String &text)
     return false;
 }
     
+bool AutotestingSystemLua::CheckText(UIControl *control, const String &expectedText)
+{
+    UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
+    if(uiStaticText)
+    {
+        String actualText = WStringToString(uiStaticText->GetText());
+        return (actualText == expectedText);
+    }
+    UITextField *uiTextField = dynamic_cast<UITextField*>(control);
+    if(uiTextField)
+    {
+        String actualText = WStringToString(uiTextField->GetText());
+        return (actualText == expectedText);
+    }
+    return false;
+}
+    
+bool AutotestingSystemLua::CheckMsgText(UIControl *control, const String &key)
+{
+    WideString expectedText = StringToWString(key);
+    //TODO: check key in localized strings for Lua
+    UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
+    if(uiStaticText)
+    {
+        WideString actualText = uiStaticText->GetText();
+        return (actualText == expectedText);
+    }
+    UITextField *uiTextField = dynamic_cast<UITextField*>(control);
+    if(uiTextField)
+    {
+        WideString actualText = uiTextField->GetText();
+        return (actualText == expectedText);
+    }
+    return false;
+}
+    
 void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
 {
     Logger::Debug("AutotestingSystemLua::TouchDown point=(%f,%f) touchId=%d", point.x, point.y, touchId);
