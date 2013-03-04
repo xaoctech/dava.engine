@@ -13,6 +13,7 @@ public:
 	virtual ~CommandsManager();
 	
     void Execute(Command *command);
+	void ExecuteAndRelease(Command* command);
     void Undo();
     void Redo();
 

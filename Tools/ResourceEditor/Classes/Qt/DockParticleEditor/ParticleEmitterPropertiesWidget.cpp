@@ -118,9 +118,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   colorOverLife.GetPropLine(),
 							   size.GetPropLine(),
 							   life);
-	CommandsManager::Instance()->Execute(commandUpdateEmitter);
-	SafeRelease(commandUpdateEmitter);
-	
+	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter);
+
 	Init(emitter, false);
 	emit ValueChanged();
 }

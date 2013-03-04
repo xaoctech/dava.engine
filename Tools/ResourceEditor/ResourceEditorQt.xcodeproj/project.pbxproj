@@ -230,7 +230,6 @@
 		5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F495E15B44B7A0038AF3A /* UICheckBox.cpp */; };
 		5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496215B44B7A0038AF3A /* UISliderWithText.cpp */; };
 		5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */; };
-		5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */; };
 		5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */; };
 		5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */; };
 		5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B915B44B910038AF3A /* ImagePacker.cpp */; };
@@ -966,8 +965,6 @@
 		5C7F496315B44B7A0038AF3A /* UISliderWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderWithText.h; path = Classes/SceneEditor/UISliderWithText.h; sourceTree = "<group>"; };
 		5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIZoomControl.cpp; path = Classes/SceneEditor/UIZoomControl.cpp; sourceTree = "<group>"; };
 		5C7F496515B44B7A0038AF3A /* UIZoomControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIZoomControl.h; path = Classes/SceneEditor/UIZoomControl.h; sourceTree = "<group>"; };
-		5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UNDOManager.cpp; path = Classes/SceneEditor/UNDOManager.cpp; sourceTree = "<group>"; };
-		5C7F496715B44B7A0038AF3A /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UNDOManager.h; path = Classes/SceneEditor/UNDOManager.h; sourceTree = "<group>"; };
 		5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineParser.cpp; path = Classes/TexturePacker/CommandLineParser.cpp; sourceTree = "<group>"; };
 		5C7F49B615B44B910038AF3A /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineParser.h; path = Classes/TexturePacker/CommandLineParser.h; sourceTree = "<group>"; };
 		5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DefinitionFile.cpp; path = Classes/TexturePacker/DefinitionFile.cpp; sourceTree = "<group>"; };
@@ -1990,8 +1987,6 @@
 				5C7F496315B44B7A0038AF3A /* UISliderWithText.h */,
 				5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */,
 				5C7F496515B44B7A0038AF3A /* UIZoomControl.h */,
-				5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */,
-				5C7F496715B44B7A0038AF3A /* UNDOManager.h */,
 			);
 			name = SceneEditor;
 			sourceTree = "<group>";
@@ -2935,7 +2930,6 @@
 				5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */,
 				5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */,
 				5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */,
-				5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */,
 				5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */,
 				5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */,
 				5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */,
