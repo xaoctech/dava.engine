@@ -21,6 +21,7 @@ public:
 protected slots:
 	// This signal is called by the model when selection in Scene Graph changed.
 	void OnSceneNodeSelectedInGraph(DAVA::SceneNode *node);
+	void OnSceneNodeDoubleClicked(const QModelIndex& index);
 
 	// Called by Scene Data Manager when scene is Created/Released.
 	void OnSceneCreated(SceneData* scene);
