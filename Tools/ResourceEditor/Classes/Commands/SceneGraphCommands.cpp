@@ -201,10 +201,10 @@ int32 CommandInternalRemoveSceneNode::GetNodeIndex(const RemoveNodeRec& nodeRec)
 	for (; i < nodeRec.nodeParent->GetChildrenCount(); ++i)
 	{
 		if (nodeRec.nodeParent->GetChild(i) == nodeRec.node)
-			break;
+			return i;
 	}
 
-	return i;
+	return -1;
 }
 
 
