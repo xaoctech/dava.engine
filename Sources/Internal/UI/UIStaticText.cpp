@@ -151,6 +151,21 @@ const Vector2 &UIStaticText::GetTextSize()
 	return tempSize;
 }
 
+Color UIStaticText::GetTextColor()
+{
+	return textColor;
+}
+
+Color UIStaticText::GetShadowColor()
+{
+	return shadowColor;
+}
+
+Vector2 UIStaticText::GetShadowOffset()
+{
+	return shadowOffset;
+}
+
 void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
 	textBlock->SetRectSize(size);
@@ -191,6 +206,9 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	YamlNode * multilineNode = node->Get("multiline");
     YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
     YamlNode * fittingNode = node->Get("fitting");
+	YamlNode * textColorNode = node->Get("textcolor");
+	YamlNode * shadowColorNode = node->Get("shadowcolor");
+	YamlNode * shadowOffsetNode = node->Get("shadowoffset");
 
 	if (fontNode)
 	{
@@ -229,6 +247,23 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetText(LocalizedString(textNode->AsWString()));
 	}
 
+	if(textColorNode)
+	{
+		Vector4 c = textColorNode->AsVector4();
+		SetTextColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(shadowColorNode)
+	{
+		Vector4 c = shadowColorNode->AsVector4();
+		SetShadowColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(shadowOffsetNode)
+	{
+		SetShadowOffset(shadowOffsetNode->AsVector2());
+	}
+
 	YamlNode * alignNode = node->Get("align");
 	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
@@ -256,6 +291,18 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     //Get font name and put it here
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
+
+	//TextColor
+	nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
+	node->Set("textcolor", nodeValue);
+
+	// ShadowColor
+	nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
+	node->Set("shadowcolor", nodeValue);
+
+	// ShadowOffset
+	nodeValue->SetVector2(GetShadowOffset());
+	node->Set("shadowoffset", nodeValue);
 
     //Text
     nodeValue->SetWideString(GetText());

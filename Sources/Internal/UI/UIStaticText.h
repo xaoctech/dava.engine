@@ -90,6 +90,9 @@ public:
 	virtual void CopyDataFrom(UIControl *srcControl);
 	UIStaticText *CloneStaticText();
 	TextBlock * GetTextBlock() { return textBlock; }
+	Color GetTextColor();
+	Color GetShadowColor();
+	Vector2 GetShadowOffset();
 	
 protected:
 	Color textColor;
