@@ -1323,9 +1323,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 		arrowsNode = new ArrowsNode();
 		arrowsNode->SetName(ARROWS_NODE_NAME);
 		AddNode(arrowsNode);
-		SafeRelease(arrowsNode);
-
-		arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+		arrowsNode->Release();
 	}
 
 	return arrowsNode;
