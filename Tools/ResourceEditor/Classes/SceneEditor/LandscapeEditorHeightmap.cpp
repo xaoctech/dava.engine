@@ -337,8 +337,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 
 				if (!skipUndoPointCreation)
 				{
-					DVASSERT(oldHeightmap == NULL);
-					oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
+					StoreOriginalHeightmap();
 				}
 
                 editingIsEnabled = true;
@@ -360,8 +359,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                     editingIsEnabled = true;
                     UpdateToolImage();
 
-					DVASSERT(oldHeightmap == NULL);
-					oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
+					StoreOriginalHeightmap();
 
 					if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
 					{
@@ -528,8 +526,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
         {
             SaveTextureAction(savedPath);
 
-			DVASSERT(oldHeightmap == NULL);
-			oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
+			StoreOriginalHeightmap();
         }
     }
     else if("property.landscape.texture.tilemask" == forKey) 
@@ -668,4 +665,10 @@ void LandscapeEditorHeightmap::UpdateLandscapeTilemap(Texture* texture)
 	workingLandscape->UpdateFullTiledTexture();
 
 	tilemaskWasChanged = true;
+}
+
+void LandscapeEditorHeightmap::StoreOriginalHeightmap()
+{
+	DVASSERT(oldHeightmap == NULL);
+	oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
 }
