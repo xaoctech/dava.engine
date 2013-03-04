@@ -34,6 +34,7 @@ bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 CommandAddScene::CommandAddScene(const DAVA::String &pathname)
     :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
 {
+	commandName = "Add Scene";
 }
 
 
@@ -81,6 +82,7 @@ void CommandEditScene::Execute()
 CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
     :   LibraryCommand(pathname, COMMAND_UNDO_REDO)
 {
+	commandName = "Reload Scene";
 }
 
 
@@ -133,7 +135,7 @@ void CommandConvertScene::Execute()
 CommandAddReferenceScene::CommandAddReferenceScene(const DAVA::String &pathname)
 :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
 {
-
+	commandName = "Add Reference";
 }
 
 void CommandAddReferenceScene::Execute()

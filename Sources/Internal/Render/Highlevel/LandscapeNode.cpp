@@ -1415,6 +1415,7 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+		archive->SetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
     }
     
     archive->SetByteArrayAsType("fogcolor", fogColor);
@@ -1453,6 +1454,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         {
             SetTexture((eTextureLevel)k, absPath);
             textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+
+			tileColor[k] = archive->GetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
         }
         else
         {

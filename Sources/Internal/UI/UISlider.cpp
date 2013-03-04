@@ -410,7 +410,7 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
     YamlNode *node = UIControl::SaveToYamlNode(loader);
     
     // Control Type
-    node->Set("type", "UISlider", true);
+    node->Set("type", "UISlider");
 	
 	// Sprite value
 	float32 value = this->GetValue();
@@ -478,6 +478,42 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	}
     
     return node;
+}
+	
+UIControl* UISlider::Clone()
+{
+	UISlider *t = new UISlider(GetRect());
+	t->CopyDataFrom(this);
+	return t;
+}
+	
+void UISlider::CopyDataFrom(UIControl *srcControl)
+{
+	UIControl::CopyDataFrom(srcControl);
+	UISlider* t = (UISlider*) srcControl;
+
+	isEventsContinuos = t->isEventsContinuos;
+	
+	leftInactivePart = t->leftInactivePart;
+	rightInactivePart = t->rightInactivePart;
+	
+	minValue = t->minValue;
+	maxValue = t->maxValue;
+	
+	currentValue = t->currentValue;
+	
+	if (t->thumbButton)
+	{
+		thumbButton = t->thumbButton->Clone();
+		AddControl(thumbButton);
+	}
+	if (t->bgMin)
+		bgMin = t->bgMin->Clone();
+	if (t->bgMax)
+		bgMax = t->bgMax->Clone();
+	
+	clipPointRelative = t->clipPointRelative;
+	relTouchPoint = t->relTouchPoint;
 }
 
 } // ns

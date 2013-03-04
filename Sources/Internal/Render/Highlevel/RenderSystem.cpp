@@ -139,11 +139,13 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 void RenderSystem::AddRenderObject(RenderObject * renderObject)
 {
 	particleEmitterSystem->AddIfEmitter(renderObject);
+	renderObject->SetRenderSystem(this);
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 {
     particleEmitterSystem->RemoveIfEmitter(renderObject);
+	renderObject->SetRenderSystem(0);
 }
 
 void RenderSystem::AddRenderBatch(RenderBatch * renderBatch)

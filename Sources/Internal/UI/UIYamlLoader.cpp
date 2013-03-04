@@ -157,6 +157,45 @@ int32 UIYamlLoader::GetAlignFromYamlNode(YamlNode * alignNode)
 	
 	return align;
 }
+
+//Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
+YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
+{
+	YamlNode *alignNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	String horzAlign = "HCENTER";
+	String vertAlign = "VCENTER";
+	
+	if (align & ALIGN_LEFT)
+	{
+		horzAlign = "LEFT";
+	}
+	else if (align & ALIGN_HCENTER)
+	{
+		horzAlign = "HCENTER";
+	}
+	else if (align & ALIGN_RIGHT)
+	{
+		horzAlign = "RIGHT";
+	}
+	
+	if (align & ALIGN_TOP)
+	{
+		vertAlign = "TOP";
+	}
+	else if (align & ALIGN_VCENTER)
+	{
+		vertAlign = "VCENTER";
+	}
+	else if (align & ALIGN_BOTTOM)
+	{
+		vertAlign = "BOTTOM";
+	}
+	
+	alignNode->AddValueToArray(horzAlign);
+	alignNode->AddValueToArray(vertAlign);
+	
+	return alignNode;
+}
 	
 bool UIYamlLoader::GetBoolFromYamlNode(YamlNode * node, bool defaultValue)
 {

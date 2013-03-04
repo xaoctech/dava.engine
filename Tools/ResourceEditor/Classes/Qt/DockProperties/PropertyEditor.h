@@ -27,7 +27,10 @@ public slots:
 	void sceneReleased(SceneData *scene);
 	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
+	void actionHideReadOnly();
+
 protected:
+	bool hideReadOnly;
 	QtPosSaver posSaver;
 
 	DAVA::SceneNode *curNode;

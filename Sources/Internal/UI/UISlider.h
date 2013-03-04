@@ -89,6 +89,9 @@ public:
 	 */
 	virtual List<UIControl* >& GetRealChildren();
 	
+	virtual UIControl *Clone();
+	virtual void CopyDataFrom(UIControl *srcControl);
+	
 protected:
 	bool isEventsContinuos;
 	
