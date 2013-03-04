@@ -743,16 +743,10 @@ void Core::EnableReloadResourceOnResize(bool enable)
 {
     enabledReloadResourceOnResize = enable;
 }
-<<<<<<< HEAD
     
 uint32 Core::GetScreenDPI()
 {
 	return DPIHelper::GetScreenDPI();
 }
-=======
-
-
-
->>>>>>> to_master
 
 };
