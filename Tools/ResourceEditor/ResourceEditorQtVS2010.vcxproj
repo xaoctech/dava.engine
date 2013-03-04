@@ -502,7 +502,6 @@
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
@@ -981,7 +980,6 @@
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
-    <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
