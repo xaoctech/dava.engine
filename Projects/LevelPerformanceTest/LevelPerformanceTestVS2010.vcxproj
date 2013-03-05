@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;$(DXSDK_DIR)/include;../../Libs/glew/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;$(DXSDK_DIR)/include;../../Libs/glew/include;../../Libs/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -100,6 +100,7 @@
     <ClCompile Include="Classes\ResultScreen.cpp" />
     <ClCompile Include="Classes\SettingsManager.cpp" />
     <ClCompile Include="Classes\Test.cpp" />
+    <ClCompile Include="Classes\TextureHelper.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +112,7 @@
     <ClInclude Include="Classes\ResultScreen.h" />
     <ClInclude Include="Classes\SettingsManager.h" />
     <ClInclude Include="Classes\Test.h" />
+    <ClInclude Include="Classes\TextureHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
