@@ -2675,6 +2675,9 @@
     <ClInclude Include="Classes\Commands\EditCommands.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
+      <Filter>Sources\Collada</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">

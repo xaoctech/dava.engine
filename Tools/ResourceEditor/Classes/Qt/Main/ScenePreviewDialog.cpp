@@ -8,8 +8,8 @@ ScenePreviewDialog::ScenePreviewDialog()
 {
     UpdateSize();
     
-    fontLight = ControlsFactory::GetFontLight();
-    fontDark = ControlsFactory::GetFontDark();
+    //fontLight = ControlsFactory::GetFontLight();
+    //fontDark = ControlsFactory::GetFontDark();
     
     preview = new ScenePreviewControl(Rect(0, 0, ControlsFactory::PREVIEW_PANEL_HEIGHT, ControlsFactory::PREVIEW_PANEL_HEIGHT));
     preview->SetDebugDraw(true);
@@ -17,7 +17,8 @@ ScenePreviewDialog::ScenePreviewDialog()
     errorMessage = new UIStaticText(preview->GetRect());
     errorMessage->SetMultiline(true);
     errorMessage->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-    errorMessage->SetFont(ControlsFactory::GetFontError());
+	errorMessage->SetTextColor(ControlsFactory::GetColorError());
+    errorMessage->SetFont(ControlsFactory::GetFont20());
     
     UIButton *b = ControlsFactory::CreateButton(Rect(0, ControlsFactory::PREVIEW_PANEL_HEIGHT,
                                                      ControlsFactory::PREVIEW_PANEL_HEIGHT, ControlsFactory::BUTTON_HEIGHT),

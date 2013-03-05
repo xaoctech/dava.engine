@@ -780,6 +780,7 @@
     <ClInclude Include="Classes\Collada\ColladaCamera.h" />
     <ClInclude Include="Classes\Collada\ColladaConvert.h" />
     <ClInclude Include="Classes\Collada\ColladaDocument.h" />
+    <ClInclude Include="Classes\Collada\ColladaErrorCodes.h" />
     <ClInclude Include="Classes\Collada\ColladaIncludes.h" />
     <ClInclude Include="Classes\Collada\ColladaLight.h" />
     <ClInclude Include="Classes\Collada\ColladaMaterial.h" />
