@@ -381,6 +381,7 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
     <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
@@ -860,6 +861,7 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />

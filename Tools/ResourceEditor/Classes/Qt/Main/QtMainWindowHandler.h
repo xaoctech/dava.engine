@@ -13,6 +13,7 @@
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
+#include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
 
 class Command;
 class QMenu;
@@ -110,7 +111,7 @@ public slots:
     void RefreshSceneGraph();
     
 	//set switch index
-	void ToggleSetSwitchIndex(DAVA::int32  value, bool isSelection);
+	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
 
     //custom colors
     void ToggleCustomColors();
