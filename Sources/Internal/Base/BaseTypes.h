@@ -323,10 +323,18 @@ enum eAlign
     // Note in Xcode, right click file, Get Info->Build, Other compiler flags = "-marm"
 #endif
 //#endif//#if !defined(__DAVAENGINE_ANDROID__)
-    
+
+
+#ifdef __GNUC__
+#define DEPRECATED(func) func __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED(func) __declspec(deprecated) func
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED(func) func
+#endif
+
 };
-
-
 
 #endif
 
