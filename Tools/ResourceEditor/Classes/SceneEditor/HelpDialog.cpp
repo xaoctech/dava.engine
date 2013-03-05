@@ -82,7 +82,8 @@ void HelpDialog::AddHelpText(const WideString &txt, float32 & y)
 {
 	UIStaticText *text;
 	text = new UIStaticText(Rect(H_OFFSET, 0, 500, y++ * V_OFFSET));
-	text->SetFont(ControlsFactory::GetFontLight());
+	text->SetFont(ControlsFactory::GetFont12());
+	text->SetTextColor(ControlsFactory::GetColorLight());
 	text->SetText(txt);
 	text->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 	draggableDialog->AddControl(text);	
