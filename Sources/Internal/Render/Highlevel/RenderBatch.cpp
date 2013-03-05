@@ -36,6 +36,8 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Debug/DVAssert.h"
+
 
 namespace DAVA
 {
@@ -74,6 +76,9 @@ void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 	if(NULL != dataSource)
 	{
 		aabbox = dataSource->GetBoundingBox();
+        DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
+                 aabbox.min.y != AABBOX_INFINITY &&
+                 aabbox.min.z != AABBOX_INFINITY);
 	}
 }
 

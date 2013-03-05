@@ -55,6 +55,8 @@ private slots:
 	void OnUndoRedoAvailabilityChanged();
 	void OnChangePropertySucceeded();
 
+	void OnUnsavedChangesNumberChanged();
+
 private:
 	bool CloseProject();
 	

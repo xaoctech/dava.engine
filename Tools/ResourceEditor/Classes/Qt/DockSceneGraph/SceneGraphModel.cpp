@@ -43,7 +43,7 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     Rebuild();
 }
 
-bool SceneGraphModel::IsAcceptNode(DAVA::SceneNode *node)
+bool SceneGraphModel::IsNodeAccepted(DAVA::SceneNode *node)
 {
 	//Check whether current node is ArrowsNode.
 	//ArrowsNode should not be displayed in SceneGraph tree
@@ -56,7 +56,7 @@ bool SceneGraphModel::IsAcceptNode(DAVA::SceneNode *node)
 
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
 {
-	if (!IsAcceptNode(node))
+	if (!IsNodeAccepted(node))
 	{
 		return;
 	}
