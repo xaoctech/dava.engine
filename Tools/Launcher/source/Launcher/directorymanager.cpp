@@ -140,12 +140,12 @@ bool DirectoryManager::CopyAllFromDir(const QString& srcPath, const QString& des
                     result = false;
                     continue;
                 }
-                CopyAllFromDir(srcPath + path, destPath + path);
+                result &= CopyAllFromDir(srcPath + path, destPath + path);
             }
             else
             {
-                if (!QFile().copy(srcPath + path, destPath + path))
-                    result = false;
+                QFile().remove(destPath + path);
+                result &= QFile().copy(srcPath + path, destPath + path);
             }
         }
         //if (!aDir.rmdir(aDir.absolutePath()))

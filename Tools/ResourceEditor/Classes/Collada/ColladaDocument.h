@@ -4,8 +4,10 @@
 #include "ColladaIncludes.h"
 #include "ColladaMesh.h"
 #include "ColladaScene.h"
+#include "ColladaErrorCodes.h"
 
 #include "DAVAEngine.h"
+
 
 namespace DAVA
 {
@@ -13,7 +15,8 @@ namespace DAVA
 class ColladaDocument
 {
 public:
-	bool	Open(const char * filename);
+    
+	eColladaErrorCodes	Open(const char * filename);
 	bool	ExportAnimations(const char * filename);
 	bool	ExportNodeAnimations(FCDocument * exportDoc, FCDSceneNode * exportNode);
 	

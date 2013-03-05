@@ -1340,7 +1340,7 @@ void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
 			return;
 		}
 
-		Matrix4 nodeWT = node->GetLocalTransform();
+		Matrix4 nodeWT = node->GetWorldTransform();
 		Matrix4 arrowsNodeTransform;
 		arrowsNodeTransform.CreateTranslation(nodeWT.GetTranslationVector());
 		arrowsNode->SetLocalTransform(arrowsNodeTransform);

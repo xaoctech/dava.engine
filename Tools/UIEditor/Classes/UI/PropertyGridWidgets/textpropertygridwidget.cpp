@@ -196,6 +196,8 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
     BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
+	// TODO - probable memory leak. Need to investigate how to fix it
+	// SafeRelease(resultFont);
 }
 
 void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
