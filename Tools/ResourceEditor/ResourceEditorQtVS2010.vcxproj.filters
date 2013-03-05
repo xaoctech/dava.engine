@@ -1524,6 +1524,9 @@
     <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -2695,6 +2698,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

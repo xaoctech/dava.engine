@@ -495,9 +495,9 @@ void QtMainWindowHandler::ReloadAsDXT()
     Execute(new ReloadTexturesAsCommand(DXT_FILE));
 }
 
-void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::int32  value, bool isSelection)
+void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
 {
-    Execute(new CommandToggleSetSwitchIndex(value,isSelection));
+    Execute(new CommandToggleSetSwitchIndex(value,state));
 }
 
 void QtMainWindowHandler::ToggleCustomColors()
@@ -582,8 +582,6 @@ void QtMainWindowHandler::SetSwitchIndexWidgetsState(bool state)
 		 rBtnScene );
 
 	setSwitchIndexToggleButton->blockSignals(true);
-//	setSwitchIndexToggleButton->setCheckable(state);
-//	setSwitchIndexToggleButton->setChecked(state);
 	setSwitchIndexToggleButton->setEnabled(state);
 	setSwitchIndexToggleButton->blockSignals(false);
 
