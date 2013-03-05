@@ -11,6 +11,10 @@
 #define COLUMN_CUR_VER 1
 #define COLUMN_NEW_VER 2
 
+#define ST_TAB 0
+#define DEV_TAB 1
+#define DEP_TAB 2
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -64,6 +68,7 @@ void MainWindow::AvailableSoftWareUpdated(const AvailableSoftWare& software) {
 
 void MainWindow::OnComboBoxValueChanged(const QString& value) {
     m_SelectedAppVersion = value;
+    UpdateBtn();
 }
 
 void MainWindow::FillTableSoft(QTableWidget* table, const AvailableSoftWare::SoftWareMap& soft) {
@@ -140,8 +145,8 @@ void MainWindow::UpdateSelectedApp(QTableWidget* table) {
 void MainWindow::UpdateBtn() {
     //update buttons
     ui->btnRemove->setEnabled(false);
-    ui->btnInstall->setEnabled(false);
-    ui->btnInstall->setVisible(true);
+    //ui->btnInstall->setEnabled(false);
+    ui->btnInstall->setVisible(false);
     ui->btnRun->setVisible(false);
     ui->btnReinstall->setVisible(false);
     ui->btnCancel->setVisible(false);
@@ -156,17 +161,17 @@ void MainWindow::UpdateBtn() {
 
     const AvailableSoftWare::SoftWareMap* pSelectedMap = NULL;
     switch (ui->tabWidget->currentIndex()) {
-    case 0: {   //stable tab
+    case ST_TAB: {
         pSelectedMap = &m_SoftWare.m_Stable;
         m_SelectedAppType = eAppTypeStable;
         UpdateSelectedApp(ui->stableTable);
     }break;
-    case 1: {   //dev tab
+    case DEV_TAB: {
         pSelectedMap = &m_SoftWare.m_Development;
         m_SelectedAppType = eAppTypeDevelopment;
         UpdateSelectedApp(ui->developmentTable);
     }break;
-    case 2: {   //dep tab
+    case DEP_TAB: {
         pSelectedMap = &m_SoftWare.m_Dependencies;
         m_SelectedAppType = eAppTypeDependencies;
         UpdateSelectedApp(ui->dependenciesTable);
@@ -180,15 +185,35 @@ void MainWindow::UpdateBtn() {
 
     if (pSelectedMap->value(m_SelectedApp).m_CurVersion.isEmpty()) {
         //install
-        ui->btnInstall->setEnabled(true);
+        ui->btnInstall->setVisible(true);
     } else {
         ui->btnInstall->setVisible(false);
-        if (ui->tabWidget->currentIndex() != 2)
+        ui->btnRemove->setEnabled(true);
+        ui->btnRun->setEnabled(!pSelectedMap->value(m_SelectedApp).m_RunPath.isEmpty());
+
+        switch (ui->tabWidget->currentIndex())
+        {
+        case DEV_TAB: {
+            if (pSelectedMap->value(m_SelectedApp).m_CurVersion != m_SelectedAppVersion)
+            {
+                ui->btnInstall->setEnabled(true);
+                ui->btnInstall->setVisible(true);
+            }
+        };
+        case ST_TAB: {
+            ui->btnRun->setVisible(true);
+        } break;
+        case DEP_TAB: {
+            ui->btnReinstall->setVisible(true);
+        }break;
+        }
+
+        /*if (ui->tabWidget->currentIndex() != DEP_TAB)
             ui->btnRun->setVisible(true);
         else
             ui->btnReinstall->setVisible(true);
         ui->btnRemove->setEnabled(true);
-        ui->btnRun->setEnabled(!pSelectedMap->value(m_SelectedApp).m_RunPath.isEmpty());
+        ui->btnRun->setEnabled(!pSelectedMap->value(m_SelectedApp).m_RunPath.isEmpty());*/
     }
 }
 

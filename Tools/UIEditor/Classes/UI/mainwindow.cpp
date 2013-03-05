@@ -577,6 +577,6 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	}
 	else
 	{
-		setWindowTitle("* " + projectTitle);
+		setWindowTitle(projectTitle + " *");
 	}
 }

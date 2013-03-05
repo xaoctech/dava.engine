@@ -274,8 +274,22 @@ void ChangeNodeHeirarchy::Execute()
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter));
 		if (node)
 		{
+			//YZ backlight parent rect
+			bool isNodeSelected = false;
+			HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+			if (controlNode)
+			{
+				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
+				HierarchyTreeController::Instance()->UnselectControl(controlNode);
+			}
+
 			node->SetParent(targetNode, insertAfterNode);
 			//insertAfterNode = node;
+			
+			if (isNodeSelected)
+			{
+				HierarchyTreeController::Instance()->SelectControl(controlNode);
+			}
 		}
 	}
 	
