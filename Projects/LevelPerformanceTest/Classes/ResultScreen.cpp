@@ -9,9 +9,8 @@ ResultScreen::ResultScreen(const LandscapeTestData& testData, const String& file
 	this->filename = filename;
 	
 	texture = SafeRetain(landscapeTexture);
-	Vector2 spriteSize((float32)texture->GetWidth(), (float32)texture->GetHeight());
-	textureSprite = Sprite::CreateFromTexture(texture, 0, 0, spriteSize.x, spriteSize.y);
-	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x, spriteSize.y, FORMAT_RGBA8888);
+	textureSprite = NULL;
+	resultSprite = NULL;
 }
 
 ResultScreen::~ResultScreen()
@@ -29,6 +28,9 @@ ResultScreen::~ResultScreen()
 
 void ResultScreen::LoadResources()
 {
+	Vector2 spriteSize((float32)texture->GetWidth(), (float32)texture->GetHeight());
+	textureSprite = Sprite::CreateFromTexture(texture, 0, 0, spriteSize.x, spriteSize.y);
+	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x, spriteSize.y, FORMAT_RGBA8888, true);
 }
 
 void ResultScreen::UnloadResources()
@@ -60,6 +62,21 @@ void ResultScreen::Input(UIEvent * event)
                 String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
                 saveFileName += filename + ".png";
                 ImageLoader::Save(image, saveFileName);
+
+				//TODO: discuss where exaclty store these results.
+				// Currenty they are stored in a plain text file in user documents dir
+				String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
+				String folderPathname = documentsPath + "PerformanceTestResult";
+				FileSystem::Instance()->CreateDirectory(folderPathname);
+				String statFileName = folderPathname + "/" + filename + ".txt";
+				File* file = File::Create(statFileName, File::CREATE | File::WRITE);
+				if (file)
+				{
+					file->WriteLine(Format("Texture memory size: %d", testData.GetTextureMemorySize()));
+					file->WriteLine(Format("Scene file size: %d", testData.GetSceneFileSize()));
+					SafeRelease(file);
+				}
+
                 state = RESULT_STATE_FINISHED;
             }
 		}
