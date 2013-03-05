@@ -50,7 +50,7 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,	color(1.0f, 0.0f, 1.0f, 1.0f)
+,	color(1.0f, 1.0f, 1.0f, 1.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -62,7 +62,7 @@ Font::~Font()
 }
 
 
-void Font::SetColor(float32 r, float32 g, float32 b, float32 a)
+DAVA_DEPRECATED(void Font::SetColor(float32 r, float32 g, float32 b, float32 a))
 {
 	color.r = r; 
 	color.g = g; 
@@ -70,12 +70,12 @@ void Font::SetColor(float32 r, float32 g, float32 b, float32 a)
 	color.a = a;
 }
 
-void Font::SetColor(const Color & _color)
+DAVA_DEPRECATED(void Font::SetColor(const Color & _color))
 {
 	color = _color;
 }
 
-const Color & Font::GetColor() const
+DAVA_DEPRECATED(const Color & Font::GetColor() const)
 {
 	return color;
 }
@@ -356,6 +356,7 @@ YamlNode * Font::SaveToYamlNode()
     node->Set("size", this->GetSize());
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
+
     Color color = this->GetColor();
     //Font color
     Vector4 colorVector4(color.r, color.g, color.b, color.a);
