@@ -16,15 +16,16 @@ local cprint = print
 
 -- File setup
 -- !!! Remove after testing
-local log = io.open("test_log.txt", "w")
+local log = io.open("test_log.txt", "a")
 log:close()
 
 
 
 -- Functions
 function print(txt)
+	txt = txt or ""
+	
 	local log = io.open("test_log.txt", "a")
-	cprint(txt)
 	
 	local function foo()
 		log:write(txt)
