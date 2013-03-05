@@ -15,12 +15,11 @@ function Step (func, ...)
     print("Start step: " .. description[step_num])
     
 	local status, err = copcall(func, ...)
-	--func(...)
-	if true then
+	if status then
 		Assert(true, description[step_num])
 		next_step()
 	else
-		 OnError(err)
+		OnError(err)
 	end
 end
 
