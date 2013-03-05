@@ -42,7 +42,7 @@
        <rect>
         <x>150</x>
         <y>0</y>
-        <width>51</width>
+        <width>61</width>
         <height>18</height>
        </rect>
       </property>
@@ -53,9 +53,9 @@
      <widget class="QRadioButton" name="rBtnSelection">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>70</x>
         <y>0</y>
-        <width>61</width>
+        <width>81</width>
         <height>18</height>
        </rect>
       </property>
@@ -71,7 +71,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>71</width>
+        <width>61</width>
         <height>20</height>
        </rect>
       </property>
