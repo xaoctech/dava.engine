@@ -24,7 +24,8 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
 	propertyList = 0;
     
     header = new UIStaticText(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    header->SetFont(ControlsFactory::GetFontLight());
+    header->SetFont(ControlsFactory::GetFont12());
+	header->SetTextColor(ControlsFactory::GetColorLight());
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     AddControl(header);
     

@@ -10,7 +10,8 @@ TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellI
     ControlsFactory::CustomizeListCell(this, L"");
     
     textureName = new UIStaticText(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    textureName->SetFont(ControlsFactory::GetFontDark());
+    textureName->SetFont(ControlsFactory::GetFont12());
+	textureName->SetTextColor(ControlsFactory::GetColorDark());
     textureName->SetInputEnabled(false);
     AddControl(textureName);
     
@@ -23,19 +24,22 @@ TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellI
 
     textureFormat = new UIStaticText(Rect(0, preview->GetRect().y + preview->GetRect().dy, 
                                           rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    textureFormat->SetFont(ControlsFactory::GetFontDark());
+    textureFormat->SetFont(ControlsFactory::GetFont12());
+	textureFormat->SetTextColor(ControlsFactory::GetColorDark());
     textureFormat->SetInputEnabled(false);
     AddControl(textureFormat);
     
     textureDimensions = new UIStaticText(Rect(0, textureFormat->GetRect().y + textureFormat->GetRect().dy, 
                                           rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    textureDimensions->SetFont(ControlsFactory::GetFontDark());
+    textureDimensions->SetFont(ControlsFactory::GetFont12());
+	textureDimensions->SetTextColor(ControlsFactory::GetColorDark());
     textureDimensions->SetInputEnabled(false);
     AddControl(textureDimensions);
 
     textureSize = new UIStaticText(Rect(0, textureDimensions->GetRect().y + textureDimensions->GetRect().dy, 
                                               rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    textureSize->SetFont(ControlsFactory::GetFontDark());
+    textureSize->SetFont(ControlsFactory::GetFont12());
+	textureSize->SetTextColor(ControlsFactory::GetColorDark());
     textureSize->SetInputEnabled(false);
     AddControl(textureSize);
 

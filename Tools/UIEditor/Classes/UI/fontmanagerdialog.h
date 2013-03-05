@@ -6,6 +6,8 @@
 
 class QStandardItemModel;
 class QStringList;
+class QItemSelectionModel;
+class QStandardItem;
 
 using namespace DAVA;
 
@@ -31,9 +33,14 @@ private:
     void InitializeTableView();
     void UpdateTableViewContents();
 	void UpdateDialogInformation();
+	Font* GetSelectedFont(QItemSelectionModel *selectionModel);
+	//void SetDefaultItemFont(QStandardItem *item, QString defaultFontName, QString fontName);
+	QStandardItem* CreateFontItem(QString itemText, QString fontName, QString defaultFontName);
 
 private slots:
     void OkButtonClicked();
+    void SetDefaultButtonClicked();
+
 };
 
 #endif // FONTMANAGERDIALOG_H
