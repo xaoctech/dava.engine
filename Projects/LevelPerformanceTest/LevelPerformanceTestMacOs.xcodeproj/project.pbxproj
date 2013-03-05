@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49D80A4816E0B9A400367B12 /* TextureHelper.cpp */; };
 		49DE0D3C1647BC09004965F9 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49DE0D3A1647BB9B004965F9 /* libFramework.a */; };
 		49DE0D471647BC8E004965F9 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DE0D3F1647BC8E004965F9 /* FileManagerWrapper.cpp */; };
 		49DE0D481647BC8E004965F9 /* ResultScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DE0D411647BC8E004965F9 /* ResultScreen.cpp */; };
@@ -28,6 +29,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		49D80A4C16E0B9A500367B12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49DE0D2E1647BB9A004965F9 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E898A2C416BD265400732C04;
+			remoteInfo = FrameworkQt;
+		};
 		49DE0D391647BB9B004965F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 49DE0D2E1647BB9A004965F9 /* Framework.xcodeproj */;
@@ -50,6 +58,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* LevelPerformanceTestMacOs_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelPerformanceTestMacOs_Prefix.pch; sourceTree = "<group>"; };
+		49D80A4816E0B9A400367B12 /* TextureHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureHelper.cpp; path = Classes/TextureHelper.cpp; sourceTree = "<group>"; };
+		49D80A4916E0B9A400367B12 /* TextureHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureHelper.h; path = Classes/TextureHelper.h; sourceTree = "<group>"; };
 		49DE0D2E1647BB9A004965F9 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		49DE0D3F1647BC8E004965F9 /* FileManagerWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileManagerWrapper.cpp; path = Classes/FileManagerWrapper.cpp; sourceTree = "<group>"; };
 		49DE0D401647BC8E004965F9 /* FileManagerWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileManagerWrapper.h; path = Classes/FileManagerWrapper.h; sourceTree = "<group>"; };
@@ -169,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				49DE0D3A1647BB9B004965F9 /* libFramework.a */,
+				49D80A4D16E0B9A500367B12 /* libFrameworkQt.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -176,6 +187,8 @@
 		FE445A961153C27800F5EFD6 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				49D80A4816E0B9A400367B12 /* TextureHelper.cpp */,
+				49D80A4916E0B9A400367B12 /* TextureHelper.h */,
 				49F12A8516514372008EF307 /* LandscapeTestData.cpp */,
 				49F12A8616514373008EF307 /* LandscapeTestData.h */,
 				49DE0D3F1647BC8E004965F9 /* FileManagerWrapper.cpp */,
@@ -261,6 +274,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		49D80A4D16E0B9A500367B12 /* libFrameworkQt.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkQt.a;
+			remoteRef = 49D80A4C16E0B9A500367B12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		49DE0D3A1647BB9B004965F9 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -314,6 +334,7 @@
 				49DE0D491647BC8E004965F9 /* SettingsManager.cpp in Sources */,
 				49DE0D4A1647BC8E004965F9 /* Test.cpp in Sources */,
 				49F12A8716514373008EF307 /* LandscapeTestData.cpp in Sources */,
+				49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,11 +378,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LevelPerformanceTestMacOs_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-					/opt/local/include/,
-				);
 				INFOPLIST_FILE = "LevelPerformanceTestMacOs-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LevelPerformanceTestMacOs;
@@ -376,11 +392,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LevelPerformanceTestMacOs_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-					/opt/local/include/,
-				);
 				INFOPLIST_FILE = "LevelPerformanceTestMacOs-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LevelPerformanceTestMacOs;
@@ -399,10 +410,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
-					/opt/local/include/,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include/,
 				);
+				LIBRARY_SEARCH_PATHS = ../../Libs/libs/;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -423,10 +435,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
-					/opt/local/include/,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include/,
 				);
+				LIBRARY_SEARCH_PATHS = ../../Libs/libs/;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",

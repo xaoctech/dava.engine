@@ -15,6 +15,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */; };
 		C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */; };
 		C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */; };
 		C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03216C2537A001EEAB2 /* SettingsManager.cpp */; };
@@ -55,6 +56,8 @@
 		1D6058910D05DD3D006BFB54 /* LevelPerformanceTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LevelPerformanceTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureHelper.cpp; sourceTree = "<group>"; };
+		4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureHelper.h; sourceTree = "<group>"; };
 		C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileManagerWrapper.cpp; sourceTree = "<group>"; };
 		C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTestData.cpp; sourceTree = "<group>"; };
 		C110F03116C2537A001EEAB2 /* LandscapeTestData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTestData.h; sourceTree = "<group>"; };
@@ -118,6 +121,8 @@
 				187C01A8161ADDA2000A1E2C /* Test.h */,
 				184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */,
 				184BFAC7161C83FA00BFBD83 /* ResultScreen.h */,
+				4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */,
+				4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -292,6 +297,7 @@
 				C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */,
 				C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */,
 				C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */,
+				4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,12 +314,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LevelPerformanceTestiPhone_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-				);
 				INFOPLIST_FILE = "LevelPerformanceTestiPhone-Info.plist";
-				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				PRODUCT_NAME = LevelPerformanceTest;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -326,12 +327,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LevelPerformanceTestiPhone_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-				);
 				INFOPLIST_FILE = "LevelPerformanceTestiPhone-Info.plist";
-				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				PRODUCT_NAME = LevelPerformanceTest;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -348,11 +344,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
+				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",
@@ -375,11 +372,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
+				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",

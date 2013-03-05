@@ -83,3 +83,23 @@ Vector2 LandscapeTestData::TranslatePoint(const Vector2& point, const DAVA::Rect
 
 	return newPos;
 }
+
+void LandscapeTestData::SetTextureMemorySize(uint32 size)
+{
+	textureMemorySize = size;
+}
+
+void LandscapeTestData::SetSceneFileSize(uint32 size)
+{
+	sceneFileSize = size;
+}
+
+uint32 LandscapeTestData::GetTextureMemorySize() const
+{
+	return textureMemorySize;
+}
+
+uint32 LandscapeTestData::GetSceneFileSize() const
+{
+	return sceneFileSize;
+}
