@@ -101,6 +101,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			this,
 			SLOT(OnChangePropertySucceeded()));
 
+	connect(CommandsController::Instance(),
+			SIGNAL(UnsavedChangesNumberChanged()),
+			this,
+			SLOT(OnUnsavedChangesNumberChanged()));
+
 	InitMenu();
 	RestoreMainWindowState();
 	CreateHierarchyDockWidgetToolbar();
@@ -561,4 +566,17 @@ void MainWindow::OnUndoRedoAvailabilityChanged()
 void MainWindow::OnChangePropertySucceeded()
 {
 	OnSelectedScreenChanged();
+}
+
+void MainWindow::OnUnsavedChangesNumberChanged()
+{
+	QString projectTitle = ResourcesManageHelper::GetProjectTitle();
+	if (CommandsController::Instance()->IsLastChangeSaved())
+	{
+		setWindowTitle(projectTitle);
+	}
+	else
+	{
+		setWindowTitle(projectTitle + " *");
+	}
 }

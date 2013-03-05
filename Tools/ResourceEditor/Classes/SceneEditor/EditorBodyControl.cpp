@@ -266,10 +266,7 @@ void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 {
 	if (node)
 	{
-		CommandPlaceOnLandscape* command;
-		command = new CommandPlaceOnLandscape(node, this);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this));
 	}
 }
 
@@ -428,9 +425,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 						{//copy object
-							CommandCloneObject* command = new CommandCloneObject(selection, this, scene->collisionWorld);
-							CommandsManager::Instance()->Execute(command);
-							SafeRelease(command);
+							CommandsManager::Instance()->ExecuteAndRelease(new CommandCloneObject(selection, this, scene->collisionWorld));
 
 							selection = scene->GetProxy();
 							modifiedNode = scene->GetProxy();
@@ -491,11 +486,9 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
-				CommandTransformObject* command = new CommandTransformObject(modifiedNode,
-																			 transformBeforeModification,
-																			 modifiedNode->GetLocalTransform());
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
+				CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
+																						  transformBeforeModification,
+																						  modifiedNode->GetLocalTransform()));
 
 				if (selection)
 				{
@@ -726,9 +719,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
-		Command *reloadTextures = new CommandReloadTextures();
-		CommandsManager::Instance()->Execute(reloadTextures);
-		SafeRelease(reloadTextures);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 	}
 }
 
@@ -1332,9 +1323,7 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 		arrowsNode = new ArrowsNode();
 		arrowsNode->SetName(ARROWS_NODE_NAME);
 		AddNode(arrowsNode);
-		SafeRelease(arrowsNode);
-
-		arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+		arrowsNode->Release();
 	}
 
 	return arrowsNode;
@@ -1397,9 +1386,7 @@ void EditorBodyControl::RestoreOriginalTransform()
 		return;
 
 	SceneNode* selection = scene->GetProxy();
-	CommandRestoreOriginalTransform* command = new CommandRestoreOriginalTransform(selection);
-	CommandsManager::Instance()->Execute(command);
-	SafeRelease(command);
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection));
 }
 
 void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
@@ -1448,11 +1435,9 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 			modification = modification * GetLandscapeOffset(modification);
 		}
 
-		CommandTransformObject* command = new CommandTransformObject(selectedNode,
-																	 originalTransform,
-																	 modification);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(selectedNode,
+																				  originalTransform,
+																				  modification));
 	}
 }
 

@@ -275,9 +275,7 @@ void SceneGraph::RemoveWorkingNode()
 {
 	if (workingNode)
 	{
-		CommandInternalRemoveSceneNode* command = new CommandInternalRemoveSceneNode(workingNode);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(workingNode));
     }
 }
 

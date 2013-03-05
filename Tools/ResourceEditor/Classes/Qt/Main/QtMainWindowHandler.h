@@ -153,9 +153,7 @@ private:
     void CreateNode(ResourceEditor::eNodeType type);
     //viewport
     void SetViewport(ResourceEditor::eViewportType type);
-    
-    void Execute(Command *command);
-    
+
     void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
     
     void ClearActions(int32 count, QAction **actions);
