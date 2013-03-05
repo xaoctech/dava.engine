@@ -498,6 +498,8 @@ DefaultScreen::ResizeType DefaultScreen::GetResizeType(const HierarchyTreeContro
 	 
 	//check is resize
 	Rect rect = GetControlRect(selectedControlNode);
+	if (!rect.PointInside(pos))
+		return ResizeTypeNoResize;
 	
 	bool horLeft = false;
 	bool horRight = false;
@@ -615,6 +617,9 @@ void DefaultScreen::ResetSizeDelta()
 
 void DefaultScreen::ResizeControl()
 {
+	if (!IsNeedApplyResize())
+		return;
+	
 	if (!lastSelectedControl)
 		return;
 	
@@ -635,6 +640,15 @@ void DefaultScreen::ResizeControl()
 	ControlResizeCommand* cmd = new ControlResizeCommand(lastSelectedControl->GetId(), resizeRect, rect);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
+}
+
+bool DefaultScreen::IsNeedApplyResize() const
+{
+	if (!lastSelectedControl)
+		return false;
+
+	Rect rect = lastSelectedControl->GetUIObject()->GetRect();
+	return rect != resizeRect;
 }
 
 void DefaultScreen::ApplyMouseSelection(const Vector2& rectSize)
@@ -720,9 +734,10 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 			selectedControlNode = NULL;
 			break;
 		}
-		
+
 		ResizeType resize = GetResizeType(selectedControlNode, point);
-		if (resize != ResizeTypeNoResize)
+		if (resize != ResizeTypeNoResize &&
+			HierarchyTreeController::Instance()->IsControlSelected(selectedControlNode))
 		{
 			resizeType = resize;
 			lastSelectedControl = selectedControlNode;
@@ -769,7 +784,7 @@ void DefaultScreen::CopySelectedControls()
 {
 	//Set copy flag
 	copyControlsInProcess = true;
-	HierarchyTreeNode* parentConrol;
+	HierarchyTreeNode* parentConrol = NULL;
 	//Get current selected controls on screen
 	const HierarchyTreeController::SELECTEDCONTROLNODES &selectedNodes = HierarchyTreeController::Instance()->GetActiveControlNodes();
 	//Get firt parent control from list of selected controls

@@ -31,7 +31,6 @@ QSceneGraphTreeView::~QSceneGraphTreeView()
 void QSceneGraphTreeView::ConnectToSignals()
 {
 	connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(OnSceneNodeSelectedInGraph(DAVA::SceneNode *)));
-	connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(OnSceneNodeDoubleClicked(const QModelIndex&)));
 
 	// Signals to rebuild the particular node and the whole graph.
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
@@ -85,16 +84,17 @@ void QSceneGraphTreeView::keyPressEvent(QKeyEvent *event)
     QTreeView::keyPressEvent(event);
 }
 
+void QSceneGraphTreeView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	QTreeView::mouseDoubleClickEvent(event);
+
+	if(SceneDataManager::Instance()->SceneGetActive())
+		SceneDataManager::Instance()->SceneGetActive()->LockAtSelectedNode();
+}
 void QSceneGraphTreeView::OnSceneNodeSelectedInGraph(DAVA::SceneNode *node)
 {
 	// TODO: Yuri Coder, 12/21/2012. Think about the nicer method.
 	SceneDataManager::Instance()->SceneNodeSelectedInSceneGraph(node);
-}
-
-void QSceneGraphTreeView::OnSceneNodeDoubleClicked(const QModelIndex& index)
-{
-	if(SceneDataManager::Instance()->SceneGetActive())
-		SceneDataManager::Instance()->SceneGetActive()->LockAtSelectedNode();
 }
 
 void QSceneGraphTreeView::OnSceneCreated(SceneData* scene)
