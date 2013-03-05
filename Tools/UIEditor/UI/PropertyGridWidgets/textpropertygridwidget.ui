@@ -110,7 +110,7 @@
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {text-align:right; font-size: 11px; border-style: outset; border: 1px solid #969696; padding: 5px; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e3e3e3, stop: 1 #f9f9f9);} 
-QPushButton:pressed {border-style: inset; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7e7e7e, stop: 1 #f9f9f9); }</string>
+QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7e7e7e, stop: 1 #e3e3e3); }</string>
     </property>
     <property name="text">
      <string>default font</string>
