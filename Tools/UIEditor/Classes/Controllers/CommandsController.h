@@ -57,11 +57,14 @@ signals:
 	// Called when Undo/Redo availability is changed.
 	void UndoRedoAvailabilityChanged();
 
+	// Called when number of unsaved changes is changed
+	void UnsavedChangesNumberChanged();
+
 protected slots:
 	void OnProjectSaved();
     
 protected:
-    bool isLastChangeSaved;
+	int32 unsavedChanges;
 	
 	// Undo/Redo controller.
 	UndoRedoController undoRedoController;
