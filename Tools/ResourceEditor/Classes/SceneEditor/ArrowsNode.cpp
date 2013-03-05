@@ -6,7 +6,7 @@
 #define GREEN Color(0.f, 1.f, 0.f, 1.f)
 #define BLUE Color(0.f, 0.f, 1.f, 1.f)
 #define YELLOW Color(1.f, 1.f, 0.f, 1.f)
-#define GRAY Color(0.5f, 0.5f, 0.5f, 1.f)
+#define GRAY Color(0.3f, 0.3f, 0.3f, 1.f)
 
 #define SELECTED_COLOR YELLOW
 #define INACTIVE_COLOR GRAY
