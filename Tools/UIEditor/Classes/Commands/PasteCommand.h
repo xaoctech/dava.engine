@@ -29,7 +29,7 @@ namespace DAVA
 		int PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreePlatformNode* parent);
 		int PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeRootNode* parent);
 		
-		QString FormatCopyName(const QString& baseName, const HierarchyTreeNode* parent) const;
+		QString FormatCopyName(QString baseName, const HierarchyTreeNode* parent) const;
 		
 		void UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node) const;
 		
