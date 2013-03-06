@@ -421,7 +421,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if(QEvent::ApplicationActivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationActivate");
+//            Logger::Debug("QEvent::ApplicationActivate");
             
             if(QtLayer::Instance())
             {
@@ -440,7 +440,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationDeactivate");
+//            Logger::Debug("QEvent::ApplicationDeactivate");
             if(QtLayer::Instance())
             {
                 QtLayer::Instance()->OnSuspend();

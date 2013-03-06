@@ -32,12 +32,18 @@
 #include "FileManagerWrapper.h"
 #include "SettingsManager.h"
 #include "LandscapeTestData.h"
+#include "Config.h"
+#include "Database/MongodbObject.h"
+#include "DeviceInfo.h"
+
 
 using namespace DAVA;
 
 GameCore::GameCore()
 {
 	resultScreen = NULL;
+	currentRunId = 0;
+	dbClient = NULL;
 }
 
 GameCore::~GameCore()
@@ -47,6 +53,8 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
+    DeviceInfo();
+    
 	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
 	
 	cursor = 0;
@@ -77,10 +85,15 @@ void GameCore::OnAppStarted()
     {
 		appFinished = true;
 	}
+    
+	ConnectToDB();
 }
 
 void GameCore::OnAppFinished()
 {
+	dbClient->Disconnect();
+	SafeRelease(dbClient);
+
 	SafeRelease(cursor);
 }
 
@@ -126,7 +139,6 @@ void GameCore::Update(float32 timeElapsed)
 			
 			if(resultScreen->IsFinished())
             {
-				SafeRelease(resultScreen);
 				tests.pop_front();
 
 				if(tests.size() == 0)
@@ -135,6 +147,7 @@ void GameCore::Update(float32 timeElapsed)
 				}
                 else
                 {
+                    SafeRelease(resultScreen);
 					Test *newCurTest = tests.front();
 					if(newCurTest != NULL)
                     {
@@ -155,4 +168,112 @@ void GameCore::Update(float32 timeElapsed)
 void GameCore::Draw()
 {
 	ApplicationCore::Draw();
+}
+
+bool GameCore::ConnectToDB()
+{
+	if(dbClient)
+		return true;
+    
+	dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
+    
+	if(dbClient)
+    {
+        dbClient->SetDatabaseName(DATABASE_NAME);
+        dbClient->SetCollectionName(DATABASE_COLLECTION);
+
+		MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
+
+		if(globalIdObject)
+			currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
+
+		MongodbObject * newGlobalIdObject = new MongodbObject();
+		newGlobalIdObject->SetObjectName("GlobalTestId");
+		newGlobalIdObject->AddInt32("LastTestId", currentRunId);
+		newGlobalIdObject->Finish();
+		dbClient->SaveObject(newGlobalIdObject, globalIdObject);
+
+		SafeRelease(newGlobalIdObject);
+		SafeRelease(globalIdObject);
+    }
+    else
+    {
+        Logger::Debug("Can't connect to DB");
+    }
+    
+    return (dbClient != NULL);
+}
+
+bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath)
+{
+	if(!dbClient)
+		return false;
+
+    Logger::Debug("Sending results to DB...");
+    
+    MongodbObject *testResultObject = new MongodbObject();
+    if(testResultObject)
+    {
+        testResultObject->SetObjectName(levelName);
+        
+        Map<String, String>::const_iterator it = results.begin();
+        for(; it != results.end(); it++)
+        {
+            testResultObject->AddString((*it).first, (*it).second);
+        }
+        
+        File * imageFile = File::Create(imagePath, File::READ | File::OPEN);
+        if(imageFile)
+        {
+            uint32 fileSize = imageFile->GetSize();
+            uint8 * data = new uint8[fileSize];
+            imageFile->Read(data, fileSize);
+            testResultObject->AddData("ResultImagePNG", data, fileSize);
+            
+            SafeDelete(data);
+            SafeRelease(imageFile);
+        }
+        else
+        {
+            Logger::Debug("Can't read result level sprite!");
+        }
+        
+        testResultObject->Finish();
+        
+		MongodbObject * currentRunObject = dbClient->FindObjectByKey(Format("%d", currentRunId));
+		MongodbObject * newRunObject = new MongodbObject();
+		if(newRunObject)
+		{
+			if(currentRunObject)
+			{
+				newRunObject->Copy(currentRunObject);
+			}
+			else
+			{
+				newRunObject->SetObjectName(Format("%d", currentRunId));
+			}
+
+			newRunObject->AddObject(levelName, testResultObject);
+			newRunObject->Finish();
+			dbClient->SaveObject(newRunObject, currentRunObject);
+			SafeRelease(newRunObject);
+		}
+		else
+		{
+			Logger::Debug("Can't create test result object in DB");
+			return false;
+		}
+
+		SafeRelease(currentRunObject);
+		SafeRelease(testResultObject);
+    }
+    else
+    {
+        Logger::Debug("Can't create tests results object");
+        return false;
+    }
+    
+    Logger::Debug("Results successful sent to DB");
+    
+    return true;
 }
