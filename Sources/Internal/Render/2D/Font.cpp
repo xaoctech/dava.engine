@@ -62,7 +62,7 @@ Font::~Font()
 }
 
 
-DAVA_DEPRECATED(void Font::SetColor(float32 r, float32 g, float32 b, float32 a))
+void Font::SetColor(float32 r, float32 g, float32 b, float32 a)
 {
 	color.r = r; 
 	color.g = g; 
@@ -70,12 +70,12 @@ DAVA_DEPRECATED(void Font::SetColor(float32 r, float32 g, float32 b, float32 a))
 	color.a = a;
 }
 
-DAVA_DEPRECATED(void Font::SetColor(const Color & _color))
+void Font::SetColor(const Color & _color)
 {
 	color = _color;
 }
 
-DAVA_DEPRECATED(const Color & Font::GetColor() const)
+const Color & Font::GetColor() const
 {
 	return color;
 }

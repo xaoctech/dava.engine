@@ -187,7 +187,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	UIControl::Draw(geometricData);
 }
 
-DAVA_DEPRECATED(void UIStaticText::SetFontColor(const Color& fontColor))
+void UIStaticText::SetFontColor(const Color& fontColor)
 {
 	SetTextColor(fontColor);
 }
