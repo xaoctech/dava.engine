@@ -32,6 +32,10 @@
 #include "FileManagerWrapper.h"
 #include "SettingsManager.h"
 #include "LandscapeTestData.h"
+#include "Config.h"
+#include "Database/MongodbObject.h"
+#include "DeviceInfo.h"
+
 
 using namespace DAVA;
 
@@ -47,6 +51,8 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
+    DeviceInfo();
+    
 	SettingsManager::Instance()->InitWithFile("~res:/Config/config.yaml");
 	
 	cursor = 0;
@@ -77,6 +83,8 @@ void GameCore::OnAppStarted()
     {
 		appFinished = true;
 	}
+    
+    DropDB();
 }
 
 void GameCore::OnAppFinished()
@@ -126,7 +134,6 @@ void GameCore::Update(float32 timeElapsed)
 			
 			if(resultScreen->IsFinished())
             {
-				SafeRelease(resultScreen);
 				tests.pop_front();
 
 				if(tests.size() == 0)
@@ -135,6 +142,7 @@ void GameCore::Update(float32 timeElapsed)
 				}
                 else
                 {
+                    SafeRelease(resultScreen);
 					Test *newCurTest = tests.front();
 					if(newCurTest != NULL)
                     {
@@ -155,4 +163,112 @@ void GameCore::Update(float32 timeElapsed)
 void GameCore::Draw()
 {
 	ApplicationCore::Draw();
+}
+
+MongodbClient * GameCore::ConnectToDB()
+{
+    MongodbClient * dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
+    if(dbClient)
+    {
+        dbClient->SetDatabaseName(DATABASE_NAME);
+        dbClient->SetCollectionName(DATABASE_COLLECTION);
+    }
+    else
+    {
+        Logger::Debug("Can't connect to DB");
+    }
+    
+    return dbClient;
+}
+
+bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath)
+{
+    Logger::Debug("Sending results to DB...");
+    
+    MongodbClient * dbClient = ConnectToDB();
+    if(!dbClient)
+        return false;
+    
+    MongodbObject *testResultObject = new MongodbObject();
+    if(testResultObject)
+    {
+        testResultObject->SetObjectName(levelName);
+        
+        Map<String, String>::const_iterator it = results.begin();
+        for(; it != results.end(); it++)
+        {
+            testResultObject->AddString((*it).first, (*it).second);
+        }
+        
+        File * imageFile = File::Create(imagePath, File::READ | File::OPEN);
+        if(imageFile)
+        {
+            uint32 fileSize = imageFile->GetSize();
+            uint8 * data = new uint8[fileSize];
+            imageFile->Read(data, fileSize);
+            testResultObject->AddData("ResultImagePNG", data, fileSize);
+            
+            SafeDelete(data);
+            SafeRelease(imageFile);
+        }
+        else
+        {
+            Logger::Debug("Can't read result level sprite!");
+        }
+        
+        testResultObject->Finish();
+        
+        MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
+        MongodbObject *newPlatformObject = new MongodbObject();
+        if(newPlatformObject)
+        {
+            if(oldPlatformObject)
+            {
+                newPlatformObject->Copy(oldPlatformObject);
+            }
+            else
+            {
+                newPlatformObject->SetObjectName(PLATFORM_NAME);
+            }
+            
+            newPlatformObject->AddObject(levelName, testResultObject);
+            newPlatformObject->Finish();
+            dbClient->SaveObject(newPlatformObject, oldPlatformObject);
+            SafeRelease(newPlatformObject);
+        }
+        else
+        {
+            Logger::Debug("Can't create platform object");
+            return false;
+        }
+        
+        SafeRelease(oldPlatformObject);
+        SafeRelease(testResultObject);
+    }
+    else
+    {
+        Logger::Debug("Can't create tests results object");
+        return false;
+    }
+    
+    dbClient->Disconnect();
+    SafeRelease(dbClient);
+    
+    Logger::Debug("Results successful sended to DB");
+    
+    return true;
+}
+void GameCore::DropDB()
+{
+    Logger::Debug("Start dropping DB");
+    MongodbClient * dbClient = ConnectToDB();
+    if(!dbClient)
+        return;
+    
+    dbClient->DropCollection();
+    dbClient->DropDatabase();
+    
+    dbClient->Disconnect();
+    SafeRelease(dbClient);
+    Logger::Debug("DB successful dropped");
 }
