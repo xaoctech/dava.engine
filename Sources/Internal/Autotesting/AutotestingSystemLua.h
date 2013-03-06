@@ -40,6 +40,7 @@
 #include "Base/Singleton.h"
 #include "UI/UIControl.h"
 
+#include "FileSystem/LocalizationSystem.h"
 
 struct lua_State;
 
@@ -105,6 +106,10 @@ protected:
     
     AutotestingSystemLuaDelegate *delegate;
     lua_State *luaState; //TODO: multiple lua states
+    
+    //TODO: write a copy of localization system for autotesting
+    LocalizationSystem *autotestingLocalizationSystem;
+    
 #endif //SWIG
 };
 
