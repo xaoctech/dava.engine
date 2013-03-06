@@ -1,6 +1,8 @@
 #ifndef LOCALIZATIONEDITORDIALOG_H
 #define LOCALIZATIONEDITORDIALOG_H
 
+#include "Base/BaseTypes.h"
+
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QItemSelection>
@@ -62,6 +64,12 @@ private:
     void ReinitializeLocalizationSystem(const QString& localizationDirectory);
 
 	void ApplySortOrder(int headerIndex);
+
+	// Helper methods to convert between QString and WideString.
+	// Don't use QString::fromStdWstring() here, it is not compatible with "treat wchar_t as embedded"
+	// option currently set for Framework.
+	QString WideStringToQString(const DAVA::WideString& str);
+	DAVA::WideString QStringToWideString(const QString& str);
 
 private slots:
     void OnOpenLocalizationFileButtonClicked();
