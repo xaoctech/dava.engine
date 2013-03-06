@@ -251,6 +251,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
 			else
 			{
 				newRunObject->SetObjectName(Format("%d", currentRunId));
+				newRunObject->AddString("DeviceDescription", DeviceInfo::Instance()->GetDeviceDescription());
 			}
 
 			newRunObject->AddObject(levelName, testResultObject);
