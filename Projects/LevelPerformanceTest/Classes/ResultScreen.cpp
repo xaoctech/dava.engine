@@ -63,9 +63,8 @@ void ResultScreen::SaveResults()
     ImageLoader::Save(image, saveFileName);
     
     Map<String, String> results;
-    results["DeviceDescription"] = DeviceInfo::Instance()->GetDeviceDescription();
-    results["TextureMemorySize"] = Format("%d", testData.GetTextureMemorySize());
-    results["SceneFileSize"] = Format("%d", testData.GetSceneFileSize());
+    results["TextureMemorySize"] = Format("%.2f Mb", testData.GetTextureMemorySize()/(1024.f * 1024.f));
+    results["SceneFileSize"] = Format("%.2f Mb", testData.GetSceneFileSize()/(1024.f * 1024.f));
     
     
     String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");

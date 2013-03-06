@@ -122,11 +122,31 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		archive->SetVector2("ims.uvoffset", uvOffset);
-		archive->SetVector2("ims.uvscale", uvScale);
+		if(uvOffset != Vector2())
+		{
+			archive->SetVector2("ims.uvoffset", uvOffset);
+		}
         
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), lightmapName);
-		archive->SetString("ims.lightmapname", filename);
+		if(uvScale != Vector2())
+		{
+			archive->SetVector2("ims.uvscale", uvScale);
+		}
+		
+		if(!lightmapName.empty())
+		{
+            String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), lightmapName);
+            archive->SetString("ims.lightmapname", filename);
+		}
+		
+		if(flatColor != Color::White())
+		{
+			archive->SetByteArrayAsType("ims.flatColor", flatColor);
+		}
+		
+		if(texture0Shift != Vector2())
+		{
+			archive->SetVector2("ims.texture0Shift", texture0Shift);
+		}
 	}
 }
 
@@ -134,8 +154,8 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("ims.uvoffset")) uvOffset = archive->GetVector2("ims.uvoffset");
-		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
+		uvOffset = archive->GetVector2("ims.uvoffset");
+		uvScale = archive->GetVector2("ims.uvscale");
 
 		String filename = archive->GetString("ims.lightmapname");
 		if(!filename.empty())
@@ -146,6 +166,9 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 			SetLightmap(lTexture, lName);
 			lTexture->Release();
 		}
+
+		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
+		texture0Shift = archive->GetVector2("ims.texture0Shift");
 	}
 }
 
@@ -552,6 +575,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.fogcolor", fogColor);
     keyedArchive->SetFloat("mat.fogdencity", fogDensity);
     keyedArchive->SetBool("mat.isFogEnabled", isFogEnabled);
+
+	keyedArchive->SetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
+	keyedArchive->SetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
 }
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -599,6 +625,9 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
 	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
 	fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
+
+	isFlatColorEnabled = keyedArchive->GetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
+	isTexture0ShiftEnabled = keyedArchive->GetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
