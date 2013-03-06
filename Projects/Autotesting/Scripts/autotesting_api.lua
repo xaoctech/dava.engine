@@ -1,9 +1,34 @@
-require "logger"
-
-print("autotesting_api start")
+--require "logger"
+--require "coxpcall"
 
 TIMEOUT = 10.0
 TIMECLICK = 0.2
+
+-- local variable
+local step_num = 0
+local function next_step()
+	step_num = step_num + 1
+	print("")
+end
+
+function SetPackagePath(path)
+	package.path = package.path .. path .. "/Actions/?.lua;" .. path .. "/Scripts/?.lua"
+
+require "logger"
+	require "coxpcall"
+end
+
+function Step (func, ...)
+    print("Start step: " .. description[step_num])
+
+	local status, err = copcall(func, ...)
+	if status then
+		Assert(true, description[step_num])
+		next_step()
+	else
+		OnError(err)
+	end
+end
 
 function Yield()
     --print("Yield")
@@ -11,17 +36,17 @@ function Yield()
 end
 
 function OnError(msg)
-    print("OnError "..msg)
-    autotestingSystem:OnError(msg)
+    print("Error on step " .. description[step_num])
+    print(msg)
+    print()
+    print()
+    autotestingSystem:OnError(description[step_num])
 end
 
 function Assert(expression, msg)
     local isPassed = (expression)
     autotestingSystem:OnTestAssert(msg, isPassed)
-    if isPassed then
-        print("Assert "..msg.." PASSED")
-    else
-        print("Assert "..msg.." FAILED")
+    if not isPassed then
         while true do
             Yield()
         end
@@ -40,37 +65,42 @@ function ResumeTest()
 end
 
 function CreateTest(test)
-    print("CreateTest")
+    --print("CreateTest")
     co = coroutine.create(test) -- create a coroutine with foo as the entry
-    print(type(co))                 -- display the type of object "co"
+    --print(type(co))                 -- display the type of object "co"
     
-    print(AutotestingSystem)
+    --print(AutotestingSystem)
     autotestingSystem = AutotestingSystem.Singleton_Autotesting_Instance()
-    print("AutotestingSystem.Singleton_Autotesting_Instance")
+    --print("AutotestingSystem.Singleton_Autotesting_Instance")
     
-    print(autotestingSystem:GetTimeElapsed())
+    --print(autotestingSystem:GetTimeElapsed())
     
-    print("CreateTest done")
+    --print("CreateTest done")
 end
 
 function StartTest(test)
-    print("StartTest")
+	print()
+	print()
+	print("================================================================================")
+    print("START TEST: " .. description[step_num])
+    print("================================================================================")
+    next_step()
     CreateTest(test)
     ResumeTest()
 end
 
 function StopTest()
-    print("StopTest")
+--    print("StopTest")
     autotestingSystem:OnTestFinished()
 end
 
 function WaitForMaster()
-    print("WaitForMaster")
+--    print("WaitForMaster")
     autotestingSystem:WaitForMaster()
 end
 
 function WaitForHelpers(helpersCount)
-    print("WaitForHelpers")
+--    print("WaitForHelpers")
     autotestingSystem:WaitForHelpers(helpersCount)
 end
 
@@ -80,11 +110,11 @@ function Wait(waitTime)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-        print("Waiting "..elapsedTime)
+--        print("Waiting "..elapsedTime)
         Yield()
     end
     
-    print("Wait done")
+--    print("Wait done")
 end
 
 function WaitControl(name, time)
@@ -94,10 +124,10 @@ function WaitControl(name, time)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-        print("Searching "..elapsedTime)
+--        print("Searching "..elapsedTime)
         
         if autotestingSystem:FindControl(name) then
-            print("WaitControl found "..name)
+--            print("WaitControl found "..name)
             return true
         else
             Yield()
@@ -164,31 +194,31 @@ function ClickControl(name, touchId, time)
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-        print("Searching "..elapsedTime)
+--        print("Searching "..elapsedTime)
         
         local control = autotestingSystem:FindControl(name)
         if control then
-            print("ClickControl found "..name)
-            print(control)
+--            print("ClickControl found "..name)
+--            print(control)
             
             -- local position = control:GetPosition(true)
             local position = Vector.Vector2()
-            print(position)
-            print("position="..position.x..","..position.y)
+--            print(position)
+--            print("position="..position.x..","..position.y)
             
             local geomData = control:GetGeometricData()
-            print(geomData)
+--            print(geomData)
             local rect = geomData:GetUnrotatedRect()
-            print(rect)
+--            print(rect)
             
-            print("rect.x="..rect.x)
-            print("rect.y="..rect.y)
-            print("rect.dx="..rect.dx)
-            print("rect.dy="..rect.dy)
+--            print("rect.x="..rect.x)
+--            print("rect.y="..rect.y)
+--            print("rect.dx="..rect.dx)
+--            print("rect.dy="..rect.dy)
             
             position.x = rect.x + rect.dx/2
             position.y = rect.y +rect.dy/2
-            print("position="..position.x..","..position.y)
+--            print("position="..position.x..","..position.y)
             
             ClickPosition(position, touchId, waitTime)
             
@@ -207,11 +237,17 @@ function SetText(path, text)
     return autotestingSystem:SetText(path, text)
 end
 
-function SetPackagePath(path)
- package.path = package.path .. path .. "/Actions/?.lua;" .. path .. "/Scripts/?.lua"
-
- require "logger"
- require "coxpcall"
+function CheckText(name, txt)
+	error("Method not implemented")
+	if FindControl(name) then
+		local control = autotestingSystem:FindControl(name)
+		return autotestingSystem:CheckText(name, txt)
+	else
+		error("Control " .. name .. " not found")
+	end
 end
 
-print("autotesting_api finish")
+function CheckMsgText(name, key)
+	error("Method not implemented")
+end
+--print("autotesting_api finish")
