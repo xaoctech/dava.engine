@@ -110,6 +110,8 @@ public:
 
     void SetDefaultValues();
     
+    const bool IsCompressedFile() const;
+    
 protected:
     
     const Compression * GetCompressionParams(ImageFileFormat fileFormat) const;
@@ -152,6 +154,8 @@ public:
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     String pathname;
+    
+    bool isCompressedFile;
 };
     
 };
