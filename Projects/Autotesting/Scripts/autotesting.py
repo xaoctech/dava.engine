@@ -39,8 +39,9 @@ print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
 # Set env variable LUA_PATH to make avaliable access to LUA modules
-os.environ["LUA_PATH"] = projectDir + "/Data/Autotesting/Scripts/?.lua;" + projectDir + "/Data/Autotesting/Actions/?.lua;;";
-print "set LUA_PATH: " + os.environ["LUA_PATH"]
+# UPDATE: Now LUA_PATH setups in C-part
+# os.environ["LUA_PATH"] = projectDir + "/Data/Autotesting/Scripts/?.lua;" + projectDir + "/Data/Autotesting/Actions/?.lua;;";
+# print "set LUA_PATH: " + os.environ["LUA_PATH"]
 
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
