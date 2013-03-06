@@ -216,8 +216,8 @@ void LocalizationEditorDialog::ReloadLocalizationTable()
 	for (Map<WideString, WideString>::iterator iter = localizationTable.begin(); iter != localizationTable.end(); iter ++)
 	{
         QList<QStandardItem *> itemsList;
-		itemsList.append(new QStandardItem(QString::fromStdWString(iter->first.c_str())));
- 		itemsList.append(new QStandardItem(QString::fromStdWString(iter->second.c_str())));
+		itemsList.append(new QStandardItem(WideStringToQString(iter->first)));
+		itemsList.append(new QStandardItem(WideStringToQString(iter->second)));
         
         tableModel->appendRow(itemsList);
     }
@@ -286,7 +286,8 @@ void LocalizationEditorDialog::UpdateLocalizationValueForCurrentKey()
 	// Update the value for the item currently selected by default.
 	QModelIndex selectedItemIndex = QModelIndex();
 	QItemSelectionModel* selectionModel = ui->tableView->selectionModel();
-	if (!selectionModel || !selectionModel->hasSelection() || !selectionModel->selectedIndexes().size() > 0)
+	if (!selectionModel || !selectionModel->hasSelection() ||
+		!(selectionModel->selectedIndexes().size() > 0))
 	{
 		return;
 	}
@@ -317,8 +318,8 @@ void LocalizationEditorDialog::UpdateLocalizationValueForCurrentKey(const QModel
 	}
 
 	// Change indeed happened - update the localized string.
-	LocalizationSystem::Instance()->SetLocalizedString(localizationKey.toStdWString(),
-													   localizationValue.toStdWString());
+	LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(localizationKey),
+													   QStringToWideString(localizationValue));
 	SaveLocalization();
 
 	// Update the current localized string in the table.
@@ -328,7 +329,7 @@ void LocalizationEditorDialog::UpdateLocalizationValueForCurrentKey(const QModel
     HierarchyTreeController::Instance()->UpdateLocalization(true);
 }
 
-void LocalizationEditorDialog::closeEvent(QCloseEvent */*event*/)
+void LocalizationEditorDialog::closeEvent(QCloseEvent* /*event*/)
 {
 	// Save the last-minute changes, if any.
 	UpdateLocalizationValueForCurrentKey();
@@ -391,8 +392,8 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 	QString newLocalizationKey = QString(DEFAULT_LOCALIZATION_KEY).arg(addedStringsCount);
 	QString newLocalizationValue = QString(DEFAULT_LOCALIZATION_VALUE).arg(addedStringsCount);
 
-	LocalizationSystem::Instance()->SetLocalizedString(newLocalizationKey.toStdWString(),
-													   newLocalizationValue.toStdWString());
+	LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(newLocalizationKey),
+													   QStringToWideString(newLocalizationValue));
 	SaveLocalization();
 	ReloadLocalizationTable();
 
@@ -402,7 +403,8 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 void LocalizationEditorDialog::RemoveSelectedLocalizationString()
 {
 	QItemSelectionModel* selectionModel = ui->tableView->selectionModel();
-	if (!selectionModel || !selectionModel->hasSelection() || !selectionModel->selectedIndexes().size() > 0)
+	if (!selectionModel || !selectionModel->hasSelection() ||
+		!(selectionModel->selectedIndexes().size() > 0))
 	{
 		return;
 	}
@@ -419,7 +421,7 @@ void LocalizationEditorDialog::RemoveSelectedLocalizationString()
 		return;
 	}
 
-	LocalizationSystem::Instance()->RemoveLocalizedString(localizationKey.toStdWString());
+	LocalizationSystem::Instance()->RemoveLocalizedString(QStringToWideString(localizationKey));
 	SaveLocalization();
 
 	ReloadLocalizationTable();
@@ -452,3 +454,12 @@ void LocalizationEditorDialog::SaveLocalization()
 	//LocalizationSystem::Instance()->SaveLocalizedStrings();
 }
 
+QString LocalizationEditorDialog::WideStringToQString(const DAVA::WideString& str)
+{
+    return (QString((const QChar*)str.c_str(), str.length()));
+}
+
+DAVA::WideString LocalizationEditorDialog::QStringToWideString(const QString& str)
+{
+    return (std::wstring((wchar_t*)str.unicode(), str.length()));
+}
