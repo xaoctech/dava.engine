@@ -108,6 +108,7 @@ os.mkdir(luaScriptDestFolder)
 
 copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
 copy_file(currentDir, luaScriptDestFolder, "logger.lua")
+copy_file(currentDir, luaScriptDestFolder, "coxpcall.lua")
 
 os.chdir(autotestingSrcFolder)
 
