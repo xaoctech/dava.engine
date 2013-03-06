@@ -1,6 +1,3 @@
---require "logger"
---require "coxpcall"
-
 TIMEOUT = 10.0
 TIMECLICK = 0.2
 
@@ -13,25 +10,14 @@ end
 
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
-
-	-- FOR DEBU
-	local log = io.open("debug_log.txt", "a")
-	log:write(package.path)
-	log:write("\n")
-	if type(path) == "string" then
-		log:write(path)
-	end
-	log:flush()
-	log:close()
-	--	
-
-require "logger"
+	
+	require "logger"
 	require "coxpcall"
 end
 
 function Step (func, ...)
     print("Start step: " .. description[step_num])
-
+    
 	local status, err = copcall(func, ...)
 	if status then
 		Assert(true, description[step_num])
@@ -116,16 +102,13 @@ function WaitForHelpers(helpersCount)
 end
 
 function Wait(waitTime)
-    print("Wait "..waitTime)
+    waitTime =  waitTime or TIMECLICK
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
---        print("Waiting "..elapsedTime)
         Yield()
     end
-    
---    print("Wait done")
 end
 
 function WaitControl(name, time)
@@ -200,6 +183,8 @@ end
 function ClickControl(name, touchId, time)
     local waitTime = time or TIMECLICK
     local touchId = touchId or 1
+	
+	Wait()
     print("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
     
     local elapsedTime = 0.0
@@ -233,6 +218,7 @@ function ClickControl(name, touchId, time)
             
             ClickPosition(position, touchId, waitTime)
             
+			Wait()
             return true
         else
             Yield()
@@ -250,15 +236,21 @@ end
 
 function CheckText(name, txt)
 	error("Method not implemented")
-	if FindControl(name) then
+	if autotestingSystem:FindControl(name) then
 		local control = autotestingSystem:FindControl(name)
-		return autotestingSystem:CheckText(name, txt)
+		return autotestingSystem:CheckText(control, txt)
 	else
 		error("Control " .. name .. " not found")
 	end
 end
 
 function CheckMsgText(name, key)
-	error("Method not implemented")
+	print("Check that text witk key [" .. txt .. "] is present on control " .. name)
+	if autotestingSystem:FindControl(name) then
+		local control = autotestingSystem:FindControl(name)
+		return autotestingSystem:CheckMsgText(control, key)
+	else
+		error("Control " .. name .. " not found")
+	end
 end
 --print("autotesting_api finish")
