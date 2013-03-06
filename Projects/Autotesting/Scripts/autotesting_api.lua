@@ -20,10 +20,10 @@ function Step (func, ...)
     
 	local status, err = copcall(func, ...)
 	if status then
-		Assert(true, description[step_num])
+		autotestingSystem:OnTestStep(description[step_num], true)
 		next_step()
 	else
-		OnError(err)
+		autotestingSystem:OnTestStep(description[step_num], false, err)
 	end
 end
 
@@ -40,13 +40,22 @@ function OnError(msg)
     autotestingSystem:OnError(description[step_num])
 end
 
-function Assert(expression, msg)
-    local isPassed = (expression)
-    autotestingSystem:OnTestAssert(msg, isPassed)
-    if not isPassed then
-        while true do
-            Yield()
-        end
+function Assert(func, ..)
+    --local isPassed = (expression)
+    --autotestingSystem:OnTestAssert(msg, isPassed)
+    --if not isPassed then
+        --while true do
+            --Yield()
+        --end
+    --end
+	print("Start assertion: " .. description[step_num])
+    
+	local status, err = copcall(func, ...)
+	if status then
+		autotestingSystem:OnTestStep(description[step_num], err)
+		next_step()
+	else
+		autotestingSystem:OnTestStep(description[step_num], false, err)
     end
 end
 
@@ -121,7 +130,7 @@ function WaitControl(name, time)
 --        print("Searching "..elapsedTime)
         
         if autotestingSystem:FindControl(name) then
---            print("WaitControl found "..name)
+            print("WaitControl found "..name)
             return true
         else
             Yield()
@@ -245,7 +254,7 @@ function CheckText(name, txt)
 end
 
 function CheckMsgText(name, key)
-	print("Check that text witk key [" .. txt .. "] is present on control " .. name)
+	print("Check that text witk key [" .. key .. "] is present on control " .. name)
 	if autotestingSystem:FindControl(name) then
 		local control = autotestingSystem:FindControl(name)
 		return autotestingSystem:CheckMsgText(control, key)
@@ -253,4 +262,3 @@ function CheckMsgText(name, key)
 		error("Control " .. name .. " not found")
 	end
 end
---print("autotesting_api finish")
