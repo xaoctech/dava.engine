@@ -50,14 +50,23 @@ public:
 	void SetCurrentLocale(const String &newLangId);
 	
 	const WideString & GetLocalizedString(const WideString & key);
+	void SetLocalizedString(const WideString & key, const WideString & value);
+	void RemoveLocalizedString(const WideString & key);
 
     const String& GetDirectoryPath() const;
 
     void Cleanup();
 
+	// Access to the whole strings list for the current locale.
+	// Returns FALSE if no strings found.
+	bool GetStringsForCurrentLocale(Map<WideString, WideString>& strings);
+	
+	// Save the current localization data to the files they were loaded from.
+	bool SaveLocalizedStrings();
+
 private:
 
-	void LoadStringFile(const String & fileName);
+	void LoadStringFile(const String & langId, const String & fileName);
 	void UnloadStringFile(const String & fileName); 
 
 	String langId;
@@ -66,11 +75,14 @@ private:
 	struct StringFile
 	{
 		String pathName;
+		String langId;
 		Map<WideString, WideString> strings;
 	};
 	List<StringFile*> stringsList;
 
-	StringFile* LoadFromYamlFile(const String & fileName);
+	// Load/Save functionality.
+	StringFile* LoadFromYamlFile(const String & langID, const String & fileName);
+	bool SaveToYamlFile(const StringFile* stringFile);
 
 	YamlParser::YamlDataHolder *dataHolder;
 };
