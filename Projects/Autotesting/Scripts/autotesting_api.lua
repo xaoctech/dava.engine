@@ -12,7 +12,18 @@ local function next_step()
 end
 
 function SetPackagePath(path)
-	package.path = package.path .. path .. "/Actions/?.lua;" .. path .. "/Scripts/?.lua"
+	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
+
+	-- FOR DEBU
+	local log = io.open("debug_log.txt", "a")
+	log:write(package.path)
+	log:write("\n")
+	if type(path) == "string" then
+		log:write(path)
+	end
+	log:flush()
+	log:close()
+	--	
 
 require "logger"
 	require "coxpcall"
