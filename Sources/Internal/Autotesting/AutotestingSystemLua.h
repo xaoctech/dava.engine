@@ -76,7 +76,7 @@ public:
     void WaitForHelpers(DAVA::int32 helpersCount);
     
     void OnError(const String &errorMessage);
-    void OnTestAssert(const String &text, bool isPassed);
+    void OnTestStep(const String &stepName, bool isPassed, const String &error = "");
     void OnTestFinished();
     
     float32 GetTimeElapsed();

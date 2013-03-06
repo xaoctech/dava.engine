@@ -2093,25 +2093,29 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_OnTestAssert(lua_State* L) {
+static int _wrap_AutotestingSystemLua_OnTestStep__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
   DAVA::String *arg2 = 0 ;
   bool arg3 ;
+  DAVA::String *arg4 = 0 ;
   DAVA::String temp2 ;
+  DAVA::String temp4 ;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::OnTestAssert",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",1,"DAVA::AutotestingSystemLua *");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",2,"DAVA::String const &");
-  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",3,"bool");
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::OnTestStep",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",2,"DAVA::String const &");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",3,"bool");
+  if(!lua_isstring(L,4)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",4,"DAVA::String const &");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_OnTestAssert",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    SWIG_fail_ptr("AutotestingSystemLua_OnTestStep",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
   }
   
   temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
   arg3 = (lua_toboolean(L, 3)!=0);
-  (arg1)->OnTestAssert((DAVA::String const &)*arg2,arg3);
+  temp4.assign(lua_tostring(L,4),lua_rawlen(L,4)); arg4=&temp4;
+  (arg1)->OnTestStep((DAVA::String const &)*arg2,arg3,(DAVA::String const &)*arg4);
   
   return SWIG_arg;
   
@@ -2120,6 +2124,105 @@ static int _wrap_AutotestingSystemLua_OnTestAssert(lua_State* L) {
 fail:
   lua_error(L);
   return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_OnTestStep__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  bool arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::OnTestStep",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",2,"DAVA::String const &");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestStep",3,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_OnTestStep",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (lua_toboolean(L, 3)!=0);
+  (arg1)->OnTestStep((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_OnTestStep(lua_State* L) {
+  int argc;
+  int argv[5]={
+    1,2,3,4,5
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isboolean(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_AutotestingSystemLua_OnTestStep__SWIG_1(L);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isstring(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isboolean(L,argv[2]);
+        }
+        if (_v) {
+          {
+            _v = lua_isstring(L,argv[3]);
+          }
+          if (_v) {
+            return _wrap_AutotestingSystemLua_OnTestStep__SWIG_0(L);
+          }
+        }
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'AutotestingSystemLua_OnTestStep'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::AutotestingSystemLua::OnTestStep(DAVA::String const &,bool,DAVA::String const &)\n"
+    "    DAVA::AutotestingSystemLua::OnTestStep(DAVA::String const &,bool)\n");
+  lua_error(L);return 0;
 }
 
 
@@ -2400,7 +2503,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"WaitForMaster", _wrap_AutotestingSystemLua_WaitForMaster}, 
     {"WaitForHelpers", _wrap_AutotestingSystemLua_WaitForHelpers}, 
     {"OnError", _wrap_AutotestingSystemLua_OnError}, 
-    {"OnTestAssert", _wrap_AutotestingSystemLua_OnTestAssert}, 
+    {"OnTestStep", _wrap_AutotestingSystemLua_OnTestStep}, 
     {"OnTestFinished", _wrap_AutotestingSystemLua_OnTestFinished}, 
     {"GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed}, 
     {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
