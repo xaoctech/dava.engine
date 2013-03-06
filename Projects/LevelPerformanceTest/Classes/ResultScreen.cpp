@@ -1,5 +1,8 @@
 #include "ResultScreen.h"
 #include "SettingsManager.h"
+#include "GameCore.h"
+#include "Config.h"
+#include "DeviceInfo.h"
 
 ResultScreen::ResultScreen(const LandscapeTestData& testData, const String& filename, Texture* landscapeTexture)
 :	isFinished(false),
@@ -30,7 +33,9 @@ void ResultScreen::LoadResources()
 {
 	Vector2 spriteSize((float32)texture->GetWidth(), (float32)texture->GetHeight());
 	textureSprite = Sprite::CreateFromTexture(texture, 0, 0, spriteSize.x, spriteSize.y);
-	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x, spriteSize.y, FORMAT_RGBA8888, true);
+	resultSprite = Sprite::CreateAsRenderTarget(spriteSize.x * RESULT_TEXTURE_SCALE,
+                                                spriteSize.y * RESULT_TEXTURE_SCALE,
+                                                FORMAT_RGBA8888, true);
 }
 
 void ResultScreen::UnloadResources()
@@ -47,6 +52,45 @@ void ResultScreen::WillDisappear()
 {
 }
 
+void ResultScreen::SaveResults()
+{
+    Core *core=DAVA::Core::Instance();
+    Vector2 screenSize(core->GetVirtualScreenWidth(), core->GetVirtualScreenHeight());
+    
+    Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
+    String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
+    saveFileName += filename + ".png";
+    ImageLoader::Save(image, saveFileName);
+    
+    Map<String, String> results;
+    results["DeviceDescription"] = DeviceInfo::Instance()->GetDeviceDescription();
+    results["TextureMemorySize"] = Format("%d", testData.GetTextureMemorySize());
+    results["SceneFileSize"] = Format("%d", testData.GetSceneFileSize());
+    
+    
+    String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
+    String folderPathname = documentsPath + "PerformanceTestResult";
+    FileSystem::Instance()->CreateDirectory(folderPathname);
+    String statFileName = folderPathname + "/" + filename + ".txt";
+    File* file = File::Create(statFileName, File::CREATE | File::WRITE);
+    if (file)
+    {
+        Map<String, String>::const_iterator it = results.begin();
+        for(; it != results.end(); it++)
+        {
+            // "Format" sometimes doesn't work correct with strings on some platforms
+            file->WriteLine(((*it).first + ": " + (*it).second).c_str());
+        }
+        
+        SafeRelease(file);
+    }
+    
+    String levelName = filename.substr(0, filename.find('.')); // "levelName" must be w/o dots
+    GameCore::Instance()->FlushToDB(levelName, results, saveFileName);
+    
+    state = RESULT_STATE_FINISHED;
+}
+
 void ResultScreen::Input(UIEvent * event)
 {
 	if(event->phase == UIEvent::PHASE_BEGAN)
@@ -55,29 +99,7 @@ void ResultScreen::Input(UIEvent * event)
         {
             if(resultSprite != 0)
             {
-                Core *core=DAVA::Core::Instance();
-                Vector2 screenSize(core->GetVirtualScreenWidth(), core->GetVirtualScreenHeight());
-
-                Image* image = resultSprite->GetTexture()->CreateImageFromMemory();
-                String saveFileName = FileSystem::Instance()->GetUserDocumentsPath();
-                saveFileName += filename + ".png";
-                ImageLoader::Save(image, saveFileName);
-
-				//TODO: discuss where exaclty store these results.
-				// Currenty they are stored in a plain text file in user documents dir
-				String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-				String folderPathname = documentsPath + "PerformanceTestResult";
-				FileSystem::Instance()->CreateDirectory(folderPathname);
-				String statFileName = folderPathname + "/" + filename + ".txt";
-				File* file = File::Create(statFileName, File::CREATE | File::WRITE);
-				if (file)
-				{
-					file->WriteLine(Format("Texture memory size: %d", testData.GetTextureMemorySize()));
-					file->WriteLine(Format("Scene file size: %d", testData.GetSceneFileSize()));
-					SafeRelease(file);
-				}
-
-                state = RESULT_STATE_FINISHED;
+                SaveResults();
             }
 		}
 	}
@@ -87,6 +109,11 @@ void ResultScreen::Update(float32 timeElapsed)
 {
 	UIScreen::Update(timeElapsed);
 	
+    if(!isFinished && state == RESULT_STATE_NORMAL && resultSprite != 0)
+    {
+        SaveResults();
+    }
+    
 	switch (state)
     {
 		case RESULT_STATE_MAKING_SCREEN_SHOT:
@@ -123,6 +150,7 @@ void ResultScreen::PrepareSprite()
 	Rect r(0, 0, resultSprite->GetWidth(), resultSprite->GetHeight());
 
 	RenderManager::Instance()->SetRenderTarget(resultSprite);
+    textureSprite->SetScale(RESULT_TEXTURE_SCALE, RESULT_TEXTURE_SCALE);
 	textureSprite->Draw();
 	DrawStatImage(r);
 	DrawMinFpsTargets(r);
@@ -162,14 +190,15 @@ void ResultScreen::DrawMinFpsTargets(DAVA::Rect rect)
 			target += pos;
 
 			manager->SetColor(1.f, 1.f, 1.f, 1.f);
-			helper->FillRect(Rect(pos - Vector2(10.f, 10.f), Vector2(20.f, 20.f)));
+			helper->FillRect(Rect(pos - Vector2(MINFPS_TARGET_SIZE, MINFPS_TARGET_SIZE),
+                                  Vector2(MINFPS_TARGET_SIZE * 2, MINFPS_TARGET_SIZE * 2)));
 
 #if defined(__DAVAENGINE_OPENGL__)
-			glLineWidth(10.f);
+			glLineWidth(MINFPS_TARGET_SIZE);
 #endif
 			helper->DrawLine(pos, target);
 #if defined(__DAVAENGINE_OPENGL__)
-			glLineWidth(1.f);
+			glLineWidth(MINFPS_TARGET_SIZE);
 #endif
 		}
 		else
