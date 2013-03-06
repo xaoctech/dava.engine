@@ -134,7 +134,6 @@ void GameCore::Update(float32 timeElapsed)
 			
 			if(resultScreen->IsFinished())
             {
-				SafeRelease(resultScreen);
 				tests.pop_front();
 
 				if(tests.size() == 0)
@@ -143,6 +142,7 @@ void GameCore::Update(float32 timeElapsed)
 				}
                 else
                 {
+                    SafeRelease(resultScreen);
 					Test *newCurTest = tests.front();
 					if(newCurTest != NULL)
                     {
