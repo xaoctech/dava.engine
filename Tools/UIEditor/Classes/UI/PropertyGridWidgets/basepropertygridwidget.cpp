@@ -467,16 +467,19 @@ void BasePropertyGridWidget::OnColorButtonClicked()
         return;
     }
 
-    QColor color = QColorDialog::getColor(Qt::white, this, "Select a color",  QColorDialog::DontUseNativeDialog);
-    if (color.isValid() == false)
-    {
-        return;
-    }
-        
-    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
-    if (iter == propertyGridWidgetsMap.end())
+	PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
+
+	if (iter == propertyGridWidgetsMap.end())
     {
         Logger::Error("OpenSelectColorDialog - unable to find attached property in the propertyGridWidgetsMap!");
+        return;
+    }
+
+	QColor propertyValue = PropertiesHelper::GetPropertyValue<QColor>(this->activeMetadata, iter->second.getProperty().name(), false);
+
+    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog);
+    if (color.isValid() == false)
+    {
         return;
     }
         
