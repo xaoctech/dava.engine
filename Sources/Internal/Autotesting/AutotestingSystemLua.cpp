@@ -30,13 +30,16 @@ extern "C" int luaopen_Vector(lua_State *l);
 
 namespace DAVA
 {
-    
-AutotestingSystemLua::AutotestingSystemLua() : luaState(NULL), delegate(NULL)
+        
+AutotestingSystemLua::AutotestingSystemLua() : luaState(NULL), delegate(NULL), autotestingLocalizationSystem(NULL)
 {
+    autotestingLocalizationSystem = new LocalizationSystem();
 }
 
 AutotestingSystemLua::~AutotestingSystemLua()
 {
+    SafeRelease(autotestingLocalizationSystem);
+    
     if(luaState)
     {
         lua_close(luaState);
@@ -51,8 +54,12 @@ void AutotestingSystemLua::SetDelegate(AutotestingSystemLuaDelegate *_delegate)
     
 void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
 {
+    Logger::Debug("AutotestingSystemLua::InitFromFile luaFilePath=%s", luaFilePath.c_str());
     if(!luaState)
     {
+        autotestingLocalizationSystem->SetCurrentLocale(LocalizationSystem::Instance()->GetCurrentLocale());
+        autotestingLocalizationSystem->InitWithDirectory("~res:/Autotesting/Strings");
+        
         luaState = lua_open();
         luaL_openlibs(luaState);
         LoadWrappedLuaObjects();
@@ -161,6 +168,8 @@ bool AutotestingSystemLua::CheckMsgText(UIControl *control, const String &key)
 {
     WideString expectedText = StringToWString(key);
     //TODO: check key in localized strings for Lua
+    expectedText = autotestingLocalizationSystem->GetLocalizedString(expectedText);
+    
     UIStaticText *uiStaticText = dynamic_cast<UIStaticText*>(control);
     if(uiStaticText)
     {
