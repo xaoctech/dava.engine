@@ -8,7 +8,6 @@
 
 #include "PasteCommand.h"
 
-#define COPY_NAME "Copy"
 #define COPY_DELTA Vector2(5, 5)
 
 PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
@@ -146,14 +145,14 @@ void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyT
         controlNode->GetUIObject()->SetName(node->GetName().toStdString());
     }
 
-	HierarchyTreeNode::HIERARCHYTREENODESLIST child = node->GetChildNodes();
+	/*HierarchyTreeNode::HIERARCHYTREENODESLIST child = node->GetChildNodes();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = child.begin();
 		 iter != child.end();
 		 ++iter)
 	{
 		HierarchyTreeNode* child = (*iter);
 		UpdateControlName(parent, child);
-	}
+	}*/
 }
 
 int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreePlatformNode* parent)
@@ -202,9 +201,22 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 	return count;
 }
 
-QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTreeNode* parent) const
+QString PasteCommand::FormatCopyName(QString baseName, const HierarchyTreeNode* parent) const
 {
 	QString name = baseName;
+	QString numberName;
+	const char* cName = name.toStdString().c_str();
+	for (int i = name.length() - 1; i >= 0; --i)
+	{
+		char a = cName[i];
+		if (a >= '0' && a <= '9')
+			numberName = a + numberName;
+		else
+			break;
+	}
+	int id = numberName.toInt();
+	baseName = name.left(name.length() - numberName.length());
+	Logger::Debug(baseName.toStdString().c_str());
 	
 	const HierarchyTreeRootNode* parentRoot = dynamic_cast<const HierarchyTreeRootNode*>(parent);
 	const HierarchyTreePlatformNode* parentPlatform = dynamic_cast<const HierarchyTreePlatformNode*>(parent);
@@ -218,8 +230,11 @@ QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTre
 		}
 	}
 	
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 1000; i++)
 	{
+		name = QString("%1%2").arg(baseName).arg(++id);
+		Logger::Debug(name.toStdString().c_str());
+
 		bool bFind = false;
 		
 		if (parentPlatform || parentRoot)
@@ -246,8 +261,6 @@ QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTre
 					return name;
 			}
 		}
-		
-		name += COPY_NAME;
 	}
 	return baseName;
 }
