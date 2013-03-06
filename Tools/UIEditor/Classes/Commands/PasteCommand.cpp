@@ -121,7 +121,7 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 			continue;
 		
 		HierarchyTreeControlNode* copy = new HierarchyTreeControlNode(parent, control);
-		UpdateControlName(parent, copy);
+		UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(control->GetName(), parent));
 		UIControl* clone = copy->GetUIObject();
 		if (clone)
@@ -134,9 +134,12 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 	return count;
 }
 
-void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node) const
+void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const
 {
-	node->SetName(FormatCopyName(node->GetName(), parent));
+	QString name = node->GetName();
+	if (needCreateNewName)
+		name = FormatCopyName(node->GetName(), parent);
+	node->SetName(name);
     
     // Also need to update the name of the UIControl - it is not copied.
     HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
@@ -145,14 +148,14 @@ void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyT
         controlNode->GetUIObject()->SetName(node->GetName().toStdString());
     }
 
-	/*HierarchyTreeNode::HIERARCHYTREENODESLIST child = node->GetChildNodes();
+	HierarchyTreeNode::HIERARCHYTREENODESLIST child = node->GetChildNodes();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = child.begin();
 		 iter != child.end();
 		 ++iter)
 	{
 		HierarchyTreeNode* child = (*iter);
-		UpdateControlName(parent, child);
-	}*/
+		UpdateControlName(parent, child, false);
+	}
 }
 
 int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreePlatformNode* parent)
@@ -168,7 +171,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 			continue;
 		
 		HierarchyTreeScreenNode* copy = new HierarchyTreeScreenNode(parent, screen);
-        UpdateControlName(parent, copy);
+        UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(screen->GetName(), parent));
 		
 		count++;
@@ -191,7 +194,7 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 			continue;
 		
 		HierarchyTreePlatformNode* copy = new HierarchyTreePlatformNode(parent, platform);
-        UpdateControlName(parent, copy);
+        UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(platform->GetName(), parent));
 		
 		count++;
