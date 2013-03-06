@@ -117,10 +117,10 @@ void AutotestingSystemLua::OnError(const String &errorMessage)
     AutotestingSystem::Instance()->OnError(errorMessage);
 }
     
-void AutotestingSystemLua::OnTestAssert(const String &text, bool isPassed)
+void AutotestingSystemLua::OnTestStep(const String &stepName, bool isPassed, const String &error)
 {
-    Logger::Debug("AutotestingSystemLua::OnTestAssert %s", text.c_str());
-    AutotestingSystem::Instance()->OnTestAssert(text, isPassed);
+    Logger::Debug("AutotestingSystemLua::OnTestStep %s %d %s", stepName.c_str(), isPassed, error.c_str());
+    AutotestingSystem::Instance()->OnTestStep(stepName, isPassed, error);
 }
     
 void AutotestingSystemLua::OnTestFinished()

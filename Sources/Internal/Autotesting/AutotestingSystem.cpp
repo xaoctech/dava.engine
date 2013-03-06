@@ -263,9 +263,9 @@ bool AutotestingSystem::ConnectToDB()
     return (NULL != dbClient);
 }
     
-void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
+void AutotestingSystem::AddTestResult(const String &text, bool isPassed, const String &error)
 {
-    testResults.push_back(std::pair< String, bool >(text, isPassed));
+    testResults.push_back(TestResult(text, isPassed, error));
 }
     
 #define AUTOTESTING_LOG_NAME "Tests"
@@ -301,17 +301,20 @@ void AutotestingSystem::SaveTestToDB()
     String testResultsKey = "TestResults";
     KeyedArchive* testResultsArchive = NULL;
     
+    String testDetailsKey = "TestDetails";
+    KeyedArchive* testDetailsArchive = NULL;
+    
     int32 testResultsCount = testResults.size();
     bool isTestPassed = true; // if not finished should not count as success
     bool isFinishLogged = false;
     for(int32 i = 0; i < testResultsCount; ++i)
     {
-        if(!testResults[i].second)
+        if(!testResults[i].isPassed)
         {
             isTestPassed = false;
             break;
         }
-        if(testResults[i].first == "finished")
+        if(testResults[i].name == "finished")
         {
             isFinishLogged = true;
         }
@@ -383,8 +386,11 @@ void AutotestingSystem::SaveTestToDB()
                         if(testArchive)
                         {
                             // found test object
+                            
                             // find test results
                             testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
+                            // find test details
+                            testDetailsArchive = SafeRetain(testArchive->GetArchive(testDetailsKey));
                         }
                     }
                 }
@@ -419,13 +425,23 @@ void AutotestingSystem::SaveTestToDB()
         testResultsArchive = new KeyedArchive();
     }
     
+    if(!testDetailsArchive)
+    {
+        testDetailsArchive = new KeyedArchive();
+    }
+    
     //update test results
     for(int32 i = 0; i < testResultsCount; ++i)
     {
-        bool testResultSuccess = testResults[i].second;
+        bool testResultSuccess = testResults[i].isPassed;
         
-        String testResultKey = Format("%03d %s", i, testResults[i].first.c_str());
+        String testResultKey = Format("%03d %s", i, testResults[i].name.c_str());
         testResultsArchive->SetInt32(testResultKey, (int32)testResultSuccess);
+        
+        if(!testResults[i].error.empty())
+        {
+            testDetailsArchive->SetString(testResultKey, testResults[i].error);
+        }
     }
     
     //update test object
@@ -434,6 +450,7 @@ void AutotestingSystem::SaveTestToDB()
     testArchive->SetString("File", testFileName);
     testArchive->SetString("Name", testName);
     testArchive->SetArchive(testResultsKey, testResultsArchive);
+    testArchive->SetArchive(testDetailsKey, testDetailsArchive);
     
     //update log object
     logArchive->SetArchive(testAndFileName, testArchive);
@@ -458,6 +475,7 @@ void AutotestingSystem::SaveTestToDB()
     SafeRelease(groupArchive);
     SafeRelease(testArchive);
     SafeRelease(testResultsArchive);
+    SafeRelease(testDetailsArchive);
     
     // delete created update object
     SafeRelease(dbUpdateObject);
@@ -717,12 +735,12 @@ bool AutotestingSystem::CheckMasterHelpersReadyDB()
     return isReady;
 }
 
-void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
+void AutotestingSystem::OnTestStep(const String & stepName, bool isPassed, const String &error)
 {
-    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
-    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
+    String assertMsg = Format("%s: %s %s", testName.c_str(), stepName.c_str(), (isPassed ? "PASSED" : "FAILED"));
+    Logger::Debug("AutotestingSystem::OnTestStep %s", assertMsg.c_str());
     
-    AddTestResult(text, isPassed);
+    AddTestResult(stepName, isPassed, error);
 	SaveTestToDB();
     
 	if(reportFile)
