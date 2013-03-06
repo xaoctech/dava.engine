@@ -81,7 +81,7 @@ public:
     void RunTests();
     
     void OnTestsSatrted();
-    void OnTestAssert(const String & text, bool isPassed);
+    void OnTestStep(const String & stepName, bool isPassed, const String & error = "");
     void OnError(const String & errorMessage = "");
 	void OnMessage(const String & logMessage = "");
     void OnTestsFinished();
@@ -101,7 +101,7 @@ public:
 protected:
     //DB
     bool ConnectToDB();
-    void AddTestResult(const String &text, bool isPassed);
+    void AddTestResult(const String &text, bool isPassed, const String & error = "");
     void SaveTestToDB();
     
     String ReadMasterIDFromDB(); //TODO: get first available master
@@ -127,7 +127,15 @@ protected:
     String testName;
     String testFileName;
     String testFilePath;
-    Vector< std::pair<String, bool> > testResults;
+    struct TestResult
+    {
+        TestResult(const String &_name, bool _isPassed, const String &_error) : name(_name), isPassed(_isPassed), error(_error) {}
+        
+        String name;
+        bool isPassed;
+        String error;
+    };
+    Vector< TestResult > testResults;
 
     MongodbClient *dbClient;
     bool isDB;
