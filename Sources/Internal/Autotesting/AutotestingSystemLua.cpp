@@ -64,6 +64,10 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         luaL_openlibs(luaState);
         LoadWrappedLuaObjects();
         RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
+        String pathToAutotesting = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/Autotesting/");
+        String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.c_str());
+        
+        RunScript(setPackagePathScript);
         
         LoadScriptFromFile(luaFilePath);
         
