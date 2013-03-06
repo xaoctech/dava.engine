@@ -64,11 +64,13 @@ public:
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     
     bool FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath);
-    void DropDB();
     
 private:
-    MongodbClient * ConnectToDB();
-    
+    bool ConnectToDB();
+
+    MongodbClient * dbClient;
+	int32 currentRunId;
+
 	DAVA::Cursor * cursor;
     
 	int32 testCount;

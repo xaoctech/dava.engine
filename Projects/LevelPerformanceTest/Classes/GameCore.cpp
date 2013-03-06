@@ -42,6 +42,8 @@ using namespace DAVA;
 GameCore::GameCore()
 {
 	resultScreen = NULL;
+	currentRunId = 0;
+	dbClient = NULL;
 }
 
 GameCore::~GameCore()
@@ -84,11 +86,14 @@ void GameCore::OnAppStarted()
 		appFinished = true;
 	}
     
-    DropDB();
+	ConnectToDB();
 }
 
 void GameCore::OnAppFinished()
 {
+	dbClient->Disconnect();
+	SafeRelease(dbClient);
+
 	SafeRelease(cursor);
 }
 
@@ -165,29 +170,46 @@ void GameCore::Draw()
 	ApplicationCore::Draw();
 }
 
-MongodbClient * GameCore::ConnectToDB()
+bool GameCore::ConnectToDB()
 {
-    MongodbClient * dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
-    if(dbClient)
+	if(dbClient)
+		return true;
+    
+	dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
+    
+	if(dbClient)
     {
         dbClient->SetDatabaseName(DATABASE_NAME);
         dbClient->SetCollectionName(DATABASE_COLLECTION);
+
+		MongodbObject *globalIdObject = dbClient->FindObjectByKey("GlobalTestId");
+
+		if(globalIdObject)
+			currentRunId = globalIdObject->GetInt32("LastTestId") + 1;
+
+		MongodbObject * newGlobalIdObject = new MongodbObject();
+		newGlobalIdObject->SetObjectName("GlobalTestId");
+		newGlobalIdObject->AddInt32("LastTestId", currentRunId);
+		newGlobalIdObject->Finish();
+		dbClient->SaveObject(newGlobalIdObject, globalIdObject);
+
+		SafeRelease(newGlobalIdObject);
+		SafeRelease(globalIdObject);
     }
     else
     {
         Logger::Debug("Can't connect to DB");
     }
     
-    return dbClient;
+    return (dbClient != NULL);
 }
 
 bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath)
 {
+	if(!dbClient)
+		return false;
+
     Logger::Debug("Sending results to DB...");
-    
-    MongodbClient * dbClient = ConnectToDB();
-    if(!dbClient)
-        return false;
     
     MongodbObject *testResultObject = new MongodbObject();
     if(testResultObject)
@@ -218,32 +240,32 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
         
         testResultObject->Finish();
         
-        MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
-        MongodbObject *newPlatformObject = new MongodbObject();
-        if(newPlatformObject)
-        {
-            if(oldPlatformObject)
-            {
-                newPlatformObject->Copy(oldPlatformObject);
-            }
-            else
-            {
-                newPlatformObject->SetObjectName(PLATFORM_NAME);
-            }
-            
-            newPlatformObject->AddObject(levelName, testResultObject);
-            newPlatformObject->Finish();
-            dbClient->SaveObject(newPlatformObject, oldPlatformObject);
-            SafeRelease(newPlatformObject);
-        }
-        else
-        {
-            Logger::Debug("Can't create platform object");
-            return false;
-        }
-        
-        SafeRelease(oldPlatformObject);
-        SafeRelease(testResultObject);
+		MongodbObject * currentRunObject = dbClient->FindObjectByKey(Format("%d", currentRunId));
+		MongodbObject * newRunObject = new MongodbObject();
+		if(newRunObject)
+		{
+			if(currentRunObject)
+			{
+				newRunObject->Copy(currentRunObject);
+			}
+			else
+			{
+				newRunObject->SetObjectName(Format("%d", currentRunId));
+			}
+
+			newRunObject->AddObject(levelName, testResultObject);
+			newRunObject->Finish();
+			dbClient->SaveObject(newRunObject, currentRunObject);
+			SafeRelease(newRunObject);
+		}
+		else
+		{
+			Logger::Debug("Can't create test result object in DB");
+			return false;
+		}
+
+		SafeRelease(currentRunObject);
+		SafeRelease(testResultObject);
     }
     else
     {
@@ -251,24 +273,7 @@ bool GameCore::FlushToDB(const String & levelName, const Map<String, String> &re
         return false;
     }
     
-    dbClient->Disconnect();
-    SafeRelease(dbClient);
-    
-    Logger::Debug("Results successful sended to DB");
+    Logger::Debug("Results successful sent to DB");
     
     return true;
-}
-void GameCore::DropDB()
-{
-    Logger::Debug("Start dropping DB");
-    MongodbClient * dbClient = ConnectToDB();
-    if(!dbClient)
-        return;
-    
-    dbClient->DropCollection();
-    dbClient->DropDatabase();
-    
-    dbClient->Disconnect();
-    SafeRelease(dbClient);
-    Logger::Debug("DB successful dropped");
 }
