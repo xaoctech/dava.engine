@@ -80,7 +80,7 @@ void QtLayerMacOS::Resize(int32 width, int32 height)
     
 void  QtLayerMacOS::Move(int32 x, int32 y)
 {
-    [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
+    // [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
 }
 
     
