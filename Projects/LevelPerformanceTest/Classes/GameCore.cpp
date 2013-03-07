@@ -60,10 +60,27 @@ void GameCore::OnAppStarted()
 	cursor = 0;
 	RenderManager::Instance()->SetFPS(60);
 
-	String dirPath = "~res:/Maps/";
-	Vector<String> v = FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2", 1);
+	String dirPath = "~res:/3d/Maps/";
+	Vector<String> levelsPaths;
+	YamlParser* parser = YamlParser::Create("~res:/maps.yaml");
+	if(parser)
+	{
+		YamlNode* rootNode = parser->GetRootNode();
+		if(rootNode)
+		{
+			int32 sz = rootNode->GetCount();
 
-	for(Vector<String>::const_iterator it = v.begin(); it != v.end(); ++it)
+			for(DAVA::int32 i = 0; i < sz; ++i)
+			{
+				String k = rootNode->GetItemKeyName(i);
+				String levelFile = rootNode->Get(i)->AsString();
+				if(k != "default")
+					levelsPaths.push_back(levelFile);
+			}
+		}
+	}
+
+	for(Vector<String>::const_iterator it = levelsPaths.begin(); it != levelsPaths.end(); ++it)
     {
 		Test *test = new Test(dirPath + (*it));
 		if(test != NULL)
@@ -73,7 +90,7 @@ void GameCore::OnAppStarted()
 		}
 	}
 
-	if(v.size() > 0)
+	if(levelsPaths.size() > 0)
     {
 		appFinished = false;
 		
