@@ -94,6 +94,11 @@ RenderDataObject::~RenderDataObject()
     //streamMap.clear();
     
 #if defined(__DAVAENGINE_OPENGL__)
+
+    //TODO: ios build has assert without LockNonMain()
+	RenderManager::Instance()->LockNonMain();
+
+
     #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
         if (vboBuffer)
             RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
@@ -105,6 +110,10 @@ RenderDataObject::~RenderDataObject()
         if (indexBuffer)
             RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
     #endif
+    
+    RenderManager::Instance()->UnlockNonMain();
+    //ENDOF TODO
+
 #endif
     
 }
