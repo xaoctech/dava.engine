@@ -1,0 +1,120 @@
+#include "LocalizationTest.h"
+
+static const String files[] = {
+	"weird_characters",
+	"de",
+	"en",
+	"es",
+	"it",
+	"ru"
+};
+
+LocalizationTest::LocalizationTest()
+:	TestTemplate<LocalizationTest>("LocalizationTest")
+{
+	currentTest = 0;
+
+	for (int32 i = 0; i < TEST_COUNT; ++i)
+	{
+		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
+	}
+
+#ifdef __DAVAENGINE_ANDROID__
+	srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("/mnt/sdcard/DavaProject/TestData/LocalizationTest/");
+#else
+	srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/LocalizationTest/");
+#endif
+	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "LocalizationTest/";
+
+	FileSystem::Instance()->DeleteDirectory(cpyDir);
+	FileSystem::Instance()->CreateDirectory(cpyDir);
+}
+
+void LocalizationTest::LoadResources()
+{
+}
+
+void LocalizationTest::UnloadResources()
+{
+}
+
+void LocalizationTest::Draw(const DAVA::UIGeometricData &geometricData)
+{
+}
+
+void LocalizationTest::TestFunction(TestTemplate<LocalizationTest>::PerfFuncData *data)
+{
+	String srcFile = srcDir + files[currentTest] + ".yaml";
+	String cpyFile = cpyDir + files[currentTest] + ".yaml";
+
+	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
+
+	LocalizationSystem* localizationSystem = LocalizationSystem::Instance();
+
+	localizationSystem->SetCurrentLocale(files[currentTest]);
+	localizationSystem->InitWithDirectory(cpyDir);
+
+	localizationSystem->SaveLocalizedStrings();
+
+	localizationSystem->Cleanup();
+
+	bool res = CompareFiles(srcFile, cpyFile);
+
+	String s = Format("Localization test %d: %s - %s", currentTest, files[currentTest].c_str(), (res ? "passed" : "fail"));
+	Logger::Debug(s.c_str());
+
+	data->testData.message = s;
+	TEST_VERIFY(res);
+
+	++currentTest;
+}
+
+bool LocalizationTest::CompareFiles(const String& file1, const String& file2)
+{
+	File* f1 = File::Create(file1, File::OPEN | File::READ);
+	File* f2 = File::Create(file2, File::OPEN | File::READ);
+
+	bool res = true;
+
+	if (f1 && f2)
+	{
+		int32 size = Max(f1->GetSize(), f2->GetSize());
+
+		char* buf1 = new char[size];
+		char* buf2 = new char[size];
+
+		while (res && !f1->IsEof() && !f2->IsEof())
+		{
+			int32 read1;
+			int32 read2;
+
+			read1 = f1->ReadLine(buf1, size);
+			read2 = f2->ReadLine(buf2, size);
+			if (read1 != read2)
+			{
+				res = false;
+			}
+			else
+			{
+				res &= !memcmp(buf1, buf2, read1);
+			}
+		}
+
+		if (!f1->IsEof() || !f2->IsEof())
+		{
+			res = false;
+		}
+
+		delete[] buf1;
+		delete[] buf2;
+	}
+	else
+	{
+		res = false;
+	}
+
+	SafeRelease(f1);
+	SafeRelease(f2);
+
+	return res;
+}
