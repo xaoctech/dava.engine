@@ -195,7 +195,7 @@ void FrameworkDidLaunched()
             uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
             SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
             creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
-            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+//            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
         }
     }
     
