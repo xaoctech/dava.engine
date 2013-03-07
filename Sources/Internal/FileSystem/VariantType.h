@@ -459,6 +459,8 @@ public:
     
 private:
     void ReleasePointer();
+
+	VariantType(void *);
 };
 	
 VariantType::eVariantType VariantType::GetType()

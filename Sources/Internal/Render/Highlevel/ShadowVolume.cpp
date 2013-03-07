@@ -497,7 +497,7 @@ void ShadowVolume::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		archive->SetVariant("sv.spg", VariantType(shadowPolygonGroup));
+		archive->SetVariant("sv.spg", VariantType((uint64)shadowPolygonGroup));
 	}
 }
 
