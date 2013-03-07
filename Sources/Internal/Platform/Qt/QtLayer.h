@@ -59,8 +59,6 @@ public:
     virtual void AppFinished() = 0;
 
 	virtual void Resize(int32 width, int32 height) = 0;
-	virtual void Move(int32 x, int32 y) = 0;
-    
     virtual void ProcessFrame() = 0;
 
     virtual void LockKeyboardInput(bool locked) = 0;
