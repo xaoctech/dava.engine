@@ -1,6 +1,6 @@
 #include "FileManagerWrapper.h"
 
-const Vector<String> FileManagerWrapper::GetFileListByExtension(const String& path, const String& ext)
+const Vector<String> FileManagerWrapper::GetFileListByExtension(const String& path, const String& ext, int32 maxLevel)
 {
     FileList fileList(path);
 
@@ -8,7 +8,26 @@ const Vector<String> FileManagerWrapper::GetFileListByExtension(const String& pa
     for(int32 i = 0; i < fileList.GetCount(); ++i)
     {
         if(fileList.IsDirectory(i))
-            continue;
+		{
+			if (maxLevel > 0)
+			{
+				String subDirName = fileList.GetFilename(i) + "/";
+				if (subDirName == "./" || subDirName == "../")
+				{
+					continue;
+				}
+
+				Vector<String> subDirList = GetFileListByExtension(path + subDirName, ext, maxLevel - 1);
+				for (Vector<String>::iterator it = subDirList.begin(); it != subDirList.end(); ++it)
+				{
+					list.push_back(subDirName + *it);
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
 
         String curFileName = fileList.GetFilename(i);
         int32 dotIndex = curFileName.rfind('.');

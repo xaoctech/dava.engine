@@ -1202,8 +1202,9 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
-        
+
         tag = srcControl->GetTag();
+        name = srcControl->name;
 
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 

@@ -718,7 +718,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
-        String imagePathname = TextureDescriptor::GetPathnameForFormat(pathName, formatForLoading);
+        String imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
         texture = CreateFromImage(imagePathname, descriptor);
         if(texture)
         {
@@ -729,6 +729,16 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
+}
+
+String Texture::GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+{
+    if(descriptor->IsCompressedFile())
+    {
+        return TextureDescriptor::GetPathnameForFormat(pathname, (ImageFileFormat)descriptor->textureFileFormat);
+    }
+    
+    return TextureDescriptor::GetPathnameForFormat(pathname, fileFormat);
 }
 
 	
@@ -756,6 +766,12 @@ void Texture::ReloadAs(ImageFileFormat fileFormat)
 
 void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
+    if(descriptor->IsCompressedFile())
+    {
+        return;
+    }
+    
+    
     ReleaseTextureData();
 	
 	DVASSERT(NULL != descriptor);
@@ -816,6 +832,11 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
     
 bool Texture::IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
+    if(descriptor->IsCompressedFile())
+    {
+        return true;
+    }
+    
     if(     (PVR_FILE == fileFormat && descriptor->pvrCompression.format == FORMAT_INVALID)
        ||   (DXT_FILE == fileFormat && descriptor->dxtCompression.format == FORMAT_INVALID))
     {

@@ -81,7 +81,6 @@ public:
     static const String TYPENAME_MATRIX3;   //  "Matrix3"
     static const String TYPENAME_MATRIX4;   // "Matrix4"
 
-	static const String TYPENAME_POINTER;   // "void *"
 	static const String TYPENAME_COLOR;     // "Color"
 	static const String TYPENAME_FASTNAME;     // "FastName"
 	static const String TYPENAME_AABBOX3;     // "AABBox3"
@@ -104,7 +103,6 @@ public:
 	explicit VariantType(const Matrix2 & value);
 	explicit VariantType(const Matrix3 & value);
 	explicit VariantType(const Matrix4 & value);
-	explicit VariantType(const void* const &value);
 	explicit VariantType(const Color & value);
 	explicit VariantType(const FastName & value);
 	explicit VariantType(const AABBox3 & value);
@@ -130,7 +128,6 @@ public:
         TYPE_MATRIX2,
         TYPE_MATRIX3,
         TYPE_MATRIX4,
-		TYPE_POINTER,
         TYPE_COLOR,
         TYPE_FASTNAME,
 		TYPE_AABBOX3,
@@ -156,7 +153,6 @@ public:
         Matrix3* matrix3Value;
         Matrix4* matrix4Value;
 
-		uint64 *x64PointerValue;
 		const void* pointerValue;
         
         String* stringValue;
@@ -289,8 +285,6 @@ public:
 
 	void SetVariant(const VariantType& value);
 
-	void SetPointer(const void* const &value);
-
     /**
      \brief Function to set Color value to variant type variable
      \param[in] value	value to set
@@ -411,8 +405,6 @@ public:
 	 */
      const Matrix4 &AsMatrix4() const;
 
-	 const void* const AsPointer() const;
-
     /**
          \brief Function to return Color from variable. Returns pointer to the Color inside.
          \returns value of variable, or generate assert if variable type is different
@@ -467,6 +459,8 @@ public:
     
 private:
     void ReleasePointer();
+
+	VariantType(void *);
 };
 	
 VariantType::eVariantType VariantType::GetType()

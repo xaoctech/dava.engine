@@ -24,10 +24,18 @@ private:
 	DAVA::Rect landscapeRect;
 	Vector<FpsStatItem> stat;
 
+	uint32 textureMemorySize;
+	uint32 sceneFileSize;
+
 public:
 	void SetLandscapeRect(const DAVA::Rect& rect);
 	void AddStatItem(const FpsStatItem& item);
-	
+
+	void SetTextureMemorySize(uint32 size);
+	void SetSceneFileSize(uint32 size);
+	uint32 GetTextureMemorySize() const;
+	uint32 GetSceneFileSize() const;
+
 	const DAVA::Rect& GetLandscapeRect() const;
 	uint32 GetItemCount() const;
 	const FpsStatItem& GetItem(uint32 index) const;

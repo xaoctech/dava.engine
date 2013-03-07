@@ -16,8 +16,6 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
-#include "UNDOManager.h"
-
 #include "SceneExporter.h"
 
 #include "../Qt/Scene/SceneData.h"
@@ -37,12 +35,12 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 void SceneEditorScreenMain::LoadResources()
 {
     new HintManager();
-    new UNDOManager();
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::GetFontLight();
+    font12 = ControlsFactory::GetFont12();
+	font12Color = ControlsFactory::GetColorLight();
 
     helpDialog = new HelpDialog();
     
@@ -85,7 +83,6 @@ void SceneEditorScreenMain::UnloadResources()
 
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
-    UNDOManager::Instance()->Release();
 }
 
 
@@ -285,9 +282,7 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()));
     }
 }
 
@@ -757,7 +752,8 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->SelectNodeQt(node);
+	if (iBody)
+	    iBody->bodyControl->SelectNodeQt(node);
 }
 
 void SceneEditorScreenMain::OnReloadRootNodesQt()

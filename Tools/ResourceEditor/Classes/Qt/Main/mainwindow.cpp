@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
@@ -18,7 +17,8 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/CommandLineTool.h"
-#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
+#include "Classes/QT/SpritesPacker/SpritePackerHelper.h"
+#include "Classes/QT/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h"
 
 #include <QApplication>
 #include <QPixmap>
@@ -32,6 +32,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, convertWaitDialog(NULL)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
+	, repackSpritesWaitDialog(NULL)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -81,6 +82,11 @@ QtMainWindow::~QtMainWindow()
 	ProjectManager::Instance()->Release();
 
     //SafeDelete(libraryModel);
+}
+
+Ui::MainWindow* QtMainWindow::GetUI()
+{
+	return ui;
 }
 
 void QtMainWindow::SetupMainMenu()
@@ -180,6 +186,11 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionDefault
                                        );
 
+	//Edit Options
+	connect(ui->actionUndo, SIGNAL(triggered()), actionHandler, SLOT(UndoAction()));
+	connect(ui->actionRedo, SIGNAL(triggered()), actionHandler, SLOT(RedoAction()));
+	actionHandler->RegisterEditActions(ResourceEditor::EDIT_COUNT, ui->actionUndo, ui->actionRedo);
+
     //View Options
     connect(ui->menuViewOptions, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuViewOptionsWillShow()));
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
@@ -229,11 +240,19 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/QtIcons/rulertool.png"));
     
  	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/QtIcons/notpassableterrain.png"));
-    
+
+	DecorateWithIcon(ui->actionUndo, QString::fromUtf8(":/QtIcons/edit_undo.png"));
+	DecorateWithIcon(ui->actionRedo, QString::fromUtf8(":/QtIcons/edit_redo.png"));
+
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
+
+	ui->mainToolBar->addAction(ui->actionUndo);
+	ui->mainToolBar->addAction(ui->actionRedo);
+	ui->mainToolBar->addSeparator();
+
     ui->mainToolBar->addAction(ui->actionMaterialEditor);
 
     ui->mainToolBar->addAction(ui->actionHeightMapEditor);
@@ -402,7 +421,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if(QEvent::ApplicationActivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationActivate");
+//            Logger::Debug("QEvent::ApplicationActivate");
             
             if(QtLayer::Instance())
             {
@@ -410,12 +429,18 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
 
-			TextureCheckConvetAndWait();
-			UpdateParticleSprites();
+			bool convertionStarted = TextureCheckConvetAndWait();
+			if(!convertionStarted)
+			{
+				// conversion hasn't been started, run repack immediately 
+				// in another case repack will be invoked in finishing callback (ConvertWaitDone)
+				UpdateParticleSprites();
+			}
+			
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationDeactivate");
+//            Logger::Debug("QEvent::ApplicationDeactivate");
             if(QtLayer::Instance())
             {
                 QtLayer::Instance()->OnSuspend();
@@ -451,8 +476,9 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	UpdateLibraryFileTypes();
 }
 
-void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
+bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
+	bool ret = false;
 	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
@@ -460,6 +486,7 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 		// signal 'readyAll' will be emited when convention finishes
 		if(TextureConvertor::Instance()->checkAndCompressAll(forceConvertAll))
 		{
+			ret = true;
 			convertWaitDialog = new QProgressDialog(this);
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(readyAll()), convertWaitDialog, SLOT(close()));
 			QObject::connect(TextureConvertor::Instance(), SIGNAL(convertStatus(const QString &, int, int)), this, SLOT(ConvertWaitStatus(const QString &, int, int)));
@@ -471,16 +498,42 @@ void QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 			convertWaitDialog->show();
 		}
 	}
+	return ret;
 }
 
 void QtMainWindow::UpdateParticleSprites()
 {
-	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+	if(repackSpritesWaitDialog != NULL)
+	{
+		return;
+	}
+
+	repackSpritesWaitDialog = new QResourceEditorProgressDialog(this, 0, true);
+
+	SpritePackerHelper::Instance()->UpdateParticleSpritesAsync();
+	
+	QObject::connect(SpritePackerHelper::Instance(), SIGNAL(readyAll()), repackSpritesWaitDialog, SLOT(close()));
+	QObject::connect(repackSpritesWaitDialog, SIGNAL(destroyed(QObject *)), this, SLOT(RepackSpritesWaitDone(QObject *)));
+
+	repackSpritesWaitDialog->setModal(true);
+	repackSpritesWaitDialog->setCancelButton(NULL);
+	repackSpritesWaitDialog->setAttribute(Qt::WA_DeleteOnClose);
+	repackSpritesWaitDialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+	repackSpritesWaitDialog->setLabelText("Repack sprites...");
+	repackSpritesWaitDialog->setRange(0, 100);
+	repackSpritesWaitDialog->setValue(0);
+	repackSpritesWaitDialog->show();
 }
 
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 {
 	convertWaitDialog = NULL;
+	UpdateParticleSprites();
+}
+
+void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
+{
+	repackSpritesWaitDialog = NULL;
 }
 
 void QtMainWindow::ConvertWaitStatus(const QString &curPath, int curJob, int jobCount)

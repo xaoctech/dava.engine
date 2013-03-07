@@ -119,6 +119,8 @@ public:
     void SetSortingKey(uint32 key);
     inline uint32 GetSortingKey();
 
+	void SetVisibilityCriteria(uint32 criteria);
+
 protected:
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
@@ -133,7 +135,7 @@ protected:
 //    ePrimitiveType type; //TODO: waiting for enums at introspection
     uint32 type;
     uint32 sortingKey;
-    
+    uint32 visiblityCriteria;
     RenderLayer * ownerLayer;
     uint32 removeIndex;
 

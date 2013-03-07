@@ -20,7 +20,9 @@
     <ClCompile Include="Classes\DXTTest.cpp" />
     <ClCompile Include="Classes\DLCSystemTests.cpp" />
     <ClCompile Include="Classes\MaterialCompilerTest.cpp" />
+    <ClCompile Include="Classes\InputTest.cpp" />
     <ClCompile Include="Classes\DPITest.cpp" />
+    <ClCompile Include="Classes\eMailTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -42,6 +44,8 @@
     <ClInclude Include="Classes\DXTTest.h" />
     <ClInclude Include="Classes\DLCSystemTests.h" />
     <ClInclude Include="Classes\MaterialCompilerTest.h" />
+    <ClInclude Include="Classes\InputTest.h" />
     <ClInclude Include="Classes\DPITest.h" />
+    <ClInclude Include="Classes\eMailTest.h" />
   </ItemGroup>
 </Project>

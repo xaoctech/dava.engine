@@ -22,13 +22,19 @@
 namespace DAVA
 {
 
-bool ColladaDocument::Open( const char * filename )
+eColladaErrorCodes ColladaDocument::Open( const char * filename )
 {
 	document = FCollada::NewTopDocument();
 	bool val = FCollada::LoadDocumentFromFile( document, FUStringConversion::ToFString(filename));
-	if (!val)return false;
+	if (!val)return COLLADA_ERROR;
 	
-	colladaScene = new ColladaScene(document->GetVisualSceneInstance());
+    FCDSceneNode *loadedRootNode = document->GetVisualSceneInstance();
+    if(!loadedRootNode)
+    {
+        return COLLADA_ERROR_OF_ROOT_NODE;
+    }
+    
+	colladaScene = new ColladaScene(loadedRootNode);
 
 	FCDGeometryLibrary * geometryLibrary = document->GetGeometryLibrary();
 
@@ -106,7 +112,7 @@ bool ColladaDocument::Open( const char * filename )
 	
 	ExportNodeAnimations(document, document->GetVisualSceneInstance());
 	colladaScene->SetExclusiveAnimation(0);
-	return true;
+	return COLLADA_OK;
 }
 	
 bool ColladaDocument::ExportNodeAnimations(FCDocument * exportDoc, FCDSceneNode * exportNode)

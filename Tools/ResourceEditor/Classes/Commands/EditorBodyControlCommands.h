@@ -3,6 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "Command.h"
+#include "BulletObject.h"
 
 class EditorBodyControl;
 
@@ -24,27 +25,30 @@ protected:
 class CommandCloneObject: public Command
 {
 public:
-	CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl);
+	CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld);
 	virtual ~CommandCloneObject();
 
 protected:
 	DAVA::SceneNode* originalNode;
 	DAVA::SceneNode* clonedNode;
 	EditorBodyControl* bodyControl;
+	btCollisionWorld* collisionWorld;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void UpdateCollision(DAVA::SceneNode* node);
 };
 
 class CommandPlaceOnLandscape: public Command
 {
 public:
-	CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::LandscapeNode* landscape);
+	CommandPlaceOnLandscape(DAVA::SceneNode* node, EditorBodyControl* bodyControl);
 
 protected:
 	DAVA::Matrix4 undoTransform;
 	DAVA::SceneNode* node;
-	DAVA::LandscapeNode* landscape;
+	EditorBodyControl* bodyControl;
 
 	DAVA::Matrix4 redoTransform;
 

@@ -1,36 +1,84 @@
 #include "CommandsManager.h"
 #include "Command.h"
 
+#include "../Qt/Main/QtMainWindowHandler.h"
+
 using namespace DAVA;
 
 CommandsManager::CommandsManager()
-    :   currentCommandIndex(-1)
+:	activeQueue(NULL)
 {
-    commandsQueue.reserve(UNDO_QUEUE_SIZE);
 }
 
 CommandsManager::~CommandsManager()
 {
-    ClearQueue();
+	ClearAllQueues();
 }
 
-void CommandsManager::ClearQueue()
+void CommandsManager::ClearAllQueues()
 {
-    currentCommandIndex = -1;
-    
-	for_each(commandsQueue.begin(), commandsQueue.end(), SafeRelease<Command>);
-    commandsQueue.clear();
+	for (QUEUE_MAP::iterator it = queueMap.begin(); it != queueMap.end(); ++it)
+	{
+		ClearQueue((*it).second);
+		SafeDelete((*it).second);
+	}
+	queueMap.clear();
+}
+
+void CommandsManager::ChangeQueue(void *scene)
+{
+	DVASSERT(scene);
+
+	QUEUE_MAP::iterator it = queueMap.find(scene);
+
+	if (it != queueMap.end())
+	{
+		activeQueue = (*it).second;
+	}
+	else
+	{
+		UndoQueue* newQueue = new UndoQueue(scene);
+		queueMap[scene] = newQueue;
+		activeQueue = newQueue;
+	}
+}
+
+void CommandsManager::ClearQueue(UndoQueue* queue)
+{
+	UndoQueue* q = queue;
+	if (!q)
+		q = activeQueue;
+
+	q->commandIndex = -1;
+	for_each(q->commands.begin(),
+			 q->commands.end(),
+			 SafeRelease<Command>);
+	q->commands.clear();
+}
+
+void CommandsManager::SceneReleased(void *scene)
+{
+	QUEUE_MAP::iterator it = queueMap.find(scene);
+
+	if (it != queueMap.end())
+	{
+		ClearQueue((*it).second);
+		SafeDelete((*it).second);
+		queueMap.erase(it);
+	}
 }
 
 void CommandsManager::ClearQueueTail()
 {
-    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
-    {
-        int32 newCount = currentCommandIndex + 1;
-		for_each(commandsQueue.begin() + newCount, commandsQueue.end(), SafeRelease<Command>);
-        
-        commandsQueue.resize(newCount);
-    }
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	{
+		int32 newCount = activeQueue->commandIndex + 1;
+		for_each(activeQueue->commands.begin() + newCount,
+				 activeQueue->commands.end(),
+				 SafeRelease<Command>);
+		activeQueue->commands.resize(newCount);
+	}
 }
 
 
@@ -48,9 +96,9 @@ void CommandsManager::Execute(Command *command)
             if(Command::STATE_VALID == command->State())
             {
                 //TODO: VK: if need only UNDO_QUEUE_SIZE commands at queue you may add code here
-                ClearQueueTail();
-                commandsQueue.push_back(SafeRetain(command));
-                ++currentCommandIndex;
+				ClearQueueTail();
+				activeQueue->commands.push_back(SafeRetain(command));
+				++activeQueue->commandIndex;
             }
             break;
 
@@ -65,26 +113,68 @@ void CommandsManager::Execute(Command *command)
             Logger::Warning("[CommandsManager::Execute] command type (%d) not processed", command->Type());
             break;
     }
+
+	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+}
+
+void CommandsManager::ExecuteAndRelease(Command* command)
+{
+	Execute(command);
+	SafeRelease(command);
 }
 
 void CommandsManager::Undo()
 {
-    if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
-    {
-        //TODO: need check state?
-        commandsQueue[currentCommandIndex]->Cancel();
-        --currentCommandIndex;
-    }
+	if ((activeQueue->commandIndex >= 0) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	{
+		//TODO: need check state?
+		activeQueue->commands[activeQueue->commandIndex]->Cancel();
+		--activeQueue->commandIndex;
+
+		QtMainWindowHandler::Instance()->UpdateUndoActionsState();
+	}
 }
 
 void CommandsManager::Redo()
 {
-    if((-1 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
-    {
-        //TODO: need check state?
-        ++currentCommandIndex;
-        commandsQueue[currentCommandIndex]->Execute();
-    }
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
+	{
+		//TODO: need check state?
+		++activeQueue->commandIndex;
+		activeQueue->commands[activeQueue->commandIndex]->Execute();
+	}
 }
 
+int32 CommandsManager::GetUndoQueueLength()
+{
+	return activeQueue->commandIndex + 1;
+}
 
+int32 CommandsManager::GetRedoQueueLength()
+{
+	return activeQueue->commands.size() - activeQueue->commandIndex - 1;
+}
+
+String CommandsManager::GetUndoCommandName()
+{
+	if ((activeQueue->commandIndex >= 0) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size()))
+	{
+		return activeQueue->commands[activeQueue->commandIndex]->commandName;
+	}
+
+	return "";
+}
+
+String CommandsManager::GetRedoCommandName()
+{
+	if ((activeQueue->commandIndex >= -1) &&
+		(activeQueue->commandIndex < (int32)activeQueue->commands.size() - 1))
+	{
+		return activeQueue->commands[activeQueue->commandIndex + 1]->commandName;
+	}
+
+	return "";
+}
