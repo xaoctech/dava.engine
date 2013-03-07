@@ -1751,9 +1751,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
@@ -2210,5 +2207,6 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
       <Filter>Internal\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
   </ItemGroup>
 </Project>
