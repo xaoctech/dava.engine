@@ -234,26 +234,27 @@
 
 static Vector<DAVA::UIEvent> activeTouches;
 
-void NSEventToUIEvent(NSEvent *nsEvent, DAVA::UIEvent &uiEvent, const NSRect &viewRect, const NSPoint  &offset)
+void NSEventToUIEvent(NSEvent *nsEvent, DAVA::UIEvent &uiEvent, const NSRect &viewRect, const NSPoint &offset)
 {
-    NSPoint p = [nsEvent locationInWindow];
+    int px = ([nsEvent locationInWindow].x + 0.6);
+    int py = ([nsEvent locationInWindow].y + 0.6);
 
     // mosemove event comes from qt, so don't apply any offset to it
     if(nsEvent.type == NSMouseMoved)
     {
-        uiEvent.physPoint.x = p.x;
-        uiEvent.physPoint.y = viewRect.size.height - p.y;
+        uiEvent.physPoint.x = px;
+        uiEvent.physPoint.y = viewRect.size.height - py;
     }
     else
     {
-        uiEvent.physPoint.x = p.x - offset.x;
-        uiEvent.physPoint.y = viewRect.size.height - (p.y - offset.y);
+        uiEvent.physPoint.x = px - offset.x;
+        uiEvent.physPoint.y = viewRect.size.height - (py - offset.y);
     }
 
-    uiEvent.physPoint.x -= 3;
-    uiEvent.physPoint.y -= 3;
+    uiEvent.physPoint.x -= 3.0;
+    uiEvent.physPoint.y -= 3.0;
 
-    // DAVA::Logger::Debug("phys _ [%f][%f][%d]", uiEvent.physPoint.x, uiEvent.physPoint.y, nsEvent.type);
+    printf("phys _ [%f][%f][%lu], offset [%f][%f]\n", uiEvent.physPoint.x, uiEvent.physPoint.y, nsEvent.type, offset.x, offset.y);
 
     uiEvent.timestamp = nsEvent.timestamp;
     uiEvent.tapCount = nsEvent.clickCount;
@@ -360,7 +361,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	touches.clear();
 }
 
-- (void) MouseMoved:(int32)x y:(int32)y
+- (void) MouseMoved:(float32)x y:(float32)y
 {
     NSRect sz = [self frame];
     NSEvent *theEvent = [NSEvent mouseEventWithType:NSMouseMoved
@@ -375,12 +376,17 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)CalcOffset:(NSEvent *)theEvent
 {
     NSPoint p = [self convertPointFromBase:[theEvent locationInWindow]];
-    offset.x = [theEvent locationInWindow].x - p.x - 0.5;
-    offset.y = [theEvent locationInWindow].y - p.y - 0.5;
+    offset.x = [theEvent locationInWindow].x - p.x;
+    offset.y = [theEvent locationInWindow].y - p.y;
+    
+    //printf("offset [%f, %f]\n", offset.x, offset.y);
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    NSPoint p = theEvent.locationInWindow;
+    printf("click [%f, %f]\n", p.x, p.y);
+    
     [self CalcOffset:theEvent];
 	[super mouseDown:theEvent];
 	[self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
