@@ -27,6 +27,7 @@ function Step (func, ...)
     print("Start step: " .. description[step_num])
     
 	local status, err = copcall(func, ...)
+	--print("STEP: Status " .. tostring(status) .. " -- Error " .. tostring(err))
 	OnTestStep(status, err)
 end
 
@@ -38,19 +39,22 @@ function Assert(func, ...)
 	print("Start assertion: " .. description[step_num])
     
 	local status, err = copcall(func, ...)
+	--print("ASSERT: Status " .. tostring(status) .. " -- Error " .. tostring(err))
 	OnTestStep(status and err, err)
 end
 
 function OnTestStep(state, err)
+	--print("ONSTEP: Status " .. tostring(state) .. " -- Error " .. tostring(err))
 	if state then
-		next_step()
 		autotestingSystem:OnTestStep(description[step_num], true)
 	else
 	    print("Error on step " .. description[step_num])
 		print(err)
 		print()
-		autotestingSystem:OnTestStep(description[step_num], false, err)
+		
+		autotestingSystem:OnTestStep(description[step_num], false, tostring(err))
 	end
+	next_step()
 end
 
 --
