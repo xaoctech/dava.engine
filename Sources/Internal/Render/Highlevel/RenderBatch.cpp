@@ -222,8 +222,8 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 		archive->SetUInt32("rb.indexCount", indexCount);
 		archive->SetUInt32("rb.startIndex", startIndex);
 		archive->SetVariant("rb.aabbox", VariantType(aabbox));
-		archive->SetVariant("rb.datasource", VariantType(dataSource));
-		archive->SetVariant("rb.maretial", VariantType(GetMaterial()));
+		archive->SetVariant("rb.datasource", VariantType((uint64)dataSource));
+		archive->SetVariant("rb.maretial", VariantType((uint64)GetMaterial()));
 		
 		KeyedArchive *mia = new KeyedArchive();
 		materialInstance->Save(mia, sceneFile);
