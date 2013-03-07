@@ -98,6 +98,7 @@ BaseObject * Light::Clone(BaseObject *dstNode)
     lightNode->diffuseColor = diffuseColor;
     lightNode->specularColor = specularColor;
 	lightNode->intensity = intensity;
+	lightNode->flags = flags;
     
     return dstNode;
 }
@@ -165,6 +166,7 @@ void Light::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     archive->SetFloat("intensity", intensity);
 
+	archive->SetUInt32("flags", flags);
 }
 
 void Light::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -190,6 +192,7 @@ void Light::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     intensity = archive->GetFloat("intensity", intensity);
 
+	flags = archive->GetUInt32("flags", flags);
     
 	//isDynamic = GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
 }
@@ -207,13 +210,21 @@ bool Light::IsDynamic()
 
 void Light::SetDynamic(bool _isDynamic)
 {
-	flags |= IS_DYNAMIC;
+	if(_isDynamic)
+	{
+		AddFlag(IS_DYNAMIC);
+	}
+	else
+	{
+		RemoveFlag(IS_DYNAMIC);
+	}
 }
 
 void Light::AddFlag(uint32 flag)
 {
     flags |= flag;
 }
+
 void Light::RemoveFlag(uint32 flag)
 {
     flags &= ~flag;
