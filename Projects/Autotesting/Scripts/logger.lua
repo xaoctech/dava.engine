@@ -14,21 +14,26 @@ local cprint = print
 --setfenv(1, M)
 
 
--- File setup
--- !!! Remove after testing
-local log = io.open("test_log.txt", "a")
-log:close()
+-- Privat functions
+local function get_date_time()
+	local date = os.date("*t",os.time())
 
-
+	return string.format("%4.0f-%02.0f-%02.0f %02.0f:%02.0f:%02.0f  ", date.year, date.month, date.day, date.hour, date.min, date.sec)
+end
 
 -- Functions
 function print(txt)
-	txt = txt or ""
+	local output
+	if txt == nil then
+		output = ""	
+	else
+		output = get_date_time() .. tostring(txt)	
+	end
 	
 	local log = io.open("test_log.txt", "a")
 	
 	local function foo()
-		log:write(txt)
+		log:write(output)
 	end
 	
 	local status, err = pcall(foo)
