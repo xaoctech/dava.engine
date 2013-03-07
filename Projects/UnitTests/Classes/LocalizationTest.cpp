@@ -19,11 +19,7 @@ LocalizationTest::LocalizationTest()
 		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
 	}
 
-#ifdef __DAVAENGINE_ANDROID__
-	srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("/mnt/sdcard/DavaProject/TestData/LocalizationTest/");
-#else
 	srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/LocalizationTest/");
-#endif
 	cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "LocalizationTest/";
 
 	FileSystem::Instance()->DeleteDirectory(cpyDir);
