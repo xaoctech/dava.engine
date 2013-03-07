@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>200</height>
+    <height>233</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,7 +25,7 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>199</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="title">
@@ -212,6 +212,52 @@ inherit:</string>
     </property>
     <property name="text">
      <string>x</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="lrSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>200</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="LRStretchLabel">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>206</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hor. Stretch:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="LRStretchLabel_2">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>206</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vert. Stretch:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="tbSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>200</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>
