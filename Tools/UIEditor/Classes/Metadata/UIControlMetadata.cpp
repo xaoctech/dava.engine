@@ -464,6 +464,45 @@ void UIControlMetadata::SetAlign(int value)
     GetActiveUIControl()->GetBackground()->SetAlign((eAlign)value);
 }
 
+float UIControlMetadata::GetLeftRightStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1.0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetLeftRightStretchCap();
+}
+
+float UIControlMetadata::GetTopBottomStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1.0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetTopBottomStretchCap();
+}
+
+void UIControlMetadata::SetLeftRightStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->GetBackground()->SetLeftRightStretchCap(value);
+}
+
+void UIControlMetadata::SetTopBottomStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->GetBackground()->SetTopBottomStretchCap(value);
+}
     
 void UIControlMetadata::SetSprite(const QString& value)
 {
