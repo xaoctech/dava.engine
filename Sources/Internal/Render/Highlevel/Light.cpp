@@ -97,6 +97,7 @@ BaseObject * Light::Clone(BaseObject *dstNode)
     lightNode->ambientColor = ambientColor;
     lightNode->diffuseColor = diffuseColor;
     lightNode->specularColor = specularColor;
+	lightNode->intensity = intensity;
     
     return dstNode;
 }
