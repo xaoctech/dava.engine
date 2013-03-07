@@ -113,7 +113,7 @@ void Core::CreateSingletons()
 		 */
 		Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 	}
-	Logger::Debug("[Core::Create] successfull");
+//	Logger::Debug("[Core::Create] successfull");
 
     new InputSystem();
     

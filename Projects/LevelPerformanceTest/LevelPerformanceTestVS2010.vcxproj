@@ -93,6 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\DeviceInfo.cpp" />
     <ClCompile Include="Classes\FileManagerWrapper.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
@@ -105,6 +106,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\Config.h" />
+    <ClInclude Include="Classes\DeviceInfo.h" />
     <ClInclude Include="Classes\FileManagerWrapper.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
