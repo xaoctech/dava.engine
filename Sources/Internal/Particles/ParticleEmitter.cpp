@@ -37,6 +37,8 @@
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FileSystem.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -146,7 +148,23 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		archive->SetString("pe.configpath", configPath);
+        String path = configPath;
+        String scenePath = sceneFile->GetScenePath();
+        
+        //TODO: temporary elegant fix for save & export of particle emitters
+        String::size_type dataSourcePos = scenePath.find("DataSource");
+        if(dataSourcePos != String::npos)
+        {
+            String::size_type pos = path.find("Data");
+            if (pos != String::npos)
+            {
+                path.replace(pos, strlen("Data"), "DataSource");
+            }
+        }
+        //ENDOF TODO
+        
+        String filename = FileSystem::Instance()->AbsoluteToRelativePath(scenePath, path);
+		archive->SetString("pe.configpath", filename);
 	}
 }
 
@@ -158,7 +176,23 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		if(archive->IsKeyExists("pe.configpath"))
 		{
-			configPath = archive->GetString("pe.configpath");
+            String filename = archive->GetString("pe.configpath");
+            String scenePath = sceneFile->GetScenePath();
+            String path = FileSystem::Instance()->GetCanonicalPath(scenePath + filename);
+
+            //TODO: temporary elegant fix for load of particle emitters
+            String::size_type dataSourcePos = scenePath.find("DataSource");
+            if(dataSourcePos != String::npos)
+            {
+                String::size_type pos = path.find("DataSource");
+                if (pos != String::npos)
+                {
+                    path.replace(pos, strlen("DataSource"), "Data");
+                }
+            }
+            //ENDOF TODO
+            
+            configPath = path;
 			LoadFromYaml(configPath);
 		}
 	}
@@ -398,7 +432,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed");
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
 		return;
 	}
 

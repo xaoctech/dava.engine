@@ -141,8 +141,9 @@ void DavaGLWidget::mouseMoveEvent(QMouseEvent *e)
     DAVA::QtLayerMacOS *qtLayer = dynamic_cast<DAVA::QtLayerMacOS *>(DAVA::QtLayer::Instance());
     if(qtLayer)
     {
-        const QRect geometry = this->geometry();
-        qtLayer->MouseMoved(e->x() + geometry.x(), -e->y() - geometry.y());
+        //const QRect geometry = this->geometry();
+        //qtLayer->MouseMoved(e->x() + geometry.x(), -e->y() - geometry.y());
+        qtLayer->MouseMoved(e->x(), e->y());
     }
 
     QWidget::mouseMoveEvent(e);
@@ -182,6 +183,6 @@ void DavaGLWidget::Render()
 
 void DavaGLWidget::Quit()
 {
-    DAVA::Logger::Info("[QUIT]");
+//    DAVA::Logger::Info("[QUIT]");
     exit(0);
 }
