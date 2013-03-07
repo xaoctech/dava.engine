@@ -79,21 +79,6 @@ DefaultScreen* ScreenWrapper::GetActiveScreen()
 	return screen;
 }
 
-Vector2 ScreenWrapper::TranslateScreenPoint(const Vector2& point)
-{
-	Vector2 newPoint = point;
-	QWidget* mainWindow = GetMainWindow();
-	if (qtScreen && mainWindow)
-	{
-		QPoint qtPoint(point.x, point.y);
-		qtPoint = qtScreen->mapFrom(mainWindow, qtPoint);
-		newPoint.x = qtPoint.x();
-		newPoint.y = qtPoint.y();
-	}
-
-	return newPoint;
-}
-
 QWidget* ScreenWrapper::GetMainWindow()
 {
 	if (!mainWindow)
