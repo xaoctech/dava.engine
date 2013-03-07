@@ -241,8 +241,8 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		startIndex = archive->GetUInt32("rb.startIndex", startIndex);
 		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
 
-		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.datasource")->AsPointer()));
-		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.maretial")->AsPointer()));
+		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
+		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.maretial")->AsUInt64()));
 
 		SetPolygonGroup(pg);
 		SetMaterial(mat);
