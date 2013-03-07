@@ -33,6 +33,7 @@
 #include "DAVAEngine.h"
 #include "Test.h"
 #include "ResultScreen.h"
+#include "Database/MongodbClient.h"
 
 class TestScreen;
 
@@ -41,7 +42,12 @@ class GameCore : public DAVA::ApplicationCore
 public:	
 	GameCore();
 	virtual ~GameCore();
-	
+    
+    static GameCore * Instance()
+	{
+		return (GameCore*) DAVA::Core::GetApplicationCore();
+	};
+    
 	virtual void OnAppStarted();
 	virtual void OnAppFinished();
 	
@@ -56,12 +62,18 @@ public:
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	virtual void OnDeviceLocked() {}
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-
+    
+    bool FlushToDB(const String & levelName, const Map<String, String> &results, const String &imagePath);
+    
 private:
+    bool ConnectToDB();
+
+    MongodbClient * dbClient;
+	int32 currentRunId;
+
 	DAVA::Cursor * cursor;
-	
+    
 	int32 testCount;
-	
 	List<Test*> tests;
 	ResultScreen *resultScreen;
 	

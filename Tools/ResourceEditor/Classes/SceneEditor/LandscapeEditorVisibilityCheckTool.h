@@ -51,19 +51,21 @@ public:
 	void RestorePointState(const Vector2& point, bool pointIsSet, Image* image);
 	void SetVisibilityPoint(const Vector2& point);
 
-	void StoreAreaState(Image** image);
+	Image* StoreAreaState();
 	void RestoreAreaState(Image* image);
 	void SetVisibilityArea(const Vector2& visibilityAreaCenter, uint32 visibilityAreaSize);
 
+	virtual void UpdateLandscapeTilemap(Texture* texture);
+
 protected:
+	void CreatePointUndoAction();
+	void CreateAreaUndoAction();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
-    virtual void UndoAction();
-    virtual void RedoAction();
 	
     virtual void RecreateHeightmapNode();
 	
@@ -89,9 +91,6 @@ protected:
 	
 	eVisibilityCheckToolState state;
 
-    EditorHeightmap *editedHeightmap;
-    Heightmap *savedHeightmap;
-
 	float32 pointsDensity;
 	float32 visibilityPointHeight;
 	Vector<float32> areaPointHeights;
@@ -114,6 +113,7 @@ protected:
 	uint32		visibilityAreaSize;
 
 	bool		isCursorTransparent;
+	bool isFogEnabled;
 };
 
 

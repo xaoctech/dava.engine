@@ -470,6 +470,11 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
+        if(solid == 0 && (selection->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || GetEmitter(selection)))
+        {
+            // Magic fix for correct node selection
+            solid = selection;
+        }
 		if(solid == 0)
 		{
 			solid = GetLodParent(selection);
@@ -478,11 +483,8 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		{
 			selection = solid;
 		}
-			
-		
-		proxy = GetHighestProxy(selection);
-		if (proxy == 0)
-			proxy = selection;
+
+        proxy = selection;
 	}
 	else
 	{
@@ -509,25 +511,6 @@ void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
 }
 
 
-SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
-{
-    if(!curr) return NULL;
-    
-	int32 cc = curr->GetChildrenCount();
-	if (cc == 0)
-		return GetHighestProxy(curr->GetParent());
-	if (cc > 1)
-		return 0;
-	if (cc == 1)
-    {
-        SceneNode * result = GetHighestProxy(curr->GetParent());
-	    if (result == 0)
-            return curr;
-        else return result;
-        
-    }
-    return NULL;
-}
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {

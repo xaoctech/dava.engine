@@ -79,17 +79,17 @@ public:
 	/**
 		\brief Set color.
 	*/
-	virtual void SetColor(float32 r, float32 g, float32 b, float32 a);
+	DAVA_DEPRECATED(virtual void SetColor(float32 r, float32 g, float32 b, float32 a));
 
 	/**
 		\brief Set color.
 	*/
-	virtual void SetColor(const Color & color);
+	DAVA_DEPRECATED(virtual void SetColor(const Color & color));
 
 	/**
 		\brief Get color.
 	*/
-	virtual const Color & GetColor() const;
+	DAVA_DEPRECATED(virtual const Color & GetColor() const);
 	
 	/**
 		\brief Set size.

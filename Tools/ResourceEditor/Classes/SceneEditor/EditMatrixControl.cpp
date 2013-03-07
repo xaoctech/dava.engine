@@ -47,7 +47,6 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
     
     Font *f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(12);
-    f->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
     
     float32 spacing = 2.0f;
     float32 buttonWidth = (_rect.dx - spacing * 2.0f) / 4.0f;
