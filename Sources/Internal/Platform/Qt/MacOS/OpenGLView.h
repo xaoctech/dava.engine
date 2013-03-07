@@ -57,7 +57,7 @@ using namespace DAVA;
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
-- (void) MouseMoved:(int32)x y:(int32)y;
+- (void) MouseMoved:(float32)x y:(float32)y;
 - (void) CalcOffset:(NSEvent *) theEvent;
 - (void) LockKeyboardInput:(bool) locked;
 
