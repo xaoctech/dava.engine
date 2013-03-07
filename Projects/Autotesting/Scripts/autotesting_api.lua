@@ -40,7 +40,7 @@ function OnError(msg)
     autotestingSystem:OnError(description[step_num])
 end
 
-function Assert(func, ..)
+function Assert(func, ...)
     --local isPassed = (expression)
     --autotestingSystem:OnTestAssert(msg, isPassed)
     --if not isPassed then
