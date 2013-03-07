@@ -367,7 +367,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 {
 	if(!texture) return;
 	
-	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texturePathname);
+	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), texturePathname);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
 	if(texture == Texture::GetPinkPlaceholder())

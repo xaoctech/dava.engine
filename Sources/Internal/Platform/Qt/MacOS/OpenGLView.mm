@@ -38,12 +38,12 @@
 
 -(id) initWithFrame: (NSRect) frameRect
 {
-	NSLog(@"[CoreMacOSPlatform] OpenGLView Init");
+//	NSLog(@"[CoreMacOSPlatform] OpenGLView Init");
 	
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
-	NSLog(@"Display bpp: %ld", [self displayBitsPerPixel:kCGDirectMainDisplay]);
+//	NSLog(@"Display bpp: %ld", [self displayBitsPerPixel:kCGDirectMainDisplay]);
 #else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
-	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
+//	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 	
 
@@ -73,7 +73,7 @@
 	
     // Just as a diagnostic, report the renderer ID that this pixel format binds to.  CGLRenderers.h contains a list of known renderers and their corresponding RendererID codes.
     [pixelFormat getValues:&rendererID forAttribute:NSOpenGLPFARendererID forVirtualScreen:0];
-    NSLog(@"[CoreMacOSPlatform] NSOpenGLView pixelFormat RendererID = %08x", (unsigned)rendererID);
+//    NSLog(@"[CoreMacOSPlatform] NSOpenGLView pixelFormat RendererID = %08x", (unsigned)rendererID);
 	
     self = [super initWithFrame:frameRect pixelFormat:pixelFormat];
 	if (self)

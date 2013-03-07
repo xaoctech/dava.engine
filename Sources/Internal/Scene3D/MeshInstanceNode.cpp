@@ -785,7 +785,7 @@ void MeshInstanceNode::BakeTransforms()
         else
         {
             canBakeEverything = false; 
-            Logger::Warning("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+//            Logger::Warning("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
         }
     }   
     if (canBakeEverything)

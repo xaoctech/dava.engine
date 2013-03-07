@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0260582716E79799003BE248 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0260582516E79799003BE248 /* DeviceInfo.cpp */; };
 		49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49D80A4816E0B9A400367B12 /* TextureHelper.cpp */; };
 		49DE0D3C1647BC09004965F9 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49DE0D3A1647BB9B004965F9 /* libFramework.a */; };
 		49DE0D471647BC8E004965F9 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DE0D3F1647BC8E004965F9 /* FileManagerWrapper.cpp */; };
@@ -53,6 +54,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0260582416E79799003BE248 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Classes/Config.h; sourceTree = "<group>"; };
+		0260582516E79799003BE248 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceInfo.cpp; path = Classes/DeviceInfo.cpp; sourceTree = "<group>"; };
+		0260582616E79799003BE248 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceInfo.h; path = Classes/DeviceInfo.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -204,6 +208,9 @@
 				FEC3CA711283557F00541220 /* GameCore.cpp */,
 				FEC3CA721283557F00541220 /* GameCore.h */,
 				FEC3CA6C1283557F00541220 /* AppScreens.h */,
+				0260582416E79799003BE248 /* Config.h */,
+				0260582516E79799003BE248 /* DeviceInfo.cpp */,
+				0260582616E79799003BE248 /* DeviceInfo.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -335,6 +342,7 @@
 				49DE0D4A1647BC8E004965F9 /* Test.cpp in Sources */,
 				49F12A8716514373008EF307 /* LandscapeTestData.cpp in Sources */,
 				49D80A4A16E0B9A400367B12 /* TextureHelper.cpp in Sources */,
+				0260582716E79799003BE248 /* DeviceInfo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,6 +423,7 @@
 					./../../Libs/include/,
 				);
 				LIBRARY_SEARCH_PATHS = ../../Libs/libs/;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -440,6 +449,7 @@
 					./../../Libs/include/,
 				);
 				LIBRARY_SEARCH_PATHS = ../../Libs/libs/;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
