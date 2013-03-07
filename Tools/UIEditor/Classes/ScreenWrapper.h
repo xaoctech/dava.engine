@@ -45,7 +45,6 @@ public:
 	float GetScale() const;
 	void UpdateScale(float scaleDelta);
 		
-	Vector2 TranslateScreenPoint(const Vector2& point);
 	DefaultScreen* GetActiveScreen();
 	
 	void RequestUpdateCursor();
