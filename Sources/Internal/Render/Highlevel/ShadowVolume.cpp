@@ -511,7 +511,7 @@ void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 		if(archive->IsKeyExists("sv.spg"))
 		{
-			pg = (PolygonGroup *) sceneFile->GetNodeByPointer((uint64) archive->GetVariant("sv.spg")->AsPointer());
+			pg = (PolygonGroup *) sceneFile->GetNodeByPointer(archive->GetVariant("sv.spg")->AsUInt64());
 			if(NULL != pg)
 			{
 				SetPolygonGroup(pg);
