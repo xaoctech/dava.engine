@@ -507,7 +507,7 @@ void QtMainWindowHandler::ReloadAsDXT()
 
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
 {
-    Execute(new CommandToggleSetSwitchIndex(value,state));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
 void QtMainWindowHandler::ToggleCustomColors()
