@@ -335,6 +335,7 @@
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
+    <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp" />
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
@@ -381,6 +382,8 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -531,6 +534,7 @@
     <ClCompile Include="_GeneratedQt\DockSceneGraph\QSceneGraphTreeView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp" />
@@ -809,6 +813,7 @@
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneEditorScreenMainCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
+    <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h" />
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\TilemapEditorCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
@@ -858,6 +863,8 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
@@ -1006,6 +1013,7 @@
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
     <None Include="DataQt\texturebrowser.ui" />
+    <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>
