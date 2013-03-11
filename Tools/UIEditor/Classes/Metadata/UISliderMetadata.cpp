@@ -178,14 +178,10 @@ void UISliderMetadata::SetSliderThumbSpriteFrame(int value)
 	}	
 	
 	Sprite* thumbSprite = thumbButton->GetBackground()->GetSprite();
-	SafeRetain(thumbSprite);
-
 	if (thumbSprite && thumbSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetThumbSprite(thumbSprite, value);
 	}
-
-	SafeRelease(thumbSprite);
 }
 
 QString UISliderMetadata::GetSliderMinSprite() const
@@ -262,14 +258,10 @@ void UISliderMetadata::SetSliderMinSpriteFrame(int value)
 	}
 		
 	Sprite* minSprite = bgMin->GetSprite();
-	SafeRetain(minSprite);
-
 	if (minSprite && minSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetMinSprite(minSprite, value);
 	}
-	
-	SafeRelease(minSprite);
 }
 
 int UISliderMetadata::GetSliderMinDrawType() const
@@ -366,14 +358,10 @@ void UISliderMetadata::SetSliderMaxSpriteFrame(int value)
 	}
 	
 	Sprite* maxSprite = bgMax->GetSprite();
-	SafeRetain(maxSprite);
-
 	if (maxSprite && maxSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetMaxSprite(maxSprite, value);
 	}
-	
-	SafeRelease(maxSprite);
 }
 
 int UISliderMetadata::GetSliderMaxDrawType() const
