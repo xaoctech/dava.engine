@@ -335,8 +335,10 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 						if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 						{
-							QString command;
-							generateCommandString(descriptor, command);
+							DAVA::String sourcePath = descriptor->GetSourceTexturePathname();
+
+							QString command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, *descriptor).c_str();
+							DAVA::Logger::Info("%s", command.toStdString().c_str());
 
 							QProcess p;
 							p.start(command);
@@ -631,17 +633,4 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 	}
 
 	return qtImage;
-}
-
-void TextureConvertor::generateCommandString(const TextureDescriptor *descriptor, QString &command)
-{
-    String source = descriptor->GetSourceTexturePathname();
-#if defined(__DAVAENGINE_WIN32__)
-    command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
-    command.remove(2,command.length() - 2);// remove all after disk name
-    source.insert(0,command.toStdString());// update SourceTexturePathname for win
-#else
-    command += "/";
-#endif
-    command += PVRConverter::Instance()->GetCommandLinePVR(source, *descriptor).c_str();
 }
