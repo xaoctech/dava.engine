@@ -12,6 +12,8 @@ public:
 	ProjectManager();
 	~ProjectManager();
 
+	bool isOpened();
+
 	QString CurProjectPath();
 	QString CurProjectDataSourcePath();
 

@@ -17,6 +17,11 @@ ProjectManager::~ProjectManager()
 
 }
 
+bool ProjectManager::isOpened()
+{
+	return (curProjectPath != "");
+}
+
 QString ProjectManager::CurProjectPath()
 {
 	return curProjectPath;
