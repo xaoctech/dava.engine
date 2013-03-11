@@ -74,8 +74,6 @@ void GameCore::OnAppStarted()
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
-
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
@@ -93,6 +91,7 @@ void GameCore::OnAppStarted()
     else
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
+        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 	
 	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using

@@ -502,7 +502,33 @@ List<UIControl* >& UITextField::GetRealChildren()
 	return realChildren;
 }
 
-
+UIControl* UITextField::Clone()
+{
+	UITextField *t = new UITextField();
+	t->CopyDataFrom(this);
+	return t;
+}
+	
+void UITextField::CopyDataFrom(UIControl *srcControl)
+{
+	UIControl::CopyDataFrom(srcControl);
+	UITextField* t = (UITextField*) srcControl;
+		
+	cursorTime = t->cursorTime;
+    showCursor = t->showCursor;
+	SetText(t->text);
+	SetRect(t->GetRect());
+	
+	cursorBlinkingTime = t->cursorBlinkingTime;
+	if (t->staticText)
+	{
+		staticText = (UIStaticText*)t->staticText->Clone();
+		AddControl(staticText);
+	}
+	if (t->textFont)
+		SetFont(t->textFont);
+}
+	
 }; // namespace
 
 

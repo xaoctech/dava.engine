@@ -5,12 +5,13 @@
 #include "SceneValidator.h"
 
 #include "../Qt/Main/QtUtils.h"
+#include "../Qt/Scene/SceneData.h"
+#include "../Qt/Scene/SceneDataManager.h"
 
 
 SceneInfoControl::SceneInfoControl(const Rect &rect)
     :   UIControl(rect)
 {
-    workingScene = NULL;
     SetInputEnabled(false);
     
     sceneInfo = new PropertyList(Rect(0, 0, rect.dx, rect.dy), NULL);
@@ -34,7 +35,7 @@ void SceneInfoControl::WillAppear()
 
 void SceneInfoControl::UpdateInfo(BaseObject * owner, void * userData, void * callerData)
 {
-    if(workingScene)
+    if(GetWorkingScene())
     {
         InvalidateRenderStats();
     }
@@ -77,7 +78,6 @@ void SceneInfoControl::SetStringInfoValue(const String &key, const String &newSt
 
 void SceneInfoControl::SetWorkingScene(Scene *scene)
 {
-    workingScene = scene;
     renderStats.Clear();
 }
 
@@ -87,6 +87,7 @@ void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
 //    SetIntInfoValue("Text.Memory", size);
     SetStringInfoValue("Text.Memory", SizeInBytesToString((float32)size));
 
+    Scene *workingScene = GetWorkingScene();
     if(workingScene)
     {
         Vector<Material *>materials;
@@ -135,3 +136,10 @@ void SceneInfoControl::SetNodesCount(int32 nodesCount)
     SetIntInfoValue("Nodes At Scene", nodesCount);
     RedrawCells();
 }
+
+Scene * SceneInfoControl::GetWorkingScene() const
+{
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+    return sceneData->GetScene();
+}
+

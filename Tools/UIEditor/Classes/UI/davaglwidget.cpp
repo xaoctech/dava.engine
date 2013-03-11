@@ -96,21 +96,11 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 	QWidget::resizeEvent(e);
 
 	QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
-
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
-	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 
 	//YZ fix load resource
 	Core::Instance()->RegisterAvailableResourceSize((int32)e->size().width(), (int32)e->size().height(), "Gfx");
-}
-
-void DavaGLWidget::moveEvent(QMoveEvent *e)
-{
-	QWidget::moveEvent(e);
-
-	QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
-
-	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
+	ScreenWrapper::Instance()->RequestUpdateView();
 }
 
 void DavaGLWidget::showEvent(QShowEvent *e)
@@ -169,8 +159,8 @@ void DavaGLWidget::mouseMoveEvent(QMouseEvent *e)
 	DAVA::QtLayerMacOS *qtLayer = dynamic_cast<DAVA::QtLayerMacOS *>(DAVA::QtLayer::Instance());
 	if(qtLayer)
 	{
-		const QRect geometry = this->geometry();
-		qtLayer->MouseMoved(e->x() + geometry.x(), -e->y() - geometry.y());
+        QPointF p = e->posF();
+		qtLayer->MouseMoved((float32) p.x(), (float32) p.y());
 	}
 
 	QWidget::mouseMoveEvent(e);

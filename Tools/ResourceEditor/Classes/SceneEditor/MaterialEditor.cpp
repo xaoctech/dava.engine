@@ -73,14 +73,16 @@ MaterialEditor::MaterialEditor()
     ControlsFactory::CusomizeListControl(materialsList);
     AddControl(materialsList);
     UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, ControlsFactory::BUTTON_HEIGHT));
-    text->SetFont(ControlsFactory::GetFontLight());
+    text->SetFont(ControlsFactory::GetFont12());
     text->SetText(LocalizedString(L"materialeditor.materials"));
+	text->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(text);
     SafeRelease(text);
     
     float32 textY = (GetRect().dy - ControlsFactory::BUTTON_HEIGHT ) / 2.f;
     noMaterials = new UIStaticText(Rect(materialListWidth, textY, GetRect().dx - materialListWidth, (float32)ControlsFactory::BUTTON_HEIGHT));
-    noMaterials->SetFont(ControlsFactory::GetFontLight());
+    noMaterials->SetFont(ControlsFactory::GetFont12());
+	noMaterials->SetTextColor(ControlsFactory::GetColorLight());
     noMaterials->SetText(LocalizedString(L"materialeditor.nomaterials"));
     
     selectedMaterial = -1;

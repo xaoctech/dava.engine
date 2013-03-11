@@ -391,6 +391,8 @@ bool HashMap<K, V>::HashMapIterator::operator!=(const typename HashMap<K, V>::Ha
 template <typename K, typename V>
 typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operator++()
 {
+	// operator ++iterator
+
 	if(NULL != current_item)
 	{
 		if(NULL != current_item->next)
@@ -420,7 +422,9 @@ typename HashMap<K, V>::HashMapIterator& HashMap<K, V>::HashMapIterator::operato
 template <typename K, typename V>
 typename HashMap<K, V>::HashMapIterator HashMap<K, V>::HashMapIterator::operator++(int count)
 {
-	HashMap<K, V>::HashMapIterator tmp = *this;
+	// operator iterator++
+
+	HashMapIterator tmp = *this;
 
 	while(0 < count--)
 	{

@@ -183,8 +183,8 @@ YamlNode * FTFont::SaveToYamlNode()
 {
 	YamlNode *node = Font::SaveToYamlNode();
 	//Type
-	node->Set("type", "FTFont", true);
-	node->Set("name", internalFont->fontPath, true);
+	node->Set("type", "FTFont");
+	node->Set("name", internalFont->fontPath);
 
 	return node;
 }

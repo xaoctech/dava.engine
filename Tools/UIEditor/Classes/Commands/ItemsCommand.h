@@ -110,7 +110,7 @@ private:
 class ChangeNodeHeirarchy: public BaseCommand
 {
 public:
-	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
+	ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items);
 
 	virtual void Execute();
 	virtual void Rollback();
@@ -125,10 +125,21 @@ private:
 	HierarchyTreeNode::HIERARCHYTREENODESIDLIST items;
 
 	// Previous parents for the "items" list.
-	typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID, HierarchyTreeNode::HIERARCHYTREENODEID> PARENTNODESMAP;
+	struct PreviousState
+	{
+		HierarchyTreeNode::HIERARCHYTREENODEID parent;
+		HierarchyTreeNode::HIERARCHYTREENODEID addedAfter;
+		PreviousState(HierarchyTreeNode::HIERARCHYTREENODEID parent, HierarchyTreeNode::HIERARCHYTREENODEID addedAfter)
+		{
+			this->parent = parent;
+			this->addedAfter = addedAfter;
+		}
+	};
+	typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID, PreviousState> PARENTNODESMAP;
 	typedef PARENTNODESMAP::iterator PARENTNODESMAPITER;
 
 	PARENTNODESMAP previousParents;
+	HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID;
 };
 
 #endif /* defined(__UIEditor__ItemsCommand__) */

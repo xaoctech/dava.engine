@@ -37,6 +37,8 @@
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FileSystem.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -146,7 +148,8 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		archive->SetString("pe.configpath", configPath);
+        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		archive->SetString("pe.configpath", filename);
 	}
 }
 
@@ -158,7 +161,9 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		if(archive->IsKeyExists("pe.configpath"))
 		{
-			configPath = archive->GetString("pe.configpath");
+            String filename = archive->GetString("pe.configpath");
+            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
+            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
 			LoadFromYaml(configPath);
 		}
 	}
@@ -398,7 +403,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed");
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
 		return;
 	}
 

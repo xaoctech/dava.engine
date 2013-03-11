@@ -92,6 +92,7 @@ private:
 	void DeleteSelectedControls();
 	
 	void ApplySizeDelta(const Vector2& delta);
+	bool IsNeedApplyResize() const;
 	void ResetSizeDelta();
 	void ResizeControl();
 	ResizeType GetResizeType(const HierarchyTreeControlNode* selectedControlNode, const Vector2& point) const;

@@ -1011,7 +1011,7 @@ void SceneNode::SetLodVisible(bool isLodVisible)
 	int32 count = GetChildrenCount();
 	for(int32 i = 0; i < count; ++i)
 	{
-		GetChild(i)->SetVisible(isLodVisible);
+		GetChild(i)->SetLodVisible(isLodVisible);
 	}
 }
 
