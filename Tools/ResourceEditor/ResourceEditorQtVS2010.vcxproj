@@ -64,7 +64,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions);__DAVAENGINE_BEAST__</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -122,7 +122,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions);__DAVAENGINE_BEAST__</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -325,6 +325,7 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp" />
+    <ClCompile Include="Classes\Commands\EditCommands.cpp" />
     <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp" />
@@ -334,6 +335,7 @@
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneEditorScreenMainCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
+    <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp" />
     <ClCompile Include="Classes\Commands\TextureOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\TilemapEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
@@ -354,7 +356,6 @@
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.cpp" />
-    <ClCompile Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.cpp" />
@@ -381,6 +382,8 @@
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp" />
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
@@ -399,6 +402,7 @@
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialView.cpp" />
     <ClCompile Include="Classes\Qt\MaterialBrowser\MaterialViewModel.cpp" />
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp" />
+    <ClCompile Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.cpp" />
     <ClCompile Include="Classes\Qt\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp" />
@@ -420,6 +424,7 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneDataManager.cpp" />
+    <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureConvertor.cpp" />
@@ -500,7 +505,6 @@
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
@@ -530,6 +534,7 @@
     <ClCompile Include="_GeneratedQt\DockSceneGraph\QSceneGraphTreeView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneGraph\SceneGraphModel_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp" />
@@ -546,6 +551,7 @@
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialViewModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialBrowser\MaterialView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Project\ProjectManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp" />
@@ -556,6 +562,7 @@
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertorWork_moc.cpp" />
@@ -777,6 +784,7 @@
     <ClInclude Include="Classes\Collada\ColladaCamera.h" />
     <ClInclude Include="Classes\Collada\ColladaConvert.h" />
     <ClInclude Include="Classes\Collada\ColladaDocument.h" />
+    <ClInclude Include="Classes\Collada\ColladaErrorCodes.h" />
     <ClInclude Include="Classes\Collada\ColladaIncludes.h" />
     <ClInclude Include="Classes\Collada\ColladaLight.h" />
     <ClInclude Include="Classes\Collada\ColladaMaterial.h" />
@@ -795,6 +803,7 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\CustomColorCommands.h" />
+    <ClInclude Include="Classes\Commands\EditCommands.h" />
     <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h" />
@@ -804,6 +813,7 @@
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneEditorScreenMainCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
+    <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h" />
     <ClInclude Include="Classes\Commands\TextureOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\TilemapEditorCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
@@ -827,7 +837,6 @@
     <ClInclude Include="Classes\LightmapsPacker.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneDataHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSceneModelHelper.h" />
-    <ClInclude Include="Classes\ParticlesEditorQT\Helpers\ParticlesEditorSpritePackerHelper.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\BaseParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EffectParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\EmitterContainerNode.h" />
@@ -854,6 +863,8 @@
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModelStateHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
@@ -872,6 +883,7 @@
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialView.h" />
     <ClInclude Include="Classes\Qt\MaterialBrowser\MaterialViewModel.h" />
     <ClInclude Include="Classes\Qt\Project\ProjectManager.h" />
+    <ClInclude Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h" />
     <ClInclude Include="Classes\Qt\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager.h" />
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h" />
@@ -893,6 +905,7 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneData.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneDataManager.h" />
+    <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertor.h" />
@@ -975,7 +988,6 @@
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
-    <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
@@ -1000,7 +1012,8 @@
     <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
-    <None Include="DataQt\texturedialog.ui" />
+    <None Include="DataQt\texturebrowser.ui" />
+    <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>

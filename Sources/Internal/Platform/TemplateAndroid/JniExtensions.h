@@ -12,6 +12,7 @@ class JniExtension
 {
 public:
 	JniExtension(const char* className);
+	virtual ~JniExtension();
 
 	jmethodID GetMethodID(const char *methodName, const char *paramCode);
 
@@ -24,6 +25,8 @@ protected:
 	jclass javaClass;
 	JNIEnv* env;
 	JavaVM* vm;
+
+	bool isThreadAttached;
 };
 
 }

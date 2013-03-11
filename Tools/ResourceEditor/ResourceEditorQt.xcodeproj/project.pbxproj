@@ -21,6 +21,7 @@
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 499922FA16CBC5A500313367 /* EditCommands.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
@@ -229,7 +230,6 @@
 		5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F495E15B44B7A0038AF3A /* UICheckBox.cpp */; };
 		5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496215B44B7A0038AF3A /* UISliderWithText.cpp */; };
 		5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */; };
-		5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */; };
 		5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */; };
 		5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */; };
 		5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B915B44B910038AF3A /* ImagePacker.cpp */; };
@@ -264,7 +264,14 @@
 		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
-		8471AC8416A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */; };
+		841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */; };
+		841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */; };
+		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
+		8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */; };
+		84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */; };
+		84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */; };
+		84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */; };
+		84221EE016E6318E000E7D74 /* SetSwitchIndexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */; };
 		8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8516A4136800129793 /* DXTConverter.cpp */; };
 		8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8916A414D900129793 /* ImageSplitter.cpp */; };
 		8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */; };
@@ -402,8 +409,8 @@
 		E838D8D516B00AAB006F1721 /* QtPropertyItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8CE16B00AAB006F1721 /* QtPropertyItemDelegate.cpp */; };
 		E838D8D616B00AAB006F1721 /* QtPropertyModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D8D016B00AAB006F1721 /* QtPropertyModel.cpp */; };
 		E84779B11669009B004CD20A /* ParticleEffectPropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */; };
-		E898A2D516BD284200732C04 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E898A2D416BD27B600732C04 /* libFrameworkQt.a */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
+		E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */; };
 		E8C9B3E3166794EB00810605 /* ColorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9B3E1166794EB00810605 /* ColorControl.cpp */; };
 		E8DD07BF16B054210013F115 /* BaseParticleEditorContentWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
@@ -418,25 +425,18 @@
 			remoteGlobalIDString = C315DFDB097840EB005D77BE;
 			remoteInfo = FColladaS;
 		};
-		E898A2D116BD27B600732C04 /* PBXContainerItemProxy */ = {
+		E8BD1EFC16DE40E300499E18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E898A2CB16BD27B500732C04 /* Framework.xcodeproj */;
+			containerPortal = E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = Framework;
 		};
-		E898A2D316BD27B600732C04 /* PBXContainerItemProxy */ = {
+		E8BD1EFE16DE40E300499E18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E898A2CB16BD27B500732C04 /* Framework.xcodeproj */;
+			containerPortal = E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = E898A2C416BD265400732C04;
-			remoteInfo = FrameworkQt;
-		};
-		E898A2D616BD28B000732C04 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E898A2CB16BD27B500732C04 /* Framework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E898A05116BD265400732C04;
 			remoteInfo = FrameworkQt;
 		};
 /* End PBXContainerItemProxy section */
@@ -473,6 +473,8 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		499922FA16CBC5A500313367 /* EditCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditCommands.cpp; path = Classes/Commands/EditCommands.cpp; sourceTree = "<group>"; };
+		499922FB16CBC5A500313367 /* EditCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditCommands.h; path = Classes/Commands/EditCommands.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -967,8 +969,6 @@
 		5C7F496315B44B7A0038AF3A /* UISliderWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderWithText.h; path = Classes/SceneEditor/UISliderWithText.h; sourceTree = "<group>"; };
 		5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIZoomControl.cpp; path = Classes/SceneEditor/UIZoomControl.cpp; sourceTree = "<group>"; };
 		5C7F496515B44B7A0038AF3A /* UIZoomControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIZoomControl.h; path = Classes/SceneEditor/UIZoomControl.h; sourceTree = "<group>"; };
-		5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UNDOManager.cpp; path = Classes/SceneEditor/UNDOManager.cpp; sourceTree = "<group>"; };
-		5C7F496715B44B7A0038AF3A /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UNDOManager.h; path = Classes/SceneEditor/UNDOManager.h; sourceTree = "<group>"; };
 		5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineParser.cpp; path = Classes/TexturePacker/CommandLineParser.cpp; sourceTree = "<group>"; };
 		5C7F49B615B44B910038AF3A /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineParser.h; path = Classes/TexturePacker/CommandLineParser.h; sourceTree = "<group>"; };
 		5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DefinitionFile.cpp; path = Classes/TexturePacker/DefinitionFile.cpp; sourceTree = "<group>"; };
@@ -1039,8 +1039,19 @@
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
-		8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorSpritePackerHelper.cpp; sourceTree = "<group>"; };
-		8471AC8316A40F2200129793 /* ParticlesEditorSpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorSpritePackerHelper.h; sourceTree = "<group>"; };
+		841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QResourceEditorProgressDialog.cpp; path = Classes/Qt/QResourceEditorProgressDialog/QResourceEditorProgressDialog.cpp; sourceTree = "<group>"; };
+		841703F816CBA49C00F1023D /* QResourceEditorProgressDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QResourceEditorProgressDialog.h; path = Classes/Qt/QResourceEditorProgressDialog/QResourceEditorProgressDialog.h; sourceTree = "<group>"; };
+		841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QResourceEditorProgressDialog_moc.cpp; path = _GeneratedQt/QResourceEditorProgressDialog/QResourceEditorProgressDialog_moc.cpp; sourceTree = "<group>"; };
+		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
+		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
+		8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper_moc.cpp; path = _GeneratedQt/SpritesPacker/SpritePackerHelper_moc.cpp; sourceTree = "<group>"; };
+		84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexCommands.cpp; path = Classes/Commands/SetSwitchIndexCommands.cpp; sourceTree = "<group>"; };
+		84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexCommands.h; path = Classes/Commands/SetSwitchIndexCommands.h; sourceTree = "<group>"; };
+		84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexHelper.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.cpp; sourceTree = "<group>"; };
+		84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexHelper.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h; sourceTree = "<group>"; };
+		84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexView.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.cpp; sourceTree = "<group>"; };
+		84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexView.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.h; sourceTree = "<group>"; };
+		84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexView_moc.cpp; path = _GeneratedQt/DockSetSwitchIndex/SetSwitchIndexView_moc.cpp; sourceTree = "<group>"; };
 		8471AC8516A4136800129793 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
 		8471AC8616A4136800129793 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		8471AC8916A414D900129793 /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitter.cpp; path = Classes/ImageSplitter/ImageSplitter.cpp; sourceTree = "<group>"; };
@@ -1067,6 +1078,7 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
 		E838D4D716AFFED4006F1721 /* CustomColorsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsView.cpp; sourceTree = "<group>"; };
 		E838D4D816AFFED4006F1721 /* CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsView.h; sourceTree = "<group>"; };
 		E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
@@ -1259,8 +1271,8 @@
 		E838D8D116B00AAB006F1721 /* QtPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyModel.h; sourceTree = "<group>"; };
 		E84779AF1669009B004CD20A /* ParticleEffectPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEffectPropertyControl.cpp; path = Classes/SceneEditor/ParticleEffectPropertyControl.cpp; sourceTree = "<group>"; };
 		E84779B01669009B004CD20A /* ParticleEffectPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEffectPropertyControl.h; path = Classes/SceneEditor/ParticleEffectPropertyControl.h; sourceTree = "<group>"; };
-		E898A2CB16BD27B500732C04 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
+		E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		E8C9B3E1166794EB00810605 /* ColorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorControl.cpp; path = Classes/SceneEditor/ColorControl.cpp; sourceTree = "<group>"; };
 		E8C9B3E2166794EB00810605 /* ColorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorControl.h; path = Classes/SceneEditor/ColorControl.h; sourceTree = "<group>"; };
 		E8DD07BD16B054210013F115 /* BaseParticleEditorContentWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseParticleEditorContentWidget.cpp; sourceTree = "<group>"; };
@@ -1277,10 +1289,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
+				E8BD1F0016DE40ED00499E18 /* libFrameworkQt.a in Frameworks & Libraries */,
 				5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */,
 				5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */,
-				5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */,
-				E898A2D516BD284200732C04 /* libFrameworkQt.a in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
 				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
@@ -1299,7 +1311,7 @@
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
-				E898A2CB16BD27B500732C04 /* Framework.xcodeproj */,
+				E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */,
 				5CCC10B315B45FC200DA83EB /* libbz2.dylib */,
 				5CCC10B115B45FBB00DA83EB /* libz.dylib */,
 				5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */,
@@ -1326,6 +1338,9 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				84221ED716E62E22000E7D74 /* DockSetSwitchIndex */,
+				841703FF16CBCE9700F1023D /* SpritesPacker */,
+				841703F616CBA48000F1023D /* QResourceEditorProgressDialog */,
 				E838D4D616AFFED4006F1721 /* DockCustomColors */,
 				E838D4D916AFFED4006F1721 /* DockLibrary */,
 				E838D4DE16AFFED4006F1721 /* DockParticleEditor */,
@@ -1806,6 +1821,7 @@
 		5C7F489B15B44B320038AF3A /* ColladaExport */ = {
 			isa = PBXGroup;
 			children = (
+				E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */,
 				5C7F489C15B44B4D0038AF3A /* ColladaAnimatedMesh.cpp */,
 				5C7F489D15B44B4D0038AF3A /* ColladaAnimatedMesh.h */,
 				5C7F489E15B44B4D0038AF3A /* ColladaAnimation.cpp */,
@@ -1985,8 +2001,6 @@
 				5C7F496315B44B7A0038AF3A /* UISliderWithText.h */,
 				5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */,
 				5C7F496515B44B7A0038AF3A /* UIZoomControl.h */,
-				5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */,
-				5C7F496715B44B7A0038AF3A /* UNDOManager.h */,
 			);
 			name = SceneEditor;
 			sourceTree = "<group>";
@@ -2019,6 +2033,10 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */,
+				84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */,
+				499922FA16CBC5A500313367 /* EditCommands.cpp */,
+				499922FB16CBC5A500313367 /* EditCommands.h */,
 				49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */,
 				49C89A3E16C3AC14008AA6F0 /* ModificationOptionsCommands.h */,
 				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
@@ -2063,6 +2081,59 @@
 			name = Commands;
 			sourceTree = "<group>";
 		};
+		841703F616CBA48000F1023D /* QResourceEditorProgressDialog */ = {
+			isa = PBXGroup;
+			children = (
+				841703F716CBA49C00F1023D /* QResourceEditorProgressDialog.cpp */,
+				841703F816CBA49C00F1023D /* QResourceEditorProgressDialog.h */,
+			);
+			name = QResourceEditorProgressDialog;
+			sourceTree = "<group>";
+		};
+		841703FB16CBA66100F1023D /* QResourceEditorProgressDialog */ = {
+			isa = PBXGroup;
+			children = (
+				841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */,
+			);
+			name = QResourceEditorProgressDialog;
+			sourceTree = "<group>";
+		};
+		841703FF16CBCE9700F1023D /* SpritesPacker */ = {
+			isa = PBXGroup;
+			children = (
+				8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */,
+				8417040116CBCEAD00F1023D /* SpritePackerHelper.h */,
+			);
+			name = SpritesPacker;
+			sourceTree = "<group>";
+		};
+		8417040316CBCFA100F1023D /* SpritesPacker */ = {
+			isa = PBXGroup;
+			children = (
+				8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */,
+			);
+			name = SpritesPacker;
+			sourceTree = "<group>";
+		};
+		84221ED716E62E22000E7D74 /* DockSetSwitchIndex */ = {
+			isa = PBXGroup;
+			children = (
+				84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */,
+				84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */,
+				84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */,
+				84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */,
+			);
+			name = DockSetSwitchIndex;
+			sourceTree = "<group>";
+		};
+		84221EDE16E6316B000E7D74 /* DockSetSwitchIndex */ = {
+			isa = PBXGroup;
+			children = (
+				84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */,
+			);
+			name = DockSetSwitchIndex;
+			sourceTree = "<group>";
+		};
 		8471AC8816A4149900129793 /* ImageSplitter */ = {
 			isa = PBXGroup;
 			children = (
@@ -2087,8 +2158,6 @@
 		C18521A316831F84003D4A6F /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				8471AC8216A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp */,
-				8471AC8316A40F2200129793 /* ParticlesEditorSpritePackerHelper.h */,
 				1735C423169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp */,
 				1735C424169DE63D001E0468 /* ParticlesEditorSceneDataHelper.h */,
 				1735C425169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp */,
@@ -2579,18 +2648,12 @@
 			path = _GeneratedQt/TextureBrowser;
 			sourceTree = "<group>";
 		};
-		E898A2CC16BD27B500732C04 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E898A2D216BD27B600732C04 /* libFramework.a */,
-				E898A2D416BD27B600732C04 /* libFrameworkQt.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				84221EDE16E6316B000E7D74 /* DockSetSwitchIndex */,
+				8417040316CBCFA100F1023D /* SpritesPacker */,
+				841703FB16CBA66100F1023D /* QResourceEditorProgressDialog */,
 				E838D79016B00511006F1721 /* DockCustomColors */,
 				E838D79216B00511006F1721 /* DockLibrary */,
 				E838D79516B00511006F1721 /* DockParticleEditor */,
@@ -2615,6 +2678,15 @@
 				E838D7DE16B00511006F1721 /* ui_VisibilityToolView.h */,
 			);
 			name = GeneratedQt;
+			sourceTree = "<group>";
+		};
+		E8BD1EF716DE40E300499E18 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8BD1EFD16DE40E300499E18 /* libFramework.a */,
+				E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		E8EE7E56160DBC8800645405 /* RulerTool */ = {
@@ -2717,7 +2789,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E898A2D716BD28B000732C04 /* PBXTargetDependency */,
 			);
 			name = ResourceEditorQt;
 			productName = ResourceEditorQt;
@@ -2748,8 +2819,8 @@
 					ProjectRef = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
 				},
 				{
-					ProductGroup = E898A2CC16BD27B500732C04 /* Products */;
-					ProjectRef = E898A2CB16BD27B500732C04 /* Framework.xcodeproj */;
+					ProductGroup = E8BD1EF716DE40E300499E18 /* Products */;
+					ProjectRef = E8BD1EF616DE40E300499E18 /* Framework.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -2767,18 +2838,18 @@
 			remoteRef = 5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E898A2D216BD27B600732C04 /* libFramework.a */ = {
+		E8BD1EFD16DE40E300499E18 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFramework.a;
-			remoteRef = E898A2D116BD27B600732C04 /* PBXContainerItemProxy */;
+			remoteRef = E8BD1EFC16DE40E300499E18 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		E898A2D416BD27B600732C04 /* libFrameworkQt.a */ = {
+		E8BD1EFF16DE40E300499E18 /* libFrameworkQt.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFrameworkQt.a;
-			remoteRef = E898A2D316BD27B600732C04 /* PBXContainerItemProxy */;
+			remoteRef = E8BD1EFE16DE40E300499E18 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -2895,7 +2966,6 @@
 				5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */,
 				5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */,
 				5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */,
-				5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */,
 				5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */,
 				5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */,
 				5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */,
@@ -3070,7 +3140,6 @@
 				C18521B916831F84003D4A6F /* LayerParticleEditorNode.cpp in Build Sources */,
 				1735C427169DE63D001E0468 /* ParticlesEditorSceneDataHelper.cpp in Build Sources */,
 				1735C428169DE63D001E0468 /* ParticlesEditorSceneModelHelper.cpp in Build Sources */,
-				8471AC8416A40F2200129793 /* ParticlesEditorSpritePackerHelper.cpp in Build Sources */,
 				8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */,
 				8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */,
 				8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */,
@@ -3203,21 +3272,22 @@
 				49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */,
 				49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */,
 				49C89A3F16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp in Build Sources */,
+				499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */,
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
+				841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */,
+				841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */,
+				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
+				8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */,
+				84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */,
+				84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */,
+				84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */,
+				84221EE016E6318E000E7D74 /* SetSwitchIndexView_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		E898A2D716BD28B000732C04 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FrameworkQt;
-			targetProxy = E898A2D616BD28B000732C04 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4B72B24813252891014BCF61 /* Debug */ = {

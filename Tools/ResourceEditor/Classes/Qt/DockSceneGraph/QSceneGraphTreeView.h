@@ -57,12 +57,12 @@ protected:
 
 	// Context Menu Action Support.
 	void ProcessContextMenuAction(QAction *action);
-	void ExecuteCommand(Command *command);
 
 	// Our model.
     SceneGraphModel *sceneGraphModel;
 	
     void keyPressEvent(QKeyEvent *event);
+	void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif //#ifndef __QSCENE_GRAPH_TREE_VIEW_H__

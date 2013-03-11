@@ -64,7 +64,6 @@ const String VariantType::TYPENAME_VECTOR4 = "Vector4";
 const String VariantType::TYPENAME_MATRIX2 = "Matrix2";
 const String VariantType::TYPENAME_MATRIX3 = "Matrix3";
 const String VariantType::TYPENAME_MATRIX4 = "Matrix4";
-const String VariantType::TYPENAME_POINTER = "void *";
 const String VariantType::TYPENAME_COLOR   = "Color";
 const String VariantType::TYPENAME_FASTNAME= "FastName";
 const String VariantType::TYPENAME_AABBOX3 = "AABBox3";
@@ -88,7 +87,6 @@ const VariantType::PairTypeName VariantType::variantNamesMap[] =
     VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2,		MetaInfo::Instance<Matrix2>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3,		MetaInfo::Instance<Matrix3>()),
     VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4,		MetaInfo::Instance<Matrix4>()),
-	VariantType::PairTypeName(VariantType::TYPE_POINTER,       TYPENAME_POINTER,		MetaInfo::Instance<void *>()),
 	VariantType::PairTypeName(VariantType::TYPE_COLOR,         TYPENAME_COLOR,          MetaInfo::Instance<Color>()),
 	VariantType::PairTypeName(VariantType::TYPE_FASTNAME,      TYPENAME_FASTNAME,       MetaInfo::Instance<FastName>()),
 	VariantType::PairTypeName(VariantType::TYPE_AABBOX3,       TYPENAME_AABBOX3,        MetaInfo::Instance<AABBox3>())
@@ -183,11 +181,6 @@ VariantType::VariantType(const Matrix3 & value) : pointerValue(NULL)
 VariantType::VariantType(const Matrix4 & value) : pointerValue(NULL)
 {
 	SetMatrix4(value);
-}
-
-VariantType::VariantType(const void* const &value) : pointerValue(NULL)
-{
-	SetPointer(value);
 }
 
 VariantType::VariantType(const Color & value) : pointerValue(NULL)
@@ -321,13 +314,6 @@ void VariantType::SetMatrix4(const Matrix4 & value)
     matrix4Value = new Matrix4(value);
 }
 
-void VariantType::SetPointer(const void* const &value)
-{
-	ReleasePointer();
-	type = TYPE_POINTER;
-	x64PointerValue = new uint64((const uint64) value);
-}
-
 void VariantType::SetColor(const DAVA::Color &value)
 {
     ReleasePointer();
@@ -434,11 +420,6 @@ void VariantType::SetVariant(const VariantType& var)
 	case TYPE_MATRIX4:
 		{
 			SetMatrix4(var.AsMatrix4());
-		}
-		break;
-	case  TYPE_POINTER:
-		{
-			SetPointer(var.AsPointer());
 		}
 		break;
     case  TYPE_COLOR:
@@ -566,11 +547,11 @@ const Matrix4 & VariantType::AsMatrix4() const
     return *matrix4Value;
 }
 
-const void* const VariantType::AsPointer() const
-{
-	DVASSERT(type == TYPE_POINTER);
-	return (void *) *x64PointerValue;
-}
+//const void* const VariantType::AsPointer() const
+//{
+//	DVASSERT(type == TYPE_POINTER);
+//	return (void *) *x64PointerValue;
+//}
     
 const Color & VariantType::AsColor() const
 {
@@ -714,12 +695,6 @@ bool VariantType::Write(File * fp) const
             if (written != sizeof(Matrix4))return false;
 		}
             break;
-	case TYPE_POINTER:
-		{
-			written = fp->Write(x64PointerValue, sizeof(uint64));
-			if (written != sizeof(uint64))return false;
-		}
-		break;
     case TYPE_COLOR:
 		{
             written = fp->Write(colorValue->color, sizeof(float32) * 4);
@@ -895,13 +870,6 @@ bool VariantType::Read(File * fp)
             if (read != sizeof(Matrix4))return false;
 		}
             break;
-		case TYPE_POINTER:
-			{
-				x64PointerValue = new uint64;
-				read = fp->Read(x64PointerValue, sizeof(uint64));
-				if (read != sizeof(uint64))return false;
-			}
-			break;
         case TYPE_COLOR:
 			{
 				colorValue = new Color;
@@ -1015,11 +983,6 @@ void VariantType::ReleasePointer()
                 delete colorValue;
             }
                 break;
-			case  TYPE_POINTER:
-			{
-				delete x64PointerValue;
-			}
-				break;
             case TYPE_FASTNAME:
             {
                 delete fastnameValue;
@@ -1156,11 +1119,6 @@ bool VariantType::operator==(const VariantType& other) const
                 isEqual = ( AsMatrix4() == other.AsMatrix4());
             }
                 break;
-			case  TYPE_POINTER:
-				{
-					isEqual = (AsPointer() == other.AsPointer());
-				}
-				break;
 			case  TYPE_COLOR:
             {
                 isEqual = (AsColor() == other.AsColor());
@@ -1270,9 +1228,6 @@ VariantType VariantType::LoadData(const void *src, const MetaInfo *meta)
 	case TYPE_MATRIX4:
 		v.SetMatrix4(*((DAVA::Matrix4 *) src));
 		break;
-	case TYPE_POINTER:
-		v.SetPointer(*((const void **) src));
-		break;
     case TYPE_COLOR:
         v.SetColor(*((DAVA::Color *) src));
         break;
@@ -1373,9 +1328,6 @@ void VariantType::SaveData(void *dst, const MetaInfo *meta, const VariantType &v
 		break;
 	case TYPE_MATRIX4:
 		*((DAVA::Matrix4 *) dst) = val.AsMatrix4();
-		break;
-	case TYPE_POINTER:
-		*((const void **) dst) = val.AsPointer();
 		break;
     case TYPE_COLOR:
         *((DAVA::Color *) dst) = val.AsColor();

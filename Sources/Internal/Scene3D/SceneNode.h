@@ -334,6 +334,8 @@ public:
     
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+
+	void FindAllSwitchComponentsRecursive(List<DAVA::SceneNode*> & switchComponents);
    
 protected:
 

@@ -58,6 +58,14 @@ enum eModificationActions
 
 	MODIFY_COUNT
 };
+
+enum eEditActions
+{
+	EDIT_UNDO,
+	EDIT_REDO,
+	
+	EDIT_COUNT
+};
     
     
 };
