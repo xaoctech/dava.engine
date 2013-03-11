@@ -891,7 +891,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

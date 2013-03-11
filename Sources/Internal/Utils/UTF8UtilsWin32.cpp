@@ -27,41 +27,57 @@
     Revision History:
         * Created by Vitaliy Borodovsky
 =====================================================================================*/
-#ifndef __DAVAENGINE_UTF8UTILS_H__
-#define __DAVAENGINE_UTF8UTILS_H__
+#include "Utils/UTF8Utils.h"
+#include "FileSystem/Logger.h"
 
-#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_WIN32__)
 
+#include <Windows.h>
 
 namespace DAVA 
 {
-/**
-	 \ingroup utils
-	 \brief Class to work with UTF8 strings
- */
-class UTF8Utils
+
+void  UTF8Utils::EncodeToWideString(uint8 * string, int32 size, WideString & resultString)
 {
-public:
+	resultString = L"";
 
-	/**
-		\brief convert UTF8 string to WideString
-		\param[in] string string in UTF8 format
-		\param[in] size size of buffer allocated for this string
-		\param[out] resultString result unicode string
-	 */
-	static void  EncodeToWideString(uint8 * string, int32 size, WideString & resultString);
+	int32 wstringLen = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)string, size, NULL, NULL);
+	if (!wstringLen)
+	{
+		return;
+	}
 
-	/**
-	 \brief convert WideString string to UTF8
-	 \param[in] wstring string in WideString format
-	 \returns string in UTF8 format, contained in DAVA::String
-	 */
-	static String EncodeToUTF8(const WideString& wstring);
+	wchar_t* buf = new wchar_t[wstringLen];
+	int32 convertRes = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)string, size, buf, wstringLen);
+	if (convertRes)
+	{
+		resultString = WideString(buf, wstringLen);
+	}
+
+	delete[] buf;
 };
 
+String UTF8Utils::EncodeToUTF8(const WideString& wstring)
+{
+	int32 bufSize = WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), -1, 0, 0, NULL, NULL);
+	if (!bufSize)
+	{
+		return "";
+	}
 
+	String resStr = "";
+
+	char* buf = new char[bufSize];
+	int32 res = WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), -1, buf, bufSize, NULL, NULL);
+	if (res)
+	{
+		resStr = String(buf);
+	}
+
+	delete[] buf;
+	return resStr;
+};
 
 };
 
-
-#endif // __DAVAENGINE_UTF8UTILS_H__
+#endif

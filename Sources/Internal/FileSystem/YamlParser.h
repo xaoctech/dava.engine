@@ -102,6 +102,7 @@ public:
 
     void            Add(const String& name, const char8* value);
     void            Add(const String& name, const String& value);
+    void            Add(const String& name, const WideString& value);
 
     void            Add(const String& name, const Vector2& value);
     void            Add(const String& name, const Vector3& value);
@@ -120,6 +121,7 @@ public:
 
     void            Set(const String& name, const char8* value);
     void            Set(const String& name, const String& value);
+    void            Set(const String& name, const WideString& value);
 
     void            Set(const String& name, const Vector2& value);
     void            Set(const String& name, const Vector3& value);
@@ -164,6 +166,7 @@ protected:
     void            InternalSet(const String& name, float32 value, bool rewritePreviousValue);
     void            InternalSet(const String& name, const char8* value, bool rewritePreviousValue);
     void            InternalSet(const String& name, const String& value, bool rewritePreviousValue);
+    void            InternalSet(const String& name, const WideString& value, bool rewritePreviousValue);
     void            InternalSet(const String& name, const Vector2& value, bool rewritePreviousValue);
     void            InternalSet(const String& name, const Vector3& value, bool rewritePreviousValue);
     void            InternalSet(const String& name, const Vector4& value, bool rewritePreviousValue);
@@ -205,6 +208,10 @@ public:
     // Save to YAML file.
 	bool SaveToYamlFile(const String& fileName, YamlNode * rootNode, bool skipRootNode, uint32 attr = File::CREATE | File::WRITE);
     
+	// Save the strings list (needed for Localization).
+	bool SaveStringsList(const String& fileName, YamlNode * rootNode, uint32 attr = File::CREATE | File::WRITE);
+
+	// Get the root node.
 	YamlNode			* GetRootNode();
 	
 	struct YamlDataHolder
@@ -226,14 +233,18 @@ private:
     bool WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeName,
                                   YamlNode* currentNode, int16 depth);
     bool WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth);
+
     bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite);
+	bool WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite);
+
+	bool WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, YamlNode* currentNode);
 
     // Recursively get the array node representation string.
     String GetArrayNodeRepresentation(const String& nodeName, YamlNode* currentNode, int16 depth, bool writeAsOuterNode = true);
 
     // Return the identation string of the appropriate depth.
     String PrepareIdentedString(int16 depth);
-	
+
 	YamlNode			* rootObject;
 	String				lastMapKey;
 	
