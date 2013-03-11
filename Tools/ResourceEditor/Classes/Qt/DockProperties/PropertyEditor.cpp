@@ -27,13 +27,18 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 
 	hideReadOnly = QtMainWindow::Instance()->GetUI()->actionPropHideReadonly->isChecked();
 
+
 	posSaver.Attach(this, "DocPropetyEditor");
-	posSaver.LoadState(this);
+	
+	DAVA::VariantType v = posSaver.LoadValue("splitPos");
+	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
 }
 
 PropertyEditor::~PropertyEditor()
 {
-	posSaver.SaveState(this);
+	DAVA::VariantType v(header()->sectionSize(0));
+	posSaver.SaveValue("splitPos", v);
+
 	SafeRelease(curNode);
 }
 
