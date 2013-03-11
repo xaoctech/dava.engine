@@ -303,6 +303,9 @@ void MainWindow::InitMenu()
 	ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
 	ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
 	ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
+    ui->menuView->addAction(ui->actionZoomIn);
+    ui->menuView->insertSeparator(ui->actionZoomIn);
+    ui->menuView->addAction(ui->actionZoomOut);
 
 	connect(ui->actionNew_project, SIGNAL(triggered()), this, SLOT(OnNewProject()));
 	connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(OnSaveProject()));
@@ -316,6 +319,9 @@ void MainWindow::InitMenu()
 	
 	connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(FileMenuTriggered(QAction *)));
+
+    connect(ui->actionZoomIn, SIGNAL(triggered()), this, SLOT(OnZoomInRequested()));
+    connect(ui->actionZoomOut, SIGNAL(triggered()), this, SLOT(OnZoomOutRequested()));
 	
 	//Create empty actions for recent projects files
 	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
@@ -442,7 +448,7 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			if (HierarchyTreeController::Instance()->Load(projectPath))
 			{
 				// Update project title if project was successfully loaded
-				this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
+				UpdateProjectSettings(projectPath);				
 			}
 			else
 			{
@@ -542,7 +548,12 @@ void MainWindow::UpdateProjectSettings(const QString& projectPath)
 {
 	// Add file to recent project files list
 	EditorSettings::Instance()->AddLastOpenedFile(projectPath.toStdString());
-	EditorSettings::Instance()->SetProjectPath(projectPath.toStdString());
+	
+	// Save to settings default project directory
+	QFileInfo fileInfo(projectPath);
+	QString projectDir = fileInfo.absoluteDir().absolutePath();
+	EditorSettings::Instance()->SetProjectPath(projectDir.toStdString());
+
 	// Update window title
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
 }
@@ -555,6 +566,16 @@ void MainWindow::OnUndoRequested()
 void MainWindow::OnRedoRequested()
 {
 	CommandsController::Instance()->Redo();
+}
+
+void MainWindow::OnZoomInRequested()
+{
+	OnUpdateScaleRequest(ui->scaleSpin->singleStep());
+}
+
+void MainWindow::OnZoomOutRequested()
+{
+	OnUpdateScaleRequest(ui->scaleSpin->singleStep() * (-1));
 }
 
 void MainWindow::OnUndoRedoAvailabilityChanged()
