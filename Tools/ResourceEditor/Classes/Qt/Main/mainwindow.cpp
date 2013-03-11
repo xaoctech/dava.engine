@@ -417,7 +417,7 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if(qApp == obj)
+    if(qApp == obj && ProjectManager::Instance()->IsOpened())
     {
         if(QEvent::ApplicationActivate == event->type())
         {
