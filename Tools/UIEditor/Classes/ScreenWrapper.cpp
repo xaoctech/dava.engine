@@ -26,7 +26,7 @@ ScreenWrapper::~ScreenWrapper()
     
 }
 
-void ScreenWrapper::SetQtScreen(const QWidget* widget)
+void ScreenWrapper::SetQtScreen(QWidget* widget)
 {
 	this->qtScreen = widget;
 }
@@ -141,18 +141,6 @@ void ScreenWrapper::SetViewPos(int posX, int posY, const QRect& size)
 	activeScreen->SetPos(Vector2(posX, posY));
 }
 
-Qt::CursorShape ScreenWrapper::GetCursorType(const QPoint& pos)
-{
-	return GetActiveScreen()->GetCursor(Vector2(pos.x(), pos.y()));
-}
-
-void ScreenWrapper::CursorMove(const QPoint& pos)
-{
-	DefaultScreen* screen = GetActiveScreen();
-	if (screen)
-		screen->MouseInputMove(Vector2(pos.x(), pos.y()));
-}
-
 void ScreenWrapper::RequestUpdateCursor()
 {
 	QCursor::setPos(QCursor::pos()); //emulate mouse move for update cursor
@@ -167,4 +155,10 @@ void ScreenWrapper::RequestUpdateView()
 {
 	UpdateScaleRequest(1);
 	UpdateScaleRequest(-1);
+}
+
+void ScreenWrapper::SetCursor(Qt::CursorShape cursor)
+{
+	if (qtScreen)
+		qtScreen->setCursor(cursor);
 }

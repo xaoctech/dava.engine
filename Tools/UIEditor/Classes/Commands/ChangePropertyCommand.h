@@ -89,7 +89,7 @@ protected:
     // Current value.
     Type curValue;
     
-    bool setTextForAllStates;
+    bool setPropertyForAllStates;
     
     // Current state.
     UIControl::eControlState curState;
@@ -123,7 +123,7 @@ template<typename Type>
     propertyGridWidgetData(propertyGridWidgetData)
 {
     this->curValue = value;
-    this->setTextForAllStates = allStates;
+    this->setPropertyForAllStates = allStates;
     this->curState = baseMetadata->GetUIControlState();
     this->commandData = BuildCommandData(baseMetadata);
 }
@@ -240,7 +240,7 @@ template<typename Type>
 	QString propertyName = GetPropertyName();
 	BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter).GetTreeNodeID());
 
-	if (setTextForAllStates)
+	if (setPropertyForAllStates)
 	{
 		//Set property text for all states
 		int statesCount = UIControlStateHelper::GetUIControlStatesCount();
