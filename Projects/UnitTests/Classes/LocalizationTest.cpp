@@ -12,9 +12,9 @@ static const String files[] = {
 LocalizationTest::LocalizationTest()
 :	TestTemplate<LocalizationTest>("LocalizationTest")
 {
-	currentTest = 0;
+	currentTest = FIRST_TEST;
 
-	for (int32 i = 0; i < TEST_COUNT; ++i)
+	for (int32 i = FIRST_TEST; i < FIRST_TEST + TEST_COUNT; ++i)
 	{
 		RegisterFunction(this, &LocalizationTest::TestFunction, Format("Localization test of %s", files[i].c_str()), NULL);
 	}

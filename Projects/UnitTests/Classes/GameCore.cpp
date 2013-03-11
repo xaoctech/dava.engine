@@ -79,23 +79,23 @@ void GameCore::OnAppStarted()
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
-//    new HashMapTest();
+    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
-//    new DPITest();
-//	new EMailTest();
-//	new InputTest();
-//    new MaterialCompilerTest();
-//    new CloneTest();
-//    new PVRTest();
-//	new DXTTest();
-//	new EntityTest();	
-//	new MemoryAllocatorsTest();
-//	new HashMapTest();
-//	new SoundTest();
-//	new SplitTest();
-//    new KeyedArchiveYamlTest();
-//	new DLCTest();
+    new DPITest();
+	new EMailTest();
+	new InputTest();
+    new MaterialCompilerTest();
+    new CloneTest();
+    new PVRTest();
+	new DXTTest();
+	new EntityTest();	
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
+    new KeyedArchiveYamlTest();
+	new DLCTest();
     
     errors.reserve(TestCount());
 
