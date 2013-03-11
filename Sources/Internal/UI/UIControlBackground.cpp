@@ -294,7 +294,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			drawState.scale = geometricData.scale;
 			drawState.pivotPoint = spr->GetDefaultPivotPoint();
 //			spr->SetScale(geometricData.scale);
-            if (drawState.scale.x == 1.0 && drawState.scale.y == 1.0)
+            //if (drawState.scale.x == 1.0 && drawState.scale.y == 1.0)
             {
                 switch(perPixelAccuracyType)
                 {
