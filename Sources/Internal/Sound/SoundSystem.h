@@ -33,6 +33,7 @@
 
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 
 #ifdef __DAVAENGINE_ANDROID__
 #include <SLES/OpenSLES.h>
@@ -53,6 +54,9 @@ public:
 
 	void			SetVolume(float32 volume); // [0..1]
 	float32			GetVolume();
+
+	void SetPosition(const Vector3 & position);
+	void SetOrientation(const Vector3 & at, const Vector3 & up);
 
 	void			AddSoundInstance(SoundInstance * soundInstance);
 	void			RemoveSoundInstance(SoundInstance * soundInstance);

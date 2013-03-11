@@ -268,6 +268,10 @@
 		841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 841703FC16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp */; };
 		8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */; };
 		8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */; };
+		84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */; };
+		84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */; };
+		84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */; };
+		84221EE016E6318E000E7D74 /* SetSwitchIndexView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */; };
 		8471AC8716A4136900129793 /* DXTConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8516A4136800129793 /* DXTConverter.cpp */; };
 		8471AC8D16A414D900129793 /* ImageSplitter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8916A414D900129793 /* ImageSplitter.cpp */; };
 		8471AC8E16A414D900129793 /* ImageSplitterScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8471AC8B16A414D900129793 /* ImageSplitterScreen.cpp */; };
@@ -1041,6 +1045,13 @@
 		8417040016CBCEAD00F1023D /* SpritePackerHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper.cpp; path = Classes/Qt/SpritesPacker/SpritePackerHelper.cpp; sourceTree = "<group>"; };
 		8417040116CBCEAD00F1023D /* SpritePackerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritePackerHelper.h; path = Classes/Qt/SpritesPacker/SpritePackerHelper.h; sourceTree = "<group>"; };
 		8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritePackerHelper_moc.cpp; path = _GeneratedQt/SpritesPacker/SpritePackerHelper_moc.cpp; sourceTree = "<group>"; };
+		84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexCommands.cpp; path = Classes/Commands/SetSwitchIndexCommands.cpp; sourceTree = "<group>"; };
+		84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexCommands.h; path = Classes/Commands/SetSwitchIndexCommands.h; sourceTree = "<group>"; };
+		84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexHelper.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.cpp; sourceTree = "<group>"; };
+		84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexHelper.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h; sourceTree = "<group>"; };
+		84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexView.cpp; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.cpp; sourceTree = "<group>"; };
+		84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetSwitchIndexView.h; path = Classes/Qt/DockSetSwitchIndex/SetSwitchIndexView.h; sourceTree = "<group>"; };
+		84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SetSwitchIndexView_moc.cpp; path = _GeneratedQt/DockSetSwitchIndex/SetSwitchIndexView_moc.cpp; sourceTree = "<group>"; };
 		8471AC8516A4136800129793 /* DXTConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTConverter.cpp; path = Classes/SceneEditor/DXTConverter.cpp; sourceTree = "<group>"; };
 		8471AC8616A4136800129793 /* DXTConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTConverter.h; path = Classes/SceneEditor/DXTConverter.h; sourceTree = "<group>"; };
 		8471AC8916A414D900129793 /* ImageSplitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitter.cpp; path = Classes/ImageSplitter/ImageSplitter.cpp; sourceTree = "<group>"; };
@@ -1327,6 +1338,7 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				84221ED716E62E22000E7D74 /* DockSetSwitchIndex */,
 				841703FF16CBCE9700F1023D /* SpritesPacker */,
 				841703F616CBA48000F1023D /* QResourceEditorProgressDialog */,
 				E838D4D616AFFED4006F1721 /* DockCustomColors */,
@@ -2021,6 +2033,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */,
+				84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */,
 				499922FA16CBC5A500313367 /* EditCommands.cpp */,
 				499922FB16CBC5A500313367 /* EditCommands.h */,
 				49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */,
@@ -2099,6 +2113,25 @@
 				8417040416CBCFC200F1023D /* SpritePackerHelper_moc.cpp */,
 			);
 			name = SpritesPacker;
+			sourceTree = "<group>";
+		};
+		84221ED716E62E22000E7D74 /* DockSetSwitchIndex */ = {
+			isa = PBXGroup;
+			children = (
+				84221ED816E62E45000E7D74 /* SetSwitchIndexHelper.cpp */,
+				84221ED916E62E45000E7D74 /* SetSwitchIndexHelper.h */,
+				84221EDA16E62E45000E7D74 /* SetSwitchIndexView.cpp */,
+				84221EDB16E62E45000E7D74 /* SetSwitchIndexView.h */,
+			);
+			name = DockSetSwitchIndex;
+			sourceTree = "<group>";
+		};
+		84221EDE16E6316B000E7D74 /* DockSetSwitchIndex */ = {
+			isa = PBXGroup;
+			children = (
+				84221EDF16E6318E000E7D74 /* SetSwitchIndexView_moc.cpp */,
+			);
+			name = DockSetSwitchIndex;
 			sourceTree = "<group>";
 		};
 		8471AC8816A4149900129793 /* ImageSplitter */ = {
@@ -2618,6 +2651,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				84221EDE16E6316B000E7D74 /* DockSetSwitchIndex */,
 				8417040316CBCFA100F1023D /* SpritesPacker */,
 				841703FB16CBA66100F1023D /* QResourceEditorProgressDialog */,
 				E838D79016B00511006F1721 /* DockCustomColors */,
@@ -3245,6 +3279,10 @@
 				841703FD16CBA67700F1023D /* QResourceEditorProgressDialog_moc.cpp in Build Sources */,
 				8417040216CBCEAD00F1023D /* SpritePackerHelper.cpp in Build Sources */,
 				8417040516CBCFC200F1023D /* SpritePackerHelper_moc.cpp in Build Sources */,
+				84221ED316E62E0C000E7D74 /* SetSwitchIndexCommands.cpp in Build Sources */,
+				84221EDC16E62E45000E7D74 /* SetSwitchIndexHelper.cpp in Build Sources */,
+				84221EDD16E62E45000E7D74 /* SetSwitchIndexView.cpp in Build Sources */,
+				84221EE016E6318E000E7D74 /* SetSwitchIndexView_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
