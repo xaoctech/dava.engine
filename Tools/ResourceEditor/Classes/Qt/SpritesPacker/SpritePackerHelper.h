@@ -1,5 +1,5 @@
-#ifndef __ResourceEditorQt__ParticlesEditorSpritePackerHelper__
-#define __ResourceEditorQt__ParticlesEditorSpritePackerHelper__
+#ifndef __SPRITE_PACKER_HELPER_H__
+#define __SPRITE_PACKER_HELPER_H__
 
 #include "DAVAEngine.h"
 #include <QFutureWatcher>
@@ -41,4 +41,4 @@ private slots:
 	
 };
 };
-#endif /* __ResourceEditorQt__ParticlesEditorSpritePackerHelper__ */
+#endif /* __SPRITE_PACKER_HELPER_H__ */

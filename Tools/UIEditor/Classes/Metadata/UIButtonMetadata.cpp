@@ -488,25 +488,13 @@ void UIButtonMetadata::SetAlign(int value)
         return;
     }
     
-    UIControlBackground* background = GetActiveUIButton()->GetStateBackground(this->uiControlState);
-    if (!background)
-    {
-        return;
-    }
-    
-    background->SetAlign(value);
+	GetActiveUIButton()->SetStateAlign(this->uiControlState, value);
     UpdatePropertyDirtyFlagForAlign();
 }
 
 int UIButtonMetadata::GetAlignForState(UIControl::eControlState state) const
 {
-    UIControlBackground* background = GetActiveUIButton()->GetStateBackground(state);
-    if (!background)
-    {
-        return ALIGN_TOP;
-    }
-
-    return background->GetAlign();
+	return GetActiveUIButton()->GetStateAlign(state);
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForAlign()

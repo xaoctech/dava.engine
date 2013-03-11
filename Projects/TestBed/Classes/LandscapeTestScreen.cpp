@@ -31,6 +31,7 @@
 
 void LandscapeTestScreen::LoadResources()
 {
+#if 0
 //    RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     RenderManager::Instance()->SetFPS(30.0);
 	scene = new Scene();
@@ -125,6 +126,7 @@ void LandscapeTestScreen::LoadResources()
     angleJoypad->GetBackground()->SetSprite("~res:/Gfx/Joypad/joypad", 0);
     angleJoypad->SetStickSprite("~res:/Gfx/Joypad/joypad", 1);
 	AddControl(angleJoypad);
+#endif
 }
 
 void LandscapeTestScreen::UnloadResources()

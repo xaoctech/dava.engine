@@ -262,7 +262,7 @@ namespace DAVA
 		{
 			if(state & 0x01)
 			{
-				CreateTextForState((eButtonDrawState)i)->SetFontColor(fontColor);
+				CreateTextForState((eButtonDrawState)i)->SetTextColor(fontColor);
 			}
 			state >>= 1;
 		}
@@ -714,7 +714,7 @@ namespace DAVA
 		UIButton *baseControl = new UIButton();
 		
 		//Control Type
-		node->Set("type", "UIButton", true);
+		node->Set("type", "UIButton");
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
@@ -786,9 +786,11 @@ namespace DAVA
 				node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
 			}
 			//State align
-			if (baseControl->GetStateAlign(stateArray[i]) != this->GetStateAlign(stateArray[i]))
+			int32 stateAlign = this->GetStateAlign(stateArray[i]);
+			int32 baseStateAlign = baseControl->GetStateAlign(stateArray[i]);
+			if (baseStateAlign != stateAlign)
 			{
-				node->Set(Format("stateAlign%s", statePostfix[i].c_str()), this->GetStateAlign(stateArray[i]));
+				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
 			}			
 			//State font
 			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();

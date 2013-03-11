@@ -21,6 +21,7 @@
 		49802D4716C2596700E40105 /* SceneEditorScreenMainCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49802D4516C2596600E40105 /* SceneEditorScreenMainCommands.cpp */; };
 		498AA6FD1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */; };
 		498AA7001653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */; };
+		499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 499922FA16CBC5A500313367 /* EditCommands.cpp */; };
 		49C89A3716C3AB1A008AA6F0 /* ArrowsNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */; };
 		49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */; };
 		49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 49C89A3A16C3ABE6008AA6F0 /* ModificationWidget.cpp */; };
@@ -229,7 +230,6 @@
 		5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F495E15B44B7A0038AF3A /* UICheckBox.cpp */; };
 		5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496215B44B7A0038AF3A /* UISliderWithText.cpp */; };
 		5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */; };
-		5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */; };
 		5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */; };
 		5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */; };
 		5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49B915B44B910038AF3A /* ImagePacker.cpp */; };
@@ -473,6 +473,8 @@
 		498AA6FC1653DC5F00E0831D /* VisibilityCheckToolCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityCheckToolCommands.h; path = Classes/Commands/VisibilityCheckToolCommands.h; sourceTree = "<group>"; };
 		498AA6FE1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorVisibilityCheckTool.cpp; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.cpp; sourceTree = "<group>"; };
 		498AA6FF1653E87300E0831D /* LandscapeEditorVisibilityCheckTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorVisibilityCheckTool.h; path = Classes/SceneEditor/LandscapeEditorVisibilityCheckTool.h; sourceTree = "<group>"; };
+		499922FA16CBC5A500313367 /* EditCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditCommands.cpp; path = Classes/Commands/EditCommands.cpp; sourceTree = "<group>"; };
+		499922FB16CBC5A500313367 /* EditCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditCommands.h; path = Classes/Commands/EditCommands.h; sourceTree = "<group>"; };
 		49C89A3516C3AB1A008AA6F0 /* ArrowsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowsNode.cpp; path = Classes/SceneEditor/ArrowsNode.cpp; sourceTree = "<group>"; };
 		49C89A3616C3AB1A008AA6F0 /* ArrowsNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrowsNode.h; path = Classes/SceneEditor/ArrowsNode.h; sourceTree = "<group>"; };
 		49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationWidget_moc.cpp; sourceTree = "<group>"; };
@@ -967,8 +969,6 @@
 		5C7F496315B44B7A0038AF3A /* UISliderWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISliderWithText.h; path = Classes/SceneEditor/UISliderWithText.h; sourceTree = "<group>"; };
 		5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIZoomControl.cpp; path = Classes/SceneEditor/UIZoomControl.cpp; sourceTree = "<group>"; };
 		5C7F496515B44B7A0038AF3A /* UIZoomControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIZoomControl.h; path = Classes/SceneEditor/UIZoomControl.h; sourceTree = "<group>"; };
-		5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UNDOManager.cpp; path = Classes/SceneEditor/UNDOManager.cpp; sourceTree = "<group>"; };
-		5C7F496715B44B7A0038AF3A /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UNDOManager.h; path = Classes/SceneEditor/UNDOManager.h; sourceTree = "<group>"; };
 		5C7F49B515B44B910038AF3A /* CommandLineParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandLineParser.cpp; path = Classes/TexturePacker/CommandLineParser.cpp; sourceTree = "<group>"; };
 		5C7F49B615B44B910038AF3A /* CommandLineParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandLineParser.h; path = Classes/TexturePacker/CommandLineParser.h; sourceTree = "<group>"; };
 		5C7F49B715B44B910038AF3A /* DefinitionFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DefinitionFile.cpp; path = Classes/TexturePacker/DefinitionFile.cpp; sourceTree = "<group>"; };
@@ -1078,6 +1078,7 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
+		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
 		E838D4D716AFFED4006F1721 /* CustomColorsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsView.cpp; sourceTree = "<group>"; };
 		E838D4D816AFFED4006F1721 /* CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsView.h; sourceTree = "<group>"; };
 		E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
@@ -1820,6 +1821,7 @@
 		5C7F489B15B44B320038AF3A /* ColladaExport */ = {
 			isa = PBXGroup;
 			children = (
+				E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */,
 				5C7F489C15B44B4D0038AF3A /* ColladaAnimatedMesh.cpp */,
 				5C7F489D15B44B4D0038AF3A /* ColladaAnimatedMesh.h */,
 				5C7F489E15B44B4D0038AF3A /* ColladaAnimation.cpp */,
@@ -1999,8 +2001,6 @@
 				5C7F496315B44B7A0038AF3A /* UISliderWithText.h */,
 				5C7F496415B44B7A0038AF3A /* UIZoomControl.cpp */,
 				5C7F496515B44B7A0038AF3A /* UIZoomControl.h */,
-				5C7F496615B44B7A0038AF3A /* UNDOManager.cpp */,
-				5C7F496715B44B7A0038AF3A /* UNDOManager.h */,
 			);
 			name = SceneEditor;
 			sourceTree = "<group>";
@@ -2035,6 +2035,8 @@
 			children = (
 				84221ED116E62E0C000E7D74 /* SetSwitchIndexCommands.cpp */,
 				84221ED216E62E0C000E7D74 /* SetSwitchIndexCommands.h */,
+				499922FA16CBC5A500313367 /* EditCommands.cpp */,
+				499922FB16CBC5A500313367 /* EditCommands.h */,
 				49C89A3D16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp */,
 				49C89A3E16C3AC14008AA6F0 /* ModificationOptionsCommands.h */,
 				498AA6FB1653DC5F00E0831D /* VisibilityCheckToolCommands.cpp */,
@@ -2964,7 +2966,6 @@
 				5C7F49AF15B44B7A0038AF3A /* UICheckBox.cpp in Build Sources */,
 				5C7F49B115B44B7A0038AF3A /* UISliderWithText.cpp in Build Sources */,
 				5C7F49B215B44B7A0038AF3A /* UIZoomControl.cpp in Build Sources */,
-				5C7F49B315B44B7A0038AF3A /* UNDOManager.cpp in Build Sources */,
 				5C7F49BF15B44B910038AF3A /* CommandLineParser.cpp in Build Sources */,
 				5C7F49C015B44B910038AF3A /* DefinitionFile.cpp in Build Sources */,
 				5C7F49C115B44B910038AF3A /* ImagePacker.cpp in Build Sources */,
@@ -3271,6 +3272,7 @@
 				49C89A3916C3AB72008AA6F0 /* ModificationWidget_moc.cpp in Build Sources */,
 				49C89A3C16C3ABE6008AA6F0 /* ModificationWidget.cpp in Build Sources */,
 				49C89A3F16C3AC14008AA6F0 /* ModificationOptionsCommands.cpp in Build Sources */,
+				499922FC16CBC5A500313367 /* EditCommands.cpp in Build Sources */,
 				177D1A9016CB8ADB0021104B /* SceneGraphModelStateHelper.cpp in Build Sources */,
 				177D1A9316CB8C820021104B /* PropertyEditorStateHelper.cpp in Build Sources */,
 				841703F916CBA49C00F1023D /* QResourceEditorProgressDialog.cpp in Build Sources */,

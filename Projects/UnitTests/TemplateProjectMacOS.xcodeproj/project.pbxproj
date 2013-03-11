@@ -71,6 +71,9 @@
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		172382C116D2735F0078DEE3 /* InputTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputTest.cpp; path = Classes/InputTest.cpp; sourceTree = "<group>"; };
+		172382C216D2735F0078DEE3 /* InputTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputTest.h; path = Classes/InputTest.h; sourceTree = "<group>"; };
+		172382C416D276920078DEE3 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
@@ -176,6 +179,15 @@
 				FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		172382C016D272DE0078DEE3 /* InputTests */ = {
+			isa = PBXGroup;
+			children = (
+				172382C116D2735F0078DEE3 /* InputTest.cpp */,
+				172382C216D2735F0078DEE3 /* InputTest.h */,
+			);
+			name = InputTests;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {

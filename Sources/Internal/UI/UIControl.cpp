@@ -67,6 +67,7 @@ namespace DAVA
 		
 //		absoluteRect = Rect(0,0,0,0);
 		debugDrawEnabled = false;
+		debugDrawColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 		absolutePosition = Vector2(0, 0);
 		
 		pivotPoint = Vector2(0, 0);
@@ -1201,8 +1202,9 @@ namespace DAVA
 		_topAlignEnabled = srcControl->_topAlignEnabled;
 		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
 		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
-        
+
         tag = srcControl->GetTag();
+        name = srcControl->name;
 
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
@@ -1451,9 +1453,10 @@ namespace DAVA
 		
 		if (debugDrawEnabled)
 		{//TODO: Add debug draw for rotated controls
-			RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
 			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			RenderManager::Instance()->SetColor(oldColor);
 		}
 		
 		isIteratorCorrupted = false;
@@ -1883,9 +1886,10 @@ namespace DAVA
 			node->Set("rect", nodeValue);
 		}
 		// Align
-		if (baseControl->GetSpriteAlign() != this->GetSpriteAlign())
+		int32 align = this->GetSpriteAlign();
+		if (baseControl->GetSpriteAlign() != align)
 		{
-			node->Set("align", this->GetSpriteAlign());
+			node->AddNodeToMap("align", loader->GetAlignNodeValue(align));
 		}
 		// Left Align
 		if (this->GetLeftAlignEnabled())
@@ -2295,6 +2299,16 @@ namespace DAVA
 				(*it)->SetDebugDraw(debugDrawEnabled, hierarchic);
 			}
 		}
+	}
+	
+	void UIControl::SetDebugDrawColor(const Color& color)
+	{
+		debugDrawColor = color;
+	}
+	
+	Color UIControl::GetDebugDrawColor() const
+	{
+		return debugDrawColor;
 	}
     
     bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const

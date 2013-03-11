@@ -26,7 +26,7 @@ public:
     typedef HIERARCHYTREENODESLIST::const_iterator HIERARCHYTREENODESCONSTITER;
     
 	typedef int HIERARCHYTREENODEID;
-	typedef std::set<HIERARCHYTREENODEID> HIERARCHYTREENODESIDLIST;
+	typedef std::list<HIERARCHYTREENODEID> HIERARCHYTREENODESIDLIST;
 
   	static const HIERARCHYTREENODEID HIERARCHYTREENODEID_EMPTY = -1;
 
@@ -53,7 +53,7 @@ public:
     // Access to the node extra data.
     HierarchyTreeNodeExtraData& GetExtraData() {return extraData;};
 	
-	virtual void SetParent(HierarchyTreeNode* /*node*/){};
+	virtual void SetParent(HierarchyTreeNode* /*node*/, HierarchyTreeNode* /*insertAfter*/){};
 	virtual HierarchyTreeNode* GetParent() {return NULL;};
 
 	bool IsHasChild(const HierarchyTreeNode* node) const;

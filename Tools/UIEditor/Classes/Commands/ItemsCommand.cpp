@@ -210,9 +210,10 @@ void DeleteSelectedNodeCommand::Rollback()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ChangeNodeHeirarchy::ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items)
+ChangeNodeHeirarchy::ChangeNodeHeirarchy(HierarchyTreeNode::HIERARCHYTREENODEID targetNodeID, HierarchyTreeNode::HIERARCHYTREENODEID afterNodeID, HierarchyTreeNode::HIERARCHYTREENODESIDLIST items)
 {
 	this->targetNodeID = targetNodeID;
+	this->afterNodeID = afterNodeID;
 	this->items = items;
 	
 	// Remember the previous parent IDs for the commands. Note - we cannot store just pointers
@@ -238,20 +239,34 @@ void ChangeNodeHeirarchy::StorePreviousParents()
 			continue;
 		}
 		
+		HierarchyTreeNode::HIERARCHYTREENODEID addAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+		HierarchyTreeNode::HIERARCHYTREENODEID lastId = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+		const HierarchyTreeNode::HIERARCHYTREENODESLIST& childs = parentNode->GetChildNodes();
+		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator citer = childs.begin();
+			 citer != childs.end();
+			 ++citer)
+		{
+			if (node == (*citer))
+				addAfter = lastId;
+			lastId = (*citer)->GetId();
+		}
+		
 		// The Previous Parents are stored in the "item ID - parent ID" map.
-		this->previousParents.insert(std::make_pair(*iter, parentNode->GetId()));
+		this->previousParents.insert(std::make_pair(*iter, PreviousState(parentNode->GetId(), addAfter)));
 	}
 }
 
 void ChangeNodeHeirarchy::Execute()
 {
 	HierarchyTreeNode* targetNode = HierarchyTreeController::Instance()->GetTree().GetNode(targetNodeID);
+	HierarchyTreeNode* insertAfterNode = HierarchyTreeController::Instance()->GetTree().GetNode(afterNodeID);
 	if (!targetNode)
 	{
 		// Possible in Redo case if some changes in tree were made.
 		return;
 	}
 
+	
 	for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator iter = items.begin();
 		 iter != items.end();
 		 ++iter)
@@ -259,7 +274,22 @@ void ChangeNodeHeirarchy::Execute()
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter));
 		if (node)
 		{
-			node->SetParent(targetNode);
+			//YZ backlight parent rect
+			bool isNodeSelected = false;
+			HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+			if (controlNode)
+			{
+				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
+				HierarchyTreeController::Instance()->UnselectControl(controlNode);
+			}
+
+			node->SetParent(targetNode, insertAfterNode);
+			//insertAfterNode = node;
+			
+			if (isNodeSelected)
+			{
+				HierarchyTreeController::Instance()->SelectControl(controlNode);
+			}
 		}
 	}
 	
@@ -272,14 +302,15 @@ void ChangeNodeHeirarchy::Rollback()
 	for (PARENTNODESMAPITER iter = previousParents.begin(); iter != previousParents.end(); iter ++)
 	{
 		HierarchyTreeNode* currentNode = HierarchyTreeController::Instance()->GetTree().GetNode(iter->first);
-		HierarchyTreeNode* prevParentNode = HierarchyTreeController::Instance()->GetTree().GetNode(iter->second);
+		HierarchyTreeNode* prevParentNode = HierarchyTreeController::Instance()->GetTree().GetNode(iter->second.parent);
+		HierarchyTreeNode* prevAddedAfter = HierarchyTreeController::Instance()->GetTree().GetNode(iter->second.addedAfter);
 		
 		if (!currentNode || !prevParentNode)
 		{
 			continue;
 		}
 		
-		currentNode->SetParent(prevParentNode);
+		currentNode->SetParent(prevParentNode, prevAddedAfter);
 	}
 	
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();

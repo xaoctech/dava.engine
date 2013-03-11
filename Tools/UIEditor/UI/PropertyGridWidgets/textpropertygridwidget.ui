@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>180</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>180</height>
+    <height>200</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,13 +25,13 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>179</height>
+     <height>199</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>179</height>
+     <height>199</height>
     </size>
    </property>
    <property name="title">
@@ -102,24 +102,25 @@
    <widget class="QPushButton" name="fontSelectButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>96</y>
-      <width>195</width>
-      <height>47</height>
+      <x>50</x>
+      <y>101</y>
+      <width>181</width>
+      <height>38</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align:right; font-size: 11px;</string>
+     <string notr="true">QPushButton {text-align:right; font-size: 11px; border-style: outset; border: 1px solid #969696; padding: 5px; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e3e3e3, stop: 1 #f9f9f9);} 
+QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7e7e7e, stop: 1 #e3e3e3); }</string>
     </property>
     <property name="text">
      <string>default font</string>
     </property>
    </widget>
-   <widget class="QLabel" name="fontNameLabel_2">
+   <widget class="QLabel" name="fontColorLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>148</y>
+      <y>168</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -132,13 +133,26 @@
     <property name="geometry">
      <rect>
       <x>85</x>
-      <y>146</y>
+      <y>166</y>
       <width>205</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="fontForAllStatesCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>143</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set font for all states</string>
     </property>
    </widget>
   </widget>

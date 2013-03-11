@@ -36,20 +36,23 @@ public:
     virtual void TextureWillChanged(const String &forKey);
     virtual void TextureDidChanged(const String &forKey);
 
-	void GetHeightmap(Heightmap** heightmap);
+	Heightmap* GetHeightmap();
 	void UpdateHeightmap(Heightmap* heightmap);
-    
+
+	virtual void UpdateLandscapeTilemap(Texture* texture);
 protected:
+	void StoreOriginalHeightmap();
+	void CreateUndoPoint();
+	void CreateHeightmapUndo();
+	void CreateCopyPasteUndo();
 
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
-    virtual void UndoAction();
-    virtual void RedoAction();
 
-    void CopyPasteBegin();
+    bool CopyPasteBegin();
     virtual void RecreateHeightmapNode();
 
     
@@ -84,7 +87,8 @@ protected:
     void CreateTilemaskImage();
     Image *CreateToolImage(int32 sideSize);
 
-	CommandDrawHeightmap* command;
+	Heightmap* oldHeightmap;
+	Image* oldTilemap;
 };
 
 

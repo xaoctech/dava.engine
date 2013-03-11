@@ -9,7 +9,6 @@ public:
 	JniDpiHelper();
 
 	uint32 GetScreenDPI();
-	void a() {};
 };
 
 JniDpiHelper::JniDpiHelper() :

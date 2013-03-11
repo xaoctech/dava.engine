@@ -330,8 +330,6 @@ protected:
 
     Texture * CreateTexture(eTextureLevel level, const String & textureName);
     
-    //AABBox3     box;
-    
     int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
 
@@ -423,7 +421,6 @@ public:
         COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(bbox, "bbox", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
         MEMBER(isFogEnabled, "Is Fog Enabled", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(fogDensity, "Fog Density", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)

@@ -52,6 +52,7 @@ void TextureDescriptor::Compression::Clear()
     
 TextureDescriptor::TextureDescriptor()
 {
+    isCompressedFile = false;
     InitializeValues();
 }
 
@@ -165,7 +166,8 @@ bool TextureDescriptor::Load(const String &filePathname)
         return true;
     }
     
-    if(COMPRESSED_FILE == signature)
+    isCompressedFile = (COMPRESSED_FILE == signature);
+    if(isCompressedFile)
     {
         LoadCompressed(file);
     }
@@ -592,6 +594,9 @@ ImageFileFormat TextureDescriptor::GetFormatForExtension(const String &extension
     return NOT_FILE;
 }
 
-
+const bool TextureDescriptor::IsCompressedFile() const
+{
+    return isCompressedFile;
+}
 
 };

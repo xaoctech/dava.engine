@@ -64,7 +64,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions);__DAVAENGINE_BEAST__</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -122,7 +122,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions);__DAVAENGINE_BEAST__</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -325,6 +325,7 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\CustomColorCommands.cpp" />
+    <ClCompile Include="Classes\Commands\EditCommands.cpp" />
     <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp" />
@@ -504,7 +505,6 @@
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
@@ -784,6 +784,7 @@
     <ClInclude Include="Classes\Collada\ColladaCamera.h" />
     <ClInclude Include="Classes\Collada\ColladaConvert.h" />
     <ClInclude Include="Classes\Collada\ColladaDocument.h" />
+    <ClInclude Include="Classes\Collada\ColladaErrorCodes.h" />
     <ClInclude Include="Classes\Collada\ColladaIncludes.h" />
     <ClInclude Include="Classes\Collada\ColladaLight.h" />
     <ClInclude Include="Classes\Collada\ColladaMaterial.h" />
@@ -802,6 +803,7 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\CustomColorCommands.h" />
+    <ClInclude Include="Classes\Commands\EditCommands.h" />
     <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h" />
@@ -986,7 +988,6 @@
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
-    <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\SpritesPacker.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
@@ -1011,8 +1012,8 @@
     <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\materialbrowser.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
+    <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
-    <None Include="DataQt\texturedialog.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
     <None Include="MakefileQt" />
   </ItemGroup>

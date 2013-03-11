@@ -227,3 +227,12 @@ void HierarchyTreePlatformNode::ReturnTreeNodeToScene()
 	// Need to recover the node previously deleted, taking position into account.
 	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }
+
+void HierarchyTreePlatformNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
+{
+	if (!node)
+		return;
+	
+	node->RemoveTreeNode(this, false, false);
+	node->AddTreeNode(this, insertAfter);
+}
