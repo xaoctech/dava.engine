@@ -223,7 +223,7 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 		archive->SetUInt32("rb.startIndex", startIndex);
 		archive->SetVariant("rb.aabbox", VariantType(aabbox));
 		archive->SetVariant("rb.datasource", VariantType((uint64)dataSource));
-		archive->SetVariant("rb.maretial", VariantType((uint64)GetMaterial()));
+		archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
 		
 		KeyedArchive *mia = new KeyedArchive();
 		materialInstance->Save(mia, sceneFile);
@@ -242,7 +242,7 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
 
 		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
-		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.maretial")->AsUInt64()));
+		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.material")->AsUInt64()));
 
 		SetPolygonGroup(pg);
 		SetMaterial(mat);
