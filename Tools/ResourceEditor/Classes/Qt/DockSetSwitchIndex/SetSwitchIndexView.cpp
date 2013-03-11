@@ -26,7 +26,7 @@ void SetSwitchIndexView::Init()
 	connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(Clicked()));
 	
 	ui->btnOK->blockSignals(true);
-	QtMainWindowHandler::Instance()->RegisterSetSwitchIndexWidgets(ui->lineEdit,
+	QtMainWindowHandler::Instance()->RegisterSetSwitchIndexWidgets(ui->spinBox,
 		ui->rBtnSelection,
 		ui->rBtnScene,
 		ui->btnOK);
@@ -37,14 +37,7 @@ void SetSwitchIndexView::Init()
 
 void SetSwitchIndexView::Clicked()
 {
-	QString qstrValue = ui->lineEdit->text();
-	ui->lineEdit->setText("");
-	if(qstrValue.isEmpty())
-	{
-		return;
-	}
-	char* p;
-	uint32 value = strtol(qstrValue.toStdString().c_str(), &p,10);
+	uint32 value = ui->spinBox->value();
 	SetSwitchIndexHelper::eSET_SWITCH_INDEX state;
 	if ( ui->rBtnSelection->isChecked())
 	{

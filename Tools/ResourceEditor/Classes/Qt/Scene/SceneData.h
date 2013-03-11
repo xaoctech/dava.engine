@@ -60,7 +60,7 @@ public:
 	void EmitSceneChanged();
 
 	void GetAllParticleEffects(DAVA::List<DAVA::SceneNode*> & particleEffects);
-	void GetAllSwitchComponents(DAVA::List<DAVA::SceneNode*> & particleEffects);
+
 signals:
 	void SceneChanged(EditorScene *scene);
 	void SceneNodeSelected(DAVA::SceneNode *node);
