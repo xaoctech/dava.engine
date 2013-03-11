@@ -78,6 +78,8 @@ Core::Core()
 	options = new KeyedArchive();
 	fixedProportions = true;
     
+    desirableIndex = 0;
+    
     EnableReloadResourceOnResize(true);
 }
 
