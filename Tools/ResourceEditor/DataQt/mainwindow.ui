@@ -39,6 +39,12 @@
     <enum>QFrame::Raised</enum>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>3</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="DavaGLWidget" name="davaGLWidget" native="true">
       <property name="focusPolicy">
@@ -70,11 +76,19 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="margin">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <item>
+      <widget class="QToolBar" name="propertiesToolBar_2">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <addaction name="actionRefreshSceneGraph"/>
+      </widget>
+     </item>
      <item>
       <widget class="QSceneGraphTreeView" name="sceneGraphTree">
        <property name="contextMenuPolicy">
@@ -91,13 +105,6 @@
        </property>
        <property name="defaultDropAction">
         <enum>Qt::MoveAction</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnRefresh">
-       <property name="text">
-        <string>Refresh</string>
        </property>
       </widget>
      </item>
@@ -925,6 +932,11 @@
    </property>
    <property name="text">
     <string>Hide readonly</string>
+   </property>
+  </action>
+  <action name="actionRefreshSceneGraph">
+   <property name="text">
+    <string>refreshSceneGraph</string>
    </property>
   </action>
  </widget>
