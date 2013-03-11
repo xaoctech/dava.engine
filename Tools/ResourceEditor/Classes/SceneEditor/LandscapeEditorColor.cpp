@@ -30,9 +30,6 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     savedTexture = NULL;
     settings = NULL;
 
-    editedHeightmap = NULL;
-    savedHeightmap = NULL;
-    
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
     dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
@@ -42,16 +39,11 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 
     editingIsEnabled = false;
 
-	command = NULL;
+	originalImage = NULL;
 }
 
 LandscapeEditorColor::~LandscapeEditorColor()
 {
-
-    SafeRelease(editedHeightmap);
-    SafeRelease(savedHeightmap);
-    
-    
     SafeRelease(tileMaskEditorShader);
 
     SafeRelease(savedTexture);
@@ -59,6 +51,7 @@ LandscapeEditorColor::~LandscapeEditorColor()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+	SafeRelease(originalImage);
 }
 
 
@@ -90,9 +83,6 @@ void LandscapeEditorColor::CreateMaskTexture()
     }
     
     CreateMaskFromTexture(savedTexture);
-    
-//    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
-//    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
 }
 
 void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
@@ -240,8 +230,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = true;
 
-			DVASSERT(command == NULL);
-			command = new CommandDrawTilemap();
+			StoreOriginalTexture();
 
             break;
         }
@@ -252,18 +241,13 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = false;
 
-				if (command)
-				{
-					CommandsManager::Instance()->Execute(command);
-					SafeRelease(command);
-				}
+				CreateUndoPoint();
             }
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
 
-				DVASSERT(command == NULL);
-				command = new CommandDrawTilemap();
+				StoreOriginalTexture();
             }
             break;
         }
@@ -272,11 +256,7 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
         {
             editingIsEnabled = false;
 
-			if (command)
-			{
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
-			}
+			CreateUndoPoint();
 
             break;
         }
@@ -311,25 +291,18 @@ void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
     }
 }
 
-void LandscapeEditorColor::StoreState(Image **image)
+Image* LandscapeEditorColor::StoreState()
 {
-	*image = maskSprite->GetTexture()->CreateImageFromMemory();
+	return maskSprite->GetTexture()->CreateImageFromMemory();
 }
 
-void LandscapeEditorColor::RestoreState(Image *image)
+void LandscapeEditorColor::RestoreState(Texture* texture)
 {
-	if (image)
+	if (texture)
 	{
-        Texture *texture = Texture::CreateTextFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
-
-        //TODO: is code usefull?
-        texture->GenerateMipmaps();
-        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-        //ENDOFTODO
-
-        CreateMaskFromTexture(texture);
-		//TODO: SafeRelease(texture)?
-    }
+		CreateMaskFromTexture(texture);
+		wasTileMaskToolUpdate = true;
+	}
 }
 
 void LandscapeEditorColor::HideAction()
@@ -341,10 +314,6 @@ void LandscapeEditorColor::HideAction()
 	SafeRelease(toolSprite);
 
 	workingLandscape->CursorDisable();
-    
-    workingLandscape->SetHeightmap(savedHeightmap);
-    SafeRelease(editedHeightmap);
-    SafeRelease(savedHeightmap);
 }
 
 void LandscapeEditorColor::ShowAction()
@@ -353,20 +322,6 @@ void LandscapeEditorColor::ShowAction()
     landscapeSize = (int32)maskSprite->GetWidth();
 
 	workingLandscape->CursorEnable();
-    
-    savedHeightmap = SafeRetain(workingLandscape->GetHeightmap());
-    editedHeightmap = new EditorHeightmap(savedHeightmap);
-    workingLandscape->SetHeightmap(editedHeightmap);
-}
-
-void LandscapeEditorColor::UndoAction()
-{
-	CommandsManager::Instance()->Undo();
-}
-
-void LandscapeEditorColor::RedoAction()
-{
-	CommandsManager::Instance()->Redo();
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
@@ -445,4 +400,29 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     }
     
     return LandscapeEditorBase::SetScene(newScene);
+}
+
+void LandscapeEditorColor::UpdateLandscapeTilemap(Texture* texture)
+{
+	RestoreState(texture);
+}
+
+void LandscapeEditorColor::CreateUndoPoint()
+{
+	if (originalImage)
+	{
+		Image* newImage = StoreState();
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawTilemap(originalImage,
+																			  newImage,
+																			  savedPath,
+																			  workingLandscape));
+		SafeRelease(originalImage);
+		SafeRelease(newImage);
+	}
+}
+
+void LandscapeEditorColor::StoreOriginalTexture()
+{
+	DVASSERT(originalImage == NULL);
+	originalImage = StoreState();
 }

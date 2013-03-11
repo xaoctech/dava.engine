@@ -157,7 +157,9 @@
 #include "UI/UIHierarchy.h"
 #include "UI/UIHierarchyCell.h"
 #include "UI/UIFileSystemDialog.h"
-
+#include "UI/UIWebView.h"
+#include "UI/UISpinner.h"
+#include "UI/VectorSpinnerAdapter.h"
 
 #include "UI/UIYamlLoader.h"
 
@@ -249,6 +251,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/UserComponent.h"
 
 // Application core 
 #include "Core/Core.h"

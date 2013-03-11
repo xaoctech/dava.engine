@@ -236,6 +236,9 @@ public:
 	 \returns Real draw color.
 	 */
 	const Color & GetDrawColor() const;
+
+	void SetDrawColor(const Color &c);
+
 	/**
 	 \brief Sets parent control color.
 	 \param[in] parentColor parent control color.

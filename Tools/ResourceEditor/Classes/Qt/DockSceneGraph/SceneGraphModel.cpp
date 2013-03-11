@@ -10,10 +10,12 @@
 
 #include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/ArrowsNode.h"
 
 #include "DockParticleEditor/ParticlesEditorController.h"
 
 #include <QTreeView>
+#include <QPainter>
 
 using namespace DAVA;
 
@@ -23,6 +25,7 @@ SceneGraphModel::SceneGraphModel(QObject *parent)
     ,   selectedNode(NULL)
     ,   selectedGraphItemForParticleEditor(NULL)
 {
+	InitDecorationIcons();
 }
 
 SceneGraphModel::~SceneGraphModel()
@@ -40,8 +43,23 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     Rebuild();
 }
 
+bool SceneGraphModel::IsNodeAccepted(DAVA::SceneNode *node)
+{
+	//Check whether current node is ArrowsNode.
+	//ArrowsNode should not be displayed in SceneGraph tree
+	ArrowsNode* arrowsNode = dynamic_cast<ArrowsNode*>(node);
+	if (arrowsNode)
+		return false;
+
+	return true;
+}
+
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
 {
+	if (!IsNodeAccepted(node))
+	{
+		return;
+	}
     // Particles Editor can change the node type during "adopting" Particle Emitter Nodes.
     node = particlesEditorSceneModelHelper.PreprocessSceneNode(node);
 
@@ -492,6 +510,14 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
             return QColor(255, 0, 0);
         }
     }
+	else if(Qt::DecorationRole == role)
+	{
+		SceneNode *node = static_cast<SceneNode *>(ItemData(index));
+		if(node)
+		{
+			return GetDecorationIcon(node);
+		}
+	}
 	
 	// Some nodes might be checked - verify this separately.
 	if (role == Qt::CheckStateRole && index.column() == 0 && IsItemCheckable(index))
@@ -582,4 +608,62 @@ GraphItem* SceneGraphModel::GetGraphItemByModelIndex(const QModelIndex& index) c
 	}
 	
 	return static_cast<GraphItem*>(index.internalPointer());
+}
+
+void SceneGraphModel::InitDecorationIcons()
+{
+	QPixmap pix(16,16);
+	QPainter p(&pix);
+
+	p.setPen(QColor(64, 64, 64));
+	p.setBrush(QBrush(QColor(96, 192, 96)));
+	p.drawRect(QRect(0,0,15,15));
+	decorationIcons["camera"] = QIcon(pix);
+
+	p.setBrush(QBrush(QColor(255, 255, 96)));
+	p.drawRect(QRect(0,0,15,15));
+	decorationIcons["light"] = QIcon(pix);
+
+	p.setBrush(QBrush(QColor(96, 96, 192)));
+	p.drawRect(QRect(0,0,15,15));
+	decorationIcons["user"] = QIcon(pix);
+
+	p.setBrush(QBrush(QColor(96, 192, 192)));
+	p.drawRect(QRect(0,0,15,15));
+	decorationIcons["lod"] = QIcon(pix);
+
+	p.setBrush(QBrush(QColor(192, 96, 96)));
+	p.drawRect(QRect(0,0,15,15));
+	decorationIcons["render"] = QIcon(pix);
+}
+
+QIcon SceneGraphModel::GetDecorationIcon(DAVA::SceneNode *node) const
+{
+	QIcon icon;
+
+	if(NULL != node)
+	{
+		if(NULL != node->GetComponent(Component::CAMERA_COMPONENT))
+		{
+			icon = decorationIcons["camera"];
+		}
+		else if(NULL != node->GetComponent(Component::LIGHT_COMPONENT))
+		{
+			icon = decorationIcons["light"];
+		}
+		else if(NULL != node->GetComponent(Component::USER_COMPONENT))
+		{
+			icon = decorationIcons["user"];
+		}
+		else if(NULL != node->GetComponent(Component::LOD_COMPONENT))
+		{
+			icon = decorationIcons["lod"];
+		}
+		else if(NULL != node->GetComponent(Component::RENDER_COMPONENT))
+		{
+			 icon = decorationIcons["render"];
+		}
+	}
+
+	return icon;
 }

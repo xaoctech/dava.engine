@@ -34,6 +34,7 @@
 
 void ImageUsageScreen::LoadResources()
 {
+#if 0
 	testImageOriginal = Image::CreateFromFile("~res:/PNGImages/logo.png");
 	testImage4444 = Image::Create(testImageOriginal->GetWidth() / 2, testImageOriginal->GetHeight() / 2, FORMAT_RGBA4444);
 
@@ -62,6 +63,7 @@ void ImageUsageScreen::LoadResources()
 		testImage4444->GetHeight());
 	testImageRGBA4444 = Sprite::CreateFromTexture(texOrig2, 0, 0, (float32)testImage4444->GetWidth(), (float32)testImage4444->GetHeight());
 	SafeRelease(texOrig2);
+#endif
 }
 
 void ImageUsageScreen::UnloadResources()

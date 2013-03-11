@@ -4,9 +4,8 @@
 
 #include "EditorSettings.h"
 
-Font* ControlsFactory::fontLight = NULL;
-Font* ControlsFactory::fontDark = NULL;
-Font* ControlsFactory::fontError = NULL;
+Font* ControlsFactory::font12 = NULL;
+Font* ControlsFactory::font20 = NULL;
 
 UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText, bool designers)
 {
@@ -24,7 +23,7 @@ UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &bu
 
 void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonText, bool designers)
 {
-    Font *font = GetFontLight();
+    Font *font = GetFont12();
     
     btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
@@ -111,7 +110,7 @@ UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
 
 void ControlsFactory::CustomizeCloseWindowButton(UIButton *btn)
 {
-    Font *font = GetFontDark();
+    Font *font = GetFont12();
     
     btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
@@ -132,54 +131,40 @@ void ControlsFactory::CustomizeCloseWindowButton(UIButton *btn)
     AddBorder(btn);
 }
 
-
-Font * ControlsFactory::GetFontLight()
+Font * ControlsFactory::GetFont12()
 {
-    if (!fontLight) 
-    {
-        fontLight = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-        CustomizeFontLight(fontLight);
-    }
-    return fontLight;
+	if (!font12) 
+	{
+		font12 = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+		font12->SetSize(12);
+	}
+	return font12;
 }
 
 
-Font * ControlsFactory::GetFontDark()
+Font * ControlsFactory::GetFont20()
 {
-    if (!fontDark) 
-    {
-        fontDark = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-        CustomizeFontDark(fontDark);
-    }
-    return fontDark;
+	if (!font20) 
+	{
+		font20 = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+		font20->SetSize(20);
+	}
+	return font12;
 }
 
-Font * ControlsFactory::GetFontError()
+Color ControlsFactory::GetColorLight()
 {
-    if (!fontError) 
-    {
-        fontError = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-        CustomizeFontError(fontError);
-    }
-    return fontError;
+    return Color(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void ControlsFactory::CustomizeFontLight(Font *font)
+Color ControlsFactory::GetColorDark()
 {
-    font->SetSize(12);
-    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    return Color(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void ControlsFactory::CustomizeFontDark(Font *font)
+Color ControlsFactory::GetColorError()
 {
-    font->SetSize(12);
-    font->SetColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
-}
-
-void ControlsFactory::CustomizeFontError(Font *font)
-{
-    font->SetSize(20);
-    font->SetColor(Color(1.0f, 0.0f, 0.0f, 0.8f));
+	return Color(1.0f, 0.0f, 0.0f, 0.8f);
 }
 
 void ControlsFactory::CustomizeScreenBack(UIControl *screen)
@@ -259,7 +244,7 @@ void ControlsFactory::CustomizeExpandButton(UIButton *btn)
 
 void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
 {
-    Font *font = GetFontDark();
+    Font *font = GetFont12();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
     c->SetStateFont(UIControl::STATE_SELECTED, font);
@@ -276,7 +261,7 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
 
 void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideString &text)
 {
-    Font *font = GetFontDark();
+    Font *font = GetFont12();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
     c->SetStateFont(UIControl::STATE_SELECTED, font);
@@ -300,7 +285,7 @@ void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 
 void ControlsFactory::CustomizeMenuPopupCell(UIListCell *c, const WideString &text)
 {
-    Font *font = GetFontLight();
+    Font *font = GetFont12();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
     c->SetStateFont(UIControl::STATE_SELECTED, font);
@@ -372,7 +357,7 @@ void ControlsFactory::CustomizePropertyButtonCell(UIListCell *c)
     c->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     c->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
     
-    Font *font = GetFontLight();
+    Font *font = GetFont12();
     c->SetStateFont(UIControl::STATE_PRESSED_INSIDE, font);
     c->SetStateFont(UIControl::STATE_DISABLED, font);
     c->SetStateFont(UIControl::STATE_NORMAL, font);
