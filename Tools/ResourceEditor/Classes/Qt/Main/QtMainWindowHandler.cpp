@@ -16,6 +16,7 @@
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
+#include "../Commands/SetSwitchIndexCommands.h"
 #include "../Commands/EditCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -39,6 +40,7 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
+#include <QLineEdit.h>
 
 #include "Render/LibDxtHelper.h"
 
@@ -503,6 +505,11 @@ void QtMainWindowHandler::ReloadAsDXT()
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
 }
 
+void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
+{
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
+}
+
 void QtMainWindowHandler::ToggleCustomColors()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
@@ -567,6 +574,30 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 		ChangeBrushSizeCustomColors(customColorsBrushSizeSlider->value());
 		ChangeColorCustomColors(customColorsColorComboBox->currentIndex());
 	}
+}
+
+void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QLineEdit* lEdit, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
+{
+	this->setSwitchIndexToggleButton = btnOK;
+	this->editSwitchIndexValue = lEdit;
+	this->rBtnSelection = rBtnSelection;
+	this->rBtnScene = rBtnScene;
+}
+
+void QtMainWindowHandler::SetSwitchIndexWidgetsState(bool state)
+{
+	DVASSERT(setSwitchIndexToggleButton &&
+		 editSwitchIndexValue &&
+		 rBtnSelection &&
+		 rBtnScene );
+
+	setSwitchIndexToggleButton->blockSignals(true);
+	setSwitchIndexToggleButton->setEnabled(state);
+	setSwitchIndexToggleButton->blockSignals(false);
+
+	editSwitchIndexValue->setEnabled(state);
+	rBtnSelection->setEnabled(state);
+	rBtnScene->setEnabled(state);
 }
 
 void QtMainWindowHandler::ToggleVisibilityTool()
