@@ -70,9 +70,9 @@ bool LocalizationTest::CompareFiles(const String& file1, const String& file2)
 	File* f1 = File::Create(file1, File::OPEN | File::READ);
 	File* f2 = File::Create(file2, File::OPEN | File::READ);
 
-	bool res = true;
+	bool res = (f1 && f2);
 
-	if (f1 && f2)
+	if (res)
 	{
 		int32 size = Max(f1->GetSize(), f2->GetSize());
 
@@ -86,27 +86,15 @@ bool LocalizationTest::CompareFiles(const String& file1, const String& file2)
 
 			read1 = f1->ReadLine(buf1, size);
 			read2 = f2->ReadLine(buf2, size);
-			if (read1 != read2)
-			{
-				res = false;
-			}
-			else
-			{
-				res &= !memcmp(buf1, buf2, read1);
-			}
+
+			res &= (read1 == read2);
+			res &= !memcmp(buf1, buf2, read1);
 		}
 
-		if (!f1->IsEof() || !f2->IsEof())
-		{
-			res = false;
-		}
+		res &= (f1->IsEof() && f2->IsEof());
 
 		delete[] buf1;
 		delete[] buf2;
-	}
-	else
-	{
-		res = false;
 	}
 
 	SafeRelease(f1);
