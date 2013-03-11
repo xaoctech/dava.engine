@@ -77,6 +77,9 @@ public:
 	*/
 	float32	GetVolume();
 
+	void SetPosition(const Vector3 & position);
+	void SetIgnorePosition(bool ignorePosition);
+
 	/**
 		\brief Stop playback.
 	*/

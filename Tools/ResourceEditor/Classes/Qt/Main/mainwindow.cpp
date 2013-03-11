@@ -338,7 +338,7 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+    connect(ui->actionRefreshSceneGraph, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
@@ -417,7 +417,7 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if(qApp == obj)
+    if(qApp == obj && ProjectManager::Instance()->IsOpened())
     {
         if(QEvent::ApplicationActivate == event->type())
         {

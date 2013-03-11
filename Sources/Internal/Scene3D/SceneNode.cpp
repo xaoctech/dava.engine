@@ -45,6 +45,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 namespace DAVA
 {
@@ -1075,7 +1076,20 @@ Matrix4 SceneNode::AccamulateLocalTransform(SceneNode * fromParent)
 	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
 
+void SceneNode::FindAllSwitchComponentsRecursive(List<DAVA::SceneNode*> & switchComponents)
+{
+	SwitchComponent * switchComponent = cast_if_equal<SwitchComponent*>(GetComponent(Component::SWITCH_COMPONENT));
+	if (switchComponent)
+	{
+		switchComponents.push_back(this);
+	}
 
+	uint32 childCount = GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		GetChild(i)->FindAllSwitchComponentsRecursive(switchComponents);
+	}
+}
 
 
 
