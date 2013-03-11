@@ -96,22 +96,11 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 	QWidget::resizeEvent(e);
 
 	QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
-
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
-	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 
 	//YZ fix load resource
 	Core::Instance()->RegisterAvailableResourceSize((int32)e->size().width(), (int32)e->size().height(), "Gfx");
 	ScreenWrapper::Instance()->RequestUpdateView();
-}
-
-void DavaGLWidget::moveEvent(QMoveEvent *e)
-{
-	QWidget::moveEvent(e);
-
-	QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
-
-	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 }
 
 void DavaGLWidget::showEvent(QShowEvent *e)
