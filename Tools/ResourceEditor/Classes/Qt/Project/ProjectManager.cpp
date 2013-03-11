@@ -17,7 +17,7 @@ ProjectManager::~ProjectManager()
 
 }
 
-bool ProjectManager::isOpened()
+bool ProjectManager::IsOpened()
 {
 	return (curProjectPath != "");
 }
