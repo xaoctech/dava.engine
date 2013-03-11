@@ -433,6 +433,9 @@ public:
 
 private:
 	Map<String, VariantType*> objectMap;
+
+public:
+	INTROSPECTION_EXTEND(KeyedArchive, BaseObject, NULL);
 };
     
 // Implementation 

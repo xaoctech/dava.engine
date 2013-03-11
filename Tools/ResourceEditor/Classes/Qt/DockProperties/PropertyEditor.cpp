@@ -99,10 +99,19 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 
 			if(hideReadOnly) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
 
-            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags));
+			QtPropertyData* propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
+
+			if(propData->ChildCount() > 0)
+			{
+				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
             
-            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-            prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+	            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+		        prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+			}
+			else
+			{
+				delete propData;
+			}
         }
     }
 }
