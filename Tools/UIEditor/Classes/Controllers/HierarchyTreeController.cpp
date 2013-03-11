@@ -92,11 +92,13 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	if (uiControl)
 	{
 		uiControl->SetDebugDraw(true);
+		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
 	
 		//YZ draw parent rect
 		UIControl* parentUiControl = uiControl->GetParent();
 		if (parentUiControl)
 		{
+			parentUiControl->SetDebugDrawColor(Color(0.55f, 0.55f, 0.55f, 1.f));
 			parentUiControl->SetDebugDraw(true);
 		}
 	}
