@@ -46,7 +46,6 @@ namespace DAVA
 NSView *qtNSView = NULL;
 OpenGLView *openGLView = NULL;
     
-    
 void QtLayerMacOS::InitializeGlWindow(void *qtView, int32 width, int32 height)
 {
     qtNSView = (NSView *)qtView;

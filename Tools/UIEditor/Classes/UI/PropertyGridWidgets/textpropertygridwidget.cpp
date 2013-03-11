@@ -160,12 +160,14 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
         // No control already assinged or not fontSelectButton
         return;
     }
+
+    bool setFontForAllStates = ui->fontForAllStatesCheckBox->isChecked();
    
     //Call font selection dialog
     FontManagerDialog *fontDialog = new FontManagerDialog(true);
     Font *resultFont = NULL;
     
-    if ( fontDialog->exec() == QDialog::Accepted )
+    if (fontDialog->exec() == QDialog::Accepted)
     {
         resultFont = fontDialog->ResultFont();
     }
@@ -192,8 +194,8 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 		SafeRelease(resultFont);
 		return;
 	}
-
-    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
+	// Set font for all states if checkbox is checked
+    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont, setFontForAllStates);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 	// TODO - probable memory leak. Need to investigate how to fix it
