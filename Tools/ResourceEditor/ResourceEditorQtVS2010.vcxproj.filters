@@ -199,6 +199,12 @@
     <Filter Include="Sources\Qt\QResourceEditorProgressDialog">
       <UniqueIdentifier>{a9ce818d-486f-4804-8236-33131380edb6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\DockSetSwitchIndex">
+      <UniqueIdentifier>{1060010d-a6c2-4da3-9613-72895b684bf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\DockSetSwitchIndex">
+      <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1506,6 +1512,18 @@
     <ClCompile Include="_GeneratedQt\QResourceEditorProgressDialog\QResourceEditorProgressDialog_moc.cpp">
       <Filter>QtGenerated\QResourceEditorProgressDialog</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.cpp">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp">
+      <Filter>QtGenerated\DockSetSwitchIndex</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SetSwitchIndexCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.cpp">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands\EditCommands.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -2672,6 +2690,15 @@
     <ClInclude Include="Classes\Qt\QResourceEditorProgressDialog\QResourceEditorProgressDialog.h">
       <Filter>Sources\Qt\QResourceEditorProgressDialog</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\SetSwitchIndexCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexHelper.h">
+      <Filter>Sources\Qt\DockSetSwitchIndex</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Commands\EditCommands.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -2872,6 +2899,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ParticleProperty.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\SetSwitchIndexView.ui">
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\texturebrowser.ui">

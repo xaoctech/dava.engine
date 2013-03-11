@@ -122,7 +122,9 @@ Sound::Sound(const String & _fileName, eType _type, int32 _priority)
 	provider(0),
 	volume(1.f),
 	looping(false),
-	group(0)
+	group(0),
+	position(Vector3()),
+	ignorePosition(true)
 {
 #ifdef __DAVAENGINE_ANDROID__
     playerObject = NULL;
@@ -405,6 +407,8 @@ SoundInstance * Sound::Play()
 	inst->buddyChannel = ch;
 	AddSoundInstance(inst);
 	ch->SetVolume(volume);
+	ch->SetPosition(position);
+	ch->SetIgnorePosition(ignorePosition);
 	ch->Play(this, looping);
 	return inst;
 #endif //#ifdef __DAVAENGINE_ANDROID__
@@ -452,6 +456,29 @@ SLuint32 Sound::GetPlayState()
 float32 Sound::GetVolume()
 {
 	return volume;
+}
+
+void Sound::SetPosition(const Vector3 & _position)
+{
+	position = _position;
+	List<SoundInstance*>::iterator sit;
+	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
+	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
+	{
+		(*sit)->SetPosition(position);
+	}
+}
+
+
+void Sound::SetIgnorePosition(bool _ignorePosition)
+{
+	ignorePosition = _ignorePosition;
+	List<SoundInstance*>::iterator sit;
+	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
+	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
+	{
+		(*sit)->SetIgnorePosition(ignorePosition);
+	}
 }
 
 void Sound::AddSoundInstance(SoundInstance * soundInstance)
@@ -537,5 +564,7 @@ void Sound::Pause(bool pause)
 		(*sit)->Pause(pause);
 	}
 }
-    
+
+
+
 };
