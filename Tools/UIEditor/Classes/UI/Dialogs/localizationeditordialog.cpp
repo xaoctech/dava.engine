@@ -116,7 +116,7 @@ void LocalizationEditorDialog::SetDefaultLanguage()
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
     QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ),
-																ResourcesManageHelper::GetDefaultDirectory());
+																ResourcesManageHelper::GetResourceRootDirectory());
 
 	if(!fileDirectory.isNull() && !fileDirectory.isEmpty())
     {

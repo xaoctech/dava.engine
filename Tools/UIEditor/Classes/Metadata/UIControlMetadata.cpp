@@ -165,10 +165,10 @@ void UIControlMetadata::SetSizeX(float value)
     {
         return;
     }
-    
-    Vector2 controlSize = GetActiveUIControl()->GetSize();
-    controlSize.x = value;
-    GetActiveUIControl()->SetSize(controlSize);
+	
+	Rect rect = GetActiveUIControl()->GetRect();
+	rect.dx = value;
+	GetActiveUIControl()->SetRect(rect);
 }
 
 float UIControlMetadata::GetSizeY() const
@@ -187,10 +187,10 @@ void UIControlMetadata::SetSizeY(float value)
     {
         return;
     }
-    
-    Vector2 controlSize = GetActiveUIControl()->GetSize();
-    controlSize.y = value;
-    GetActiveUIControl()->SetSize(controlSize);
+
+	Rect rect = GetActiveUIControl()->GetRect();
+	rect.dy = value;
+	GetActiveUIControl()->SetRect(rect);
 }
 
 float UIControlMetadata::GetPivotX() const
