@@ -1220,7 +1220,6 @@
 		E898A2AA16BD265400732C04 /* HTTPDownloader.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989D8E16BD24E500732C04 /* HTTPDownloader.mm */; };
 		E898A2AB16BD265400732C04 /* MD5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9016BD24E500732C04 /* MD5.cpp */; };
 		E898A2AC16BD265400732C04 /* StringFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9316BD24E500732C04 /* StringFormat.cpp */; };
-		E898A2AD16BD265400732C04 /* UTF8Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9516BD24E500732C04 /* UTF8Utils.cpp */; };
 		E898A2AE16BD265400732C04 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9716BD24E500732C04 /* Utils.cpp */; };
 		E898A2AF16BD265400732C04 /* UtilsMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8989D9916BD24E500732C04 /* UtilsMacOS.mm */; };
 		E898A2B116BD265400732C04 /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
@@ -1295,6 +1294,7 @@
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
+		17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -1916,7 +1916,6 @@
 		E8989D9216BD24E500732C04 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
 		E8989D9316BD24E500732C04 /* StringFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringFormat.cpp; sourceTree = "<group>"; };
 		E8989D9416BD24E500732C04 /* StringFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringFormat.h; sourceTree = "<group>"; };
-		E8989D9516BD24E500732C04 /* UTF8Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UTF8Utils.cpp; sourceTree = "<group>"; };
 		E8989D9616BD24E500732C04 /* UTF8Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF8Utils.h; sourceTree = "<group>"; };
 		E8989D9716BD24E500732C04 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
 		E8989D9816BD24E500732C04 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
@@ -2902,6 +2901,7 @@
 		E8989D8C16BD24E500732C04 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */,
 				E8989D8D16BD24E500732C04 /* HTTPDownloader.h */,
 				E8989D8E16BD24E500732C04 /* HTTPDownloader.mm */,
 				E8989D9016BD24E500732C04 /* MD5.cpp */,
@@ -2909,7 +2909,6 @@
 				E8989D9216BD24E500732C04 /* Random.h */,
 				E8989D9316BD24E500732C04 /* StringFormat.cpp */,
 				E8989D9416BD24E500732C04 /* StringFormat.h */,
-				E8989D9516BD24E500732C04 /* UTF8Utils.cpp */,
 				E8989D9616BD24E500732C04 /* UTF8Utils.h */,
 				E8989D9716BD24E500732C04 /* Utils.cpp */,
 				E8989D9816BD24E500732C04 /* Utils.h */,
@@ -3997,7 +3996,6 @@
 				E898A04516BD24E500732C04 /* HTTPDownloader.mm in Sources */,
 				E898A04716BD24E500732C04 /* MD5.cpp in Sources */,
 				E898A04A16BD24E500732C04 /* StringFormat.cpp in Sources */,
-				E898A04C16BD24E500732C04 /* UTF8Utils.cpp in Sources */,
 				E898A04E16BD24E500732C04 /* Utils.cpp in Sources */,
 				E898A05016BD24E500732C04 /* UtilsMacOS.mm in Sources */,
 				509740D816C12EED00631E71 /* IntrospectionBase.cpp in Sources */,
@@ -4015,6 +4013,7 @@
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
 				E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				17DDBDBA16E79AB000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4288,7 +4287,6 @@
 				E898A2AA16BD265400732C04 /* HTTPDownloader.mm in Sources */,
 				E898A2AB16BD265400732C04 /* MD5.cpp in Sources */,
 				E898A2AC16BD265400732C04 /* StringFormat.cpp in Sources */,
-				E898A2AD16BD265400732C04 /* UTF8Utils.cpp in Sources */,
 				E898A2AE16BD265400732C04 /* Utils.cpp in Sources */,
 				E898A2AF16BD265400732C04 /* UtilsMacOS.mm in Sources */,
 				509740DA16C12EEE00631E71 /* IntrospectionBase.cpp in Sources */,
@@ -4302,6 +4300,7 @@
 				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
 				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
 				E9EA496D16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				17DDBDBB16E79E7000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
