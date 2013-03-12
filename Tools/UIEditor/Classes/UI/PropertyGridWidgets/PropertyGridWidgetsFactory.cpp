@@ -103,8 +103,11 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
-		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
+        resultList.push_back(alignWidget);
+        if(uiButtonMetadata)
+        {
+            resultList.push_back(stateWidget);
+        }
         resultList.push_back(textWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
