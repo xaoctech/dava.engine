@@ -329,6 +329,24 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			drawState.pivotPoint.x = geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx);
 			drawState.pivotPoint.y = geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy);
 			drawState.angle = geometricData.angle;
+			{
+				switch(perPixelAccuracyType)
+				{
+				case PER_PIXEL_ACCURACY_ENABLED:
+					if(lastDrawPos == drawState.position)
+					{
+						drawState.usePerPixelAccuracy = true;
+					}
+					break;
+				case PER_PIXEL_ACCURACY_FORCED:
+					drawState.usePerPixelAccuracy = true;
+					break;
+				default:
+					break;
+				}
+			}
+
+			lastDrawPos = drawState.position;
 
 //			spr->SetPosition(geometricData.position);
 //			spr->SetScale(drawRect.dx / spr->GetSize().dx, drawRect.dy / spr->GetSize().dy);
@@ -415,6 +433,24 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //				spr->SetAngle(geometricData.angle);
 			}
 //			spr->SetPosition((float32)x, (float32)y);
+			{
+				switch(perPixelAccuracyType)
+				{
+				case PER_PIXEL_ACCURACY_ENABLED:
+					if(lastDrawPos == drawState.position)
+					{
+						drawState.usePerPixelAccuracy = true;
+					}
+					break;
+				case PER_PIXEL_ACCURACY_FORCED:
+					drawState.usePerPixelAccuracy = true;
+					break;
+				default:
+					break;
+				}
+			}
+
+			lastDrawPos = drawState.position;
 			
 			spr->Draw(&drawState);
 		}
