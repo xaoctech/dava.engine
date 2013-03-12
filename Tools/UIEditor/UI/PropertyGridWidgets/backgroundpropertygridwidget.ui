@@ -218,7 +218,7 @@ inherit:</string>
     <property name="geometry">
      <rect>
       <x>9</x>
-      <y>206</y>
+      <y>204</y>
       <width>81</width>
       <height>16</height>
      </rect>
@@ -231,8 +231,8 @@ inherit:</string>
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>206</y>
-      <width>71</width>
+      <y>204</y>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -243,7 +243,7 @@ inherit:</string>
    <widget class="QSpinBox" name="lrSpinBox">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>90</x>
       <y>200</y>
       <width>51</width>
       <height>22</height>
@@ -259,7 +259,7 @@ inherit:</string>
    <widget class="QSpinBox" name="tbSpinBox">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>235</x>
       <y>200</y>
       <width>46</width>
       <height>22</height>
