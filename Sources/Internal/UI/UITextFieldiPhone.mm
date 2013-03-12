@@ -175,11 +175,30 @@ namespace DAVA
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         textFieldHolder->textField.textColor = [UIColor colorWithRed:r green:g blue:b alpha:a];
+        
     }
     void UITextFieldiPhone::SetFontSize(float size)
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         textFieldHolder->textField.font = [UIFont systemFontOfSize:size * Core::GetVirtualToPhysicalFactor()];
+    }
+    
+    void UITextFieldiPhone::SetAlign(DAVA::int32 align)
+    {
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        if (align & ALIGN_LEFT)
+            textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        else if (align & ALIGN_HCENTER)
+            textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        else if (align & ALIGN_RIGHT)
+            textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+
+        if (align & ALIGN_TOP)
+            textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
+        else if (align & ALIGN_VCENTER)
+            textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        else if (align & ALIGN_BOTTOM)
+            textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentBottom;
     }
 	
     void UITextFieldiPhone::SetReturnKey(int32 returnType)
