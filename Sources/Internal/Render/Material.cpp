@@ -166,6 +166,10 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 			SetLightmap(lTexture, lName);
 			lTexture->Release();
 		}
+        else
+        {
+			SetLightmap(NULL, String(""));
+        }
 
 		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
 		texture0Shift = archive->GetVector2("ims.texture0Shift");
