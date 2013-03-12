@@ -152,12 +152,10 @@ void main()
 	}
 #endif
 	
+#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
+    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
-#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP)
-    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-#elif defined(MATERIAL_DETAIL)
-    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #else
 	vec3 color = vec3(1.0);
 #endif
