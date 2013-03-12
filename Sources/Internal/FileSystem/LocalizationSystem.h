@@ -49,7 +49,7 @@ public:
 	const String &GetCurrentLocale();
 	void SetCurrentLocale(const String &newLangId);
 	
-	const WideString & GetLocalizedString(const WideString & key);
+	WideString GetLocalizedString(const WideString & key);
 	void SetLocalizedString(const WideString & key, const WideString & value);
 	void RemoveLocalizedString(const WideString & key);
 
@@ -87,11 +87,11 @@ private:
 	YamlParser::YamlDataHolder *dataHolder;
 };
 
-inline const WideString &  LocalizedString(const WideString & key)
+inline WideString LocalizedString(const WideString & key)
 {
 	return LocalizationSystem::Instance()->GetLocalizedString(key);
 }
-inline const WideString &  LocalizedString(const String & key)
+inline WideString LocalizedString(const String & key)
 {
 	return LocalizationSystem::Instance()->GetLocalizedString(WideString(key.begin(), key.end()));
 }

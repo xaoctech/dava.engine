@@ -242,7 +242,7 @@ void ControlsFactory::CustomizeExpandButton(UIButton *btn)
     btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->color = color + 0.3f;
 }
 
-void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
+void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text, bool setLightFont)
 {
     Font *font = GetFont12();
     
@@ -257,6 +257,17 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
     c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 0.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
+
+    if(setLightFont)
+    {
+        c->GetStateTextControl(UIControl::STATE_NORMAL)->SetTextColor(Color::White());
+        c->GetStateTextControl(UIControl::STATE_SELECTED)->SetTextColor(Color::White());
+    }
+    else
+    {
+        c->GetStateTextControl(UIControl::STATE_NORMAL)->SetTextColor(Color::Black());
+        c->GetStateTextControl(UIControl::STATE_SELECTED)->SetTextColor(Color::Black());
+    }
 }
 
 void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideString &text)
