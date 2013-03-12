@@ -12,10 +12,10 @@ else
 	OS_INFO:=Unix
 endif
 
-QT_DIR_OUTPUT := _GeneratedQt
-QT_DIR_UI := DataQt
-QT_DIR_QRC := DataQt
-QT_DIR_MOC := Classes/Qt
+QT_DIR_OUTPUT := GeneratedFiles
+QT_DIR_UI := UI
+QT_DIR_QRC := Data
+QT_DIR_MOC := Classes
 
 QT_UI_FILES := $(wildcard $(QT_DIR_UI)/*.ui)
 QT_UI_FILES_GEN := $(addprefix $(QT_DIR_OUTPUT)/ui_, $(notdir $(QT_UI_FILES:.ui=.h)))

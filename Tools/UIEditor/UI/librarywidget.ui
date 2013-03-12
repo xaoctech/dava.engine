@@ -70,6 +70,16 @@
        <string>UISlider</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>UIList</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>UISpinner</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>
