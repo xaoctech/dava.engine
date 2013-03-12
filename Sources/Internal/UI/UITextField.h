@@ -139,9 +139,6 @@ public:
 	void OpenKeyboard();
 	void CloseKeyboard();
 	
-	void SetFontColor(float r, float g, float b, float a);
-	void SetFontSize(float size);
-
 	virtual void SetSpriteAlign(int32 align);
     
 	const WideString & GetText();
@@ -169,17 +166,9 @@ public:
     virtual bool IsLostFocusAllowed(UIControl *newFocus);
 
     
-    void SetFont(Font * font)
-    {
-        SafeRelease(textFont);
-        textFont = SafeRetain(font);
-		staticText->SetFont(textFont);
-    }
-
-    void SetFontColor(const Color& fontColor)
-    {
-        staticText->SetFontColor(fontColor);
-    }
+    void SetFont(Font * font);
+    void SetFontColor(const Color& fontColor);
+    void SetFontSize(float size);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 	
