@@ -100,5 +100,52 @@ LodComponent * GetLodComponent(SceneNode *fromEntity)
 }
 
 
+void RecursiveProcessMeshNode(SceneNode * curr, void * userData, void(*process)(SceneNode*, void *))
+{
+	RenderComponent * comp = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
+	if (comp)
+	{
+		RenderObject * renderObject = comp->GetRenderObject();
+		if (renderObject->GetType() == RenderObject::TYPE_MESH)
+		{
+			process(curr, userData);
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+			RecursiveProcessMeshNode(curr->GetChild(i), userData, process);
+	}
+}
+
+
+
+void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(*process)(SceneNode*, void*))
+{
+	LodComponent * lodComp = (LodComponent*)curr->GetComponent(Component::LOD_COMPONENT);
+	if (lodComp)
+	{
+		List<LodComponent::LodData*> retLodLayers;
+		lodComp->GetLodData(retLodLayers);
+		for (List<LodComponent::LodData*>::iterator it = retLodLayers.begin(); it != retLodLayers.end(); ++it)
+		{
+			LodComponent::LodData * data = *it;
+			if (data->layer == lod)
+			{
+				for (Vector<SceneNode*>::iterator i = data->nodes.begin(); i != data->nodes.end(); ++i)
+				{
+					process((*i), userData);
+				}
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+			RecursiveProcessLodNode(curr->GetChild(i), lod, userData, process);
+	}
+}
+
 
 }

@@ -131,9 +131,8 @@ void LayerForceWidget::OnValueChanged()
 						 propForceVariable.GetPropLine(),
 						 propForceOverLife.GetPropLine());
 	
-	CommandsManager::Instance()->Execute(updateForceCmd);
-	SafeRelease(updateForceCmd);
-	
+	CommandsManager::Instance()->ExecuteAndRelease(updateForceCmd);
+
 	Init(emitter, layer, forceIndex, false);
 	emit ValueChanged();
 }

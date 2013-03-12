@@ -262,7 +262,7 @@ namespace DAVA
 		{
 			if(state & 0x01)
 			{
-				CreateTextForState((eButtonDrawState)i)->SetFontColor(fontColor);
+				CreateTextForState((eButtonDrawState)i)->SetTextColor(fontColor);
 			}
 			state >>= 1;
 		}

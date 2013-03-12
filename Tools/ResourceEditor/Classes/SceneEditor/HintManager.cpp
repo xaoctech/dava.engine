@@ -9,7 +9,8 @@ HintControl::HintControl(const Rect &rect, bool rectInAbsoluteCoordinates)
     ControlsFactory::CusomizeBottomLevelControl(this);
 
     hintText = new UIStaticText();
-    hintText->SetFont(ControlsFactory::GetFontDark());
+    hintText->SetFont(ControlsFactory::GetFont12());
+	hintText->SetTextColor(ControlsFactory::GetColorDark());
     hintText->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     hintText->SetText(L"");
     AddControl(hintText);

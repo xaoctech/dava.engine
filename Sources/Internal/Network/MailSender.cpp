@@ -8,11 +8,13 @@
 
 #include "Network/MailSender.h"
 
-using namespace DAVA;
-
 #if defined(__DAVAENGINE_WIN32__)
+
 #include "Utils/StringFormat.h"
 #include <shellapi.h>
+
+namespace DAVA
+{
 
 bool MailSender::SendEmail(const WideString& email, const WideString& subject, const WideString& messageText)
 {
@@ -31,9 +33,14 @@ bool MailSender::SendEmail(const WideString& email, const WideString& subject, c
 	return (result > 32);
 }
 
+};
+
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "JniExtensions.h"
 #include "Utils/Utils.h"
+
+namespace DAVA
+{
 
 class JniMailSender: public JniExtension
 {
@@ -78,5 +85,7 @@ bool MailSender::SendEmail(const WideString& email, const WideString& subject, c
 
 	return JniMailSender::jniMailSender->SendEmail(WStringToString(email), WStringToString(subject), WStringToString(messageText));
 }
+    
+};
 
 #endif

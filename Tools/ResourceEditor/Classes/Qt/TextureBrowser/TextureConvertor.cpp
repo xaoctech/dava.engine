@@ -335,10 +335,8 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 						if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 						{
-							QString command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
-
-							command += "/";
-							command += PVRConverter::Instance()->GetCommandLinePVR(descriptor->GetSourceTexturePathname(), *descriptor).c_str();
+							QString command;
+							generateCommandString(descriptor, command);
 
 							QProcess p;
 							p.start(command);
@@ -358,14 +356,16 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 						if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 						{
-							// TODO:
-							// DXT convert
-							// ...
-
-							bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
-							if(wasUpdated)
+							DAVA::String sourcePath = descriptor->GetSourceTexturePathname();
+							DAVA::String outputPath = DXTConverter::GetDXTOutput(sourcePath);
+							if(!outputPath.empty())
 							{
-								descriptor->Save();
+								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
+								bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+								if(wasUpdated)
+								{
+									descriptor->Save();
+								}
 							}
 						}
 					}
@@ -631,4 +631,17 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 	}
 
 	return qtImage;
+}
+
+void TextureConvertor::generateCommandString(const TextureDescriptor *descriptor, QString &command)
+{
+    String source = descriptor->GetSourceTexturePathname();
+#if defined(__DAVAENGINE_WIN32__)
+    command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
+    command.remove(2,command.length() - 2);// remove all after disk name
+    source.insert(0,command.toStdString());// update SourceTexturePathname for win
+#else
+    command += "/";
+#endif
+    command += PVRConverter::Instance()->GetCommandLinePVR(source, *descriptor).c_str();
 }

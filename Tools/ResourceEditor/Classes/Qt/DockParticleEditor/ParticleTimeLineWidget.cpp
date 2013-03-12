@@ -466,8 +466,7 @@ void ParticleTimeLineWidget::OnValueChanged(int lineId)
 	
 	CommandUpdateParticleLayerTime* cmd = new CommandUpdateParticleLayerTime(iter->second.layer);
 	cmd->Init(iter->second.startTime, iter->second.endTime);
-	CommandsManager::Instance()->Execute(cmd);
-	SafeRelease(cmd);
+	CommandsManager::Instance()->ExecuteAndRelease(cmd);
 	
 	emit ValueChanged();
 }

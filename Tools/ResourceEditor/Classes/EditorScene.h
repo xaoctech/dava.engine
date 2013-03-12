@@ -69,8 +69,6 @@ protected:
     
     void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
 
-	SceneNode * GetHighestProxy(SceneNode* curr);
-
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;

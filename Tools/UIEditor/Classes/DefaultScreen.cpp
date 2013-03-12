@@ -118,7 +118,7 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
-			//MouseInputMove(event);
+			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
 		{
@@ -710,11 +710,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	lastSelectedControl = NULL;
 	useMouseUpSelection = true;
 	
-#ifdef WIN32
 	Vector2 localPoint = event->point;
-#else
-	Vector2 localPoint = ScreenWrapper::Instance()->TranslateScreenPoint(event->point);
-#endif
 	Vector2 point = LocalToInternal(localPoint);
 
 	HierarchyTreeControlNode* selectedControlNode = GetSelectedControl(point);
@@ -884,11 +880,7 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 	//located in the same area
 	if ((inputState == InputStateSelection) && useMouseUpSelection)
 	{		
-#ifdef WIN32
 		Vector2 localPoint = event->point;
-#else
-		Vector2 localPoint = ScreenWrapper::Instance()->TranslateScreenPoint(event->point);
-#endif
 		Vector2 point = LocalToInternal(localPoint);
 		
 		HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);

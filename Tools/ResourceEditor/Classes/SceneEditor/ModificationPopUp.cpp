@@ -18,7 +18,8 @@ ModificationPopUp::ModificationPopUp()
     selection = 0;
 	
     UIStaticText *text = new UIStaticText(Rect(0, 0, 80, 20));
-    text->SetFont(ControlsFactory::GetFontLight());
+    text->SetFont(ControlsFactory::GetFont12());
+	text->SetTextColor(ControlsFactory::GetColorLight());
     text->SetText(LocalizedString(L"modificationpanel.modification"));
     AddControl(text);
     SafeRelease(text);

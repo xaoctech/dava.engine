@@ -59,6 +59,7 @@ public:
 	void InitOpenGL();
 	void ReleaseOpenGL();
 
+	HINSTANCE hInstance;
 	HWND hWindow;
 	HDC hDC;
 	HGLRC hRC;

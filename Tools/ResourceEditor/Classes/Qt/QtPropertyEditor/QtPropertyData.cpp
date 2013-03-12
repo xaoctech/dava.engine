@@ -97,20 +97,9 @@ void QtPropertyData::ChildAdd(const QString &key, QtPropertyData *data)
 	if(NULL != data && !key.isEmpty())
 	{
 		int sz = children.size();
-		if(!children.contains(key))
-		{
-			children.insert(key, data);
-			childrenOrder.insert(key, sz);
-		}
-		else
-		{
-			if(NULL != children[key])
-			{
-				delete children[key];
-			}
-
-			children[key] = data;
-		}
+        
+        children.insert(key, data);
+        childrenOrder.insert(key, sz);
 
 		data->parent = this;
 	}

@@ -87,7 +87,8 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
     UIStaticText *textControl = new UIStaticText(rect);
     textControl->SetName(WStringToString(text));
     textControl->SetText(text);
-    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetFont(ControlsFactory::GetFont12());
+	textControl->SetTextColor(ControlsFactory::GetColorLight());
     textControl->SetAlign(ALIGN_VCENTER | ALIGN_RIGHT);
     AddControl(textControl);
     SafeRelease(textControl);
@@ -107,7 +108,8 @@ UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideStri
     
     UIStaticText *textControl = new UIStaticText(textRect);
     textControl->SetText(text);
-    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetFont(ControlsFactory::GetFont12());
+	textControl->SetTextColor(ControlsFactory::GetColorLight());
     textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
     AddControl(textControl);
     SafeRelease(textControl);

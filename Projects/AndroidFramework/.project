@@ -2892,6 +2892,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/UIYamlLoader.h</locationURI>
 		</link>
 		<link>
+			<name>src/Internal/UI/VectorSpinnerAdapter.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/VectorSpinnerAdapter.h</locationURI>
+		</link>
+		<link>
 			<name>src/Internal/Utils/HTTPDownloader.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Utils/HTTPDownloader.h</locationURI>
@@ -5575,6 +5580,11 @@
 			<name>bin/classes/Internal/UI/UIYamlLoader.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/UIYamlLoader.h</locationURI>
+		</link>
+		<link>
+			<name>bin/classes/Internal/UI/VectorSpinnerAdapter.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/VectorSpinnerAdapter.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Internal/Utils/HTTPDownloader.h</name>

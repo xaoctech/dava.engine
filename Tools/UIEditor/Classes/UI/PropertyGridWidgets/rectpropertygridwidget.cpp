@@ -99,6 +99,7 @@ void RectPropertyGridWidget::UpdateHorizontalWidgetsState()
 	// Change relative X position spinbox state according to align properties
 	bool disableRelativeX = leftAlignEnabled || hcenterAlignEnabled || rightAlignEnabled;
 	ui->relativeXSpinBox->setDisabled(disableRelativeX);
+	ui->absoluteXSpinBox->setDisabled(disableRelativeX);
 		
 	// Change size X spinbox state according to align properties
 	bool disableSizeX = IsTwoAlignsEnabled(leftAlignEnabled, hcenterAlignEnabled, rightAlignEnabled);
@@ -115,6 +116,7 @@ void RectPropertyGridWidget::UpdateVerticalWidgetsState()
 	// Change relative Y position spinbox state according to align properties
 	bool disableRelativeY = topAlignEnabled || vcenterAlignEnabled || bottomAlignEnabled;
 	ui->relativeYSpinBox->setDisabled(disableRelativeY);
+	ui->absoluteYSpinBox->setDisabled(disableRelativeY);
 		
 	// Change size Y spinbox state according to align properties
 	bool disableSizeY = IsTwoAlignsEnabled(topAlignEnabled, vcenterAlignEnabled, bottomAlignEnabled);

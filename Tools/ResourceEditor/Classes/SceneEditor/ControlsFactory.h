@@ -57,13 +57,16 @@ public:
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
 
+	static Font* GetFont12();
+	static Font* GetFont20();
     
-    static Font* GetFontLight();
-    static Font* GetFontDark();
-    static Font* GetFontError();
-    static void CustomizeFontLight(Font *font);
-    static void CustomizeFontDark(Font *font);
-    static void CustomizeFontError(Font *font);
+    static Color GetColorLight();
+    static Color GetColorDark();
+    static Color GetColorError();
+
+    //static void CustomizeFontLight(Font *font);
+    //static void CustomizeFontDark(Font *font);
+    //static void CustomizeFontError(Font *font);
 
     static void CustomizeScreenBack(UIControl *screen);
     
@@ -108,9 +111,8 @@ public:
     
     static void AddFogSubsection(PropertyList *propertyList, bool enabled, float32 dencity, const Color &newColor);
     
-    static Font* fontLight;
-    static Font* fontDark;
-    static Font* fontError;
+    static Font* font12;
+    static Font* font20;
 };
 
 

@@ -27,8 +27,11 @@ void SwitchSystem::Process()
 
 		if(sw->oldSwitchIndex != sw->newSwitchIndex)
 		{
-			int32 childrenCound = entity->GetChildrenCount();
-			for(int32 i = 0; i < childrenCound; ++i)
+			int32 childrenCount = entity->GetChildrenCount();
+
+			sw->newSwitchIndex = Clamp(sw->newSwitchIndex, 0, (childrenCount - 1));//start counting from zero
+
+			for(int32 i = 0; i < childrenCount; ++i)
 			{
 				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
 			}

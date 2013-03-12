@@ -66,7 +66,7 @@ class RenderBatch;
 class RenderObject : public AnimatedObject
 {
 public:
-    enum eEmitterType
+    enum eType
     {
         TYPE_RENDEROBJECT = 0,  // Base Render Object
         TYPE_MESH,              // Normal mesh
@@ -117,16 +117,20 @@ public:
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
     
-    inline eEmitterType GetType() { return (eEmitterType)type; }
+    inline eType GetType() { return (eType)type; }
 
 	virtual RenderObject * Clone(RenderObject *newObject);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
     void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+
+	void SetRenderSystem(RenderSystem * renderSystem);
+	RenderSystem * GetRenderSystem();
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
+	RenderSystem * renderSystem;
     uint32 type;
 
     uint32 flags;

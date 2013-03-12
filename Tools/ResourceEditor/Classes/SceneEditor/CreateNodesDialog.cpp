@@ -8,8 +8,8 @@
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
 #include "EditorLightNode.h"
-#include "Scene3D/UserNode.h"
 #include "Scene3D/ReferenceNode.h"
+#include "Scene3D/Components/UserComponent.h"
 #include "EditorSettings.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -24,7 +24,8 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
 	propertyList = 0;
     
     header = new UIStaticText(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT));
-    header->SetFont(ControlsFactory::GetFontLight());
+    header->SetFont(ControlsFactory::GetFont12());
+	header->SetTextColor(ControlsFactory::GetColorLight());
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     AddControl(header);
     
@@ -106,7 +107,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
             sceneNode = new SceneNode();
-            sceneNode->AddComponent(new RenderComponent(new LandscapeNode()));
+            sceneNode->AddComponent(new RenderComponent(ScopedPtr<LandscapeNode>(new LandscapeNode())));
             sceneNode->SetName("Landscape");
             break;
 
@@ -170,12 +171,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(LocalizedString(L"createnode.usernode"));
 			sceneNode = new SceneNode();
 			sceneNode->SetName("UserNode");
-            
-            RenderObject *ro = new RenderObject();
-            ro->SetAABBox(AABBox3(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f)));
-            
-            sceneNode->AddComponent(new RenderComponent(ro));
-            ro->Release();
+			sceneNode->AddComponent(new UserComponent());
 			break;
         }
 

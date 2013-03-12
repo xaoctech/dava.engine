@@ -6,7 +6,7 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/PVRConverter.h"
 
-#include "./ParticlesEditorQT/Helpers/ParticlesEditorSpritePackerHelper.h"
+#include "./Qt/SpritesPacker/SpritePackerHelper.h"
 
 using namespace DAVA;
 
@@ -711,6 +711,6 @@ void SceneDataManager::RefreshParticlesLayer(DAVA::ParticleLayer* layer)
 
 void SceneDataManager::UpdateParticleSprites()
 {
-	ParticlesEditorSpritePackerHelper::UpdateParticleSprites();
+	SpritePackerHelper::Instance()->UpdateParticleSprites();
 }
 

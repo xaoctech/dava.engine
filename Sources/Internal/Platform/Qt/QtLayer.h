@@ -70,7 +70,8 @@ public:
     
     void Quit();
     void SetDelegate(QtLayerDelegate *delegate);
-    
+
+	virtual void* GetOpenGLView() { return NULL; };
 protected:
     
     QtLayerDelegate *delegate;

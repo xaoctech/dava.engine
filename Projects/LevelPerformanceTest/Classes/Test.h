@@ -28,6 +28,7 @@ public:
 	Texture* GetLandscapeTexture();
 
 	const String GetFileName() const;
+	const String GetFilePath() const;
 
 	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:

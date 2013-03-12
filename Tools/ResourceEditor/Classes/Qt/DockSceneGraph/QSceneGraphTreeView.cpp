@@ -31,7 +31,6 @@ QSceneGraphTreeView::~QSceneGraphTreeView()
 void QSceneGraphTreeView::ConnectToSignals()
 {
 	connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(OnSceneNodeSelectedInGraph(DAVA::SceneNode *)));
-	
 
 	// Signals to rebuild the particular node and the whole graph.
 	connect(SceneDataManager::Instance(), SIGNAL(SceneGraphNeedRebuildNode(DAVA::SceneNode*)), this, SLOT(OnSceneGraphNeedRebuildNode(DAVA::SceneNode*)));
@@ -85,12 +84,18 @@ void QSceneGraphTreeView::keyPressEvent(QKeyEvent *event)
     QTreeView::keyPressEvent(event);
 }
 
+void QSceneGraphTreeView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	QTreeView::mouseDoubleClickEvent(event);
+
+	if(SceneDataManager::Instance()->SceneGetActive())
+		SceneDataManager::Instance()->SceneGetActive()->LockAtSelectedNode();
+}
 void QSceneGraphTreeView::OnSceneNodeSelectedInGraph(DAVA::SceneNode *node)
 {
 	// TODO: Yuri Coder, 12/21/2012. Think about the nicer method.
 	SceneDataManager::Instance()->SceneNodeSelectedInSceneGraph(node);
 }
-
 
 void QSceneGraphTreeView::OnSceneCreated(SceneData* scene)
 {
@@ -196,13 +201,7 @@ void QSceneGraphTreeView::AddActionToMenu(QMenu *menu, const QString &actionTitl
 void QSceneGraphTreeView::ProcessContextMenuAction(QAction *action)
 {
 	Command *command = PointerHolder<Command *>::ToPointer(action->data());
-	ExecuteCommand(command);
-}
-
-void QSceneGraphTreeView::ExecuteCommand(Command *command)
-{
-	CommandsManager::Instance()->Execute(command);
-	SafeRelease(command);
+	CommandsManager::Instance()->ExecuteAndRelease(command);
 }
 
 void QSceneGraphTreeView::OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer)

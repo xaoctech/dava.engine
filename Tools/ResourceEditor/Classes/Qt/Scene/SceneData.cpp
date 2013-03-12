@@ -443,3 +443,13 @@ void SceneData::FindAllParticleEffectsRecursive(SceneNode *node , List<DAVA::Sce
 		FindAllParticleEffectsRecursive(node->GetChild(i), particleEffects);
 	}
 }
+
+void SceneData::GetAllSwitchComponents(List<DAVA::SceneNode*> & switchComponents)
+{
+	Scene* scene = this->GetScene();
+	uint32 childCount = scene->GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		scene->GetChild(i)->FindAllSwitchComponentsRecursive(switchComponents);
+	}
+}

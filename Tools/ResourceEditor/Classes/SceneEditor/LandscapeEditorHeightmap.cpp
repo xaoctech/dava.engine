@@ -46,7 +46,8 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     tilemaskTexture = NULL;
     toolImageTile = NULL;
 
-	command = NULL;
+	oldHeightmap = NULL;
+	oldTilemap = NULL;
 }
 
 
@@ -59,6 +60,8 @@ LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
     SafeRelease(toolImage);
     
     SafeRelease(landscapesController);
+	SafeRelease(oldHeightmap);
+	SafeRelease(oldTilemap);
 }
 
 void LandscapeEditorHeightmap::Update(float32 timeElapsed)
@@ -317,16 +320,28 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                     currentTool->height = GetDropperHeight();
                 }
                 
+				bool skipUndoPointCreation = false;
                 if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
                 {
-                    CopyPasteBegin();
+					//CopyPasteBegin returns true when copyFrom point is set
+					//no need to create undo point in this case
+					skipUndoPointCreation = CopyPasteBegin();
+					
+					if (!skipUndoPointCreation)
+					{
+						DVASSERT(oldTilemap == NULL);
+						workingLandscape->UpdateFullTiledTexture();
+						oldTilemap = tilemaskTexture->CreateImageFromMemory();
+					}
                 }
-                
+
+				if (!skipUndoPointCreation)
+				{
+					StoreOriginalHeightmap();
+				}
+
                 editingIsEnabled = true;
                 UpdateToolImage();
-
-				DVASSERT(command == NULL);
-				command = new CommandDrawHeightmap();
 
                 break;
             }
@@ -337,21 +352,21 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                 {
                     editingIsEnabled = false;
 
-//                    Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
-//                    UNDOManager::Instance()->SaveHightmap(heightmap);
-					if (command)
-					{
-						CommandsManager::Instance()->Execute(command);
-						SafeRelease(command);
-					}
+					CreateUndoPoint();
                 }
                 else if(!editingIsEnabled && intersects)
                 {
                     editingIsEnabled = true;
                     UpdateToolImage();
 
-					DVASSERT(command == NULL);
-					command = new CommandDrawHeightmap();
+					StoreOriginalHeightmap();
+
+					if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
+					{
+						DVASSERT(oldTilemap == NULL);
+						workingLandscape->UpdateFullTiledTexture();
+						oldTilemap = tilemaskTexture->CreateImageFromMemory();
+					}
                 }
                 break;
             }
@@ -360,13 +375,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
             {
                 editingIsEnabled = false;
 
-//                Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
-//                UNDOManager::Instance()->SaveHightmap(heightmap);
-				if (command)
-				{
-					CommandsManager::Instance()->Execute(command);
-					SafeRelease(command);
-				}
+				CreateUndoPoint();
 
                 break;
             }
@@ -377,9 +386,9 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
     }
 }
 
-void LandscapeEditorHeightmap::GetHeightmap(Heightmap** heightmap)
+Heightmap* LandscapeEditorHeightmap::GetHeightmap()
 {
-	*heightmap = landscapesController->GetCurrentHeightmap();
+	return landscapesController->GetCurrentHeightmap();
 }
 
 void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap)
@@ -387,7 +396,7 @@ void LandscapeEditorHeightmap::UpdateHeightmap(Heightmap* heightmap)
 	UpdateHeightmap(Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f));
 }
 
-void LandscapeEditorHeightmap::CopyPasteBegin()
+bool LandscapeEditorHeightmap::CopyPasteBegin()
 {
     bool start = IsKeyModificatorPressed(DVKEY_ALT);
     if(start)
@@ -399,6 +408,8 @@ void LandscapeEditorHeightmap::CopyPasteBegin()
     {
         copyToCenter = landscapePoint;
     }
+
+	return start;
 }
 
 void LandscapeEditorHeightmap::HideAction()
@@ -409,12 +420,15 @@ void LandscapeEditorHeightmap::HideAction()
 
     landscapesController->ReleaseEditorLandscapeNode();
     SafeRelease(landscapesController);
-    
-    if(tilemaskImage && tilemaskWasChanged)
-    {
-        tilemaskWasChanged = false;
-        ImageLoader::Save(tilemaskImage, TextureDescriptor::GetPathnameForFormat(tilemaskPathname, PNG_FILE));
-    }
+
+	if (tilemaskWasChanged)
+	{
+		tilemaskWasChanged = false;
+		workingLandscape->UpdateFullTiledTexture();
+		Image* image = tilemaskTexture->CreateImageFromMemory();
+		ImageLoader::Save(image, TextureDescriptor::GetPathnameForFormat(tilemaskPathname, PNG_FILE));
+		SafeRelease(image);
+	}
 
     SafeRelease(tilemaskImage);
     SafeRelease(toolImageTile);
@@ -424,8 +438,8 @@ void LandscapeEditorHeightmap::HideAction()
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
 
-    
-//    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
+	Texture* texture = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
+	texture->Reload();
 }
 
 void LandscapeEditorHeightmap::ShowAction()
@@ -447,8 +461,6 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapesController->CursorEnable();
     
     CreateTilemaskImage();
-    
-//    UNDOManager::Instance()->SaveHightmap(heightmap);
 }
 
 void LandscapeEditorHeightmap::CreateTilemaskImage()
@@ -474,18 +486,6 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskTexture);
     workingLandscape->UpdateFullTiledTexture();
 }
-
-void LandscapeEditorHeightmap::UndoAction()
-{
-	CommandsManager::Instance()->Undo();
-}
-
-void LandscapeEditorHeightmap::RedoAction()
-{
-	CommandsManager::Instance()->Redo();
-}
-
-
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {
@@ -526,8 +526,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
         {
             SaveTextureAction(savedPath);
 
-			DVASSERT(command);
-			command = new CommandDrawHeightmap();
+			StoreOriginalHeightmap();
         }
     }
     else if("property.landscape.texture.tilemask" == forKey) 
@@ -548,16 +547,10 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
         
         Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
         landscapeSize = heightmap->Size();
-        
-//        UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
-//        UNDOManager::Instance()->SaveHightmap(heightmap);
-		if (command)
-		{
-			CommandsManager::Instance()->Execute(command);
-			SafeRelease(command);
-		}
+
+		CreateHeightmapUndo();
     }
-    else if("property.landscape.texture.tilemask" == forKey) 
+    else if("property.landscape.texture.tilemask" == forKey)
     {
         CreateTilemaskImage();
     }
@@ -617,3 +610,61 @@ void LandscapeEditorHeightmap::RecreateHeightmapNode()
     workingScene->AddNode(heightmapNode);
 }
 
+void LandscapeEditorHeightmap::CreateUndoPoint()
+{
+	if (LandscapeTool::TOOL_COPYPASTE == currentTool->type)
+		CreateCopyPasteUndo();
+	else
+		CreateHeightmapUndo();
+}
+
+void LandscapeEditorHeightmap::CreateHeightmapUndo()
+{
+	if (oldHeightmap)
+	{
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap()));
+		SafeRelease(oldHeightmap);
+	}
+}
+
+void LandscapeEditorHeightmap::CreateCopyPasteUndo()
+{
+	if (oldHeightmap && oldTilemap)
+	{
+		workingLandscape->UpdateFullTiledTexture();
+		Texture* texture = tilemaskTexture;
+		Image* image = texture->CreateImageFromMemory();
+
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
+																					 currentTool->copyTilemask,
+																					 oldHeightmap,
+																					 GetHeightmap(),
+																					 oldTilemap,
+																					 image,
+																					 tilemaskPathname));
+		SafeRelease(oldHeightmap);
+		SafeRelease(oldTilemap);
+		SafeRelease(image);
+	}
+}
+
+void LandscapeEditorHeightmap::UpdateLandscapeTilemap(Texture* texture)
+{
+	SafeRelease(tilemaskTexture);
+	SafeRelease(tilemaskImage);
+
+	workingLandscape->UpdateFullTiledTexture();
+	tilemaskTexture = SafeRetain(texture);
+	tilemaskImage = tilemaskTexture->CreateImageFromMemory();
+
+	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskTexture);
+	workingLandscape->UpdateFullTiledTexture();
+
+	tilemaskWasChanged = true;
+}
+
+void LandscapeEditorHeightmap::StoreOriginalHeightmap()
+{
+	DVASSERT(oldHeightmap == NULL);
+	oldHeightmap = GetHeightmap()->Clone(oldHeightmap);
+}

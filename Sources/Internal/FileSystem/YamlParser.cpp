@@ -761,9 +761,8 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
             break;
         case VariantType::TYPE_WIDE_STRING:
         {
-            String strToInitWith = '"'+WStringToString(varType->AsWideString())+'"';
-            nwStringValue = String(strToInitWith);
-            stringValue = StringToWString(strToInitWith);
+            stringValue = L'"' + varType->AsWideString() +L'"';
+            nwStringValue = WStringToString(stringValue);
         }
             break;
         case VariantType::TYPE_UINT32:
@@ -1329,8 +1328,16 @@ bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& no
 	resultString += StringToWString(nodeName);
 
 	resultString += NAME_VALUE_DELIMITER;
+
+	WideString nodeValue = currentNode->AsWString();
 	
-	resultString += currentNode->AsWString();
+	size_t pos = WideString::npos;
+	while ((pos = nodeValue.find(L"\n")) != WideString::npos)
+	{
+		nodeValue.replace(pos, WideString(L"\n").length(), L"\\n");
+	}
+
+	resultString += nodeValue;
 	resultString += L"\n";
 
 	return WriteStringToYamlFile(fileToSave, resultString);
@@ -1461,13 +1468,9 @@ bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToW
 
 bool YamlParser::WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite)
 {
-	uint32 prevFileSize = fileToSave->GetSize();
-//  TODO! Yuri Coder, 2013/03/06. Currently does not work properly - need UTF8 lib to continue.
-//	String utf8String = UTF8Utils::EncodeToUTF8(stringToWrite);
-	String utf8String = WStringToString(stringToWrite);
-	uint32 bytesWritten = fileToSave->Write(utf8String.c_str(), utf8String.size());
-
-	return (fileToSave->GetSize() == prevFileSize + bytesWritten);
+	// Yaml contains UTF8 strings only.
+	String utf8String = UTF8Utils::EncodeToUTF8(stringToWrite);
+	return WriteStringToYamlFile(fileToSave, utf8String);
 }
 
 bool YamlParser::WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth)
