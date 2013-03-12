@@ -40,16 +40,14 @@ using namespace DAVA;
 
 @interface OpenGLView : NSOpenGLView 
 {
-	bool sizeChanged;
 	NSTrackingArea *trackingArea;
+
+	bool sizeChanged;
 	bool isFirstDraw;
-//	DAVA::Cursor * activeCursor;
 	bool willQuit;
-    
     bool keyboardLocked;
-    bool needToSkipMouseUp;
     
-    Vector2 windowOffset;
+    NSPoint offset;
 }
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
@@ -59,10 +57,8 @@ using namespace DAVA;
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
-- (void) setWindowOffset: (const Vector2 &) offset;
-
-- (void) MouseMoved:(int32)x y:(int32)y;
-
+- (void) MouseMoved:(float32)x y:(float32)y;
+- (void) CalcOffset:(NSEvent *) theEvent;
 - (void) LockKeyboardInput:(bool) locked;
 
 @end

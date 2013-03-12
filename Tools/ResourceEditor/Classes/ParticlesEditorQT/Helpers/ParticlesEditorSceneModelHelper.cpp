@@ -641,8 +641,7 @@ void ParticlesEditorSceneModelHelper::SetCheckableStateForGraphItem(GraphItem* g
 	}
 	
 	// Execute the appropriate command.
-	CommandUpdateParticleLayerEnabled* command = new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value);
-	CommandsManager::Instance()->Execute(command);
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandUpdateParticleLayerEnabled(layerEditorNode->GetLayer(), value));
 }
 
 LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGraphItem(GraphItem* graphItem) const

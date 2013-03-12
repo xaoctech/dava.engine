@@ -179,9 +179,14 @@ public:
 		staticText->SetFont(textFont);
     }
 
-    void SetFontColor(const Color& fontColor)
+	void SetTextColor(const Color& c)
+	{
+		staticText->SetTextColor(c);
+	}
+
+    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor))
     {
-        staticText->SetFontColor(fontColor);
+        staticText->SetTextColor(fontColor);
     }
 
     virtual void SetSize(const DAVA::Vector2 &newSize);

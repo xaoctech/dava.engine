@@ -7,6 +7,7 @@
 CommandCreateNodeSceneEditor::CommandCreateNodeSceneEditor(DAVA::SceneNode* node)
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Create Node";
 	this->node = SafeRetain(node);
 }
 

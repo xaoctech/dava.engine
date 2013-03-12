@@ -124,6 +124,13 @@ void UIControlBackground::SetSprite(const String &spriteName, int32 drawFrame)
 
 void UIControlBackground::SetSprite(Sprite* drawSprite, int32 drawFrame)
 {
+	if (drawSprite == this->spr)
+	{
+		// Sprite is not changed - update frame only.
+		frame = drawFrame;
+		return;
+	}
+
 	SafeRelease(spr);
 	spr = SafeRetain(drawSprite);
 	frame =  drawFrame;
@@ -168,7 +175,12 @@ const Color &UIControlBackground::GetDrawColor() const
 {
 	return drawColor;
 }
-	
+
+void UIControlBackground::SetDrawColor(const Color &c)
+{
+	drawColor = c;
+}
+
 void UIControlBackground::SetParentColor(const Color &parentColor)
 {
 	switch (colorInheritType) 

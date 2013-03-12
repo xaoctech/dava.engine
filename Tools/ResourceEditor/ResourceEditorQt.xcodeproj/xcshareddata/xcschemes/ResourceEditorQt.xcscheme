@@ -44,7 +44,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
@@ -59,7 +59,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-sceneexporter -export -indir /Users/victorkleschenko/Work/WoT/wot.sniper/DataSource/3d/ -outdir /Users/victorkleschenko/Work/WoT/wot.sniper/Data/3d -processfile Maps/c_level.sc2"
+            argument = "-sceneexporter -export -indir /Users/victorkleschenko/Work/WoT/wot.blitz/DataSource/3d/ -outdir /Users/victorkleschenko/Work/WoT/wot.blitz/Data/3d -processdir Tanks"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

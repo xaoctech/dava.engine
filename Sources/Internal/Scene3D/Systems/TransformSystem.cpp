@@ -45,16 +45,17 @@ void TransformSystem::Process()
 
 	if(passedNodes)
 	{
-		//Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
+//		Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
 	}
 }
 
-void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
+void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity, bool forcedUpdate)
 {
 	passedNodes++;
 
-	if(entity->GetFlags() & SceneNode::TRANSFORM_NEED_UPDATE)
+	if(forcedUpdate || entity->GetFlags() & SceneNode::TRANSFORM_NEED_UPDATE)
 	{
+		forcedUpdate = true;
 		multipliedNodes++;
 		TransformComponent * transform = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
 		if(transform->parentMatrix)
@@ -64,14 +65,17 @@ void TransformSystem::HierahicFindUpdatableTransform(SceneNode * entity)
 		}
 	}
 
-	entity->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-	entity->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
-
 	uint32 size = entity->GetChildrenCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		HierahicFindUpdatableTransform(entity->GetChild(i));
+		if(forcedUpdate || entity->GetFlags() & SceneNode::TRANSFORM_DIRTY)
+		{
+			HierahicFindUpdatableTransform(entity->GetChild(i), forcedUpdate);
+		}
 	}
+
+	entity->RemoveFlag(SceneNode::TRANSFORM_NEED_UPDATE);
+	entity->RemoveFlag(SceneNode::TRANSFORM_DIRTY);
 }
 
 void TransformSystem::SortAndThreadSplit()
@@ -84,23 +88,15 @@ void TransformSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 	{
 	case EventSystem::LOCAL_TRANSFORM_CHANGED:
 	case EventSystem::TRANSFORM_PARENT_CHANGED:
-		HierahicNeedUpdate(entity);
+		EntityNeedUpdate(entity);
 		HierahicAddToUpdate(entity);
 		break;
 	}
 }
 
-void TransformSystem::HierahicNeedUpdate(SceneNode * entity)
+void TransformSystem::EntityNeedUpdate(SceneNode * entity)
 {
-	if(!(entity->GetFlags() & SceneNode::TRANSFORM_NEED_UPDATE))
-	{
-		entity->AddFlag(SceneNode::TRANSFORM_NEED_UPDATE);
-		uint32 size = entity->GetChildrenCount();
-		for(uint32 i = 0; i < size; ++i)
-		{
-			HierahicNeedUpdate(entity->GetChild(i));
-		}
-	}
+	entity->AddFlag(SceneNode::TRANSFORM_NEED_UPDATE);
 }
 
 void TransformSystem::HierahicAddToUpdate(SceneNode * entity)

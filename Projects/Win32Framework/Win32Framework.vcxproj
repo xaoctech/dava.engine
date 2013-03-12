@@ -242,7 +242,6 @@
     <ClInclude Include="..\..\Sources\Internal\DLC\DLCSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\DLCUnpacker.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\FileDownloader.h" />
-    <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimationManager.h" />
@@ -325,6 +324,7 @@
     <ClInclude Include="..\..\Sources\Internal\Math\Vector.h" />
     <ClInclude Include="..\..\Sources\Internal\Network\BaseNetworkConnection.h" />
     <ClInclude Include="..\..\Sources\Internal\Network\BTNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\MailSender.h" />
     <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnection.h" />
     <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnectionIPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\Network\NetworkDelegate.h" />
@@ -364,6 +364,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
@@ -547,10 +548,13 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UISpinner.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\VectorSpinnerAdapter.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
@@ -676,6 +680,7 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp" />
@@ -707,6 +712,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DPIHelperWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
@@ -878,12 +884,14 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

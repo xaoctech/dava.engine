@@ -610,10 +610,10 @@ void Scene::Update(float timeElapsed)
 		mesh->Update(timeElapsed);
 	}
 
-	if(imposterManager)
-	{
-		imposterManager->Update(timeElapsed);
-	}
+	//if(imposterManager)
+	//{
+	//	imposterManager->Update(timeElapsed);
+	//}
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }

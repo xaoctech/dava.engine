@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QMessageBox>
+#include <QInputDialog>
 
 using namespace DAVA;
 
@@ -115,7 +116,7 @@ void LocalizationEditorDialog::SetDefaultLanguage()
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
     QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ),
-																ResourcesManageHelper::GetDefaultDirectory());
+																ResourcesManageHelper::GetResourceRootDirectory());
 
 	if(!fileDirectory.isNull() && !fileDirectory.isEmpty())
     {
@@ -392,10 +393,18 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 	QString newLocalizationKey = QString(DEFAULT_LOCALIZATION_KEY).arg(addedStringsCount);
 	QString newLocalizationValue = QString(DEFAULT_LOCALIZATION_VALUE).arg(addedStringsCount);
 
-	LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(newLocalizationKey),
+	bool isOK = false;
+	QString text = QInputDialog::getText(this, "Localization Key",
+										 "New Localization Key", QLineEdit::Normal,
+										 newLocalizationKey, &isOK);
+	if (isOK && !text.isEmpty())
+	{
+		newLocalizationKey = text;
+		LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(newLocalizationKey),
 													   QStringToWideString(newLocalizationValue));
-	SaveLocalization();
-	ReloadLocalizationTable();
+		SaveLocalization();
+		ReloadLocalizationTable();
+	}
 
 	SelectItemByKey(newLocalizationKey);
 }
@@ -449,17 +458,21 @@ void LocalizationEditorDialog::SelectItemByKey(const QString& keyToBeSelected)
 
 void LocalizationEditorDialog::SaveLocalization()
 {
-	// TODO: Yuri Coder, 2013/03/05. This method is commented out since UT8 strings are currently not supported.
-	// Uncomment it when save to UTF8 will work!
-	//LocalizationSystem::Instance()->SaveLocalizedStrings();
+	LocalizationSystem::Instance()->SaveLocalizedStrings();
 }
 
 QString LocalizationEditorDialog::WideStringToQString(const DAVA::WideString& str)
 {
-    return (QString((const QChar*)str.c_str(), str.length()));
+	// Convert Wide String to UTF8 and create from it.
+	String utf8String = UTF8Utils::EncodeToUTF8(str);
+	return QString::fromUtf8(utf8String.c_str());
 }
 
 DAVA::WideString LocalizationEditorDialog::QStringToWideString(const QString& str)
 {
-    return (std::wstring((wchar_t*)str.unicode(), str.length()));
+	QByteArray utf8Array = str.toUtf8();
+	WideString resultString;
+	UTF8Utils::EncodeToWideString((uint8*)utf8Array.data(), utf8Array.size(), resultString);
+
+	return resultString;
 }

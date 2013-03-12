@@ -5,32 +5,59 @@ using namespace DAVA;
 
 JniExtension::JniExtension(const char* className)
 {
+	Logger::Debug("JniExtension::JniExtension(%s)", className);
 	this->className = className;
 	javaClass = 0;
+	isThreadAttached = false;
 
 	CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
 	AndroidSystemDelegate* delegate = core->GetAndroidSystemDelegate();
-	env = delegate->GetEnvironment();
 	vm = delegate->GetVM();
+
+	jint res = JNI_OK;
+	res = vm->GetEnv((void **)&env,JNI_VERSION_1_6);
+
+	/*if (res == JNI_EDETACHED)
+	{
+		res = vm->AttachCurrentThread(&env, NULL);
+		if (res == JNI_OK)
+			isThreadAttached = true;
+	}*/
+
+	if (res == JNI_OK)
+	{
+		javaClass = env->FindClass(className);
+		if (!javaClass)
+			Logger::Debug("Error find class %s", className);
+	}
+	else
+	{
+		Logger::Debug("Failed to get the environment using GetEnv()");
+	}
+}
+
+JniExtension::~JniExtension()
+{
+	Logger::Debug("JniExtension::~JniExtension(%s)", className);
+
+	if (javaClass)
+		env->DeleteLocalRef(javaClass);
+
+	if (isThreadAttached)
+	{
+		jint res = vm->DetachCurrentThread();
+		Logger::Debug("vm->DetachCurrentThread() = %d", res);
+		Logger::Debug("Failed to DetachCurrentThread()");
+	}
 }
 
 jmethodID JniExtension::GetMethodID(const char *methodName, const char *paramCode)
 {
-	if (vm->AttachCurrentThread(&env, 0) < 0)
-	{
-		Logger::Debug("Failed to AttachCurrentThread()");
-		return NULL;
-	}
+	Logger::Debug("JniExtension::GetMethodID javaClass=%s methodName=%s", className, methodName);
+	jmethodID mid = NULL;
+	if (javaClass)
+		mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
 
-	javaClass = env->FindClass(className);
-	if (!javaClass)
-	{
-		Logger::Debug("Error find class %s", className);
-		return NULL;
-	}
-
-	jmethodID mid = env->GetStaticMethodID(javaClass, methodName, paramCode);
-	env->DeleteLocalRef(javaClass);
 	if (!mid)
 	{
 		Logger::Debug("get method id of %s.%s error ", className, methodName);

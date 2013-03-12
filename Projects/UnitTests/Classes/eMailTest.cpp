@@ -63,6 +63,7 @@ void EMailTest::LoadResources()
 #else
 	address->SetFont(font);
 #endif
+
 	address->SetText(L"test@test.com");
 	address->SetDebugDraw(true);
 	address->SetDelegate(new UITextFieldDelegate());
@@ -74,6 +75,7 @@ void EMailTest::LoadResources()
 #else
 	subject->SetFont(font);
 #endif
+
 	subject->SetText(L"test subject");
 	subject->SetDebugDraw(true);
 	subject->SetDelegate(new UITextFieldDelegate());
@@ -85,6 +87,7 @@ void EMailTest::LoadResources()
 #else
 	text->SetFont(font);
 #endif
+
 	text->SetText(L"test text");
 	text->SetDebugDraw(true);
 	text->SetDelegate(new UITextFieldDelegate());

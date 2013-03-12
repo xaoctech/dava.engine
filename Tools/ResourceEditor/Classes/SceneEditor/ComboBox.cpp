@@ -49,7 +49,7 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
     indecesMap.clear();
     items = listItems;
 
-    Font *font = ControlsFactory::GetFontLight();
+    Font *font = ControlsFactory::GetFont12();
     listWidth = size.x;
     for (int i = 0; i < (int32)items.size(); i++)
     {

@@ -167,28 +167,33 @@ SLObjectItf SoundSystem::getOutputMixObject()
 #endif //#ifdef __DAVAENGINE_ANDROID__
 SoundChannel * SoundSystem::FindChannel(int32 priority)
 {
+	SoundChannel * ch = 0;
+
 	Deque<SoundChannel*>::iterator it;
 	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
 	for(it = channelsPool.begin(); it != itEnd; ++it)
 	{
-		SoundChannel * ch = *it;
+		ch = *it;
 		if(SoundChannel::STATE_FREE == ch->GetState())
 		{
-			return ch;
+			break;
 		}
 	}
 
-	for(it = channelsPool.begin(); it != itEnd; ++it)
+	if(!ch)
 	{
-		SoundChannel * ch = *it;
-		if(ch->GetProirity() < priority)
+		for(it = channelsPool.begin(); it != itEnd; ++it)
 		{
-			ch->Stop();
-			return ch;
+			ch = *it;
+			if(ch->GetProirity() < priority)
+			{
+				ch->Stop();
+				break;
+			}
 		}
 	}
 
-	return 0;
+	return ch;
 }
 
 void SoundSystem::Update()
@@ -280,6 +285,21 @@ void SoundSystem::SetVolume(float32 _volume)
 #endif //#ifdef __DAVASOUND_AL__
 }
 
+void SoundSystem::SetPosition(const Vector3 & position)
+{
+#ifdef __DAVASOUND_AL__
+	AL_VERIFY(alListener3f(AL_POSITION, position.x, position.y, position.z));
+#endif //#ifdef __DAVASOUND_AL__
+}
+
+void SoundSystem::SetOrientation(const Vector3 & at, const Vector3 & up)
+{
+#ifdef __DAVASOUND_AL__
+	ALfloat listenerOri[]={at.x, at.y, at.z, up.x, up.y, up.z};
+	AL_VERIFY(alListenerfv(AL_ORIENTATION, listenerOri));
+#endif //#ifdef __DAVASOUND_AL__
+}
+
 float32 SoundSystem::GetVolume()
 {
 	return volume;
@@ -294,5 +314,7 @@ SoundGroup		* SoundSystem::GroupMusic()
 {
 	return groupMusic;
 }
+
+
 
 };
