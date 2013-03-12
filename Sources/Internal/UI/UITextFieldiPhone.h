@@ -51,6 +51,8 @@ public:
 	void SetFontColor(float r, float g, float b, float a);
 	void SetFontSize(float size);
 
+    void SetAlign(DAVA::int32 align);
+    
 	void ShowField();
 	void HideField();
 	
