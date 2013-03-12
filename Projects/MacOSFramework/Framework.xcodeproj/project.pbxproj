@@ -27,6 +27,8 @@
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
 		840ED3E116D5089E00D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3E016D5089E00D2BA6C /* DPIHelper.h */; };
 		840ED3E316D5095000D2BA6C /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
+		84221EF816EF701D000E7D74 /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
+		84221EF916EF701E000E7D74 /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
 		C151B17716D3747E00E09BAF /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B17416D3747E00E09BAF /* DVAssertMessage.cpp */; };
 		C151B17816D3747E00E09BAF /* DVAssertMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B17516D3747E00E09BAF /* DVAssertMessage.h */; };
 		C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B17616D3747E00E09BAF /* DVAssertMessageApple.mm */; };
@@ -1245,8 +1247,6 @@
 		E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */; };
 		E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
 		E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
-		E8CBDFA416EDDD4B00F70C8F /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
-		E8CBDFA516EDDD4C00F70C8F /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */; };
@@ -4013,8 +4013,8 @@
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
-				17DDBDBA16E79AB000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 				E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				84221EF816EF701D000E7D74 /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4300,8 +4300,8 @@
 				E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */,
 				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
 				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
-				17DDBDBB16E79E7000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 				E9EA496D16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				84221EF916EF701E000E7D74 /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
