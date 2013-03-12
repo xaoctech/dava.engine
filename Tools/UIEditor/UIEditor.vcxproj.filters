@@ -58,16 +58,6 @@
     <Filter Include="Form Files\PropertyGridWidgets">
       <UniqueIdentifier>{b3f4a243-35ab-40b2-9d99-c25873885539}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Generated Files\DebugQt">
-      <UniqueIdentifier>{0e14f710-b990-48b1-b2f0-f2803d5724d1}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
-    <Filter Include="Generated Files\ReleaseQt">
-      <UniqueIdentifier>{499e08c4-9f44-4ed0-9421-1d3c79d73855}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
     <Filter Include="Sources\ResourcePacker">
       <UniqueIdentifier>{79afd1d9-3d5b-4b12-856b-e49d8ec99780}</UniqueIdentifier>
     </Filter>
@@ -148,41 +138,17 @@
     <ClCompile Include="Classes\Controllers\CommandsController.cpp">
       <Filter>Sources\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_CommandsController.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_CommandsController.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Controllers\CopyPasteController.cpp">
       <Filter>Sources\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Controllers\HierarchyTreeController.cpp">
       <Filter>Sources\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_HierarchyTreeController.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_HierarchyTreeController.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Controllers\PropertiesGridController.cpp">
       <Filter>Sources\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_PropertiesGridController.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_PropertiesGridController.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Metadata\BaseMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_BaseMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_BaseMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Metadata\BaseMetadataParams.cpp">
       <Filter>Sources\Metadata</Filter>
@@ -193,119 +159,41 @@
     <ClCompile Include="Classes\Metadata\PlatformMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_PlatformMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_PlatformMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Metadata\ScreenMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_ScreenMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_ScreenMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Metadata\UIButtonMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UIButtonMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UIButtonMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Metadata\UIControlMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UIControlMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UIControlMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Metadata\UIStaticTextMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UIStaticTextMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UIStaticTextMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Metadata\UITextControlMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UITextControlMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UITextControlMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Metadata\UITextFieldMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UITextFieldMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UITextFieldMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\backgroundpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_backgroundpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_backgroundpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\basepropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_basepropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_basepropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\controlpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_controlpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_controlpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\flagspropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_flagspropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_flagspropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\platformpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_platformpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_platformpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\propertygridcontainerwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_propertygridcontainerwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_propertygridcontainerwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\PropertyGridWidgetData.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
@@ -316,182 +204,62 @@
     <ClCompile Include="Classes\UI\PropertyGridWidgets\rectpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_rectpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_rectpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\screenpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_screenpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_screenpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\statepropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_statepropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_statepropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\textpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_textpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_textpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_uitextfieldpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_uitextfieldpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\controllist.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_controllist.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_controllist.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\createplatformdlg.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_createplatformdlg.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_createplatformdlg.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\createscreendlg.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_createscreendlg.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_createscreendlg.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\davaglwidget.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_davaglwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_davaglwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_fontmanagerdialog.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_fontmanagerdialog.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\hierarchytreecontrol.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_hierarchytreecontrol.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_hierarchytreecontrol.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\hierarchytreewidget.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_hierarchytreewidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_hierarchytreewidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\librarywidget.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_librarywidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_librarywidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\mainwindow.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_mainwindow.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_mainwindow.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\UI\QColorButton.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_QColorButton.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_QColorButton.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\StateComboBoxItemDelegate.cpp">
       <Filter>Sources\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_StateComboBoxItemDelegate.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_StateComboBoxItemDelegate.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\EditorFontManager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_EditorFontManager.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_EditorFontManager.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp">
       <Filter>Sources\UI\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_localizationeditordialog.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_localizationeditordialog.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\ScreenWrapper.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_ScreenWrapper.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_ScreenWrapper.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\ScreenManager.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_ScreenManager.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_ScreenManager.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\EditorSettings.cpp">
       <Filter>Sources</Filter>
@@ -502,17 +270,8 @@
     <ClCompile Include="Classes\Metadata\UISliderMetadata.cpp">
       <Filter>Sources\Metadata</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_sliderpropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_UISliderMetadata.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Controllers\UndoRedoController.cpp">
       <Filter>Sources\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_icons.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="Classes\ResourcePacker\ResourcePacker.cpp">
       <Filter>Sources\ResourcePacker</Filter>
@@ -538,17 +297,242 @@
     <ClCompile Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.cpp">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_alignspropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
+    <ClCompile Include="GeneratedFiles\Commands\BaseCommand_moc.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\DebugQt\moc_alignspropertygridwidget.cpp">
-      <Filter>Generated Files\DebugQt</Filter>
+    <ClCompile Include="GeneratedFiles\Commands\ChangePropertyCommand_moc.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UISliderMetadata.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
+    <ClCompile Include="GeneratedFiles\Commands\ControlCommands_moc.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_sliderpropertygridwidget.cpp">
-      <Filter>Generated Files\ReleaseQt</Filter>
+    <ClCompile Include="GeneratedFiles\Commands\ItemsCommand_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Commands\PasteCommand_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Controllers\CommandsController_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Controllers\CopyPasteController_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Controllers\HierarchyTreeController_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Controllers\PropertiesGridController_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Controllers\UndoRedoController_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DefaultScreen_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\EditorFontManager_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\EditorSettings_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\FrameworkMain_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\GameCore_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\BackgroundGridWidgetHelper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\LocalizationSystemHelper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\PropertiesHelper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\ResourcesManageHelper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\UIControlStateHelper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Helpers\WidgetSignalsBlocker_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\icons_qrc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\BaseMetadataParams_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\BaseMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\MetadataFactory_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\PlatformMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\PropertyNames_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\ScreenMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UIButtonMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UIControlMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UISliderMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UIStaticTextMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UITextControlMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UITextFieldMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeControlNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeNodeExtraData_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreePlatformNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeRootNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeScreenNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTree_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\ResourcePacker_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\CommandLineParser_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\DefinitionFile_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\ImagePacker_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PngImage_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\PVRConverter_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ResourcePacker\TexturePacker\TexturePacker_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ScreenControl_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ScreenManager_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ScreenWrapper_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\StringUtils_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\controllist_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\createplatformdlg_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\createscreendlg_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\davaglwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationeditordialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\fontmanagerdialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\hierarchytreecontrol_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\hierarchytreewidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\librarywidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\mainwindow_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\AlignsPropertyGridWidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\backgroundpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\basepropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\controlpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\flagspropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\platformpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\propertygridcontainerwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\PropertyGridWidgetData_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\PropertyGridWidgetsFactory_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\rectpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\screenpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\sliderpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\statepropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\textpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\uitextfieldpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\QColorButton_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\StateComboBoxItemDelegate_moc.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -621,63 +605,6 @@
     <ClInclude Include="Classes\Models\HierarchyTreeScreenNode.h">
       <Filter>Sources\Models</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_davaglwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_hierarchytreewidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_librarywidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_createplatformdlg.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_createscreendlg.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_fontmanagerdialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_localizationeditordialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_backgroundpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_basepropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_controlpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_flagspropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_platformpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_propertygridcontainerwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_rectpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_screenpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Controllers\CopyPasteController.h">
       <Filter>Sources\Controllers</Filter>
     </ClInclude>
@@ -698,9 +625,6 @@
     </ClInclude>
     <ClInclude Include="Classes\EditorSettings.h">
       <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Controllers\UndoRedoController.h">
       <Filter>Sources\Controllers</Filter>
@@ -726,11 +650,182 @@
     <ClInclude Include="Classes\ResourcePacker\TexturePacker\TexturePacker.h">
       <Filter>Sources\ResourcePacker\TexturePacker</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ScreenManager.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ScreenWrapper.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\EditorFontManager.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\QColorButton.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\StateComboBoxItemDelegate.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\mainwindow.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\librarywidget.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\hierarchytreewidget.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\hierarchytreecontrol.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\fontmanagerdialog.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\davaglwidget.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\createscreendlg.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\createplatformdlg.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\controllist.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\textpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\statepropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\screenpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\rectpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\propertygridcontainerwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\platformpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\flagspropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\controlpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\basepropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\backgroundpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\localizationeditordialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\BaseMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\PlatformMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\ScreenMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIButtonMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIControlMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIStaticTextMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UITextControlMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UITextFieldMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\CommandsController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\HierarchyTreeController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\PropertiesGridController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_alignspropertygridwidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    <ClInclude Include="GeneratedFiles\ui_backgroundpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_basepropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_controlpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_createplatformdlg.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_createscreendlg.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_davaglwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_flagspropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_fontmanagerdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_hierarchytreewidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_librarywidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_localizationeditordialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_platformpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_propertygridcontainerwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_rectpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_screenpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_sliderpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_statepropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_textpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -746,179 +841,64 @@
     <CustomBuild Include="UI\mainwindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="UI\Dialogs\createplatformdlg.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\Dialogs\createscreendlg.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\Dialogs\fontmanagerdialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\Dialogs\localizationeditordialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\backgroundpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\basepropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\controlpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\flagspropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\platformpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\propertygridcontainerwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\rectpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\screenpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\statepropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\textpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\uitextfieldpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Controllers\CommandsController.h">
-      <Filter>Sources\Controllers</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Controllers\HierarchyTreeController.h">
-      <Filter>Sources\Controllers</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Controllers\PropertiesGridController.h">
-      <Filter>Sources\Controllers</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\BaseMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\PlatformMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\ScreenMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UIButtonMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UIControlMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UIStaticTextMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UITextControlMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UITextFieldMetadata.h">
-      <Filter>Sources\Metadata</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\backgroundpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\basepropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\controlpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\flagspropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\platformpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\propertygridcontainerwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\rectpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\screenpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\statepropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\textpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.h">
-      <Filter>Sources\UI\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\controllist.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\createplatformdlg.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\createscreendlg.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\davaglwidget.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\fontmanagerdialog.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\hierarchytreecontrol.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\hierarchytreewidget.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\librarywidget.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\mainwindow.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\QColorButton.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\StateComboBoxItemDelegate.h">
-      <Filter>Sources\UI</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\EditorFontManager.h">
-      <Filter>Sources</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\Dialogs\localizationeditordialog.h">
-      <Filter>Sources\UI\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\ScreenWrapper.h">
-      <Filter>Sources</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\ScreenManager.h">
-      <Filter>Sources</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\sliderpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\sliderpropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\Metadata\UISliderMetadata.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Classes\UI\PropertyGridWidgets\alignspropertygridwidget.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="Data\icons.qrc">
       <Filter>Resources</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\createplatformdlg.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\createscreendlg.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\fontmanagerdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\localizationeditordialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\alignspropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\backgroundpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\basepropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\controlpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\flagspropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\platformpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\propertygridcontainerwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\rectpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\screenpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\sliderpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\statepropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\textpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\uitextfieldpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
   </ItemGroup>
 </Project>
