@@ -48,9 +48,11 @@ public:
 	void SetText(const WideString & string);
 	void UpdateRect(const Rect & rect);
 
-	void SetFontColor(float r, float g, float b, float a);
+	void SetTextColor(const DAVA::Color &color);
 	void SetFontSize(float size);
 
+    void SetAlign(DAVA::int32 align);
+    
 	void ShowField();
 	void HideField();
 	
