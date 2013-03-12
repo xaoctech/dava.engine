@@ -534,6 +534,18 @@
     <ClCompile Include="GeneratedFiles\UI\StateComboBoxItemDelegate_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Metadata\UIListMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UISpinnerMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UIListMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UISpinnerMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -826,6 +838,12 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_uitextfieldpropertygridwidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIListMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UISpinnerMetadata.h">
+      <Filter>Sources\Metadata</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

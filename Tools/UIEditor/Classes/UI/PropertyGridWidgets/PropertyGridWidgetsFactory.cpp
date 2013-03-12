@@ -16,6 +16,8 @@
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
 #include "UISliderMetadata.h"
+#include "UIListMetadata.h"
+#include "UISpinnerMetadata.h"
 
 using namespace DAVA;
 
@@ -144,7 +146,35 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 				
 		return resultList;
 	}
-    
+
+    // UI List.
+	const UIListMetadata* uiListMetadata = dynamic_cast<const UIListMetadata*>(metaData);
+    if (uiListMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
+	// UI Spinner.
+	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+    if (uiSpinnerMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for
     // all UI Controls and used as a "last chance" if we are unable to determine the control type.

@@ -50,6 +50,8 @@ compilers: \
 	$(COMP_DIR)moc_UITextControlMetadata.cpp \
 	$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 	$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+	$(COMP_DIR)moc_UIListMetadata.cpp \
+	$(COMP_DIR)moc_UISpinnerMetadata.cpp \
 	$(COMP_DIR)moc_PlatformMetadata.cpp \
 	$(COMP_DIR)moc_ScreenMetadata.cpp \
 	$(COMP_DIR)moc_HierarchyTreeController.cpp \
@@ -113,6 +115,8 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_UITextControlMetadata.cpp \
 	$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 	$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+	$(COMP_DIR)moc_UIListMetadata.cpp \
+	$(COMP_DIR)moc_UISpinnerMetadata.cpp \
 	$(COMP_DIR)moc_UISliderMetadata.cpp \
 	$(COMP_DIR)moc_PlatformMetadata.cpp \
 	$(COMP_DIR)moc_ScreenMetadata.cpp \
@@ -159,6 +163,8 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_UITextControlMetadata.cpp \
 		$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 		$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+		$(COMP_DIR)moc_UIListMetadata.cpp \
+		$(COMP_DIR)moc_UISpinnerMetadata.cpp \
 		$(COMP_DIR)moc_UISliderMetadata.cpp \
 		$(COMP_DIR)moc_PlatformMetadata.cpp \
 		$(COMP_DIR)moc_ScreenMeadata.cpp \
@@ -221,6 +227,12 @@ $(COMP_DIR)moc_UIButtonMetadata.cpp: $(SOURCE_DIR)Metadata/UIButtonMetadata.h
 
 $(COMP_DIR)moc_UIStaticTextMetadata.cpp: $(SOURCE_DIR)Metadata/UIStaticTextMetadata.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UIStaticTextMetadata.h -o $(COMP_DIR)moc_UIStaticTextMetadata.cpp
+
+$(COMP_DIR)moc_UIListMetadata.cpp: $(SOURCE_DIR)Metadata/UIListMetadata.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UIListMetadata.h -o $(COMP_DIR)moc_UIListMetadata.cpp
+
+$(COMP_DIR)moc_UISpinnerMetadata.cpp: $(SOURCE_DIR)Metadata/UISpinnerMetadata.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UISpinnerMetadata.h -o $(COMP_DIR)moc_UISpinnerMetadata.cpp
 
 $(COMP_DIR)moc_UISliderMetadata.cpp: $(SOURCE_DIR)Metadata/UISliderMetadata.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UISliderMetadata.h -o $(COMP_DIR)moc_UISliderMetadata.cpp
