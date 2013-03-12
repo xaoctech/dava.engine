@@ -21,7 +21,7 @@ void SetSwitchIndexHelper::ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_IN
 		}
 		if( SetSwitchIndexHelper::FOR_SCENE == state)
 		{
-			sceneData->GetAllSwitchComponents(switchComponents);
+			sceneData->GetScene()->FindAllSwitchComponentsRecursive( switchComponents);
 		}
 		
 		for(List<SceneNode*>::const_iterator it = switchComponents.begin(); it != switchComponents.end(); ++it)
