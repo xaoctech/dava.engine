@@ -214,16 +214,6 @@ inherit:</string>
      <string>x</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="lrSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>200</y>
-      <width>62</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="LRStretchLabel">
     <property name="geometry">
      <rect>
@@ -250,14 +240,36 @@ inherit:</string>
      <string>Vert. Stretch:</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="tbSpinBox">
+   <widget class="QSpinBox" name="lrSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>200</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>999</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="tbSpinBox">
     <property name="geometry">
      <rect>
       <x>220</x>
       <y>200</y>
-      <width>62</width>
+      <width>46</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>999</number>
     </property>
    </widget>
   </widget>
