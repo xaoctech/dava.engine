@@ -67,13 +67,19 @@ ShadowRect::ShadowRect()
 
 	rdo->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, vertices);
 
+    
+    shadowColor = Color(0, 0, 0, 0.5f);
+    
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
 	shader->Recompile();
+    
+    uniformShadowColor = shader->FindUniformLocationByName("shadowColor");
 }
 
 ShadowRect::~ShadowRect()
 {
+    uniformShadowColor = -1;
 	SafeRelease(shader);
 	SafeRelease(rdo);
 
@@ -85,8 +91,23 @@ void ShadowRect::Draw()
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(rdo);
 	RenderManager::Instance()->FlushState();
+    
+    if (uniformShadowColor != -1)
+        shader->SetUniformColor4(uniformShadowColor, shadowColor);
+    
 	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 }
+    
+void ShadowRect::SetColor(const Color &color)
+{
+    shadowColor = color;
+}
+
+Color ShadowRect::GetColor() const
+{
+    return shadowColor;
+}
+
 
 };

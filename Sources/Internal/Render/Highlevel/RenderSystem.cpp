@@ -32,6 +32,7 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Render/Highlevel/ShadowRect.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -354,5 +355,34 @@ RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const Fas
 
 	return newLayer;
 }
+    
+void RenderSystem::SetShadowRectColor(const Color &color)
+{
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    if(shadowVolume)
+    {
+        ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+        if(shadowRect)
+        {
+            shadowRect->SetColor(color);
+        }
+    }
+}
+    
+Color RenderSystem::GetShadowRectColor()
+{
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    if(shadowVolume)
+    {
+        ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+        if(shadowRect)
+        {
+            return shadowRect->GetColor();
+        }
+    }
+    
+    return Color();
+}
+
 
 };
