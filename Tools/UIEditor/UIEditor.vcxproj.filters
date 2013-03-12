@@ -550,6 +550,24 @@
     <ClCompile Include="GeneratedFiles\ReleaseQt\moc_sliderpropertygridwidget.cpp">
       <Filter>Generated Files\ReleaseQt</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Metadata\UIListMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UISpinnerMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UIListMetadata.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseQt\moc_UISpinnerMetadata.cpp">
+      <Filter>Generated Files\ReleaseQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_UIListMetadata.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\DebugQt\moc_UISpinnerMetadata.cpp">
+      <Filter>Generated Files\DebugQt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -919,6 +937,12 @@
     </CustomBuild>
     <CustomBuild Include="Data\icons.qrc">
       <Filter>Resources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\Metadata\UIListMetadata.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Classes\Metadata\UISpinnerMetadata.h">
+      <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
