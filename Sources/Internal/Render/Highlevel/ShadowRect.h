@@ -45,6 +45,9 @@ public:
 	virtual ~ShadowRect();
 
 	void Draw();
+    
+    void SetColor(const Color &color);
+    Color GetColor() const;
 
 private:
 	ShadowRect();
@@ -57,6 +60,10 @@ private:
 	float32 vertices[12];
 
 	static ShadowRect * instance;
+    
+    Color shadowColor;
+    int32 uniformShadowColor;
+
 };
 
 };

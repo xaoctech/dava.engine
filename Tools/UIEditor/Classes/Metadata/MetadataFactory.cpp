@@ -17,6 +17,8 @@
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
 #include "UISliderMetadata.h"
+#include "UIListMetadata.h"
+#include "UISpinnerMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -64,6 +66,17 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
 	{
 		return new UISliderMetadata();
 	}
+	
+	if (dynamic_cast<const UIList*>(uiControl))
+	{
+		return new UIListMetadata();
+	}
+
+	if (dynamic_cast<const UISpinner*>(uiControl))
+	{
+		return new UISpinnerMetadata();
+	}
+
     // Add metadata for other Controls here.
 
     return new UIControlMetadata();

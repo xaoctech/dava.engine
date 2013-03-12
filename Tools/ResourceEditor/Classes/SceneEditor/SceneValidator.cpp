@@ -393,6 +393,11 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 	{
 		errorsLog.insert("Wrong size of " + textureInfo);
 	}
+    
+    if(texture->GetWidth() > 2048 || texture->GetHeight() > 2048)
+	{
+		errorsLog.insert("Texture is too big. " + textureInfo);
+	}
 }
 
 

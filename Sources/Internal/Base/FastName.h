@@ -56,6 +56,10 @@ public:
 private:
 	int index;
 
+#ifdef DAVA_DEBUG
+	const char* debug_str_ptr;
+#endif
+
 	void AddRef(int i) const;
 	void RemRef(int i) const;
 };

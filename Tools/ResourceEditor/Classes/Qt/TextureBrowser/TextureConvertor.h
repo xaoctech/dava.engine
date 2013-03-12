@@ -53,7 +53,6 @@ private:
 	QImage convertThreadPVR(JobItem *item);
 	QImage convertThreadDXT(JobItem *item);
 	void convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *> *allTextures, bool forceConverAll);
-	void generateCommandString(const DAVA::TextureDescriptor *descriptor, QString& command);
 
 	int jobGetConvertFreeIndex();
 	int jobGetConvertIndex(QFutureWatcher<QImage> *watcher);
