@@ -23,11 +23,9 @@ public:
 	int GetFPS();
 
 	virtual QPaintEngine *paintEngine() const;
-
 	virtual void paintEvent(QPaintEvent *);
 
 	virtual void resizeEvent(QResizeEvent *);
-	virtual void moveEvent(QMoveEvent *);
 	virtual void wheelEvent(QWheelEvent *);
 
 	virtual void showEvent(QShowEvent *);

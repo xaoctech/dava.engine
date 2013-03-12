@@ -893,6 +893,8 @@ public:
 	 \param[in] hierarchic Is value need to be changed in all coltrol children.
 	 */
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
+	void	SetDebugDrawColor(const Color& color);
+	Color	GetDebugDrawColor() const;
 	
 public:
 	
@@ -1151,6 +1153,7 @@ protected:
 	bool needToRecalcFromAbsoluteCoordinates;
 	
 	bool debugDrawEnabled;
+	Color debugDrawColor;
 	
 	void SetParent(UIControl *newParent);
 	virtual ~UIControl();

@@ -25,58 +25,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Vitaliy Borodovsky
 =====================================================================================*/
-#ifndef __DAVAENGINE_QT_LAYER_H__
-#define __DAVAENGINE_QT_LAYER_H__
+#include "Utils/UTF8Utils.h"
+#include "FileSystem/Logger.h"
 
-#include "DAVAEngine.h"
+#if defined(__DAVAENGINE_WIN32__)
+
+#include <Windows.h>
 
 namespace DAVA 
 {
-class QtLayerDelegate
+
+void  UTF8Utils::EncodeToWideString(uint8 * string, int32 size, WideString & resultString)
 {
-public:
-    
-    virtual void Quit() = 0;
-    
-};
-    
-class QtLayer: public Singleton<QtLayer>
-{
-public:
+	resultString = L"";
 
-    QtLayer();
-    virtual ~QtLayer() {};
-    
-    virtual void WidgetCreated() = 0;
-    virtual void WidgetDestroyed() = 0;
+	int32 wstringLen = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)string, size, NULL, NULL);
+	if (!wstringLen)
+	{
+		return;
+	}
 
-    virtual void OnSuspend() = 0;
-    virtual void OnResume() = 0;
-	
-    virtual void AppStarted() = 0;
-    virtual void AppFinished() = 0;
+	wchar_t* buf = new wchar_t[wstringLen];
+	int32 convertRes = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)string, size, buf, wstringLen);
+	if (convertRes)
+	{
+		resultString = WideString(buf, wstringLen);
+	}
 
-	virtual void Resize(int32 width, int32 height) = 0;
-	virtual void Move(int32 x, int32 y) = 0;
-    
-    virtual void ProcessFrame() = 0;
-
-    virtual void LockKeyboardInput(bool locked) = 0;
-
-    virtual void* CreateAutoreleasePool() { return NULL; };
-    virtual void ReleaseAutoreleasePool(void *pool) {};
-    
-    void Quit();
-    void SetDelegate(QtLayerDelegate *delegate);
-
-	virtual void* GetOpenGLView() { return NULL; };
-protected:
-    
-    QtLayerDelegate *delegate;
-};	
+	delete[] buf;
 };
 
+String UTF8Utils::EncodeToUTF8(const WideString& wstring)
+{
+	int32 bufSize = WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), -1, 0, 0, NULL, NULL);
+	if (!bufSize)
+	{
+		return "";
+	}
 
-#endif // __DAVAENGINE_QT_LAYER_H__
+	String resStr = "";
+
+	char* buf = new char[bufSize];
+	int32 res = WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), -1, buf, bufSize, NULL, NULL);
+	if (res)
+	{
+		resStr = String(buf);
+	}
+
+	delete[] buf;
+	return resStr;
+};
+
+};
+
+#endif

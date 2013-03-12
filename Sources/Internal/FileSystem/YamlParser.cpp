@@ -551,6 +551,11 @@ void YamlNode::Add(const String& name, const String& value)
 	InternalSet(name, value, false);
 }
 
+void YamlNode::Add(const String& name, const WideString& value)
+{
+	InternalSet(name, value, false);
+}
+
 void YamlNode::Add(const String& name, const Vector2& value)
 {
 	InternalSet(name, value, false);
@@ -598,6 +603,11 @@ void YamlNode::Set(const String& name, const char8* value)
 }
 
 void YamlNode::Set(const String& name, const String& value)
+{
+	InternalSet(name, value, true);
+}
+
+void YamlNode::Set(const String& name, const WideString& value)
 {
 	InternalSet(name, value, true);
 }
@@ -751,9 +761,8 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
             break;
         case VariantType::TYPE_WIDE_STRING:
         {
-            String strToInitWith = '"'+WStringToString(varType->AsWideString())+'"';
-            nwStringValue = String(strToInitWith);
-            stringValue = StringToWString(strToInitWith);
+            stringValue = L'"' + varType->AsWideString() +L'"';
+            nwStringValue = WStringToString(stringValue);
         }
             break;
         case VariantType::TYPE_UINT32:
@@ -1283,6 +1292,57 @@ bool YamlParser::SaveToYamlFile(const String& fileName, YamlNode * rootNode, boo
     return saveSucceeded;
 }
 
+bool YamlParser::SaveStringsList(const String& fileName, YamlNode * rootNode, uint32 attr)
+{
+	File * yamlFileToSave = File::Create(fileName, attr);
+	if (!yamlFileToSave)
+	{
+		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.c_str());
+		return false;
+	}
+	
+	// Strings List is a bit different - it contains one and only Map node with the list of the
+	// strings themselves.
+	DVASSERT(rootNode->GetType() == YamlNode::TYPE_MAP);
+	MultiMap<String, YamlNode*> & childrenList = rootNode->AsMap();
+
+	bool saveSucceeded = true;
+	for (MultiMap<String, YamlNode*>::iterator iter = childrenList.begin();
+		 iter != childrenList.end(); iter ++)
+	{
+		saveSucceeded &= WriteStringListNodeToYamlFie(yamlFileToSave, iter->first, iter->second);
+	}
+	
+	// Cleanup the memory.
+    SafeRelease(yamlFileToSave);
+
+	return saveSucceeded;
+}
+
+bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, YamlNode* currentNode)
+{
+	const char16* NAME_VALUE_DELIMITER = L"\": ";
+	WideString resultString = L"\"";
+
+	// String nodes must be enquoted.
+	resultString += StringToWString(nodeName);
+
+	resultString += NAME_VALUE_DELIMITER;
+
+	WideString nodeValue = currentNode->AsWString();
+	
+	size_t pos = WideString::npos;
+	while ((pos = nodeValue.find(L"\n")) != WideString::npos)
+	{
+		nodeValue.replace(pos, WideString(L"\n").length(), L"\\n");
+	}
+
+	resultString += nodeValue;
+	resultString += L"\n";
+
+	return WriteStringToYamlFile(fileToSave, resultString);
+}
+	
 Vector<YamlNodeKeyValuePair> YamlParser::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes)
 {
     // Order the map nodes by the "Relative Depth".
@@ -1405,7 +1465,14 @@ bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToW
     
     return (fileToSave->GetSize() == prevFileSize + bytesWritten);
 }
-    
+
+bool YamlParser::WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite)
+{
+	// Yaml contains UTF8 strings only.
+	String utf8String = UTF8Utils::EncodeToUTF8(stringToWrite);
+	return WriteStringToYamlFile(fileToSave, utf8String);
+}
+
 bool YamlParser::WriteMapNodeToYamlFile(File* fileToSave, const String& mapNodeName, int16 depth)
 {
     const char8* MAP_DELIMITER = ":";
@@ -1673,7 +1740,29 @@ void YamlNode::InternalSet(const String& name, const String& value, bool rewrite
 		FillContentAccordingToVariantTypeValue(&variantValue);
 	}
 }
-	
+
+void YamlNode::InternalSet(const String& name, const WideString& value, bool rewritePreviousValue)
+{
+	if (type == TYPE_MAP)
+	{
+		if (rewritePreviousValue)
+		{
+			RemoveNodeFromMap(name);
+		}
+
+		YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
+		stringNode->Set(name, value);
+		objectMap.insert(std::pair<String, YamlNode*> (name, stringNode));
+	}
+	else if (type == TYPE_STRING)
+	{
+		// Just initialize the value.
+		VariantType variantValue;
+		variantValue.SetWideString(value);
+		FillContentAccordingToVariantTypeValue(&variantValue);
+	}
+}
+
 void YamlNode::InternalSet(const String& name, const Vector2& value, bool rewritePreviousValue)
 {
 	if (type == TYPE_MAP)
