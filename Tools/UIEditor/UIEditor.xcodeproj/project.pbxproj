@@ -10,6 +10,10 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		1700E418162EB2C20069650D /* basepropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E416162EB2C20069650D /* basepropertygridwidget.cpp */; };
 		1700E41D162EB8C60069650D /* rectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */; };
+		1710178B16EE197900BC7AE0 /* UIListMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17AB665116EDF86B00634657 /* UIListMetadata.cpp */; };
+		1710178D16EE1B1000BC7AE0 /* moc_UIListMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1710178C16EE1B1000BC7AE0 /* moc_UIListMetadata.cpp */; };
+		1710179016EE2F3200BC7AE0 /* UISpinnerMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1710178E16EE2F3100BC7AE0 /* UISpinnerMetadata.cpp */; };
+		1710179216EE31D000BC7AE0 /* moc_UISpinnerMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1710179116EE31D000BC7AE0 /* moc_UISpinnerMetadata.cpp */; };
 		17112B45163920BC0017E713 /* CommandsController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B43163920BC0017E713 /* CommandsController.cpp */; };
 		17112B481639214D0017E713 /* BaseCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B461639214D0017E713 /* BaseCommand.cpp */; };
 		17112B5916392EA80017E713 /* WidgetSignalsBlocker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17112B5716392EA80017E713 /* WidgetSignalsBlocker.cpp */; };
@@ -189,6 +193,10 @@
 		1700E417162EB2C20069650D /* basepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basepropertygridwidget.h; path = PropertyGridWidgets/basepropertygridwidget.h; sourceTree = "<group>"; };
 		1700E41B162EB8C60069650D /* rectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rectpropertygridwidget.cpp; path = PropertyGridWidgets/rectpropertygridwidget.cpp; sourceTree = "<group>"; };
 		1700E41C162EB8C60069650D /* rectpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rectpropertygridwidget.h; path = PropertyGridWidgets/rectpropertygridwidget.h; sourceTree = "<group>"; };
+		1710178C16EE1B1000BC7AE0 /* moc_UIListMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UIListMetadata.cpp; sourceTree = "<group>"; };
+		1710178E16EE2F3100BC7AE0 /* UISpinnerMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UISpinnerMetadata.cpp; path = Metadata/UISpinnerMetadata.cpp; sourceTree = "<group>"; };
+		1710178F16EE2F3200BC7AE0 /* UISpinnerMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UISpinnerMetadata.h; path = Metadata/UISpinnerMetadata.h; sourceTree = "<group>"; };
+		1710179116EE31D000BC7AE0 /* moc_UISpinnerMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_UISpinnerMetadata.cpp; sourceTree = "<group>"; };
 		17112B43163920BC0017E713 /* CommandsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandsController.cpp; path = Controllers/CommandsController.cpp; sourceTree = "<group>"; };
 		17112B44163920BC0017E713 /* CommandsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandsController.h; path = Controllers/CommandsController.h; sourceTree = "<group>"; };
 		17112B461639214D0017E713 /* BaseCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseCommand.cpp; path = Commands/BaseCommand.cpp; sourceTree = "<group>"; };
@@ -242,6 +250,8 @@
 		176D3960162C3E890099AACF /* UIControlMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIControlMetadata.h; path = Metadata/UIControlMetadata.h; sourceTree = "<group>"; };
 		178F303C165677BF008678AD /* StringUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringUtils.cpp; sourceTree = "<group>"; };
 		178F303D165677BF008678AD /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
+		17AB665116EDF86B00634657 /* UIListMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListMetadata.cpp; path = Metadata/UIListMetadata.cpp; sourceTree = "<group>"; };
+		17AB665216EDF86B00634657 /* UIListMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListMetadata.h; path = Metadata/UIListMetadata.h; sourceTree = "<group>"; };
 		17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_CommandsController.cpp; sourceTree = "<group>"; };
 		17CD340C16397D600061A467 /* moc_backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
 		17CD340D16397D600061A467 /* moc_BaseMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_BaseMetadata.cpp; sourceTree = "<group>"; };
@@ -588,6 +598,10 @@
 		176D3958162C3C8C0099AACF /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				1710178E16EE2F3100BC7AE0 /* UISpinnerMetadata.cpp */,
+				1710178F16EE2F3200BC7AE0 /* UISpinnerMetadata.h */,
+				17AB665116EDF86B00634657 /* UIListMetadata.cpp */,
+				17AB665216EDF86B00634657 /* UIListMetadata.h */,
 				7482C8C51688AA9100435155 /* UISliderMetadata.cpp */,
 				7482C8C61688AA9100435155 /* UISliderMetadata.h */,
 				748E2E5A1649684300C77EB8 /* UITextFieldMetadata.cpp */,
@@ -741,6 +755,8 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
+				1710179116EE31D000BC7AE0 /* moc_UISpinnerMetadata.cpp */,
+				1710178C16EE1B1000BC7AE0 /* moc_UIListMetadata.cpp */,
 				17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */,
 				74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */,
 				748EF23F16AE97EF00AC647E /* qrc_icons.cpp */,
@@ -1167,6 +1183,10 @@
 				748EF24016AE97EF00AC647E /* qrc_icons.cpp in Build Sources */,
 				74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */,
 				74EED63416B18D5500262D63 /* moc_alignspropertygridwidget.cpp in Build Sources */,
+				1710178B16EE197900BC7AE0 /* UIListMetadata.cpp in Build Sources */,
+				1710178D16EE1B1000BC7AE0 /* moc_UIListMetadata.cpp in Build Sources */,
+				1710179016EE2F3200BC7AE0 /* UISpinnerMetadata.cpp in Build Sources */,
+				1710179216EE31D000BC7AE0 /* moc_UISpinnerMetadata.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
