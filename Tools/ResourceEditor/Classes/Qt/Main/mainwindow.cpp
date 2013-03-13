@@ -33,6 +33,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
 	, repackSpritesWaitDialog(NULL)
+	, emitRepackAndReloadFinished(false)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -260,9 +261,9 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addAction(ui->actionRulerTool);
 
     ui->mainToolBar->addSeparator();
-    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
+    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Check, repack and reload textures"));
     DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/QtIcons/reloadtextures.png"));
-    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(ReloadTexturesFromFileSystem()));
+    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RepackAndReloadTextures()));
     ui->mainToolBar->addSeparator();
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
@@ -429,14 +430,7 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
 
-			bool convertionStarted = TextureCheckConvetAndWait();
-			if(!convertionStarted)
-			{
-				// conversion hasn't been started, run repack immediately 
-				// in another case repack will be invoked in finishing callback (ConvertWaitDone)
-				UpdateParticleSprites();
-			}
-			
+			// RepackAndReloadScene();			
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
@@ -472,8 +466,8 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	}
 
 	this->setWindowTitle(strVer + QString("Project - ") + path);
-	UpdateParticleSprites();
 	UpdateLibraryFileTypes();
+	UpdateParticleSprites();
 }
 
 bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
@@ -525,6 +519,17 @@ void QtMainWindow::UpdateParticleSprites()
 	repackSpritesWaitDialog->show();
 }
 
+void QtMainWindow::RepackAndReloadScene()
+{
+	emitRepackAndReloadFinished = true;
+	if(!TextureCheckConvetAndWait())
+	{
+		// conversion hasn't been started, run repack immediately 
+		// in another case repack will be invoked in finishing callback (ConvertWaitDone)
+		UpdateParticleSprites();
+	}
+}
+
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 {
 	convertWaitDialog = NULL;
@@ -533,6 +538,12 @@ void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 
 void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
 {
+	if(emitRepackAndReloadFinished)
+	{
+		emit RepackAndReloadFinished();
+	}
+
+	emitRepackAndReloadFinished = false;
 	repackSpritesWaitDialog = NULL;
 }
 
