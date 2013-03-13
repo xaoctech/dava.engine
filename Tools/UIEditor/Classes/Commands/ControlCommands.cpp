@@ -19,20 +19,35 @@ ControlsMoveCommand::ControlsMoveCommand(const HierarchyTreeController::SELECTED
 
 void ControlsMoveCommand::Execute()
 {
-    for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = this->controls.begin();
-         iter != this->controls.end(); iter ++)
-    {
-        BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter)->GetId());
-
-        // This command is NOT state-aware and contains one and only param.
-        baseMetadata->SetActiveParamID(0);
-        baseMetadata->ApplyMove(this->delta);
-
-        SAFE_DELETE(baseMetadata);
-    }
+	ApplyMove(this->delta);
     
     // Notify the Grid some properties were changed.
     CommandsController::Instance()->EmitUpdatePropertyValues();
+}
+
+void ControlsMoveCommand::Rollback()
+{
+	// Return the controls to the previous positions.
+	Vector2 prevDelta = -1 * delta;
+	ApplyMove(prevDelta);
+
+    // Notify the Grid some properties were changed.
+    CommandsController::Instance()->EmitUpdatePropertyValues();
+}
+
+void ControlsMoveCommand::ApplyMove(const Vector2& moveDelta)
+{
+	for (HierarchyTreeController::SELECTEDCONTROLNODES::iterator iter = this->controls.begin();
+         iter != this->controls.end(); iter ++)
+    {
+        BaseMetadata* baseMetadata = GetMetadataForTreeNode((*iter)->GetId());
+		
+        // This command is NOT state-aware and contains one and only param.
+        baseMetadata->SetActiveParamID(0);
+        baseMetadata->ApplyMove(moveDelta);
+		
+        SAFE_DELETE(baseMetadata);
+    }
 }
 
 ControlResizeCommand::ControlResizeCommand(HierarchyTreeNode::HIERARCHYTREENODEID nodeId, const Rect& originalRect, const Rect& newRect)
@@ -44,11 +59,29 @@ ControlResizeCommand::ControlResizeCommand(HierarchyTreeNode::HIERARCHYTREENODEI
 
 void ControlResizeCommand::Execute()
 {
+	ApplyResize(originalRect, newRect);
+	
+	// Notify the Grid some properties were changed.
+    CommandsController::Instance()->EmitUpdatePropertyValues();
+}
+
+void ControlResizeCommand::Rollback()
+{
+	// Return the controls to the previous size.
+	ApplyResize(newRect, originalRect);
+	
+    // Notify the Grid some properties were changed.
+    CommandsController::Instance()->EmitUpdatePropertyValues();
+}
+
+void ControlResizeCommand::ApplyResize(const Rect& prevRect, const Rect& updatedRect)
+{
+	
     BaseMetadata* baseMetadata = GetMetadataForTreeNode(nodeId);
-    
+
     // This command is NOT state-aware and contains one and only param.
     baseMetadata->SetActiveParamID(0);
-    baseMetadata->ApplyResize(originalRect, newRect);
+    baseMetadata->ApplyResize(prevRect, updatedRect);
     
     SAFE_DELETE(baseMetadata);
 }

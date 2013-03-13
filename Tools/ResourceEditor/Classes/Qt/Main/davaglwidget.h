@@ -25,9 +25,7 @@ public:
 	virtual QPaintEngine *paintEngine() const;
 	
 	virtual void paintEvent(QPaintEvent *);
-    
 	virtual void resizeEvent(QResizeEvent *);
-    virtual void moveEvent(QMoveEvent *);
 
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);

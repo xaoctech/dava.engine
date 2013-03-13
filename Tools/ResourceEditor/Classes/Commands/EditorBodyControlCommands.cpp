@@ -5,6 +5,8 @@
 CommandTransformObject::CommandTransformObject(DAVA::SceneNode* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Transform Object";
+
 	undoTransform = originalTransform;
 	redoTransform = finalTransform;
 	this->node = node;
@@ -29,10 +31,13 @@ void CommandTransformObject::Cancel()
 }
 
 
-CommandCloneObject::CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl)
+CommandCloneObject::CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld)
 :	Command(COMMAND_UNDO_REDO)
 ,	clonedNode(NULL)
+,	collisionWorld(collisionWorld)
 {
+	commandName = "Clone Object";
+
 	originalNode = node;
 	this->bodyControl = bodyControl;
 }
@@ -49,6 +54,9 @@ void CommandCloneObject::Execute()
 		if (!clonedNode)
 		{
 			clonedNode = SafeRetain(originalNode->Clone());
+
+			if (collisionWorld)
+				UpdateCollision(clonedNode);
 		}
 
 		originalNode->GetParent()->AddNode(clonedNode);
@@ -69,11 +77,34 @@ void CommandCloneObject::Cancel()
 	}
 }
 
-CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::LandscapeNode* landscape)
-:	Command(COMMAND_UNDO_REDO)
+void CommandCloneObject::UpdateCollision(DAVA::SceneNode *node)
 {
-	this->node = node;
-	this->landscape = landscape;
+	DVASSERT(node && collisionWorld);
+	
+	BulletComponent* bc = dynamic_cast<BulletComponent*>(node->GetComponent(Component::BULLET_COMPONENT));
+	if (bc && !bc->GetBulletObject())
+	{
+		bc->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(node->GetScene(),
+																	 collisionWorld,
+																	 node,
+																	 node->GetWorldTransform())));
+	}
+	
+	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		UpdateCollision(node->GetChild(i));
+	}
+}
+
+
+CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::SceneNode* node, EditorBodyControl* bodyControl)
+:	Command(COMMAND_UNDO_REDO)
+,	node(node)
+,	bodyControl(bodyControl)
+{
+	commandName = "Place On Landscape";
+
+	redoTransform.Identity();
 
 	if (node)
 		undoTransform = node->GetLocalTransform();
@@ -81,20 +112,9 @@ CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::La
 
 void CommandPlaceOnLandscape::Execute()
 {
-	if (node && landscape)
+	if (node && bodyControl)
 	{
-		const Matrix4& worldTransform = node->GetWorldTransform();
-		Vector3 p = Vector3(0, 0, 0) * worldTransform;
-		
-		Vector3 result;
-		bool res = landscape->PlacePoint(p, result);
-		if (res)
-		{
-			Vector3 offset = result - p;
-			redoTransform.CreateTranslation(offset);
-			redoTransform = node->GetLocalTransform() * redoTransform;
-		}
-		
+		redoTransform = node->GetLocalTransform() * bodyControl->GetLandscapeOffset(node->GetWorldTransform());
 		node->SetLocalTransform(redoTransform);
 	}
 	else
@@ -114,6 +134,8 @@ CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::SceneNode
 :	Command(COMMAND_UNDO_REDO)
 ,	node(node)
 {
+	commandName = "Restore Original Transform";
+
 	if (node)
 	{
 		StoreCurrentTransform(node);

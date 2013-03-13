@@ -55,7 +55,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     needGLScreenShot(false),
     screenShotIndex(0)
 {
-	Logger::Debug("[RenderManager] created");
+//	Logger::Debug("[RenderManager] created");
 
     Texture::InitializePixelFormatDescriptors();
     

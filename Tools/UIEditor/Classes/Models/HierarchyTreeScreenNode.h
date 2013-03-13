@@ -34,7 +34,8 @@ public:
 	void SetPosY(int y);
 	int GetPosY() const;
 	
-	virtual void SetParent(HierarchyTreeNode* node);
+	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
+	virtual HierarchyTreeNode* GetParent();
 	
 	String GetNewControlName(const String& baseName) const;
 	
@@ -43,6 +44,10 @@ public:
 	bool Load(const QString& path);
 	bool Save(const QString& path);
 	
+	virtual void ReturnTreeNodeToScene();
+	
+	Rect GetRect() const;
+
 private:
 	void BuildHierarchyTree(HierarchyTreeNode* parent, List<UIControl*> child);
 	

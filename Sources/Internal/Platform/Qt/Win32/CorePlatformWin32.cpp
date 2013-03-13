@@ -249,9 +249,6 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 
 			// translate this to WM_CHAR message
 			TranslateMessage(message);
-
-//			*result = 0;
-//			return true;
 		}
 		break;
 
@@ -284,9 +281,6 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 
 			// translate this to WM_CHAR message
 			TranslateMessage(message);
-
-			//*result = 0;
-			//return true;
 		}
 		break;
 
@@ -314,6 +308,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 				touches.pop_back();
 				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 			}
+
 			*result = 0;
 			return true;
 		}
@@ -322,44 +317,11 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_MBUTTONDOWN:
-		//		case WM_XBUTTONDOWN:
-            
-            if(!isFocused)
-            {
-                break;
-            }
-
-			if(needToSkipMouseUp)
-			{
-				if(message->message == WM_RBUTTONDOWN)
-				{
-					needToSkipMouseUp = false;
-				}
-				else
-				{
-					break;
-				}
-			}
-
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
 	case WM_MBUTTONUP:
-		//		case WM_XBUTTONUP:
-			if(!isFocused)
-			{
-				break;
-			}
-
-            if(needToSkipMouseUp)
-            {
-                needToSkipMouseUp = false;
-                break;
-            }
-
 	case WM_MOUSEMOVE:
 		{
-			//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-
 			Vector<DAVA::UIEvent> touches;
 			Vector<DAVA::UIEvent> emptyTouches;
 
@@ -368,9 +330,6 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 			UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
 
 			touches.clear();
-
-// 				*result = 0;
-// 				return true;
 		}
 		break;
 	}
@@ -383,13 +342,8 @@ void CoreWin32Platform::SetFocused(bool focused)
 	if(isFocused != focused)
 	{
 		isFocused = focused;
-		if(isFocused)
-		{
-			needToSkipMouseUp = true;
-		}
 	}
 }
 
-	
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)

@@ -39,11 +39,19 @@ public:
 	bool Save(const QString& projectPath);
 
 	void CloseProject();
-	void AddPlatform(const QString& name, const Vector2& size);
-	void AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);	
-	void CreateNewControl(const QString& type, const QPoint& position);
-	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
-    
+
+	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
+	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);
+	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
+
+	// Return any kind of node (one or multiple) back to the scene.
+	void ReturnNodeToScene(HierarchyTreeNode* nodeToReturn);
+	void ReturnNodeToScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodesToReturn);
+
+	// Delete one node and several nodes.
+	void DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID, bool deleteNodeFromMemory, bool deleteNodeFromScene);
+	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory, bool deleteNodeFromScene);
+
     const HierarchyTree& GetTree() const {return hierarchyTree;};
     
 	void UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
@@ -53,7 +61,7 @@ public:
 	
 	void ChangeItemSelection(HierarchyTreeControlNode* control);
 	void SelectControl(HierarchyTreeControlNode* control);
-	void UnselectControl(HierarchyTreeControlNode* control);
+	void UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged = true);
 	bool IsControlSelected(HierarchyTreeControlNode* control) const;
 	void ResetSelectedControl();
 	
@@ -91,18 +99,33 @@ signals:
 	void SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
 	
 	void SelectedTreeItemChanged(const HierarchyTreeNode*);
-		
+	
 protected:
 	void Clear();
 	
+	// Register/unregister nodes removed from scene.
+	void RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
+	void RegisterNodeDeletedFromScene(HierarchyTreeNode* node);
+	void UnregisterNodeDeletedFromScene(HierarchyTreeNode* node);
+	
+	// Cleanup the memory used by nodes removed from scene.
+	void CleanupNodesDeletedFromScene();
+
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;
     
 	HierarchyTreePlatformNode* activePlatform;
     HierarchyTreeScreenNode* activeScreen;
-//    HierarchyTreeControlNode* activeControl;
     
 	SELECTEDCONTROLNODES activeControlNodes;
+	
+	// Nodes deleted from the scene, but not from memory. Have to be
+	// cleaned up separately.
+	Set<HierarchyTreeNode*> deletedFromSceneNodes;
+	
+	// Active Platform/Active Screen after nodes deletion.
+	HierarchyTreePlatformNode* activePlatformAfterDeleteNodes;
+    HierarchyTreeScreenNode* activeScreenAfterDeleteNodes;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

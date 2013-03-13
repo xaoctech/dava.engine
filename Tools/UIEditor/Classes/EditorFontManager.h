@@ -27,11 +27,28 @@ public:
 	Font* LoadFont(const String& fontPath, const String& fontName);
 	
 	Font* GetDefaultFont() const;
+	void SetDefaultFont(Font* font);
     
 	Font* GetFont(const String& name) const;
     QString GetFontName(Font* font) const;
 
 	const FONTSMAP& GetAllFonts() const;
+	
+	struct DefaultFontPath
+	{
+		String fontPath;
+		String fontSpritePath;
+		
+		DefaultFontPath(String fontPath, String fontSpritePath)
+		{
+			this->fontPath = fontPath;
+			this->fontSpritePath = fontSpritePath;
+		}
+	};
+	
+	DefaultFontPath GetDefaultFontPath();
+	void InitDefaultFontFromPath(const DefaultFontPath& defaultFontPath);
+	QString GetDefaultFontName() const;
     
 signals:
     void FontLoaded();

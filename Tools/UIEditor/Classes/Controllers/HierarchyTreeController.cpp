@@ -29,17 +29,19 @@ bool HierarchyTreeController::Load(const QString& projectPath)
 	CloseProject();
 	
 	bool res = hierarchyTree.Load(projectPath);
-
-	emit HierarchyTreeUpdated();
-	emit ProjectLoaded();
-	
+	if (res)
+	{
+		emit HierarchyTreeUpdated();
+		emit ProjectLoaded();
+	}
 	return res;
 }
 
 bool HierarchyTreeController::Save(const QString& projectPath)
 {
 	bool res = hierarchyTree.Save(projectPath);
-	emit ProjectSaved();
+	if (res)
+		emit ProjectSaved();
 	return res;
 }
 
@@ -86,23 +88,65 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	//add selection
 	activeControlNodes.insert(control);
-	control->GetUIObject()->SetDebugDraw(true);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(true);
+		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
+	
+		//YZ draw parent rect
+		UIControl* parentUiControl = uiControl->GetParent();
+		if (parentUiControl)
+		{
+			parentUiControl->SetDebugDrawColor(Color(0.55f, 0.55f, 0.55f, 1.f));
+			parentUiControl->SetDebugDraw(true);
+		}
+	}
+	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
 	UpdateSelection(control);
 }
 
-void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control)
+void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
 {
 	if (activeControlNodes.find(control) == activeControlNodes.end())
 		return;
 	
 	//remove selection
-	//activeControlNodes.erase(iter);
 	activeControlNodes.erase(control);
-	control->GetUIObject()->SetDebugDraw(false);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(false);
+		
+		//YZ draw parent rect
+		UIControl* parentToRemove = uiControl->GetParent();
+		if (parentToRemove)
+		{
+			bool removeParentDraw = true;
+			for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin(); iter != activeControlNodes.end(); ++iter)
+			{
+				HierarchyTreeControlNode* control = (*iter);
+				UIControl* uiControl = control->GetUIObject();
+				if (uiControl)
+				{
+					UIControl* parentUiControl = uiControl->GetParent();
+					if (parentToRemove == uiControl ||
+						parentToRemove == parentUiControl)
+					{
+						removeParentDraw = false;
+						break;
+					}
+				}
+			}
+			if (removeParentDraw)
+				parentToRemove->SetDebugDraw(false);
+		}
+	}
 	emit RemoveSelectedControl(control);
-	emit SelectedControlNodesChanged(activeControlNodes);
+	if (emitSelectedControlNodesChanged)
+		emit SelectedControlNodesChanged(activeControlNodes);
 }
 
 bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* control) const
@@ -112,16 +156,11 @@ bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* contro
 
 void HierarchyTreeController::ResetSelectedControl()
 {
-	for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin();
-		 iter != activeControlNodes.end();
-		 ++iter)
+	while (activeControlNodes.size())
 	{
-		HierarchyTreeControlNode* activeControl = (*iter);
-		activeControl->GetUIObject()->SetDebugDraw(false);
-		emit RemoveSelectedControl(activeControl);
+		UnselectControl(*(activeControlNodes.begin()), false);
 	}
-
-	activeControlNodes.clear();
+	
 	emit SelectedControlNodesChanged(activeControlNodes);
 }
 
@@ -131,12 +170,15 @@ void HierarchyTreeController::Clear()
     activeScreen = NULL;
 	
 	ResetSelectedControl();
+	CleanupNodesDeletedFromScene();
 }
 
-void HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
 {
 	if (!activeScreen)
-		return;
+	{
+		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	}
 		
     // Create the control itself.
 	String type = strType.toStdString();
@@ -145,9 +187,9 @@ void HierarchyTreeController::CreateNewControl(const QString& strType, const QPo
 	if (!control)
 	{
 		SafeRelease(object);
-		return;
+		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	}
-	
+
 	HierarchyTreeNode* parentNode = activeScreen;
 	Vector2 parentDelta(0, 0);
 	if (activeControlNodes.size() == 1)
@@ -188,6 +230,58 @@ void HierarchyTreeController::CreateNewControl(const QString& strType, const QPo
 	emit HierarchyTreeUpdated();
 	ResetSelectedControl();
 	SelectControl(controlNode);
+	
+	return controlNode->GetId();
+}
+
+void HierarchyTreeController::ReturnNodeToScene(HierarchyTreeNode* nodeToReturn)
+{
+	if (!nodeToReturn)
+	{
+		return;
+	}
+
+	nodeToReturn->ReturnTreeNodeToScene();
+	UnregisterNodeDeletedFromScene(nodeToReturn);
+
+	emit HierarchyTreeUpdated();
+	ResetSelectedControl();
+	
+	HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(nodeToReturn);
+	if (controlNode)
+	{
+		SelectControl(controlNode);
+	}
+}
+
+void HierarchyTreeController::ReturnNodeToScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodesToReturn)
+{
+	
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = nodesToReturn.begin();
+		 iter != nodesToReturn.end(); iter ++)
+	{
+		HierarchyTreeNode* nodeToReturn = (*iter);
+		if (nodeToReturn)
+		{
+			nodeToReturn->ReturnTreeNodeToScene();
+			UnregisterNodeDeletedFromScene(nodeToReturn);
+		}
+	}
+
+	emit HierarchyTreeUpdated();
+	ResetSelectedControl();
+
+	// Select the first one, if any.
+	if (nodesToReturn.size() == 0 )
+	{
+		return;
+	}
+
+	HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(nodesToReturn.front());
+	if (controlNode)
+	{
+		SelectControl(controlNode);
+	}
 }
 
 HierarchyTreePlatformNode* HierarchyTreeController::GetActivePlatform() const
@@ -218,20 +312,33 @@ void HierarchyTreeController::EmitHierarchyTreeUpdated()
 bool HierarchyTreeController::NewProject(const QString& projectPath)
 {
 	hierarchyTree.CreateProject();
-	emit ProjectCreated();
-	return Save(projectPath);
+	
+	bool res = Save(projectPath);
+	if (res)
+	{
+		emit ProjectCreated();
+	}
+	
+	return res;
 }
 
-void HierarchyTreeController::AddPlatform(const QString& name, const Vector2& size)
+HierarchyTreePlatformNode* HierarchyTreeController::AddPlatform(const QString& name, const Vector2& size)
 {
-	hierarchyTree.AddPlatform(name, size);
+	HierarchyTreePlatformNode* platformNode = hierarchyTree.AddPlatform(name, size);
 	EmitHierarchyTreeUpdated();
+	
+	return platformNode;
 }
 
-void HierarchyTreeController::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform)
+HierarchyTreeScreenNode* HierarchyTreeController::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform)
 {
-	if (hierarchyTree.AddScreen(name, platform))
+	HierarchyTreeScreenNode* screenNode = hierarchyTree.AddScreen(name, platform);
+	if (screenNode)
+	{
 		EmitHierarchyTreeUpdated();
+	}
+	
+	return screenNode;
 }
 
 void HierarchyTreeController::CloseProject()
@@ -239,23 +346,50 @@ void HierarchyTreeController::CloseProject()
 	activeControlNodes.clear();
 	hierarchyTree.CloseProject();
 
+	CleanupNodesDeletedFromScene();
 	ResetSelectedControl();
 	UpdateSelection(NULL, NULL);
+
 	EmitHierarchyTreeUpdated();
 	emit ProjectClosed();
 }
 
-void HierarchyTreeController::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+void HierarchyTreeController::DeleteNode(const HierarchyTreeNode::HIERARCHYTREENODEID nodeID,
+										 bool deleteNodeFromMemory, bool deleteNodeFromScene)
+{
+	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
+	
+	HierarchyTreeNode* nodeToDelete = GetTree().GetNode(nodeID);
+	if (!nodeToDelete)
+	{
+		return;
+	}
+
+	nodes.push_back(nodeToDelete);
+	DeleteNodes(nodes, deleteNodeFromMemory, deleteNodeFromScene);
+}
+
+void HierarchyTreeController::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes,
+										  bool deleteNodeFromMemory, bool deleteNodeFromScene)
 {
 	if (!nodes.size())
 		return;
 	
+	// Deletion of nodes might change the active platform or screen.
+	this->activePlatformAfterDeleteNodes = this->activePlatform;
+	this->activeScreenAfterDeleteNodes = this->activeScreen;
+
 	DeleteNodesInternal(nodes);
-	
-	UpdateSelection(activePlatform, activeScreen);
+	UpdateSelection(this->activePlatformAfterDeleteNodes, this->activeScreenAfterDeleteNodes);
+
 	emit SelectedControlNodesChanged(activeControlNodes);
 	
-	hierarchyTree.DeleteNodes(nodes);
+	if (deleteNodeFromScene)
+	{
+		RegisterNodesDeletedFromScene(nodes);
+	}
+
+	hierarchyTree.DeleteNodes(nodes, deleteNodeFromMemory, deleteNodeFromScene);
 	EmitHierarchyTreeUpdated();
 }
 
@@ -268,10 +402,17 @@ void HierarchyTreeController::DeleteNodesInternal(const HierarchyTreeNode::HIERA
 	for (iter = nodes.begin(); iter != nodes.end(); ++iter)
 	{
 		if (activeScreen && activeScreen->GetId() == (*iter)->GetId())
+		{
 			activeScreen = NULL;
+			this->activeScreenAfterDeleteNodes = NULL;
+		}
+	
 		if (activePlatform && activePlatform->GetId() == (*iter)->GetId())
+		{
 			activePlatform = NULL;
-		
+			this->activePlatformAfterDeleteNodes = NULL;
+		}
+
 		HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>((*iter));
 		if (controlNode)
 		{
@@ -318,4 +459,41 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     // Localization System is updated; need to look through all controls
     // and cause them to update their texts according to the new Localization.
     hierarchyTree.UpdateLocalization();
+}
+
+void HierarchyTreeController::RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+{
+	HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter;
+	for (iter = nodes.begin(); iter != nodes.end(); ++iter)
+	{
+		RegisterNodeDeletedFromScene(*iter);
+	}
+}
+
+void HierarchyTreeController::RegisterNodeDeletedFromScene(HierarchyTreeNode* node)
+{
+	deletedFromSceneNodes.insert(node);
+	
+}
+
+void HierarchyTreeController::UnregisterNodeDeletedFromScene(HierarchyTreeNode* node)
+{
+	deletedFromSceneNodes.erase(node);
+}
+
+void HierarchyTreeController::CleanupNodesDeletedFromScene()
+{
+	// Cleanup the nodes deleted from scene, but not from memory.
+	Logger::Debug("CLEANUP: Amount of nodes deleted from the scene %i", deletedFromSceneNodes.size());
+	for (Set<HierarchyTreeNode*>::iterator iter = deletedFromSceneNodes.begin();
+		 iter != deletedFromSceneNodes.end(); iter ++)
+	{
+		HierarchyTreeNode* node = (*iter);
+		if (node)
+		{
+			delete(node);
+		}
+	}
+
+	deletedFromSceneNodes.clear();
 }

@@ -53,6 +53,8 @@ public:
         SORT_BY_DISTANCE = 1 << 2,
         
         SORT_REQUIRED = 1 << 3,
+
+		VISIBLE = 1 << 4
     };
     
     static const uint32 SORT_THIS_FRAME = SORT_ENABLED | SORT_REQUIRED;
@@ -60,9 +62,14 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(RenderBatch * batch);
     uint32 GetRenderBatchCount();
-    
+    inline void ForceLayerSort();
+	const FastName & GetName();
+
     void Update(Camera * camera);
     virtual void Draw(Camera * camera);
+
+	void SetVisible(bool visible);
+	bool GetVisible();
 private:
     FastName name;
     Vector<RenderBatch*> renderBatchArray;
@@ -84,8 +91,13 @@ public:
         MEMBER(name, "Name", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
         COLLECTION(renderBatchArray, "Render Batch Array", INTROSPECTION_EDITOR)
     );
-
 };
+    
+inline void RenderLayer::ForceLayerSort()
+{
+    flags |= SORT_REQUIRED;
+}
+
     
 } // ns
 

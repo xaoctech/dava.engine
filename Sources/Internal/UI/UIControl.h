@@ -115,7 +115,7 @@ public:
 		return unrotatedRect;
 	}
 	
-private:
+//private:
 	Rect unrotatedRect;
 	float32 oldAngle;
 
@@ -229,19 +229,19 @@ public:
 		You can call this function directly for the controlBackgound.
 	 \returns Sprite frame used for draw.
 	 */
-	virtual int32 GetFrame();
+	virtual int32 GetFrame() const;
 	/**
 	 \brief Returns draw type used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
 	 \returns Draw type used for draw.
 	 */
-	virtual UIControlBackground::eDrawType GetSpriteDrawType();
+	virtual UIControlBackground::eDrawType GetSpriteDrawType() const;
 	/**
 	 \brief Returns Sprite align used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
 	 \returns Sprite eAlign bit mask used for draw.
 	 */
-	virtual int32 GetSpriteAlign();
+	virtual int32 GetSpriteAlign() const;
 	/**
 	 \brief Sets Sprite for the control UIControlBackground object.
 	 \param[in] spriteName Sprite path-name.
@@ -281,8 +281,126 @@ public:
 	 \returns background used for draw.
 	 */
 	virtual UIControlBackground * GetBackground();
-
-	
+	/**
+	 \brief Sets left align of control relative to its parent. 
+	 \param[in] align left align of control.
+	 */
+	virtual void SetLeftAlign(int32 align);
+	/**
+	 \brief Returns left align of control relative to its parent.
+	 \returns left align of control.
+	 */
+	virtual int32 GetLeftAlign();
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlign(int32 align);
+	/**
+	 \brief Returns horizontal central align of control relative to its parent.
+	 \returns horizontal central align of control.
+	 */
+	virtual int32 GetHCenterAlign();
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlign(int32 align);
+	/**
+	 \brief Returns right align of control relative to its parent.
+	 \returns right align of control.
+	 */
+	virtual int32 GetRightAlign();
+		/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlign(int32 align);
+	/**
+	 \brief Returns top align of control relative to its parent.
+	 \returns top align of control.
+	 */
+	virtual int32 GetTopAlign();
+		/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlign(int32 align);
+	/**
+	 \brief Returns vertical central align of control relative to its parent.
+	 \returns vertical central align of control.
+	 */
+	virtual int32 GetVCenterAlign();
+		/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlign(int32 align);
+	/**
+	 \brief Returns bottom align of control relative to its parent.
+	 \returns bottom align of control.
+	 */
+	virtual int32 GetBottomAlign();	
+	/**
+	 \brief Sets control ability to change left align.
+	 \param[in] isEnabled left align availability.
+	 */
+	virtual void SetLeftAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns availability of left align of control.
+	 \returns ability to change left align.
+	 */
+	virtual bool GetLeftAlignEnabled();
+	/**
+	 \brief Sets horizontal central align of control relative to its parent. 
+	 \param[in] align horizontal central align of control.
+	 */
+	virtual void SetHCenterAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns horizontal central align of control relative to its parent.
+	 \returns horizontal central align of control.
+	 */
+	virtual bool GetHCenterAlignEnabled();
+	/**
+	 \brief Sets right align of control relative to its parent. 
+	 \param[in] align right align of control.
+	 */	
+	virtual void SetRightAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns right align of control relative to its parent.
+	 \returns right align of control.
+	 */
+	virtual bool GetRightAlignEnabled();
+		/**
+	 \brief Sets top align of control relative to its parent. 
+	 \param[in] align top align of control.
+	 */	
+	virtual void SetTopAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns top align of control relative to its parent.
+	 \returns top align of control.
+	 */
+	virtual bool GetTopAlignEnabled();
+		/**
+	 \brief Sets vertical central align of control relative to its parent. 
+	 \param[in] align l vertical central align of control.
+	 */	
+	virtual void SetVCenterAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns vertical central align of control relative to its parent.
+	 \returns vertical central align of control.
+	 */
+	virtual bool GetVCenterAlignEnabled();
+		/**
+	 \brief Sets bottom align of control relative to its parent. 
+	 \param[in] align bottom align of control.
+	 */	
+	virtual void SetBottomAlignEnabled(bool isEnabled);
+	/**
+	 \brief Returns bottom align of control relative to its parent.
+	 \returns bottom align of control.
+	 */
+	virtual bool GetBottomAlignEnabled();	
 	/**
 	 \brief Returns untransformed control rect.
 		To get control metrics that applies all control transformation you need to use 
@@ -319,7 +437,7 @@ public:
 		geometric data received with GetGeometricData().
 	 \returns control size.
 	 */
-	virtual const Vector2 &GetSize();
+	virtual const Vector2 &GetSize() const;
 	/**
 	 \brief Sets the untransformed control size.
 	 \param[in] newSize new control size.
@@ -343,7 +461,7 @@ public:
 	 \brief Returns control rotation angle in radians.
 	 \returns control angle in radians.
 	 */
-	virtual float32 GetAngle();
+	virtual float32 GetAngle() const;
 	/**
 	 \brief Sets contol rotation angle in radians.
 		Control rotates around the pivot point.
@@ -359,7 +477,7 @@ public:
 		But this methods calls for their children.
 	 \returns control visibility.
 	 */
-	virtual bool GetVisible();
+	virtual bool GetVisible() const;
 	/**
 	 \brief Sets contol visibility.
 		Invisible controls don't process any inputs. But allows input processing for their children.
@@ -377,7 +495,7 @@ public:
 		Be ware! Base control processing inputs by default.
 	 \returns true if control pocessing inputs.
 	 */
-	virtual bool GetInputEnabled();
+	virtual bool GetInputEnabled() const;
 	/**
 	 \brief Sets contol input processing ability.
 		If input is disabled control don't process any inputs. If input is disabled all inputs events would comes to the parent control.
@@ -397,7 +515,7 @@ public:
 		All controls is enabled by default.
 	 \returns true if control is disabled.
 	 */
-	virtual bool GetDisabled();
+	virtual bool GetDisabled() const;
 	/**
 	 \brief Sets the contol enabling/disabling.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -413,7 +531,7 @@ public:
 	 \brief Returns control selection state.
 	 \returns is control selected.
 	 */
-	virtual bool GetSelected();
+	virtual bool GetSelected() const;
 	/**
 	 \brief Sets contol selection state.
 		Selection state don't influence on any control activities.
@@ -427,7 +545,7 @@ public:
 		Clip contents is disabled by default.
 	 \returns true if control rect clips draw and input areas of his children.
 	 */
-	virtual bool GetClipContents();
+	virtual bool GetClipContents() const;
 	/**
 	 \brief Sets clip contents state.
 		If clip contents is enabled all incoming inputs for the control children processed only
@@ -442,7 +560,7 @@ public:
 		Only controlsa what processed inputs may be hovered.
 	 \returns control hover state is true if mouse placed over the control rect and no mous buttons is pressed.
 	 */
-	virtual bool GetHover();
+    virtual bool GetHover() const;
 
 	/**
 	 \brief Is exclusive input enabled.
@@ -452,7 +570,7 @@ public:
 		Exclusive input is disabled by default.
 	 \returns true if control supports exclusive input.
 	 */
-	virtual bool GetExclusiveInput();
+    virtual bool GetExclusiveInput() const;
 	/**
 	 \brief Enables or disables control exclusive input.
 		If control have exlusive input enabled and this control starts to process 
@@ -470,7 +588,7 @@ public:
 		Multiply input is disabled by default.
 	 \returns true if control supports multyple inputs.
 	 */
-	virtual bool GetMultiInput();
+    virtual bool GetMultiInput() const;
 	/**
 	 \brief Sets contol multi input processing.
 		If multiple input is enabled control can process all incoming inputs (Two or 
@@ -492,7 +610,7 @@ public:
 	 \brief Returns current name of the control.
 	 \returns control name.
 	 */
-	const String & GetName(); 
+    const String & GetName() const; 
 
 	/**
 	 \brief Sets the contol tag.
@@ -503,7 +621,7 @@ public:
 	 \brief Returns current control tag.
 	 \returns control tag.
 	 */
-	int32 GetTag();
+    int32 GetTag() const;
 
 	/**
 	 \brief Returns control with given name.
@@ -517,7 +635,7 @@ public:
 	 \brief Returns control state bit mask.
 	 \returns control state.
 	 */
-	int32 GetState();
+    int32 GetState() const;
 	/**
 	 \brief Sets control state bit mask.
 		Try to not use this method manually.
@@ -534,7 +652,7 @@ public:
 	 \brief Returns list of control children.
 	 \returns list of control children.
 	 */
-	const List<UIControl*> &GetChildren();
+    const List<UIControl*> &GetChildren() const;
 	/**
 	 \brief Returns list of control children without internal controls.
 	 \returns list of control children without internal controls.
@@ -775,6 +893,8 @@ public:
 	 \param[in] hierarchic Is value need to be changed in all coltrol children.
 	 */
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
+	void	SetDebugDrawColor(const Color& color);
+	Color	GetDebugDrawColor() const;
 	
 public:
 	
@@ -953,7 +1073,7 @@ public:
 	 \brief Returns control on screen status.
 	 \returns True if control in view hierarchy for now.
 	 */
-	bool IsOnScreen();
+    bool IsOnScreen() const;
 	/**
 	 \brief Returns point status realtive to control .
 	 \param[in] point Point to check.
@@ -964,7 +1084,7 @@ public:
 
 
     
-    virtual bool IsLostFocusAllowed(UIControl *newFocus);
+    virtual bool IsLostFocusAllowed(UIControl *newFocus) const;
 
     virtual void SystemOnFocusLost(UIControl *newFocus);
 
@@ -976,6 +1096,10 @@ public:
     
     /// sets rect to match background sprite, also moves pivot point to center
     void SetSizeFromBg(bool pivotToCenter = true);
+
+	// Recalculate the size and positions for the child controls according to their Align Options.
+	void ApplyAlignSettingsForChildren();
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1009,6 +1133,21 @@ protected:
 	int32 touchesInside;
 	int32 totalTouches;
 	
+	// Align options
+	int32 _leftAlign;
+	int32 _hcenterAlign;
+	int32 _rightAlign;
+	int32 _topAlign;
+	int32 _vcenterAlign;
+	int32 _bottomAlign;
+
+	// Enable align options
+	bool _leftAlignEnabled;
+	bool _hcenterAlignEnabled;
+	bool _rightAlignEnabled;
+	bool _topAlignEnabled;
+	bool _vcenterAlignEnabled;
+	bool _bottomAlignEnabled;
 	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
@@ -1018,6 +1157,7 @@ protected:
 	bool needToRecalcFromAbsoluteCoordinates;
 	
 	bool debugDrawEnabled;
+	Color debugDrawColor;
 	
 	void SetParent(UIControl *newParent);
 	virtual ~UIControl();
@@ -1032,7 +1172,21 @@ private:
 	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
-
+	
+	void RecalculateAlignProperties();
+	void RecalculateChildsSize();
+	
+	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
+	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
+	
+	float32 GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child);
+	float32 GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child);
+	
+	float32 GetRelativeX(UIControl *parent, int32 align);
+	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 GetRelativeY(UIControl *parent, int32 align);
+	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
+	float32 Round(float32 value);
 };
 };
 

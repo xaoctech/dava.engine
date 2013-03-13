@@ -308,9 +308,9 @@ void NodesPropertyControl::AddChildLodSection()
             float32 *distances = new float32[LodComponent::MAX_LOD_LAYERS];
             
             
-            List<LodComponent::LodData*> lodLayers;
+            Vector<LodComponent::LodData*> lodLayers;
             childLodComponents[i]->GetLodData(lodLayers);
-            List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
             
             int32 iLod = 0;
             for(; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
@@ -949,29 +949,28 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
     int32 trianglesCount = 0;
     for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
     {
-        Vector<MeshInstanceNode *> meshes;
+        Vector<SceneNode *> meshes;
         lodData->nodes[n]->GetChildNodes(meshes);
         
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {
-            Vector<PolygonGroupWithMaterial *> polygonGroups = meshes[m]->GetPolygonGroups();
-            for(int32 p = 0; p < (int32)polygonGroups.size(); ++p)
+            RenderObject *ro = GetRenerObject(meshes[m]);
+            if(!ro || ro->GetType() != RenderObject::TYPE_MESH) continue;
+
+            uint32 count = ro->GetRenderBatchCount();
+            for(uint32 r = 0; r < count; ++r)
             {
-                trianglesCount += polygonGroups[p]->GetPolygonGroup()->GetIndexCount() / 3;
+                RenderBatch *batch = ro->GetRenderBatch(r);
+                
+                PolygonGroup *pg = batch->GetPolygonGroup();
+                if(pg)
+                {
+                    trianglesCount += pg->GetIndexCount() / 3;
+                }
             }
         }
     }
     return trianglesCount;
 }
 
-LodComponent *NodesPropertyControl::GetLodComponent(SceneNode *node)
-{
-    if(node)
-    {
-        LodComponent *lodComponent = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
-        return lodComponent;
-    }
-
-    return NULL;
-}
 

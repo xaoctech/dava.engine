@@ -189,7 +189,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
 
 void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog)
 {
-    LodComponent *lodComponent = static_cast<LodComponent *>(ownerNode->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
 
 
@@ -205,12 +205,12 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
         }
     }
     
-    List<LodComponent::LodData *>lodLayers;
+    Vector<LodComponent::LodData *>lodLayers;
     lodComponent->GetLodData(lodLayers);
     
-    List<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
+    Vector<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
     int32 layer = 0;
-    for(List<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
+    for(Vector<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
     {
         LodComponent::LodData * ld = *it;
         
@@ -367,7 +367,7 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 {
 	if(!texture) return;
 	
-	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texturePathname);
+	String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), texturePathname);
 	String textureInfo = path + " for object: " + validatedObjectName;
 
 	if(texture == Texture::GetPinkPlaceholder())
@@ -393,36 +393,58 @@ void SceneValidator::ValidateTexture(Texture *texture, const String &texturePath
 	{
 		errorsLog.insert("Wrong size of " + textureInfo);
 	}
+    
+    if(texture->GetWidth() > 2048 || texture->GetHeight() > 2048)
+	{
+		errorsLog.insert("Texture is too big. " + textureInfo);
+	}
 }
-
-
 
 
 
 void SceneValidator::EnumerateSceneTextures()
 {
-    sceneTextureCount = 0;
-    sceneTextureMemory = 0;
+    SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
+    DVASSERT_MSG(sceneData, "Illegal situation");
     
-    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings(); 
+    Map<String, Texture *> textureMap;
+    SceneDataManager::EnumerateTextures(sceneData->GetScene(), textureMap);
+    sceneTextureCount = textureMap.size();
+
+    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
     String projectPath = settings->GetString("ProjectPath");
+
+    sceneTextureMemory = 0;
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
+        if(String::npos == t->GetPathname().find(projectPath))
+        {   // skip all textures that are not related the scene
+            continue;
+        }
+
+        
         if(String::npos != t->GetPathname().find(projectPath))
-        {
-            String::size_type pvrPos = t->GetPathname().find(".pvr");
-            if(String::npos != pvrPos)
-            {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
-                sceneTextureMemory += LibPVRHelper::GetDataLength(t->GetPathname());
-            }
-            else 
+        {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
+            String imageFileName = TextureDescriptor::GetPathnameForFormat(t->GetPathname(), t->GetSourceFileFormat());
+            switch (t->GetSourceFileFormat())
             {
-                sceneTextureMemory += t->GetDataSize();
+                case DAVA::PVR_FILE:
+                {
+                    sceneTextureMemory += LibPVRHelper::GetDataLength(imageFileName);
+                    break;
+                }
+                    
+                case DAVA::DXT_FILE:
+                {
+                    sceneTextureMemory += (int32)LibDxtHelper::GetDataSize(imageFileName);
+                    break;
+                }
+                    
+                default:
+                    sceneTextureMemory += t->GetDataSize();
+                    break;
             }
-            
-            ++sceneTextureCount;
         }
 	}
     

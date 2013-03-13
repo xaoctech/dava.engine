@@ -171,10 +171,10 @@ namespace DAVA
         textFieldHolder = 0;
     }
 	
-    void UITextFieldiPhone::SetFontColor(float r, float g, float b, float a)
+    void UITextFieldiPhone::SetTextColor(const DAVA::Color &color)
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-        textFieldHolder->textField.textColor = [UIColor colorWithRed:r green:g blue:b alpha:a];
+        textFieldHolder->textField.textColor = [UIColor colorWithRed:color.r green:color.g blue:color.b alpha:color.a];
         
     }
     void UITextFieldiPhone::SetFontSize(float size)
