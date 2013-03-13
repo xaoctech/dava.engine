@@ -1934,12 +1934,10 @@ namespace DAVA
 		{
 			node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
 		}
-		// Draw type
+		// Draw type, obligatory for UI controls.
 		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
-		if (baseControl->GetBackground()->GetDrawType() != drawType)
-		{
-			node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
-		}
+		node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+
 		// LeftRightStretchCapNode
 		if (baseControl->GetBackground()->GetLeftRightStretchCap() != this->GetBackground()->GetLeftRightStretchCap())
 		{
