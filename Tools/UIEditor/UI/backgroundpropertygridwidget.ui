@@ -214,7 +214,7 @@ inherit:</string>
      <string>x</string>
     </property>
    </widget>
-   <widget class="QLabel" name="LRStretchLabel">
+   <widget class="QLabel" name="lrStretchLabel">
     <property name="geometry">
      <rect>
       <x>9</x>
@@ -227,10 +227,10 @@ inherit:</string>
      <string>Hor. Stretch:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="LRStretchLabel_2">
+   <widget class="QLabel" name="tbStretchLabel">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>154</x>
       <y>204</y>
       <width>81</width>
       <height>16</height>
@@ -259,7 +259,7 @@ inherit:</string>
    <widget class="QSpinBox" name="tbSpinBox">
     <property name="geometry">
      <rect>
-      <x>235</x>
+      <x>238</x>
       <y>200</y>
       <width>46</width>
       <height>22</height>
@@ -270,6 +270,29 @@ inherit:</string>
     </property>
     <property name="maximum">
      <number>999</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="sprModificationSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>239</x>
+      <y>85</y>
+      <width>46</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="modificationLabel">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>90</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Modification:</string>
     </property>
    </widget>
   </widget>

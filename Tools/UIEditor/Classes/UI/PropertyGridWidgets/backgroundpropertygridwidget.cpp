@@ -53,6 +53,7 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 
     RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::SPRITE_PROPERTY_NAME, ui->spriteLineEdit, false, true);
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_FRAME_PROPERTY_NAME, this->ui->frameSpinBox, false, true);
+	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_MODIFICATION_PROPERTY_NAME, this->ui->sprModificationSpinBox, false, true);
 
 	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::STRETCH_HORIZONTAL_PROPERTY_NAME, this->ui->lrSpinBox, false, true);
 	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::STRETCH_VERTICAL_PROPERTY_NAME, this->ui->tbSpinBox, false, true);
@@ -258,6 +259,7 @@ void BackGroundPropertyGridWidget::HandleStretchSpinBoxes()
 		case UIControlBackground::DRAW_STRETCH_HORIZONTAL:
 			lrState = true;
 			tbState = false;
+			//TODO
 			break;
 		case UIControlBackground::DRAW_STRETCH_VERTICAL:
 			lrState = false;

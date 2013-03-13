@@ -47,6 +47,7 @@ class UIControlMetadata : public BaseMetadata
     
     Q_PROPERTY(QString Sprite READ GetSprite WRITE SetSprite);
     Q_PROPERTY(int SpriteFrame READ GetSpriteFrame WRITE SetSpriteFrame);
+	Q_PROPERTY(int SpriteModification READ GetSpriteModification WRITE SetSpriteModification);
     
     Q_PROPERTY(int DrawType READ GetDrawType WRITE SetDrawType);
     Q_PROPERTY(int ColorInheritType READ GetColorInheritType WRITE SetColorInheritType);
@@ -146,6 +147,9 @@ protected:
 
     virtual void SetSpriteFrame(int value);
     virtual int GetSpriteFrame();
+
+	virtual void SetSpriteModification(int value);
+    virtual int GetSpriteModification();
 
     //Boolean gettes/setters
     bool GetSelected() const;
