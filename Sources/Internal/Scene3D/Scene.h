@@ -71,7 +71,7 @@ class DebugRenderSystem;
 class EventSystem;
 class ParticleEmitterSystem;
 class ParticleEffectSystem;
-class UpdatableSystem;
+class UpdateSystem;
 class LightUpdateSystem;
 class SwitchSystem;
     
@@ -111,7 +111,7 @@ public:
     DebugRenderSystem * debugRenderSystem;
 	EventSystem * eventSystem;
 	ParticleEffectSystem * particleEffectSystem;
-	UpdatableSystem * updatableSystem;
+	UpdateSystem * updatableSystem;
     LightUpdateSystem * lightUpdateSystem;
 	SwitchSystem * switchSystem;
 	RenderSystem * renderSystem;

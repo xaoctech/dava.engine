@@ -96,7 +96,7 @@ protected:
 
     SceneData * FindDataForScene(EditorScene *scene);
     
-	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::LandscapeNode *forNode);
+	static void CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, DAVA::Landscape *forNode);
 	static void CollectTexture(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, const DAVA::String &name, DAVA::Texture *tex);
 
 	void RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Texture *texture);

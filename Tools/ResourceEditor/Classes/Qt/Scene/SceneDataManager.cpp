@@ -70,7 +70,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
         Vector3 nodePos = pos + 10 * direction;
         nodePos.z = 0;
         
-        LandscapeNode * ls = scene->GetLandscape(scene);
+        Landscape * ls = scene->GetLandscape(scene);
         if(ls)
         {
             Vector3 result;
@@ -87,7 +87,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
     }
 
 	
-    LandscapeNode *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = scene->GetLandscape(scene);
     bool needUpdateLandscapeController = (landscape != NULL);
 
 	
@@ -217,7 +217,7 @@ void SceneDataManager::AddReferenceScene(const String &scenePathname)
 		Vector3 nodePos = pos + 10 * direction;
 		nodePos.z = 0;
 		
-		LandscapeNode * ls = scene->GetLandscape(scene);
+		Landscape * ls = scene->GetLandscape(scene);
 		if(ls)
 		{
 			Vector3 result;
@@ -544,7 +544,7 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
             }
         }
 
-        LandscapeNode *land = dynamic_cast<LandscapeNode *>(ro);
+        Landscape *land = dynamic_cast<Landscape *>(ro);
         if(land)
         {
             CollectLandscapeTextures(textures, land);
@@ -552,11 +552,11 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
     }
 }
 
-void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
+void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode)
 {
-	for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTextureName((LandscapeNode::eTextureLevel)t), forNode->GetTexture((LandscapeNode::eTextureLevel)t));
+		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
 

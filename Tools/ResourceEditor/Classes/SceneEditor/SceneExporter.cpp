@@ -255,7 +255,7 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
 
-    LandscapeNode *landscape = EditorScene::GetLandscape(scene);
+    Landscape *landscape = EditorScene::GetLandscape(scene);
     if (landscape)
     {
         ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
@@ -263,17 +263,17 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     }
 }
 
-void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog)
+void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog)
 {
-    if(landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK)
+    if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK)
     {
         return;
     }
     
-    String textureName = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_FULL);
+    String textureName = landscape->GetTextureName(Landscape::TEXTURE_TILE_FULL);
     if(textureName.empty())
     {
-        String colorTextureMame = landscape->GetTextureName(LandscapeNode::TEXTURE_COLOR);
+        String colorTextureMame = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
         String filename, pathname;
         FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
         
@@ -303,7 +303,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
             
             SafeRelease(descriptor);
             
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
+            landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
             
             if(needToDeleteDescriptorFile)
             {
@@ -316,10 +316,10 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
         else
         {
             errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
-            landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, String(""));
+            landscape->SetTextureName(Landscape::TEXTURE_TILE_FULL, String(""));
         }
         
-        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
+        landscape->SetTextureName(Landscape::TEXTURE_TILE_FULL, dataSourceFolder + workingPathname);
     }
 }
 

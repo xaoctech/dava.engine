@@ -1,5 +1,5 @@
 #include "Scene3D/Components/UpdatableComponent.h"
-#include "Scene3D/Systems/UpdatableSystem.h"
+#include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Scene.h"
 

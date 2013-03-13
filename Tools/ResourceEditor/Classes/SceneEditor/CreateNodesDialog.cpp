@@ -107,7 +107,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
         case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
             sceneNode = new SceneNode();
-            sceneNode->AddComponent(new RenderComponent(ScopedPtr<LandscapeNode>(new LandscapeNode())));
+            sceneNode->AddComponent(new RenderComponent(ScopedPtr<Landscape>(new Landscape())));
             sceneNode->SetName("Landscape");
             break;
 

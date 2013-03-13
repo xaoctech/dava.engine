@@ -22,7 +22,7 @@ void ParticleLayerLong::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	Vector3 direction = camera->GetDirection();

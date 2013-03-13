@@ -369,9 +369,9 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
+Landscape * EditorScene::GetLandscape(SceneNode *node)
 {
-    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    Landscape *landscape = DAVA::GetLandscape(node);
     if(!landscape)
     {
         for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
@@ -389,7 +389,7 @@ LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 
 SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
-    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    Landscape *landscape = DAVA::GetLandscape(node);
     if(landscape)
     {
         return node;
@@ -550,7 +550,7 @@ void EditorScene::Draw()
 void EditorScene::DrawGrid()
 {
     uint32 oldState = RenderManager::Instance()->GetState();	
-	RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
+	RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST); 
 	RenderManager::Instance()->SetColor(0.7f, 0.7f, 0.7f, 1.0f);
 	for (float32 x = -GRIDMAX; x <= GRIDMAX; x+=GRIDSTEP)
 	{

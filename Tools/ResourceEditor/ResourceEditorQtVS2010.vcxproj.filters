@@ -909,9 +909,6 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp">
-      <Filter>Sources\LandscapeEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
@@ -1526,6 +1523,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands\EditCommands.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2276,9 +2276,6 @@
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h">
-      <Filter>Sources\LandscapeEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
@@ -2705,6 +2702,9 @@
     <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
       <Filter>Sources\Collada</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2885,9 +2885,6 @@
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
-    </None>
-    <None Include="MakefileQt">
-      <Filter>Sources</Filter>
     </None>
     <None Include="DataQt\materialbrowser.ui">
       <Filter>QtData</Filter>

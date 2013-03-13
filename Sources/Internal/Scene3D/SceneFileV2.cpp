@@ -62,7 +62,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
 #include "Base/TemplateHelpers.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/ShadowVolume.h"
 
 #include "Scene3D/SpriteNode.h"
@@ -539,7 +539,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         node->SetScene(scene);
         node->Load(archive, this);
         
-        LandscapeNode * landscapeRenderObject = new LandscapeNode();
+        Landscape * landscapeRenderObject = new Landscape();
         landscapeRenderObject->Load(archive, this);
         
         node->AddComponent(new RenderComponent(landscapeRenderObject));
