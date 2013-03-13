@@ -40,7 +40,7 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
-#include <QLineEdit.h>
+#include <QSpinBox.h>
 
 #include "Render/LibDxtHelper.h"
 
@@ -583,10 +583,10 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	}
 }
 
-void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QLineEdit* lEdit, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
+void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
 {
 	this->setSwitchIndexToggleButton = btnOK;
-	this->editSwitchIndexValue = lEdit;
+	this->editSwitchIndexValue = spinBox;
 	this->rBtnSelection = rBtnSelection;
 	this->rBtnScene = rBtnScene;
 }

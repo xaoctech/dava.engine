@@ -6,10 +6,12 @@
 //
 //
 
-#include "eMailTest.h"
+#include "EMailTest.h"
 #include "Network/MailSender.h"
 
 using namespace DAVA;
+
+float32 EMailTest::AUTO_CLOSE_TIME = 30.f;
 
 EMailTest::EMailTest() :
  TestTemplate<EMailTest>("EMailTest")
@@ -23,6 +25,8 @@ EMailTest::EMailTest() :
 	testFinished = false;
 	
 	RegisterFunction(this, &EMailTest::TestFunction, Format("EMailTest"), NULL);
+	
+	 onScreenTime = 0.f;
 }
 
 void EMailTest::LoadResources()
@@ -117,6 +121,22 @@ void EMailTest::UnloadResources()
 	SafeRelease(text);
 	SafeRelease(sendMailBtn);
 	SafeRelease(finishTestBtn);
+}
+
+void EMailTest::DidAppear()
+{
+    onScreenTime = 0.f;
+}
+
+void EMailTest::Update(float32 timeElapsed)
+{
+    onScreenTime += timeElapsed;
+    if(onScreenTime > AUTO_CLOSE_TIME)
+    {
+        testFinished = true;
+    }
+    
+    TestTemplate<EMailTest>::Update(timeElapsed);
 }
 
 void EMailTest::TestFunction(PerfFuncData * data)

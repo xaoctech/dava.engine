@@ -125,9 +125,9 @@ void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(
 	LodComponent * lodComp = (LodComponent*)curr->GetComponent(Component::LOD_COMPONENT);
 	if (lodComp)
 	{
-		List<LodComponent::LodData*> retLodLayers;
+		Vector<LodComponent::LodData*> retLodLayers;
 		lodComp->GetLodData(retLodLayers);
-		for (List<LodComponent::LodData*>::iterator it = retLodLayers.begin(); it != retLodLayers.end(); ++it)
+		for (Vector<LodComponent::LodData*>::iterator it = retLodLayers.begin(); it != retLodLayers.end(); ++it)
 		{
 			LodComponent::LodData * data = *it;
 			if (data->layer == lod)

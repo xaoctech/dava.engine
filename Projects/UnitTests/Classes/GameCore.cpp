@@ -47,7 +47,7 @@
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
 #include "DPITest.h"
-#include "eMailTest.h"
+#include "EMailTest.h"
 #include "InputTest.h"
 
 using namespace DAVA;
@@ -74,13 +74,13 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new EMailTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
-    new HashMapTest();
+//    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
+	new EMailTest();
     new DPITest();
 	new InputTest();
     new MaterialCompilerTest();

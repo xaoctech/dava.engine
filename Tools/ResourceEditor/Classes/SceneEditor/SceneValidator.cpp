@@ -205,12 +205,12 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
         }
     }
     
-    List<LodComponent::LodData *>lodLayers;
+    Vector<LodComponent::LodData *>lodLayers;
     lodComponent->GetLodData(lodLayers);
     
-    List<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
+    Vector<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
     int32 layer = 0;
-    for(List<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
+    for(Vector<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
     {
         LodComponent::LodData * ld = *it;
         
