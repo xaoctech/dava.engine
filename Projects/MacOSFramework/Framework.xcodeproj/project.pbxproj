@@ -1249,6 +1249,10 @@
 		E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
+		E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
+		E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9E798A716F0BE7600745AF5 /* UISwitch.cpp */; };
+		E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E798A816F0BE7600745AF5 /* UISwitch.h */; };
+		E9E798AC16F0BE7600745AF5 /* UISwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E798A816F0BE7600745AF5 /* UISwitch.h */; };
 		E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */; };
 		E9EA496D16DF93FA00C44B6F /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */; };
 		E9EA496E16DF93FA00C44B6F /* UISpinner.h in Headers */ = {isa = PBXBuildFile; fileRef = E9EA496B16DF93FA00C44B6F /* UISpinner.h */; };
@@ -1928,6 +1932,8 @@
 		E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteRenderBatch.h; sourceTree = "<group>"; };
 		E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
+		E9E798A716F0BE7600745AF5 /* UISwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISwitch.cpp; sourceTree = "<group>"; };
+		E9E798A816F0BE7600745AF5 /* UISwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISwitch.h; sourceTree = "<group>"; };
 		E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
 		E9EA496B16DF93FA00C44B6F /* UISpinner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpinner.h; sourceTree = "<group>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -2891,6 +2897,8 @@
 				E8989D8516BD24E500732C04 /* UIStaticText.h */,
 				E8989D8616BD24E500732C04 /* UITextField.cpp */,
 				E8989D8716BD24E500732C04 /* UITextField.h */,
+				E9E798A716F0BE7600745AF5 /* UISwitch.cpp */,
+				E9E798A816F0BE7600745AF5 /* UISwitch.h */,
 				E8989D8A16BD24E500732C04 /* UIYamlLoader.cpp */,
 				E8989D8B16BD24E500732C04 /* UIYamlLoader.h */,
 				171F938316CE6F28007038AB /* UIWebView.cpp */,
@@ -3306,6 +3314,7 @@
 				CC24800A16DD174E00183D40 /* UserComponent.h in Headers */,
 				E9EA496E16DF93FA00C44B6F /* UISpinner.h in Headers */,
 				CC24804216E0DF2800183D40 /* VectorSpinnerAdapter.h in Headers */,
+				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3639,6 +3648,7 @@
 				E83F10A216D6721D00C6ED39 /* DVAssertMessage.h in Headers */,
 				CC24800B16DD174E00183D40 /* UserComponent.h in Headers */,
 				E9EA496F16DF93FA00C44B6F /* UISpinner.h in Headers */,
+				E9E798AC16F0BE7600745AF5 /* UISwitch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4015,6 +4025,7 @@
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
 				E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
 				E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
+				E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4302,6 +4313,7 @@
 				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
 				E9EA496D16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
 				E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
+				E9E798AA16F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
