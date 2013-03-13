@@ -1934,12 +1934,10 @@ namespace DAVA
 		{
 			node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
 		}
-		// Draw type
+		// Draw type, obligatory for UI controls.
 		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
-		if (baseControl->GetBackground()->GetDrawType() != drawType)
-		{
-			node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
-		}
+		node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+
 		// LeftRightStretchCapNode
 		if (baseControl->GetBackground()->GetLeftRightStretchCap() != this->GetBackground()->GetLeftRightStretchCap())
 		{
@@ -2528,5 +2526,10 @@ namespace DAVA
 	float32 UIControl::Round(float32 value)
 	{
 		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
+	}
+
+	void UIControl::ApplyAlignSettingsForChildren()
+	{
+		RecalculateChildsSize();
 	}
 }

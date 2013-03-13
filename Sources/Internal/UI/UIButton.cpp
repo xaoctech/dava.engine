@@ -791,13 +791,14 @@ namespace DAVA
 			if (baseStateAlign != stateAlign)
 			{
 				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
-			}			
-			//State font
-			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
-			node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
-			//StateText
+			}
+
+			//State font& State text
 			if (this->GetStateTextControl(stateArray[i]))
 			{
+				Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
+				node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
+
 				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
 				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
 			}

@@ -107,6 +107,10 @@ public:
 	void AddRenderBatch(RenderBatch * renderBatch);
 	void RemoveRenderBatch(RenderBatch * renderBatch);
     
+    
+    void SetShadowRectColor(const Color &color);
+    const Color & GetShadowRectColor();
+    
 private:
     void ProcessClipping();
     void FindNearestLights();
