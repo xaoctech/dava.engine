@@ -14,8 +14,6 @@
 		1723D47016CCF1C00039CCC2 /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
 		1799E52616CCEC030058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
 		1799E52716CCEC030058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E52516CCEC030058061F /* ParticleForce.h */; };
-		17DDBDBA16E79AB000D3D4D9 /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
-		17DDBDBB16E79E7000D3D4D9 /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */; };
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
@@ -1247,6 +1245,8 @@
 		E89CE91C16C549F9006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */; };
 		E89CE91D16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
 		E89CE91E16C549F9006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */; };
+		E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
+		E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */; };
@@ -1295,7 +1295,6 @@
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
 		1799E52416CCEC030058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E52516CCEC030058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
-		17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		17F53E2116D36DDE004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
 		4910CBF5167B73EC00CF948A /* libdxt_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_macos.a; path = ../../Libs/libs/libdxt_macos.a; sourceTree = "<group>"; };
@@ -1927,6 +1926,7 @@
 		E89CE91416C549F9006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
 		E89CE91516C549F9006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
 		E89CE91616C549F9006BEFF4 /* SpriteRenderBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteRenderBatch.h; sourceTree = "<group>"; };
+		E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E9EA496A16DF93FA00C44B6F /* UISpinner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISpinner.cpp; sourceTree = "<group>"; };
 		E9EA496B16DF93FA00C44B6F /* UISpinner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpinner.h; sourceTree = "<group>"; };
@@ -2902,7 +2902,6 @@
 		E8989D8C16BD24E500732C04 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				17DDBDB916E79AB000D3D4D9 /* UTF8UtilsMac.mm */,
 				E8989D8D16BD24E500732C04 /* HTTPDownloader.h */,
 				E8989D8E16BD24E500732C04 /* HTTPDownloader.mm */,
 				E8989D9016BD24E500732C04 /* MD5.cpp */,
@@ -2910,6 +2909,7 @@
 				E8989D9216BD24E500732C04 /* Random.h */,
 				E8989D9316BD24E500732C04 /* StringFormat.cpp */,
 				E8989D9416BD24E500732C04 /* StringFormat.h */,
+				E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */,
 				E8989D9616BD24E500732C04 /* UTF8Utils.h */,
 				E8989D9716BD24E500732C04 /* Utils.cpp */,
 				E8989D9816BD24E500732C04 /* Utils.h */,
@@ -4013,8 +4013,8 @@
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
-				17DDBDBA16E79AB000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 				E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4300,8 +4300,8 @@
 				E83F10A316D6721D00C6ED39 /* DVAssertMessageApple.mm in Sources */,
 				E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */,
 				CC24800916DD174E00183D40 /* UserComponent.cpp in Sources */,
-				17DDBDBB16E79E7000D3D4D9 /* UTF8UtilsMac.mm in Sources */,
 				E9EA496D16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
+				E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

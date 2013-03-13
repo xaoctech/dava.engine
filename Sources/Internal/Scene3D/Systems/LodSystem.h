@@ -8,6 +8,7 @@ namespace DAVA
 {
 
 class Camera;
+class LodComponent;
 
 class LodSystem : public SceneSystem
 {
@@ -20,7 +21,22 @@ public:
 
 	virtual void SetCamera(Camera * camera);
 
-	void UpdateEntityAfterLoad(SceneNode * entity);
+	static void UpdateEntityAfterLoad(SceneNode * entity);
+
+	static void MergeChildLods(SceneNode * toEntity);
+
+	class LodMerger
+	{
+	public:
+		LodMerger(SceneNode * toEntity);
+		void MergeChildLods();
+
+	private:
+		void GetLodComponentsRecursive(SceneNode * fromEntity, Vector<SceneNode*> & allLods);
+		SceneNode * toEntity;
+	};
+
+	
 
 private:
 	//partial update per frame

@@ -11,7 +11,6 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
-		1700485D16EF68610036C575 /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1700485C16EF68610036C575 /* UTF8UtilsMac.mm */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
 		17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2C16D36FF3004D5099 /* IWebViewControl.h */; };
@@ -642,6 +641,7 @@
 		E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */; };
 		E8BD1F0D16DE4A9C00499E18 /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BD1F0A16DE4A9C00499E18 /* MailSender.h */; };
 		E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */; };
+		E8CBDFC716EE10EE00F70C8F /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8CBDFC616EE10EE00F70C8F /* UTF8UtilsMac.mm */; };
 		E8CC1BFC16C10A5A009B49BF /* IntrospectionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */; };
 		E8F21DD016C1971F007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */; };
 		E8F21DD116C1971F007F957A /* GlobalEventSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */; };
@@ -673,7 +673,6 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
-		1700485C16EF68610036C575 /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17F53E2C16D36FF3004D5099 /* IWebViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWebViewControl.h; sourceTree = "<group>"; };
@@ -1306,6 +1305,7 @@
 		E8BD1F0916DE4A9C00499E18 /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		E8BD1F0A16DE4A9C00499E18 /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		E8BD1F0B16DE4A9C00499E18 /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		E8CBDFC616EE10EE00F70C8F /* UTF8UtilsMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UTF8UtilsMac.mm; sourceTree = "<group>"; };
 		E8CC1BFB16C10A5A009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E8F21DCE16C1971F007F957A /* GlobalEventSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEventSystem.cpp; sourceTree = "<group>"; };
 		E8F21DCF16C1971F007F957A /* GlobalEventSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEventSystem.h; sourceTree = "<group>"; };
@@ -2224,7 +2224,6 @@
 		E8B3CA7016B9326E002BD35F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				1700485C16EF68610036C575 /* UTF8UtilsMac.mm */,
 				E8B3CA7116B9326E002BD35F /* HTTPDownloader.h */,
 				E8B3CA7216B9326E002BD35F /* HTTPDownloader.mm */,
 				E8B3CA7416B9326E002BD35F /* MD5.cpp */,
@@ -2232,6 +2231,7 @@
 				E8B3CA7616B9326E002BD35F /* Random.h */,
 				E8B3CA7716B9326E002BD35F /* StringFormat.cpp */,
 				E8B3CA7816B9326E002BD35F /* StringFormat.h */,
+				E8CBDFC616EE10EE00F70C8F /* UTF8UtilsMac.mm */,
 				E8B3CA7A16B9326E002BD35F /* UTF8Utils.h */,
 				E8B3CA7B16B9326E002BD35F /* Utils.cpp */,
 				E8B3CA7C16B9326E002BD35F /* Utils.h */,
@@ -2998,7 +2998,7 @@
 				E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */,
 				E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */,
 				E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */,
-				1700485D16EF68610036C575 /* UTF8UtilsMac.mm in Sources */,
+				E8CBDFC716EE10EE00F70C8F /* UTF8UtilsMac.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,7 +17,7 @@
     <ClInclude Include="Classes\DLCSystemTests.h" />
     <ClInclude Include="Classes\DPITest.h" />
     <ClInclude Include="Classes\DXTTest.h" />
-    <ClInclude Include="Classes\eMailTest.h" />
+    <ClInclude Include="Classes\EMailTest.h" />
     <ClInclude Include="Classes\EntityTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
@@ -40,7 +40,7 @@
     <ClCompile Include="Classes\DLCSystemTests.cpp" />
     <ClCompile Include="Classes\DPITest.cpp" />
     <ClCompile Include="Classes\DXTTest.cpp" />
-    <ClCompile Include="Classes\eMailTest.cpp" />
+    <ClCompile Include="Classes\EMailTest.cpp" />
     <ClCompile Include="Classes\EntityTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />

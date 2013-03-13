@@ -117,6 +117,12 @@ FTFont * FTFont::Create(const String& path)
 	if(!iFont)
 	{//TODO: for now internal fonts is never released, need to be fixed later
 		iFont = new FTInternalFont(path);
+        if( !iFont->face )
+        {
+            SafeRelease(iFont);
+            return NULL;
+        }
+
 		fontMap[path] = iFont;
 	}
 	
@@ -194,8 +200,10 @@ YamlNode * FTFont::SaveToYamlNode()
 
 	
 FTInternalFont::FTInternalFont(const String& path)
-:	face(0),
-	fontPath(path)
+:	face(NULL),
+	fontPath(path),
+    memoryFont(NULL),
+    memoryFontSize(0)
 {
     File * fp = 0;
     size_t pos = path.rfind("/");

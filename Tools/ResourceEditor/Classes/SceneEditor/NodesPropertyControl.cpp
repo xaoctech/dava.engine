@@ -308,9 +308,9 @@ void NodesPropertyControl::AddChildLodSection()
             float32 *distances = new float32[LodComponent::MAX_LOD_LAYERS];
             
             
-            List<LodComponent::LodData*> lodLayers;
+            Vector<LodComponent::LodData*> lodLayers;
             childLodComponents[i]->GetLodData(lodLayers);
-            List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
             
             int32 iLod = 0;
             for(; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)
@@ -955,7 +955,7 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
         for(int32 m = 0; m < (int32)meshes.size(); ++m)
         {
             RenderObject *ro = GetRenerObject(meshes[m]);
-            if(!ro) continue;
+            if(!ro || ro->GetType() != RenderObject::TYPE_MESH) continue;
 
             uint32 count = ro->GetRenderBatchCount();
             for(uint32 r = 0; r < count; ++r)

@@ -105,4 +105,10 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 	}
 }
     
+ShadowRect * ShadowVolumeRenderPass::GetShadowRect() const
+{
+    return shadowRect;
+}
+
+    
 };
