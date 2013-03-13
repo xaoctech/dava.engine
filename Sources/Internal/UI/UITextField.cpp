@@ -490,6 +490,10 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
 
+	// Draw Type must be overwritten fot UITextField.
+	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
+	node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+
     SafeDelete(nodeValue);
     
     return node;
