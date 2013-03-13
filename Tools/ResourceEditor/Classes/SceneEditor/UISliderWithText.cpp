@@ -7,7 +7,8 @@ UISliderWithText::UISliderWithText()
 	: UISlider()
 {
     sliderText = new UIStaticText(Rect(0, -40, 100, 40));
-    sliderText->SetFont(ControlsFactory::GetFontLight());
+    sliderText->SetFont(ControlsFactory::GetFont12());
+	sliderText->SetTextColor(ControlsFactory::GetColorLight());
     sliderText->SetAlign(ALIGN_HCENTER | ALIGN_BOTTOM);
     sliderText->SetInputEnabled(false);
     
@@ -20,7 +21,8 @@ UISliderWithText::UISliderWithText(const Rect & rect)
 :	UISlider(rect)
 {
     sliderText = new UIStaticText(Rect(0, -40, 100, 40));
-    sliderText->SetFont(ControlsFactory::GetFontLight());
+    sliderText->SetFont(ControlsFactory::GetFont12());
+	sliderText->SetTextColor(ControlsFactory::GetColorLight());
     sliderText->SetAlign(ALIGN_HCENTER | ALIGN_BOTTOM);
     sliderText->SetInputEnabled(false);
     

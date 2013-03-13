@@ -229,21 +229,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
             }
         }
     }
-    
-    if(UIEvent::PHASE_KEYCHAR == touch->phase)
-    {
-        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_CTRL))
-        {
-            UndoAction();
-            return true;
-        }
-        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
-        {
-            RedoAction();
-            return true;
-        }
-    }
-    
+
     return false;
 }
 

@@ -149,11 +149,11 @@ public:
 
 
 	// Logic to work with Particle Forces.
-	void AddParticleForce(ParticleForce* particleForce);
-	void RemoveParticleForce(ParticleForce* particleForce);
-	void RemoveParticleForce(int32 particleForceIndex);
+	void AddForce(ParticleForce* force);
+	void RemoveForce(ParticleForce* force);
+	void RemoveForce(int32 forceIndex);
 
-	void UpdateParticleForce(int32 particleForceIndex, RefPtr< PropertyLine<Vector3> > force,
+	void UpdateForce(int32 forceIndex, RefPtr< PropertyLine<Vector3> > force,
 							 RefPtr< PropertyLine<Vector3> > forceVariation,
 							 RefPtr< PropertyLine<float32> > forceOverLife);
 
@@ -174,7 +174,7 @@ protected:
 
 	void UpdateFrameTimeline();
 	
-	void CleanupParticleForces();
+	void CleanupForces();
 
 	// list of particles
 	Particle *	head;
@@ -216,7 +216,7 @@ public:
 	RefPtr< PropertyLine<float32> > velocityVariation;	
 	RefPtr< PropertyLine<float32> > velocityOverLife;
 	
-	Vector<ParticleForce*> particleForces;
+	Vector<ParticleForce*> forces;
 	
 	RefPtr< PropertyLine<float32> > spin;				// spin of angle / second
 	RefPtr< PropertyLine<float32> > spinVariation;

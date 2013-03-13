@@ -41,29 +41,11 @@ void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
     for(uint32 i = 0; i < count; ++i)
     {
         RenderBatch *renderBatch = renderObject->GetRenderBatch(i);
-
-        Material *material = renderBatch->GetMaterial();
-        if(material)
-        {
-			InsertDataNode(material, dataNodes);
-        }
-        
-        PolygonGroup *pg = renderBatch->GetPolygonGroup();
-        if(pg)
-        {
-			InsertDataNode(pg, dataNodes);
-        }
+		if(NULL != renderBatch)
+		{
+			renderBatch->GetDataNodes(dataNodes);
+		}
     }
-}
-
-void RenderComponent::InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes)
-{
-	dataNodes.insert(node);
-
-	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
-	{
-		InsertDataNode(node->GetChild(i), dataNodes);
-	}
 }
 
 void RenderComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
@@ -91,6 +73,10 @@ void RenderComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 			{
 				ro->Load(roArch, sceneFile);
 				SetRenderObject(ro);
+			}
+			else
+			{
+				printf("1111\n");
 			}
 		}
 	}

@@ -262,7 +262,7 @@ namespace DAVA
 		{
 			if(state & 0x01)
 			{
-				CreateTextForState((eButtonDrawState)i)->SetFontColor(fontColor);
+				CreateTextForState((eButtonDrawState)i)->SetTextColor(fontColor);
 			}
 			state >>= 1;
 		}
@@ -710,11 +710,14 @@ namespace DAVA
 		//Temp variable
 		VariantType *nodeValue = new VariantType();
 		String stringValue;
-
+		
+		UIButton *baseControl = new UIButton();
+		
 		//Control Type
 		node->Set("type", "UIButton");
         
 		//Remove values of UIControl
+		//UIButton has state specific properties
 		YamlNode *spriteNode = node->Get("sprite");
 		YamlNode *drawTypeNode = node->Get("drawType");
 		YamlNode *colorInheritNode = node->Get("colorInherit");
@@ -763,23 +766,39 @@ namespace DAVA
 			}
 
 			//StateDrawType
-			UIControlBackground::eDrawType drawType = this->GetStateDrawType(stateArray[i]); 
-			node->Set(Format("stateDrawType%s", statePostfix[i].c_str()), loader->GetDrawTypeNodeValue(drawType));
+			UIControlBackground::eDrawType drawType = this->GetStateDrawType(stateArray[i]);
+			if (baseControl->GetStateDrawType(stateArray[i]) != drawType)
+			{
+				node->Set(Format("stateDrawType%s", statePostfix[i].c_str()), loader->GetDrawTypeNodeValue(drawType));
+			}
 			//leftRightStretchCap
 			float32 leftStretchCap = this->GetActualBackground(stateArray[i])->GetLeftRightStretchCap();
-			node->Set(Format("leftRightStretchCap%s", statePostfix[i].c_str()), leftStretchCap);            
+			float32 baseLeftStretchCap = baseControl->GetActualBackground(stateArray[i])->GetLeftRightStretchCap();
+			if (baseLeftStretchCap != leftStretchCap)
+			{
+				node->Set(Format("leftRightStretchCap%s", statePostfix[i].c_str()), leftStretchCap);
+			}
 			//topBottomStretchCap
 			float32 topBottomStretchCap = this->GetActualBackground(stateArray[i])->GetTopBottomStretchCap();
-			node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
+			float32 baseTopBottomStretchCap = baseControl->GetActualBackground(stateArray[i])->GetTopBottomStretchCap();
+			if (baseTopBottomStretchCap != topBottomStretchCap)
+			{
+				node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
+			}
 			//State align
-			node->Set(Format("stateAlign%s", statePostfix[i].c_str()), this->GetStateAlign(stateArray[i]));
-			//State font
-            
-			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
-			node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
-			//StateText
+			int32 stateAlign = this->GetStateAlign(stateArray[i]);
+			int32 baseStateAlign = baseControl->GetStateAlign(stateArray[i]);
+			if (baseStateAlign != stateAlign)
+			{
+				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
+			}
+
+			//State font& State text
 			if (this->GetStateTextControl(stateArray[i]))
 			{
+				Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
+				node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
+
 				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
 				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
 			}
@@ -791,7 +810,8 @@ namespace DAVA
 		}
         
 		SafeDelete(nodeValue);
-        
+		SafeRelease(baseControl);
+		      
 		return node;
 	}
 

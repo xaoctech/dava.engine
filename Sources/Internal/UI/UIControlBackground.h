@@ -106,25 +106,29 @@ public:
 	 \brief Returns Sprite frame used for draw.
 	 \returns Sprite frame used for draw.
 	 */
-	virtual int32	GetFrame();
+	virtual int32	GetFrame() const;
 	/**
 	 \brief Returns Sprite align in the control rect.
 	 \returns Sprite eAlign bit mask used for draw.
 	 */
-	virtual int32	GetAlign();
+	virtual int32	GetAlign() const;
 	/**
 	 \brief Returns current draw type.
 	 \returns Draw type used for draw.
 	 */
-	virtual UIControlBackground::eDrawType	GetDrawType();
+	virtual UIControlBackground::eDrawType	GetDrawType() const;
 	/**
 	 \brief Returns horizontal or vertical sprite flips.
 	 \returns eSpriteModification bits.
 	 */
-	virtual int32	GetModification();
-	
-	
-	
+	virtual int32	GetModification() const;
+    /**
+	 \brief Returns Sprite color used for draw.
+	 \returns Sprite color used for draw.
+	 */
+	inline const Color &GetColor() const;
+
+
 	/**
 	 \brief Sets control Sprite.
 	 \param[in] drawSprite Pointer for a Sprite.
@@ -170,8 +174,8 @@ public:
     /*
      Getters for StretchCap
      */
-	virtual float32 GetLeftRightStretchCap();
-	virtual float32 GetTopBottomStretchCap();
+	virtual float32 GetLeftRightStretchCap() const;
+	virtual float32 GetTopBottomStretchCap() const;
 	/**
 	 \brief Sets horizontal or vertical sprite flip modificators.
 	 \param[in] modification eSpriteModification bit mask.
@@ -195,7 +199,7 @@ public:
 		Color inheritance type by default is COLOR_IGNORE_PARENT.
 	 \returns eColorInheritType color inheritance type.
 	 */
-	virtual eColorInheritType GetColorInheritType();
+	virtual eColorInheritType GetColorInheritType() const;
     
     /**
 	 \brief Sets per pixel accuracy type. Enable per pixel accuracy if you want to draw controls using int coordinates instead of float. Disabled by default.  
@@ -207,7 +211,7 @@ public:
 	 \brief Returns per pixel accuracy type. Enable per pixel accuracy if you want to draw controls using int coordinates instead of float. Disabled by default.  
 	 \returns ePerPixelAccuracyType per pixel accuracy type
 	 */
-    UIControlBackground::ePerPixelAccuracyType GetPerPixelAccuracyType();
+    UIControlBackground::ePerPixelAccuracyType GetPerPixelAccuracyType() const;
 
 	/**
 	 \brief Draw selected sprite by selected rules in the current control rect.
@@ -231,7 +235,10 @@ public:
 	 \brief Returns final draw color. This color is affected by the parrent color.
 	 \returns Real draw color.
 	 */
-	const Color & GetDrawColor();
+	const Color & GetDrawColor() const;
+
+	void SetDrawColor(const Color &c);
+
 	/**
 	 \brief Sets parent control color.
 	 \param[in] parentColor parent control color.
@@ -244,10 +251,9 @@ public:
 	 \param[in] color control draw color.
 	 */
 	inline void SetColor(const Color & color); 
-	
+
 	// WTF? Probably we should move it to protected to avoid problems in future? 
 	Color color;//!<Control color. By default is Color(1,1,1,1).
-	int32 frame;//!<Sprite frame.
     
 protected:
 	void DrawStretched(const Rect &drawRect);
@@ -259,6 +265,7 @@ protected:
 	float32 leftStretchCap;
 	float32 topStretchCap;
 	int colorInheritType;
+    int32 frame;
 	
 	Vector2 lastDrawPos;
 	RenderDataObject * rdoObject;
@@ -278,6 +285,11 @@ protected:
 inline void UIControlBackground::SetColor(const Color & _color)
 {
 	color = _color;
+}
+
+inline const Color &UIControlBackground::GetColor() const
+{
+    return color;
 }
 
 };

@@ -80,7 +80,10 @@ Sprite::Sprite()
     
     spriteRenderObject = new RenderDataObject();
     vertexStream = spriteRenderObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
-    texCoordStream  = spriteRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);    
+    texCoordStream  = spriteRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);
+	
+	pivotPoint = Vector2(0.0f, 0.0f);
+	defaultPivotPoint = Vector2(0.0f, 0.0f);
 }
 
 Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
@@ -1395,7 +1398,7 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 }
 	
-float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType)
+float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
 {
 	return rectsAndOffsets[frame][valueType];
 }

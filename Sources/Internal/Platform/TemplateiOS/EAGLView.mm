@@ -154,6 +154,7 @@
 		currFPS = 60;
 		displayLink = nil;
 		animationTimer = nil;
+		blockDrawViewIfAssertHappened = false;
 		
         // A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
         // class is used as fallback when it isn't available.
@@ -172,6 +173,11 @@
 
 - (void) drawView:(id)sender
 {
+	if (blockDrawViewIfAssertHappened)
+	{
+		// Yuri Coder, 2013/02/06. We are displaying ASSERT dialog and need block  rendering because RenderManager might be already locked here.
+		return;
+	}
 
 	DAVA::RenderManager::Instance()->Lock();
     
@@ -368,6 +374,10 @@ void MoveTouchsToVector(void *inTouches, DAVA::Vector<DAVA::UIEvent> *outTouches
 	[renderer setCurrentContext];
 }
 
+- (void) blockDrawing
+{
+	blockDrawViewIfAssertHappened = true;
+}
 
 @end
 

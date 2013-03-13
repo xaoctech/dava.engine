@@ -84,7 +84,7 @@ void LightUpdateSystem::AddEntity(SceneNode * entity)
 
 void LightUpdateSystem::RemoveEntity(SceneNode * entity)
 {
-    Light * lightObject = entityObjectMap.Value(entity);
+    Light * lightObject = entityObjectMap.GetValue(entity);
     if (!lightObject)
 	{
 		return;

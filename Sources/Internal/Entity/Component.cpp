@@ -10,6 +10,8 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/UserComponent.h"
 
 namespace DAVA
 {
@@ -37,6 +39,12 @@ Component * Component::CreateByType(uint32 componentType)
 		break;
 	case LIGHT_COMPONENT:
 		return new LightComponent();
+		break;
+	case SWITCH_COMPONENT:
+		return new SwitchComponent();
+		break;
+	case USER_COMPONENT:
+		return new UserComponent();
 		break;
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:

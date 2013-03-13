@@ -44,21 +44,19 @@ class UTF8Utils
 public:
 
 	/**
-		\brief get length of UTF8 string
-		\param[in] string string in UTF8 format
-		\param[in] size size of buffer allocated for this string
-		\returns length of this UTF8 string in characters
-	 */
-	static int32 GetStringLength(uint8 * string, int32 size);
-	
-	/**
 		\brief convert UTF8 string to WideString
 		\param[in] string string in UTF8 format
 		\param[in] size size of buffer allocated for this string
 		\param[out] resultString result unicode string
 	 */
 	static void  EncodeToWideString(uint8 * string, int32 size, WideString & resultString);
-	
+
+	/**
+	 \brief convert WideString string to UTF8
+	 \param[in] wstring string in WideString format
+	 \returns string in UTF8 format, contained in DAVA::String
+	 */
+	static String EncodeToUTF8(const WideString& wstring);
 };
 
 

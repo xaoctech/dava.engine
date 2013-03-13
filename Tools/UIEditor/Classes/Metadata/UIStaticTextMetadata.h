@@ -36,6 +36,9 @@ protected:
     UIStaticText* GetActiveStaticText() const;
     
     // Getters/setters.
+	virtual int GetAlign();
+    virtual void SetAlign(int value);
+
     virtual Font * GetFont();
     virtual void SetFont(Font* font);
     

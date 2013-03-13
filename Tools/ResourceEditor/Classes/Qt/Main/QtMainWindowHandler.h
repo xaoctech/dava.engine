@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QVector>
 #include <QAbstractButton>
+#include <QRadioButton.h>
 
 #include "DAVAEngine.h"
 #include "../Constants.h"
@@ -12,6 +13,7 @@
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
+#include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
 
 class Command;
 class QMenu;
@@ -22,6 +24,7 @@ class QPushButton;
 class QSlider;
 class QComboBox;
 class ModificationWidget;
+class QSpinBox;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -36,7 +39,8 @@ public:
     void RegisterDockActions(DAVA::int32 count, ...);
     void RegisterTextureFormatActions(DAVA::int32 count, ...);
 	void RegisterModificationActions(DAVA::int32 count, ...);
-    
+	void RegisterEditActions(DAVA::int32 count, ...);
+
     void SetResentMenu(QMenu *menu);
     void SetResentAncorAction(QAction *ancorAction);
 
@@ -54,12 +58,18 @@ public:
 	//custom colors
 	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
-	
+
+	//set switch index
+	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
+    void SetSwitchIndexWidgetsState(bool state);
+
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
 	void SetWidgetsStateVisibilityTool(bool state);
 	void SetPointButtonStateVisibilityTool(bool state);
 	void SetAreaButtonStateVisibilityTool(bool state);
+
+	void UpdateUndoActionsState();
 
 public slots:
     //menu
@@ -79,6 +89,10 @@ public slots:
     void ExportAsPVR();
     void ExportAsDXT();
     void SaveToFolderWithChilds();
+
+	//Edit
+	void UndoAction();
+	void RedoAction();
 
     //View
     void RestoreViews();
@@ -104,6 +118,9 @@ public slots:
     //scene graph
     void RefreshSceneGraph();
     
+	//set switch index
+	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
@@ -134,7 +151,9 @@ public slots:
 	void OnApplyModification(double x, double y, double z);
 	void OnResetModification();
 	void SetModificationMode(ResourceEditor::eModificationActions mode);
-	
+
+	void OnSceneActivated(SceneData *scene);
+	void OnSceneReleased(SceneData *scene);
 signals:
 
 	void ProjectChanged();
@@ -144,9 +163,7 @@ private:
     void CreateNode(ResourceEditor::eNodeType type);
     //viewport
     void SetViewport(ResourceEditor::eViewportType type);
-    
-    void Execute(Command *command);
-    
+
     void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
     
     void ClearActions(int32 count, QAction **actions);
@@ -154,6 +171,12 @@ private:
 	void UpdateModificationActions();
 
 private:
+	//set switch index
+	QPushButton*	setSwitchIndexToggleButton;
+	QSpinBox*		editSwitchIndexValue;
+	QRadioButton*	rBtnSelection;
+	QRadioButton*	rBtnScene;
+
 	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;
@@ -174,6 +197,7 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
     QAction *textureFileFormatActions[DAVA::FILE_FORMAT_COUNT];
 	QAction *modificationActions[ResourceEditor::MODIFY_COUNT];
+	QAction *editActions[ResourceEditor::EDIT_COUNT];
 
     
     QMenu *menuResentScenes;

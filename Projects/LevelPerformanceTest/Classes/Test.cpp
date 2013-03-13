@@ -1,6 +1,7 @@
 #include "Test.h"
 #include "SettingsManager.h"
 #include "AppScreens.h"
+#include "TextureHelper.h"
 
 #define DEF_CAMERA_DIRECTION Vector3(1.f, 0.f, 0.f)
 
@@ -27,15 +28,14 @@ Test::Test(const String& fullName)
 
 void Test::LoadResources()
 {
-	SettingsManager *settings = SettingsManager::Instance();
-	
 	time = 0.f;
 	isFinished = false;
 	skipFrames = 100;
 
 	Scene *scene = new Scene();
 	scene->AddNode(scene->GetRootNode(fullName));
-	
+	DVASSERT_MSG(scene, "Could not load the scene");
+
 	Camera* cam = new Camera();
 	scene->AddCamera(cam);
 
@@ -48,16 +48,23 @@ void Test::LoadResources()
     
     scene->SetCurrentCamera(cam);
 	SafeRelease(cam);
-	
-    LandscapeNode* land = (LandscapeNode *)scene->FindByName(settings->GetLandscapeNodeName());
-    if(land)
-    {
-		land->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
-		UI3DView *sceneView = new UI3DView(Rect(0, 0, GetSize().x, GetSize().y));
-		sceneView->SetScene(scene);
-		AddControl(sceneView);
-		SafeRelease(sceneView);
-    }
+
+	UI3DView *sceneView = new UI3DView(Rect(0, 0, GetSize().x, GetSize().y));
+	sceneView->SetScene(scene);
+	AddControl(sceneView);
+	SafeRelease(sceneView);
+
+	LandscapeNode* landscape = GetLandscape();
+	DVASSERT_MSG(scene, "There is no landscape in a scene");
+	landscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+
+	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath());
+	testData.SetTextureMemorySize(textureMemory);
+
+	File* file = File::Create(fullName, File::OPEN | File::READ);
+	DVASSERT_MSG(file, "Could not open file scene file");
+	testData.SetSceneFileSize(file->GetSize());
+	SafeRelease(file);
 
 	PreparePath();
     PrepareFpsStat();
@@ -259,6 +266,14 @@ const String Test::GetFileName() const
 	return filename;
 }
 
+const String Test::GetFilePath() const
+{
+	String path;
+	String filename;
+	FileSystem::Instance()->SplitPath(fullName, path, filename);
+	return path;
+}
+
 void Test::ZeroCurFpsStat()
 {
 	fpsStatItem.minFps = std::numeric_limits<float32>::infinity();
@@ -282,5 +297,23 @@ inline Camera* Test::GetCamera()
 inline LandscapeNode* Test::GetLandscape()
 {
 	SettingsManager* settings = SettingsManager::Instance();
-	return (LandscapeNode *)GetScene()->FindByName(settings->GetLandscapeNodeName());
+	SceneNode* landscapeNode = GetScene()->FindByName(settings->GetLandscapeNodeName());
+	LandscapeNode* landscape = NULL;
+	if (landscapeNode)
+	{
+		RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(landscapeNode->GetComponent(Component::RENDER_COMPONENT));
+		if (renderComponent)
+		{
+			landscape = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+		}
+	}
+
+	return landscape;
 }
+
+Texture* Test::GetLandscapeTexture()
+{
+	LandscapeNode* landscape = GetLandscape();
+	return landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+};
+

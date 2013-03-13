@@ -37,9 +37,14 @@
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FileSystem.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
+
+REGISTER_CLASS(ParticleEmitter);
+
 ParticleEmitter::ParticleEmitter()
 {
 	type = TYPE_PARTICLE_EMTITTER;
@@ -137,6 +142,33 @@ RenderObject * ParticleEmitter::Clone(RenderObject *newObject)
 	return newObject;
 }
 
+void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Save(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		archive->SetString("pe.configpath", filename);
+	}
+}
+
+void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderObject::Load(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		if(archive->IsKeyExists("pe.configpath"))
+		{
+            String filename = archive->GetString("pe.configpath");
+            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
+            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
+			LoadFromYaml(configPath);
+		}
+	}
+}
+
 void ParticleEmitter::AddLayer(ParticleLayer * layer)
 {
 	if (layer)
@@ -199,12 +231,12 @@ void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMo
 void ParticleEmitter::Play()
 {
     Pause(false);
-    Restart(false);
+    DoRestart(false);
 }
     
 void ParticleEmitter::Stop()
 {
-    Restart(true);
+    DoRestart(true);
     Pause(true);
 }
     
@@ -215,6 +247,12 @@ bool ParticleEmitter::IsStopped()
 }
 
 void ParticleEmitter::Restart(bool isDeleteAllParticles)
+{
+	DoRestart(isDeleteAllParticles);
+	Pause(false);
+}
+	
+void ParticleEmitter::DoRestart(bool isDeleteAllParticles)
 {
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
@@ -365,7 +403,7 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed");
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
 		return;
 	}
 
