@@ -134,7 +134,6 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 
         case ResourceEditor::NODE_CAMERA:
         {
-            
             SetHeader(LocalizedString(L"createnode.camera"));
             sceneNode = new SceneNode();
             
@@ -157,11 +156,13 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode = new SceneNode();
 			sceneNode->SetName("Particle Emitter");
 
-			ParticleEmitter* newEmitter = new ParticleEmitter();
+			ParticleEmitter3D* newEmitter = new ParticleEmitter3D();
 
 			RenderComponent * renderComponent = new RenderComponent();
 			renderComponent->SetRenderObject(newEmitter);
 			sceneNode->AddComponent(renderComponent);
+            
+            newEmitter->Release();
 
 			break;
 		}
