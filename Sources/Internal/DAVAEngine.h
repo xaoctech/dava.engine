@@ -219,7 +219,7 @@
 #include "Scene3D/SpriteNode.h"
 #include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"

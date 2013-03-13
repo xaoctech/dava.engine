@@ -52,7 +52,7 @@
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderSystem.h"
 
 #include "Entity/SceneSystem.h"
@@ -63,7 +63,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/UpdatableSystem.h"
+#include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
 
@@ -123,7 +123,7 @@ void Scene::CreateSystems()
 	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 
-	updatableSystem = new UpdatableSystem(this);
+	updatableSystem = new UpdateSystem(this);
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
     
     lightUpdateSystem = new LightUpdateSystem(this);
@@ -641,7 +641,7 @@ void Scene::Draw()
 	}
     
     RenderManager::Instance()->SetCullMode(FACE_BACK);
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+    RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
     //glDepthMask(GL_TRUE);
@@ -670,7 +670,7 @@ void Scene::Draw()
     
 
 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);

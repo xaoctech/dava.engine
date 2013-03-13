@@ -69,7 +69,7 @@ void LandscapesController::SetScene(DAVA::Scene *scene)
         EditorScene *editorScene = dynamic_cast<EditorScene *>(scene);
         if(editorScene)
         {
-           LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+           Landscape *landscape = editorScene->GetLandscape(editorScene);
             if(landscape)
             {
                 SaveLandscape(landscape);
@@ -109,7 +109,7 @@ void LandscapesController::ReleaseScene()
     currentLandscape = NULL;
 }
 
-void LandscapesController::ReleaseLandscape(EditorLandscapeNode *landscapeNode)
+void LandscapesController::ReleaseLandscape(EditorLandscape *landscapeNode)
 {
     // RETURN TO THIS CODE LATER
     //    if(landscapeNode && landscapeNode->GetParent())
@@ -120,7 +120,7 @@ void LandscapesController::ReleaseLandscape(EditorLandscapeNode *landscapeNode)
 }
 
 
-void LandscapesController::SaveLandscape(DAVA::LandscapeNode *landscape)
+void LandscapesController::SaveLandscape(DAVA::Landscape *landscape)
 {
     SafeRelease(savedHeightmap);
     SafeRelease(savedLandscape);
@@ -162,9 +162,9 @@ void LandscapesController::ToggleNotPassableLandscape()
     }
 }
 
-bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLandscape)
+bool LandscapesController::ShowEditorLandscape(EditorLandscape *displayingLandscape)
 {
-	LandscapeNode *landscape = EditorScene::GetLandscape(scene);
+	Landscape *landscape = EditorScene::GetLandscape(scene);
 	if (!landscape)
     {
         Logger::Error("[LandscapesController::ShowEditorLandscape] Can be only one landscape");
@@ -194,12 +194,12 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     return true;
 }
 
-bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLandscape)
+bool LandscapesController::HideEditorLandscape(EditorLandscape *hiddingLandscape)
 {
     hiddingLandscape->FlushChanges();
     
-    EditorLandscapeNode *parentLandscape = hiddingLandscape->GetParentLandscape();
-    LandscapeNode *nestedLandscape = hiddingLandscape->GetNestedLandscape();
+    EditorLandscape *parentLandscape = hiddingLandscape->GetParentLandscape();
+    Landscape *nestedLandscape = hiddingLandscape->GetNestedLandscape();
     
     if(parentLandscape)
     {
@@ -212,7 +212,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     }
     else
     {
-        EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+        EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(nestedLandscape);
         if(editorLandscape)
         {
             editorLandscape->SetParentLandscape(NULL);
@@ -237,9 +237,9 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
 }
 
 
-bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection)
+bool LandscapesController::NeedToKillRenderer(DAVA::Landscape *landscapeForDetection)
 {
-    return !(IsPointerToExactClass<EditorLandscapeNode>(landscapeForDetection));
+    return !(IsPointerToExactClass<EditorLandscape>(landscapeForDetection));
 }
 
 
@@ -248,9 +248,9 @@ bool LandscapesController::EditorLandscapeIsActive()
     return (NULL != notPassableTerrain) || (NULL != landscapeRenderer) || (NULL != renderedHeightmap) || (NULL != rulerToolLandscape);
 }
 
-EditorLandscapeNode *LandscapesController::CreateEditorLandscapeNode()
+EditorLandscape * LandscapesController::CreateEditorLandscape()
 {
-    editorLandscape = new EditorLandscapeNode();
+    editorLandscape = new EditorLandscape();
     bool showed = ShowEditorLandscape(editorLandscape);
     if(!showed)
     {
@@ -260,7 +260,7 @@ EditorLandscapeNode *LandscapesController::CreateEditorLandscapeNode()
     return editorLandscape;
 }
 
-void LandscapesController::ReleaseEditorLandscapeNode()
+void LandscapesController::ReleaseEditorLandscape()
 {
     bool hidden = HideEditorLandscape(editorLandscape);
     if(hidden)
@@ -269,7 +269,7 @@ void LandscapesController::ReleaseEditorLandscapeNode()
     }
 }
 
-DAVA::LandscapeNode * LandscapesController::GetCurrentLandscape()
+DAVA::Landscape * LandscapesController::GetCurrentLandscape()
 {
     return currentLandscape;
 }
@@ -290,7 +290,7 @@ void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
     landscapeRenderer->RebuildVertexes(changedRect);
     renderedHeightmap->HeghtWasChanged(changedRect);
 
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(currentLandscape);
     if(editorLandscape)
     {
         editorLandscape->HeihghtmapUpdated(changedRect);

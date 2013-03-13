@@ -501,9 +501,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -1125,12 +1122,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1169,9 +1160,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
-      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -1274,6 +1262,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UISwitch.h">
       <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Landscape.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1545,9 +1542,6 @@
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp">
@@ -2111,12 +2105,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2140,9 +2128,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp">
-      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -2239,6 +2224,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp">
       <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -34,7 +34,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Frustum.h"
 #include "Render/Highlevel/Camera.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"

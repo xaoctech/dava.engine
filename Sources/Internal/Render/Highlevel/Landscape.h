@@ -97,7 +97,7 @@ public:
     Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
  */ 
 
-class LandscapeNode : public RenderObject
+class Landscape : public RenderObject
 {
 public:	
     enum 
@@ -108,8 +108,8 @@ public:
         BOTTOM = 3,
     };
     
-	LandscapeNode();
-	virtual ~LandscapeNode();
+	Landscape();
+	virtual ~Landscape();
     
     /**
         \brief Set lod coefficients for dynamic roam landscape
@@ -416,7 +416,7 @@ protected:
     
 public:
     
-    INTROSPECTION_EXTEND(LandscapeNode, RenderObject,
+    INTROSPECTION_EXTEND(Landscape, RenderObject,
         MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
          
@@ -429,7 +429,7 @@ public:
 };
 
     
-inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
+inline const Landscape::eTiledShaderMode Landscape::GetTiledShaderMode()
 {
     return (eTiledShaderMode)tiledShaderMode;
 }

@@ -58,7 +58,7 @@ public:
      \param[in] landscape landscape for validation
      \param[out] errorsLog set for validation erros
 	 */
-    void ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog);
+    void ValidateLandscape(Landscape *landscape, Set<String> &errorsLog);
         
     /*
      \brief Function to validate SceneNode errors

@@ -461,7 +461,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && InModificationMode())
 				{
-                    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
+                    Landscape *landscape = dynamic_cast<Landscape *>(selection);
                     if(!landscape)
                     {
                         PrepareModMatrix(event->point);
@@ -927,7 +927,7 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    LandscapeNode *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = scene->GetLandscape(scene);
     if (landscape)
     {
         landscape->UpdateFullTiledTexture();
@@ -1449,7 +1449,7 @@ Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
 	Vector3 p = Vector3(0, 0, 0) * transform;
 
 	Vector3 result;
-	LandscapeNode* landscape = scene->GetLandscape(scene);
+	Landscape* landscape = scene->GetLandscape(scene);
 	bool res = landscape->PlacePoint(p, result);
 	if (res)
 	{

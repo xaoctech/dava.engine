@@ -385,8 +385,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Landscape.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
@@ -425,7 +424,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
@@ -508,7 +507,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
@@ -731,8 +730,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
@@ -768,7 +766,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
@@ -849,7 +847,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />

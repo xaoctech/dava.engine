@@ -10,7 +10,7 @@ using namespace DAVA;
 
 class EditorScene;
 class EditorHeightmap;
-class EditorLandscapeNode;
+class EditorLandscape;
 class LandscapesController;
 class CommandDrawHeightmap;
 class LandscapeEditorHeightmap

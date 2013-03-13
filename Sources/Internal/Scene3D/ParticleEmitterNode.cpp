@@ -40,7 +40,7 @@ void ParticleEmitterNode::Draw()
 	{
 		eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 
 //		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
 //		emitter3D->Draw(scene->GetCurrentCamera());

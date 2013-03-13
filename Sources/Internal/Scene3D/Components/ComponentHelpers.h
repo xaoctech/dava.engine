@@ -10,7 +10,7 @@ class ParticleEmitter;
 class SceneNode;
 class RenderObject;
 class Light;
-class LandscapeNode;
+class Landscape;
 class Camera;
 class LodComponent;
 
@@ -18,7 +18,7 @@ ParticleEmitter * GetEmitter(SceneNode * fromEntity);
 RenderObject * GetRenerObject(SceneNode * fromEntity);
 
 Light *GetLight(SceneNode * fromEntity);
-LandscapeNode *GetLandscape(SceneNode * fromEntity);
+Landscape *GetLandscape(SceneNode * fromEntity);
 
 Camera * GetCamera(SceneNode * fromEntity);
 

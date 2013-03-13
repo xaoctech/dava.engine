@@ -8,7 +8,7 @@
 
 class EditorScene;
 class LandscapesController;
-class EditorLandscapeNode;
+class EditorLandscape;
 
 class SceneData: public QObject
 {

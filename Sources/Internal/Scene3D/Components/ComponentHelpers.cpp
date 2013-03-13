@@ -6,7 +6,7 @@
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Render/Highlevel/Camera.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 
 
@@ -60,14 +60,14 @@ Light * GetLight( SceneNode * fromEntity )
 	return NULL;
 }
 
-LandscapeNode * GetLandscape( SceneNode * fromEntity )
+Landscape * GetLandscape( SceneNode * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
 		RenderObject * object = GetRenerObject(fromEntity);
 		if(object && object->GetType() == RenderObject::TYPE_LANDSCAPE)
 		{
-			LandscapeNode *landscape = static_cast<LandscapeNode *>(object);
+			Landscape *landscape = static_cast<Landscape *>(object);
 			return landscape;
 		}
 	}

@@ -72,7 +72,7 @@ void SceneData::AddSceneNode(DAVA::SceneNode *node)
         scene->AddNode(node);
     }
     
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+    Landscape *landscape = dynamic_cast<Landscape *>(node);
     if(landscape)
     {
         landscapesController->SaveLandscape(landscape);
@@ -86,7 +86,7 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
     SceneNode * parent = node->GetParent();
     if (parent)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+        Landscape *landscape = dynamic_cast<Landscape *>(node);
         if(landscape)
         {
             landscapesController->SaveLandscape(NULL);
@@ -352,7 +352,7 @@ void SceneData::SetLandscapesControllerScene(EditorScene* scene)
 
 void SceneData::ResetLandsacpeSelection()
 {
-	LandscapeNode *selectedNode = dynamic_cast<LandscapeNode *>	(GetSelectedNode());
+	Landscape *selectedNode = dynamic_cast<Landscape *>	(GetSelectedNode());
 	if(selectedNode)
 	{
 		SelectNode(NULL);
@@ -400,14 +400,14 @@ void SceneData::RestoreTexture(const DAVA::String &descriptorPathname, DAVA::Tex
             }
         }
         
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+        Landscape *landscape = dynamic_cast<Landscape *>(ro);
         if(landscape)
         {
-            for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; ++t)
+            for(int32 t = 0; t < Landscape::TEXTURE_COUNT; ++t)
             {
-                if(landscape->GetTextureName((LandscapeNode::eTextureLevel)t) == descriptorPathname)
+                if(landscape->GetTextureName((Landscape::eTextureLevel)t) == descriptorPathname)
                 {
-                    landscape->SetTexture((LandscapeNode::eTextureLevel)t, texture);
+                    landscape->SetTexture((Landscape::eTextureLevel)t, texture);
                 }
             }
         }

@@ -10,7 +10,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -179,7 +179,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
         ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
     }
     
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+    Landscape *landscape = dynamic_cast<Landscape *>(ro);
     if(landscape)
     {
         ValidateLandscape(landscape, errorsLog);
@@ -306,35 +306,35 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
 }
 
 
-void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
+void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
     
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(landscape);
     if(editorLandscape)
     {
         return;
     }
     
     
-    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
     {
-        if(		(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
-           ||	(LandscapeNode::TEXTURE_TILE_FULL == (LandscapeNode::eTextureLevel)i
-                 &&	landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK))
+        if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
+           ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
+                 &&	landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK))
         {
             continue;
         }
         
 		// TODO:
 		// new texture path
-		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
+		DAVA::String landTexName = landscape->GetTextureName((Landscape::eTextureLevel)i);
 		if(!IsTextureDescriptorPath(landTexName))
 		{
-			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
+			landscape->SetTextureName((Landscape::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
 		}
         
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), landscape->GetTextureName((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
+        ValidateTexture(landscape->GetTexture((Landscape::eTextureLevel)i), landscape->GetTextureName((Landscape::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
     }
     
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
