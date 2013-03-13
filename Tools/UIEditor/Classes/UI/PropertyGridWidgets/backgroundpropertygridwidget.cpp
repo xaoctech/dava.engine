@@ -53,7 +53,7 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 
     RegisterLineEditWidgetForProperty(propertiesMap, PropertyNames::SPRITE_PROPERTY_NAME, ui->spriteLineEdit, false, true);
     RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_FRAME_PROPERTY_NAME, this->ui->frameSpinBox, false, true);
-	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_MODIFICATION_PROPERTY_NAME, this->ui->sprModificationSpinBox, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SPRITE_MODIFICATION_PROPERTY_NAME, this->ui->modificationComboBox, false, true);
 
 	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::STRETCH_HORIZONTAL_PROPERTY_NAME, this->ui->lrSpinBox, false, true);
 	RegisterSpinBoxWidgetForProperty(propertiesMap, PropertyNames::STRETCH_VERTICAL_PROPERTY_NAME, this->ui->tbSpinBox, false, true);
@@ -69,7 +69,7 @@ void BackGroundPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     ui->spriteLineEdit->setDisabled(disableSpriteEditingControls);
     ui->frameSpinBox->setDisabled(disableSpriteEditingControls);
     ui->openSpriteButton->setDisabled(disableSpriteEditingControls);
-	HandleStretchSpinBoxes();
+	HandleDrawTypeComboBox();
 }
 
 void BackGroundPropertyGridWidget::Cleanup()
@@ -83,6 +83,10 @@ void BackGroundPropertyGridWidget::Cleanup()
     UnregisterComboBoxWidget(ui->alignComboBox);
     UnregisterColorButtonWidget(ui->selectColorButton);
 
+	UnregisterComboBoxWidget(ui->modificationComboBox);
+	UnregisterSpinBoxWidget(ui->lrSpinBox);
+	UnregisterSpinBoxWidget(ui->tbSpinBox);
+
     BasePropertyGridWidget::Cleanup();
 }
 
@@ -91,6 +95,7 @@ void BackGroundPropertyGridWidget::FillComboboxes()
     WidgetSignalsBlocker drawTypeBlocker(ui->drawTypeComboBox);
     WidgetSignalsBlocker colorInheritTypeBlocker(ui->colorInheritComboBox);
     WidgetSignalsBlocker alignBlocker(ui->alignComboBox);
+	WidgetSignalsBlocker spriteModificationBlocker(ui->modificationComboBox);
 
     ui->drawTypeComboBox->clear();
     int itemsCount = BackgroundGridWidgetHelper::GetDrawTypesCount();
@@ -111,6 +116,13 @@ void BackGroundPropertyGridWidget::FillComboboxes()
     for (int i = 0; i < itemsCount; i ++)
     {
         ui->alignComboBox->addItem(BackgroundGridWidgetHelper::GetAlignTypeDesc(i));
+    }
+
+	ui->modificationComboBox->clear();
+    itemsCount = BackgroundGridWidgetHelper::GetModificationTypesCount();
+    for (int i = 0; i < itemsCount; i ++)
+    {
+        ui->modificationComboBox->addItem(BackgroundGridWidgetHelper::GetModificationTypeDesc(i));
     }
 }
 
@@ -171,7 +183,7 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
     
     if (senderWidget == ui->drawTypeComboBox)
     {
-		HandleStretchSpinBoxes();
+		HandleDrawTypeComboBox();
         return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetDrawType(selectedIndex));
     }
     else if (senderWidget == ui->colorInheritComboBox)
@@ -181,6 +193,10 @@ void BackGroundPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sender
     else if (senderWidget == ui->alignComboBox)
     {
         return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetAlignType(selectedIndex));
+    }
+	else if (senderWidget == ui->modificationComboBox)
+    {
+        return CustomProcessComboboxValueChanged(iter, BackgroundGridWidgetHelper::GetModificationType(selectedIndex));
     }
 
     // No postprocessing was applied - use the generic process.
@@ -233,6 +249,12 @@ void BackGroundPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboB
         return SetComboboxSelectedItem(comboBoxWidget,
                                        BackgroundGridWidgetHelper::GetAlignTypeDescByType(propertyValue));
     }
+	else if (comboBoxWidget == ui->modificationComboBox)
+    {
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
+        return SetComboboxSelectedItem(comboBoxWidget,
+                                       BackgroundGridWidgetHelper::GetModificationTypeDescByType(propertyValue));
+    }
 
     // Not related to the custom combobox - call the generic one.
     BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
@@ -243,7 +265,7 @@ QString BackGroundPropertyGridWidget::PreprocessSpriteName(const QString& rawSpr
     return ResourcesManageHelper::GetResourceRelativePath(rawSpriteName);
 }
 
-void BackGroundPropertyGridWidget::HandleStretchSpinBoxes()
+void BackGroundPropertyGridWidget::HandleDrawTypeComboBox()
 {
 	if(NULL == ui->drawTypeComboBox)
 	{
@@ -254,23 +276,27 @@ void BackGroundPropertyGridWidget::HandleStretchSpinBoxes()
 	UIControlBackground::eDrawType drawType = BackgroundGridWidgetHelper::GetDrawType(selectedIndex);
 	bool lrState = false;
 	bool tbState = false;
+	bool modificationComboBoxState = true;
 	switch (drawType)
 	{
 		case UIControlBackground::DRAW_STRETCH_HORIZONTAL:
 			lrState = true;
 			tbState = false;
-			//TODO
+			modificationComboBoxState = false;
 			break;
 		case UIControlBackground::DRAW_STRETCH_VERTICAL:
 			lrState = false;
 			tbState = true;
+			modificationComboBoxState = false;
 			break;
 		case UIControlBackground::DRAW_STRETCH_BOTH:
 			lrState = true;
 			tbState = true;
+			modificationComboBoxState = false;
 			break;
 	}
 
 	ui->lrSpinBox->setEnabled(lrState);
 	ui->tbSpinBox->setEnabled(tbState);
+	ui->modificationComboBox->setEnabled(modificationComboBoxState);
 }
