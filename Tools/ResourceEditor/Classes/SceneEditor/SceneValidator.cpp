@@ -667,7 +667,7 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFo
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
-        isChanged = descriptor->IsSourceValidForFormat(fileFormat);
+        isChanged = descriptor->IsSourceChanged(fileFormat);
         SafeRelease(descriptor);
     }
 

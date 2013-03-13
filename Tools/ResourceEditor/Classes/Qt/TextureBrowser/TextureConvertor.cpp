@@ -16,7 +16,7 @@ TextureConvertor::TextureConvertor()
 	: curJobOriginal(NULL)
 {
 	// slots will be called in connector(this) thread
-	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)));
+	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)), Qt::QueuedConnection);
 	QObject::connect(&loadOriginalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
 	QObject::connect(&convertAllWatcher, SIGNAL(finished()), this, SLOT(threadConvertAllFinished()), Qt::QueuedConnection);
 
@@ -220,7 +220,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 					DAVA::Logger::Error("---");
 				}
 
-				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::PVR_FILE);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
@@ -272,7 +272,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::DXT_FILE);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
@@ -344,7 +344,7 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 							p.start(command);
 							p.waitForFinished(-1);
 
-							bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+							bool wasUpdated = descriptor->UpdateCrcForFormat(PVR_FILE);
 							if(wasUpdated)
 							{
 								descriptor->Save();
@@ -363,7 +363,7 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 							if(!outputPath.empty())
 							{
 								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
-								bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+								bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
 								if(wasUpdated)
 								{
 									descriptor->Save();
