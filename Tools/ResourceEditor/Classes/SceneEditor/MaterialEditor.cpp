@@ -174,6 +174,22 @@ void MaterialEditor::WillAppear()
     OnAllPressed(NULL, NULL, NULL);
 }
 
+void MaterialEditor::DidAppear()
+{
+    for (int32 wnm = 0; wnm < (int32)workingNodeMaterials.size(); ++wnm)
+    {
+        Material *m = workingNodeMaterials[wnm];
+        for(int32 i = 0; i < (int32)materials.size(); ++i)
+        {
+            if(m == materials[i])
+            {
+                materialsList->ScrollToElement(i);
+                break;
+            }
+        }
+    }
+}
+
 void MaterialEditor::WillDisappear()
 {
 	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
@@ -348,7 +364,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         found = true;
     }
     
-    ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+    ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()), false);
     UIControl *sceneFlagBox = c->FindByName("flagBox");
     sceneFlagBox->SetVisible(found, false);
     

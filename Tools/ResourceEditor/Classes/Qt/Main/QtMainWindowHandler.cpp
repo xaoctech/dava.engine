@@ -40,7 +40,7 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
-#include <QLineEdit.h>
+#include <QSpinBox.h>
 
 #include "Render/LibDxtHelper.h"
 
@@ -68,8 +68,10 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     }
 
 	SceneDataManager* sceneDataManager = SceneDataManager::Instance();
+
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -430,9 +432,9 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 }
 
 
-void QtMainWindowHandler::ReloadTexturesFromFileSystem()
+void QtMainWindowHandler::RepackAndReloadTextures()
 {
-    CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+	QtMainWindow::Instance()->RepackAndReloadScene();
 }
 
 void QtMainWindowHandler::CreateParticleEmitterNode()
@@ -503,6 +505,11 @@ void QtMainWindowHandler::ReloadAsPVR()
 void QtMainWindowHandler::ReloadAsDXT()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+}
+
+void QtMainWindowHandler::ReloadSceneTextures()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 }
 
 void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
@@ -576,10 +583,10 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	}
 }
 
-void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QLineEdit* lEdit, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
+void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
 {
 	this->setSwitchIndexToggleButton = btnOK;
-	this->editSwitchIndexValue = lEdit;
+	this->editSwitchIndexValue = spinBox;
 	this->rBtnSelection = rBtnSelection;
 	this->rBtnScene = rBtnScene;
 }

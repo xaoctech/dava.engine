@@ -25,8 +25,8 @@ public:
 	void SaveState(QMainWindow *mainwindow);
 	void LoadState(QMainWindow *mainwindow);
 
-	void SaveState(QTreeView *treeView);
-	void LoadState(QTreeView *treeView);
+	void SaveValue(const QString &key, const DAVA::VariantType &value);
+	DAVA::VariantType LoadValue(const QString &key);
 
 protected:
 	QWidget *attachedWidget;

@@ -207,7 +207,6 @@ int32 MoveTouchsToVector(UINT message, WPARAM wParam, LPARAM lParam, Vector<UIEv
 		//			newTouch.timestamp = curEvent.timestamp;
 		//			newTouch.tapCount = curEvent.clickCount;
 		newTouch.phase = phase;
-		printf("%f %f\n", p.x, p.y);
 		activeTouches.push_back(newTouch);
 	}
 

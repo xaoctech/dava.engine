@@ -12,7 +12,11 @@ namespace DAVA
 
 FastName::FastName()
 	: index(-1)
-{ }
+{
+#ifdef DAVA_DEBUG
+	debug_str_ptr = NULL;
+#endif
+}
 
 FastName::FastName(const char *name)
 	: index(-1)
@@ -57,13 +61,23 @@ FastName::FastName(const char *name)
 		// add name and its index into hash
 		db->namesHash.Insert(nameCopy, index);
 	}
+
+	#ifdef DAVA_DEBUG
+		debug_str_ptr = c_str();
+	#endif
 }
 
 FastName::FastName(const FastName &_name)
     : index(-1)
 {
 	RemRef(index);
+
 	index = _name.index;
+
+#ifdef DAVA_DEBUG
+	debug_str_ptr = _name.debug_str_ptr;
+#endif
+
 	AddRef(index);
 }
 
@@ -85,7 +99,13 @@ const char* FastName::c_str() const
 FastName& FastName::operator=(const FastName &_name)
 {
 	RemRef(index);
+
 	index = _name.index;
+
+#ifdef DAVA_DEBUG
+	debug_str_ptr = _name.debug_str_ptr;
+#endif
+
 	AddRef(index);
 	return *this;
 }

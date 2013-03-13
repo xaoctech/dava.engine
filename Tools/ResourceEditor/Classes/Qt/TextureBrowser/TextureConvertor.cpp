@@ -16,7 +16,7 @@ TextureConvertor::TextureConvertor()
 	: curJobOriginal(NULL)
 {
 	// slots will be called in connector(this) thread
-	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)));
+	QObject::connect(this, SIGNAL(convertStatusFromThread(const QString &, int, int)), this, SLOT(threadConvertStatus(const QString &, int, int)), Qt::QueuedConnection);
 	QObject::connect(&loadOriginalWatcher, SIGNAL(finished()), this, SLOT(threadOriginalFinished()), Qt::QueuedConnection);
 	QObject::connect(&convertAllWatcher, SIGNAL(finished()), this, SLOT(threadConvertAllFinished()), Qt::QueuedConnection);
 
@@ -220,7 +220,7 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 					DAVA::Logger::Error("---");
 				}
 
-				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::PVR_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::PVR_FILE);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
@@ -272,7 +272,7 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
-				bool wasUpdated = item->descriptorCopy.UpdateDateAndCrcForFormat(DAVA::DXT_FILE);
+				bool wasUpdated = item->descriptorCopy.UpdateCrcForFormat(DAVA::DXT_FILE);
                 if(wasUpdated)
                 {
                     item->descriptorCopy.Save();
@@ -335,14 +335,16 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 						if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 						{
-							QString command;
-							generateCommandString(descriptor, command);
+							DAVA::String sourcePath = descriptor->GetSourceTexturePathname();
+
+							QString command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, *descriptor).c_str();
+							DAVA::Logger::Info("%s", command.toStdString().c_str());
 
 							QProcess p;
 							p.start(command);
 							p.waitForFinished(-1);
 
-							bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+							bool wasUpdated = descriptor->UpdateCrcForFormat(PVR_FILE);
 							if(wasUpdated)
 							{
 								descriptor->Save();
@@ -361,7 +363,7 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 							if(!outputPath.empty())
 							{
 								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
-								bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+								bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
 								if(wasUpdated)
 								{
 									descriptor->Save();
@@ -631,17 +633,4 @@ QImage TextureConvertor::fromDavaImage(DAVA::Image *image)
 	}
 
 	return qtImage;
-}
-
-void TextureConvertor::generateCommandString(const TextureDescriptor *descriptor, QString &command)
-{
-    String source = descriptor->GetSourceTexturePathname();
-#if defined(__DAVAENGINE_WIN32__)
-    command = DAVA::FileSystem::Instance()->GetCurrentWorkingDirectory().c_str();
-    command.remove(2,command.length() - 2);// remove all after disk name
-    source.insert(0,command.toStdString());// update SourceTexturePathname for win
-#else
-    command += "/";
-#endif
-    command += PVRConverter::Instance()->GetCommandLinePVR(source, *descriptor).c_str();
 }

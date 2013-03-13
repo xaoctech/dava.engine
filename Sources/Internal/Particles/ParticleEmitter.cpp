@@ -148,22 +148,7 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-        String path = configPath;
-        String scenePath = sceneFile->GetScenePath();
-        
-        //TODO: temporary elegant fix for save & export of particle emitters
-        String::size_type dataSourcePos = scenePath.find("DataSource");
-        if(dataSourcePos != String::npos)
-        {
-            String::size_type pos = path.find("Data");
-            if (pos != String::npos)
-            {
-                path.replace(pos, strlen("Data"), "DataSource");
-            }
-        }
-        //ENDOF TODO
-        
-        String filename = FileSystem::Instance()->AbsoluteToRelativePath(scenePath, path);
+        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
 		archive->SetString("pe.configpath", filename);
 	}
 }
@@ -177,22 +162,8 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		if(archive->IsKeyExists("pe.configpath"))
 		{
             String filename = archive->GetString("pe.configpath");
-            String scenePath = sceneFile->GetScenePath();
-            String path = FileSystem::Instance()->GetCanonicalPath(scenePath + filename);
-
-            //TODO: temporary elegant fix for load of particle emitters
-            String::size_type dataSourcePos = scenePath.find("DataSource");
-            if(dataSourcePos != String::npos)
-            {
-                String::size_type pos = path.find("DataSource");
-                if (pos != String::npos)
-                {
-                    path.replace(pos, strlen("DataSource"), "Data");
-                }
-            }
-            //ENDOF TODO
-            
-            configPath = path;
+            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
+            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
 			LoadFromYaml(configPath);
 		}
 	}
