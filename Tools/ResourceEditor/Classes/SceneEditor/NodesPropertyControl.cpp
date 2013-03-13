@@ -308,9 +308,9 @@ void NodesPropertyControl::AddChildLodSection()
             float32 *distances = new float32[LodComponent::MAX_LOD_LAYERS];
             
             
-            List<LodComponent::LodData*> lodLayers;
+            Vector<LodComponent::LodData*> lodLayers;
             childLodComponents[i]->GetLodData(lodLayers);
-            List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
             
             int32 iLod = 0;
             for(; iLod < childLodComponents[i]->GetLodLayersCount(); ++iLod)

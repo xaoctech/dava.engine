@@ -359,29 +359,23 @@ RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const Fas
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
     ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
-    if(shadowVolume)
-    {
-        ShadowRect *shadowRect = shadowVolume->GetShadowRect();
-        if(shadowRect)
-        {
-            shadowRect->SetColor(color);
-        }
-    }
+    DVASSERT(shadowVolume);
+
+    ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+    DVASSERT(shadowRect);
+
+    shadowRect->SetColor(color);
 }
     
-Color RenderSystem::GetShadowRectColor()
+const Color & RenderSystem::GetShadowRectColor()
 {
     ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
-    if(shadowVolume)
-    {
-        ShadowRect *shadowRect = shadowVolume->GetShadowRect();
-        if(shadowRect)
-        {
-            return shadowRect->GetColor();
-        }
-    }
+    DVASSERT(shadowVolume);
     
-    return Color();
+    ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+    DVASSERT(shadowRect);
+    
+    return shadowRect->GetColor();
 }
 
 
