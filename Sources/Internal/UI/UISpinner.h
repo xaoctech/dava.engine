@@ -90,9 +90,12 @@ public:
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
     virtual void CopyDataFrom(DAVA::UIControl *srcControl);
+    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     UIButton * GetButtonNext() {return buttonNext;}
     UIButton * GetButtonPrevious() {return buttonPrevious;}
+
+    virtual List<UIControl* >& GetRealChildren();
 
 protected:
     SpinnerAdapter * adapter;
