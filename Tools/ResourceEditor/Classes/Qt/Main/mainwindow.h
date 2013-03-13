@@ -38,14 +38,15 @@ private:
 
 public slots:
 	
-	//return true if conversion has been started
-	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
+	void returnToOldMaxMinSizesForDockSceneGraph();
 
+	//return true if conversion has been started
+	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void UpdateParticleSprites();
 
-	void returnToOldMaxMinSizesForDockSceneGraph();
+	void RepackAndReloadScene();
 
 private slots:
 	void ProjectOpened(const QString &path);
@@ -62,6 +63,7 @@ private slots:
 signals:
 	// Library File Types.
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
+	void RepackAndReloadFinished();
 
 private:
     Ui::MainWindow *ui;
@@ -75,6 +77,7 @@ private:
 	QSize oldDockSceneGraphMaxSize;
 	QSize oldDockSceneGraphMinSize;
 
+	bool emitRepackAndReloadFinished;
 };
 
 
