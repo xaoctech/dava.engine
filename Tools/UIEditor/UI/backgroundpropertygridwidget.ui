@@ -196,7 +196,7 @@ inherit:</string>
      <rect>
       <x>81</x>
       <y>84</y>
-      <width>57</width>
+      <width>41</width>
       <height>25</height>
      </rect>
     </property>
@@ -272,27 +272,27 @@ inherit:</string>
      <number>999</number>
     </property>
    </widget>
-   <widget class="QSpinBox" name="sprModificationSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>239</x>
-      <y>85</y>
-      <width>46</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="modificationLabel">
     <property name="geometry">
      <rect>
-      <x>169</x>
+      <x>129</x>
       <y>90</y>
       <width>71</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Modification:</string>
+     <string>Reflection:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="modificationComboBox">
+    <property name="geometry">
+     <rect>
+      <x>197</x>
+      <y>86</y>
+      <width>86</width>
+      <height>21</height>
+     </rect>
     </property>
    </widget>
   </widget>

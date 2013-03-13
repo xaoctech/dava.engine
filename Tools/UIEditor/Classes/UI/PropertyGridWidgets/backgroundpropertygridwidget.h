@@ -42,8 +42,8 @@ protected:
     // Pre-process the sprite name.
     QString PreprocessSpriteName(const QString& rawSpriteName);
 
-	//handle stretch spinBoxes acordin drawType
-	void HandleStretchSpinBoxes();
+	//handle elements according drawType
+	void HandleDrawTypeComboBox();
 
 private slots:
     void OpenSpriteDialog();
