@@ -22,7 +22,7 @@ LandscapePropertyControl::~LandscapePropertyControl()
 
 }
 
-void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
+void LandscapePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

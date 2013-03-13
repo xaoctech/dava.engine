@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Scene3D/SceneFileV2.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Texture.h"
 #include "Render/Material.h"
@@ -41,7 +41,6 @@
 #include "Render/Highlevel/Mesh.h"
 
 #include "Scene3D/SceneNodeAnimationList.h"
-#include "Scene3D/ReferenceNode.h"
 #include "Scene3D/LodNode.h"
 #include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Components/LodComponent.h"
@@ -298,7 +297,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     if(isDebugLogEnabled)
         Logger::Debug("+ load hierarchy");
         
-    SceneNode * rootNode = new SceneNode();
+    Entity * rootNode = new Entity();
     rootNode->SetName(rootNodeName);
 	rootNode->SetScene(0);
     for (int ci = 0; ci < header.nodeCount; ++ci)
@@ -490,50 +489,43 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
     dataNodes[ptr] = SafeRetain(node);
 }
     
-bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
+bool SceneFileV2::SaveHierarchy(Entity * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     if (isDebugLogEnabled)
         Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, this);    
-	ReferenceNode * ref = dynamic_cast<ReferenceNode*>(node);
     
-	if(!ref)
-	{
-		archive->SetInt32("#childrenCount", node->GetChildrenCount());
-	}
+	archive->SetInt32("#childrenCount", node->GetChildrenCount());
  
     archive->Save(file);
 
-	if(!ref)
+	for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
 	{
-		for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-		{
-			SceneNode * child = node->GetChild(ci);
-			SaveHierarchy(child, file, level + 1);
-		}
+		Entity * child = node->GetChild(ci);
+		SaveHierarchy(child, file, level + 1);
 	}
     
     SafeRelease(archive);
     return true;
 }
 
-void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, int32 level)
+void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
-    //SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
+    //Entity * node = dynamic_cast<Entity*>(BaseObject::LoadFromArchive(archive));
     
     String name = archive->GetString("##name");
     BaseObject * baseObject = 0;
-    SceneNode * node = 0;
+    Entity * node = 0;
     
     bool skipNode = false;
     bool removeChildren = false;
     
     if (name == "LandscapeNode")
     {
-        node = new SceneNode();
+        node = new Entity();
         baseObject = node;
 
         node->SetScene(scene);
@@ -551,7 +543,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         skipNode = true;
     }else if (name == "Camera")
     {
-        node = new SceneNode();
+        node = new Entity();
         baseObject = node;
         
         node->SetScene(scene);
@@ -567,7 +559,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         skipNode = true;
     }else if ((name == "LightNode"))// || (name == "EditorLightNode"))
     {
-        node = new SceneNode();
+        node = new Entity();
         baseObject = node;
         
         node->SetScene(scene);
@@ -585,16 +577,22 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         SafeRelease(light);
         skipNode = true;
         removeChildren = true;
-    }else
+    }
+	else if(name == "SceneNode")
+	{
+		node = new Entity();
+		baseObject = node;
+	}
+	else
     {
         baseObject = ObjectFactory::Instance()->New(name);
-        node = dynamic_cast<SceneNode*>(baseObject);
+        node = dynamic_cast<Entity*>(baseObject);
     }
 
 	//TODO: refactor this elegant fix
 	if(!node) //in case if editor class is loading in non-editor sprsoject
 	{
-		node = new SceneNode();
+		node = new Entity();
 		skipNode = true;
 	}
 
@@ -631,15 +629,15 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     SafeRelease(archive);
 }
     
-bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
+bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
 {
     for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
     {
-        SceneNode * childNode = currentNode->GetChild(c);
+        Entity * childNode = currentNode->GetChild(c);
         bool dec = RemoveEmptySceneNodes(childNode);
         if(dec)c--;
     }
-    if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(SceneNode)))
+    if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(Entity)))
     {
         KeyedArchive *customProperties = currentNode->GetCustomProperties();
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
@@ -652,7 +650,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
         
         if (!doNotRemove)
         {
-            SceneNode * parent  = currentNode->GetParent();
+            Entity * parent  = currentNode->GetParent();
             if (parent)
             {
                 parent->RemoveNode(currentNode);
@@ -664,11 +662,11 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::SceneNode * currentNode)
     return false;
 }
     
-bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
+bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 {
     for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
     {
-        SceneNode * childNode = currentNode->GetChild(c);
+        Entity * childNode = currentNode->GetChild(c);
         bool dec = RemoveEmptyHierarchy(childNode);
         if(dec)c--;
     }
@@ -680,7 +678,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 //        Logger::Debug("found node: %s %p", currentNode->GetName().c_str(), currentNode);
 //    }
 
-    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(SceneNode)))
+    if ((currentNode->GetChildrenCount() == 1) && (typeid(*currentNode) == typeid(Entity)))
     {
         if (currentNode->GetComponentCount() == 1)
         {
@@ -691,12 +689,12 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
         else if (currentNode->GetComponentCount() >= 2)
             return false;
         
-        if (currentNode->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+        if (currentNode->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
         {
-            SceneNode * parent  = currentNode->GetParent();
+            Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-                SceneNode * childNode = SafeRetain(currentNode->GetChild(0));
+                Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = SafeRetain(currentNode->GetCustomProperties());
                 
@@ -725,7 +723,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(SceneNode * currentNode)
 }
 
     
-bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
+bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 {
     MeshInstanceNode * oldMeshInstanceNode = dynamic_cast<MeshInstanceNode*>(node);
     if (oldMeshInstanceNode)
@@ -746,8 +744,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
                 //DVASSERT(oldMeshInstanceNode->GetLightmapDataForIndex(0)->lightmap != 0)
             }
         }
-        SceneNode * newMeshInstanceNode = new SceneNode();
-        oldMeshInstanceNode->SceneNode::Clone(newMeshInstanceNode);
+        Entity * newMeshInstanceNode = new Entity();
+        oldMeshInstanceNode->Entity::Clone(newMeshInstanceNode);
         newMeshInstanceNode->AddComponent(oldMeshInstanceNode->GetComponent(Component::TRANSFORM_COMPONENT)->Clone(newMeshInstanceNode));
         
         //Vector<PolygonGroupWithMaterial*> polygroups = oldMeshInstanceNode->GetPolygonGroups();
@@ -784,7 +782,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
         mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
         
         //
-        SceneNode * parent = oldMeshInstanceNode->GetParent();
+        Entity * parent = oldMeshInstanceNode->GetParent();
         for (int32 k = 0; k < parent->GetChildrenCount(); ++k)
         {
             ShadowVolumeNode * oldShadowVolumeNode = dynamic_cast<ShadowVolumeNode*>(parent->GetChild(k));
@@ -825,9 +823,9 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	LodNode * lod = dynamic_cast<LodNode*>(node);
 	if(lod)
 	{
-		SceneNode * newNode = new SceneNode();
-		lod->SceneNode::Clone(newNode);
-		SceneNode * parent = lod->GetParent();
+		Entity * newNode = new Entity();
+		lod->Entity::Clone(newNode);
+		Entity * parent = lod->GetParent();
 
 		newNode->AddComponent(new LodComponent());
 		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
@@ -871,9 +869,9 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode*>(node);
 	if(particleEmitterNode)
 	{
-		SceneNode * newNode = new SceneNode();
-		particleEmitterNode->SceneNode::Clone(newNode);
-		SceneNode * parent = particleEmitterNode->GetParent();
+		Entity * newNode = new Entity();
+		particleEmitterNode->Entity::Clone(newNode);
+		Entity * parent = particleEmitterNode->GetParent();
 
 		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
 		RenderComponent * renderComponent = new RenderComponent();
@@ -894,9 +892,9 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	ParticleEffectNode * particleEffectNode = dynamic_cast<ParticleEffectNode*>(node);
 	if(particleEffectNode)
 	{
-		SceneNode * newNode = new SceneNode();
-		particleEffectNode->SceneNode::Clone(newNode);
-		SceneNode * parent = particleEffectNode->GetParent();
+		Entity * newNode = new Entity();
+		particleEffectNode->Entity::Clone(newNode);
+		Entity * parent = particleEffectNode->GetParent();
 
 		DVASSERT(parent);
 		if(parent)
@@ -914,14 +912,14 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	SwitchNode * sw = dynamic_cast<SwitchNode*>(node);
 	if(sw)
 	{
-		SceneNode * newNode = new SceneNode();
-		sw->SceneNode::Clone(newNode);
+		Entity * newNode = new Entity();
+		sw->Entity::Clone(newNode);
 
 		SwitchComponent * swConponent = new SwitchComponent();
 		newNode->AddComponent(swConponent);
 		swConponent->SetSwitchIndex(sw->GetSwitchIndex());
 
-		SceneNode * parent = sw->GetParent();
+		Entity * parent = sw->GetParent();
 		DVASSERT(parent);
 		if(parent)
 		{
@@ -936,12 +934,12 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	UserNode *un = dynamic_cast<UserNode*>(node);
 	if(un)
 	{
-		SceneNode * newNode = new SceneNode();
+		Entity * newNode = new Entity();
 		un->Clone(newNode);
 
 		newNode->AddComponent(new UserComponent());
 
-		SceneNode * parent = un->GetParent();
+		Entity * parent = un->GetParent();
 		DVASSERT(parent);
 		if(parent)
 		{
@@ -956,7 +954,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 	SpriteNode * spr = dynamic_cast<SpriteNode*>(node);
 	if(spr)
 	{
-		SceneNode * newNode = new SceneNode();
+		Entity * newNode = new Entity();
 		spr->Clone(newNode);
 
 		SpriteObject *spriteObject = new SpriteObject(spr->GetSprite(), spr->GetFrame(), spr->GetScale(), spr->GetPivot());
@@ -964,7 +962,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 
 		newNode->AddComponent(new RenderComponent(spriteObject));
 
-		SceneNode * parent = spr->GetParent();
+		Entity * parent = spr->GetParent();
 		DVASSERT(parent);
 		if(parent)
 		{
@@ -983,11 +981,11 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
     
 
 
-void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
+void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 {
 	for(int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
 	{
-		SceneNode * childNode = currentNode->GetChild(c);
+		Entity * childNode = currentNode->GetChild(c);
 		ReplaceOldNodes(childNode);
         /**
             Here it's very important to call ReplaceNodeAfterLoad after recursion, to replace nodes that 
@@ -1002,7 +1000,7 @@ void SceneFileV2::ReplaceOldNodes(SceneNode * currentNode)
 }
 
     
-void SceneFileV2::OptimizeScene(SceneNode * rootNode)
+void SceneFileV2::OptimizeScene(Entity * rootNode)
 {
     int32 beforeCount = rootNode->GetChildrenCountRecursive();
     removedNodeCount = 0;
@@ -1015,7 +1013,7 @@ void SceneFileV2::OptimizeScene(SceneNode * rootNode)
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
 //    {
-//        SceneNode * node = rootNode->GetChild(k);
+//        Entity * node = rootNode->GetChild(k);
 //        if (node->GetName() == "instance_0")
 //            node->SetName(rootNodeName);
 //    }

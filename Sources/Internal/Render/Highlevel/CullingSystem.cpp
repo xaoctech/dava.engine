@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/CullingSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderBatch.h"
@@ -49,7 +49,7 @@ CullingSystem::~CullingSystem()
 {
 }
     
-void CullingSystem::ImmediateUpdate(SceneNode * entity)
+void CullingSystem::ImmediateUpdate(Entity * entity)
 {
     RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
@@ -62,12 +62,12 @@ void CullingSystem::ImmediateUpdate(SceneNode * entity)
     // Do we need updates??? 
 }
     
-void CullingSystem::AddEntity(SceneNode * entity)
+void CullingSystem::AddEntity(Entity * entity)
 {
     
 }
 
-void CullingSystem::RemoveEntity(SceneNode * entity)
+void CullingSystem::RemoveEntity(Entity * entity)
 {
     
 }

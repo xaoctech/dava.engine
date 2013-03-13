@@ -43,7 +43,7 @@ void SceneGraphModel::SetScene(EditorScene *newScene)
     Rebuild();
 }
 
-bool SceneGraphModel::IsNodeAccepted(DAVA::SceneNode *node)
+bool SceneGraphModel::IsNodeAccepted(DAVA::Entity *node)
 {
 	//Check whether current node is ArrowsNode.
 	//ArrowsNode should not be displayed in SceneGraph tree
@@ -54,7 +54,7 @@ bool SceneGraphModel::IsNodeAccepted(DAVA::SceneNode *node)
 	return true;
 }
 
-void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate)
+void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::Entity *node, bool partialUpdate)
 {
 	if (!IsNodeAccepted(node))
 	{
@@ -103,7 +103,7 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bo
     {
 		// AddNodeToTree() can change the children while Particles Editor adopts orphaned Particle Emitter nodes.
 		// Need to store the original pointers list to the current node's children to process them corrrectly.
-		Vector<DAVA::SceneNode*> originalNodes;
+		Vector<DAVA::Entity*> originalNodes;
         int32 count = node->GetChildrenCount();
         for(int32 i = 0; i < count; ++i)
         {
@@ -119,7 +119,7 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bo
     }
 }
 
-void SceneGraphModel::RebuildNode(DAVA::SceneNode* rootNode)
+void SceneGraphModel::RebuildNode(DAVA::Entity* rootNode)
 {
 	if(!rootNode)
 	{
@@ -242,7 +242,7 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     {
         QItemSelectionRange selectedRange = selected.at(0);
         SceneGraphItem *selectedItem = static_cast<SceneGraphItem*>(selectedRange.topLeft().internalPointer());
-        SceneNode *newSelectedNode = static_cast<SceneNode *>(selectedItem->GetUserData());
+        Entity *newSelectedNode = static_cast<Entity *>(selectedItem->GetUserData());
 
         if(0 < deselectedSize)
         {
@@ -261,12 +261,12 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     }
 }
 
-void SceneGraphModel::SelectNode(DAVA::SceneNode *node)
+void SceneGraphModel::SelectNode(DAVA::Entity *node)
 {
     SelectNode(node, true);
 }
 
-void SceneGraphModel::SelectNode(DAVA::SceneNode *node, bool selectAtGraph)
+void SceneGraphModel::SelectNode(DAVA::Entity *node, bool selectAtGraph)
 {
     if(selectedNode != node)
     {
@@ -311,7 +311,7 @@ void SceneGraphModel::SelectItem(GraphItem *item, bool needExpand)
     }
 }
 
-DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
+DAVA::Entity * SceneGraphModel::GetSelectedNode()
 {
     return selectedNode;
 }
@@ -371,13 +371,13 @@ bool SceneGraphModel::removeRows(int row, int count, const QModelIndex &parent/*
 //    int32 lastRow = row + count - 1;
 //    beginRemoveRows(parent, firstRow, lastRow);
 //    
-//    SceneNode *parentNode = static_cast<SceneNode *>(parentItem->GetUserData());
+//    Entity *parentNode = static_cast<Entity *>(parentItem->GetUserData());
 //    if(parentNode)
 //    {
 //        int32 lastNodeRow = Min(lastRow, parentNode->GetChildrenCount() - 1);
 //        for(int32 i = firstRow; i <= lastNodeRow; ++i)
 //        {
-//            SceneNode *removedNode = parentNode->GetChild(i);
+//            Entity *removedNode = parentNode->GetChild(i);
 //            parentNode->RemoveNode(removedNode);
 //            Logger::Debug("[%d] Remove %s from %s", i, removedNode->GetName().c_str(), parentNode->GetName().c_str());
 //        }
@@ -439,7 +439,7 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
 		return true;
 	}
 
-    SceneNode *newNode = (SceneNode *)newItem->GetUserData();
+    Entity *newNode = (Entity *)newItem->GetUserData();
     SafeRetain(newNode);
     
     if(newNode && newNode->GetParent())
@@ -448,7 +448,7 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
     }
     
     GraphItem *parentItem = item->GetParent();
-    SceneNode *parentNode = static_cast<SceneNode *>(parentItem->GetUserData());
+    Entity *parentNode = static_cast<Entity *>(parentItem->GetUserData());
     if(parentNode)
     {
         parentNode->AddNode(newNode);
@@ -479,9 +479,9 @@ bool SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
     oldParentItem->RemoveChild(movedItem);
     newParentItem->AppendChild(movedItem);
     
-    SceneNode *movedNode = static_cast<SceneNode *>(movedItem->GetUserData());
-    SceneNode *newParentNode = static_cast<SceneNode *>(newParentItem->GetUserData());
-    SceneNode *oldParentNode = static_cast<SceneNode *>(oldParentItem->GetUserData());
+    Entity *movedNode = static_cast<Entity *>(movedItem->GetUserData());
+    Entity *newParentNode = static_cast<Entity *>(newParentItem->GetUserData());
+    Entity *oldParentNode = static_cast<Entity *>(oldParentItem->GetUserData());
 
     DVASSERT((NULL != movedNode) && "movedNode is NULL");
     DVASSERT((NULL != newParentNode) && "newParentNode is NULL");
@@ -504,15 +504,15 @@ QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
 
 	if (Qt::TextColorRole == role)
     {
-        SceneNode *node = static_cast<SceneNode *>(ItemData(index));
-        if(node && (node->GetFlags() & SceneNode::NODE_INVALID))
+        Entity *node = static_cast<Entity *>(ItemData(index));
+        if(node && (node->GetFlags() & Entity::NODE_INVALID))
         {
             return QColor(255, 0, 0);
         }
     }
 	else if(Qt::DecorationRole == role)
 	{
-		SceneNode *node = static_cast<SceneNode *>(ItemData(index));
+		Entity *node = static_cast<Entity *>(ItemData(index));
 		if(node)
 		{
 			return GetDecorationIcon(node);
@@ -637,7 +637,7 @@ void SceneGraphModel::InitDecorationIcons()
 	decorationIcons["render"] = QIcon(pix);
 }
 
-QIcon SceneGraphModel::GetDecorationIcon(DAVA::SceneNode *node) const
+QIcon SceneGraphModel::GetDecorationIcon(DAVA::Entity *node) const
 {
 	QIcon icon;
 

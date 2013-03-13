@@ -25,11 +25,11 @@ public:
     ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
-	void UpdateBullet(SceneNode * curr);
+	void UpdateBullet(Entity * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
-	void CheckNodes(SceneNode * curr);
+	void CheckNodes(Entity * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
 	bool TryIsTargetAccesible(Vector3 from, Vector3 target);
@@ -37,37 +37,37 @@ public:
 	void SeparateCollWorldFromLandscapeCollWorld();
     bool LandscapeIntersection(const Vector3 &from, const Vector3 &direction, Vector3 &point); 
 
-	inline SceneNode * GetSelection()
+	inline Entity * GetSelection()
 	{
 		return selection;
 	}
 
-	inline SceneNode * GetProxy()
+	inline Entity * GetProxy()
 	{
 		return proxy;
 	}
 	
 	
-	void SetSelection(SceneNode *newSelection);
+	void SetSelection(Entity *newSelection);
     
 	virtual void Draw();
 	void DrawGrid();
-	void SetBulletUpdate(SceneNode* curr, bool value);
-	void ReleaseUserData(SceneNode * curr);
-	static Landscape * GetLandscape(SceneNode *node);
-	static SceneNode* GetLandscapeNode(SceneNode *node);
+	void SetBulletUpdate(Entity* curr, bool value);
+	void ReleaseUserData(Entity * curr);
+	static Landscape * GetLandscape(Entity *node);
+	static Entity* GetLandscapeNode(Entity *node);
     
     void SetDrawGrid(bool newDrawGrid);
 	
-    void SetForceLodLayer(SceneNode *node, int32 layer);
-    int32 GetForceLodLayer(SceneNode *node);
+    void SetForceLodLayer(Entity *node, int32 layer);
+    int32 GetForceLodLayer(Entity *node);
     
 protected:
 
     
-    void SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags);
+    void SetNodeDebugFlags(Entity *selectedNode, uint32 flags);
     
-    void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
+    void SetForceLodLayerRecursive(Entity *node, int32 layer);
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
@@ -78,15 +78,15 @@ protected:
 	btCollisionDispatcher* landDispatcher;
 	btAxisSweep3* landBroadphase;
 
-	SceneNode * selection;
-	SceneNode * proxy;
+	Entity * selection;
+	Entity * proxy;
     
-    SceneNode *selectedEntity;
+    Entity *selectedEntity;
 	
-	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
-	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
+	Entity * FindSelected(Entity * curr, btCollisionObject * coll);
+	HeightmapNode * FindHeightmap(Entity * curr, btCollisionObject * coll);
 
-	SceneNode * lastSelectedPhysics;
+	Entity * lastSelectedPhysics;
     
     bool drawGrid;
 

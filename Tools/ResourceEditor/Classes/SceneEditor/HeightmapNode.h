@@ -17,7 +17,7 @@ using namespace DAVA;
 class btHeightfieldTerrainShape;
 class EditorScene;
 //class Heightmap;
-class HeightmapNode : public SceneNode
+class HeightmapNode : public Entity
 {
 public:
     

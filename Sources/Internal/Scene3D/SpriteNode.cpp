@@ -39,7 +39,7 @@ namespace DAVA
 
 SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
                        , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode()
+:   Entity()
 {
     sprite = Sprite::Create(pathToSprite);
     sprScale = reqScale;
@@ -57,7 +57,7 @@ SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
 
 SpriteNode::SpriteNode(Sprite *spr, int32 _frame
            , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode()
+:   Entity()
 {
     sprScale = reqScale;
     sprPivot = pivotPoint;
@@ -155,7 +155,7 @@ SpriteNode::eType SpriteNode::GetType()
 
 void SpriteNode::Draw()
 {
-	if (!(flags&SceneNode::NODE_VISIBLE))return;
+	if (!(flags&Entity::NODE_VISIBLE))return;
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
 	{

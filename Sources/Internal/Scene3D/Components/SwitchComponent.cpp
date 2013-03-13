@@ -13,7 +13,7 @@ SwitchComponent::SwitchComponent()
 
 }
 
-Component * SwitchComponent::Clone(SceneNode * toEntity)
+Component * SwitchComponent::Clone(Entity * toEntity)
 {
 	SwitchComponent * newComponent = new SwitchComponent();
 	newComponent->SetEntity(toEntity);

@@ -23,7 +23,7 @@ CommandRemoveRootNodes::CommandRemoveRootNodes()
 void CommandRemoveRootNodes::Execute()
 {
 	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
-	SceneNode *node = activeScene->GetSelectedNode();
+	Entity *node = activeScene->GetSelectedNode();
 
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, true));
 }
@@ -51,7 +51,7 @@ CommandLockAtObject::CommandLockAtObject()
 void CommandLockAtObject::Execute()
 {
     SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
+    Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
         activeScene->LockAtSelectedNode();
@@ -72,13 +72,13 @@ CommandRemoveSceneNode::CommandRemoveSceneNode()
 void CommandRemoveSceneNode::Execute()
 {
 	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
-	SceneNode *node = activeScene->GetSelectedNode();
+	Entity *node = activeScene->GetSelectedNode();
 
 	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, false));
 }
 
 
-CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node, bool removeSimilar)
+CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, bool removeSimilar)
 :	Command(Command::COMMAND_UNDO_REDO)
 {
 	commandName = "Remove Object";
@@ -92,7 +92,7 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node, 
 	if (removeSimilar)
 	{
 		String referenceToOwner;
-		SceneNode* nodeParent = node->GetParent();
+		Entity* nodeParent = node->GetParent();
 
 		KeyedArchive *customProperties = node->GetCustomProperties();
 		if(customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
@@ -104,7 +104,7 @@ CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(SceneNode* node, 
 
 		for (int32 i = 0; i < nodeParent->GetChildrenCount(); ++i)
 		{
-			SceneNode* child = nodeParent->GetChild(i);
+			Entity* child = nodeParent->GetChild(i);
 
 			customProperties = child->GetCustomProperties();
 			if (customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
@@ -217,7 +217,7 @@ CommandDebugFlags::CommandDebugFlags()
 void CommandDebugFlags::Execute()
 {
     SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
+    Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
         if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)

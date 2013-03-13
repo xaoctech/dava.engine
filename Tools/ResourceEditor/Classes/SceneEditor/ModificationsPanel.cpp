@@ -152,7 +152,7 @@ void ModificationsPanel::OnLandscapeRelative(BaseObject *, void *, void *)
 	}
 }
 
-void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
+void ModificationsPanel::ChangeCollisionModeShow(Entity * node)
 {
 	if (!node)
 		return;
@@ -389,7 +389,7 @@ void ModificationsPanel::Update(float32 timeElapsed)
 {
     if(workingScene)
     {
-        SceneNode * selection = workingScene->GetProxy();
+        Entity * selection = workingScene->GetProxy();
         modificationPopUp->SetSelection(selection);
         if (isModeModification && selection && modificationPanel->GetParent() == 0)
         {

@@ -230,7 +230,7 @@ void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *newWorkingMa
 }
 
 
-void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode)
+void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, Entity *newWorkingSceneNode)
 {
     if ((newWorkingScene == workingScene) && (workingSceneNode == newWorkingSceneNode))
     {

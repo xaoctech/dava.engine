@@ -12,7 +12,7 @@
 
 using namespace DAVA;
 
-bool ParticlesEditorSceneDataHelper::AddSceneNode(SceneNode* node) const
+bool ParticlesEditorSceneDataHelper::AddSceneNode(Entity* node) const
 {
 	ParticleEmitter * emitter = GetEmitter(node);
     if (emitter)
@@ -33,7 +33,7 @@ bool ParticlesEditorSceneDataHelper::AddSceneNode(SceneNode* node) const
     return false;
 }
 
-void ParticlesEditorSceneDataHelper::RemoveSceneNode(SceneNode *node) const
+void ParticlesEditorSceneDataHelper::RemoveSceneNode(Entity *node) const
 {
     // If the Particle Effect node is removed - unregister it.
 	ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));

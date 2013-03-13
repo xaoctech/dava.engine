@@ -318,9 +318,6 @@
     <ClCompile Include="Classes\BulletObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\DebugNode.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\EditorScene.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -478,9 +475,6 @@
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
       <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PropertyList.h">
@@ -1650,9 +1644,6 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\config.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\DebugNode.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\EditorScene.h">
@@ -2825,9 +2816,6 @@
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Properties\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
       <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">

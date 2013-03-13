@@ -20,7 +20,7 @@ public:
 
     IMPLEMENT_COMPONENT_TYPE(CAMERA_COMPONENT);
 
-    virtual Component* Clone(SceneNode *toEntity);
+    virtual Component* Clone(Entity *toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
     

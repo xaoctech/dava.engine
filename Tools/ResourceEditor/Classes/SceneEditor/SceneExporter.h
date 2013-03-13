@@ -29,7 +29,7 @@ protected:
     String NormalizeFolderPath(const String &pathname);
     String RemoveFolderFromPath(const String &pathname, const String &folderPathname);
     
-    void RemoveEditorNodes(SceneNode *rootNode);
+    void RemoveEditorNodes(Entity *rootNode);
     
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog);

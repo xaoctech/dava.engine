@@ -184,7 +184,7 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscape *displayingLandsc
 	
 	//TODO: remove SetWorldTransformPtr
 	displayingLandscape->SetWorldTransformPtr(landscape->GetWorldTransformPtr());
-	SceneNode* lanscapeNode = EditorScene::GetLandscapeNode(scene);
+	Entity* lanscapeNode = EditorScene::GetLandscapeNode(scene);
 	
 	lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
 	RenderComponent* component = new RenderComponent(displayingLandscape);
@@ -218,7 +218,7 @@ bool LandscapesController::HideEditorLandscape(EditorLandscape *hiddingLandscape
             editorLandscape->SetParentLandscape(NULL);
         }
 		
-		SceneNode* lanscapeNode = EditorScene::GetLandscapeNode(scene);
+		Entity* lanscapeNode = EditorScene::GetLandscapeNode(scene);
 		lanscapeNode->RemoveComponent(Component::RENDER_COMPONENT);
 		lanscapeNode->AddComponent(new RenderComponent(nestedLandscape));
         

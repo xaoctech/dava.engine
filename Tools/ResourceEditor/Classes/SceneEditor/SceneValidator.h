@@ -61,11 +61,11 @@ public:
     void ValidateLandscape(Landscape *landscape, Set<String> &errorsLog);
         
     /*
-     \brief Function to validate SceneNode errors
+     \brief Function to validate Entity errors
      \param[in] sceneNode sceneNode for validation
      \param[out] errorsLog set for validation erros
 	 */
-    void ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog);
+    void ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog);
     
     /*
      \brief Function to validate Material errors
@@ -103,22 +103,22 @@ public:
     
 protected:
 
-    void ValidateRenderComponent(SceneNode *ownerNode, Set<String> &errorsLog);
-    void ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog);
-    void ValidateParticleEmitterComponent(SceneNode *ownerNode, Set<String> &errorsLog);
+    void ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog);
+    void ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog);
+    void ValidateParticleEmitterComponent(Entity *ownerNode, Set<String> &errorsLog);
 
-    void ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
+    void ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
     void ValidateInstanceMaterialState(InstanceMaterialState *materialState, Set<String> &errorsLog);
 
     
     
-    int32 EnumerateSceneNodes(SceneNode *node);
+    int32 EnumerateSceneNodes(Entity *node);
     
-	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
+	void ValidateScalesInternal(Entity *sceneNode, Set<String> &errorsLog);
     
     bool ValidatePathname(const String &pathForValidation, const String &validatedObjectName);
 
-    bool NodeRemovingDisabled(SceneNode *node);
+    bool NodeRemovingDisabled(Entity *node);
     
     bool WasTextureChanged(Texture *texture, ImageFileFormat fileFormat);
 
@@ -126,7 +126,7 @@ protected:
     
     bool IsFBOTexture(Texture *texture);
     
-    Set<SceneNode *> emptyNodesForDeletion;
+    Set<Entity *> emptyNodesForDeletion;
     Set<String> errorMessages;
     
     SceneInfoControl *infoControl;

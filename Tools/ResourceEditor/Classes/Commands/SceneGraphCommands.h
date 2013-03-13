@@ -4,7 +4,7 @@
 #include "Command.h"
 
 class SceneData;
-class DAVA::SceneNode;
+class DAVA::Entity;
 class CommandRemoveRootNodes: public Command
 {
 public:	
@@ -48,15 +48,15 @@ protected:
 class CommandInternalRemoveSceneNode: public Command
 {
 public:
-	CommandInternalRemoveSceneNode(DAVA::SceneNode* node, bool removeSimilar = false);
+	CommandInternalRemoveSceneNode(DAVA::Entity* node, bool removeSimilar = false);
 	virtual ~CommandInternalRemoveSceneNode();
 	
 protected:
 	struct RemoveNodeRec
 	{
-		DAVA::SceneNode* node;
-		DAVA::SceneNode* insertBeforeNode;
-		DAVA::SceneNode* nodeParent;
+		DAVA::Entity* node;
+		DAVA::Entity* insertBeforeNode;
+		DAVA::Entity* nodeParent;
 
 		RemoveNodeRec()
 		:	node(NULL)
@@ -66,7 +66,7 @@ protected:
 	};
 
 	DAVA::Vector<RemoveNodeRec> nodesForDeletion;
-	DAVA::SceneNode* selectedNode;
+	DAVA::Entity* selectedNode;
 
     virtual void Execute();
     virtual void Cancel();

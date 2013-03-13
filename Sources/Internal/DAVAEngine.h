@@ -215,9 +215,8 @@
 
 // 3D scene management
 #include "Scene3D/Scene.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SpriteNode.h"
-#include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/Heightmap.h"
@@ -229,12 +228,9 @@
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
-#include "Scene3D/BVHierarchy.h"
-#include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Scene3D/ParticleEffectNode.h"
-#include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
 #include "Scene3D/Systems/LodSystem.h"

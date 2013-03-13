@@ -377,7 +377,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             if(0 <= key && key < 8)
             {
                 BodyItem *iBody = FindCurrentBody();
-                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                Entity *node = iBody->bodyControl->GetSelectedSGNode();
                 EditorScene *editorScene = iBody->bodyControl->GetScene();
                 editorScene->SetForceLodLayer(node, key);
             }
@@ -520,7 +520,7 @@ void SceneEditorScreenMain::CopyFile(const String & file)
 	}
 }
 
-void SceneEditorScreenMain::CheckNodes(SceneNode * node)
+void SceneEditorScreenMain::CheckNodes(Entity * node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
@@ -749,7 +749,7 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
 }
 
-void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
+void SceneEditorScreenMain::SelectNodeQt(DAVA::Entity *node)
 {
     BodyItem *iBody = FindCurrentBody();
 	if (iBody)

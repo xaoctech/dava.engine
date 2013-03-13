@@ -1,6 +1,6 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
 
 namespace DAVA
@@ -14,7 +14,7 @@ ParticleEffectComponent::ParticleEffectComponent()
 	emittersCurrentlyStopped = 0;
 }
 
-Component * ParticleEffectComponent::Clone(SceneNode * toEntity)
+Component * ParticleEffectComponent::Clone(Entity * toEntity)
 {
 	ParticleEffectComponent * newComponent = new ParticleEffectComponent();
 	newComponent->SetEntity(toEntity);

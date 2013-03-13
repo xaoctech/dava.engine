@@ -1,6 +1,6 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Components/UpdatableComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Platform/SystemTimer.h"
 
 namespace DAVA
@@ -12,7 +12,7 @@ UpdateSystem::UpdateSystem(Scene * scene)
 
 }
 
-void UpdateSystem::AddEntity(SceneNode * entity)
+void UpdateSystem::AddEntity(Entity * entity)
 {
 	UpdatableComponent * component = (UpdatableComponent*)entity->GetComponent(Component::UPDATABLE_COMPONENT);
 	IUpdatable * object = component->GetUpdatableObject();
@@ -33,7 +33,7 @@ void UpdateSystem::AddEntity(SceneNode * entity)
 	}
 }
 
-void UpdateSystem::RemoveEntity(SceneNode * entity)
+void UpdateSystem::RemoveEntity(Entity * entity)
 {
 	UpdatableComponent * component = (UpdatableComponent*)entity->GetComponent(Component::UPDATABLE_COMPONENT);
 	IUpdatable * object = component->GetUpdatableObject();

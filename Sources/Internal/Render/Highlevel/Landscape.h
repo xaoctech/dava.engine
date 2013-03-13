@@ -34,8 +34,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-#include "Scene3D/Frustum.h"
+#include "Scene3D/Entity.h"
+#include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/LandscapeCursor.h"
 #include "Render/Highlevel/RenderObject.h"
 

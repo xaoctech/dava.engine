@@ -40,7 +40,7 @@ const float32 ImposterNode::TOGGLE_SQUARE_DISTANCE = 2500.f;
 REGISTER_CLASS(ImposterNode);
 
 ImposterNode::ImposterNode()
-:	SceneNode()
+:	Entity()
 {
 	state = STATE_3D;
 	renderData = 0;
@@ -164,11 +164,11 @@ void ImposterNode::GeneralDraw()
 	}
 	else
 	{
-		SceneNode::Draw();
+		Entity::Draw();
 	}
 }
 
-void ImposterNode::GetOOBBoxScreenCoords(SceneNode * node, const Matrix4 & mvp, AABBox3 & screenBounds)
+void ImposterNode::GetOOBBoxScreenCoords(Entity * node, const Matrix4 & mvp, AABBox3 & screenBounds)
 {
 	const Rect & viewport = RenderManager::Instance()->GetViewport();
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(node);
@@ -210,7 +210,7 @@ void ImposterNode::UpdateImposter()
 	Camera * imposterCamera = new Camera();
 	Vector3 cameraPos = camera->GetPosition();
 
-	SceneNode * child = GetChild(0);
+	Entity * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBoxSlow();
 	Vector3 bboxCenter = bbox.GetCenter();
 
@@ -361,7 +361,7 @@ void ImposterNode::UpdateImposter()
 	CreateGeometry();
 }
 
-void ImposterNode::HierarchicalRemoveCull(SceneNode * node)
+void ImposterNode::HierarchicalRemoveCull(Entity * node)
 {
 	//TODO: remove this function
 	node->RemoveFlag(NODE_CLIPPED_THIS_FRAME);
@@ -411,7 +411,7 @@ void ImposterNode::DrawImposter()
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 }
 
-SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
+Entity* ImposterNode::Clone(Entity *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
@@ -419,7 +419,7 @@ SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
 		dstNode = new ImposterNode();
 	}
 
-	SceneNode::Clone(dstNode);
+	Entity::Clone(dstNode);
 
 	return dstNode;
 }
