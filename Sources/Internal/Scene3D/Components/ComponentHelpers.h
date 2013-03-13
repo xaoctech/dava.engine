@@ -7,24 +7,24 @@ namespace DAVA
 {
 
 class ParticleEmitter;
-class SceneNode;
+class Entity;
 class RenderObject;
 class Light;
 class Landscape;
 class Camera;
 class LodComponent;
 
-ParticleEmitter * GetEmitter(SceneNode * fromEntity);
-RenderObject * GetRenerObject(SceneNode * fromEntity);
+ParticleEmitter * GetEmitter(Entity * fromEntity);
+RenderObject * GetRenerObject(Entity * fromEntity);
 
-Light *GetLight(SceneNode * fromEntity);
-Landscape *GetLandscape(SceneNode * fromEntity);
+Light *GetLight(Entity * fromEntity);
+Landscape *GetLandscape(Entity * fromEntity);
 
-Camera * GetCamera(SceneNode * fromEntity);
+Camera * GetCamera(Entity * fromEntity);
 
-LodComponent * GetLodComponent(SceneNode *fromEntity);
-void RecursiveProcessMeshNode(SceneNode * curr, void * userData, void(*process)(SceneNode*, void *));
-void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(*process)(SceneNode*, void*));
+LodComponent * GetLodComponent(Entity *fromEntity);
+void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
+void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
 
 }
 

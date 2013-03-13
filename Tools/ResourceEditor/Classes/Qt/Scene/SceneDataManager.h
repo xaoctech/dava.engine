@@ -35,14 +35,11 @@ public:
 	// Edit the active scene.
 	void EditActiveScene(const String &scenePathname);
 
-	// Add the reference scene.
-	void AddReferenceScene(const String &scenePathname);
-
 	// Reload the scene.
 	void ReloadScene(const String &scenePathname);
 
-	DAVA::SceneNode*	SceneGetSelectedNode(SceneData *scene);
-	DAVA::SceneNode*	SceneGetRootNode(SceneData *scene);
+	DAVA::Entity*	SceneGetSelectedNode(SceneData *scene);
+	DAVA::Entity*	SceneGetRootNode(SceneData *scene);
 	SceneData*			SceneGetActive();
 	SceneData*			SceneGetLevel();
 	SceneData*			SceneGet(DAVA::int32 index);
@@ -54,11 +51,11 @@ public:
 	void				TextureReloadAll(DAVA::ImageFileFormat asFile);
 	DAVA::Texture*		TextureReload(const TextureDescriptor *descriptor, DAVA::Texture *prevTexture, DAVA::ImageFileFormat asFile);
 
-	static void EnumerateTextures(DAVA::SceneNode *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
-	static void EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials);
+	static void EnumerateTextures(DAVA::Entity *forNode, DAVA::Map<DAVA::String, DAVA::Texture *> &textures);
+	static void EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &materials);
 
 	// These methods are called by Scene Graph Tree View.
-	void SceneNodeSelectedInSceneGraph(SceneNode* node);
+	void SceneNodeSelectedInSceneGraph(Entity* node);
 
 	// Refresh the information regarding the particular Particles Editor nods.
 	void RefreshParticlesLayer(DAVA::ParticleLayer* layer);
@@ -69,28 +66,28 @@ signals:
 	void SceneDeactivated(SceneData *scene);
 	void SceneChanged(SceneData *scene);
 	void SceneReleased(SceneData *scene);
-	void SceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
+	void SceneNodeSelected(SceneData *scene, DAVA::Entity *node);
 	
 	// Signals needed for Scene Graph Tree View.
-	void SceneGraphNeedRebuildNode(DAVA::SceneNode* node);
+	void SceneGraphNeedRebuildNode(DAVA::Entity* node);
 	void SceneGraphNeedRebuild();
 	
 	// Signals related to Particles Editor.
 	void SceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer);
 
 	void SceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
-	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
+	void SceneGraphNeedSelectNode(SceneData *sceneData, DAVA::Entity* node);
 
 protected slots:
 	void InSceneData_SceneChanged(EditorScene *scene);
-	void InSceneData_SceneNodeSelected(DAVA::SceneNode *node);
+	void InSceneData_SceneNodeSelected(DAVA::Entity *node);
 
 	// Rebuild the Scene Graph for particular node and for the whole graph.
-	void InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
+	void InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::Entity *node);
 	void InSceneData_SceneGraphModelNeedsRebuild();
 	
 	void InSceneData_SceneGraphModelNeedSetScene(EditorScene* scene);
-	void InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
+	void InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity* node);
 
 protected:
 
@@ -106,7 +103,7 @@ protected:
 	void EditScene(SceneData* sceneData, const String &scenePathname);
 
 	// Reload the scene node in a recursive way.
-	void ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname);
+	void ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname);
 
 	// Update the Particle Editor sprites.
 	void UpdateParticleSprites();
@@ -118,9 +115,9 @@ protected:
 	// This structure is needed to reload scene.
     struct AddedNode
     {
-        DAVA::SceneNode *nodeToAdd;
-        DAVA::SceneNode *nodeToRemove;
-        DAVA::SceneNode *parent;
+        DAVA::Entity *nodeToAdd;
+        DAVA::Entity *nodeToRemove;
+        DAVA::Entity *parent;
     };
 	
     DAVA::Vector<AddedNode> nodesToAdd;

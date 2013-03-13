@@ -11,7 +11,7 @@ public:
 	LandscapePropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~LandscapePropertyControl();
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
 
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);

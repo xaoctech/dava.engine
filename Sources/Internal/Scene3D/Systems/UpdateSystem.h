@@ -14,8 +14,8 @@ class UpdateSystem : public SceneSystem
 public:
 	UpdateSystem(Scene * scene);
 	virtual void Process();
-	virtual void AddEntity(SceneNode * entity);
-	virtual void RemoveEntity(SceneNode * entity);
+	virtual void AddEntity(Entity * entity);
+	virtual void RemoveEntity(Entity * entity);
 
 	void UpdatePreTransform();
 	void UpdatePostTransform();

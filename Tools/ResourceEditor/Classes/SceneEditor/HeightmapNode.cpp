@@ -6,7 +6,7 @@
 #include "Render/Highlevel/LandscapeCursor.h"
 
 HeightmapNode::HeightmapNode(EditorScene * _scene, Landscape *_land)
-    :   SceneNode()
+    :   Entity()
     ,   position(0,0,0)
     ,   rotation(0)
 {

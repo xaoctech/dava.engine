@@ -29,10 +29,10 @@
 =====================================================================================*/
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
 
@@ -55,7 +55,7 @@ LightUpdateSystem::~LightUpdateSystem()
 {
 }
 
-void LightUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
+void LightUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
@@ -73,7 +73,7 @@ void LightUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     }
 }
     
-void LightUpdateSystem::AddEntity(SceneNode * entity)
+void LightUpdateSystem::AddEntity(Entity * entity)
 {
     Light * lightObject = ((LightComponent*)entity->GetComponent(Component::LIGHT_COMPONENT))->GetLightObject();
     if (!lightObject)return;
@@ -82,7 +82,7 @@ void LightUpdateSystem::AddEntity(SceneNode * entity)
     GetScene()->GetRenderSystem()->AddLight(lightObject);
 }
 
-void LightUpdateSystem::RemoveEntity(SceneNode * entity)
+void LightUpdateSystem::RemoveEntity(Entity * entity)
 {
     Light * lightObject = entityObjectMap.GetValue(entity);
     if (!lightObject)

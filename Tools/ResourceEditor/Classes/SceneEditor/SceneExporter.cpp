@@ -77,11 +77,11 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
     
     //Load scene with *.sc2
     Scene *scene = new Scene();
-    SceneNode *rootNode = scene->GetRootNode(dataSourceFolder + fileName);
+    Entity *rootNode = scene->GetRootNode(dataSourceFolder + fileName);
     if(rootNode)
     {
         int32 count = rootNode->GetChildrenCount();
-		Vector<SceneNode*> tempV;
+		Vector<Entity*> tempV;
 		tempV.reserve((count));
         for(int32 i = 0; i < count; ++i)
         {
@@ -150,17 +150,17 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
 
-void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
+void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
 {
     //Remove scene nodes
-    Vector<SceneNode *> scenenodes;
+    Vector<Entity *> scenenodes;
     rootNode->GetChildNodes(scenenodes);
         
     //remove nodes from hierarhy
-    Vector<SceneNode *>::reverse_iterator endItDeletion = scenenodes.rend();
-    for (Vector<SceneNode *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
+    Vector<Entity *>::reverse_iterator endItDeletion = scenenodes.rend();
+    for (Vector<Entity *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
     {
-        SceneNode * node = *it;
+        Entity * node = *it;
 		String::size_type pos = node->GetName().find(String("editor."));
         if(String::npos != pos)
         {

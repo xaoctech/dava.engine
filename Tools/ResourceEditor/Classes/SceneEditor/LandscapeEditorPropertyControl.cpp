@@ -161,7 +161,7 @@ void LandscapeEditorPropertyControl::SetValuesFromSettings()
 }
 
 
-void LandscapeEditorPropertyControl::ReadFrom(DAVA::SceneNode *sceneNode)
+void LandscapeEditorPropertyControl::ReadFrom(DAVA::Entity *sceneNode)
 {
     LandscapePropertyControl::ReadFrom(sceneNode);
     

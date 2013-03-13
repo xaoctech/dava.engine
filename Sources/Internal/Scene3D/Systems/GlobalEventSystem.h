@@ -8,13 +8,13 @@
 namespace DAVA
 {
 class Component;
-class SceneNode;
+class Entity;
 class GlobalEventSystem : public StaticSingleton<GlobalEventSystem>
 {
 public:
-    void Event(SceneNode * entity, Component * component, uint32 event);
+    void Event(Entity * entity, Component * component, uint32 event);
     
-    void PerformAllEventsFromCache(SceneNode * entity);
+    void PerformAllEventsFromCache(Entity * entity);
     void PerformAllEventsFromCache(Component * entity);
     
     void RemoveAllEvents(Component * component);

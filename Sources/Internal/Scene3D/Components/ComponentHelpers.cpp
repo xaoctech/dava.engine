@@ -1,5 +1,5 @@
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/LightComponent.h"
@@ -13,7 +13,7 @@
 namespace DAVA
 {
 
-RenderObject * GetRenerObject(SceneNode * fromEntity)
+RenderObject * GetRenerObject(Entity * fromEntity)
 {
 	RenderObject * object = 0;
 
@@ -29,7 +29,7 @@ RenderObject * GetRenerObject(SceneNode * fromEntity)
 	return object;
 }
 
-ParticleEmitter * GetEmitter(SceneNode * fromEntity)
+ParticleEmitter * GetEmitter(Entity * fromEntity)
 {
 	ParticleEmitter * emitter = 0;
 
@@ -46,7 +46,7 @@ ParticleEmitter * GetEmitter(SceneNode * fromEntity)
 }
 
 
-Light * GetLight( SceneNode * fromEntity )
+Light * GetLight( Entity * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
@@ -60,7 +60,7 @@ Light * GetLight( SceneNode * fromEntity )
 	return NULL;
 }
 
-Landscape * GetLandscape( SceneNode * fromEntity )
+Landscape * GetLandscape( Entity * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
@@ -75,7 +75,7 @@ Landscape * GetLandscape( SceneNode * fromEntity )
 	return NULL;
 }
 
-Camera * GetCamera(SceneNode * fromEntity)
+Camera * GetCamera(Entity * fromEntity)
 {
 	if(NULL != fromEntity)
 	{
@@ -89,7 +89,7 @@ Camera * GetCamera(SceneNode * fromEntity)
     return NULL;
 }
     
-LodComponent * GetLodComponent(SceneNode *fromEntity)
+LodComponent * GetLodComponent(Entity *fromEntity)
 {
     if(fromEntity)
     {
@@ -100,7 +100,7 @@ LodComponent * GetLodComponent(SceneNode *fromEntity)
 }
 
 
-void RecursiveProcessMeshNode(SceneNode * curr, void * userData, void(*process)(SceneNode*, void *))
+void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))
 {
 	RenderComponent * comp = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
 	if (comp)
@@ -120,7 +120,7 @@ void RecursiveProcessMeshNode(SceneNode * curr, void * userData, void(*process)(
 
 
 
-void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(*process)(SceneNode*, void*))
+void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*))
 {
 	LodComponent * lodComp = (LodComponent*)curr->GetComponent(Component::LOD_COMPONENT);
 	if (lodComp)
@@ -132,7 +132,7 @@ void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(
 			LodComponent::LodData * data = *it;
 			if (data->layer == lod)
 			{
-				for (Vector<SceneNode*>::iterator i = data->nodes.begin(); i != data->nodes.end(); ++i)
+				for (Vector<Entity*>::iterator i = data->nodes.begin(); i != data->nodes.end(); ++i)
 				{
 					process((*i), userData);
 				}

@@ -1,7 +1,7 @@
 #include "Entity/Component.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -30,7 +30,7 @@ void DebugRenderSystem::Process()
     uint32 size = entities.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        SceneNode * entity = entities[i];
+        Entity * entity = entities[i];
         
         DebugRenderComponent * debugRenderComponent = cast_if_equal<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
         TransformComponent * transformComponent = cast_if_equal<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
@@ -229,7 +229,7 @@ void DebugRenderSystem::Process()
     }
 }
 
-void DebugRenderSystem::AddEntity(SceneNode * entity)
+void DebugRenderSystem::AddEntity(Entity * entity)
 {
 	entities.push_back(entity);
 
@@ -241,7 +241,7 @@ void DebugRenderSystem::AddEntity(SceneNode * entity)
     }
 }
 
-void DebugRenderSystem::RemoveEntity(SceneNode * entity)
+void DebugRenderSystem::RemoveEntity(Entity * entity)
 {
     //DebugRenderComponent * debugRenderComponent = static_cast<DebugRenderComponent*>(entity->GetComponent(Component::DEBUG_RENDER_COMPONENT));
     RenderComponent * renderComponent = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT));

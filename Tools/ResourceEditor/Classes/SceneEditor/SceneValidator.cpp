@@ -47,9 +47,9 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
 
-        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
-            SceneNode * node = *it;
+            Entity * node = *it;
             if (node->GetParent())
             {
                 node->GetParent()->RemoveNode(node);
@@ -57,9 +57,9 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
         }
         
 
-		for (Set<SceneNode *>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+		for (Set<Entity *>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
 		{
-			SceneNode *node = *it;
+			Entity *node = *it;
 			SafeRelease(node);
 		}
 
@@ -83,7 +83,7 @@ void SceneValidator::ValidateScales(Scene *scene, Set<String> &errorsLog)
 	}
 }
 
-void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog)
+void SceneValidator::ValidateScalesInternal(Entity *sceneNode, Set<String> &errorsLog)
 {
 //  Basic algorithm is here
 // 	Matrix4 S, T, R; //Scale Transpose Rotation
@@ -121,14 +121,14 @@ void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &e
 }
 
 
-void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog)
+void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog)
 {
     if(!sceneNode) return;
     
     int32 count = sceneNode->GetChildrenCount();
     for(int32 i = 0; i < count; ++i)
     {
-        SceneNode *node = sceneNode->GetChild(i);
+        Entity *node = sceneNode->GetChild(i);
         
         ValidateRenderComponent(node, errorsLog);
         ValidateLodComponent(node, errorsLog);
@@ -164,7 +164,7 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
 }
 
 
-void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
     RenderComponent *rc = static_cast<RenderComponent *>(ownerNode->GetComponent(Component::RENDER_COMPONENT));
     if(!rc) return;
@@ -187,7 +187,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
 }
 
 
-void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
     LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
@@ -222,7 +222,7 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
     }
 }
 
-void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
 	ParticleEmitter * emitter = GetEmitter(ownerNode);
     if(!emitter) 
@@ -237,9 +237,9 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode
 
 
 
-void SceneValidator::ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
+void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
 {
-    ownerNode->RemoveFlag(SceneNode::NODE_INVALID);
+    ownerNode->RemoveFlag(Entity::NODE_INVALID);
     
     
     Material *material = renderBatch->GetMaterial();
@@ -262,7 +262,7 @@ void SceneValidator::ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *rend
         {
             if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
             {
-                ownerNode->AddFlag(SceneNode::NODE_INVALID);
+                ownerNode->AddFlag(Entity::NODE_INVALID);
                 errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
                 errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
             }
@@ -348,7 +348,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
 
 
 
-bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
+bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
     return (customProperties && customProperties->IsKeyExists("editor.donotremove"));
@@ -646,7 +646,7 @@ void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
         infoControl->SetNodesCount(nodesCount);
 }
 
-int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
+int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
 {
     //TODO: lode node can have several nodes at layer
     
