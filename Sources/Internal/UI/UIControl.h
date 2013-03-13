@@ -1096,6 +1096,10 @@ public:
     
     /// sets rect to match background sprite, also moves pivot point to center
     void SetSizeFromBg(bool pivotToCenter = true);
+
+	// Recalculate the size and positions for the child controls according to their Align Options.
+	void ApplyAlignSettingsForChildren();
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
