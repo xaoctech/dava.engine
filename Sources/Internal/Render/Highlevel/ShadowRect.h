@@ -47,7 +47,7 @@ public:
 	void Draw();
     
     void SetColor(const Color &color);
-    Color GetColor() const;
+    const Color & GetColor() const;
 
 private:
 	ShadowRect();

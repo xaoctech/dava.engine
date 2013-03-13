@@ -109,7 +109,7 @@ public:
     
     
     void SetShadowRectColor(const Color &color);
-    Color GetShadowRectColor();
+    const Color & GetShadowRectColor();
     
 private:
     void ProcessClipping();
