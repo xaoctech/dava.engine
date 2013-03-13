@@ -2529,4 +2529,9 @@ namespace DAVA
 	{
 		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
 	}
+
+	void UIControl::ApplyAlignSettingsForChildren()
+	{
+		RecalculateChildsSize();
+	}
 }
