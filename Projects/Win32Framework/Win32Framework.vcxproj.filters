@@ -2219,7 +2219,6 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
       <Filter>Internal\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
@@ -2231,6 +2230,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp">
       <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp">
+      <Filter>Internal\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

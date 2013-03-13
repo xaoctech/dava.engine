@@ -58,7 +58,14 @@ void ParticleEmitter3D::Draw(Camera * camera)
 
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
 {
-	Vector3 tempPosition = particlesFollow ? Vector3() : position;
+	Vector3 tempPosition = Vector3();
+	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	if(worldTransformPtr)
+	{
+		tempPosition = worldTransformPtr->GetTranslationVector();
+	}
+
+	//Vector3 tempPosition = particlesFollow ? Vector3() : position;
     if (emitterType == EMITTER_POINT)
     {
         particle->position = tempPosition;
