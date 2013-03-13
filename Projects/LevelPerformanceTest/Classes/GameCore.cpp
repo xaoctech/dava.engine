@@ -108,6 +108,10 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
+	File * testIdFile = File::Create(FileSystem::Instance()->GetCurrentWorkingDirectory() + "/testId.txt", File::WRITE | File::CREATE);
+	testIdFile->WriteLine(Format("%d", currentRunId));
+	SafeRelease(testIdFile);
+
 	dbClient->Disconnect();
 	SafeRelease(dbClient);
 
