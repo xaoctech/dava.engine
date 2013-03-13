@@ -108,7 +108,6 @@ void PropertiesGridController::UpdatePropertiesForUIControlNodeList(const Hierar
     }
 
     this->activeNodes = selectedNodes;
-    Logger::Debug("Current Active Nodes count: %i", selectedNodes.size());
     emit PropertiesGridUpdated();
 }
 
