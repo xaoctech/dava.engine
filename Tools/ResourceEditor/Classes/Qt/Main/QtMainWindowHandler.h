@@ -135,7 +135,7 @@ public slots:
 	void SetVisibilityAreaVisibilityTool();
 
     //
-    void ReloadTexturesFromFileSystem();
+    void RepackAndReloadTextures();
 
 	//particles editor
 	void CreateParticleEmitterNode();
@@ -153,8 +153,10 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
-signals:
 
+	void ReloadSceneTextures();
+
+signals:
 	void ProjectChanged();
 
 private:

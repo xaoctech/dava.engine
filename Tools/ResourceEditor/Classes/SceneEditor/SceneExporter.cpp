@@ -424,7 +424,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				if(exportFormat == PVR_FILE)
 				{
 					PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
-					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+					bool wasUpdated = descriptor->UpdateCrcForFormat(PVR_FILE);
                     if(wasUpdated)
                     {
                         descriptor->Save();
@@ -433,7 +433,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				else if(exportFormat == DXT_FILE)
 				{
 					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
-					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+					bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
                     if(wasUpdated)
                     {
                         descriptor->Save();
