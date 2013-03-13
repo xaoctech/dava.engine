@@ -379,6 +379,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	
 	LoadFromNode(rootControl, rootNode, false);
 	SafeRelease(parser);
+
+	// After the scene is fully loaded, apply the align settings
+	// to position child controls correctly.
+	rootControl->ApplyAlignSettingsForChildren();
 	
 	for (Map<String, Font *>::iterator t = fontMap.begin(); t != fontMap.end(); ++t)
 	{
