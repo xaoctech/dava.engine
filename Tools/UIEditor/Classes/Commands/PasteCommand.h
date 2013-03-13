@@ -22,7 +22,8 @@ namespace DAVA
 		
 		// Execute command.
 		virtual void Execute();
-		virtual bool IsUndoRedoSupported() {return false;};
+		virtual void Rollback();
+		virtual bool IsUndoRedoSupported() {return true;};
 		
 	private:
         int PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeNode *parent);
@@ -33,10 +34,19 @@ namespace DAVA
 		
 		void UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const;
 		
+		// Undo/Redo-related functionality.
+		void ReturnPastedControlsToScene();
+		void CleanupPastedItems();
+
 	private:
 		HierarchyTreeNode* parentNode;
 		CopyPasteController::CopyType copyType;
+		
+		// Items to be pasted.
 		const HierarchyTreeNode::HIERARCHYTREENODESLIST* items;
+		
+		// Items were pasted (coy of the items to be pasted).
+		HierarchyTreeNode::HIERARCHYTREENODESLIST* newItems;
 	};
 }
 
