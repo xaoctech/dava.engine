@@ -581,6 +581,38 @@ int UIControlMetadata::GetSpriteFrame()
     return GetActiveUIControl()->GetBackground()->GetFrame();
 }
 
+void UIControlMetadata::SetSpriteModification(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
+    if (sprite == NULL)
+    {
+        return;
+    }
+
+    GetActiveUIControl()->GetBackground()->SetModification(value);
+}
+
+int UIControlMetadata::GetSpriteModification()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1;
+    }
+    
+    Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
+    if (sprite == NULL)
+    {
+        return 0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetModification();
+}
+
 int UIControlMetadata::GetLeftAlign()
 {
     if (!VerifyActiveParamID())
