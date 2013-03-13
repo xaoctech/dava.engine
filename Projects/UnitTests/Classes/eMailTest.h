@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef __TemplateProjectMacOS__eMailTest__
-#define __TemplateProjectMacOS__eMailTest__
+#ifndef __EMAIL_TEST_H__
+#define __EMAIL_TEST_H__
 
 #include "DAVAEngine.h"
 
@@ -17,12 +17,17 @@ using namespace DAVA;
 
 class EMailTest: public TestTemplate<EMailTest>
 {
+	static float32 AUTO_CLOSE_TIME;
+
 public:
 	EMailTest();
 
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual bool RunTest(int32 testNum);
+	
+	virtual void DidAppear();	
+	virtual void Update(float32 timeElapsed);
 	
 	void TestFunction(PerfFuncData * data);
 	
@@ -37,6 +42,8 @@ private:
 	UIButton* finishTestBtn;
 
 	bool testFinished;
+		
+	float32 onScreenTime;
 };
 
-#endif /* defined(__TemplateProjectMacOS__InputTest__) */
+#endif /* defined(__EMAIL_TEST_H__) */
