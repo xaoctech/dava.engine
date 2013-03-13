@@ -40,7 +40,11 @@ void ParticleEmitterSystem::Update(float32 timeElapsed)
 	uint32 size = emitters.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		emitters[i]->Update(timeElapsed);
+        uint32 flags = emitters[i]->GetFlags();
+        if ((flags & RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
+        {
+            emitters[i]->Update(timeElapsed);
+        }
 	}
 }
 

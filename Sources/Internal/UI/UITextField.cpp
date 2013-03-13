@@ -250,6 +250,35 @@ void UITextField::ReleaseFocus()
 	}
 }
     
+void UITextField::SetFont(Font * font)
+{
+#ifndef __DAVAENGINE_IPHONE__
+    SafeRelease(textFont);
+    textFont = SafeRetain(font);
+    staticText->SetFont(textFont);
+#endif
+}
+
+void UITextField::SetTextColor(const Color& fontColor)
+{
+#ifdef __DAVAENGINE_IPHONE__
+    textFieldiPhone->SetTextColor(fontColor);
+#else
+    staticText->SetTextColor(fontColor);
+#endif
+}
+
+void UITextField::SetFontColor(const Color& fontColor)
+{
+    SetTextColor(fontColor);
+}
+
+void UITextField::SetFontSize(float size)
+{
+#ifdef __DAVAENGINE_IPHONE__
+    textFieldiPhone->SetFontSize(size);
+#endif
+}
 
 void UITextField::SetDelegate(UITextFieldDelegate * _delegate)
 {
@@ -261,23 +290,10 @@ UITextFieldDelegate * UITextField::GetDelegate()
 	return delegate;
 }
 	
-void UITextField::SetFontColor(float r, float g, float b, float a)
-{
-#ifdef __DAVAENGINE_IPHONE__
-	textFieldiPhone->SetFontColor(r, g, b, a);
-#endif
-}
-	
-void UITextField::SetFontSize(float size)
-{
-#ifdef __DAVAENGINE_IPHONE__
-	textFieldiPhone->SetFontSize(size);
-#endif
-}
-    
 void UITextField::SetSpriteAlign(int32 align)
 {
 #ifdef __DAVAENGINE_IPHONE__
+    textFieldiPhone->SetAlign(align);
 #else
     staticText->SetSpriteAlign(align);
 #endif
@@ -489,6 +505,10 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
     //Get font name and put it here
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
+
+	// Draw Type must be overwritten fot UITextField.
+	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
+	node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
 
     SafeDelete(nodeValue);
     
