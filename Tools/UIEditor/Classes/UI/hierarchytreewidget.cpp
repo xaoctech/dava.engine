@@ -73,7 +73,8 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			 iter != platformNode->GetChildNodes().end();
 			 ++iter)
 		{
-			const HierarchyTreeScreenNode* screenNode = (const HierarchyTreeScreenNode*)(*iter);
+			const HierarchyTreeScreenNode* screenNode = dynamic_cast<const HierarchyTreeScreenNode*>(*iter);
+			DVASSERT(screenNode);
 
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());

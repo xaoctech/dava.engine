@@ -2409,7 +2409,8 @@ namespace DAVA
 	
 	void UIControl::RecalculateChildsSize()
 	{
-		const List<UIControl*>& realChildren = this->GetRealChildren();
+//		const List<UIControl*>& realChildren = this->GetRealChildren();
+		const List<UIControl*>& realChildren = this->GetChildren();	//YZ recalculate size for all controls
 		for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
 		{
 			UIControl* child = (*iter);

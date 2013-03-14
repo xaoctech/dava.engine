@@ -7,6 +7,7 @@
 //
 
 #include "PasteCommand.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 
 #define COPY_DELTA Vector2(5, 5)
 
@@ -120,7 +121,12 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 		if (!control)
 			continue;
 		
-		HierarchyTreeControlNode* copy = new HierarchyTreeControlNode(parent, control);
+		HierarchyTreeAggregatorControlNode* aggregatorControl = dynamic_cast<HierarchyTreeAggregatorControlNode*>(control);
+		HierarchyTreeControlNode* copy = NULL;
+		if (aggregatorControl)
+			copy = new HierarchyTreeAggregatorControlNode(parent, aggregatorControl);
+		else
+			copy = new HierarchyTreeControlNode(parent, control);
 		UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(control->GetName(), parent));
 		UIControl* clone = copy->GetUIObject();
