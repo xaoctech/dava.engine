@@ -150,7 +150,7 @@ void GraphBase::NodesPropertyChanged(const String &forKey)
 	// the whole Scene Graph refresh is needed.
 	if (IsRebuildSelectedNodeEnough(forKey))
 	{
-		SceneNode* selectedNode = activeScene->GetSelectedNode();
+		Entity* selectedNode = activeScene->GetSelectedNode();
 		activeScene->RebuildSceneGraphNode(selectedNode);
 	}
 	else

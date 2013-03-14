@@ -12,7 +12,7 @@ ParticleEffectPropertyControl::~ParticleEffectPropertyControl()
 
 }
 
-void ParticleEffectPropertyControl::ReadFrom(SceneNode * sceneNode)
+void ParticleEffectPropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

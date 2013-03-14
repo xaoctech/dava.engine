@@ -78,12 +78,12 @@ void SpritePackerHelper::Reload()
 
 void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 {
-	List<SceneNode*> particleEffects;
+	List<Entity*> particleEffects;
 	sceneData->GetAllParticleEffects(particleEffects);
 
 	for (auto it = particleEffects.begin(); it != particleEffects.end(); ++it)
 	{
-		SceneNode* curNode = (*it);
+		Entity* curNode = (*it);
 	    ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(curNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
 		
 		if (!effectComponent)
@@ -97,7 +97,7 @@ void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 		int32 emittersCount = curNode->GetChildrenCount();
 		for (int32 i = 0; i < emittersCount; i ++)
 		{
-			SceneNode* childNode = curNode->GetChild(i);
+			Entity* childNode = curNode->GetChild(i);
 			ParticleEmitter * emitter = GetEmitter(childNode);
 
 			if (!emitter)

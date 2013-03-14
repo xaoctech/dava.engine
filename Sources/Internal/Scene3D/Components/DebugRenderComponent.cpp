@@ -22,7 +22,7 @@ uint32 DebugRenderComponent::GetDebugFlags()
     return curDebugFlags;
 }
     
-Component * DebugRenderComponent::Clone(SceneNode * toEntity)
+Component * DebugRenderComponent::Clone(Entity * toEntity)
 {
     DebugRenderComponent * component = new DebugRenderComponent();
 	component->SetEntity(toEntity);

@@ -43,7 +43,7 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, User
 	CreateBoxObject();
 }
 
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const Matrix4 &pWorldTransform)
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const Matrix4 &pWorldTransform)
 :	collWorld(collisionWorld),
 	collisionPartTransform(&((Matrix4&)pWorldTransform)),
 	userNode(0),
@@ -58,7 +58,7 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Scen
 	CreateFromEntity();
 }
 
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const AABBox3 &_box, const Matrix4 &pWorldTransform)
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const AABBox3 &_box, const Matrix4 &pWorldTransform)
 :	collWorld(collisionWorld),
 	collisionPartTransform(&((Matrix4&)pWorldTransform)),
 	userNode(0),

@@ -165,7 +165,7 @@ inline uint32 RenderStateBlock::GetStateValue(uint32 state)
 class Texture;
 class Shader;
     
-class RenderStateBlock
+class RenderState
 {
 public:  
     enum 
@@ -273,8 +273,8 @@ public:
         
     };*/
 
-    RenderStateBlock();
-    ~RenderStateBlock();
+    RenderState();
+    ~RenderState();
         
     Core::eRenderer renderer;
     uint32 state;
@@ -384,12 +384,12 @@ public:
         It checks what was changed from previous flush
         It updates previous state block to current state
      */
-    void Flush(RenderStateBlock * previousState) const;
+    void Flush(RenderState * previousState) const;
     
     /**
         Compare states
      */
-    bool IsEqual(RenderStateBlock * anotherState);
+    bool IsEqual(RenderState * anotherState);
 
 
 #if defined(__DAVAENGINE_DIRECTX9__)
@@ -398,7 +398,7 @@ public:
 };
 
 // Implementation of inline functions
-inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float32 _a)
+inline void RenderState::SetColor(float32 _r, float32 _g, float32 _b, float32 _a)
 {
     //if ((color.r != _r) || (color.g != _g) || (color.b != _b) || (color.a != _a))
     {
@@ -410,7 +410,7 @@ inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float
     }
 }
 
-inline void RenderStateBlock::SetColor(const Color & _color)
+inline void RenderState::SetColor(const Color & _color)
 {
     //if (color != _color)
     {
@@ -419,7 +419,7 @@ inline void RenderStateBlock::SetColor(const Color & _color)
     }
 }
 
-inline void RenderStateBlock::ResetColor()
+inline void RenderState::ResetColor()
 {
     //if ((color.r != 1.0f) || (color.g != 1.0f) || (color.b != 1.0f) || (color.a != 1.0f))
     {
@@ -429,12 +429,12 @@ inline void RenderStateBlock::ResetColor()
 }
 
 
-inline const Color & RenderStateBlock::GetColor() const
+inline const Color & RenderState::GetColor() const
 {
     return color;
 }
 
-inline void RenderStateBlock::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor)
+inline void RenderState::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor)
 {
     //if ((sourceFactor != _sourceFactor) || (destFactor != _destFactor))
     {       
@@ -445,7 +445,7 @@ inline void RenderStateBlock::SetBlendMode(eBlendMode _sourceFactor, eBlendMode 
 }
     
 // SHADER
-inline void RenderStateBlock::SetShader(Shader * _shader)
+inline void RenderState::SetShader(Shader * _shader)
 {
     shader = _shader;
 // Rethink concept of caching shader / shader data
@@ -457,7 +457,7 @@ inline void RenderStateBlock::SetShader(Shader * _shader)
 }
 
 // CULL MODE
-inline void RenderStateBlock::SetCullMode(eFace _cullMode)
+inline void RenderState::SetCullMode(eFace _cullMode)
 {
     //if (cullMode != _cullMode)
     {   
@@ -466,7 +466,7 @@ inline void RenderStateBlock::SetCullMode(eFace _cullMode)
     }
 }
 
-inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
+inline void RenderState::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 {
     uint8 newCmpValue = (uint8)(cmpValue * 255.0f);
     //if ((alphaFunc != func) || (alphaFuncCmpValue != newCmpValue))
@@ -477,7 +477,7 @@ inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
     }
 }
 
-inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
+inline void RenderState::SetDepthFunc(eCmpFunc func)
 {
 	//if(depthFunc != func)
 	{
@@ -486,7 +486,7 @@ inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
 	}
 }
 
-inline void RenderStateBlock::SetScissorRect(const Rect & rect)
+inline void RenderState::SetScissorRect(const Rect & rect)
 {
 	//if(scissorRect != rect)
 	{
@@ -495,46 +495,46 @@ inline void RenderStateBlock::SetScissorRect(const Rect & rect)
 	}
 }
 
-inline void RenderStateBlock::SetFillMode(eFillMode _fillMode)
+inline void RenderState::SetFillMode(eFillMode _fillMode)
 {
 	fillMode = _fillMode;
 }
     
-inline eBlendMode RenderStateBlock::GetSrcBlend()
+inline eBlendMode RenderState::GetSrcBlend()
 {
     return sourceFactor;
 }
 
-inline eBlendMode RenderStateBlock::GetDestBlend()
+inline eBlendMode RenderState::GetDestBlend()
 {
     return destFactor;
 }
 
 // STATE_TEXTURE
-inline void RenderStateBlock::SetTexture(Texture *texture, uint32 textureLevel)
+inline void RenderState::SetTexture(Texture *texture, uint32 textureLevel)
 {
     currentTexture[textureLevel] = texture;
     //changeSet |= (STATE_CHANGED_TEXTURE0 << textureLevel);
 }
 
-inline Texture * RenderStateBlock::GetTexture(uint32 textureLevel)
+inline Texture * RenderState::GetTexture(uint32 textureLevel)
 {
     return currentTexture[textureLevel];
 }
 
-inline void RenderStateBlock::SetStencilRef(int32 ref)
+inline void RenderState::SetStencilRef(int32 ref)
 {
 	stencilState.ref = ref;
 	//changeSet |= STATE_CHANGED_STENCIL_REF;
 }
 
-inline void RenderStateBlock::SetStencilMask(uint32 mask)
+inline void RenderState::SetStencilMask(uint32 mask)
 {
 	stencilState.mask = mask;
 	//changeSet |= STATE_CHANGED_STENCIL_MASK;
 }
 
-inline void RenderStateBlock::SetStencilFunc(eFace face, eCmpFunc func)
+inline void RenderState::SetStencilFunc(eFace face, eCmpFunc func)
 {
 	if(face == FACE_FRONT_AND_BACK)
 	{
@@ -546,7 +546,7 @@ inline void RenderStateBlock::SetStencilFunc(eFace face, eCmpFunc func)
 	}
 }
 
-inline void RenderStateBlock::SetStencilPass(eFace face, eStencilOp operation)
+inline void RenderState::SetStencilPass(eFace face, eStencilOp operation)
 {
 	if(face == FACE_FRONT_AND_BACK)
 	{
@@ -558,7 +558,7 @@ inline void RenderStateBlock::SetStencilPass(eFace face, eStencilOp operation)
 	}
 }
 
-inline void RenderStateBlock::SetStencilFail(eFace face, eStencilOp operation)
+inline void RenderState::SetStencilFail(eFace face, eStencilOp operation)
 {
 	if(face == FACE_FRONT_AND_BACK)
 	{
@@ -570,7 +570,7 @@ inline void RenderStateBlock::SetStencilFail(eFace face, eStencilOp operation)
 	}
 }
 
-inline void RenderStateBlock::SetStencilZFail(eFace face, eStencilOp operation)
+inline void RenderState::SetStencilZFail(eFace face, eStencilOp operation)
 {
 	if(face == FACE_FRONT_AND_BACK)
 	{

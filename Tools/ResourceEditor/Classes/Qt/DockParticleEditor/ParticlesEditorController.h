@@ -34,8 +34,8 @@ public:
     virtual ~ParticlesEditorController();
     
     // Register/remove the Patricles Effect node.
-    EffectParticleEditorNode* RegisterParticleEffectNode(SceneNode* effectNode, bool autoStart = true);
-    void UnregiserParticleEffectNode(SceneNode* effectNode);
+    EffectParticleEditorNode* RegisterParticleEffectNode(Entity* effectNode, bool autoStart = true);
+    void UnregiserParticleEffectNode(Entity* effectNode);
 
     // Whether the node belongs to Particle Editor?
     bool IsBelongToParticlesEditor(SceneGraphItem* sceneGraphItem);
@@ -50,11 +50,11 @@ public:
     void CleanupSelectedNode();
 
     // Get the Root node for the Particle Effect registered.
-    EffectParticleEditorNode* GetRootForParticleEffectNode(SceneNode* effectNode);
+    EffectParticleEditorNode* GetRootForParticleEffectNode(Entity* effectNode);
     
     // Add/remove different types of Particles Editor nodes to the scene.
-    void AddParticleEmitterNodeToScene(SceneNode* emitterSceneNode);
-    void RemoveParticleEmitterNode(SceneNode* emitterSceneNode);
+    void AddParticleEmitterNodeToScene(Entity* emitterSceneNode);
+    void RemoveParticleEmitterNode(Entity* emitterSceneNode);
     
     // Cleanup the Editor nodes of the node.
     void CleanupParticleEmitterEditorNode(EmitterParticleEditorNode* emitterNode);
@@ -83,10 +83,10 @@ public:
 	void RefreshSelectedNode(bool forceRefresh = false);
 
 signals:
-	void EffectSelected(SceneNode* effectNode);
-    void EmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode);
-	void LayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
-    void ForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
+	void EffectSelected(Entity* effectNode);
+    void EmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode);
+	void LayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh);
+    void ForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode);
 	void NodeDeselected(BaseParticleEditorNode* editorNode);
 
 protected:
@@ -95,7 +95,7 @@ protected:
 	void EmitNodeWillBeDeselected();
 
 	// Find the Emitter Editor node by the appropriate Scene Node.
-    void FindEmitterEditorNode(SceneNode* emitterSceneNode,
+    void FindEmitterEditorNode(Entity* emitterSceneNode,
                                EffectParticleEditorNode** rootEditorNode,
                                EmitterParticleEditorNode** emitterEditorNode);
 
@@ -119,7 +119,7 @@ protected:
 	void CleanupSelectedNodeIfDeleting(BaseParticleEditorNode* nodeToBeDeleted);
 
     // Particle Effects registered in the system.
-    typedef Map<SceneNode*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;
+    typedef Map<Entity*, EffectParticleEditorNode*> PARTICLESEFFECTMAP;
     typedef PARTICLESEFFECTMAP::iterator PARTICLESEFFECTITER;
     
     PARTICLESEFFECTMAP particleEffectNodes;

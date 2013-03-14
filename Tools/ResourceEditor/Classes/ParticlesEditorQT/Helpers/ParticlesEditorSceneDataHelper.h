@@ -10,7 +10,7 @@
 #define __ResourceEditorQt__ParticlesEditorSceneDataHelper__
 
 #include "DAVAEngine.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA {
 
@@ -20,10 +20,10 @@ class ParticlesEditorSceneDataHelper
 public:
 	// Add the new node, if it is related to Particles Editor. Returns TRUE if
 	// no further processing needed.
-	bool AddSceneNode(SceneNode* node) const;
+	bool AddSceneNode(Entity* node) const;
 		
 	// Remove the Scene Node, if it is related to Particles Editor.
-	void RemoveSceneNode(SceneNode* node) const;
+	void RemoveSceneNode(Entity* node) const;
 	
 	// Validate the Particle Emitter, generate the error message, if needed.
 	static bool ValidateParticleEmitter(ParticleEmitter* emitter, String& validationMsg);
