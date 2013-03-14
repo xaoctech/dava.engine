@@ -47,13 +47,13 @@ ProxyNode::~ProxyNode()
     SafeRelease(node);
 }
     
-void ProxyNode::SetNode(SceneNode * _node)
+void ProxyNode::SetNode(Entity * _node)
 {
     SafeRelease(node);
     node = SafeRetain(_node);
 }
 
-SceneNode * ProxyNode::GetNode()
+Entity * ProxyNode::GetNode()
 {
     return node;
 }

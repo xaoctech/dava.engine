@@ -42,7 +42,7 @@ class RenderPass;
 class RenderLayer;
 class RenderObject;
 class RenderBatch;
-class SceneNode;
+class Entity;
 class Camera;
 class Light;
 class ParticleEmitterSystem;
@@ -138,7 +138,7 @@ private:
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     
-    //HashMap<SceneNode*, RenderObject *> entityObjectMap;
+    //HashMap<Entity*, RenderObject *> entityObjectMap;
     Camera * camera;
     //Vector<RenderObject*> forRemove;
     

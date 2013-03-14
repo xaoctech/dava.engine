@@ -23,14 +23,14 @@ public:
 	EditorScene* GetScene() const {return scene;};
 
 	// Rebuild the model for the appropriate node and for the whole graph.
-	void RebuildNode(DAVA::SceneNode* rootNode);
+	void RebuildNode(DAVA::Entity* rootNode);
     virtual void Rebuild();
 
 	// Refresh the Particle Editor Layer.
 	void RefreshParticlesLayer(DAVA::ParticleLayer* layer);
 
-    void SelectNode(DAVA::SceneNode *node);
-    DAVA::SceneNode * GetSelectedNode();
+    void SelectNode(DAVA::Entity *node);
+    DAVA::Entity * GetSelectedNode();
 
 	// Get the persistent data for Model Index, needed for save/restore
 	// SceneGraphModel expanded state.
@@ -51,18 +51,18 @@ public:
     
 Q_SIGNALS:
     
-    void SceneNodeSelected(DAVA::SceneNode *node);
+    void SceneNodeSelected(DAVA::Entity *node);
     
 protected:
     void InitDecorationIcons();
-	QIcon GetDecorationIcon(DAVA::SceneNode *node) const;
+	QIcon GetDecorationIcon(DAVA::Entity *node) const;
 
-    void SelectNode(DAVA::SceneNode *node, bool selectAtGraph);
+    void SelectNode(DAVA::Entity *node, bool selectAtGraph);
     void SelectItem(GraphItem *item, bool needExpand = false);
     
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-    void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node, bool partialUpdate = false);
+    void AddNodeToTree(GraphItem *parent, DAVA::Entity *node, bool partialUpdate = false);
     
     bool LandscapeEditorModeEnabled() const;
     
@@ -81,11 +81,11 @@ protected:
 	GraphItem* GetGraphItemByModelIndex(const QModelIndex& index) const;
 
 	//Nodes which should not be displayed in SceneGraph tree must return false when passed to this function
-	bool IsNodeAccepted(DAVA::SceneNode* node);
+	bool IsNodeAccepted(DAVA::Entity* node);
 protected:
 
     EditorScene *scene;
-    DAVA::SceneNode *selectedNode;
+    DAVA::Entity *selectedNode;
     
     DAVA::ParticlesEditorSceneModelHelper particlesEditorSceneModelHelper;
     

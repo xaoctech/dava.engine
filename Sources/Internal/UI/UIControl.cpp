@@ -1958,6 +1958,11 @@ namespace DAVA
 		{
 			node->Set("tag", this->tag);
 		}
+		// spriteModification
+		if (baseControl->GetBackground()->GetModification() != this->GetBackground()->GetModification())
+		{
+			node->Set("spriteModification", this->GetBackground()->GetModification());
+		}
         
 		// Release variantType variable
 		SafeDelete(nodeValue);
@@ -1989,6 +1994,8 @@ namespace DAVA
 		
 		YamlNode * angleNode = node->Get("angle");
 		YamlNode * tagNode = node->Get("tag");
+
+		YamlNode * spriteModificationNode = node->Get("spriteModification");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -2139,6 +2146,12 @@ namespace DAVA
 		{
 			tag = tagNode->AsInt();
 		}
+
+		if(spriteModificationNode)
+        {
+			int32 spriteModification = spriteModificationNode->AsInt32();
+            GetBackground()->SetModification(spriteModification);
+        }
 	}
 	
 	Animation *	UIControl::WaitAnimation(float32 time, int32 track)

@@ -11,7 +11,7 @@ public:
 	LandscapePropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~LandscapePropertyControl();
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
 
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
@@ -23,15 +23,15 @@ public:
 protected:
     Vector<String> tiledModes;
 
-    void SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname);
+    void SetLandscapeTexture(Landscape::eTextureLevel level, const String &texturePathname);
 
     void GenerateFullTiledTexture(BaseObject * object, void * userData, void * callerData);
     
     void SaveHeightmapToPng(BaseObject * object, void * userData, void * callerData);
     
-    void AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level);
+    void AddFilepathProperty(const String &key, const String &filter, Landscape::eTextureLevel level);
     
-	LandscapeNode* GetLandscape() const;
+	Landscape* GetLandscape() const;
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__

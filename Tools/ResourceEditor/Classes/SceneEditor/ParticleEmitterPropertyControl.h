@@ -11,7 +11,7 @@ public:
 	ParticleEmitterPropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~ParticleEmitterPropertyControl();
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
 };
 
 #endif //__PARTCLEEMITTER_PROPERTY_CONTROL_H__

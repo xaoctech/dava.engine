@@ -6,7 +6,7 @@
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "Scene/SceneData.h"
 
-class DAVA::SceneNode;
+class DAVA::Entity;
 
 class PropertyEditor : public QtPropertyEditor
 {
@@ -16,7 +16,7 @@ public:
 	PropertyEditor(QWidget *parent = 0);
 	~PropertyEditor();
 
-	void SetNode(DAVA::SceneNode *node);
+	void SetNode(DAVA::Entity *node);
 
 protected:
     void AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
@@ -25,7 +25,7 @@ public slots:
 	void sceneActivated(SceneData *scene);
 	void sceneChanged(SceneData *scene);
 	void sceneReleased(SceneData *scene);
-	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
+	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
 
 	void actionHideReadOnly();
 
@@ -33,7 +33,7 @@ protected:
 	bool hideReadOnly;
 	QtPosSaver posSaver;
 
-	DAVA::SceneNode *curNode;
+	DAVA::Entity *curNode;
 	PropertyEditorStateHelper treeStateHelper;
 };
 

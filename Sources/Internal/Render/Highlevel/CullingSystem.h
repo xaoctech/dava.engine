@@ -41,7 +41,7 @@ class RenderPass;
 class RenderLayer;
 class RenderObject;
 class RenderBatch;
-class SceneNode;
+class Entity;
 class Camera;
 
 class CullingSystem : public SceneSystem
@@ -50,9 +50,9 @@ public:
     CullingSystem(Scene * scene);
     virtual ~CullingSystem();
     
-    virtual void AddEntity(SceneNode * entity);
-    virtual void RemoveEntity(SceneNode * entity);
-    virtual void ImmediateUpdate(SceneNode * entity);
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateUpdate(Entity * entity);
 
     virtual void Process();
     

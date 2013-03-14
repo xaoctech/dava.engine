@@ -15,7 +15,7 @@ LightPropertyControl::~LightPropertyControl()
 
 }
 
-void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
+void LightPropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

@@ -31,7 +31,7 @@
 #define __DAVAENGINE_SCENE_NODE_ANIMATION_KEY_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {

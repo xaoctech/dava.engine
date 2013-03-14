@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/Frustum.h"
 
 namespace DAVA
 {

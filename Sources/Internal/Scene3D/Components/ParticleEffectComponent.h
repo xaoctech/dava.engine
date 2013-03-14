@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Base/BaseObject.h"
 #include "Base/Message.h"
 
@@ -18,7 +18,7 @@ public:
 
 	ParticleEffectComponent();
 
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 
 	void Start();
 

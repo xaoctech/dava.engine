@@ -31,6 +31,15 @@ const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelp
     {UIControlBackground::COLOR_REPLACE_ALPHA_ONLY,     "Replace Alpha only"}
 };
 
+const BackgroundGridWidgetHelper::SpriteModificationTypesData BackgroundGridWidgetHelper::spriteModificationTypesData[] =
+{
+	{0,						"Original"},
+	{ESM_HFLIP,				"Horizontal"},
+	{ESM_VFLIP,				"Vertical"},
+	{ESM_HFLIP|ESM_VFLIP,	"Both"}
+
+};
+
 const BackgroundGridWidgetHelper::AlignTypesData BackgroundGridWidgetHelper::alignTypesData[] =
 {
     {ALIGN_LEFT | ALIGN_TOP,        "Left & Top"},
@@ -169,6 +178,45 @@ QString BackgroundGridWidgetHelper::GetAlignTypeDescByType(int alignType)
     return QString();
 }
 
+int BackgroundGridWidgetHelper::GetModificationType(int index)
+{
+	if (ValidateSpriteModificationIndex(index) == false)
+    {
+		return  spriteModificationTypesData[0].spriteModificationType;
+    }
+    
+	return spriteModificationTypesData[index].spriteModificationType;
+}
+
+QString BackgroundGridWidgetHelper::GetModificationTypeDesc(int index)
+{
+	if (ValidateSpriteModificationIndex(index) == false)
+    {
+		return  spriteModificationTypesData[0].spriteModificationTypeDescription;
+    }
+    
+    return spriteModificationTypesData[index].spriteModificationTypeDescription;
+}
+
+int BackgroundGridWidgetHelper::GetModificationTypesCount()
+{
+    return sizeof(spriteModificationTypesData)/sizeof(*spriteModificationTypesData);
+}
+
+QString BackgroundGridWidgetHelper::GetModificationTypeDescByType(int modifType)
+{
+	int count = GetModificationTypesCount();
+    for (int i = 0; i < count; i ++)
+    {
+		if (spriteModificationTypesData[i].spriteModificationType == modifType)
+        {
+			return spriteModificationTypesData[i].spriteModificationTypeDescription;
+        }
+    }
+    
+    Logger::Error("Unknown/unsupported Modification Type %i!", modifType);
+    return QString();
+}
 bool BackgroundGridWidgetHelper::ValidateDrawTypeIndex(int index)
 {
     if (index < 0 || index >= GetDrawTypesCount())
@@ -196,6 +244,17 @@ bool BackgroundGridWidgetHelper::ValidateAlginTypeIndex(int index)
     if (index < 0 || index >= GetAlignTypesCount())
     {
         Logger::Error("Align Type index %i is out of bounds!", index);
+        return false;
+    }
+    
+    return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateSpriteModificationIndex(int index)
+{
+	if (index < 0 || index >= GetModificationTypesCount())
+    {
+        Logger::Error("Sprite modification index %i is out of bounds!", index);
         return false;
     }
     
