@@ -136,6 +136,7 @@
 		C10740FF163A960D0069A640 /* BaseMetadataParams.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C10740FE163A960D0069A640 /* BaseMetadataParams.cpp */; };
 		C1074160163E7B740069A640 /* ItemsCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C107415E163E7B740069A640 /* ItemsCommand.cpp */; };
 		C107916716D78CCD0081E58C /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C107916416D78C9E0081E58C /* libFrameworkQt.a */; };
+		C14920F716F0D04900B8B8A2 /* HierarchyTreeAggregatorControlNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C14920F516F0D04800B8B8A2 /* HierarchyTreeAggregatorControlNode.cpp */; };
 		C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C14FF9C0162EE4DF00F77F70 /* controllist.cpp */; };
 		C15C2FED162AD6E400818631 /* FrameworkMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */; };
 		C15C2FEE162AD6E400818631 /* GameCore.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C15C2FE3162AD6E400818631 /* GameCore.cpp */; };
@@ -157,6 +158,12 @@
 		C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */; };
 		C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A6F162EC800000C1B32 /* librarywidget.ui */; };
 		C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A71162EC809000C1B32 /* librarywidget.cpp */; };
+		C1D9D90E16EE18330039BD20 /* createaggregatordlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1D9D90C16EE18330039BD20 /* createaggregatordlg.cpp */; };
+		C1D9D91116EE1A000039BD20 /* createaggregatordlg.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1D9D91016EE1A000039BD20 /* createaggregatordlg.ui */; };
+		C1D9D91416EE1F470039BD20 /* moc_createaggregatordlg.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1D9D91316EE1F470039BD20 /* moc_createaggregatordlg.cpp */; };
+		C1D9D91716EE296F0039BD20 /* HierarchyTreeAggregatorNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1D9D91516EE296F0039BD20 /* HierarchyTreeAggregatorNode.cpp */; };
+		C1D9D91A16EE36440039BD20 /* LibraryController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1D9D91816EE36440039BD20 /* LibraryController.cpp */; };
+		C1D9D92116EF611C0039BD20 /* UIAggregatorMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1D9D91F16EF611B0039BD20 /* UIAggregatorMetadata.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -407,6 +414,8 @@
 		C107415E163E7B740069A640 /* ItemsCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ItemsCommand.cpp; path = Commands/ItemsCommand.cpp; sourceTree = "<group>"; };
 		C107415F163E7B740069A640 /* ItemsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemsCommand.h; path = Commands/ItemsCommand.h; sourceTree = "<group>"; };
 		C107915B16D78C9E0081E58C /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../../Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
+		C14920F516F0D04800B8B8A2 /* HierarchyTreeAggregatorControlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeAggregatorControlNode.cpp; path = Models/HierarchyTreeAggregatorControlNode.cpp; sourceTree = "<group>"; };
+		C14920F616F0D04900B8B8A2 /* HierarchyTreeAggregatorControlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeAggregatorControlNode.h; path = Models/HierarchyTreeAggregatorControlNode.h; sourceTree = "<group>"; };
 		C14FF9C0162EE4DF00F77F70 /* controllist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controllist.cpp; sourceTree = "<group>"; };
 		C14FF9C1162EE4DF00F77F70 /* controllist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = controllist.h; sourceTree = "<group>"; };
 		C15C2FE1162AD6E400818631 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameworkMain.cpp; sourceTree = "<group>"; };
@@ -443,6 +452,17 @@
 		C1C62A6F162EC800000C1B32 /* librarywidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = librarywidget.ui; sourceTree = "<group>"; };
 		C1C62A71162EC809000C1B32 /* librarywidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = librarywidget.cpp; sourceTree = "<group>"; };
 		C1C62A72162EC809000C1B32 /* librarywidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = librarywidget.h; sourceTree = "<group>"; };
+		C1D9D90C16EE18330039BD20 /* createaggregatordlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = createaggregatordlg.cpp; path = Dialogs/createaggregatordlg.cpp; sourceTree = "<group>"; };
+		C1D9D90D16EE18330039BD20 /* createaggregatordlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = createaggregatordlg.h; path = Dialogs/createaggregatordlg.h; sourceTree = "<group>"; };
+		C1D9D91016EE1A000039BD20 /* createaggregatordlg.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = createaggregatordlg.ui; path = Dialogs/createaggregatordlg.ui; sourceTree = "<group>"; };
+		C1D9D91216EE1DBA0039BD20 /* ui_createaggregatordlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_createaggregatordlg.h; sourceTree = "<group>"; };
+		C1D9D91316EE1F470039BD20 /* moc_createaggregatordlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_createaggregatordlg.cpp; sourceTree = "<group>"; };
+		C1D9D91516EE296F0039BD20 /* HierarchyTreeAggregatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HierarchyTreeAggregatorNode.cpp; path = Models/HierarchyTreeAggregatorNode.cpp; sourceTree = "<group>"; };
+		C1D9D91616EE296F0039BD20 /* HierarchyTreeAggregatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HierarchyTreeAggregatorNode.h; path = Models/HierarchyTreeAggregatorNode.h; sourceTree = "<group>"; };
+		C1D9D91816EE36440039BD20 /* LibraryController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryController.cpp; path = Controllers/LibraryController.cpp; sourceTree = "<group>"; };
+		C1D9D91916EE36440039BD20 /* LibraryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryController.h; path = Controllers/LibraryController.h; sourceTree = "<group>"; };
+		C1D9D91F16EF611B0039BD20 /* UIAggregatorMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIAggregatorMetadata.cpp; path = Metadata/UIAggregatorMetadata.cpp; sourceTree = "<group>"; };
+		C1D9D92016EF611B0039BD20 /* UIAggregatorMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIAggregatorMetadata.h; path = Metadata/UIAggregatorMetadata.h; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -564,6 +584,10 @@
 				176D3956162C397F0099AACF /* HierarchyTree.h */,
 				17F6F49C1647B234003FFA0E /* HierarchyTreeNodeExtraData.cpp */,
 				17F6F49D1647B234003FFA0E /* HierarchyTreeNodeExtraData.h */,
+				C1D9D91516EE296F0039BD20 /* HierarchyTreeAggregatorNode.cpp */,
+				C1D9D91616EE296F0039BD20 /* HierarchyTreeAggregatorNode.h */,
+				C14920F516F0D04800B8B8A2 /* HierarchyTreeAggregatorControlNode.cpp */,
+				C14920F616F0D04900B8B8A2 /* HierarchyTreeAggregatorControlNode.h */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -581,6 +605,8 @@
 				17112B44163920BC0017E713 /* CommandsController.h */,
 				173339E51694472600E98820 /* UndoRedoController.cpp */,
 				173339E61694472600E98820 /* UndoRedoController.h */,
+				C1D9D91816EE36440039BD20 /* LibraryController.cpp */,
+				C1D9D91916EE36440039BD20 /* LibraryController.h */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -611,6 +637,8 @@
 				17DF04D816368040001F7ED2 /* ScreenMetadata.h */,
 				176D395D162C3DF90099AACF /* UIButtonMetadata.h */,
 				1759BE26164A89A80067F498 /* PropertyNames.h */,
+				C1D9D91F16EF611B0039BD20 /* UIAggregatorMetadata.cpp */,
+				C1D9D92016EF611B0039BD20 /* UIAggregatorMetadata.h */,
 			);
 			name = Metadata;
 			sourceTree = "<group>";
@@ -634,6 +662,7 @@
 		17FF15DC16400155001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				C1D9D91016EE1A000039BD20 /* createaggregatordlg.ui */,
 				17FF15F81640069E001B130F /* localizationeditordialog.ui */,
 				17FF15DD16400160001B130F /* createplatformdlg.ui */,
 				17FF15DE16400160001B130F /* createscreendlg.ui */,
@@ -665,6 +694,8 @@
 		17FF15FD16400A41001B130F /* Dialogs */ = {
 			isa = PBXGroup;
 			children = (
+				C1D9D90C16EE18330039BD20 /* createaggregatordlg.cpp */,
+				C1D9D90D16EE18330039BD20 /* createaggregatordlg.h */,
 				7492E0E91639445D00DF883A /* fontmanagerdialog.h */,
 				7492E0E81639445D00DF883A /* fontmanagerdialog.cpp */,
 				17FF15FE16400A75001B130F /* localizationeditordialog.cpp */,
@@ -741,52 +772,50 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
-				17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */,
+				C1D9D91316EE1F470039BD20 /* moc_createaggregatordlg.cpp */,
+				C1D9D91216EE1DBA0039BD20 /* ui_createaggregatordlg.h */,
 				74EED63316B18D5500262D63 /* moc_alignspropertygridwidget.cpp */,
-				748EF23F16AE97EF00AC647E /* qrc_icons.cpp */,
-				7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */,
-				7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */,
-				7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */,
-				17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */,
-				176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */,
-				176834A516510759004800D7 /* ui_uitextfieldpropertygridwidget.h */,
-				748E2E5D16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp */,
-				7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */,
-				748955FE164162B000070AE1 /* moc_qcolorbutton.cpp */,
-				C161DCEC16400F4E00068417 /* moc_hierarchytreecontrol.cpp */,
-				17FF160416400CCA001B130F /* moc_localizationeditordialog.cpp */,
-				17FF160216400AE9001B130F /* ui_localizationeditordialog.h */,
-				17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */,
-				17CED797163E822F00F9B02D /* moc_statepropertygridwidget.cpp */,
-				17CED798163E822F00F9B02D /* ui_statepropertygridwidget.h */,
 				747FA17D1636A8A3000CEEDA /* moc_backgroundpropertygridwidget.cpp */,
 				17CD340D16397D600061A467 /* moc_BaseMetadata.cpp */,
 				17CD340E16397D600061A467 /* moc_basepropertygridwidget.cpp */,
+				17AFA3E8163EDCE400F6CB5B /* moc_CommandsController.cpp */,
 				17CD340F16397D600061A467 /* moc_controllist.cpp */,
 				17CD341016397D600061A467 /* moc_controlpropertygridwidget.cpp */,
 				C10740EA163A94750069A640 /* moc_createplatformdlg.cpp */,
 				C10740EB163A94750069A640 /* moc_createscreendlg.cpp */,
 				17CD341116397D600061A467 /* moc_davaglwidget.cpp */,
+				17FD40361663D57B00BE42A2 /* moc_EditorFontManager.cpp */,
 				17CD341216397D600061A467 /* moc_flagspropertygridwidget.cpp */,
 				7492E0F016394A4E00DF883A /* moc_fontmanagerdialog.cpp */,
+				C161DCEC16400F4E00068417 /* moc_hierarchytreecontrol.cpp */,
 				17CD341316397D600061A467 /* moc_HierarchyTreeController.cpp */,
 				17CD341416397D600061A467 /* moc_hierarchytreewidget.cpp */,
 				17CD341516397D600061A467 /* moc_librarywidget.cpp */,
+				17FF160416400CCA001B130F /* moc_localizationeditordialog.cpp */,
 				17CD341616397D600061A467 /* moc_mainwindow.cpp */,
 				17CD341716397D600061A467 /* moc_PlatformMetadata.cpp */,
 				17CD341816397D600061A467 /* moc_platformpropertygridwidget.cpp */,
 				17CD341916397D600061A467 /* moc_PropertiesGridController.cpp */,
 				17CD341A16397D600061A467 /* moc_propertygridcontainerwidget.cpp */,
+				748955FE164162B000070AE1 /* moc_qcolorbutton.cpp */,
 				17CD341B16397D600061A467 /* moc_rectpropertygridwidget.cpp */,
 				C10740EC163A94750069A640 /* moc_screenmanager.cpp */,
 				17CD341C16397D600061A467 /* moc_ScreenMetadata.cpp */,
 				17CD341D16397D600061A467 /* moc_screenpropertygridwidget.cpp */,
 				17CD341E16397D600061A467 /* moc_ScreenWrapper.cpp */,
+				7482C8CD1688AB7C00435155 /* moc_sliderpropertygridwidget.cpp */,
+				7484342C1648035E00920BBD /* moc_statecomboboxitemdelegate.cpp */,
+				17CED797163E822F00F9B02D /* moc_statepropertygridwidget.cpp */,
 				17CD341F16397D600061A467 /* moc_textpropertygridwidget.cpp */,
 				17CD342016397D600061A467 /* moc_UIButtonMetadata.cpp */,
 				17CD342116397D600061A467 /* moc_UIControlMetadata.cpp */,
+				7482C8CE1688AB7C00435155 /* moc_UISliderMetadata.cpp */,
 				17CD342216397D600061A467 /* moc_UIStaticTextMetadata.cpp */,
 				17CD342316397D600061A467 /* moc_UITextControlMetadata.cpp */,
+				748E2E5D16496AFD00C77EB8 /* moc_UITextFieldMetadata.cpp */,
+				176834A416510759004800D7 /* moc_uitextfieldpropertygridwidget.cpp */,
+				748EF23F16AE97EF00AC647E /* qrc_icons.cpp */,
+				17F298DC16CA92CA007716C3 /* ui_alignspropertygridwidget.h */,
 				747FA17E1636A8A3000CEEDA /* ui_backgroundpropertygridwidget.h */,
 				C10740ED163A94750069A640 /* ui_basepropertygridwidget.h */,
 				C10740EE163A94750069A640 /* ui_controlpropertygridwidget.h */,
@@ -797,12 +826,16 @@
 				7492E0F116394A4E00DF883A /* ui_fontmanagerdialog.h */,
 				C10740F3163A94750069A640 /* ui_hierarchytreewidget.h */,
 				C10740F4163A94750069A640 /* ui_librarywidget.h */,
+				17FF160216400AE9001B130F /* ui_localizationeditordialog.h */,
 				C10740F5163A94750069A640 /* ui_mainwindow.h */,
 				C10740F6163A94750069A640 /* ui_platformpropertygridwidget.h */,
 				C10740F7163A94750069A640 /* ui_propertygridcontainerwidget.h */,
 				C10740F8163A94750069A640 /* ui_rectpropertygridwidget.h */,
 				C10740F9163A94750069A640 /* ui_screenpropertygridwidget.h */,
+				7482C8CF1688AB7C00435155 /* ui_sliderpropertygridwidget.h */,
+				17CED798163E822F00F9B02D /* ui_statepropertygridwidget.h */,
 				C10740FA163A94750069A640 /* ui_textpropertygridwidget.h */,
+				176834A516510759004800D7 /* ui_uitextfieldpropertygridwidget.h */,
 				17CD340C16397D600061A467 /* moc_backgroundpropertygridwidget.cpp */,
 			);
 			path = GeneratedFiles;
@@ -1008,6 +1041,7 @@
 				176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */,
 				7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */,
 				74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */,
+				C1D9D91116EE1A000039BD20 /* createaggregatordlg.ui in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1167,6 +1201,12 @@
 				748EF24016AE97EF00AC647E /* qrc_icons.cpp in Build Sources */,
 				74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */,
 				74EED63416B18D5500262D63 /* moc_alignspropertygridwidget.cpp in Build Sources */,
+				C1D9D90E16EE18330039BD20 /* createaggregatordlg.cpp in Build Sources */,
+				C1D9D91416EE1F470039BD20 /* moc_createaggregatordlg.cpp in Build Sources */,
+				C1D9D91716EE296F0039BD20 /* HierarchyTreeAggregatorNode.cpp in Build Sources */,
+				C1D9D91A16EE36440039BD20 /* LibraryController.cpp in Build Sources */,
+				C1D9D92116EF611C0039BD20 /* UIAggregatorMetadata.cpp in Build Sources */,
+				C14920F716F0D04900B8B8A2 /* HierarchyTreeAggregatorControlNode.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

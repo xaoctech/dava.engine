@@ -98,6 +98,8 @@ compilers: \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_localizationeditordialog.cpp \
 	$(COMP_DIR)ui_localizationeditordialog.h \
+	$(COMP_DIR)moc_createaggregatordlg.cpp \
+	$(COMP_DIR)ui_createaggregatordlg.h \
 	$(COMP_DIR)qrc_icons.cpp
 	
 compiler_objective_c_make_all:
@@ -145,6 +147,7 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_createscreendlg.cpp \
 	$(COMP_DIR)moc_localizationeditordialog.cpp \
+	$(COMP_DIR)moc_createaggregatordlg.cpp \
 	$(COMP_DIR)qrc_icons.cpp
 
 compiler_moc_header_clean:
@@ -190,6 +193,7 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_qcolorbutton.cpp \
 		$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 		$(COMP_DIR)moc_localizationeditordialog.cpp \
+		$(COMP_DIR)moc_createaggregatordlg.cpp \
 		$(COMP_DIR)qrc_icons.cpp
 
 $(COMP_DIR)moc_mainwindow.cpp: $(SOURCE_DIR)UI/mainwindow.h
@@ -312,6 +316,9 @@ $(COMP_DIR)moc_statecomboboxitemdelegate.cpp: $(SOURCE_DIR)UI/statecomboboxitemd
 $(COMP_DIR)moc_localizationeditordialog.cpp: $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h -o $(COMP_DIR)moc_localizationeditordialog.cpp
 
+$(COMP_DIR)moc_createaggregatordlg.cpp: $(SOURCE_DIR)UI/Dialogs/createaggregatordlg.h 
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/Dialogs/createaggregatordlg.h -o $(COMP_DIR)moc_createaggregatordlg.cpp
+
 $(COMP_DIR)qrc_icons.cpp : $(QRC_DIR)icons.qrc
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc -name icons $(QRC_DIR)icons.qrc -o $(COMP_DIR)qrc_icons.cpp
 
@@ -347,6 +354,8 @@ compiler_uic_make_all: \
 	$(COMP_DIR)ui_createplatformdlg.h \
 	$(COMP_DIR)ui_createscreendlg.h \
 	$(COMP_DIR)ui_localizationeditordialog.h \
+	$(COMP_DIR)ui_createaggregatordlg.h \
+
 
 compiler_uic_clean:
 	-$(DEL_FILE) \
@@ -370,7 +379,8 @@ compiler_uic_clean:
 		$(COMP_DIR)ui_fontmanagerdialog.h \
 		$(COMP_DIR)ui_createplatformdlg.h \
 		$(COMP_DIR)ui_createscreendlg.h \
-		$(COMP_DIR)ui_localizationeditordialog.h
+		$(COMP_DIR)ui_localizationeditordialog.h \
+		$(COMP_DIR)ui_createaggregatordlg.h
 
 $(COMP_DIR)ui_mainwindow.h: $(UI_DIR)mainwindow.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)mainwindow.ui -o $(COMP_DIR)ui_mainwindow.h
@@ -434,6 +444,9 @@ $(COMP_DIR)ui_createscreendlg.h: $(UI_DIR)/Dialogs/createscreendlg.ui
 
 $(COMP_DIR)ui_localizationeditordialog.h: $(UI_DIR)/Dialogs/localizationeditordialog.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/Dialogs/localizationeditordialog.ui -o $(COMP_DIR)ui_localizationeditordialog.h
+
+$(COMP_DIR)ui_createaggregatordlg.h: $(UI_DIR)/Dialogs/createaggregatordlg.ui
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/Dialogs/createaggregatordlg.ui -o $(COMP_DIR)ui_createaggregatordlg.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:

@@ -171,6 +171,7 @@
 #include "UI/UIScreenManager.h"
 
 #include "UI/TheoraPlayer.h"
+#include "UI/UIAggregatorControl.h"
 
 
 // Game object manager / 2D Scene

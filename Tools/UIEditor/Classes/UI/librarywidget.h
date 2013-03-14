@@ -14,7 +14,10 @@ class LibraryWidget : public QWidget
 public:
     explicit LibraryWidget(QWidget *parent = 0);
     ~LibraryWidget();
-	    
+	
+	void AddControl(const QString& name);
+	void RemoveControl(const QString& name);
+	
 private:
     Ui::LibraryWidget *ui;
 };
