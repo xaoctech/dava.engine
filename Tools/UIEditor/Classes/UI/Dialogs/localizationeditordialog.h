@@ -94,6 +94,10 @@ private slots:
 	// A dialog is closed.
 	void CloseDialog();
 
+	// Add/Remove String slots.
+	void OnAddNewLocalizationString();
+	void OnRemoveSelectedLocalizationString();
+
 private:
 	// Localization Table Model.
 	QStandardItemModel* tableModel;
