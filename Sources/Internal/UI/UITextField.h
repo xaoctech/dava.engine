@@ -156,10 +156,26 @@ public:
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-
+	
+	/**
+	 \brief Returns the font of control
+	 \returns Font font of the control
+	 */
     Font *GetFont();
+	/**
+	 \brief Returns the text color of control.
+	 \returns Color color of control's text
+	 */
 	Color GetTextColor();
+	/**
+	 \brief Returns text shadow offset relative to base text.
+	 \returns Vector2 with shadow offset for X and Y axis
+	 */
 	Vector2 GetShadowOffset();
+	/**
+	 \brief Returns color of text shadow.
+	 \returns Color of text shadow.
+	 */
 	Color GetShadowColor();
 
     void SetFocused()
@@ -170,39 +186,33 @@ public:
     void ReleaseFocus();
     
     virtual bool IsLostFocusAllowed(UIControl *newFocus);
-
-    
+	
+  	/**
+	 \brief Sets the font of the control text.
+	 \param[in] font font used for text draw of the states.
+	 */  
     void SetFont(Font * font);
+	/**
+	 \brief Sets the color of the text.
+	 \param[in] fontColor font used for text draw of the states.
+	 */
     void SetTextColor(const Color& fontColor);
     DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
+	/**
+	 \brief Sets the size of the font.
+	 \param[in] size font size to be set.
+	 */
     void SetFontSize(float size);
-
-    void SetFont(Font * font)
-    {
-        SafeRelease(textFont);
-        textFont = SafeRetain(font);
-		staticText->SetFont(textFont);
-    }
-
-	void SetTextColor(const Color& c)
-	{
-		staticText->SetTextColor(c);
-	}
-
-    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor))
-    {
-        staticText->SetTextColor(fontColor);
-    }
-	
-	void SetShadowOffset(const DAVA::Vector2 &offset)
-	{
-		staticText->SetShadowOffset(offset);
-	}
-	
-	void SetShadowColor(const Color& c)
-	{
-		staticText->SetShadowColor(c);
-    }
+	/**
+	 \brief Sets shadow offset of text control.
+	 \param[in] offset offset of text shadow relative to base text.
+	 */
+	void SetShadowOffset(const DAVA::Vector2 &offset);
+	/**
+	 \brief Sets shadow color of text control.
+	 \param[in] color color of text shadow.
+	 */
+	void SetShadowColor(const Color& color);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 	
