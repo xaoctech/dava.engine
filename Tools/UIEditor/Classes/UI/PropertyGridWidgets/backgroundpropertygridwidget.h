@@ -42,6 +42,9 @@ protected:
     // Pre-process the sprite name.
     QString PreprocessSpriteName(const QString& rawSpriteName);
 
+	//handle elements according drawType
+	void HandleDrawTypeComboBox();
+
 private slots:
     void OpenSpriteDialog();
     void RemoveSprite();

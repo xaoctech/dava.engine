@@ -50,7 +50,7 @@ bool ParticlesEditorSceneModelHelper::ProcessSelectionChanged(const QItemSelecti
 }
 
 // Custom node selection.
-SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelected(GraphItem* rootItem, SceneNode* node)
+SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelected(GraphItem* rootItem, Entity* node)
 {
     // Do we have something marked for selection on the Particles Editor? If yes,
     // do select it.
@@ -64,7 +64,7 @@ void ParticlesEditorSceneModelHelper::ResetSelection()
 	ParticlesEditorController::Instance()->CleanupSelectedNode();
 }
 
-SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, SceneNode* node)
+SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, Entity* node)
 {
     SceneGraphItem* graphRootItem = dynamic_cast<SceneGraphItem*>(rootItem);
     if (!graphRootItem || graphRootItem->GetExtraUserData() == NULL)
@@ -99,7 +99,7 @@ SceneGraphItem* ParticlesEditorSceneModelHelper::GetGraphItemToBeSelectedRecursi
     return NULL;
 }
 
-SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNode)
+Entity* ParticlesEditorSceneModelHelper::PreprocessSceneNode(Entity* rawNode)
 {
     // There is one and only preprocessing case - if the "raw" node is "orphaned" Particles Emitter
     // (without the ParticlesEffectNode parent), we'll create the new Particles Effect node and
@@ -112,13 +112,13 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
 
 	//ParticleEmitterNode* emitterNode = static_cast<ParticleEmitterNode*>(rawNode);
 	//emitterNode->SetEmitter(emitterComponent->GetParticleEmitter());
-    SceneNode* curParentNode = rawNode->GetParent();
+    Entity* curParentNode = rawNode->GetParent();
     ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(curParentNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     // If the Emitter Node has parent, but its parent is not ParticleEffectNode, we need to
     // "adopt" this node by creating ParticleEffect node and attaching.
     if (curParentNode && (effectComponent == NULL))
     {
-		SceneNode* newParentNodeParticleEffect = CreateParticleEffectNode();
+		Entity* newParentNodeParticleEffect = CreateParticleEffectNode();
 		curParentNode->AddNode(newParentNodeParticleEffect);
 
         // Add the emitter node to the new Effect (this will also remove it from the scene).
@@ -138,9 +138,9 @@ SceneNode* ParticlesEditorSceneModelHelper::PreprocessSceneNode(SceneNode* rawNo
     return rawNode;
 }
 
-SceneNode* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
+Entity* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
 {
-	SceneNode * newParentNodeParticleEffect = new SceneNode();
+	Entity * newParentNodeParticleEffect = new Entity();
 	newParentNodeParticleEffect->SetName("Particle effect");
 	ParticleEffectComponent * newEffectComponent = new ParticleEffectComponent();
 	newParentNodeParticleEffect->AddComponent(newEffectComponent);
@@ -148,7 +148,7 @@ SceneNode* ParticlesEditorSceneModelHelper::CreateParticleEffectNode()
 	return newParentNodeParticleEffect;
 }
 
-bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node)
+bool ParticlesEditorSceneModelHelper::AddNodeToSceneGraph(SceneGraphItem *graphItem, Entity *node)
 {
     ParticleEffectComponent * effectComponent = cast_if_equal<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
     if (effectComponent == NULL)
@@ -184,7 +184,7 @@ void ParticlesEditorSceneModelHelper::BuildSceneGraphRecursive(BaseParticleEdito
     // Set the UserData for inner Emitter nodes.
     if (dynamic_cast<EmitterParticleEditorNode*>(rootNode))
     {
-        SceneNode* emitterNode = (static_cast<EmitterParticleEditorNode*>(rootNode))->GetEmitterNode();
+        Entity* emitterNode = (static_cast<EmitterParticleEditorNode*>(rootNode))->GetEmitterNode();
         rootItem->SetUserData(emitterNode);
     }
 
@@ -209,7 +209,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
 	EffectParticleEditorNode* effectEditorNode = dynamic_cast<EffectParticleEditorNode*>(node);
     if (effectEditorNode)
     {
-		SceneNode* effectRootNode = node->GetRootNode();
+		Entity* effectRootNode = node->GetRootNode();
         SynchronizeEffectParticleEditorNode(effectEditorNode, effectRootNode);
     }
 
@@ -226,7 +226,7 @@ void ParticlesEditorSceneModelHelper::SynchronizeParticleEditorTree(BaseParticle
     }
 }
 
-void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode)
+void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, Entity* effectRootNode)
 {
     if (!node || !effectRootNode)
     {

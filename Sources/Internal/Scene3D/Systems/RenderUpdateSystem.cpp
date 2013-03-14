@@ -29,12 +29,12 @@
 =====================================================================================*/
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
@@ -57,7 +57,7 @@ RenderUpdateSystem::~RenderUpdateSystem()
 {
 }
 
-void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
+void RenderUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
@@ -75,7 +75,7 @@ void RenderUpdateSystem::ImmediateEvent(SceneNode * entity, uint32 event)
     }
 }
     
-void RenderUpdateSystem::AddEntity(SceneNode * entity)
+void RenderUpdateSystem::AddEntity(Entity * entity)
 {
     RenderObject * renderObject = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
     if (!renderObject)return;
@@ -84,7 +84,7 @@ void RenderUpdateSystem::AddEntity(SceneNode * entity)
 	GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
 }
 
-void RenderUpdateSystem::RemoveEntity(SceneNode * entity)
+void RenderUpdateSystem::RemoveEntity(Entity * entity)
 {
     RenderObject * renderObject = entityObjectMap.GetValue(entity);
     if (!renderObject)

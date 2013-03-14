@@ -37,7 +37,7 @@ namespace DAVA
 
 class ImposterManager;
 
-class ImposterNode : public SceneNode
+class ImposterNode : public Entity
 {
 public:
 
@@ -56,7 +56,7 @@ public:
 
 	void UpdateState();
 	virtual void Draw();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual Entity* Clone(Entity *dstNode = NULL);
 
 	void UpdateImposter();
 	void GeneralDraw();
@@ -96,13 +96,13 @@ private:
 	SharedFBO::Block * block;
 
 	void RecreateFbo(const Vector2 & size);
-	void HierarchicalRemoveCull(SceneNode * node);
+	void HierarchicalRemoveCull(Entity * node);
 
 	void UpdatePriority(float32 squaredDistance, float32 dotProduct);
 	float32 priority;
 
 	bool IsAngleOrRangeChangedEnough(float32 squareDistance, float32 dotProduct);
-	void GetOOBBoxScreenCoords(SceneNode * node, const Matrix4 & mvp, AABBox3 & screenBounds);
+	void GetOOBBoxScreenCoords(Entity * node, const Matrix4 & mvp, AABBox3 & screenBounds);
 
 	friend class ImposterNodeComparer;
 };

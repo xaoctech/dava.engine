@@ -30,12 +30,12 @@
 #ifndef __DAVAENGINE_USERNODE_H__
 #define __DAVAENGINE_USERNODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
 
-class UserNode : public SceneNode
+class UserNode : public Entity
 {
 public:	
 	UserNode();
@@ -45,7 +45,7 @@ public:
 	AABBox3 drawBox;
 	
 	virtual AABBox3 GetWTMaximumBoundingBox();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual Entity* Clone(Entity *dstNode = NULL);
 
 };
 

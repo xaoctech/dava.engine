@@ -318,9 +318,6 @@
     <ClCompile Include="Classes\BulletObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\DebugNode.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\EditorScene.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -478,9 +475,6 @@
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
-      <Filter>Sources\SceneEditor\Properties\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
       <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PropertyList.h">
@@ -907,9 +901,6 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp">
-      <Filter>Sources\LandscapeEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp">
@@ -1527,6 +1518,9 @@
     <ClCompile Include="Classes\Commands\EditCommands.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1650,9 +1644,6 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\config.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\DebugNode.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\EditorScene.h">
@@ -2276,9 +2267,6 @@
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h">
-      <Filter>Sources\LandscapeEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
@@ -2705,6 +2693,9 @@
     <ClInclude Include="Classes\Collada\ColladaErrorCodes.h">
       <Filter>Sources\Collada</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2827,9 +2818,6 @@
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
-      <Filter>Sources\SceneEditor\Properties\Light</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
@@ -2885,9 +2873,6 @@
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
-    </None>
-    <None Include="MakefileQt">
-      <Filter>Sources</Filter>
     </None>
     <None Include="DataQt\materialbrowser.ui">
       <Filter>QtData</Filter>

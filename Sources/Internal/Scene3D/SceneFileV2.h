@@ -126,9 +126,9 @@ public:
     void SetError(eError error);
     eError GetError();
     
-    void OptimizeScene(SceneNode * rootNode);
-    bool RemoveEmptySceneNodes(SceneNode * rootNode);
-    bool RemoveEmptyHierarchy(SceneNode * currentNode);
+    void OptimizeScene(Entity * rootNode);
+    bool RemoveEmptySceneNodes(Entity * rootNode);
+    bool RemoveEmptyHierarchy(Entity * currentNode);
     int32 removedNodeCount;
 private:
     void AddToNodeMap(DataNode * node);
@@ -149,11 +149,11 @@ private:
     bool SaveDataNode(DataNode * node, File * file);
     void LoadDataNode(DataNode * parent, File * file);
 
-    bool SaveHierarchy(SceneNode * node, File * file, int32 level);
-    void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
+    bool SaveHierarchy(Entity * node, File * file, int32 level);
+    void LoadHierarchy(Scene * scene, Entity * node, File * file, int32 level);
 
-    bool ReplaceNodeAfterLoad(SceneNode * node);
-	void ReplaceOldNodes(SceneNode * currentNode);
+    bool ReplaceNodeAfterLoad(Entity * node);
+	void ReplaceOldNodes(Entity * currentNode);
 
     
     bool isDebugLogEnabled;

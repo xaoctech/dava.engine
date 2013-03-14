@@ -124,7 +124,10 @@ namespace DAVA
 	void UIButton::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	{
 		UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-		for(int i = 1; i < DRAW_STATE_COUNT; i++)
+		
+		// Have to update all the stateTexts here to update the position of the text for all states.
+		// Start loop from zero.
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
 			if(stateTexts[i])
 			{

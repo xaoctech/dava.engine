@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 
 #include "FileSystem/FilePath.h"
 #include "Base/FastName.h"
@@ -277,7 +277,7 @@ public:
 	inline Texture * GetTexture(eTextureLevel level) const;
 	inline const String & GetTextureName(eTextureLevel level) const;
 
-	RenderStateBlock * GetRenderStateBlock();
+	RenderState * GetRenderState();
     
     inline void SetBlendSrc(eBlendMode _blendSrc);
     inline void SetBlendDest(eBlendMode _blendDest);
@@ -346,7 +346,7 @@ private:
     int32 uniformFlatColor;
     int32 uniformTexture0Shift;
 
-	RenderStateBlock renderStateBlock;
+	RenderState renderStateBlock;
     
     
     /*

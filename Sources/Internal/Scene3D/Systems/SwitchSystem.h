@@ -13,12 +13,12 @@ public:
 	SwitchSystem(Scene * scene);
 
 	virtual void Process();
-	virtual void ImmediateEvent(SceneNode * entity, uint32 event);
+	virtual void ImmediateEvent(Entity * entity, uint32 event);
 
 private:
-	Set<SceneNode*> updatableEntities;
+	Set<Entity*> updatableEntities;
 
-	void SetVisibleHierarchy(SceneNode * entity, bool visible);
+	void SetVisibleHierarchy(Entity * entity, bool visible);
 };
 
 }

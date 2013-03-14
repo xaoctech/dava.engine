@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/Light.h"
 
 namespace DAVA 
@@ -16,7 +16,7 @@ public:
     ~LightComponent();
     
     IMPLEMENT_COMPONENT_TYPE(LIGHT_COMPONENT);
-    virtual Component * Clone(SceneNode * toEntity);
+    virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 

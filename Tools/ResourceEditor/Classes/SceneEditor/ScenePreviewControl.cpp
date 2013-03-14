@@ -239,7 +239,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
             if(!cam)
             {
                 Camera * cam = new Camera();
-                //cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+                //cam->SetDebugFlags(Entity::DEBUG_DRAW_ALL);
                 cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
                 cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
                 cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
@@ -248,7 +248,7 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
                 
 
                 
-                ScopedPtr<SceneNode> node(new SceneNode());
+                ScopedPtr<Entity> node(new Entity());
                 node->SetName("preview-camera");
                 node->AddComponent(new CameraComponent(cam));
                 editorScene->AddNode(node);
