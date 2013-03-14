@@ -608,7 +608,6 @@ void BasePropertyGridWidget::UpdateLineEditWidgetWithPropertyValue(QLineEdit* li
         else
         {
             // Get the current value.
-            Logger::Debug(propertyValue.toStdString().c_str());
             lineEditWidget->setText(propertyValue);
         }
     }
