@@ -24,7 +24,7 @@ public:
     virtual ~ModificationPopUp();
 	
     void OnButton(BaseObject * object, void * userData, void * callerData);
-	inline void SetSelection(SceneNode * _selection)
+	inline void SetSelection(Entity * _selection)
 	{
 		selection = _selection;
 //		parameters->Refresh();
@@ -36,7 +36,7 @@ public:
 protected:
 
     PropertyList *parameters;
-    SceneNode * selection;
+    Entity * selection;
 	UIButton * btnReset;
 
 };

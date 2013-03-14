@@ -16,7 +16,7 @@ MeshInstancePropertyControl::~MeshInstancePropertyControl()
 
 }
 
-void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
+void MeshInstancePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

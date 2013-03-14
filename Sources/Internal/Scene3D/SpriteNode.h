@@ -31,7 +31,7 @@
 #ifndef __SPRITE_NODE_H__
 #define __SPRITE_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/RenderDataObject.h"
 
 namespace DAVA 
@@ -42,7 +42,7 @@ class Sprite;
     \ingroup 
     \brief 
  */
-class SpriteNode : public SceneNode
+class SpriteNode : public Entity
 {
 public:
     

@@ -31,10 +31,10 @@
 #define __RULER_TOOL_LANDSCAPE_H__
 
 #include "DAVAEngine.h"
-#include "EditorLandscapeNode.h"
+#include "EditorLandscape.h"
 
 class LandscapeRenderer;
-class RulerToolLandscape: public EditorLandscapeNode
+class RulerToolLandscape: public EditorLandscape
 {
     
 public:	

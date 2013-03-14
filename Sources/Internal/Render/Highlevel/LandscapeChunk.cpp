@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/LandscapeChunk.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
 
@@ -36,7 +36,7 @@ namespace DAVA
 {
 REGISTER_CLASS(LandscapeChunk);
 
-LandscapeChunk::LandscapeChunk(LandscapeNode * _landscape)
+LandscapeChunk::LandscapeChunk(Landscape * _landscape)
     : landscape(_landscape)
 {
     SetOwnerLayerName(LAYER_OPAQUE);

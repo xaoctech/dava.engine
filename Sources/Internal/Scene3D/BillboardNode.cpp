@@ -36,7 +36,7 @@ namespace DAVA
 REGISTER_CLASS(BillboardNode);
 
 BillboardNode::BillboardNode()
-    : SceneNode()
+    : Entity()
 {
 
 }

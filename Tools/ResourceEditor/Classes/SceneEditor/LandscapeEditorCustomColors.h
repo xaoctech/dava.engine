@@ -78,7 +78,7 @@ protected:
     void DrawCircle(Vector<Vector<bool> >& matrixForCircle) ;
     uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent);
 
-	Map<LandscapeNode*, String> saveFileNamesMap;
+	Map<Landscape*, String> saveFileNamesMap;
 	
 	bool wasTileMaskToolUpdate;
     

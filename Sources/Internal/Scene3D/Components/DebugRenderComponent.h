@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA 
@@ -37,7 +37,7 @@ public:
     void SetDebugFlags(uint32 debugFlags);
     uint32 GetDebugFlags();
 
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 

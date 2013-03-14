@@ -43,10 +43,10 @@ protected:
     void OnBuildQuadTreePressed(BaseObject * obj, void *, void *);
     void OnRefreshGraph(BaseObject * obj, void *, void *);
 
-    void RecreatePropertiesPanelForNode(SceneNode *node);
+    void RecreatePropertiesPanelForNode(Entity *node);
 
     
-    SceneNode * workingNode;
+    Entity * workingNode;
 };
 
 
