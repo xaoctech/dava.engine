@@ -47,11 +47,15 @@ class UIControlMetadata : public BaseMetadata
     
     Q_PROPERTY(QString Sprite READ GetSprite WRITE SetSprite);
     Q_PROPERTY(int SpriteFrame READ GetSpriteFrame WRITE SetSpriteFrame);
+	Q_PROPERTY(int SpriteModification READ GetSpriteModification WRITE SetSpriteModification);
     
     Q_PROPERTY(int DrawType READ GetDrawType WRITE SetDrawType);
     Q_PROPERTY(int ColorInheritType READ GetColorInheritType WRITE SetColorInheritType);
     Q_PROPERTY(int Align READ GetAlign WRITE SetAlign);
     
+	Q_PROPERTY(float LeftRightStretchCap READ GetLeftRightStretchCap WRITE SetLeftRightStretchCap);
+	Q_PROPERTY(float TopBottomStretchCap READ GetTopBottomStretchCap WRITE SetTopBottomStretchCap);
+
     // Flag Properties
     Q_PROPERTY(bool Selected READ GetSelected WRITE SetSelected);
     Q_PROPERTY(bool Visible READ GetVisible WRITE SetVisible);
@@ -126,6 +130,12 @@ protected:
     virtual int GetAlign();
     virtual void SetAlign(int value);
 
+	virtual float GetLeftRightStretchCap();
+	virtual void SetLeftRightStretchCap(float value);
+	
+	virtual float GetTopBottomStretchCap();
+	virtual void SetTopBottomStretchCap(float value);
+
     //Color getter/setter. Also virtual.
     virtual QColor GetColor();
     virtual void SetColor(const QColor& value);
@@ -137,6 +147,9 @@ protected:
 
     virtual void SetSpriteFrame(int value);
     virtual int GetSpriteFrame();
+
+	virtual void SetSpriteModification(int value);
+    virtual int GetSpriteModification();
 
     //Boolean gettes/setters
     bool GetSelected() const;
