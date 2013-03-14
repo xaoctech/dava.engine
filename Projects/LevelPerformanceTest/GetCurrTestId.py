@@ -20,6 +20,6 @@ if None != connection:
 	
 	currTest = collection.find_one({'_id': 'GlobalTestId'})
 	if None != currTest:
-		report.write(str(currTest['LastTestId']))
+		report.write(str(currTest['LastTestId']+1))
 
 report.close()
