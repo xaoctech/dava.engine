@@ -48,6 +48,8 @@ public:
     
 	// Return the Platform Node back to scene after deletion when performing Undo.
 	virtual void ReturnTreeNodeToScene();
+	
+	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
 
 private:
 	int width;

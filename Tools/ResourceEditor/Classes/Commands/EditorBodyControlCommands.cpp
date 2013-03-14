@@ -2,9 +2,11 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-CommandTransformObject::CommandTransformObject(DAVA::SceneNode* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
+CommandTransformObject::CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform)
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Transform Object";
+
 	undoTransform = originalTransform;
 	redoTransform = finalTransform;
 	this->node = node;
@@ -29,10 +31,13 @@ void CommandTransformObject::Cancel()
 }
 
 
-CommandCloneObject::CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl)
+CommandCloneObject::CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld)
 :	Command(COMMAND_UNDO_REDO)
 ,	clonedNode(NULL)
+,	collisionWorld(collisionWorld)
 {
+	commandName = "Clone Object";
+
 	originalNode = node;
 	this->bodyControl = bodyControl;
 }
@@ -49,6 +54,9 @@ void CommandCloneObject::Execute()
 		if (!clonedNode)
 		{
 			clonedNode = SafeRetain(originalNode->Clone());
+
+			if (collisionWorld)
+				UpdateCollision(clonedNode);
 		}
 
 		originalNode->GetParent()->AddNode(clonedNode);
@@ -69,11 +77,34 @@ void CommandCloneObject::Cancel()
 	}
 }
 
-CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::LandscapeNode* landscape)
-:	Command(COMMAND_UNDO_REDO)
+void CommandCloneObject::UpdateCollision(DAVA::Entity *node)
 {
-	this->node = node;
-	this->landscape = landscape;
+	DVASSERT(node && collisionWorld);
+	
+	BulletComponent* bc = dynamic_cast<BulletComponent*>(node->GetComponent(Component::BULLET_COMPONENT));
+	if (bc && !bc->GetBulletObject())
+	{
+		bc->SetBulletObject(ScopedPtr<BulletObject>(new BulletObject(node->GetScene(),
+																	 collisionWorld,
+																	 node,
+																	 node->GetWorldTransform())));
+	}
+	
+	for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+	{
+		UpdateCollision(node->GetChild(i));
+	}
+}
+
+
+CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::Entity* node, EditorBodyControl* bodyControl)
+:	Command(COMMAND_UNDO_REDO)
+,	node(node)
+,	bodyControl(bodyControl)
+{
+	commandName = "Place On Landscape";
+
+	redoTransform.Identity();
 
 	if (node)
 		undoTransform = node->GetLocalTransform();
@@ -81,20 +112,9 @@ CommandPlaceOnLandscape::CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::La
 
 void CommandPlaceOnLandscape::Execute()
 {
-	if (node && landscape)
+	if (node && bodyControl)
 	{
-		const Matrix4& worldTransform = node->GetWorldTransform();
-		Vector3 p = Vector3(0, 0, 0) * worldTransform;
-		
-		Vector3 result;
-		bool res = landscape->PlacePoint(p, result);
-		if (res)
-		{
-			Vector3 offset = result - p;
-			redoTransform.CreateTranslation(offset);
-			redoTransform = node->GetLocalTransform() * redoTransform;
-		}
-		
+		redoTransform = node->GetLocalTransform() * bodyControl->GetLandscapeOffset(node->GetWorldTransform());
 		node->SetLocalTransform(redoTransform);
 	}
 	else
@@ -110,10 +130,12 @@ void CommandPlaceOnLandscape::Cancel()
 }
 
 
-CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::SceneNode* node)
+CommandRestoreOriginalTransform::CommandRestoreOriginalTransform(DAVA::Entity* node)
 :	Command(COMMAND_UNDO_REDO)
 ,	node(node)
 {
+	commandName = "Restore Original Transform";
+
 	if (node)
 	{
 		StoreCurrentTransform(node);
@@ -138,7 +160,7 @@ void CommandRestoreOriginalTransform::Cancel()
 	}
 }
 
-void CommandRestoreOriginalTransform::StoreCurrentTransform(DAVA::SceneNode *node)
+void CommandRestoreOriginalTransform::StoreCurrentTransform(DAVA::Entity *node)
 {
 	if (node)
 	{
@@ -149,11 +171,11 @@ void CommandRestoreOriginalTransform::StoreCurrentTransform(DAVA::SceneNode *nod
 	}
 }
 
-void CommandRestoreOriginalTransform::RestoreTransform(DAVA::SceneNode *node)
+void CommandRestoreOriginalTransform::RestoreTransform(DAVA::Entity *node)
 {
 	if (node)
 	{
-		Map<SceneNode*, Matrix4>::iterator it = undoTransforms.find(node);
+		Map<Entity*, Matrix4>::iterator it = undoTransforms.find(node);
 		if (it != undoTransforms.end())
 		{
 			node->SetLocalTransform((*it).second);

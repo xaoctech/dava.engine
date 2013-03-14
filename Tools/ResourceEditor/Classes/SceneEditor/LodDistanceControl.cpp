@@ -32,13 +32,15 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
                                                     rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
         
         distanceText[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-        distanceText[iDist]->SetFont(ControlsFactory::GetFontLight());
+        distanceText[iDist]->SetFont(ControlsFactory::GetFont12());
+		distanceText[iDist]->SetTextColor(ControlsFactory::GetColorLight());
         
         
         distanceTextValues[iDist] = new UITextField(Rect(rect.dx / 2.f, (float32)((iDist+1) * ControlsFactory::BUTTON_HEIGHT), 
                                                          rect.dx / 2.f, (float32)(ControlsFactory::BUTTON_HEIGHT)));
         ControlsFactory::CustomizeEditablePropertyCell(distanceTextValues[iDist]);
-        distanceTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
+        distanceTextValues[iDist]->SetFont(ControlsFactory::GetFont12());
+		distanceTextValues[iDist]->SetTextColor(ControlsFactory::GetColorLight());
         distanceTextValues[iDist]->SetDelegate(this);
         distanceTextValues[iDist]->SetInputEnabled((0 != iDist), false);
         
@@ -47,24 +49,28 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
                                                     rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
         
         trianglesText[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-        trianglesText[iDist]->SetFont(ControlsFactory::GetFontLight());
+        trianglesText[iDist]->SetFont(ControlsFactory::GetFont12());
+		trianglesText[iDist]->SetTextColor(ControlsFactory::GetColorLight());
         
         trianglesTextValues[iDist] = new UIStaticText(Rect(rect.dx / 2.f, 0,
                                                      rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
         
         trianglesTextValues[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-        trianglesTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
+        trianglesTextValues[iDist]->SetFont(ControlsFactory::GetFont12());
+		trianglesTextValues[iDist]->SetTextColor(ControlsFactory::GetColorLight());
     }
     
     distanceToCameraText = new UIStaticText(Rect(0, 0, rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
     distanceToCameraText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    distanceToCameraText->SetFont(ControlsFactory::GetFontLight());
+    distanceToCameraText->SetFont(ControlsFactory::GetFont12());
+	distanceToCameraText->SetTextColor(ControlsFactory::GetColorLight());
     distanceToCameraText->SetText(WideString(L"From Camera:"));
     AddControl(distanceToCameraText);
     
     distanceToCameraValue = new UIStaticText(Rect(rect.dx / 2.f, 0, rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
     distanceToCameraValue->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    distanceToCameraValue->SetFont(ControlsFactory::GetFontLight());
+    distanceToCameraValue->SetFont(ControlsFactory::GetFont12());
+	distanceToCameraValue->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(distanceToCameraValue);
 }
 
@@ -108,7 +114,7 @@ void LodDistanceControl::UpdateDistanceToCamera()
     EditorScene *scene = activeScene->GetScene();
     DVASSERT(scene);
 
-    SceneNode *selection = scene->GetSelection();
+    Entity *selection = scene->GetSelection();
     if(selection)
     {
         Camera *activeCamera = scene->GetCurrentCamera();

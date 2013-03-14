@@ -108,7 +108,9 @@ TextBlock::~TextBlock()
 	
 void TextBlock::SetFont(Font * _font)
 {
-	DVASSERT(_font);
+	if(!_font)
+        return;
+
 	if (!constFont || !constFont->IsEqual(_font))
 	{
 		needRedraw = true;
@@ -123,19 +125,7 @@ void TextBlock::SetFont(Font * _font)
 	originalFontSize = font->GetSize();
 	Prepare();
 }
-	
-void TextBlock::SetFontColor(const Color& fontColor)
-{
-    if (!font || font->GetColor() == fontColor)
-    {
-        return;
-    }
-
-    font->SetColor(fontColor);
-    needRedraw = true;
-    Prepare();
-}
-    
+   
 void TextBlock::SetRectSize(const Vector2 & size)
 {
 	if (rectSize != size) 

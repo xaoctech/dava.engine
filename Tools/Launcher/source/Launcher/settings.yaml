@@ -1,13 +1,3 @@
 LAUNCHER:
-  LAUNCHER_UPDATE_URL: http://127.0.0.1/~adebt/Launcher/config.yaml
-  LAUNCHER_VER: 0.1
-DEVELOPMENT:
-  Calculator:
-    ver: 2.2
-    runPath: Calculator.app/Contents/MacOS/Calculator
-    installCmd: ""
-    uninstallCmd: ""
-    installParams: ""
-    uninstallParams: ""
-    installedFiles:
-      - Calculator.app
+  LAUNCHER_UPDATE_URL: http://by2-svn.wargaming.net/dava.framework/win/launcher/configs/config.yaml
+  LAUNCHER_VER: 0.7

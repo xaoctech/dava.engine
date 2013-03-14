@@ -4,9 +4,10 @@
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Scene/SceneData.h"
 
-CommandCreateNodeSceneEditor::CommandCreateNodeSceneEditor(DAVA::SceneNode* node)
+CommandCreateNodeSceneEditor::CommandCreateNodeSceneEditor(DAVA::Entity* node)
 :	Command(COMMAND_UNDO_REDO)
 {
+	commandName = "Create Node";
 	this->node = SafeRetain(node);
 }
 

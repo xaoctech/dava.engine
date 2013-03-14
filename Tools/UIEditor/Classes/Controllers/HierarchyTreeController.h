@@ -61,7 +61,7 @@ public:
 	
 	void ChangeItemSelection(HierarchyTreeControlNode* control);
 	void SelectControl(HierarchyTreeControlNode* control);
-	void UnselectControl(HierarchyTreeControlNode* control);
+	void UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged = true);
 	bool IsControlSelected(HierarchyTreeControlNode* control) const;
 	void ResetSelectedControl();
 	

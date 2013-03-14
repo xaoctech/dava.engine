@@ -30,14 +30,14 @@ PropertyControlCreator::~PropertyControlCreator()
 }
 
 
-NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties)
+NodesPropertyControl * PropertyControlCreator::CreateControlForNode(Entity * sceneNode, const Rect & rect, bool createNodeProperties)
 {
 	return CreateControlForNode(DetectNodeType(sceneNode), rect, createNodeProperties);
     
 }
 
 
-PropertyControlCreator::ePropertyControlIDs PropertyControlCreator::DetectNodeType(SceneNode *node)
+PropertyControlCreator::ePropertyControlIDs PropertyControlCreator::DetectNodeType(Entity *node)
 {
     if(node->GetComponent(Component::LIGHT_COMPONENT))
     {
@@ -162,7 +162,7 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
     return controls[controlID];
 }
 
-NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(SceneNode * sceneNode, const Rect & rect, LandscapeEditorPropertyControl::eEditorMode mode)
+NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(Entity * sceneNode, const Rect & rect, LandscapeEditorPropertyControl::eEditorMode mode)
 {
     if(LandscapeEditorPropertyControl::MASK_EDITOR_MODE == mode)
     {

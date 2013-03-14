@@ -10,7 +10,7 @@
 namespace DAVA 
 {
 
-class SceneNode;
+class Entity;
 class Transform;
 
 class TransformSystem : public SceneSystem
@@ -21,8 +21,8 @@ public:
 
     Transform * CreateTransform();
 
-	virtual void ImmediateEvent(SceneNode * entity, uint32 event);
-	virtual void RemoveEntity(SceneNode * entity);
+	virtual void ImmediateEvent(Entity * entity, uint32 event);
+	virtual void RemoveEntity(Entity * entity);
 
     void DeleteTransform(Transform * transform);
     void LinkTransform(int32 parentIndex, int32 childIndex);
@@ -33,12 +33,12 @@ public:
 private:
     void SortAndThreadSplit();
     
-	Vector<SceneNode*> updatableEntities;
+	Vector<Entity*> updatableEntities;
 
-	void HierahicNeedUpdate(SceneNode * entity);
-	void HierahicAddToUpdate(SceneNode * entity);
+	void EntityNeedUpdate(Entity * entity);
+	void HierahicAddToUpdate(Entity * entity);
 
-	void HierahicFindUpdatableTransform(SceneNode * entity);
+	void HierahicFindUpdatableTransform(Entity * entity, bool forcedUpdate = false);
 
 	int32 passedNodes;
 	int32 multipliedNodes;

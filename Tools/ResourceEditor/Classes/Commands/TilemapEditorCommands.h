@@ -18,17 +18,22 @@ protected:
 class CommandDrawTilemap: public Command
 {
 public:
-	CommandDrawTilemap();
+	CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape);
 	virtual ~CommandDrawTilemap();
 
 protected:
 	Image* undoImage;
 	Image* redoImage;
+	String savedPathname;
+
+	Landscape* landscape;
 
 	virtual void Execute();
 	virtual void Cancel();
 
 	LandscapeEditorColor* GetEditor();
+	LandscapeEditorBase* GetActiveEditor();
+	void UpdateLandscapeTilemap(Image* image);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__TILEMAPEDITORCOMMANDS__) */

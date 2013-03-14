@@ -157,7 +157,10 @@
 #include "UI/UIHierarchy.h"
 #include "UI/UIHierarchyCell.h"
 #include "UI/UIFileSystemDialog.h"
-
+#include "UI/UIWebView.h"
+#include "UI/UISpinner.h"
+#include "UI/VectorSpinnerAdapter.h"
+#include "UI/UISwitch.h"
 
 #include "UI/UIYamlLoader.h"
 
@@ -212,11 +215,10 @@
 
 // 3D scene management
 #include "Scene3D/Scene.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SpriteNode.h"
-#include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Mesh.h"
@@ -226,12 +228,9 @@
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
-#include "Scene3D/BVHierarchy.h"
-#include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Scene3D/ParticleEffectNode.h"
-#include "Scene3D/ReferenceNode.h"
 #include "Scene3D/SwitchNode.h"
 #include "Scene3D/UserNode.h"
 #include "Scene3D/Systems/LodSystem.h"
@@ -249,6 +248,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/UserComponent.h"
 
 // Application core 
 #include "Core/Core.h"

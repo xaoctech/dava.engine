@@ -43,13 +43,15 @@ UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rect
 	:	UIControl(rect, rectInAbsoluteCoordinates)
 	,	delegate(NULL)
 	,	orientation(requiredOrientation)
+	,	scrollContainer(NULL)
+	,	scroll(NULL)
 {
 		InitAfterYaml();
 }
 		
-UIList::UIList() : delegate(NULL), orientation(ORIENTATION_VERTICAL)
+UIList::UIList() : delegate(NULL), orientation(ORIENTATION_VERTICAL), scrollContainer(NULL), scroll(NULL)
 {
-		
+	InitAfterYaml();
 }
 		
 void UIList::InitAfterYaml()
@@ -59,6 +61,14 @@ void UIList::InitAfterYaml()
 	Rect r = GetRect();
 	r.x = 0;
 	r.y = 0;
+	
+	// InitAfterYaml might be called multiple times - check this and remove previous scroll, if yes.
+	if (scrollContainer)
+	{
+		RemoveControl(scrollContainer);
+		SafeRelease(scrollContainer);
+	}
+
 	scrollContainer = new UIControl(r);
 	AddControl(scrollContainer);
 	
@@ -73,7 +83,10 @@ void UIList::InitAfterYaml()
 	
 	needRefresh = FALSE;
 	
-	scroll = new ScrollHelper();
+	if (scroll == NULL)
+	{
+		scroll = new ScrollHelper();
+	}
 }
 
 UIList::~UIList()
@@ -683,5 +696,11 @@ void UIList::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPosition
     scroll->SetPosition(-newPosition);
 }
     
-	
+List<UIControl* >& UIList::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(scrollContainer);
+	return realChildren;
+}
+
 };

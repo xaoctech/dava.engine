@@ -88,23 +88,65 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	//add selection
 	activeControlNodes.insert(control);
-	control->GetUIObject()->SetDebugDraw(true);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(true);
+		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
+	
+		//YZ draw parent rect
+		UIControl* parentUiControl = uiControl->GetParent();
+		if (parentUiControl)
+		{
+			parentUiControl->SetDebugDrawColor(Color(0.55f, 0.55f, 0.55f, 1.f));
+			parentUiControl->SetDebugDraw(true);
+		}
+	}
+	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
 	UpdateSelection(control);
 }
 
-void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control)
+void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
 {
 	if (activeControlNodes.find(control) == activeControlNodes.end())
 		return;
 	
 	//remove selection
-	//activeControlNodes.erase(iter);
 	activeControlNodes.erase(control);
-	control->GetUIObject()->SetDebugDraw(false);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(false);
+		
+		//YZ draw parent rect
+		UIControl* parentToRemove = uiControl->GetParent();
+		if (parentToRemove)
+		{
+			bool removeParentDraw = true;
+			for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin(); iter != activeControlNodes.end(); ++iter)
+			{
+				HierarchyTreeControlNode* control = (*iter);
+				UIControl* uiControl = control->GetUIObject();
+				if (uiControl)
+				{
+					UIControl* parentUiControl = uiControl->GetParent();
+					if (parentToRemove == uiControl ||
+						parentToRemove == parentUiControl)
+					{
+						removeParentDraw = false;
+						break;
+					}
+				}
+			}
+			if (removeParentDraw)
+				parentToRemove->SetDebugDraw(false);
+		}
+	}
 	emit RemoveSelectedControl(control);
-	emit SelectedControlNodesChanged(activeControlNodes);
+	if (emitSelectedControlNodesChanged)
+		emit SelectedControlNodesChanged(activeControlNodes);
 }
 
 bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* control) const
@@ -114,16 +156,11 @@ bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* contro
 
 void HierarchyTreeController::ResetSelectedControl()
 {
-	for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin();
-		 iter != activeControlNodes.end();
-		 ++iter)
+	while (activeControlNodes.size())
 	{
-		HierarchyTreeControlNode* activeControl = (*iter);
-		activeControl->GetUIObject()->SetDebugDraw(false);
-		emit RemoveSelectedControl(activeControl);
+		UnselectControl(*(activeControlNodes.begin()), false);
 	}
-
-	activeControlNodes.clear();
+	
 	emit SelectedControlNodesChanged(activeControlNodes);
 }
 

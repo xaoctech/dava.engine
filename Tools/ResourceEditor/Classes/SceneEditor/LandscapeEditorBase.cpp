@@ -42,7 +42,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
-    savedShaderMode = LandscapeNode::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_MIXED;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
@@ -81,7 +81,7 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
     }
     
     savedShaderMode = workingLandscape->GetTiledShaderMode();
-    workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TILEMASK);
+    workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILEMASK);
     
     workingScene = SafeRetain(newScene);
     return true;
@@ -92,7 +92,7 @@ void LandscapeEditorBase::SetTool(LandscapeTool *newTool)
     currentTool = newTool;
 }
 
-LandscapeNode *LandscapeEditorBase::GetLandscape()
+Landscape *LandscapeEditorBase::GetLandscape()
 {
     return workingLandscape;
 }
@@ -139,7 +139,7 @@ void LandscapeEditorBase::Close()
     
     workingLandscape->UpdateFullTiledTexture();
     workingLandscape->SetTiledShaderMode(savedShaderMode);
-    savedShaderMode = LandscapeNode::TILED_MODE_MIXED;
+    savedShaderMode = Landscape::TILED_MODE_MIXED;
     
     SafeRelease(workingLandscape);
 
@@ -229,21 +229,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
             }
         }
     }
-    
-    if(UIEvent::PHASE_KEYCHAR == touch->phase)
-    {
-        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_CTRL))
-        {
-            UndoAction();
-            return true;
-        }
-        if(DVKEY_Z == touch->tid && IsKeyModificatorPressed(DVKEY_SHIFT))
-        {
-            RedoAction();
-            return true;
-        }
-    }
-    
+
     return false;
 }
 

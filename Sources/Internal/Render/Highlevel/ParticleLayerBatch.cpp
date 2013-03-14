@@ -23,17 +23,19 @@ ParticleLayerBatch::~ParticleLayerBatch()
 void ParticleLayerBatch::Draw(Camera * camera)
 {
 	if(!renderObject)return;
-	Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
-	if (!worldTransformPtr)return;
+	//Matrix4 * worldTransformPtr = renderObject->GetWorldTransformPtr();
+	//if (!worldTransformPtr)return;
 
 	uint32 flags = renderObject->GetFlags();
-	if ((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA)
+	if (((flags & RenderObject::VISIBILITY_CRITERIA) != RenderObject::VISIBILITY_CRITERIA) || particleLayer->isDisabled)
 		return;
 
-	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
+	Matrix4 worldMatrix = Matrix4::IDENTITY;
+	Matrix4 finalMatrix = worldMatrix * camera->GetMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 
-	particleLayer->Draw(camera);
+    particleLayer->Draw(camera);
+    
 	if(!totalCount)return;
 
 	RenderManager::Instance()->SetRenderData(renderDataObject);

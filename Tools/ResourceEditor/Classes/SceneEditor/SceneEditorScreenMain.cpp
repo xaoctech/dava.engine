@@ -16,8 +16,6 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
-#include "UNDOManager.h"
-
 #include "SceneExporter.h"
 
 #include "../Qt/Scene/SceneData.h"
@@ -37,12 +35,12 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 void SceneEditorScreenMain::LoadResources()
 {
     new HintManager();
-    new UNDOManager();
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::GetFontLight();
+    font12 = ControlsFactory::GetFont12();
+	font12Color = ControlsFactory::GetColorLight();
 
     helpDialog = new HelpDialog();
     
@@ -85,7 +83,6 @@ void SceneEditorScreenMain::UnloadResources()
 
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
-    UNDOManager::Instance()->Release();
 }
 
 
@@ -285,9 +282,7 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()));
     }
 }
 
@@ -382,7 +377,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             if(0 <= key && key < 8)
             {
                 BodyItem *iBody = FindCurrentBody();
-                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                Entity *node = iBody->bodyControl->GetSelectedSGNode();
                 EditorScene *editorScene = iBody->bodyControl->GetScene();
                 editorScene->SetForceLodLayer(node, key);
             }
@@ -525,7 +520,7 @@ void SceneEditorScreenMain::CopyFile(const String & file)
 	}
 }
 
-void SceneEditorScreenMain::CheckNodes(SceneNode * node)
+void SceneEditorScreenMain::CheckNodes(Entity * node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
@@ -754,10 +749,11 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
 }
 
-void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
+void SceneEditorScreenMain::SelectNodeQt(DAVA::Entity *node)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->SelectNodeQt(node);
+	if (iBody)
+	    iBody->bodyControl->SelectNodeQt(node);
 }
 
 void SceneEditorScreenMain::OnReloadRootNodesQt()

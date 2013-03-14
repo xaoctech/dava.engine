@@ -3,6 +3,8 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
+#include "../Qt/Main/QtUtils.h"
+
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
@@ -34,6 +36,7 @@ bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 CommandAddScene::CommandAddScene(const DAVA::String &pathname)
     :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
 {
+	commandName = "Add Scene";
 }
 
 
@@ -81,6 +84,7 @@ void CommandEditScene::Execute()
 CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
     :   LibraryCommand(pathname, COMMAND_UNDO_REDO)
 {
+	commandName = "Reload Scene";
 }
 
 
@@ -109,34 +113,34 @@ void CommandConvertScene::Execute()
     DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
     SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
     
-    ConvertDaeToSce(filePathname);
-    
-    // load sce to scene object
-    String path = FileSystem::Instance()->ReplaceExtension(filePathname, ".sce");
-    Scene * scene = new Scene();
-
-    SceneNode *rootNode = scene->GetRootNode(path);
-    scene->AddNode(rootNode);
-    
-    scene->BakeTransforms();
-    
-    // Export to *.sc2
-    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableDebugLog(true);
-    file->SaveScene(path.c_str(), scene);
-    SafeRelease(file);
-    
-    SafeRelease(scene);
+    eColladaErrorCodes code = ConvertDaeToSce(filePathname);
+    if(code == COLLADA_OK)
+    {
+        // load sce to scene object
+        String path = FileSystem::Instance()->ReplaceExtension(filePathname, ".sce");
+        Scene * scene = new Scene();
+        
+        Entity *rootNode = scene->GetRootNode(path);
+        scene->AddNode(rootNode);
+        
+        scene->BakeTransforms();
+        
+        // Export to *.sc2
+        path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+        SceneFileV2 * file = new SceneFileV2();
+        file->EnableDebugLog(true);
+        file->SaveScene(path.c_str(), scene);
+        SafeRelease(file);
+        
+        SafeRelease(scene);
+    }
+    else if(code == COLLADA_ERROR_OF_ROOT_NODE)
+    {
+        ShowErrorDialog(String("Can't convert from DAE. Looks like one of materials has same name as root node."));
+    }
+    else
+    {
+        ShowErrorDialog(String("Can't convert from DAE."));
+    }
 }
 
-CommandAddReferenceScene::CommandAddReferenceScene(const DAVA::String &pathname)
-:   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
-{
-
-}
-
-void CommandAddReferenceScene::Execute()
-{
-	SceneDataManager::Instance()->AddReferenceScene(filePathname);
-}

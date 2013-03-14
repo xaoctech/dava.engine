@@ -37,7 +37,7 @@
 namespace DAVA
 {
     // TODO: Think how to make it work for generic pointers and char * at the same time
-    class SceneNode;
+    class Entity;
     
 	// default hash function for strings
 	inline size_t DavaHashString(const char* str)

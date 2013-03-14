@@ -56,16 +56,16 @@ public:
     virtual void SetSize(const Vector2 &newSize);
 
     void ReloadRootScene(const String &pathToFile);
-    void ReloadNode(SceneNode *node, const String &pathToFile);
+    void ReloadNode(Entity *node, const String &pathToFile);
     
 	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();
-    void AddNode(SceneNode *node);
+    void AddNode(Entity *node);
     
     void RemoveSelectedSGNode();
-    SceneNode *GetSelectedSGNode(); //Scene Graph node
+    Entity *GetSelectedSGNode(); //Scene Graph node
     
     void Refresh();
     
@@ -82,6 +82,7 @@ public:
     
     bool ToggleLandscapeEditor(int32 landscapeEditorMode);
 	LandscapeEditorBase* GetLandscapeEditor(int32 landscapeEditorMode);
+	LandscapeEditorBase* GetCurrentLandscapeEditor();
     
     void RecreteFullTilingTexture();
 
@@ -103,7 +104,7 @@ public:
     void SetScene(EditorScene *newScene);
     void SetCameraController(CameraController *newCameraController);
     
-    void SelectNodeQt(SceneNode *node);
+    void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
     
@@ -135,13 +136,15 @@ public:
 
     void ProcessIsSolidChanging();
 
-	void RemoveNode(SceneNode* node);
-	void SelectNode(SceneNode* node);
+	void RemoveNode(Entity* node);
+	void SelectNode(Entity* node);
 
 	ResourceEditor::eModificationActions GetModificationMode();
 	void SetModificationMode(ResourceEditor::eModificationActions mode);
 	bool IsLandscapeRelative();
 	void SetLandscapeRelative(bool isLandscapeRelative);
+
+	Matrix4 GetLandscapeOffset(const Matrix4& transform);
 
 protected:
 
@@ -152,7 +155,7 @@ protected:
 	void PrepareModMatrix(const Vector2 & point);
 
 	void PlaceOnLandscape();
-	void PlaceOnLandscape(SceneNode *node);
+	void PlaceOnLandscape(Entity *node);
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
@@ -191,7 +194,7 @@ protected:
     String mainFilePath;
     
     
-    void SelectNodeAtTree(SceneNode *node);
+    void SelectNodeAtTree(Entity *node);
 
 	//for moving object
 	Vector3 startDragPoint;
@@ -199,14 +202,14 @@ protected:
 	
 	Matrix4 translate1, translate2;
 
-	SceneNode * mainCam;
-	SceneNode * debugCam;
+	Entity * mainCam;
+	Entity * debugCam;
     
     struct AddedNode
     {
-        SceneNode *nodeToAdd;
-        SceneNode *nodeToRemove;
-        SceneNode *parent;
+        Entity *nodeToAdd;
+        Entity *nodeToRemove;
+        Entity *parent;
     };
     Vector<AddedNode> nodesToAdd;
 	
@@ -221,7 +224,7 @@ protected:
 	ResourceEditor::eModificationActions modificationMode;
 	bool landscapeRelative;
 	ArrowsNode* GetArrowsNode(bool createIfNotExist);
-	void UpdateArrowsNode(SceneNode* node);
+	void UpdateArrowsNode(Entity* node);
 	bool InModificationMode();
 
     //Landscape Editor
@@ -243,7 +246,7 @@ protected:
     
     RulerTool *landscapeRulerTool;
 
-	SceneNode* modifiedNode;
+	Entity* modifiedNode;
 	Matrix4 transformBeforeModification;
 };
 

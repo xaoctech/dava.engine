@@ -41,16 +41,6 @@ protected:
     virtual void Execute();
 };
 
-class CommandAddReferenceScene: public LibraryCommand
-{
-public:	
-	CommandAddReferenceScene(const DAVA::String &pathname);
-
-protected:	
-
-	virtual void Execute();
-};
-
 class CommandReloadScene: public LibraryCommand
 {
 public:

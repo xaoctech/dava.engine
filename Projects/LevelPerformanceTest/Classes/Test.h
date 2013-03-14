@@ -28,6 +28,7 @@ public:
 	Texture* GetLandscapeTexture();
 
 	const String GetFileName() const;
+	const String GetFilePath() const;
 
 	const LandscapeTestData& GetLandscapeTestData() const {return testData;};
 private:
@@ -67,7 +68,7 @@ private:
 	inline UI3DView* GetSceneView();
 	inline Scene* GetScene();
 	inline Camera* GetCamera();
-	inline LandscapeNode* GetLandscape();
+	inline Landscape* GetLandscape();
 };
 
 #endif

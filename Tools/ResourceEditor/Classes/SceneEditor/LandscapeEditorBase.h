@@ -59,7 +59,7 @@ public:
     void Toggle();
     bool IsActive();
     
-    LandscapeNode *GetLandscape();
+    Landscape *GetLandscape();
     
     LandscapeToolsPanel *GetToolPanel();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
@@ -74,6 +74,8 @@ public:
 
 	virtual void ClearSceneResources();
 
+	virtual void UpdateLandscapeTilemap(Texture* texture) {};
+
 protected:
 
     virtual void SaveTexture();
@@ -84,8 +86,6 @@ protected:
     virtual void ShowAction() = 0;
     virtual void SaveTextureAction(const String &pathToFile) = 0;
 	virtual void UpdateCursor() = 0;
-    virtual void UndoAction() = 0;
-    virtual void RedoAction() = 0;
     
     virtual void RecreateHeightmapNode() = 0;
     
@@ -100,7 +100,7 @@ protected:
     eLEState state;
 
     HeightmapNode *heightmapNode;
-    LandscapeNode *workingLandscape;
+    Landscape *workingLandscape;
 
     LandscapeTool *currentTool;
 
@@ -121,7 +121,7 @@ protected:
 	Texture * cursorTexture;
 
     
-    LandscapeNode::eTiledShaderMode savedShaderMode;
+    Landscape::eTiledShaderMode savedShaderMode;
 };
 
 

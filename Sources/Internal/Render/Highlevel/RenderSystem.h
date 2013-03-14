@@ -42,7 +42,7 @@ class RenderPass;
 class RenderLayer;
 class RenderObject;
 class RenderBatch;
-class SceneNode;
+class Entity;
 class Camera;
 class Light;
 class ParticleEmitterSystem;
@@ -107,6 +107,10 @@ public:
 	void AddRenderBatch(RenderBatch * renderBatch);
 	void RemoveRenderBatch(RenderBatch * renderBatch);
     
+    
+    void SetShadowRectColor(const Color &color);
+    const Color & GetShadowRectColor();
+    
 private:
     void ProcessClipping();
     void FindNearestLights();
@@ -134,7 +138,7 @@ private:
     //Vector<AABBox> transformedBBox;
     //Vector<BSphere> transformedBSphere;
     
-    //HashMap<SceneNode*, RenderObject *> entityObjectMap;
+    //HashMap<Entity*, RenderObject *> entityObjectMap;
     Camera * camera;
     //Vector<RenderObject*> forRemove;
     

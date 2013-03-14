@@ -286,6 +286,9 @@ public:							// properties for fast access
     static void SetDefaultFileFormat(ImageFileFormat fileFormat);
     static ImageFileFormat GetDefaultFileFormat();
     
+    
+    inline const ImageFileFormat GetSourceFileFormat() const;
+    
 private:
     
 	static Map<String, Texture*> textureMap;	
@@ -319,6 +322,8 @@ private:
     ImageFileFormat loadedAsFile;
     
     static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    
+    static String GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions
@@ -331,6 +336,11 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 inline const String & Texture::GetPathname() const
 {
 	return relativePathname;
+}
+    
+inline const ImageFileFormat Texture::GetSourceFileFormat() const
+{
+    return loadedAsFile;
 }
 
 };

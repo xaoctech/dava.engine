@@ -123,7 +123,9 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		newObject->AddRenderBatch(GetRenderBatch(i)->Clone());
+        RenderBatch *batch = GetRenderBatch(i)->Clone();
+		newObject->AddRenderBatch(batch);
+        batch->Release();
 	}
     newObject->ownerDebugInfo = ownerDebugInfo;
 
@@ -196,7 +198,7 @@ void RenderObject::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 
 void RenderObject::SetRenderSystem(RenderSystem * _renderSystem)
 {
-	DVASSERT(renderSystem == 0);
+	renderSystem = _renderSystem;
 }
 
 RenderSystem * RenderObject::GetRenderSystem()

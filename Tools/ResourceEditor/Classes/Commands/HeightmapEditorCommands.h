@@ -15,10 +15,22 @@ protected:
     virtual void Execute();
 };
 
-class CommandDrawHeightmap: public Command
+class HeightmapModificationCommand: public Command
 {
 public:
-	CommandDrawHeightmap();
+	HeightmapModificationCommand(Command::eCommandType type);
+
+protected:
+	static String TimeString();
+	static String SaveHeightmap(Heightmap* heightmap);
+	static LandscapeEditorHeightmap* GetEditor();
+	static void UpdateLandscapeHeightmap(String filename);
+};
+
+class CommandDrawHeightmap: public HeightmapModificationCommand
+{
+public:
+	CommandDrawHeightmap(Heightmap* originalHeightmap, Heightmap* newHeightmap);
 	virtual ~CommandDrawHeightmap();
 	
 protected:
@@ -27,12 +39,32 @@ protected:
 
 	virtual void Execute();
 	virtual void Cancel();
+};
 
-	LandscapeEditorHeightmap* GetEditor();
+class CommandCopyPasteHeightmap: public HeightmapModificationCommand
+{
+public:
+	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath);
+	virtual ~CommandCopyPasteHeightmap();
 
-	String TimeString();
-	String SaveHeightmap(Heightmap* heightmap, String suffix);
-	String GetRandomString(uint32 len);
+protected:
+	String heightmapUndoFilename;
+	String heightmapRedoFilename;
+
+	Image* tilemapUndoImage;
+	Image* tilemapRedoImage;
+	String tilemapSavedPathname;
+
+	Landscape* landscape;
+
+	bool heightmap;
+	bool tilemap;
+
+	virtual void Execute();
+	virtual void Cancel();
+
+	void UpdateLandscapeTilemap(Image* image);
+	LandscapeEditorBase* GetActiveEditor();
 };
 
 #endif /* defined(__RESOURCEEDITORQT__HEIGHTMAPEDITORCOMMANDS__) */

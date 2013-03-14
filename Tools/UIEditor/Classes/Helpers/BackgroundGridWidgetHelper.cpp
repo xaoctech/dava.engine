@@ -31,25 +31,28 @@ const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelp
     {UIControlBackground::COLOR_REPLACE_ALPHA_ONLY,     "Replace Alpha only"}
 };
 
+const BackgroundGridWidgetHelper::SpriteModificationTypesData BackgroundGridWidgetHelper::spriteModificationTypesData[] =
+{
+	{0,						"Original"},
+	{ESM_HFLIP,				"Horizontal"},
+	{ESM_VFLIP,				"Vertical"},
+	{ESM_HFLIP|ESM_VFLIP,	"Both"}
+
+};
+
 const BackgroundGridWidgetHelper::AlignTypesData BackgroundGridWidgetHelper::alignTypesData[] =
 {
-    {ALIGN_LEFT,                    "Left"},
     {ALIGN_LEFT | ALIGN_TOP,        "Left & Top"},
-    {ALIGN_LEFT | ALIGN_BOTTOM,     "Left & Bottom"},
-    {ALIGN_LEFT | ALIGN_HCENTER,    "Left & Horz Center"},
     {ALIGN_LEFT | ALIGN_VCENTER,    "Left & Vert Center"},
+    {ALIGN_LEFT | ALIGN_BOTTOM,     "Left & Bottom"},
 
-    {ALIGN_RIGHT,                   "Right"},
+	{ALIGN_HCENTER | ALIGN_TOP,     "Horz Center & Top"},
+    {ALIGN_HCENTER | ALIGN_VCENTER, "Horz Center & Vert Center"},
+    {ALIGN_HCENTER | ALIGN_BOTTOM,  "Horz Center & Bottom"},
+
     {ALIGN_RIGHT | ALIGN_TOP,       "Right & Top"},
-    {ALIGN_RIGHT | ALIGN_BOTTOM,    "Right & Bottom"},
-    {ALIGN_RIGHT | ALIGN_HCENTER,   "Right & Horz Center"},
     {ALIGN_RIGHT | ALIGN_VCENTER,   "Right & Vert Center"},
-  
-    {ALIGN_TOP,                     "Top"},
-    {ALIGN_BOTTOM,                  "Bottom"},
-    {ALIGN_HCENTER,                 "Horizontal Center"},
-    {ALIGN_VCENTER,                 "Vertical Center"},
-    {ALIGN_HCENTER | ALIGN_VCENTER, "Horz & Vert Center"},
+    {ALIGN_RIGHT | ALIGN_BOTTOM,    "Right & Bottom"},
     
     {ALIGN_HJUSTIFY,                "Horizontal Justify"}
 };
@@ -175,6 +178,45 @@ QString BackgroundGridWidgetHelper::GetAlignTypeDescByType(int alignType)
     return QString();
 }
 
+int BackgroundGridWidgetHelper::GetModificationType(int index)
+{
+	if (ValidateSpriteModificationIndex(index) == false)
+    {
+		return  spriteModificationTypesData[0].spriteModificationType;
+    }
+    
+	return spriteModificationTypesData[index].spriteModificationType;
+}
+
+QString BackgroundGridWidgetHelper::GetModificationTypeDesc(int index)
+{
+	if (ValidateSpriteModificationIndex(index) == false)
+    {
+		return  spriteModificationTypesData[0].spriteModificationTypeDescription;
+    }
+    
+    return spriteModificationTypesData[index].spriteModificationTypeDescription;
+}
+
+int BackgroundGridWidgetHelper::GetModificationTypesCount()
+{
+    return sizeof(spriteModificationTypesData)/sizeof(*spriteModificationTypesData);
+}
+
+QString BackgroundGridWidgetHelper::GetModificationTypeDescByType(int modifType)
+{
+	int count = GetModificationTypesCount();
+    for (int i = 0; i < count; i ++)
+    {
+		if (spriteModificationTypesData[i].spriteModificationType == modifType)
+        {
+			return spriteModificationTypesData[i].spriteModificationTypeDescription;
+        }
+    }
+    
+    Logger::Error("Unknown/unsupported Modification Type %i!", modifType);
+    return QString();
+}
 bool BackgroundGridWidgetHelper::ValidateDrawTypeIndex(int index)
 {
     if (index < 0 || index >= GetDrawTypesCount())
@@ -202,6 +244,17 @@ bool BackgroundGridWidgetHelper::ValidateAlginTypeIndex(int index)
     if (index < 0 || index >= GetAlignTypesCount())
     {
         Logger::Error("Align Type index %i is out of bounds!", index);
+        return false;
+    }
+    
+    return true;
+}
+
+bool BackgroundGridWidgetHelper::ValidateSpriteModificationIndex(int index)
+{
+	if (index < 0 || index >= GetModificationTypesCount())
+    {
+        Logger::Error("Sprite modification index %i is out of bounds!", index);
         return false;
     }
     

@@ -47,7 +47,8 @@
 #include "CloneTest.h"
 #include "DLCSystemTests.h"
 #include "DPITest.h"
-#include "eMailTest.h"
+#include "EMailTest.h"
+#include "InputTest.h"
 
 using namespace DAVA;
 
@@ -76,11 +77,12 @@ void GameCore::OnAppStarted()
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();
-    new HashMapTest();
+//    new HashMapTest();
 //    new SoundTest();
 //    new SplitTest();
-    new DPITest();
 	new EMailTest();
+    new DPITest();
+	new InputTest();
     new MaterialCompilerTest();
     new CloneTest();
     new PVRTest();
@@ -149,16 +151,32 @@ void GameCore::OnAppFinished()
 
 void GameCore::OnSuspend()
 {
+//    Logger::Debug("GameCore::OnSuspend");
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    ApplicationCore::OnSuspend();
+#endif
+
 }
 
 void GameCore::OnResume()
 {
+//    Logger::Debug("GameCore::OnResume");
     ApplicationCore::OnResume();
 }
 
 void GameCore::OnBackground()
 {	
+//    Logger::Debug("GameCore::OnBackground");
 }
+
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+void GameCore::OnDeviceLocked()
+{
+//    Logger::Debug("GameCore::OnDeviceLocked");
+    Core::Instance()->Quit();
+}
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+
 
 void GameCore::BeginFrame()
 {

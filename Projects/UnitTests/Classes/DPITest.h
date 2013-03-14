@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef __TemplateProjectMacOS__DPITest__
-#define __TemplateProjectMacOS__DPITest__
+#ifndef __DPI_TEST_H__
+#define __DPI_TEST_H__
 
 #include "DAVAEngine.h"
 
@@ -43,4 +43,4 @@ private:
     float32 onScreenTime;
 };
 
-#endif /* defined(__TemplateProjectMacOS__InputTest__) */
+#endif /* defined(__DPI_TEST_H__) */

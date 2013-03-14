@@ -1,6 +1,6 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
@@ -18,17 +18,20 @@ SwitchSystem::SwitchSystem(Scene * scene)
 void SwitchSystem::Process()
 {
     TIME_PROFILE("SwitchSystem::Process");
-	Set<SceneNode*>::iterator it;
-	Set<SceneNode*>::const_iterator itEnd = updatableEntities.end();
+	Set<Entity*>::iterator it;
+	Set<Entity*>::const_iterator itEnd = updatableEntities.end();
 	for(it = updatableEntities.begin(); it != itEnd; ++it)
 	{
-		SceneNode * entity = *it;
+		Entity * entity = *it;
 		SwitchComponent * sw = (SwitchComponent*)entity->GetComponent(Component::SWITCH_COMPONENT);
 
 		if(sw->oldSwitchIndex != sw->newSwitchIndex)
 		{
-			int32 childrenCound = entity->GetChildrenCount();
-			for(int32 i = 0; i < childrenCound; ++i)
+			int32 childrenCount = entity->GetChildrenCount();
+
+			sw->newSwitchIndex = Clamp(sw->newSwitchIndex, 0, (childrenCount - 1));//start counting from zero
+
+			for(int32 i = 0; i < childrenCount; ++i)
 			{
 				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
 			}
@@ -39,7 +42,7 @@ void SwitchSystem::Process()
 	updatableEntities.clear();
 }
 
-void SwitchSystem::ImmediateEvent(SceneNode * entity, uint32 event)
+void SwitchSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if(EventSystem::SWITCH_CHANGED == event)
 	{
@@ -47,7 +50,7 @@ void SwitchSystem::ImmediateEvent(SceneNode * entity, uint32 event)
 	}
 }
 
-void SwitchSystem::SetVisibleHierarchy(SceneNode * entity, bool visible)
+void SwitchSystem::SetVisibleHierarchy(Entity * entity, bool visible)
 {
 	entity->SetSwitchVisible(visible);
 	uint32 size = entity->GetChildrenCount();
