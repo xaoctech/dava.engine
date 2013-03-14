@@ -230,7 +230,7 @@ void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *newWorkingMa
 }
 
 
-void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode)
+void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, Entity *newWorkingSceneNode)
 {
     if ((newWorkingScene == workingScene) && (workingSceneNode == newWorkingSceneNode))
     {
@@ -516,7 +516,7 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
         EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
         if(editorScene)
         {
-            LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+            Landscape *landscape = editorScene->GetLandscape(editorScene);
             if (landscape)
             {
                 landscape->SetFog(enabled);

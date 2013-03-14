@@ -11,7 +11,7 @@
 
 using namespace DAVA;
 
-EmitterParticleEditorNode::EmitterParticleEditorNode(SceneNode* rootNode, SceneNode* emitter,
+EmitterParticleEditorNode::EmitterParticleEditorNode(Entity* rootNode, Entity* emitter,
                                                      const QString& nodeName) :
     EmitterContainerNode(rootNode, emitter, nodeName)
 {

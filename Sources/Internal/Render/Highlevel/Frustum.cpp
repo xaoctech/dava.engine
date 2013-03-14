@@ -9,7 +9,7 @@
 	* Created by Borodovsky Vitaliy 
 =============================================================================*/
 #include "Render/RenderHelper.h"
-#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/Frustum.h"
 
 namespace DAVA
 {

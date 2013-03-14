@@ -11,7 +11,7 @@
 #include "FileSystem/KeyedArchive.h"
 using namespace DAVA;
 
-BaseParticleEditorNode::BaseParticleEditorNode(SceneNode* rootNode) :
+BaseParticleEditorNode::BaseParticleEditorNode(Entity* rootNode) :
     ExtraUserData()
 {
 	Component *effectComponent = rootNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT);

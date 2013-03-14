@@ -40,7 +40,7 @@
 #include "Core/DisplayMode.h"
 #include "Core/Core.h"
 #include "Render/Cursor.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 #include "Render/RenderOptions.h"
 #include <stack>
 
@@ -50,7 +50,7 @@ namespace DAVA
 	
 class Texture;
 class Shader;
-class RenderStateBlock;
+class RenderState;
 /** 
 	\ingroup render
 	\brief Main class that implements rendering abstraction layer.
@@ -235,7 +235,7 @@ public:
 	 */
 	void FlushState();
 
-	void FlushState(RenderStateBlock * stateBlock);
+	void FlushState(RenderState * stateBlock);
 
 	/** 
 	 \brief 
@@ -295,7 +295,7 @@ public:
     uint32 GetState();
     void PopState();
 
-	static RenderStateBlock * State();
+	static RenderState * State();
     
     void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
     void SetCullMode(eFace cullFace);
@@ -585,12 +585,12 @@ protected:
 //  Shader * shader;
 	
     
-    RenderStateBlock currentState;
-    RenderStateBlock hardwareState;
+    RenderState currentState;
+    RenderState hardwareState;
 
     int oldVertexArrayEnabled;                      // state
     int oldNormalArrayEnabled;                      // state
-	int oldTextureCoordArrayEnabled[RenderStateBlock::MAX_TEXTURE_LEVELS];                // state
+	int oldTextureCoordArrayEnabled[RenderState::MAX_TEXTURE_LEVELS];                // state
 	int oldColorArrayEnabled;                       // state
 //	int oldBlendingEnabled;                         // state
 

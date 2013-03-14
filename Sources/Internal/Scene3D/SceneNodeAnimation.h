@@ -31,7 +31,7 @@
 #define __DAVAENGINE_SCENE_NODE_ANIMATION_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
 namespace DAVA 
 {
@@ -58,7 +58,7 @@ public:
 	inline float32 GetDuration(); 
 		
 	void SetBindName(const String & bindName); 
-	void SetBindNode(SceneNode * bindNode);
+	void SetBindNode(Entity * bindNode);
 	
 	virtual void Update(float32 timeElapsed);
 	virtual void Execute();
@@ -71,7 +71,7 @@ public:
 	
 	
 	// this is node of animation this animation is supposed for
-	SceneNode * bindNode;
+	Entity * bindNode;
 	String bindName;
 	bool apply;
 	float32 weight;

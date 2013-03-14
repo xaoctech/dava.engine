@@ -112,7 +112,7 @@ void NodesPropertyControl::WillDisappear()
     SafeRelease(currentSceneNode);
 }
 
-void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
+void NodesPropertyControl::ReadFrom(Entity *sceneNode)
 {
 	SafeRelease(currentSceneNode);
     currentSceneNode = SafeRetain(sceneNode);
@@ -264,7 +264,7 @@ void NodesPropertyControl::AddChildLodSection()
     DVASSERT(0 == childLodComponents.size());
     DVASSERT(0 == childDistances.size());
     
-    Vector<SceneNode *>nodes;
+    Vector<Entity *>nodes;
     currentSceneNode->GetChildNodes(nodes);
     nodes.push_back(currentSceneNode);
     for(int32 i = 0; i < (int32)nodes.size(); ++i)
@@ -392,10 +392,6 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
     }
 }
 
-void NodesPropertyControl::ReadFrom(Entity *entity)
-{
-}
-
 
 void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const String &forKey, float32 newValue, int32 index)
 {
@@ -463,7 +459,7 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 
 void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
-    if(forKey == SCENE_NODE_NAME_PROPERTY_NAME) //SceneNode
+    if(forKey == SCENE_NODE_NAME_PROPERTY_NAME) //Entity
     {
         if(currentSceneNode)
         {
@@ -949,7 +945,7 @@ int32 NodesPropertyControl::GetTrianglesForLodLayer(LodComponent::LodData *lodDa
     int32 trianglesCount = 0;
     for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
     {
-        Vector<SceneNode *> meshes;
+        Vector<Entity *> meshes;
         lodData->nodes[n]->GetChildNodes(meshes);
         
         for(int32 m = 0; m < (int32)meshes.size(); ++m)

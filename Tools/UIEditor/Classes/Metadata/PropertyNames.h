@@ -22,6 +22,10 @@ namespace PropertyNames
     static const char* BACKGROUND_COLOR_PROPERTY_NAME = "BackgroundColor";
     static const char* SPRITE_PROPERTY_NAME = "Sprite";
     static const char* SPRITE_FRAME_PROPERTY_NAME = "SpriteFrame";
+	static const char* SPRITE_MODIFICATION_PROPERTY_NAME = "SpriteModification";
+
+	static const char* STRETCH_HORIZONTAL_PROPERTY_NAME = "LeftRightStretchCap";
+	static const char* STRETCH_VERTICAL_PROPERTY_NAME = "TopBottomStretchCap";
     
     static const char* DRAW_TYPE_PROPERTY_NAME = "DrawType";
     static const char* COLOR_INHERIT_TYPE_PROPERTY_NAME = "ColorInheritType";

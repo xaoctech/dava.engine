@@ -24,7 +24,7 @@ ParticlesEditorController::~ParticlesEditorController()
     Cleanup();
 }
 
-EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(SceneNode* effectNode, bool autoStart)
+EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(Entity* effectNode, bool autoStart)
 {
     if (!effectNode)
     {
@@ -46,7 +46,7 @@ EffectParticleEditorNode* ParticlesEditorController::RegisterParticleEffectNode(
     return rootNode;
 }
 
-void ParticlesEditorController::UnregiserParticleEffectNode(SceneNode* effectNode)
+void ParticlesEditorController::UnregiserParticleEffectNode(Entity* effectNode)
 {
     if (!effectNode)
     {
@@ -106,7 +106,7 @@ bool ParticlesEditorController::ShouldDisplayPropertiesInSceneEditor(SceneGraphI
     return false;
 }
 
-EffectParticleEditorNode* ParticlesEditorController::GetRootForParticleEffectNode(SceneNode* effectNode)
+EffectParticleEditorNode* ParticlesEditorController::GetRootForParticleEffectNode(Entity* effectNode)
 {
     PARTICLESEFFECTITER iter = this->particleEffectNodes.find(effectNode);
     if (iter == this->particleEffectNodes.end())
@@ -194,10 +194,10 @@ void ParticlesEditorController::EmitSelectedNodeChanged(bool forceRefresh)
     EmitterSelected(NULL, this->selectedNode);
 }
 
-void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitterSceneNode)
+void ParticlesEditorController::AddParticleEmitterNodeToScene(Entity* emitterSceneNode)
 {
     // We are adding new Emitter to the Particle Effect node just selected.
-    SceneNode* effectNode = NULL;
+    Entity* effectNode = NULL;
     BaseParticleEditorNode* selectedNode = GetSelectedNode();
     if (selectedNode)
     {
@@ -222,7 +222,7 @@ void ParticlesEditorController::AddParticleEmitterNodeToScene(SceneNode* emitter
     }
 }
 
-void ParticlesEditorController::RemoveParticleEmitterNode(SceneNode* emitterSceneNode)
+void ParticlesEditorController::RemoveParticleEmitterNode(Entity* emitterSceneNode)
 {
     // Lookup for such node.
     EffectParticleEditorNode* effectEditorNode = NULL;
@@ -406,7 +406,7 @@ void ParticlesEditorController::RemoveParticleForceNode(ForceParticleEditorNode*
     layerNode->UpdateForcesIndices();
 }
 
-void ParticlesEditorController::FindEmitterEditorNode(SceneNode* emitterSceneNode,
+void ParticlesEditorController::FindEmitterEditorNode(Entity* emitterSceneNode,
                                                       EffectParticleEditorNode** effectEditorNode,
                                                       EmitterParticleEditorNode** emitterEditorNode)
 {
@@ -453,9 +453,9 @@ bool ParticlesEditorController::MoveEmitter(EmitterParticleEditorNode* movedItem
 	newEffectParentNode->AddChildNode(movedItemEmitterNode);
 
 	// and inside the SceneGraph.
-	SceneNode* movedNode = movedItemEmitterNode->GetEmitterNode();
-	SceneNode* newParentNode = newEffectParentNode->GetRootNode();
-	SceneNode* oldParentNode = oldEffectParentNode->GetRootNode();
+	Entity* movedNode = movedItemEmitterNode->GetEmitterNode();
+	Entity* newParentNode = newEffectParentNode->GetRootNode();
+	Entity* oldParentNode = oldEffectParentNode->GetRootNode();
 
     SafeRetain(movedNode);
     oldParentNode->RemoveNode(movedNode);

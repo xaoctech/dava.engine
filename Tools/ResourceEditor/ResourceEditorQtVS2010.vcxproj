@@ -341,14 +341,13 @@
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\Commands\ViewCommands.cpp" />
     <ClCompile Include="Classes\Commands\VisibilityCheckToolCommands.cpp" />
-    <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\ImageSplitter\ImageSplitter.cpp" />
     <ClCompile Include="Classes\ImageSplitter\ImageSplitterScreen.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
-    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp" />
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\LandscapesController.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
@@ -452,7 +451,6 @@
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
-    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
@@ -821,14 +819,13 @@
     <ClInclude Include="Classes\Commands\VisibilityCheckToolCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
-    <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h" />
     <ClInclude Include="Classes\ImageSplitter\ImageSplitterScreen.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
-    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h" />
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />
     <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h" />
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h" />
@@ -934,7 +931,6 @@
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />
-    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
@@ -1015,7 +1011,6 @@
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\VisibilityToolView.ui" />
-    <None Include="MakefileQt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
