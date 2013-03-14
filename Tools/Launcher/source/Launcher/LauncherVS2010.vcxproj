@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -99,7 +99,7 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <CustomBuildStep>
-      <Command>$(SolutionDir)make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)make.bat -f MakefileQt all</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>QT generate: MOC, UI, QRC</Message>
@@ -130,7 +130,7 @@
       <AdditionalDependencies>quazip1.lib;libyaml-cppmd.lib;user32.lib;shell32.lib;QtOpenGL4.lib;QtGui4.lib;QtNetwork4.lib;QtCore4.lib;qtmain.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>$(SolutionDir)make.exe -f MakefileQt all</Command>
+      <Command>$(SolutionDir)make.bat -f MakefileQt all</Command>
       <Message>QT generate: MOC, UI, QRC</Message>
       <Outputs>$(SolutionDir)/alwaysrun</Outputs>
     </CustomBuildStep>
