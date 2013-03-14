@@ -344,8 +344,8 @@ void ParticlesEditorController::RemoveParticleLayerNode(LayerParticleEditorNode*
 	CleanupSelectedNodeIfDeleting(layerToRemove);
 
     // Remove the node from the layers list and also from the emitter.
-    Vector<ParticleLayer*>& layers = emitter->GetLayers();
-    layers.erase(layers.begin() + layerIndex);
+    emitter->RemoveLayer(layerIndex);
+    
     emitterNode->RemoveChildNode(layerToRemove);
 }
 
