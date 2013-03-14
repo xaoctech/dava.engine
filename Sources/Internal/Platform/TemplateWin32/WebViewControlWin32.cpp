@@ -2,7 +2,82 @@
 #include "CorePlatformWin32.h"
 using namespace DAVA;
 
-#include <exdisp.h>
+#include <atlbase.h>
+#include <atlcom.h>
+#include <ExDisp.h>
+#include <ExDispid.h>
+
+extern _ATL_FUNC_INFO BeforeNavigate2Info;
+_ATL_FUNC_INFO BeforeNavigate2Info = {CC_STDCALL, VT_EMPTY, 7, {VT_DISPATCH,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_VARIANT,VT_BYREF|VT_BOOL}};
+
+struct EventSink : public IDispEventImpl<1, EventSink, &DIID_DWebBrowserEvents2>
+{
+private:
+	DAVA::IUIWebViewDelegate* delegate;
+	DAVA::UIWebView* webView;
+
+public:
+	EventSink()
+	{
+		delegate = NULL;
+		webView = NULL;
+	};
+
+	void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+	{
+		if (delegate && webView)
+		{
+			this->delegate = delegate;
+			this->webView = webView;
+		}
+	}
+
+	void __stdcall BeforeNavigate2(IDispatch* pDisp, VARIANT* URL, VARIANT* Flags,
+								   VARIANT* TargetFrameName, VARIANT* PostData,
+								   VARIANT* Headers, VARIANT_BOOL* Cancel)
+	{
+		bool process = true;
+
+		if (delegate && webView)
+		{
+			BSTR bstr = V_BSTR(URL);
+			int32 len = SysStringLen(bstr) + 1;
+			char* str = new char[len];
+			WideCharToMultiByte(CP_ACP, 0, bstr, -1, str, len, NULL, NULL);
+			String s = str;
+			delete[] str;
+
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(webView, s);
+
+			switch (action)
+			{
+				case IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
+					Logger::Debug("PROCESS_IN_WEBVIEW");
+					break;
+
+				case IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
+					Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					process = false;
+					ShellExecute(NULL, L"open", bstr, NULL, NULL, SW_SHOWNORMAL);
+					break;
+
+				case IUIWebViewDelegate::NO_PROCESS:
+					Logger::Debug("NO_PROCESS");
+
+				default:
+					process = false;
+					break;
+			}
+		}
+
+		*Cancel = process ? VARIANT_FALSE : VARIANT_TRUE;
+	}
+
+	BEGIN_SINK_MAP(EventSink)
+		SINK_ENTRY_INFO(1, DIID_DWebBrowserEvents2, DISPID_BEFORENAVIGATE2, BeforeNavigate2, &BeforeNavigate2Info)
+	END_SINK_MAP()
+};
+
 
 WebBrowserContainer::WebBrowserContainer() :
 	hwnd(0),
@@ -12,11 +87,21 @@ WebBrowserContainer::WebBrowserContainer() :
 
 WebBrowserContainer::~WebBrowserContainer()
 {
+	EventSink* s = (EventSink*)sink;
+	s->DispEventUnadvise(webBrowser, &DIID_DWebBrowserEvents2);
+	delete s;
+
 	if (webBrowser)
 	{
 		webBrowser->Release();
 		webBrowser = NULL;
 	}
+}
+
+void WebBrowserContainer::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+{
+	EventSink* s = (EventSink*)sink;
+	s->SetDelegate(delegate, webView);
 }
 
 bool WebBrowserContainer::Initialize(HWND parentWindow)
@@ -56,6 +141,15 @@ bool WebBrowserContainer::Initialize(HWND parentWindow)
 	{
 		Logger::Error("WebViewControl::InititalizeBrowserContainer(), IOleObject::QueryInterface(IID_IWebBrowser2) failed!, error code %i", hRes);
 		oleObject->Release();
+		return false;
+	}
+
+	sink = new EventSink();
+	EventSink* s = (EventSink*)sink;
+	hRes = s->DispEventAdvise(webBrowser, &DIID_DWebBrowserEvents2);
+	if (FAILED(hRes))
+	{
+		Logger::Error("WebViewControl::InititalizeBrowserContainer(), EventSink::DispEventAdvise(&DIID_DWebBrowserEvents2) failed!, error code %i", hRes);
 		return false;
 	}
 
@@ -173,6 +267,11 @@ WebViewControl::~WebViewControl()
 	}
 
 	SafeDelete(browserContainer);
+}
+
+void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+{
+	browserContainer->SetDelegate(delegate, webView);
 }
 
 void WebViewControl::Initialize(const Rect& rect)
