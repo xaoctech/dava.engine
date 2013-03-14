@@ -32,7 +32,8 @@
 		}
 
 		document.onclick = f;
-		document.addEventListener('touchstart', f);
+		if (document.addEventListener)
+			document.addEventListener('touchstart', f);
 	</script>
 </head>
 

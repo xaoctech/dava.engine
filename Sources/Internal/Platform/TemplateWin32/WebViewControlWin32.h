@@ -56,12 +56,16 @@ public:
 	HRESULT __stdcall OnShowWindow(BOOL) { return S_OK; }
 	HRESULT __stdcall RequestNewObjectLayout() { return E_NOTIMPL; }
 
+	void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+
 protected:
 	// Parent window.
 	HWND hwnd;
 
 	// The browser itselt.
 	IWebBrowser2* webBrowser;
+
+	void* sink;
 };
 
 // Web View Control for Win32.
@@ -80,6 +84,8 @@ public:
 	// Size/pos/visibility changes.
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
+
+	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
 
 protected:
 	// Initialize the COM and create the browser container.
