@@ -71,7 +71,7 @@ protected:
     PreviewCameraController * cameraController;
     
     String currentScenePath;
-    SceneNode *rootNode;
+    Entity *rootNode;
     
     bool needSetCamera;
     bool sceCamera;

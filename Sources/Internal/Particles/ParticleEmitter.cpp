@@ -289,7 +289,8 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		(*it)->Update(timeElapsed);
+        if(!(*it)->isDisabled)
+            (*it)->Update(timeElapsed);
 	}
 }
 

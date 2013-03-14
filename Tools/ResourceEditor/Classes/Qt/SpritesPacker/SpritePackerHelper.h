@@ -13,20 +13,15 @@ class SpritePackerHelper : public QObject, public DAVA::StaticSingleton<SpritePa
 	Q_OBJECT
 
 public:
-	
 	SpritePackerHelper();
 
 	void UpdateParticleSprites();
-	
 	void UpdateParticleSpritesAsync();
-	
 
 signals:
-
 	void readyAll();
 
 protected: 
-	
 	void ReloadParticleSprites(SceneData* sceneData);
 
 	void Pack();
@@ -36,7 +31,6 @@ protected:
 	QFutureWatcher<void> watcher;
 
 private slots:
-	
     void threadRepackAllFinished();
 	
 };

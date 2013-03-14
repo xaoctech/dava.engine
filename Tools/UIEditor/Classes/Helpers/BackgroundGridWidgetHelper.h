@@ -42,11 +42,19 @@ public:
     // Get the Align Type Description by the Value.
     static QString GetAlignTypeDescByType(int alignType);
 
+	//SpriteModificationType
+	static int GetModificationType(int index);
+    static QString GetModificationTypeDesc(int index);
+	static int GetModificationTypesCount();
+
+	static QString GetModificationTypeDescByType(int modificationType);
+
 protected:
     // Validate the indexes.
     static bool ValidateDrawTypeIndex(int index);
     static bool ValidateColorInheritTypeIndex(int index);
     static bool ValidateAlginTypeIndex(int index);
+	static bool ValidateSpriteModificationIndex(int index);
     
     // Maps.
     struct DrawTypesData
@@ -67,9 +75,16 @@ protected:
         const char* alignTypeDesc;
     };
 
+	struct SpriteModificationTypesData
+    {
+        int spriteModificationType;
+        const char* spriteModificationTypeDescription;
+    };
+
     static const DrawTypesData drawTypesData[];
     static const ColorInheritTypesData colorInheritTypesData[];
     static const AlignTypesData alignTypesData[];
+	static const SpriteModificationTypesData spriteModificationTypesData[];
 };
 
 };

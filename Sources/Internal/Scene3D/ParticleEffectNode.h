@@ -9,13 +9,13 @@
 #ifndef __DAVAENGINE_PARTICLE_EFFECT_NODE_H__
 #define __DAVAENGINE_PARTICLE_EFFECT_NODE_H__
 
-#include "SceneNode.h"
+#include "Entity.h"
 #include "ParticleEmitterNode.h"
 
 namespace DAVA {
 
 // Particle Effect Node.
-class ParticleEffectNode : public SceneNode
+class ParticleEffectNode : public Entity
 {
 public:
     ParticleEffectNode();
@@ -23,8 +23,8 @@ public:
     /**
      \brief Access to Scene Nodes.
      */
-	virtual void	AddNode(SceneNode * node);
-    virtual void    InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode);
+	virtual void	AddNode(Entity * node);
+    virtual void    InsertBeforeNode(Entity *newNode, Entity *beforeNode);
 
     /**
      \brief Start the playback for all inner nodes.
@@ -59,11 +59,11 @@ public:
      */
     void SetPlaybackCompleteMessage(const Message& msg);
 
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual Entity* Clone(Entity *dstNode = NULL);
 
 protected:
     // Check whether Node is Particle Emitter one and check the duration.
-    bool PrepareNewParticleEmitterNode(SceneNode* node);
+    bool PrepareNewParticleEmitterNode(Entity* node);
     
     // Update the duration for all the child nodes.
     void UpdateDurationForChildNodes(float32 newEmitterLifeTime);

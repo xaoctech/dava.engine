@@ -10,7 +10,7 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "../ParticlesEditorQT/Helpers/ParticlesEditorSceneDataHelper.h"
 
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -47,9 +47,9 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
 
-        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        for (Set<Entity*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
         {
-            SceneNode * node = *it;
+            Entity * node = *it;
             if (node->GetParent())
             {
                 node->GetParent()->RemoveNode(node);
@@ -57,9 +57,9 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
         }
         
 
-		for (Set<SceneNode *>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+		for (Set<Entity *>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
 		{
-			SceneNode *node = *it;
+			Entity *node = *it;
 			SafeRelease(node);
 		}
 
@@ -83,7 +83,7 @@ void SceneValidator::ValidateScales(Scene *scene, Set<String> &errorsLog)
 	}
 }
 
-void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog)
+void SceneValidator::ValidateScalesInternal(Entity *sceneNode, Set<String> &errorsLog)
 {
 //  Basic algorithm is here
 // 	Matrix4 S, T, R; //Scale Transpose Rotation
@@ -121,14 +121,14 @@ void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &e
 }
 
 
-void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog)
+void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog)
 {
     if(!sceneNode) return;
     
     int32 count = sceneNode->GetChildrenCount();
     for(int32 i = 0; i < count; ++i)
     {
-        SceneNode *node = sceneNode->GetChild(i);
+        Entity *node = sceneNode->GetChild(i);
         
         ValidateRenderComponent(node, errorsLog);
         ValidateLodComponent(node, errorsLog);
@@ -164,7 +164,7 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
 }
 
 
-void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
     RenderComponent *rc = static_cast<RenderComponent *>(ownerNode->GetComponent(Component::RENDER_COMPONENT));
     if(!rc) return;
@@ -179,7 +179,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
         ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
     }
     
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(ro);
+    Landscape *landscape = dynamic_cast<Landscape *>(ro);
     if(landscape)
     {
         ValidateLandscape(landscape, errorsLog);
@@ -187,7 +187,7 @@ void SceneValidator::ValidateRenderComponent(SceneNode *ownerNode, Set<String> &
 }
 
 
-void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog)
 {
     LodComponent *lodComponent = GetLodComponent(ownerNode);
     if(!lodComponent) return;
@@ -222,7 +222,7 @@ void SceneValidator::ValidateLodComponent(SceneNode *ownerNode, Set<String> &err
     }
 }
 
-void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
 	ParticleEmitter * emitter = GetEmitter(ownerNode);
     if(!emitter) 
@@ -237,9 +237,9 @@ void SceneValidator::ValidateParticleEmitterComponent(DAVA::SceneNode *ownerNode
 
 
 
-void SceneValidator::ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
+void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
 {
-    ownerNode->RemoveFlag(SceneNode::NODE_INVALID);
+    ownerNode->RemoveFlag(Entity::NODE_INVALID);
     
     
     Material *material = renderBatch->GetMaterial();
@@ -262,7 +262,7 @@ void SceneValidator::ValidateRenderBatch(SceneNode *ownerNode, RenderBatch *rend
         {
             if (material->Validate(polygonGroup) == Material::VALIDATE_INCOMPATIBLE)
             {
-                ownerNode->AddFlag(SceneNode::NODE_INVALID);
+                ownerNode->AddFlag(Entity::NODE_INVALID);
                 errorsLog.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), ownerNode->GetFullName().c_str()));
                 errorsLog.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
             }
@@ -306,35 +306,35 @@ void SceneValidator::ValidateInstanceMaterialState(InstanceMaterialState *materi
 }
 
 
-void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog)
+void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errorsLog)
 {
     if(!landscape) return;
     
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(landscape);
     if(editorLandscape)
     {
         return;
     }
     
     
-    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
     {
-        if(		(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
-           ||	(LandscapeNode::TEXTURE_TILE_FULL == (LandscapeNode::eTextureLevel)i
-                 &&	landscape->GetTiledShaderMode() == LandscapeNode::TILED_MODE_TILEMASK))
+        if(		(Landscape::TEXTURE_DETAIL == (Landscape::eTextureLevel)i)
+           ||	(Landscape::TEXTURE_TILE_FULL == (Landscape::eTextureLevel)i
+                 &&	landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK))
         {
             continue;
         }
         
 		// TODO:
 		// new texture path
-		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
+		DAVA::String landTexName = landscape->GetTextureName((Landscape::eTextureLevel)i);
 		if(!IsTextureDescriptorPath(landTexName))
 		{
-			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
+			landscape->SetTextureName((Landscape::eTextureLevel)i, TextureDescriptor::GetDescriptorPathname(landTexName));
 		}
         
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), landscape->GetTextureName((LandscapeNode::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
+        ValidateTexture(landscape->GetTexture((Landscape::eTextureLevel)i), landscape->GetTextureName((Landscape::eTextureLevel)i), Format("Landscape. TextureLevel %d", i), errorsLog);
     }
     
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -348,7 +348,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 
 
 
-bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
+bool SceneValidator::NodeRemovingDisabled(Entity *node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
     return (customProperties && customProperties->IsKeyExists("editor.donotremove"));
@@ -646,7 +646,7 @@ void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
         infoControl->SetNodesCount(nodesCount);
 }
 
-int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
+int32 SceneValidator::EnumerateSceneNodes(DAVA::Entity *node)
 {
     //TODO: lode node can have several nodes at layer
     
@@ -667,7 +667,7 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname, ImageFileFo
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(descriptor)
     {
-        isChanged = descriptor->IsSourceValidForFormat(fileFormat);
+        isChanged = descriptor->IsSourceChanged(fileFormat);
         SafeRelease(descriptor);
     }
 
