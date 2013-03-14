@@ -107,7 +107,7 @@ public:
     
     void RecreteFullTilingTexture();
 
-    void SelectNodeQt(SceneNode *node);
+    void SelectNodeQt(Entity *node);
     void OnReloadRootNodesQt();
     
     void ShowScenePreview(const String scenePathname);
@@ -168,7 +168,7 @@ private:
 	//for save to folder with Childs
 	//////////////////////////////
 	void CopyFile(const String & file);
-	void CheckNodes(SceneNode * node);
+	void CheckNodes(Entity * node);
 	String inputFolder;
 	String outputFolder;
 	//////////////////////////////

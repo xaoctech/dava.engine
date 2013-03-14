@@ -72,7 +72,7 @@ public:
 	
 	virtual void Update(float32 timeElapsed);
 	virtual void OnStart();
-private:
+protected:
 	T * var;
 	T endValue;
 	T startValue;

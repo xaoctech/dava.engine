@@ -55,7 +55,7 @@ RenderEffect * TextureMulColorEffect::Create(Core::eRenderer renderer)
    
 void TextureMulColorEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
+    RenderManager::Instance()->AppendState(RenderState::STATE_TEXTURE0);
 
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
@@ -65,7 +65,7 @@ void TextureMulColorEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32
 
 void TextureMulColorEffectGL::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
+    RenderManager::Instance()->AppendState(RenderState::STATE_TEXTURE0);
 
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
@@ -107,7 +107,7 @@ void TextureMulColorEffectGL20::DrawElements(ePrimitiveType type, int32 count, e
     
 void TextureMulColorEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
-	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
+	RenderManager::Instance()->AppendState(RenderState::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -116,7 +116,7 @@ void TextureMulColorEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int3
 
 void TextureMulColorEffectDX9::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
+	RenderManager::Instance()->AppendState(RenderState::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();

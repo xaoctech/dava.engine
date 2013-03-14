@@ -16,24 +16,24 @@ public:
 	LodSystem(Scene * scene);
 
 	virtual void Process();
-	virtual void AddEntity(SceneNode * entity);
-	virtual void RemoveEntity(SceneNode * entity);
+	virtual void AddEntity(Entity * entity);
+	virtual void RemoveEntity(Entity * entity);
 
 	virtual void SetCamera(Camera * camera);
 
-	static void UpdateEntityAfterLoad(SceneNode * entity);
+	static void UpdateEntityAfterLoad(Entity * entity);
 
-	static void MergeChildLods(SceneNode * toEntity);
+	static void MergeChildLods(Entity * toEntity);
 
 	class LodMerger
 	{
 	public:
-		LodMerger(SceneNode * toEntity);
+		LodMerger(Entity * toEntity);
 		void MergeChildLods();
 
 	private:
-		void GetLodComponentsRecursive(SceneNode * fromEntity, Vector<SceneNode*> & allLods);
-		SceneNode * toEntity;
+		void GetLodComponentsRecursive(Entity * fromEntity, Vector<Entity*> & allLods);
+		Entity * toEntity;
 	};
 
 	
@@ -46,10 +46,10 @@ private:
 	void UpdatePartialUpdateIndices();
 
 	
-	Vector<SceneNode*> entities;
+	Vector<Entity*> entities;
 
-	void UpdateLod(SceneNode * entity);
-	void RecheckLod(SceneNode * entity);
+	void UpdateLod(Entity * entity);
+	void RecheckLod(Entity * entity);
 
 	Camera * camera;
 };

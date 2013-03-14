@@ -14,7 +14,7 @@
 
 using namespace DAVA;
 
-class DebugNode : public SceneNode
+class DebugNode : public Entity
 {
 public:
 	DebugNode(std::vector<float32> &data);

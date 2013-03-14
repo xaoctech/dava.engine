@@ -11,7 +11,7 @@ public:
 	ParticleEffectPropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~ParticleEffectPropertyControl();
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
 
 protected:
 

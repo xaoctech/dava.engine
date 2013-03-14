@@ -22,7 +22,7 @@ public:
 	~TextureListModel();
 
 	void setScene(DAVA::Scene *scene);
-	void setHighlight(DAVA::SceneNode *node);
+	void setHighlight(DAVA::Entity *node);
 	void setFilter(QString filter);
 	void setFilterBySelectedNode(bool enabled);
 	void setSortMode(TextureListModel::TextureListSortMode sortMode);

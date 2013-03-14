@@ -29,10 +29,10 @@ protected:
     String NormalizeFolderPath(const String &pathname);
     String RemoveFolderFromPath(const String &pathname, const String &folderPathname);
     
-    void RemoveEditorNodes(SceneNode *rootNode);
+    void RemoveEditorNodes(Entity *rootNode);
     
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
-    void ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog);
+    void ExportLandscapeFullTiledTexture(Landscape *landscape, Set<String> &errorLog);
     bool ExportFileDirectly(const String &filePathname, Set<String> &errorLog);
     bool ExportTexture(const String &texturePathname, Set<String> &errorLog);
     bool ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog);

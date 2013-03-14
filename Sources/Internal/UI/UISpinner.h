@@ -42,7 +42,7 @@ public:
      *
      * Implementation depends on a kind of controls used to display data element.
      */
-    virtual void DisplaySelectedData(UISpinner * spinner) const = 0;
+    virtual void DisplaySelectedData(UISpinner * spinner) = 0;
 
     /*
      * Select next element. Returns 'true' and calls OnSelectedChanged for all observers if next element selected successfully. Returns 'false' otherwise.
@@ -89,12 +89,13 @@ public:
 
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
-	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+    virtual void CopyDataFrom(DAVA::UIControl *srcControl);
+    virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     UIButton * GetButtonNext() {return buttonNext;}
     UIButton * GetButtonPrevious() {return buttonPrevious;}
 
-	virtual List<UIControl* >& GetRealChildren();
+    virtual List<UIControl* >& GetRealChildren();
 
 protected:
     SpinnerAdapter * adapter;
@@ -109,6 +110,7 @@ protected:
 
     void InitButtons();
     void ReleaseButtons();
+    void FindRequiredControls();
 };
 
 }

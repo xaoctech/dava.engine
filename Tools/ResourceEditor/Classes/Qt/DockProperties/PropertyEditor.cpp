@@ -20,7 +20,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
 	// MainWindow actions
 	QObject::connect(QtMainWindow::Instance()->GetUI()->actionPropHideReadonly, SIGNAL(triggered()), this, SLOT(actionHideReadOnly()));
@@ -42,7 +42,7 @@ PropertyEditor::~PropertyEditor()
 	SafeRelease(curNode);
 }
 
-void PropertyEditor::SetNode(DAVA::SceneNode *node)
+void PropertyEditor::SetNode(DAVA::Entity *node)
 {
 	// Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
@@ -140,7 +140,7 @@ void PropertyEditor::sceneActivated(SceneData *sceneData)
 void PropertyEditor::sceneReleased(SceneData *sceneData)
 { }
 
-void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 {
 	SetNode(node);
 }

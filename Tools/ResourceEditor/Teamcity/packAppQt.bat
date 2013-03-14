@@ -13,8 +13,8 @@ xcopy /e ..\Data\*.* app\ResourceEditor\dava.framework\Tools\ResourceEditor\Data
 xcopy *.exe app\ResourceEditor\dava.framework\Tools\ResourceEditor
 xcopy ..\glew32.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
 xcopy ..\Teamcity\imagesplitter\*.bat app\ResourceEditor\dava.framework\Tools\ResourceEditor
-xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtCore4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
-xcopy %QT_HOME%\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy %QT_HOME%\lib\QtCore4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
+xcopy %QT_HOME%\lib\QtGui4.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
 xcopy ..\..\..\..\dava.resourceeditor.beast\beast\bin\beast32.dll app\ResourceEditor\dava.framework\Tools\ResourceEditor
 xcopy /e ..\..\..\..\dava.resourceeditor.beast\*.* app\ResourceEditor\dava.resourceeditor.beast\
 
