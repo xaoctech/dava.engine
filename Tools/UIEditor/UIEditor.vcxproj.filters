@@ -847,26 +847,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="UI\davaglwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\hierarchytreewidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\librarywidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\mainwindow.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Data\icons.qrc">
-      <Filter>Resources</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="UI\createplatformdlg.ui">
       <Filter>Form Files\Dialogs</Filter>
     </None>
@@ -917,6 +897,24 @@
     </None>
     <None Include="UI\uitextfieldpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\davaglwidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\hierarchytreewidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\librarywidget.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="UI\mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </None>
+    <None Include="Data\icons.qrc">
+      <Filter>Resources</Filter>
     </None>
   </ItemGroup>
 </Project>

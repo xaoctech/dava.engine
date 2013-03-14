@@ -15,10 +15,12 @@ PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::C
 	this->parentNode = parentNode;
 	this->copyType = copyType;
 	this->items = items;
+	this->newItems = NULL;
 }
 
 PasteCommand::~PasteCommand()
 {
+	CleanupPastedItems();
 	//delete this->items;
 }
 
@@ -28,7 +30,17 @@ void PasteCommand::Execute()
 	HierarchyTreeController::Instance()->ResetSelectedControl();
 	
 	int count = 0;
-	HierarchyTreeNode::HIERARCHYTREENODESLIST* newItems = new HierarchyTreeNode::HIERARCHYTREENODESLIST();
+	
+	if (this->newItems)
+	{
+		// We are performing Rollback after Execute.
+		ReturnPastedControlsToScene();
+		return;
+	}
+
+	// This is the first Execute - remember the items to be pasted.
+	this->newItems = new HierarchyTreeNode::HIERARCHYTREENODESLIST();
+
 	switch (copyType) {
 		case CopyPasteController::CopyTypeControl:
 		{
@@ -105,6 +117,27 @@ void PasteCommand::Execute()
 			break;
 	}
 	
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+void PasteCommand::Rollback()
+{
+	if (!newItems)
+	{
+		return;
+	}
+	
+	// Cleanup the new items, if any.
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		// Remove the controls added and appropriate nodes. Don't delete them from
+		// memory - we might return them in Rollback.
+		HierarchyTreeNode* curNode = (*iter);
+		curNode->PrepareRemoveFromSceneInformation();
+		HierarchyTreeController::Instance()->DeleteNode(curNode->GetId(), false, true);
+	}
+
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
 }
 
@@ -266,4 +299,38 @@ QString PasteCommand::FormatCopyName(QString baseName, const HierarchyTreeNode* 
 		}
 	}
 	return baseName;
+}
+
+void PasteCommand::ReturnPastedControlsToScene()
+{
+	if (!newItems)
+	{
+		return;
+	}
+
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		// Return the removed node back to scene.
+		HierarchyTreeNode* curNode = (*iter);
+		HierarchyTreeController::Instance()->ReturnNodeToScene(curNode);
+	}
+
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+void PasteCommand::CleanupPastedItems()
+{
+	if (this->newItems == NULL)
+	{
+		return;
+	}
+
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		SafeDelete(*iter);
+	}
+	
+	SafeDelete(this->newItems);
 }
