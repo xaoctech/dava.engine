@@ -273,6 +273,16 @@ void UITextField::SetFontColor(const Color& fontColor)
     SetTextColor(fontColor);
 }
 
+void UITextField::SetShadowOffset(const DAVA::Vector2 &offset)
+{
+	staticText->SetShadowOffset(offset);
+}
+	
+void UITextField::SetShadowColor(const Color& color)
+{
+	staticText->SetShadowColor(color);
+   }
+
 void UITextField::SetFontSize(float size)
 {
 #ifdef __DAVAENGINE_IPHONE__
