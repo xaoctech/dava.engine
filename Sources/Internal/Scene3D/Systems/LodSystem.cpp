@@ -1,6 +1,6 @@
 #include "Scene3D/Systems/LodSystem.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -19,7 +19,7 @@ void LodSystem::Process()
 {
 	for(int32 i = partialUpdateIndices[currentPartialUpdateIndex]; i < partialUpdateIndices[currentPartialUpdateIndex+1]; ++i)
 	{
-		SceneNode * entity = entities[i];
+		Entity * entity = entities[i];
 		LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 		if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 		{
@@ -33,13 +33,13 @@ void LodSystem::Process()
 	currentPartialUpdateIndex = currentPartialUpdateIndex < UPDATE_PART_PER_FRAME-1 ? currentPartialUpdateIndex+1 : 0;
 }
 
-void LodSystem::AddEntity(SceneNode * entity)
+void LodSystem::AddEntity(Entity * entity)
 {
 	entities.push_back(entity);
 	UpdatePartialUpdateIndices();
 }
 
-void LodSystem::RemoveEntity(SceneNode * entity)
+void LodSystem::RemoveEntity(Entity * entity)
 {
 	uint32 size = entities.size();
 	for(uint32 i = 0; i < size; ++i)
@@ -56,7 +56,7 @@ void LodSystem::RemoveEntity(SceneNode * entity)
 	DVASSERT(0);
 }
 
-void LodSystem::UpdateEntityAfterLoad(SceneNode * entity)
+void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 {
 	LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	for (Vector<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
@@ -65,7 +65,7 @@ void LodSystem::UpdateEntityAfterLoad(SceneNode * entity)
 		size_t size = ld.indexes.size();
 		for (size_t idx = 0; idx < size; ++idx)
 		{
-			SceneNode * childEntity = entity->GetChild(ld.indexes[idx]);
+			Entity * childEntity = entity->GetChild(ld.indexes[idx]);
 			ld.nodes.push_back(childEntity);
 			{
 				childEntity->SetLodVisible(false);
@@ -100,7 +100,7 @@ void LodSystem::UpdatePartialUpdateIndices()
 	LastSlot = Max(LastSlot, size);
 }
 
-void LodSystem::UpdateLod(SceneNode * entity)
+void LodSystem::UpdateLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	LodComponent::LodData * oldLod = lodComponent->currentLod;
@@ -123,7 +123,7 @@ void LodSystem::UpdateLod(SceneNode * entity)
 	}
 }
 
-void LodSystem::RecheckLod(SceneNode * entity)
+void LodSystem::RecheckLod(Entity * entity)
 {
 	LodComponent * lodComponent = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
 	if (!lodComponent->currentLod)return;
@@ -178,13 +178,13 @@ void LodSystem::SetCamera(Camera * _camera)
 	camera = _camera;
 }
 
-void LodSystem::MergeChildLods(SceneNode * toEntity)
+void LodSystem::MergeChildLods(Entity * toEntity)
 {
 	LodSystem::LodMerger merger(toEntity);
 	merger.MergeChildLods();
 }
 
-LodSystem::LodMerger::LodMerger(SceneNode * _toEntity)
+LodSystem::LodMerger::LodMerger(Entity * _toEntity)
 {
 	DVASSERT(_toEntity);
 	toEntity = _toEntity;
@@ -195,7 +195,7 @@ void LodSystem::LodMerger::MergeChildLods()
 	LodComponent * toLod = (LodComponent*)toEntity->GetOrCreateComponent(Component::LOD_COMPONENT);
 	
 
-	Vector<SceneNode*> allLods;
+	Vector<Entity*> allLods;
 	GetLodComponentsRecursive(toEntity, allLods);
 
 	uint32 count = allLods.size();
@@ -239,7 +239,7 @@ void LodSystem::LodMerger::MergeChildLods()
 	}
 }
 
-void LodSystem::LodMerger::GetLodComponentsRecursive(SceneNode * fromEntity, Vector<SceneNode*> & allLods)
+void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector<Entity*> & allLods)
 {
 	if(fromEntity != toEntity)
 	{

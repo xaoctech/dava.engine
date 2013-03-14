@@ -33,7 +33,7 @@
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Render/Highlevel/RenderBatch.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 
 namespace DAVA
 {
@@ -43,7 +43,7 @@ namespace DAVA
 class LandscapeChunk : public RenderBatch
 {
 public:
-    LandscapeChunk(LandscapeNode * node = 0);
+    LandscapeChunk(Landscape * node = 0);
     ~LandscapeChunk();
     
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
@@ -51,7 +51,7 @@ public:
     virtual void Draw(Camera * camera);
 
 private:
-    LandscapeNode * landscape;
+    Landscape * landscape;
     
 public:
     INTROSPECTION_EXTEND(LandscapeChunk, RenderBatch,

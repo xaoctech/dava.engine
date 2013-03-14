@@ -14,7 +14,7 @@
 using namespace DAVA;
 REGISTER_CLASS(ParticleEffectNode);
 
-ParticleEffectNode::ParticleEffectNode() : SceneNode()
+ParticleEffectNode::ParticleEffectNode() : Entity()
 {
     this->stopAfterNRepeats = -1;
     this->stopWhenEmpty = false;
@@ -24,24 +24,24 @@ ParticleEffectNode::ParticleEffectNode() : SceneNode()
     SetName("Particle effect");
 }
 
-void ParticleEffectNode::AddNode(SceneNode* node)
+void ParticleEffectNode::AddNode(Entity* node)
 {
 	//Dizz: commented due to ParticleEmitterNode => Component transition (ParticleEmitterNode on load, Component after conversion)
     //if (PrepareNewParticleEmitterNode(node))
     {
-        SceneNode::AddNode(node);
+        Entity::AddNode(node);
     }
 }
 
-void ParticleEffectNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode)
+void ParticleEffectNode::InsertBeforeNode(Entity *newNode, Entity *beforeNode)
 {
     if (PrepareNewParticleEmitterNode(newNode))
     {
-        SceneNode::InsertBeforeNode(newNode, beforeNode);
+        Entity::InsertBeforeNode(newNode, beforeNode);
     }
 }
 
-bool ParticleEffectNode::PrepareNewParticleEmitterNode(SceneNode* node)
+bool ParticleEffectNode::PrepareNewParticleEmitterNode(Entity* node)
 {
     //// Only Particle Emitter nodes are allowed.
     //ParticleEmitterComponent * particleEmitterComponent = static_cast<ParticleEmitterComponent*>(node->GetComponent(Component::PARTICLE_EMITTER_COMPONENT));
@@ -165,7 +165,7 @@ void ParticleEffectNode::Update(float32 timeElapsed)
 
 void DAVA::ParticleEffectNode::Draw()
 {
-	SceneNode::Draw();
+	Entity::Draw();
 }
 
 
@@ -213,7 +213,7 @@ void ParticleEffectNode::SetPlaybackCompleteMessage(const Message& msg)
     this->playbackComplete = msg;
 }
 
-SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
+Entity* ParticleEffectNode::Clone(Entity *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
@@ -221,7 +221,7 @@ SceneNode* ParticleEffectNode::Clone(SceneNode *dstNode /*= NULL*/)
 		dstNode = new ParticleEffectNode();
 	}
 
-	SceneNode::Clone(dstNode);
+	Entity::Clone(dstNode);
 	ParticleEffectNode *nd = (ParticleEffectNode *)dstNode;
 	nd->effectDuration = effectDuration;
 
