@@ -13,7 +13,6 @@
 #include "DAVAEngine.h"
 #include "bullet/btBulletDynamicsCommon.h"
 #include "bullet/btBulletCollisionCommon.h"
-#include "DebugNode.h"
 #include "Scene3d/UserNode.h"
 
 using namespace DAVA;
@@ -24,8 +23,8 @@ public:
     
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform);
 	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, UserNode *_userNode, const Matrix4 &pWorldTransform);
-	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const Matrix4 &pWorldTransform);
-	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const AABBox3 &b, const Matrix4 &pWorldTransform);
+	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const Matrix4 &pWorldTransform);
+	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Entity * _entity, const AABBox3 &b, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
 	void UpdateCollisionObject(void);
@@ -52,7 +51,7 @@ protected:
 	void CreateFromEntity();
 	void CreateFromAABox();
 
-	SceneNode * entity;
+	Entity * entity;
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
 	btCollisionObject *collisionObject;

@@ -1,6 +1,7 @@
 #include "DAVAEngine.h"
 #include "Scene/SceneDataManager.h"
 #include "Entity/Component.h"
+#include "Main/mainwindow.h"
 
 #include "DockProperties/PropertyEditor.h"
 #include "QtPropertyEditor/QtPropertyItem.h"
@@ -11,6 +12,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
+	, hideReadOnly(false)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
@@ -18,19 +20,29 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneActivated(SceneData *)), this, SLOT(sceneActivated(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneChanged(SceneData *)), this, SLOT(sceneChanged(SceneData *)));
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneReleased(SceneData *)), this, SLOT(sceneReleased(SceneData *)));
-	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::SceneNode *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::SceneNode *)));
+	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
+
+	// MainWindow actions
+	QObject::connect(QtMainWindow::Instance()->GetUI()->actionPropHideReadonly, SIGNAL(triggered()), this, SLOT(actionHideReadOnly()));
+
+	hideReadOnly = QtMainWindow::Instance()->GetUI()->actionPropHideReadonly->isChecked();
+
 
 	posSaver.Attach(this, "DocPropetyEditor");
-	posSaver.LoadState(this);
+	
+	DAVA::VariantType v = posSaver.LoadValue("splitPos");
+	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
 }
 
 PropertyEditor::~PropertyEditor()
 {
-	posSaver.SaveState(this);
+	DAVA::VariantType v(header()->sectionSize(0));
+	posSaver.SaveValue("splitPos", v);
+
 	SafeRelease(curNode);
 }
 
-void PropertyEditor::SetNode(DAVA::SceneNode *node)
+void PropertyEditor::SetNode(DAVA::Entity *node)
 {
 	// Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
@@ -85,12 +97,26 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 			currentInfo = currentInfo->BaseInfo();
 		}
 
-        //if(hasMembers)
+        if(hasMembers)
         {
-            QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), new QtPropertyDataIntrospection(object, currentInfo));
+			int hasFlags = DAVA::INTROSPECTION_EDITOR;
+			int hasNotFlags = 0;
+
+			if(hideReadOnly) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
+
+			QtPropertyData* propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
+
+			if(propData->ChildCount() > 0)
+			{
+				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
             
-            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
-            prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+	            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
+		        prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
+			}
+			else
+			{
+				delete propData;
+			}
         }
     }
 }
@@ -114,7 +140,17 @@ void PropertyEditor::sceneActivated(SceneData *sceneData)
 void PropertyEditor::sceneReleased(SceneData *sceneData)
 { }
 
-void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::SceneNode *node)
+void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 {
 	SetNode(node);
+}
+
+void PropertyEditor::actionHideReadOnly()
+{
+	QAction *hideAction = dynamic_cast<QAction *>(QObject::sender());
+	if(NULL != hideAction)
+	{
+		hideReadOnly = hideAction->isChecked();
+		SetNode(curNode);
+	}
 }

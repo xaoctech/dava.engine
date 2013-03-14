@@ -32,6 +32,7 @@
 #define __DAVAENGINE_SOUND_CHANNEL_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 #include "Sound/ALUtils.h"
 
 namespace DAVA
@@ -62,6 +63,9 @@ public:
 
 	void	SetVolume(float32 volume); // [0..1]
 	float32	GetVolume();
+
+	void SetPosition(const Vector3 & position);
+	void SetIgnorePosition(bool ignorePosition);
 
 	void	Update();
 

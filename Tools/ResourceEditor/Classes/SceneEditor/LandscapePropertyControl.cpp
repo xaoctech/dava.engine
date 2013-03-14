@@ -22,11 +22,11 @@ LandscapePropertyControl::~LandscapePropertyControl()
 
 }
 
-void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
+void LandscapePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
-	LandscapeNode *landscape = GetLandscape();
+	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
 
@@ -54,25 +54,25 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     
     propertyList->AddSubsection("property.landscape.subsection.textures");
-    AddFilepathProperty(String("property.landscape.texture.color"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_COLOR);
-    AddFilepathProperty(String("property.landscape.texture.tile0"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE0);
-    AddFilepathProperty(String("property.landscape.texture.tile1"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE1);
-    AddFilepathProperty(String("property.landscape.texture.tile2"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE2);
-    AddFilepathProperty(String("property.landscape.texture.tile3"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE3);
-    AddFilepathProperty(String("property.landscape.texture.tilemask"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_MASK);
-    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), TextureDescriptor::GetSupportedTextureExtensions(), LandscapeNode::TEXTURE_TILE_FULL);
+    AddFilepathProperty(String("property.landscape.texture.color"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_COLOR);
+    AddFilepathProperty(String("property.landscape.texture.tile0"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE0);
+    AddFilepathProperty(String("property.landscape.texture.tile1"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE1);
+    AddFilepathProperty(String("property.landscape.texture.tile2"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE2);
+    AddFilepathProperty(String("property.landscape.texture.tile3"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE3);
+    AddFilepathProperty(String("property.landscape.texture.tilemask"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE_MASK);
+    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), TextureDescriptor::GetSupportedTextureExtensions(), Landscape::TEXTURE_TILE_FULL);
 
     propertyList->AddColorProperty("property.landscape.texture.tilecolor0");
-    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor0", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE0));
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor0", landscape->GetTileColor(Landscape::TEXTURE_TILE0));
     
     propertyList->AddColorProperty("property.landscape.texture.tilecolor1");
-    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor1", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE1));
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor1", landscape->GetTileColor(Landscape::TEXTURE_TILE1));
     
     propertyList->AddColorProperty("property.landscape.texture.tilecolor2");
-    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor2", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE2));
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor2", landscape->GetTileColor(Landscape::TEXTURE_TILE2));
     
     propertyList->AddColorProperty("property.landscape.texture.tilecolor3");
-    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor3", landscape->GetTileColor(LandscapeNode::TEXTURE_TILE3));
+    propertyList->SetColorPropertyValue("property.landscape.texture.tilecolor3", landscape->GetTileColor(Landscape::TEXTURE_TILE3));
 
     propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"),
                                      Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
@@ -93,31 +93,31 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 	propertyList->SetIntPropertyValue("lightmap.size", currentSceneNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
 
     propertyList->AddFloatProperty("property.landscape.texture0.tilex");
-    propertyList->SetFloatPropertyValue("property.landscape.texture0.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE0).x);
+    propertyList->SetFloatPropertyValue("property.landscape.texture0.tilex", landscape->GetTextureTiling(Landscape::TEXTURE_TILE0).x);
     propertyList->AddFloatProperty("property.landscape.texture0.tiley");
-    propertyList->SetFloatPropertyValue("property.landscape.texture0.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE0).y);
+    propertyList->SetFloatPropertyValue("property.landscape.texture0.tiley", landscape->GetTextureTiling(Landscape::TEXTURE_TILE0).y);
     
     propertyList->AddFloatProperty("property.landscape.texture1.tilex");
-    propertyList->SetFloatPropertyValue("property.landscape.texture1.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE1).x);
+    propertyList->SetFloatPropertyValue("property.landscape.texture1.tilex", landscape->GetTextureTiling(Landscape::TEXTURE_TILE1).x);
     propertyList->AddFloatProperty("property.landscape.texture1.tiley");
-    propertyList->SetFloatPropertyValue("property.landscape.texture1.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE1).y);
+    propertyList->SetFloatPropertyValue("property.landscape.texture1.tiley", landscape->GetTextureTiling(Landscape::TEXTURE_TILE1).y);
 
     propertyList->AddFloatProperty("property.landscape.texture2.tilex");
-    propertyList->SetFloatPropertyValue("property.landscape.texture2.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE2).x);
+    propertyList->SetFloatPropertyValue("property.landscape.texture2.tilex", landscape->GetTextureTiling(Landscape::TEXTURE_TILE2).x);
     propertyList->AddFloatProperty("property.landscape.texture2.tiley");
-    propertyList->SetFloatPropertyValue("property.landscape.texture2.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE2).y);
+    propertyList->SetFloatPropertyValue("property.landscape.texture2.tiley", landscape->GetTextureTiling(Landscape::TEXTURE_TILE2).y);
     
     propertyList->AddFloatProperty("property.landscape.texture3.tilex");
-    propertyList->SetFloatPropertyValue("property.landscape.texture3.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).x);
+    propertyList->SetFloatPropertyValue("property.landscape.texture3.tilex", landscape->GetTextureTiling(Landscape::TEXTURE_TILE3).x);
     propertyList->AddFloatProperty("property.landscape.texture3.tiley");
-    propertyList->SetFloatPropertyValue("property.landscape.texture3.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).y);
+    propertyList->SetFloatPropertyValue("property.landscape.texture3.tiley", landscape->GetTextureTiling(Landscape::TEXTURE_TILE3).y);
     
     ControlsFactory::AddFogSubsection(propertyList, landscape->IsFogEnabled(), landscape->GetFogDensity(), landscape->GetFogColor());
 }
 
-void LandscapePropertyControl::AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level)
+void LandscapePropertyControl::AddFilepathProperty(const String &key, const String &filter, Landscape::eTextureLevel level)
 {
-	LandscapeNode *landscape = GetLandscape();
+	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
     Texture * t = landscape->GetTexture(level);
@@ -138,7 +138,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 {
     if("property.landscape.size" == forKey || "property.landscape.height" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 		{
 			Vector3 size(
@@ -159,48 +159,48 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
     }
     if ("property.landscape.texture0.tilex" == forKey || "property.landscape.texture0.tiley" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 		{
 			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture0.tilex"),
 						   propertyList->GetFloatPropertyValue("property.landscape.texture0.tiley"));
-			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE0, tiling);
+			landscape->SetTextureTiling(Landscape::TEXTURE_TILE0, tiling);
 		}
     }
     if ("property.landscape.texture1.tilex" == forKey || "property.landscape.texture1.tiley" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 		{
 			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture1.tilex"),
 						   propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
-			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE1, tiling);
+			landscape->SetTextureTiling(Landscape::TEXTURE_TILE1, tiling);
 		}
     }
 	if ("property.landscape.texture2.tilex" == forKey || "property.landscape.texture2.tiley" == forKey)
 	{
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 		{
 			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture2.tilex"),
 				propertyList->GetFloatPropertyValue("property.landscape.texture2.tiley"));
-			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE2, tiling);
+			landscape->SetTextureTiling(Landscape::TEXTURE_TILE2, tiling);
 		}
 	}
 	if ("property.landscape.texture3.tilex" == forKey || "property.landscape.texture3.tiley" == forKey)
 	{
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 		{
 			Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture3.tilex"),
 				propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
-			landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
+			landscape->SetTextureTiling(Landscape::TEXTURE_TILE3, tiling);
 		}
 	}
     
     if ("property.material.dencity" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
 			landscape->SetFogDensity(newValue);
     }
@@ -227,7 +227,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 		bool isValid = SceneValidator::Instance()->ValidateHeightmapPathname(newValue, errorsLog);
 		if(isValid)
 		{
-			LandscapeNode *landscape = GetLandscape();
+			Landscape *landscape = GetLandscape();
 			if (!landscape)
 				return;
 
@@ -258,31 +258,31 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
             
 			if("property.landscape.texture.tile0" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE0, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile1" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE1, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile2" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE2, descriptorPathname);
 			}
 			else if("property.landscape.texture.tile3" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE3, descriptorPathname);
 			}
 			else if("property.landscape.texture.tilemask" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE_MASK, descriptorPathname);
 			}
 			else if("property.landscape.texture.color" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_COLOR, descriptorPathname);
 			}
 			else if("property.landscape.texture.tiledtexture" == forKey)
 			{
-				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, descriptorPathname);
+				SetLandscapeTexture(Landscape::TEXTURE_TILE_FULL, descriptorPathname);
 			}
 		}
 	}
@@ -297,16 +297,16 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 }
 
-void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)
+void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel level, const String &texturePathname)
 {
-	LandscapeNode *landscape = GetLandscape();
+	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
 
     landscape->SetTexture(level, texturePathname);
     SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
 
-    if(LandscapeNode::TEXTURE_TILE_FULL != level)
+    if(Landscape::TEXTURE_TILE_FULL != level)
     {
         landscape->UpdateFullTiledTexture();   
     }
@@ -319,11 +319,11 @@ void LandscapePropertyControl::OnComboIndexChanged(
 {
     if("property.landscape.tilemode" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
 
-        landscape->SetTiledShaderMode((LandscapeNode::eTiledShaderMode)newItemIndex);
+        landscape->SetTiledShaderMode((Landscape::eTiledShaderMode)newItemIndex);
     }
         
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
@@ -347,7 +347,7 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
     }
     else if (String("property.material.fogenabled") == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
 
@@ -361,7 +361,7 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
 {
     if("property.material.fogcolor" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
         landscape->SetFogColor(newColor);
@@ -369,31 +369,31 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
     
     if("property.landscape.texture.tilecolor0" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
-        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE0, newColor);
+        landscape->SetTileColor(Landscape::TEXTURE_TILE0, newColor);
     }
     if("property.landscape.texture.tilecolor1" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
-        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE1, newColor);
+        landscape->SetTileColor(Landscape::TEXTURE_TILE1, newColor);
     }
     if("property.landscape.texture.tilecolor2" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
-        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE2, newColor);
+        landscape->SetTileColor(Landscape::TEXTURE_TILE2, newColor);
     }
     if("property.landscape.texture.tilecolor3" == forKey)
     {
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (!landscape)
 			return;
-        landscape->SetTileColor(LandscapeNode::TEXTURE_TILE3, newColor);
+        landscape->SetTileColor(Landscape::TEXTURE_TILE3, newColor);
     }
     
     PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
@@ -402,7 +402,7 @@ void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, con
 
 void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-	LandscapeNode *landscape = GetLandscape();
+	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
 
@@ -418,14 +418,14 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
     }
     
     propertyList->SetFilepathPropertyValue(String("property.landscape.texture.tiledtexture"), descriptor->pathname);
-    landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, descriptor->pathname);
+    landscape->SetTexture(Landscape::TEXTURE_TILE_FULL, descriptor->pathname);
     
     SafeRelease(descriptor);
 }
 
 void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-	LandscapeNode *landscape = GetLandscape();
+	Landscape *landscape = GetLandscape();
 	if (!landscape)
 		return;
 
@@ -435,10 +435,10 @@ void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void
     heightmap->SaveToImage(heightmapPath);
 }
 
-LandscapeNode* LandscapePropertyControl::GetLandscape() const
+Landscape* LandscapePropertyControl::GetLandscape() const
 {
 	RenderComponent* component = cast_if_equal<RenderComponent*>(currentSceneNode->GetComponent(Component::RENDER_COMPONENT));
-	LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (component->GetRenderObject());
+	Landscape *landscape = dynamic_cast<Landscape*> (component->GetRenderObject());
 	DVASSERT(landscape);
 	return landscape;
 }

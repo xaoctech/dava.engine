@@ -8,7 +8,7 @@
 namespace DAVA 
 {
 
-class SceneNode;
+class Entity;
 
 class TransformComponent : public Component
 {
@@ -26,9 +26,9 @@ public:
 	inline int32 GetIndex();
 
 	void SetLocalTransform(const Matrix4 * transform);
-	void SetParent(SceneNode * node);
+	void SetParent(Entity * node);
 
-    virtual Component * Clone(SceneNode * toEntity);
+    virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -36,7 +36,7 @@ private:
 	Matrix4 localMatrix;
 	Matrix4 worldMatrix;
 	Matrix4 * parentMatrix;
-	SceneNode * parent; //SceneNode::parent should be removed
+	Entity * parent; //Entity::parent should be removed
 
 	int32 index;
 

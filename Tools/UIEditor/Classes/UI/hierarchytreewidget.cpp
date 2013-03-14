@@ -57,9 +57,9 @@ void HierarchyTreeWidget::OnTreeUpdated()
 	ui->treeWidget->clear();
 	
 	const HierarchyTree& tree = HierarchyTreeController::Instance()->GetTree();
-	const HierarchyTreeRootNode& rootNode = tree.GetRootNode();
-	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();
-		 iter != rootNode.GetChildNodes().end();
+	const HierarchyTreeRootNode* rootNode = tree.GetRootNode();
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode->GetChildNodes().begin();
+		 iter != rootNode->GetChildNodes().end();
 		 ++iter)
 	{
 		//add platform node

@@ -17,7 +17,12 @@ HierarchyTreeControlMimeData::HierarchyTreeControlMimeData(const QList<QTreeWidg
 		QTreeWidgetItem* item = (*iter);
 		QVariant data = item->data(ITEM_ID);
 		HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-		this->items.insert(id);
+		
+		Logger::Debug("HierarchyTreeNode::HIERARCHYTREENODEID %d", id);
+		
+		HierarchyTreeNode::HIERARCHYTREENODESIDLIST::iterator it = std::find(this->items.begin(), this->items.end(), id);
+		if (it == this->items.end())
+			this->items.push_back(id);
 	}
 }
 
@@ -28,23 +33,17 @@ HierarchyTreeControlMimeData::~HierarchyTreeControlMimeData()
 
 bool HierarchyTreeControlMimeData::IsDropEnable(const HierarchyTreeNode *parentItem) const
 {
-	if (items.find(parentItem->GetId()) != items.end())	//ignore self insert
-	{
-		return false;
-	}
-	
 	const HierarchyTreePlatformNode* parentPlatform = dynamic_cast<const HierarchyTreePlatformNode*>(parentItem);
 	const HierarchyTreeScreenNode* parentScreen = dynamic_cast<const HierarchyTreeScreenNode*>(parentItem);
 	const HierarchyTreeControlNode* parentControl = dynamic_cast<const HierarchyTreeControlNode*>(parentItem);
+	const HierarchyTreeRootNode* rootNode = dynamic_cast<const HierarchyTreeRootNode*>(parentItem);
 	
 	for (HierarchyTreeNode::HIERARCHYTREENODESIDLIST::const_iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
 		HierarchyTreeNode::HIERARCHYTREENODEID id = (*iter);
 		
 		const HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(id);
-		if (parentItem == node) //skip self drop
-			return false;
-	
+		
 		if (node->IsHasChild(parentItem))
 			return false;
 		
@@ -55,11 +54,17 @@ bool HierarchyTreeControlMimeData::IsDropEnable(const HierarchyTreeNode *parentI
 			if (!screen)
 				return false;
 		}
-		else  if (parentScreen || parentControl)
+		else if (parentScreen || parentControl)
 		{
 			//all items must be control
 			const HierarchyTreeControlNode* control = dynamic_cast<const HierarchyTreeControlNode*>(node);
 			if (!control)
+				return false;
+		}
+		else if (rootNode)
+		{
+			const HierarchyTreePlatformNode* platform = dynamic_cast<const HierarchyTreePlatformNode*>(node);
+			if (!platform)
 				return false;
 		}
 	}
@@ -82,25 +87,94 @@ void HierarchyTreeControl::contextMenuEvent(QContextMenuEvent * event)
 	emit ShowCustomMenu(event->globalPos());
 }
 
+uint32 HierarchyTreeControl::GetInternalIndex(QTreeWidgetItem* item, int& factor) const
+{
+	int idx = 0;
+	QTreeWidgetItem* parent = item->parent();
+	if (parent)
+	{
+		idx = parent->indexOfChild(item) + 1;
+		int a = GetInternalIndex(parent, factor);
+		factor *= 10;
+		idx = idx * factor + a;
+	}
+	else
+	{
+		for(int i = 0; i < topLevelItemCount(); ++i)
+		{
+			if (item == topLevelItem(i))
+			{
+				return i + 1;
+			}
+		}
+	}
+
+	return idx;
+}
+
+uint32 HierarchyTreeControl::GetInternalIndex(QTreeWidgetItem* item) const
+{
+	int factor = 1;
+	return GetInternalIndex(item, factor);
+}
+
+bool HierarchyTreeControl::SortByInternalIndex(const SortedItems &first, const SortedItems &second)
+{
+	int firstIdx = first.internalIndex;
+	int secondIdx = second.internalIndex;
+	while (firstIdx)
+	{
+		int firstId = firstIdx % 10;
+		int secondId = secondIdx % 10;
+		firstIdx /= 10;
+		secondIdx /= 10;
+		if (firstId > secondId)
+			return true;
+		if (firstId < secondId)
+			return false;
+	}
+	return true;
+}
+
 QMimeData* HierarchyTreeControl::mimeData(const QList<QTreeWidgetItem*> items) const
 {
-	QMimeData* data = QTreeWidget::mimeData(items);
-	data->setUserData(TREE_MIME_DATA, new HierarchyTreeControlMimeData(items));
+	std::list<SortedItems> sortedItems;
+	
+	for (QList<QTreeWidgetItem*>::const_iterator iter = items.begin(); iter != items.end(); ++iter)
+	{
+		QTreeWidgetItem* item = (*iter);
+		sortedItems.push_back(SortedItems(item, GetInternalIndex(item)));
+	}
+	
+	sortedItems.sort(SortByInternalIndex);
+	QList<QTreeWidgetItem* > qSortedItems;
+	for (std::list<SortedItems>::iterator iter = sortedItems.begin(); iter != sortedItems.end(); ++iter)
+	{
+		qSortedItems.push_back(iter->item);
+	}
+	
+	QMimeData* data = QTreeWidget::mimeData(qSortedItems);
+	data->setUserData(TREE_MIME_DATA, new HierarchyTreeControlMimeData(qSortedItems));
 	return data;
 }
 
 void HierarchyTreeControl::dropEvent(QDropEvent *event)
 {
-	//Get new parent item position at list
 	QTreeWidgetItem* item = itemAt(event->pos());
 	if (!item)
 		return;
-	//Get parent item tree node
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	HierarchyTreeNode* parentNode = HierarchyTreeController::Instance()->GetTree().GetNode(id);
-	if (!parentNode)
+	
+	HierarchyTreeNode::HIERARCHYTREENODEID insertInTo = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode::HIERARCHYTREENODEID insertAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	if (!GetMoveItemID(event, insertInTo, insertAfter))
 		return;
+	
+	HierarchyTreeNode* parentNode = HierarchyTreeController::Instance()->GetTree().GetNode(insertInTo);
+	if (!parentNode)
+	{
+		parentNode = (HierarchyTreeNode*) HierarchyTreeController::Instance()->GetTree().GetRootNode();
+		insertInTo = parentNode->GetId();
+	}
 	
 	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
 	if (!mimeData)
@@ -118,12 +192,12 @@ void HierarchyTreeControl::dropEvent(QDropEvent *event)
 	else //Otherwise move item(s)
 	{
 		HierarchyTreeNode::HIERARCHYTREENODESIDLIST items = mimeData->GetItems();
-		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(parentNode->GetId(), items);
+		ChangeNodeHeirarchy* cmd = new ChangeNodeHeirarchy(insertInTo, insertAfter, items);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
 	}
 }
-
+ 
 void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (!event->mimeData())
@@ -138,20 +212,21 @@ void HierarchyTreeControl::dragEnterEvent(QDragEnterEvent *event)
 
 void HierarchyTreeControl::dragMoveEvent(QDragMoveEvent *event)
 {
+	QTreeWidget::dragMoveEvent(event);
+
 	event->ignore();
 	
 	if (!event->mimeData())
 		return;
-		
-	QTreeWidgetItem* item = itemAt(event->pos());
-	if (!item)
+
+	HierarchyTreeNode::HIERARCHYTREENODEID insertInTo = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode::HIERARCHYTREENODEID insertAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	if (!GetMoveItemID(event, insertInTo, insertAfter))
 		return;
 	
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(id);
+	HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(insertInTo);
 	if (!node)
-		return;
+		node = (HierarchyTreeNode*) HierarchyTreeController::Instance()->GetTree().GetRootNode();
 	
 	const HierarchyTreeControlMimeData* mimeData = dynamic_cast<const HierarchyTreeControlMimeData* >(event->mimeData()->userData(TREE_MIME_DATA));
 	if (!mimeData)
@@ -159,7 +234,56 @@ void HierarchyTreeControl::dragMoveEvent(QDragMoveEvent *event)
 
 	if (mimeData->IsDropEnable(node))
 	{
-		QTreeWidget::dragMoveEvent(event);
 		event->accept();
 	}
+}
+
+bool HierarchyTreeControl::GetMoveItemID(QDropEvent *event, HierarchyTreeNode::HIERARCHYTREENODEID &insertInTo, HierarchyTreeNode::HIERARCHYTREENODEID &insertAfter)
+{
+	DropIndicatorPosition position = dropIndicatorPosition();
+	
+	QTreeWidgetItem* item = itemAt(event->pos());
+	if (!item)
+		return false;
+
+	if (item == currentItem())
+		return false;
+
+	insertInTo = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	
+	switch (position)
+	{
+		case OnViewport:
+		{
+			return false;
+		}break;
+		case OnItem:
+		{
+			QVariant data = item->data(ITEM_ID);
+			insertInTo = data.toInt();
+			insertAfter = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+		} break;
+		case AboveItem:
+		{
+			QTreeWidgetItem* parent = item->parent();
+			if (parent)
+				insertInTo = parent->data(ITEM_ID).toInt();
+			QTreeWidgetItem* above = itemAbove(item);
+			if (!above)
+				return false;
+			insertAfter = above->data(ITEM_ID).toInt();
+		} break;
+		case BelowItem:
+		{
+			QTreeWidgetItem* parent = item->parent();
+			if (parent)
+				insertInTo = parent->data(ITEM_ID).toInt();
+			insertAfter = item->data(ITEM_ID).toInt();
+		}break;
+	}
+	
+	if (currentItem()->data(ITEM_ID) == insertAfter)
+		return false;
+
+	return true;
 }

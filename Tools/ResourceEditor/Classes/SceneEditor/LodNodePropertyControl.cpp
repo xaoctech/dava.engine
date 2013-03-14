@@ -12,7 +12,7 @@ LodNodePropertyControl::~LodNodePropertyControl()
 }
 
 
-void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
+void LodNodePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 
@@ -34,10 +34,10 @@ void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
         int32 *triangles = new int32[lodComponent->GetLodLayersCount()];
         
         
-        List<LodComponent::LodData*> lodLayers;
+        Vector<LodComponent::LodData*> lodLayers;
         lodComponent->GetLodData(lodLayers);
         
-        List<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+        Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
         for(int32 i = 0; i < lodComponent->GetLodLayersCount(); ++i)
         {
             distances[i] = lodComponent->GetLodLayerDistance(i);

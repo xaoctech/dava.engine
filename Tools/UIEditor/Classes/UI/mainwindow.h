@@ -52,8 +52,13 @@ private slots:
 	void OnUndoRequested();
 	void OnRedoRequested();
 	
+	void OnZoomInRequested();
+	void OnZoomOutRequested();
+	
 	void OnUndoRedoAvailabilityChanged();
 	void OnChangePropertySucceeded();
+
+	void OnUnsavedChangesNumberChanged();
 
 private:
 	bool CloseProject();

@@ -44,11 +44,9 @@ void FontUsageScreen::LoadResources()
 	
 	ftFont1 = FTFont::Create("~res:/Fonts/bd_cartoon.ttf");
 	ftFont1->SetSize(24.0f);
-	ftFont1->SetColor(1.0f, 1.0f, 1.0f, 1.0f);	
 	
 	ftFont2 = FTFont::Create("~res:/Fonts/jointbypizzadude.ttf");
 	ftFont2->SetSize(24.0f);
-	ftFont2->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	textSpriteWithFreetypeSingleLineFont = TextBlock::Create(Vector2(900, 200));
 	//graphicsFont1->SetSize(7.0f);

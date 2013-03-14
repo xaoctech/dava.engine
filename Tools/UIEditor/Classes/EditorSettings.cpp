@@ -7,6 +7,8 @@
 //
 
 #include "EditorSettings.h"
+#include "ResourcesManageHelper.h"
+#include <QString>
 
 EditorSettings::EditorSettings()
 {
@@ -57,11 +59,9 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
 {
     Vector<String> filesList;
     
-	String _pathToFile = (pathToFile);
-// Replace  backslash to simple slash for Windows
-#if defined(__DAVAENGINE_WIN32__)
-	std::replace(_pathToFile.begin(), _pathToFile.end(),'\\','/');
-#endif	 //#if defined(__DAVAENGINE_WIN32__)
+	// Put all slash symbols to Unix style
+	QString normalizedPath = ResourcesManageHelper::ConvertPathToUnixStyle(QString::fromStdString(pathToFile));
+	String _pathToFile = normalizedPath.toStdString();
 
     int32 count = GetLastOpenedCount();
 

@@ -124,7 +124,10 @@ namespace DAVA
 	void UIButton::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	{
 		UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-		for(int i = 1; i < DRAW_STATE_COUNT; i++)
+		
+		// Have to update all the stateTexts here to update the position of the text for all states.
+		// Start loop from zero.
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
 			if(stateTexts[i])
 			{
@@ -262,7 +265,7 @@ namespace DAVA
 		{
 			if(state & 0x01)
 			{
-				CreateTextForState((eButtonDrawState)i)->SetFontColor(fontColor);
+				CreateTextForState((eButtonDrawState)i)->SetTextColor(fontColor);
 			}
 			state >>= 1;
 		}
@@ -714,7 +717,7 @@ namespace DAVA
 		UIButton *baseControl = new UIButton();
 		
 		//Control Type
-		node->Set("type", "UIButton", true);
+		node->Set("type", "UIButton");
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
@@ -786,16 +789,19 @@ namespace DAVA
 				node->Set(Format("topBottomStretchCap%s", statePostfix[i].c_str()), topBottomStretchCap);
 			}
 			//State align
-			if (baseControl->GetStateAlign(stateArray[i]) != this->GetStateAlign(stateArray[i]))
+			int32 stateAlign = this->GetStateAlign(stateArray[i]);
+			int32 baseStateAlign = baseControl->GetStateAlign(stateArray[i]);
+			if (baseStateAlign != stateAlign)
 			{
-				node->Set(Format("stateAlign%s", statePostfix[i].c_str()), this->GetStateAlign(stateArray[i]));
-			}			
-			//State font
-			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
-			node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
-			//StateText
+				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
+			}
+
+			//State font& State text
 			if (this->GetStateTextControl(stateArray[i]))
 			{
+				Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
+				node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
+
 				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
 				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
 			}

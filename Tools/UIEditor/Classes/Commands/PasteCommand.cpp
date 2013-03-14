@@ -8,7 +8,6 @@
 
 #include "PasteCommand.h"
 
-#define COPY_NAME "Copy"
 #define COPY_DELTA Vector2(5, 5)
 
 PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
@@ -16,10 +15,12 @@ PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::C
 	this->parentNode = parentNode;
 	this->copyType = copyType;
 	this->items = items;
+	this->newItems = NULL;
 }
 
 PasteCommand::~PasteCommand()
 {
+	CleanupPastedItems();
 	//delete this->items;
 }
 
@@ -29,7 +30,17 @@ void PasteCommand::Execute()
 	HierarchyTreeController::Instance()->ResetSelectedControl();
 	
 	int count = 0;
-	HierarchyTreeNode::HIERARCHYTREENODESLIST* newItems = new HierarchyTreeNode::HIERARCHYTREENODESLIST();
+	
+	if (this->newItems)
+	{
+		// We are performing Rollback after Execute.
+		ReturnPastedControlsToScene();
+		return;
+	}
+
+	// This is the first Execute - remember the items to be pasted.
+	this->newItems = new HierarchyTreeNode::HIERARCHYTREENODESLIST();
+
 	switch (copyType) {
 		case CopyPasteController::CopyTypeControl:
 		{
@@ -109,6 +120,27 @@ void PasteCommand::Execute()
 	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
 }
 
+void PasteCommand::Rollback()
+{
+	if (!newItems)
+	{
+		return;
+	}
+	
+	// Cleanup the new items, if any.
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		// Remove the controls added and appropriate nodes. Don't delete them from
+		// memory - we might return them in Rollback.
+		HierarchyTreeNode* curNode = (*iter);
+		curNode->PrepareRemoveFromSceneInformation();
+		HierarchyTreeController::Instance()->DeleteNode(curNode->GetId(), false, true);
+	}
+
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
 int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newControls, HierarchyTreeNode *parent)
 {
 	int count = 0;
@@ -122,7 +154,7 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 			continue;
 		
 		HierarchyTreeControlNode* copy = new HierarchyTreeControlNode(parent, control);
-		UpdateControlName(parent, copy);
+		UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(control->GetName(), parent));
 		UIControl* clone = copy->GetUIObject();
 		if (clone)
@@ -135,9 +167,12 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 	return count;
 }
 
-void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node) const
+void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const
 {
-	node->SetName(FormatCopyName(node->GetName(), parent));
+	QString name = node->GetName();
+	if (needCreateNewName)
+		name = FormatCopyName(node->GetName(), parent);
+	node->SetName(name);
     
     // Also need to update the name of the UIControl - it is not copied.
     HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
@@ -152,7 +187,7 @@ void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyT
 		 ++iter)
 	{
 		HierarchyTreeNode* child = (*iter);
-		UpdateControlName(parent, child);
+		UpdateControlName(parent, child, false);
 	}
 }
 
@@ -169,7 +204,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 			continue;
 		
 		HierarchyTreeScreenNode* copy = new HierarchyTreeScreenNode(parent, screen);
-        UpdateControlName(parent, copy);
+        UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(screen->GetName(), parent));
 		
 		count++;
@@ -192,7 +227,7 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 			continue;
 		
 		HierarchyTreePlatformNode* copy = new HierarchyTreePlatformNode(parent, platform);
-        UpdateControlName(parent, copy);
+        UpdateControlName(parent, copy, true);
 		//copy->SetName(FormatCopyName(platform->GetName(), parent));
 		
 		count++;
@@ -202,9 +237,22 @@ int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newS
 	return count;
 }
 
-QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTreeNode* parent) const
+QString PasteCommand::FormatCopyName(QString baseName, const HierarchyTreeNode* parent) const
 {
 	QString name = baseName;
+	QString numberName;
+	const char* cName = name.toStdString().c_str();
+	for (int i = name.length() - 1; i >= 0; --i)
+	{
+		char a = cName[i];
+		if (a >= '0' && a <= '9')
+			numberName = a + numberName;
+		else
+			break;
+	}
+	int id = numberName.toInt();
+	baseName = name.left(name.length() - numberName.length());
+	Logger::Debug(baseName.toStdString().c_str());
 	
 	const HierarchyTreeRootNode* parentRoot = dynamic_cast<const HierarchyTreeRootNode*>(parent);
 	const HierarchyTreePlatformNode* parentPlatform = dynamic_cast<const HierarchyTreePlatformNode*>(parent);
@@ -218,8 +266,11 @@ QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTre
 		}
 	}
 	
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 1000; i++)
 	{
+		name = QString("%1%2").arg(baseName).arg(++id);
+		Logger::Debug(name.toStdString().c_str());
+
 		bool bFind = false;
 		
 		if (parentPlatform || parentRoot)
@@ -246,8 +297,40 @@ QString PasteCommand::FormatCopyName(const QString& baseName, const HierarchyTre
 					return name;
 			}
 		}
-		
-		name += COPY_NAME;
 	}
 	return baseName;
+}
+
+void PasteCommand::ReturnPastedControlsToScene()
+{
+	if (!newItems)
+	{
+		return;
+	}
+
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		// Return the removed node back to scene.
+		HierarchyTreeNode* curNode = (*iter);
+		HierarchyTreeController::Instance()->ReturnNodeToScene(curNode);
+	}
+
+	HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+void PasteCommand::CleanupPastedItems()
+{
+	if (this->newItems == NULL)
+	{
+		return;
+	}
+
+	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::iterator iter = this->newItems->begin();
+		 iter != this->newItems->end(); ++iter)
+	{
+		SafeDelete(*iter);
+	}
+	
+	SafeDelete(this->newItems);
 }

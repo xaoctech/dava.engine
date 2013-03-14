@@ -5,81 +5,27 @@
 #include "../Qt/Scene/SceneData.h"
 #include "../EditorScene.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
+#include "CommandsManager.h"
 
+#include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/EditorBodyControl.h"
 
 using namespace DAVA;
 
+#define REMOVE_ROOT_NODES_COMMON_PROPERTY "editor.referenceToOwner"
+
 CommandRemoveRootNodes::CommandRemoveRootNodes()
-    :   Command(Command::COMMAND_UNDO_REDO)
-    ,   activeScene(NULL)
+    :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
 }
 
 
 void CommandRemoveRootNodes::Execute()
 {
-    activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *selectedNode = activeScene->GetSelectedNode();
-    EditorScene *scene = activeScene->GetScene();
-    if(selectedNode && scene && (selectedNode->GetParent() == scene))
-    {
-        //TODO: save scene state here
-        
-        
-        String referenceToOwner;
-        
-        KeyedArchive *customProperties = selectedNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-        {
-            referenceToOwner = customProperties->GetString("editor.referenceToOwner");
-        }
-        
-        
-        Vector<SceneNode *>nodesForDeletion;
-        nodesForDeletion.reserve(scene->GetChildrenCount());
-        
-        for(int32 i = 0; i < scene->GetChildrenCount(); ++i)
-        {
-            SceneNode *node = scene->GetChild(i);
-            
-            customProperties = node->GetCustomProperties();
-            if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-            {
-                if(customProperties->GetString("editor.referenceToOwner") == referenceToOwner)
-                {
-                    nodesForDeletion.push_back(SafeRetain(node));
-                }
-            }
-        }
-        
-        scene->SetSelection(NULL);
-        activeScene->SelectNode(NULL);
-        
-        for(int32 i = 0; i < (int32)nodesForDeletion.size(); ++i)
-        {
-            SceneNode *node = nodesForDeletion[i];
-            
-            scene->ReleaseUserData(node);
-            scene->RemoveNode(node);
-            
-            SafeRelease(node);
-        }
-        nodesForDeletion.clear();
-        
-//        SceneValidator::Instance()->EnumerateSceneTextures();
-        
-        SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
-        sceneData->RebuildSceneGraph();
-    }
-    else
-    {
-        SetState(STATE_INVALID);
-    }
-}
+	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
+	Entity *node = activeScene->GetSelectedNode();
 
-void CommandRemoveRootNodes::Cancel()
-{
-    //TODO: restore saved state if active scene is same as saved
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, true));
 }
 
 
@@ -105,7 +51,7 @@ CommandLockAtObject::CommandLockAtObject()
 void CommandLockAtObject::Execute()
 {
     SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
+    Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
         activeScene->LockAtSelectedNode();
@@ -119,45 +65,146 @@ void CommandLockAtObject::Execute()
 
 
 CommandRemoveSceneNode::CommandRemoveSceneNode()
-    :   Command(Command::COMMAND_UNDO_REDO)
-    ,   activeScene(NULL)
-	,	undoNode(NULL)
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
-}
-
-CommandRemoveSceneNode::~CommandRemoveSceneNode()
-{
-	SafeRelease(undoNode);
 }
 
 void CommandRemoveSceneNode::Execute()
 {
-	if (!undoNode)
-	{
-		activeScene = SceneDataManager::Instance()->SceneGetActive();
-		SceneNode *node = activeScene->GetSelectedNode();
-		if (!node)
-		{
-			SetState(STATE_INVALID);
-			return;
-		}
+	SceneData* activeScene = SceneDataManager::Instance()->SceneGetActive();
+	Entity *node = activeScene->GetSelectedNode();
 
-		undoNode = SafeRetain(node);
-	}
-
-	activeScene->RemoveSceneNode(undoNode);
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(node, false));
 }
 
-void CommandRemoveSceneNode::Cancel()
+
+CommandInternalRemoveSceneNode::CommandInternalRemoveSceneNode(Entity* node, bool removeSimilar)
+:	Command(Command::COMMAND_UNDO_REDO)
 {
-	if (undoNode)
+	commandName = "Remove Object";
+
+	if (removeSimilar)
+		commandName += "s";
+
+	if (!node || !node->GetParent())
+		return;
+
+	if (removeSimilar)
 	{
-		if (activeScene == SceneDataManager::Instance()->SceneGetActive())
+		String referenceToOwner;
+		Entity* nodeParent = node->GetParent();
+
+		KeyedArchive *customProperties = node->GetCustomProperties();
+		if(customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
 		{
-			activeScene->AddSceneNode(undoNode);
-			activeScene->SelectNode(undoNode);
+			referenceToOwner = customProperties->GetString(REMOVE_ROOT_NODES_COMMON_PROPERTY);
+		}
+
+		nodesForDeletion.reserve(nodeParent->GetChildrenCount());
+
+		for (int32 i = 0; i < nodeParent->GetChildrenCount(); ++i)
+		{
+			Entity* child = nodeParent->GetChild(i);
+
+			customProperties = child->GetCustomProperties();
+			if (customProperties && customProperties->IsKeyExists(REMOVE_ROOT_NODES_COMMON_PROPERTY))
+			{
+				if (customProperties->GetString(REMOVE_ROOT_NODES_COMMON_PROPERTY) == referenceToOwner)
+				{
+					RemoveNodeRec removeNodeRec;
+					removeNodeRec.node = SafeRetain(child);
+					removeNodeRec.nodeParent = nodeParent;
+
+					int32 i = GetNodeIndex(removeNodeRec);
+					if (i >= 0 && i < nodeParent->GetChildrenCount() - 1)
+						removeNodeRec.insertBeforeNode = nodeParent->GetChild(i + 1);
+
+					nodesForDeletion.push_back(removeNodeRec);
+				}
+			}
 		}
 	}
+	else
+	{
+		RemoveNodeRec removeNodeRec;
+		removeNodeRec.node = SafeRetain(node);
+		removeNodeRec.nodeParent = node->GetParent();
+
+		int32 i = GetNodeIndex(removeNodeRec);
+		if (i >= 0 && i < removeNodeRec.nodeParent->GetChildrenCount() - 1)
+			removeNodeRec.insertBeforeNode = removeNodeRec.nodeParent->GetChild(i + 1);
+		nodesForDeletion.push_back(removeNodeRec);
+	}
+
+	selectedNode = node;
+}
+
+CommandInternalRemoveSceneNode::~CommandInternalRemoveSceneNode()
+{
+	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
+	{
+		SafeRelease(nodesForDeletion[i].node);
+	}
+	nodesForDeletion.clear();
+}
+
+void CommandInternalRemoveSceneNode::Execute()
+{
+	if (nodesForDeletion.size() == 0)
+	{
+		SetState(STATE_INVALID);
+		return;
+	}
+
+	for (uint32 i = 0; i < nodesForDeletion.size(); ++i)
+	{
+		nodesForDeletion[i].nodeParent->RemoveNode(nodesForDeletion[i].node);
+	}
+
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
+}
+
+void CommandInternalRemoveSceneNode::Cancel()
+{
+	if (nodesForDeletion.size() == 0)
+		return;
+
+	for (Vector<RemoveNodeRec>::reverse_iterator rIt = nodesForDeletion.rbegin(); rIt != nodesForDeletion.rend(); ++rIt)
+	{
+		if (rIt->insertBeforeNode)
+			rIt->nodeParent->InsertBeforeNode(rIt->node, rIt->insertBeforeNode);
+		else
+			rIt->nodeParent->AddNode(rIt->node);
+	}
+
+	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
+	activeScene->RebuildSceneGraph();
+
+	if (selectedNode)
+	{
+		SceneEditorScreenMain* screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+		DVASSERT(screen);
+
+		EditorBodyControl* bodyControl = screen->FindCurrentBody()->bodyControl;
+		if (bodyControl && !bodyControl->LandscapeEditorActive())
+			activeScene->SelectNode(selectedNode);
+	}
+}
+
+int32 CommandInternalRemoveSceneNode::GetNodeIndex(const RemoveNodeRec& nodeRec)
+{
+	if (!nodeRec.node || !nodeRec.nodeParent)
+		return -1;
+
+	int32 i = 0;
+	for (; i < nodeRec.nodeParent->GetChildrenCount(); ++i)
+	{
+		if (nodeRec.nodeParent->GetChild(i) == nodeRec.node)
+			return i;
+	}
+
+	return -1;
 }
 
 
@@ -170,7 +217,7 @@ CommandDebugFlags::CommandDebugFlags()
 void CommandDebugFlags::Execute()
 {
     SceneData * activeScene = SceneDataManager::Instance()->SceneGetActive();
-    SceneNode *node = activeScene->GetSelectedNode();
+    Entity *node = activeScene->GetSelectedNode();
     if(node)
     {
         if (node->GetDebugFlags() & DebugRenderComponent::DEBUG_DRAW_ALL)

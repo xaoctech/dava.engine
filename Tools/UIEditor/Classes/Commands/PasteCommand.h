@@ -22,21 +22,31 @@ namespace DAVA
 		
 		// Execute command.
 		virtual void Execute();
-		virtual bool IsUndoRedoSupported() {return false;};
+		virtual void Rollback();
+		virtual bool IsUndoRedoSupported() {return true;};
 		
 	private:
         int PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeNode *parent);
 		int PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreePlatformNode* parent);
 		int PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST*, HierarchyTreeRootNode* parent);
 		
-		QString FormatCopyName(const QString& baseName, const HierarchyTreeNode* parent) const;
+		QString FormatCopyName(QString baseName, const HierarchyTreeNode* parent) const;
 		
-		void UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node) const;
+		void UpdateControlName(const HierarchyTreeNode* parent, HierarchyTreeNode* node, bool needCreateNewName) const;
 		
+		// Undo/Redo-related functionality.
+		void ReturnPastedControlsToScene();
+		void CleanupPastedItems();
+
 	private:
 		HierarchyTreeNode* parentNode;
 		CopyPasteController::CopyType copyType;
+		
+		// Items to be pasted.
 		const HierarchyTreeNode::HIERARCHYTREENODESLIST* items;
+		
+		// Items were pasted (coy of the items to be pasted).
+		HierarchyTreeNode::HIERARCHYTREENODESLIST* newItems;
 	};
 }
 

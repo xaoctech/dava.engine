@@ -1,19 +1,19 @@
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Render/Highlevel/Camera.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 
 
 namespace DAVA
 {
 
-RenderObject * GetRenerObject(SceneNode * fromEntity)
+RenderObject * GetRenerObject(Entity * fromEntity)
 {
 	RenderObject * object = 0;
 
@@ -29,7 +29,7 @@ RenderObject * GetRenerObject(SceneNode * fromEntity)
 	return object;
 }
 
-ParticleEmitter * GetEmitter(SceneNode * fromEntity)
+ParticleEmitter * GetEmitter(Entity * fromEntity)
 {
 	ParticleEmitter * emitter = 0;
 
@@ -46,7 +46,7 @@ ParticleEmitter * GetEmitter(SceneNode * fromEntity)
 }
 
 
-Light * GetLight( SceneNode * fromEntity )
+Light * GetLight( Entity * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
@@ -60,14 +60,14 @@ Light * GetLight( SceneNode * fromEntity )
 	return NULL;
 }
 
-LandscapeNode * GetLandscape( SceneNode * fromEntity )
+Landscape * GetLandscape( Entity * fromEntity )
 {
 	if(NULL != fromEntity)
 	{
 		RenderObject * object = GetRenerObject(fromEntity);
 		if(object && object->GetType() == RenderObject::TYPE_LANDSCAPE)
 		{
-			LandscapeNode *landscape = static_cast<LandscapeNode *>(object);
+			Landscape *landscape = static_cast<Landscape *>(object);
 			return landscape;
 		}
 	}
@@ -75,7 +75,7 @@ LandscapeNode * GetLandscape( SceneNode * fromEntity )
 	return NULL;
 }
 
-Camera * GetCamera(SceneNode * fromEntity)
+Camera * GetCamera(Entity * fromEntity)
 {
 	if(NULL != fromEntity)
 	{
@@ -89,7 +89,7 @@ Camera * GetCamera(SceneNode * fromEntity)
     return NULL;
 }
     
-LodComponent * GetLodComponent(SceneNode *fromEntity)
+LodComponent * GetLodComponent(Entity *fromEntity)
 {
     if(fromEntity)
     {
@@ -99,6 +99,53 @@ LodComponent * GetLodComponent(SceneNode *fromEntity)
     return NULL;
 }
 
+
+void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))
+{
+	RenderComponent * comp = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
+	if (comp)
+	{
+		RenderObject * renderObject = comp->GetRenderObject();
+		if (renderObject->GetType() == RenderObject::TYPE_MESH)
+		{
+			process(curr, userData);
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+			RecursiveProcessMeshNode(curr->GetChild(i), userData, process);
+	}
+}
+
+
+
+void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*))
+{
+	LodComponent * lodComp = (LodComponent*)curr->GetComponent(Component::LOD_COMPONENT);
+	if (lodComp)
+	{
+		Vector<LodComponent::LodData*> retLodLayers;
+		lodComp->GetLodData(retLodLayers);
+		for (Vector<LodComponent::LodData*>::iterator it = retLodLayers.begin(); it != retLodLayers.end(); ++it)
+		{
+			LodComponent::LodData * data = *it;
+			if (data->layer == lod)
+			{
+				for (Vector<Entity*>::iterator i = data->nodes.begin(); i != data->nodes.end(); ++i)
+				{
+					process((*i), userData);
+				}
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+			RecursiveProcessLodNode(curr->GetChild(i), lod, userData, process);
+	}
+}
 
 
 }

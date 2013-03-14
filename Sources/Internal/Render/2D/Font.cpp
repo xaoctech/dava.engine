@@ -50,7 +50,7 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,	color(1.0f, 0.0f, 1.0f, 1.0f)
+,	color(1.0f, 1.0f, 1.0f, 1.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -351,11 +351,12 @@ YamlNode * Font::SaveToYamlNode()
     
     VariantType *nodeValue = new VariantType();
     //Type
-    node->Set("type", "Font", true);
+    node->Set("type", "Font");
     //Font size
     node->Set("size", this->GetSize());
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
+
     Color color = this->GetColor();
     //Font color
     Vector4 colorVector4(color.r, color.g, color.b, color.a);

@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_SCENE_ANIMATION_MIXER_H__
 #define __DAVAENGINE_SCENE_ANIMATION_MIXER_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/SceneNodeAnimation.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Base/EventDispatcher.h"

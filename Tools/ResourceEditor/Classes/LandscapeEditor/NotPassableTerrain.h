@@ -31,10 +31,10 @@
 #define __NOTPASSABLE_TERRAIN_H__
 
 #include "DAVAEngine.h"
-#include "EditorLandscapeNode.h"
+#include "EditorLandscape.h"
 
 class LandscapeRenderer;
-class NotPassableTerrain: public EditorLandscapeNode
+class NotPassableTerrain: public EditorLandscape
 {
     static const DAVA::int32 NOT_PASSABLE_ANGLE = 23;
     

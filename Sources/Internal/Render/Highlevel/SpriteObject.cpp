@@ -91,7 +91,7 @@ void SpriteObject::SetupRenderBatch()
 	material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	material->SetName("SpriteObject_material");
 
-	material->GetRenderStateBlock()->SetTexture(sprite->GetTexture(frame));
+	material->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 
 	SpriteRenderBatch *batch = new SpriteRenderBatch();
 	batch->SetMaterial(material);
@@ -125,7 +125,7 @@ void SpriteObject::SetFrame(int32 newFrame)
 	int32 count = GetRenderBatchCount();
 	if(count)
 	{
-		GetRenderBatch(0)->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(frame));
+		GetRenderBatch(0)->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(frame));
 	}
 }
 

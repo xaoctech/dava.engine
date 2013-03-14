@@ -49,6 +49,7 @@ int32 UIYamlLoader::GetDrawTypeFromNode(YamlNode * drawTypeNode)
     if("DRAW_ALIGNED" == type) ret = UIControlBackground::DRAW_ALIGNED;
     if("DRAW_SCALE_TO_RECT" == type) ret = UIControlBackground::DRAW_SCALE_TO_RECT;
     if("DRAW_SCALE_PROPORTIONAL" == type) ret = UIControlBackground::DRAW_SCALE_PROPORTIONAL;
+    if("DRAW_SCALE_PROPORTIONAL_ONE" == type) ret = UIControlBackground::DRAW_SCALE_PROPORTIONAL_ONE;
     if("DRAW_FILL" == type) ret = UIControlBackground::DRAW_FILL;
     if("DRAW_STRETCH_HORIZONTAL" == type) ret = UIControlBackground::DRAW_STRETCH_HORIZONTAL;
     if("DRAW_STRETCH_VERTICAL" == type) ret = UIControlBackground::DRAW_STRETCH_VERTICAL;
@@ -69,6 +70,9 @@ String UIYamlLoader::GetDrawTypeNodeValue(int32 drawType)
             break;
         case UIControlBackground::DRAW_SCALE_PROPORTIONAL:
             ret = "DRAW_SCALE_PROPORTIONAL";
+            break;
+        case UIControlBackground::DRAW_SCALE_PROPORTIONAL_ONE:
+            ret = "DRAW_SCALE_PROPORTIONAL_ONE";
             break;
         case UIControlBackground::DRAW_FILL:
             ret = "DRAW_FILL";
@@ -156,6 +160,45 @@ int32 UIYamlLoader::GetAlignFromYamlNode(YamlNode * alignNode)
 	else if (vertAlign == "BOTTOM")align |= ALIGN_BOTTOM;
 	
 	return align;
+}
+
+//Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
+YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
+{
+	YamlNode *alignNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	String horzAlign = "HCENTER";
+	String vertAlign = "VCENTER";
+	
+	if (align & ALIGN_LEFT)
+	{
+		horzAlign = "LEFT";
+	}
+	else if (align & ALIGN_HCENTER)
+	{
+		horzAlign = "HCENTER";
+	}
+	else if (align & ALIGN_RIGHT)
+	{
+		horzAlign = "RIGHT";
+	}
+	
+	if (align & ALIGN_TOP)
+	{
+		vertAlign = "TOP";
+	}
+	else if (align & ALIGN_VCENTER)
+	{
+		vertAlign = "VCENTER";
+	}
+	else if (align & ALIGN_BOTTOM)
+	{
+		vertAlign = "BOTTOM";
+	}
+	
+	alignNode->AddValueToArray(horzAlign);
+	alignNode->AddValueToArray(vertAlign);
+	
+	return alignNode;
 }
 	
 bool UIYamlLoader::GetBoolFromYamlNode(YamlNode * node, bool defaultValue)
@@ -340,6 +383,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	
 	LoadFromNode(rootControl, rootNode, false);
 	SafeRelease(parser);
+
+	// After the scene is fully loaded, apply the align settings
+	// to position child controls correctly.
+	rootControl->ApplyAlignSettingsForChildren();
 	
 	for (Map<String, Font *>::iterator t = fontMap.begin(); t != fontMap.end(); ++t)
 	{

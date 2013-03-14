@@ -54,22 +54,21 @@ void HierarchyTreeNode::AddTreeNode(HierarchyTreeNode* treeNode)
 void HierarchyTreeNode::AddTreeNode(HierarchyTreeNode* treeNode, HierarchyTreeNode* nodeToAddAfter)
 {
     if (treeNode == NULL)
-    {
         return;
-    }
+	
+	HIERARCHYTREENODESITER iter = std::find(childNodes.begin(), childNodes.end(), treeNode);
+    if (iter != childNodes.end())
+		return;
 
 	if (nodeToAddAfter == NULL)
 	{
-		// Insert at the top.
-		if (childNodes.size() == 0)
-		{
-			AddTreeNode(treeNode);
-		}
-		else
-		{
-			childNodes.insert(this->childNodes.begin(), treeNode);
-		}
-
+		AddTreeNode(treeNode);
+		return;
+	}
+	
+	if (nodeToAddAfter == this)
+	{
+		childNodes.push_front(treeNode);
 		return;
 	}
 
@@ -85,7 +84,6 @@ void HierarchyTreeNode::AddTreeNode(HierarchyTreeNode* treeNode, HierarchyTreeNo
     {
 		return AddTreeNode(treeNode);
     }
-
 	
 	childNodes.insert(nodeAfterIter, treeNode);
 }

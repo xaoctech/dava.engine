@@ -3,17 +3,18 @@
 
 #include "DAVAEngine.h"
 #include "Command.h"
+#include "BulletObject.h"
 
 class EditorBodyControl;
 
 class CommandTransformObject: public Command
 {
 public:
-	CommandTransformObject(DAVA::SceneNode* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform);
+	CommandTransformObject(DAVA::Entity* node, const DAVA::Matrix4& originalTransform, const DAVA::Matrix4& finalTransform);
 
 protected:
 	DAVA::Matrix4 undoTransform;
-	DAVA::SceneNode* node;
+	DAVA::Entity* node;
 
 	DAVA::Matrix4 redoTransform;
 
@@ -24,27 +25,30 @@ protected:
 class CommandCloneObject: public Command
 {
 public:
-	CommandCloneObject(DAVA::SceneNode* node, EditorBodyControl* bodyControl);
+	CommandCloneObject(DAVA::Entity* node, EditorBodyControl* bodyControl, btCollisionWorld* collisionWorld);
 	virtual ~CommandCloneObject();
 
 protected:
-	DAVA::SceneNode* originalNode;
-	DAVA::SceneNode* clonedNode;
+	DAVA::Entity* originalNode;
+	DAVA::Entity* clonedNode;
 	EditorBodyControl* bodyControl;
+	btCollisionWorld* collisionWorld;
 
 	virtual void Execute();
 	virtual void Cancel();
+
+	void UpdateCollision(DAVA::Entity* node);
 };
 
 class CommandPlaceOnLandscape: public Command
 {
 public:
-	CommandPlaceOnLandscape(DAVA::SceneNode* node, DAVA::LandscapeNode* landscape);
+	CommandPlaceOnLandscape(DAVA::Entity* node, EditorBodyControl* bodyControl);
 
 protected:
 	DAVA::Matrix4 undoTransform;
-	DAVA::SceneNode* node;
-	DAVA::LandscapeNode* landscape;
+	DAVA::Entity* node;
+	EditorBodyControl* bodyControl;
 
 	DAVA::Matrix4 redoTransform;
 
@@ -55,17 +59,17 @@ protected:
 class CommandRestoreOriginalTransform: public Command
 {
 public:
-	CommandRestoreOriginalTransform(DAVA::SceneNode* node);
+	CommandRestoreOriginalTransform(DAVA::Entity* node);
 
 protected:
-	DAVA::Map<DAVA::SceneNode*, DAVA::Matrix4> undoTransforms;
-	DAVA::SceneNode* node;
+	DAVA::Map<DAVA::Entity*, DAVA::Matrix4> undoTransforms;
+	DAVA::Entity* node;
 
 	virtual void Execute();
 	virtual void Cancel();
 
-	void StoreCurrentTransform(DAVA::SceneNode* node);
-	void RestoreTransform(DAVA::SceneNode* node);
+	void StoreCurrentTransform(DAVA::Entity* node);
+	void RestoreTransform(DAVA::Entity* node);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__EDITORBODYCONTROLCOMMANDS__) */
