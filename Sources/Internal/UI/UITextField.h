@@ -158,6 +158,9 @@ public:
     virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
 
     Font *GetFont();
+	Color GetTextColor();
+	Vector2 GetShadowOffset();
+	Color GetShadowColor();
 
     void SetFocused()
     {
@@ -173,6 +176,33 @@ public:
     void SetTextColor(const Color& fontColor);
     DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
     void SetFontSize(float size);
+
+    void SetFont(Font * font)
+    {
+        SafeRelease(textFont);
+        textFont = SafeRetain(font);
+		staticText->SetFont(textFont);
+    }
+
+	void SetTextColor(const Color& c)
+	{
+		staticText->SetTextColor(c);
+	}
+
+    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor))
+    {
+        staticText->SetTextColor(fontColor);
+    }
+	
+	void SetShadowOffset(const DAVA::Vector2 &offset)
+	{
+		staticText->SetShadowOffset(offset);
+	}
+	
+	void SetShadowColor(const Color& c)
+	{
+		staticText->SetShadowColor(c);
+    }
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 	

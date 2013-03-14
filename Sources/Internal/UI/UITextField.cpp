@@ -334,7 +334,21 @@ const WideString & UITextField::GetText()
     {
         return textFont;
     }
-
+	
+	Color UITextField::GetTextColor()
+	{
+		return staticText ? staticText->GetTextColor() : Color(1,1,1,1);
+	}
+	
+	Vector2 UITextField::GetShadowOffset()
+	{
+		return staticText ? staticText->GetShadowOffset() : Vector2(0,0);
+	}
+	
+	Color UITextField::GetShadowColor()
+	{
+		return staticText ? staticText->GetShadowColor() : Color(1,1,1,1);
+	}
 
 void UITextField::Input(UIEvent *currentInput)
 {
@@ -461,6 +475,27 @@ void UITextField::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     if(staticText)
     {
         staticText->SetRect(Rect(0,0,GetRect().dx, GetRect().dy));
+		
+		YamlNode * textColorNode = node->Get("textcolor");
+		YamlNode * shadowColorNode = node->Get("shadowcolor");
+		YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+		
+		if(textColorNode)
+		{
+			Vector4 c = textColorNode->AsVector4();
+			SetTextColor(Color(c.x, c.y, c.z, c.w));
+		}
+
+		if(shadowColorNode)
+		{
+			Vector4 c = shadowColorNode->AsVector4();
+			SetShadowColor(Color(c.x, c.y, c.z, c.w));
+		}
+
+		if(shadowOffsetNode)
+		{
+			SetShadowOffset(shadowOffsetNode->AsVector2());
+		}
     }
     //InitAfterYaml();
 
@@ -505,6 +540,20 @@ YamlNode * UITextField::SaveToYamlNode(UIYamlLoader * loader)
     //Get font name and put it here
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
+	
+	//TextColor
+	Color textColor = GetTextColor();
+	nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
+	node->Set("textcolor", nodeValue);
+
+	// ShadowColor
+	Color shadowColor = GetShadowColor();
+	nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
+	node->Set("shadowcolor", nodeValue);
+
+	// ShadowOffset
+	nodeValue->SetVector2(GetShadowOffset());
+	node->Set("shadowoffset", nodeValue);
 
 	// Draw Type must be overwritten fot UITextField.
 	UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();

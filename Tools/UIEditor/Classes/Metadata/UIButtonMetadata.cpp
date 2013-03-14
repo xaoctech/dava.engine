@@ -178,7 +178,6 @@ QColor UIButtonMetadata::GetFontColor() const
     return GetFontColorForState(this->uiControlState);
 }
 
-
 void UIButtonMetadata::SetFontColor(const QColor& value)
 {
     if (!VerifyActiveParamID())
@@ -188,6 +187,92 @@ void UIButtonMetadata::SetFontColor(const QColor& value)
     
     GetActiveUIButton()->SetStateFontColor(this->uiControlState, QTColorToDAVAColor(value));
     UpdatePropertyDirtyFlagForFontColor();
+}
+
+float UIButtonMetadata::GetShadowOffsetX() const
+{
+    if (VerifyActiveParamID())
+    {
+		UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    	if (referenceButtonText)
+    	{
+			return referenceButtonText->GetShadowOffset().x;
+    	}
+	}
+    
+	return -1.0f;	
+}
+
+void UIButtonMetadata::SetShadowOffsetX(float offset)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    if (referenceButtonText)
+    {
+		Vector2 shadowOffset = GetOffsetX(referenceButtonText->GetShadowOffset(), offset);
+		referenceButtonText->SetShadowOffset(shadowOffset);
+    }
+}
+	
+float UIButtonMetadata::GetShadowOffsetY() const
+{
+    if (VerifyActiveParamID())
+    {
+		UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    	if (referenceButtonText)
+    	{
+			return referenceButtonText->GetShadowOffset().y;
+    	}
+	}
+    
+	return -1.0f;	
+}
+
+void UIButtonMetadata::SetShadowOffsetY(float offset)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    if (referenceButtonText)
+    {
+		Vector2 shadowOffset = GetOffsetY(referenceButtonText->GetShadowOffset(), offset);
+		referenceButtonText->SetShadowOffset(shadowOffset);
+    }
+}
+	
+QColor UIButtonMetadata::GetShadowColor() const
+{
+    if (VerifyActiveParamID())
+    {
+		UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    	if (referenceButtonText)
+    	{
+			return DAVAColorToQTColor(referenceButtonText->GetShadowColor());
+    	}
+	}
+    
+	return QColor();
+}
+
+void UIButtonMetadata::SetShadowColor(const QColor& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(this->uiControlState);
+    if (referenceButtonText)
+    {
+		referenceButtonText->SetShadowColor(QTColorToDAVAColor(value));
+    }
 }
 
 void UIButtonMetadata::UpdatePropertyDirtyFlagForFontColor()
@@ -208,11 +293,7 @@ QColor UIButtonMetadata::GetFontColorForState(UIControl::eControlState state) co
     UIStaticText* referenceButtonText = GetActiveUIButton()->GetStateTextControl(state);
     if (referenceButtonText)
     {
-        Font* referenceFont = referenceButtonText->GetFont();
-        if (referenceFont)
-        {
-            return DAVAColorToQTColor(referenceFont->GetColor());
-        }
+		return DAVAColorToQTColor(referenceButtonText->GetTextColor());
     }
     
     return QColor();
