@@ -15,13 +15,15 @@ HierarchyTreeAggregatorControlNode::HierarchyTreeAggregatorControlNode(Hierarchy
 																	   HierarchyTreeNode* parent,
 																	   UIControl* uiObject,
 																	   const QString& name):
-	HierarchyTreeControlNode(parent, uiObject, name)
+	HierarchyTreeControlNode(parent, uiObject, name),
+	parentAggregatorSave(NULL)
 {
 	this->parentAggregator = parentAggregator;
 }
 
 HierarchyTreeAggregatorControlNode::HierarchyTreeAggregatorControlNode(HierarchyTreeNode* parent, const HierarchyTreeAggregatorControlNode* node) :
-	HierarchyTreeControlNode(parent, node)
+	HierarchyTreeControlNode(parent, node),
+	parentAggregatorSave(NULL)
 {
 	parentAggregator = node->parentAggregator;
 	
@@ -41,6 +43,8 @@ void HierarchyTreeAggregatorControlNode::SetAggregatorNode(HierarchyTreeAggregat
 		this->parentAggregator->RemoveChild(this);
 	
 	this->parentAggregator = parentAggregator;
+	if (this->parentAggregator)
+		this->parentAggregator->AddChild(this);
 }
 
 void HierarchyTreeAggregatorControlNode::RemoveTreeNodeFromScene()

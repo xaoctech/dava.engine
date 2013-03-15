@@ -226,3 +226,8 @@ void HierarchyTreeAggregatorNode::SetName(const QString& name)
 	HierarchyTreeScreenNode::SetName(name);
 	LibraryController::Instance()->UpdateControl(this);
 }
+
+const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChilds() const
+{
+	return childs;
+}
