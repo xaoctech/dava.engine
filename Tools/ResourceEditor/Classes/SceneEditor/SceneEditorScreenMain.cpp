@@ -186,6 +186,17 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
 }
 
+void SceneEditorScreenMain::ActivateLevelBodyItem()
+{
+	// "Level" body item is always first.
+	static const int32 LEVEL_BODY_ITEM_INDEX = 0;
+	if (bodies.empty() || !bodies[LEVEL_BODY_ITEM_INDEX]->headerButton)
+	{
+		return;
+	}
+	
+	OnSelectBody(bodies[LEVEL_BODY_ITEM_INDEX]->headerButton, NULL, NULL);
+}
 
 void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
 {
@@ -420,6 +431,12 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
+	// In case the current scene isn't the "level" one, switch to it firstly.
+	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
+	{
+		ActivateLevelBodyItem();
+	}
+
     //опен всегда загружает только уровень, но не отдельные части сцены
     SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
