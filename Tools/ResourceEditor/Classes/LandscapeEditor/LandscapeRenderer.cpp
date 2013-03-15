@@ -87,8 +87,8 @@ void LandscapeRenderer::SetHeightmap(DAVA::Heightmap *heightmap, const DAVA::AAB
     vertices.resize(heightmap->Size() * heightmap->Size());
 	indices.resize(heightmap->Size() * heightmap->Size() * 6);
     
-    landscapeRenderObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeNode::LandscapeVertex), &vertices[0].position);
-	landscapeRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeNode::LandscapeVertex), &vertices[0].texCoord);
+    landscapeRenderObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(Landscape::LandscapeVertex), &vertices[0].position);
+	landscapeRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(Landscape::LandscapeVertex), &vertices[0].texCoord);
     
     RebuildVertexes(Rect(0.f, 0.f, (float32)heightmap->Size(), (float32)heightmap->Size()));
     RebuildIndexes();

@@ -1,5 +1,5 @@
 #include "Scene3D/Components/LodComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -30,7 +30,7 @@ void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 	farDistanceSq = farDistance * farDistance;
 }
 
-Component * LodComponent::Clone(SceneNode * toEntity)
+Component * LodComponent::Clone(Entity * toEntity)
 {
 	LodComponent * newLod = new LodComponent();
 	newLod->SetEntity(toEntity);
@@ -55,7 +55,7 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 	//			int32 count = entity->GetChildrenCount();
 	//			for (int32 i = 0; i < count; i++) 
 	//			{
-	//				SceneNode * child = entity->GetChild(i);
+	//				Entity * child = entity->GetChild(i);
 	//				if(child == ld.nodes[idx])
 	//				{
 	//					ld.nodes[idx] = toEntity->GetChild(i);

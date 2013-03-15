@@ -101,7 +101,7 @@ void SceneNodeAnimation::SetDuration(float32 _duration)
 	duration = _duration;
 }
 	
-void SceneNodeAnimation::SetBindNode(SceneNode * _bindNode)
+void SceneNodeAnimation::SetBindNode(Entity * _bindNode)
 {
 	bindNode = _bindNode;
 }

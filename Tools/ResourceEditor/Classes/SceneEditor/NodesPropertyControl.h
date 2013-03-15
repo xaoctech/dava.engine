@@ -28,9 +28,8 @@ public:
     virtual void WillAppear();
     virtual void WillDisappear();
 
-    virtual void ReadFrom(SceneNode *sceneNode);
+    virtual void ReadFrom(Entity *sceneNode);
     virtual void ReadFrom(DataNode *dataNode);
-	virtual void ReadFrom(Entity *entity);
     
 
 
@@ -98,7 +97,7 @@ protected:
 
 	static const int32 PROP_CONTROL_ELEM_COUNT = 10;
     CreatePropertyControl *propControl;
-    SceneNode *currentSceneNode;
+    Entity *currentSceneNode;
     DataNode *currentDataNode;
     
     Scene *workingScene;

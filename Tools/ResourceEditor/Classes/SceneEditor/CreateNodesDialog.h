@@ -36,7 +36,7 @@ public:
     void SetScene(Scene *_scene);
 
     void CreateNode(ResourceEditor::eNodeType nodeType);
-    SceneNode *GetSceneNode();
+    Entity *GetSceneNode();
 
 protected:
 
@@ -50,7 +50,7 @@ protected:
     NodesPropertyControl *propertyList;
   
     UIStaticText *header;
-    SceneNode *sceneNode;
+    Entity *sceneNode;
     Scene *scene;
 
 	Rect propertyRect;

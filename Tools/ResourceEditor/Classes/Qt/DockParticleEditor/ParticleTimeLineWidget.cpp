@@ -40,22 +40,22 @@ ParticleTimeLineWidget::ParticleTimeLineWidget(QWidget *parent/* = 0*/) :
 	gridStyle = GRID_STYLE_LIMITS;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(SceneNode*, BaseParticleEditorNode*)),
+			SIGNAL(EmitterSelected(Entity*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(Entity*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
+			SIGNAL(LayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(Entity*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
+			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnNodeSelected(SceneNode*)));
+			SLOT(OnNodeSelected(Entity*)));
 
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EffectSelected(SceneNode*)),
+			SIGNAL(EffectSelected(Entity*)),
 			this,
-			SLOT(OnEffectNodeSelected(SceneNode*)));
+			SLOT(OnEffectNodeSelected(Entity*)));
 	
 	Init(0, 0);
 	
@@ -67,7 +67,7 @@ ParticleTimeLineWidget::~ParticleTimeLineWidget()
 	
 }
 
-void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
+void ParticleTimeLineWidget::OnNodeSelected(Entity* node)
 {
 	emitterNode = node;
 	effectNode = NULL;
@@ -111,7 +111,7 @@ void ParticleTimeLineWidget::OnNodeSelected(SceneNode* node)
 	}
 }
 
-void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
+void ParticleTimeLineWidget::OnEffectNodeSelected(Entity* node)
 {
 	emitterNode = NULL;
 	effectNode = node;
@@ -123,7 +123,7 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 		int32 count = node->GetChildrenCount();
 		for (int32 i = 0; i < count; ++i)
 		{
-			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(i));
+			Entity* emitterNode = dynamic_cast<Entity*>(node->GetChild(i));
 			if (emitterNode)
 			{
 				ParticleEmitter * emitter = GetEmitter(emitterNode);
@@ -145,7 +145,7 @@ void ParticleTimeLineWidget::OnEffectNodeSelected(SceneNode* node)
 		int32 iLines = 0;
 		for (int32 iEmitter = 0; iEmitter < count; ++iEmitter)
 		{
-			SceneNode* emitterNode = dynamic_cast<SceneNode*>(node->GetChild(iEmitter));
+			Entity* emitterNode = dynamic_cast<Entity*>(node->GetChild(iEmitter));
 			if (emitterNode)
 			{
 				ParticleEmitter * emitter = GetEmitter(emitterNode);

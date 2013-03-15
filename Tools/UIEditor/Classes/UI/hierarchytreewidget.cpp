@@ -10,7 +10,7 @@
 #include <QVariant>
 #include <QMenu>
 
-#define ITEM_ID 0, 1
+#define ITEM_ID 0, Qt::UserRole
 
 #define MENU_ITEM_DELETE tr("Delete")
 #define MENU_ITEM_COPY tr("Copy")
@@ -67,6 +67,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
 		platformItem->setText(0, platformNode->GetName());
+		platformItem->setIcon(0, QIcon(":/icons/079.png"));
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
@@ -78,6 +79,7 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
 			screenItem->setText(0, screenNode->GetName());
+			screenItem->setIcon(0, QIcon(":/icons/068.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());

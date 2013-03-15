@@ -90,13 +90,10 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 void ParticleEmitter::CleanupLayers()
 {
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		SafeRelease(*it);
-	}
-
-	layers.clear();
+    while(!layers.empty())
+    {
+        RemoveLayer(layers[0]);
+    }
 }
 
 //ParticleEmitter * ParticleEmitter::Clone()
@@ -200,10 +197,20 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	if (layerIter != this->layers.end())
 	{
 		layers.erase(layerIter);
+
+        RemoveRenderBatch(layer->GetRenderBatch());
 		layer->SetEmitter(NULL);
 		SafeRelease(layer);
 	}
 }
+    
+void ParticleEmitter::RemoveLayer(int32 index)
+{
+    DVASSERT(0 <= index && index < layers.size());
+
+    RemoveLayer(layers[index]);
+}
+
 	
 void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
 {
@@ -289,7 +296,8 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		(*it)->Update(timeElapsed);
+        if(!(*it)->isDisabled)
+            (*it)->Update(timeElapsed);
 	}
 }
 
@@ -400,6 +408,8 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+    Cleanup(true);
+    
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{

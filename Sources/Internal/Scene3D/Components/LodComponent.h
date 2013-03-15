@@ -8,7 +8,7 @@
 namespace DAVA
 {
 
-class SceneNode;
+class Entity;
 class LodComponent : public Component
 {
 public:
@@ -59,14 +59,14 @@ public:
 			isDummy(false)
 		{ }
 
-		Vector<SceneNode*> nodes;
+		Vector<Entity*> nodes;
 		Vector<int32> indexes;
 		int32 layer;
 		bool isDummy;
 	};
 
 	LodComponent();
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -120,7 +120,7 @@ public:
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
     
-//    SceneNode::Save(archive, sceneFile);
+//    Entity::Save(archive, sceneFile);
 //    archive->SetInt32("lodCount", (int32)lodLayers.size());
 //    
 //    int32 lodIdx = 0;

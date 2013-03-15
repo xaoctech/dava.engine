@@ -9,12 +9,12 @@
 #ifndef ResourceEditorQt_SceneNodePropertyNames_h
 #define ResourceEditorQt_SceneNodePropertyNames_h
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
 	// Different Property Names for Scene Nodes which are needed for Editor.
-	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME = SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME = Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME;
 	static const char* SCENE_NODE_NAME_PROPERTY_NAME = "property.scenenode.name";
 	static const char* SCENE_NODE_IS_VISIBLE_PROPERTY_NAME = "property.scenenode.isVisible";
 

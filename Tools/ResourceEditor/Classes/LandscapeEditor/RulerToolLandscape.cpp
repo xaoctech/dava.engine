@@ -35,7 +35,7 @@
 using namespace DAVA;
 
 RulerToolLandscape::RulerToolLandscape()
-    : EditorLandscapeNode()
+    : EditorLandscape()
 {
     // RETURN TO THIS CODE LATER
     //SetName(String("Landscape_RulerTool"));
@@ -117,7 +117,7 @@ void RulerToolLandscape::SetPoints(const DAVA::List<DAVA::Vector3> &points)
 
 void RulerToolLandscape::SetDisplayedTexture()
 {
-    SetTexture(LandscapeNode::TEXTURE_TILE_FULL, rulerSprite->GetTexture());
+    SetTexture(Landscape::TEXTURE_TILE_FULL, rulerSprite->GetTexture());
 }
 
 Texture * RulerToolLandscape::GetDisplayedTexture()
