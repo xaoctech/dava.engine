@@ -17,6 +17,7 @@
 #include "HelpDialog.h"
 
 #include "SceneExporter.h"
+#include "SceneSaver.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -544,7 +545,7 @@ void SceneEditorScreenMain::CheckNodes(Entity * node)
 
 void SceneEditorScreenMain::SaveToFolder(const String & folder)
 {
-	String formatStr = String("png");
+//	String formatStr = String("png");
     
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
@@ -566,27 +567,25 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     String projectPath = keyedArchieve->GetString(String("ProjectPath"));
     
-    if(!SceneExporter::Instance()) new SceneExporter();
+    if(!SceneSaver::Instance()) new SceneSaver();
     
     String inFolder = projectPath + String("DataSource/3d/");
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetOutFolder(folder);
+    SceneSaver::Instance()->SetInFolder(inFolder);
+    SceneSaver::Instance()->SetOutFolder(folder);
     
 	inputFolder = inFolder;
 	outputFolder = folder;
     
-	SceneExporter::Instance()->SetExportingFormat(formatStr);
-    
     Set<String> errorsLog;
-    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    SceneSaver::Instance()->SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
     ShowErrorDialog(errorsLog);
 
-	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
-	CopyFile(filePath);
-	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
+//	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
+//	CopyFile(filePath);
+//	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
 	CheckNodes(iBody->bodyControl->GetScene());
 }
 
