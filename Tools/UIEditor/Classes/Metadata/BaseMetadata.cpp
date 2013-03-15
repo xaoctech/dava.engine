@@ -132,6 +132,11 @@ UIControl::eControlState BaseMetadata::GetUIControlState() const
 void BaseMetadata::SetUIControlState(UIControl::eControlState controlState)
 {
     this->uiControlState = controlState;
+
+	if(NULL != GetActiveUIControl())
+	{
+		GetActiveUIControl()->SetState(controlState);
+	}
 }
 
 HierarchyTreeNode* BaseMetadata::GetTreeNode(BaseMetadataParams::METADATAPARAMID paramID) const
