@@ -546,6 +546,42 @@
     <ClCompile Include="GeneratedFiles\Metadata\UISpinnerMetadata_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Models\HierarchyTreeAggregatorControlNode.cpp">
+      <Filter>Sources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Models\HierarchyTreeAggregatorNode.cpp">
+      <Filter>Sources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\AggregatorMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UIAggregatorMetadata.cpp">
+      <Filter>Sources\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Controllers\LibraryController.cpp">
+      <Filter>Sources\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\createaggregatordlg.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\createaggregatordlg_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\aggregatorpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeAggregatorControlNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Models\HierarchyTreeAggregatorNode_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\AggregatorMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -844,6 +880,27 @@
     </ClInclude>
     <ClInclude Include="Classes\Metadata\UISpinnerMetadata.h">
       <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Models\HierarchyTreeAggregatorControlNode.h">
+      <Filter>Sources\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Models\HierarchyTreeAggregatorNode.h">
+      <Filter>Sources\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\AggregatorMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UIAggregatorMetadata.h">
+      <Filter>Sources\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\LibraryController.h">
+      <Filter>Sources\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\createaggregatordlg.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\aggregatorpropertygridwidget.h">
+      <Filter>Sources\UI\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
