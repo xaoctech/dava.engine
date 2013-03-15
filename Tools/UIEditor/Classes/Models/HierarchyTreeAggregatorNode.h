@@ -18,11 +18,14 @@ namespace DAVA
 class HierarchyTreeAggregatorNode: public HierarchyTreeScreenNode
 {
 public:
+	typedef Set<HierarchyTreeControlNode*> CHILDS;
+
 	HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect);
 	~HierarchyTreeAggregatorNode();
 
 	void AddChild(HierarchyTreeControlNode* node);
 	void RemoveChild(HierarchyTreeControlNode* node);
+	const CHILDS& GetChilds() const;
 	
 	HierarchyTreeControlNode* CreateChild(HierarchyTreeNode* parentNode, const QString& name);
 	void UpdateChilds();
@@ -45,7 +48,6 @@ private:
 private:
 	Rect rect;
 	
-	typedef Set<HierarchyTreeControlNode*> CHILDS;
 	CHILDS childs;
 	
 	String path;

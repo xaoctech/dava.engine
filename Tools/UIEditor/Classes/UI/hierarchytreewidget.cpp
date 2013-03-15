@@ -10,6 +10,7 @@
 #include "CopyPasteController.h"
 #include <QVariant>
 #include <QMenu>
+#include <QMessageBox>
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -305,6 +306,7 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 	if (!items.size())
 		return;
 
+	bool needConfirm = false;
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
@@ -312,8 +314,30 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 		QVariant data = item->data(ITEM_ID);
 		HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(id);
+		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
+			needConfirm |= childs.size();
+			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+			{
+				nodes.push_back((*iter));
+			}
+		}
+		
 		nodes.push_back(node);
 	}
+	
+	if (needConfirm)
+	{
+		if (QMessageBox::No == QMessageBox::information(this,
+								 "",
+								 "Selected aggregator control has child controls. Do you want delete aggregator with all child controls?",
+								 QMessageBox::Yes | QMessageBox::No))
+			return;
+	}
+	
 	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
