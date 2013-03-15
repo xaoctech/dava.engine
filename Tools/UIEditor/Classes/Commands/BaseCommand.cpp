@@ -13,7 +13,13 @@ using namespace DAVA;
 
 BaseCommand::BaseCommand()
 {
-    
+ 	activePlatform = activeScreen = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
+	HierarchyTreeNode* platform = HierarchyTreeController::Instance()->GetActivePlatform();
+	if (platform)
+		activePlatform = platform->GetId();
+	HierarchyTreeNode* screen = HierarchyTreeController::Instance()->GetActiveScreen();
+	if (screen)
+		activeScreen = screen->GetId();
 }
 
 BaseCommand::~BaseCommand()
@@ -49,4 +55,12 @@ BaseMetadata* BaseCommand::GetMetadataForTreeNode(HierarchyTreeNode::HIERARCHYTR
     baseMetadata->SetupParams(params);
     
     return baseMetadata;
+}
+
+void BaseCommand::ActivateCommandScreen()
+{
+	HierarchyTreePlatformNode* platform = dynamic_cast<HierarchyTreePlatformNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activePlatform));
+	HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+
+	HierarchyTreeController::Instance()->UpdateSelection(platform, screen);
 }
