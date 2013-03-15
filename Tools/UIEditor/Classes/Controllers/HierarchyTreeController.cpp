@@ -335,6 +335,7 @@ HierarchyTreeScreenNode* HierarchyTreeController::AddScreen(const QString& name,
 	HierarchyTreeScreenNode* screenNode = hierarchyTree.AddScreen(name, platform);
 	if (screenNode)
 	{
+		UpdateSelection(screenNode->GetPlatform(), screenNode);
 		EmitHierarchyTreeUpdated();
 	}
 	
