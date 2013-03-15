@@ -319,7 +319,7 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 		if (aggregatorNode)
 		{
 			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
-			needConfirm |= childs.size();
+			needConfirm |= (childs.size() > 0);
 			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
 			{
 				nodes.push_back((*iter));
