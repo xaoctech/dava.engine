@@ -122,6 +122,8 @@ public:
 
     void ProcessIsSolidChanging();
 
+	void ActivateLevelBodyItem();
+
 private:
     
     void InitControls();
