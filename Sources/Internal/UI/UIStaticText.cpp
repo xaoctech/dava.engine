@@ -46,7 +46,7 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	, textColor(1.0f, 1.0f, 1.0f, 1.0f)
 	, tempSize(0, 0)
 	, shadowOffset(0, 0)
-	, shadowColor(0, 0, 0, 0)
+	, shadowColor(0, 0, 0, 1)
 {
 	inputEnabled = false;
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
