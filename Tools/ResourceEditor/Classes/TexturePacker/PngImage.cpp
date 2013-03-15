@@ -9,6 +9,7 @@
 
 #include "PngImage.h"
 #include "CommandLineParser.h"
+#include "Render/LibPngHelpers.h"
 
 PngImageExt::PngImageExt()
 :	internalData(0)
@@ -25,20 +26,20 @@ bool PngImageExt::Read(const String & filename)
 {
     SafeRelease(internalData);
     
-    Vector<Image *> imageSet = ImageLoader::CreateFromFile(filename);
-    if(imageSet.size() == 1)
+    internalData = new Image();
+    
+    int32 retCode = LibPngWrapper::ReadPngFile(filename, internalData, FORMAT_RGBA8888);
+    if(1 != retCode)
     {
-        internalData = imageSet[0];
-        return true;
+        if (CommandLineParser::Instance()->GetVerbose())
+        {
+            Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.c_str());
+        }
+
+        SafeRelease(internalData);
     }
     
-    if (CommandLineParser::Instance()->GetVerbose())
-    {
-        Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.c_str());
-    }
-
-    for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
-	return false;
+	return (internalData != NULL);
 }
 
 void PngImageExt::Write(const String & filename)
@@ -52,12 +53,14 @@ bool PngImageExt::Create(uint32 width, uint32 height)
     SafeRelease(internalData);
     
     internalData = Image::Create(width, height, FORMAT_RGBA8888);
+    memset(GetData(), 0, width * height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888));
+
 	return (internalData != 0);
 }
 
 void PngImageExt::DrawImage(int sx, int sy, PngImageExt * image, const Rect2i & srcRect)
 {
-	uint32 * destData32 = (uint32*)GetData();
+    uint32 * destData32 = (uint32*)GetData();
 	uint32 * srcData32 = (uint32*)image->GetData();
 	
 	int rx, ry;
@@ -88,10 +91,11 @@ void PngImageExt::DrawImage(int sx, int sy, PngImageExt * image)
 {
 	// printf("0x%08x 0x%08x %d %d\n", data, image->data, sx, sy);
 	
-	uint32 * destData32 = (uint32*)GetData();
+    uint32 * destData32 = (uint32*)GetData();
 	uint32 * srcData32 = (uint32*)image->GetData();
-	
-	for (int y = 0; y < image->GetHeight(); ++y)
+
+    
+    for (int y = 0; y < image->GetHeight(); ++y)
 		for (int x = 0; x < image->GetWidth(); ++x)
 		{
 			if ((sx + x) < 0)continue;
@@ -104,6 +108,7 @@ void PngImageExt::DrawImage(int sx, int sy, PngImageExt * image)
 			//printf("%04x ", srcData32[x + y * image->width]);
 		}
 }
+
 
 bool PngImageExt::IsHorzLineOpaque(int y)
 {
@@ -229,9 +234,9 @@ Color PngImageExt::GetDitheredColorForPoint(int32 x, int32 y)
             if(GetData()[offset + 3])
             {
                 ++count;
-                newColor.r += (float32)GetData()[offset];
-                newColor.g += (float32)GetData()[offset + 1];
-                newColor.b += (float32)GetData()[offset + 2];
+                newColor.r += (float32)(GetData()[offset]);
+                newColor.g += (float32)(GetData()[offset + 1]);
+                newColor.b += (float32)(GetData()[offset + 2]);
             }
         }
     }
