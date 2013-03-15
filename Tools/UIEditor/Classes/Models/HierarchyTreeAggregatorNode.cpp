@@ -48,6 +48,8 @@ void HierarchyTreeAggregatorNode::RemoveChild(HierarchyTreeControlNode* node)
 void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
 {
 	this->rect = rect;
+	screen->SetRect(rect);
+	UpdateChilds();
 }
 
 Rect HierarchyTreeAggregatorNode::GetRect() const
@@ -109,6 +111,7 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
 		}
+		//aggregatorControl->SetSize(screen->GetSize()); TODO:// update child size 
 		aggregatorControl->SetRect(aggregatorControl->GetRect());	//update childs size and position
 	}
 }
@@ -216,4 +219,11 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 		
 		ReplaceAggregator(node);
 	}
+}
+
+void HierarchyTreeAggregatorNode::SetName(const QString& name)
+{
+	QString oldName = GetName();
+	HierarchyTreeScreenNode::SetName(name);
+	LibraryController::Instance()->UpdateControl(this, oldName);
 }

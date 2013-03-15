@@ -7,6 +7,10 @@
 //
 
 #include "UIAggregatorMetadata.h"
+#include "HierarchyTreeController.h"
+#include "HierarchyTreeAggregatorControlNode.h"
+
+using namespace DAVA;
 
 void UIAggregatorMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
@@ -16,9 +20,27 @@ void UIAggregatorMetadata::InitializeControl(const String& controlName, const Ve
         UIControl* control = this->treeNodeParams[i].GetUIControl();
 		
         control->SetName(controlName);
-        //control->SetSize(INITIAL_CONTROL_SIZE);
         control->SetPosition(position);
         
         control->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
     }
+}
+
+QString UIAggregatorMetadata::GetUIControlClassName()
+{
+	const METADATAPARAMSVECT& params = GetParams();
+	if (params.size())
+	{
+		const BaseMetadataParams& param = params[0];
+		HierarchyTreeNode::HIERARCHYTREENODEID id = param.GetTreeNodeID();
+		HierarchyTreeAggregatorControlNode* node = dynamic_cast<HierarchyTreeAggregatorControlNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(id));
+		if (node)
+		{
+			const HierarchyTreeAggregatorNode* aggregatorNode = node->GetAggregatorNode();
+			if (aggregatorNode)
+				return aggregatorNode->GetName();
+		}
+	}
+	
+	return UIControlMetadata::GetUIControlClassName();
 }

@@ -52,15 +52,15 @@ void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
 void LibraryController::RemoveControl(HierarchyTreeAggregatorNode* node)
 {
 	const QString& name = node->GetName();
-	CONTROLS::iterator iter = controls.find(name);
-	if (iter != controls.end())
-		controls.erase(iter);
+	controls.erase(name);
 	widget->RemoveControl(name);
 }
 
-void LibraryController::UpdateControl(HierarchyTreeAggregatorNode* node)
+void LibraryController::UpdateControl(HierarchyTreeAggregatorNode* node, const QString& oldName)
 {
-	
+	controls.erase(oldName);
+	controls[node->GetName()] = node;
+	widget->UpdateControl(oldName, node->GetName());
 }
 
 void LibraryController::AddControl(const QString& name, UIControl* control)

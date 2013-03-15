@@ -18,6 +18,8 @@ namespace DAVA
 	public:
 	    // Initialize the control(s) attached.
 		virtual void InitializeControl(const String& controlName, const Vector2& position);
+		
+		virtual QString GetUIControlClassName();
 	};
 }
 

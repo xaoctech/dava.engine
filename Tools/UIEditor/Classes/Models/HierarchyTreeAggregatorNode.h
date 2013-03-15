@@ -35,6 +35,8 @@ public:
 	bool Load(YamlNode* node, const QString& path);
 	bool Save(YamlNode* node, const QString& path);
 	
+	virtual void SetName(const QString& name);
+	
 private:
 	void CopyAggregatorControls();
 	void UpdateHierarchyTree();

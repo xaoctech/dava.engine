@@ -26,7 +26,7 @@ namespace DAVA
 		
 		void AddControl(HierarchyTreeAggregatorNode* node);
 		void RemoveControl(HierarchyTreeAggregatorNode* node);
-		void UpdateControl(HierarchyTreeAggregatorNode* node);
+		void UpdateControl(HierarchyTreeAggregatorNode* node, const QString& oldName);
 		
 		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position);
 		
