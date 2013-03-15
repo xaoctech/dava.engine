@@ -237,24 +237,14 @@ void ParticlesEditorSceneModelHelper::SynchronizeEffectParticleEditorNode(Effect
     int emittersCountInEffect = effectRootNode->GetChildrenCount();
     int emittersCountInEffectNode = node->GetEmittersCount();
 
-    if (emittersCountInEffect > 0 && emittersCountInEffectNode == 0)
+    if (emittersCountInEffect > emittersCountInEffectNode)
     {
-        // Root Node has no Emitters - need to add them.
-        for (int32 i = 0; i < emittersCountInEffect; i ++)
-        {
-            // Create the new Emitter and add it to the tree.
-			ParticleEmitter * emitter =  GetEmitter(effectRootNode->GetChild(i));
-			if (!emitter)
-			{
-			    continue;
-			}
-
- 
-            EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, effectRootNode->GetChild(i),
-                                                                                         QString::fromStdString(effectRootNode->GetChild(i)->GetName()));
-            node->AddChildNode(emitterEditorNode);
-        }
+		AddNewNodesToSceneGraph(node, effectRootNode);
     }
+	else if (emittersCountInEffectNode > emittersCountInEffect)
+	{
+		RemoveExcessiveNodesFromSceneGraph(node, effectRootNode);
+	}
 }
 
 void ParticlesEditorSceneModelHelper::SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node)
@@ -654,4 +644,82 @@ LayerParticleEditorNode* ParticlesEditorSceneModelHelper::GetLayerEditorNodeByGr
 	}
 	
 	return NULL;
+}
+
+void ParticlesEditorSceneModelHelper::BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
+														Set<Entity*>& entitiesInParticleEditor,
+														Set<Entity*>& entitiesInSceneGraph)
+{
+	for (List<BaseParticleEditorNode*>::const_iterator iter = node->GetChildren().begin();
+		 iter != node->GetChildren().end(); iter ++)
+	{
+		EmitterParticleEditorNode* childNode = dynamic_cast<EmitterParticleEditorNode*>(*iter);
+		if (!childNode || !childNode->GetEmitterNode())
+		{
+			continue;
+		}
+		
+		entitiesInParticleEditor.insert(childNode->GetEmitterNode());
+	}
+	
+	// Build the set of nodes present
+    int emittersCountInEffect = effectRootNode->GetChildrenCount();
+	for (int32 i = 0; i < emittersCountInEffect; i ++)
+	{
+		// Create the new Emitter and add it to the tree.
+		Entity* effectEntity = effectRootNode->GetChild(i);
+		if (!effectEntity)
+		{
+			continue;
+		}
+		
+		entitiesInSceneGraph.insert(effectEntity);
+	}
+
+}
+
+void ParticlesEditorSceneModelHelper::AddNewNodesToSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode)
+{
+	Set<Entity*> entitiesInParticleEditor;
+	Set<Entity*> entitiesInSceneGraph;
+	BuildEntitiesSets(node, effectRootNode, entitiesInParticleEditor, entitiesInSceneGraph);
+	
+	// Scene Graph contains more items than Particle Emitter node, add the new ones.
+    int emittersCountInEffect = effectRootNode->GetChildrenCount();
+	for (int32 i = 0; i < emittersCountInEffect; i ++)
+	{
+		if (entitiesInParticleEditor.find(effectRootNode->GetChild(i)) != entitiesInParticleEditor.end())
+		{
+			continue;
+		}
+
+		// Create the new Emitter and add it to the tree.
+		ParticleEmitter * emitter =  GetEmitter(effectRootNode->GetChild(i));
+		if (!emitter)
+		{
+			continue;
+		}
+		
+		EmitterParticleEditorNode* emitterEditorNode = new EmitterParticleEditorNode(effectRootNode, effectRootNode->GetChild(i),
+																					 QString::fromStdString(effectRootNode->GetChild(i)->GetName()));
+		node->AddChildNode(emitterEditorNode);
+	}
+}
+
+void ParticlesEditorSceneModelHelper::RemoveExcessiveNodesFromSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode)
+{
+	// Some Particle Emitters were removed, update the tree.
+	Set<Entity*> entitiesInParticleEditor;
+	Set<Entity*> entitiesInSceneGraph;
+	BuildEntitiesSets(node, effectRootNode, entitiesInParticleEditor, entitiesInSceneGraph);
+	
+	// Now compare these two lists and remove the excessive ones.
+	for (Set<Entity*>::iterator iter = entitiesInParticleEditor.begin(); iter != entitiesInParticleEditor.end();
+		 iter ++)
+	{
+		if (entitiesInSceneGraph.find(*iter) == entitiesInSceneGraph.end())
+		{
+			ParticlesEditorController::Instance()->RemoveParticleEmitterNode(*iter);
+		}
+	}
 }
