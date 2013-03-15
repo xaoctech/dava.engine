@@ -49,8 +49,10 @@ bool HierarchyTreeController::Save(const QString& projectPath)
 void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
 											  const HierarchyTreeScreenNode* activeScreen)
 {
+	bool updateLibrary = false;
 	if (this->activePlatform != activePlatform)
 	{
+		updateLibrary = true;
 		ResetSelectedControl();
 		this->activePlatform = (HierarchyTreePlatformNode*)activePlatform;
 		if (this->activePlatform)
@@ -58,11 +60,11 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 
         // The platform is changed - update the Localization System.
         UpdateLocalization(false);
-
 		emit SelectedPlatformChanged(this->activePlatform);
 	}
 	if (this->activeScreen != activeScreen)
 	{
+		updateLibrary = true;
 		if (this->activeScreen)
 			this->activeScreen->RemoveSelection();
 		
@@ -70,6 +72,8 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 		this->activeScreen = (HierarchyTreeScreenNode*)activeScreen;
 		emit SelectedScreenChanged(this->activeScreen);
 	}
+	if (updateLibrary)
+		LibraryController::Instance()->UpdateLibrary();
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeItem)
