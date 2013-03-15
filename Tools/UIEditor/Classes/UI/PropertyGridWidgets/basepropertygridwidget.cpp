@@ -477,7 +477,7 @@ void BasePropertyGridWidget::OnColorButtonClicked()
 
 	QColor propertyValue = PropertiesHelper::GetPropertyValue<QColor>(this->activeMetadata, iter->second.getProperty().name(), false);
 
-    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog);
+    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
     if (color.isValid() == false)
     {
         return;
