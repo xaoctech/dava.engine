@@ -21,17 +21,38 @@ HangingObjectsView::~HangingObjectsView()
 
 void HangingObjectsView::Init()
 {
-	/*QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(this, SIGNAL(Clicked(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)), handler, SLOT(ToggleSetSwitchIndex(DAVA::uint32, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX)));
-	connect(ui->btnOK, SIGNAL(clicked()), this, SLOT(Clicked()));
+	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
+	connect(this, SIGNAL(Clicked(float)), handler, SLOT(ToggleHangingObjects(float)));
+	connect(ui->btnUpdate, SIGNAL(clicked()), this, SLOT(Clicked()));
+	connect(ui->checkBoxEnable, SIGNAL(stateChanged(int)), this, SLOT(CheckBoxChangeState(int )));
 	
-	ui->btnOK->blockSignals(true);
-	QtMainWindowHandler::Instance()->RegisterSetSwitchIndexWidgets(ui->spinBox,
-		ui->rBtnSelection,
-		ui->rBtnScene,
-		ui->btnOK);
+	ui->btnUpdate->blockSignals(true);
+	QtMainWindowHandler::Instance()->RegisterHangingObjectsWidgets(ui->checkBoxEnable,
+		ui->doubleSpinBoxHeight,
+		ui->btnUpdate);
 
-	handler->SetSwitchIndexWidgetsState(true);
-	*/
+	handler->SetHangingObjectsWidgetsState(false);
+	ui->checkBoxEnable->setEnabled(true);
 }
 
+
+void HangingObjectsView::Clicked()
+{
+	float value = (float)ui->doubleSpinBoxHeight->value();
+	emit Clicked(value);
+}
+
+void HangingObjectsView::CheckBoxChangeState(int newState)
+{
+	if(newState == Qt::Unchecked)
+	{
+		ui->doubleSpinBoxHeight->setEnabled(false);
+		ui->btnUpdate->setEnabled(false);
+	}
+	if(newState == Qt::Checked)
+	{
+		ui->doubleSpinBoxHeight->setEnabled(true);
+		ui->btnUpdate->setEnabled(true);
+		this->Clicked();
+	}
+}
