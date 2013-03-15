@@ -453,7 +453,6 @@
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
@@ -494,6 +493,9 @@
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneSaver.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneUtils.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneUtilsScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
@@ -933,7 +935,6 @@
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h" />
-    <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
@@ -975,6 +976,9 @@
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneSaver.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneUtils.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneUtilsScreen.h" />
     <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
