@@ -4,6 +4,8 @@
 
 using namespace DAVA;
 
+#define TEXT_ID 0
+
 LibraryWidget::LibraryWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LibraryWidget)
@@ -21,7 +23,7 @@ LibraryWidget::~LibraryWidget()
 void LibraryWidget::AddControl(const QString& name)
 {
 	QTreeWidgetItem* control = new QTreeWidgetItem();
-	control->setText(0, name);
+	control->setText(TEXT_ID, name);
 	ui->treeWidget->addTopLevelItem(control);
 }
 
@@ -32,5 +34,15 @@ void LibraryWidget::RemoveControl(const QString &name)
 	{
 		QTreeWidgetItem* item = items[i];
 		delete item;
+	}
+}
+
+void LibraryWidget::UpdateControl(const QString& oldName, const QString& name)
+{
+	QList<QTreeWidgetItem*> items = ui->treeWidget->findItems(oldName, Qt::MatchExactly);
+	for (int i = 0; i < items.size(); ++i)
+	{
+		QTreeWidgetItem* item = items[i];
+		item->setText(TEXT_ID, name);
 	}
 }

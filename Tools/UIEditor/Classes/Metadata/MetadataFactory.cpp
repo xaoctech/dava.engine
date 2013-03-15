@@ -12,7 +12,6 @@
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
-#include "PlatformMetadata.h"
 
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
@@ -44,6 +43,11 @@ PlatformMetadata* MetadataFactory::GetPlatformMetadata() const
 ScreenMetadata* MetadataFactory::GetScreenMetadata() const
 {
     return new ScreenMetadata();
+}
+
+AggregatorMetadata* MetadataFactory::GetAggregatorMetadata() const
+{
+	return new AggregatorMetadata();
 }
 
 BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiControl) const
@@ -96,6 +100,11 @@ BaseMetadata* MetadataFactory::GetMetadataForTreeNode(const HierarchyTreeNode* t
     }
 
     // First try pre-defined nodes.
+	if (dynamic_cast<const HierarchyTreeAggregatorNode*>(treeNode))
+	{
+		return GetAggregatorMetadata();
+	}
+	
     if (dynamic_cast<const HierarchyTreeScreenNode*>(treeNode))
     {
         return GetScreenMetadata();

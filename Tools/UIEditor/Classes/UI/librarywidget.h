@@ -17,6 +17,7 @@ public:
 	
 	void AddControl(const QString& name);
 	void RemoveControl(const QString& name);
+	void UpdateControl(const QString& oldName, const QString& name);
 	
 private:
     Ui::LibraryWidget *ui;
