@@ -2,6 +2,7 @@
 #define LIBRARYWIDGET_H
 
 #include <QWidget>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class LibraryWidget;
@@ -15,9 +16,10 @@ public:
     explicit LibraryWidget(QWidget *parent = 0);
     ~LibraryWidget();
 	
-	void AddControl(const QString& name);
-	void RemoveControl(const QString& name);
-	void UpdateControl(const QString& oldName, const QString& name);
+	QTreeWidgetItem* AddControl(const QString& name);
+	void RemoveControl(QTreeWidgetItem* item);
+	void UpdateControl(QTreeWidgetItem* item, const QString& name);
+	void SetItemVisible(QTreeWidgetItem* item, bool visible);
 	
 private:
     Ui::LibraryWidget *ui;

@@ -20,29 +20,29 @@ LibraryWidget::~LibraryWidget()
     delete ui;
 }
 
-void LibraryWidget::AddControl(const QString& name)
+QTreeWidgetItem* LibraryWidget::AddControl(const QString& name)
 {
 	QTreeWidgetItem* control = new QTreeWidgetItem();
 	control->setText(TEXT_ID, name);
 	ui->treeWidget->addTopLevelItem(control);
+	return control;
 }
 
-void LibraryWidget::RemoveControl(const QString &name)
+void LibraryWidget::RemoveControl(QTreeWidgetItem* item)
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->findItems(name, Qt::MatchExactly);
-	for (int i = 0; i < items.size(); ++i)
+	int index = ui->treeWidget->indexOfTopLevelItem(item);
+	if (index != -1)
 	{
-		QTreeWidgetItem* item = items[i];
 		delete item;
 	}
 }
 
-void LibraryWidget::UpdateControl(const QString& oldName, const QString& name)
+void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->findItems(oldName, Qt::MatchExactly);
-	for (int i = 0; i < items.size(); ++i)
-	{
-		QTreeWidgetItem* item = items[i];
-		item->setText(TEXT_ID, name);
-	}
+	item->setText(TEXT_ID, name);
+}
+
+void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
+{
+	item->setHidden(!visible);
 }

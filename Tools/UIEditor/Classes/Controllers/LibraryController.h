@@ -22,11 +22,12 @@ namespace DAVA
 		~LibraryController();
 		
 		void Init(LibraryWidget* widget);
-		bool IsNameAvailable(const QString& name) const;
+		
+		void UpdateLibrary();
 		
 		void AddControl(HierarchyTreeAggregatorNode* node);
 		void RemoveControl(HierarchyTreeAggregatorNode* node);
-		void UpdateControl(HierarchyTreeAggregatorNode* node, const QString& oldName);
+		void UpdateControl(HierarchyTreeAggregatorNode* node);
 		
 		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position);
 		
@@ -34,7 +35,7 @@ namespace DAVA
 		void AddControl(const QString& name, DAVA::UIControl* control);
 		
 	private:
-		typedef Map<QString, HierarchyTreeNode*> CONTROLS;
+		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
 		CONTROLS controls;
 		LibraryWidget* widget;
 		

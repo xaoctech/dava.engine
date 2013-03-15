@@ -223,7 +223,6 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 
 void HierarchyTreeAggregatorNode::SetName(const QString& name)
 {
-	QString oldName = GetName();
 	HierarchyTreeScreenNode::SetName(name);
-	LibraryController::Instance()->UpdateControl(this, oldName);
+	LibraryController::Instance()->UpdateControl(this);
 }
