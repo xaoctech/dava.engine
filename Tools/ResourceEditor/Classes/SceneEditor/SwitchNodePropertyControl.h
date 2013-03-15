@@ -10,7 +10,7 @@ class SwitchNodePropertyControl : public NodesPropertyControl
 public:
 	SwitchNodePropertyControl(const Rect & rect, bool createNodeProperties);
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
 
 	virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
 

@@ -615,7 +615,7 @@ void RenderManager::FlushState()
     currentState.Flush(&hardwareState);
 }
 
-void RenderManager::FlushState(RenderStateBlock * stateBlock)
+void RenderManager::FlushState(RenderState * stateBlock)
 {
 	PrepareRealMatrix();
 	

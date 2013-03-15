@@ -48,11 +48,10 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Render/Highlevel/Light.h"
-#include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
-#include "Render/Highlevel/LandscapeNode.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderSystem.h"
 
 #include "Entity/SceneSystem.h"
@@ -63,7 +62,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/UpdatableSystem.h"
+#include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
 
@@ -81,7 +80,7 @@ namespace DAVA
 REGISTER_CLASS(Scene);
     
 Scene::Scene()
-	:   SceneNode()
+	:   Entity()
     ,   currentCamera(0)
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
@@ -89,8 +88,6 @@ Scene::Scene()
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
-	bvHierarchy = new BVHierarchy();
-	bvHierarchy->ChangeScene(this);
 
 //	entityManager = new EntityManager();
 
@@ -123,7 +120,7 @@ void Scene::CreateSystems()
 	particleEffectSystem = new ParticleEffectSystem(this);
 	AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT));
 
-	updatableSystem = new UpdatableSystem(this);
+	updatableSystem = new UpdateSystem(this);
 	AddSystem(updatableSystem, (1 << Component::UPDATABLE_COMPONENT));
     
     lightUpdateSystem = new LightUpdateSystem(this);
@@ -162,7 +159,6 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
-	SafeRelease(bvHierarchy);
 
     transformSystem = 0;
     renderUpdateSystem = 0;
@@ -176,9 +172,8 @@ Scene::~Scene()
 	SafeDelete(renderSystem);
 }
 
-void Scene::RegisterNode(SceneNode * node)
+void Scene::RegisterNode(Entity * node)
 {
-    //Logger::Debug("Register node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
     Light * light = dynamic_cast<Light*>(node);
     if (light)
     {
@@ -190,42 +185,6 @@ void Scene::RegisterNode(SceneNode * node)
 	{
 		RegisterImposter(imposter);
 	}
-
-	if (bvHierarchy)
-	{
-		bvHierarchy->RegisterNode(node);
-	}
-
-	//MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-	//if(meshInstance)
-	//{
-	//	Entity * entity = entityManager->CreateEntity();
-	//	node->entity = entity;
-	//	node->entity->AddComponent(VisibilityAABBoxComponent::Get());
-	//	node->entity->AddComponent(MeshInstanceComponent::Get());
-	//	node->entity->AddComponent(TransformComponent::Get());
-
-	//	//TODO: move Flush and data init to some Init() function
-	//	entityManager->Flush();
-	//	node->entity->SetData("flags", (uint32)0);
-	//}
-
-	//LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
-	//if(landscapeNode)
-	//{
-	//	Entity * entity = entityManager->CreateEntity();
-	//	node->entity = entity;
-	//	node->entity->AddComponent(LandscapeGeometryComponent::Get());
-	//	entityManager->Flush();
-	//	node->entity->SetData("landscapeNode", landscapeNode);
-	//}
-    
-//    Drawable * drawable = dynamic_cast<Drawable*>(node);
-//    
-//    if (drawable)
-//    {
-//        drawArray.push_back(drawable);
-//    }
     
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -238,7 +197,7 @@ void Scene::RegisterNode(SceneNode * node)
     }
 }
 
-void Scene::UnregisterNode(SceneNode * node)
+void Scene::UnregisterNode(Entity * node)
 {
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -249,8 +208,6 @@ void Scene::UnregisterNode(SceneNode * node)
         if (needRemove)
             systems[k]->RemoveEntity(node);
     }
-    
-    //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
 
     Light * light = dynamic_cast<Light*>(node);
     if (light)
@@ -261,37 +218,9 @@ void Scene::UnregisterNode(SceneNode * node)
 	{
 		UnregisterImposter(imposter);
 	}
-
-	if (bvHierarchy)
-	{
-		bvHierarchy->UnregisterNode(node);
-	}
-
-	//if(node->entity)
-	//{
-	//	entityManager->DestroyEntity(node->entity);
-	//}
-    
-//    // Remove drawable remove
-//    Drawable * drawable = dynamic_cast<Drawable*>(node);
-//    
-//    if (drawable)
-//    {
-//        int32 size = (uint32)drawArray.size();
-//        uint32 pos = 0;
-//        for (pos = 0; pos < size; ++pos)
-//        {
-//            if (drawArray[pos] == drawable)
-//            {
-//                drawArray[pos] = drawArray[size - 1];
-//                drawArray.pop_back();
-//                break;
-//            }
-//        }
-//    }
 }
     
-void Scene::AddComponent(SceneNode * entity, Component * component)
+void Scene::AddComponent(Entity * entity, Component * component)
 {
     uint32 oldComponentFlags = entity->componentFlags;
     entity->componentFlags |= (1 << component->GetType());
@@ -307,7 +236,7 @@ void Scene::AddComponent(SceneNode * entity, Component * component)
     }
 }
     
-void Scene::RemoveComponent(SceneNode * entity, Component * component)
+void Scene::RemoveComponent(Entity * entity, Component * component)
 {
     uint32 oldComponentFlags = entity->componentFlags;
     entity->componentFlags &= ~(1 << component->GetType());
@@ -324,7 +253,7 @@ void Scene::RemoveComponent(SceneNode * entity, Component * component)
     }
 }
     
-void Scene::ImmediateEvent(SceneNode * entity, uint32 componentType, uint32 event)
+void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 {
     uint32 systemsCount = systems.size();
     uint32 updatedComponentFlag = 1 << componentType;
@@ -421,7 +350,7 @@ Camera * Scene::GetCamera(int32 n)
 }
 
 
-void Scene::AddRootNode(SceneNode *node, const String &rootNodePath)
+void Scene::AddRootNode(Entity *node, const String &rootNodePath)
 {
     ProxyNode * proxyNode = new ProxyNode();
     proxyNode->SetNode(node);
@@ -430,7 +359,7 @@ void Scene::AddRootNode(SceneNode *node, const String &rootNodePath)
     proxyNode->SetName(rootNodePath);
 }
 
-SceneNode *Scene::GetRootNode(const String &rootNodePath)
+Entity *Scene::GetRootNode(const String &rootNodePath)
 {
 //    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
 //    if (proxyNode)
@@ -509,13 +438,13 @@ void Scene::ReleaseRootNode(const String &rootNodePath)
 	}
 }
     
-void Scene::ReleaseRootNode(SceneNode *nodeToRelease)
+void Scene::ReleaseRootNode(Entity *nodeToRelease)
 {
-//	for (Map<String, SceneNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
+//	for (Map<String, Entity*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
 //	{
 //        if (nodeToRelease == it->second) 
 //        {
-//            SceneNode * obj = it->second;
+//            Entity * obj = it->second;
 //            obj->Release();
 //            rootNodes.erase(it);
 //            return;
@@ -641,7 +570,7 @@ void Scene::Draw()
 	}
     
     RenderManager::Instance()->SetCullMode(FACE_BACK);
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+    RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
     //glDepthMask(GL_TRUE);
@@ -670,7 +599,7 @@ void Scene::Draw()
     
 
 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
@@ -688,7 +617,7 @@ void Scene::StopAllAnimations(bool recursive )
 		SceneNodeAnimationList * anim = animations[animationIndex];
 		anim->StopAnimation();
 	}
-	SceneNode::StopAllAnimations(recursive);
+	Entity::StopAllAnimations(recursive);
 }
     
     
@@ -885,7 +814,7 @@ RenderSystem * Scene::GetRenderSystem()
 /*void Scene::Save(KeyedArchive * archive)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
-    SceneNode::Save(archive);
+    Entity::Save(archive);
     
     
     
@@ -895,7 +824,7 @@ RenderSystem * Scene::GetRenderSystem()
 
 void Scene::Load(KeyedArchive * archive)
 {
-    SceneNode::Load(archive);
+    Entity::Load(archive);
 }*/
     
 

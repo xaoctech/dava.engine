@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_LOD_NODE_H__
 #define __DAVAENGINE_LOD_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {
@@ -40,7 +40,7 @@ class Material;
 class Texture;
 class SceneFileV2;
     
-class LodNode : public SceneNode
+class LodNode : public Entity
 {
     static const int32 RECHECK_LOD_EVERY_FRAME = 3;
     
@@ -75,7 +75,7 @@ public:
         ,isDummy(false)
         {
         }
-        Vector<SceneNode*> nodes;
+        Vector<Entity*> nodes;
         Vector<int32> indexes;
         int32 layer;
         bool isDummy;
@@ -85,15 +85,15 @@ public:
 	virtual ~LodNode();
 	
     
-    virtual void	AddNodeInLayer(SceneNode * node, int32 layer);//adds new node and registers this node as a LOD layer
-    virtual void	RegisterNodeInLayer(SceneNode * node, int32 layer);//register existing node as a layer
-	virtual void	RemoveNode(SceneNode * node);
+    virtual void	AddNodeInLayer(Entity * node, int32 layer);//adds new node and registers this node as a LOD layer
+    virtual void	RegisterNodeInLayer(Entity * node, int32 layer);//register existing node as a layer
+	virtual void	RemoveNode(Entity * node);
 	virtual void	RemoveAllChildren();
     
     virtual void Update(float32 timeElapsed);
     void SimpleUpdate(float32 timeElapsed);
 	
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    virtual Entity* Clone(Entity *dstNode = NULL);
     /**
         \brief virtual function to save node to KeyedArchive
      */
@@ -108,7 +108,7 @@ public:
 
     virtual void SceneDidLoaded();
     
-    virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
+    virtual bool IsLodMain(Entity *childToCheck = NULL);//if childToCheck is NULL checks the caller node
 
 	int32 GetMaxLodLayer();
 
@@ -148,7 +148,7 @@ public:
     void GetLodData(List<LodData*> &retLodLayers);
     
 protected:
-//    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
+//    virtual Entity* CopyDataTo(Entity *dstNode);
 
     virtual void	RegisterIndexInLayer(int32 nodeIndex, int32 layer);
     virtual LodData	*CreateNewLayer(int32 layer);

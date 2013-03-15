@@ -11,7 +11,7 @@ CameraPropertyControl::~CameraPropertyControl()
 
 }
 
-void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
+void CameraPropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

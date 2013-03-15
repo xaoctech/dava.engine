@@ -169,6 +169,20 @@ public:
 	virtual void SetStateFontColor(int32 state, const Color& fontColor);
 
 	/**
+	 \brief Sets the color of the shadow for particular state.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] color font used for text draw of the states.
+	 */
+	virtual void SetStateShadowColor(int32 state, const Color& shadowColor);
+	
+	/**
+	 \brief Sets the offset of the shadow for particular state.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] color font used for text draw of the states.
+	 */
+	virtual void SetStateShadowOffset(int32 state, const Vector2& offset);
+
+	/**
 	 \brief Returns text control used for the requested state.
 	 \param[in] state state to get value for.
 	 \returns UIStaticText used for a state.

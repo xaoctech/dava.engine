@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_MESH_INSTANCE_H__
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderBatch.h"
 
@@ -80,7 +80,7 @@ private:
 };
 
     
-class MeshInstanceNode : public SceneNode
+class MeshInstanceNode : public Entity
 {
 public:	
 	struct LightmapData
@@ -112,7 +112,7 @@ public:
 	
     Vector<PolygonGroupWithMaterial*> & GetPolygonGroups();
     	
-    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    virtual Entity* Clone(Entity *dstNode = NULL);
     
     //Returns maximum Bounding Box as WorlTransformedBox
     virtual AABBox3 GetWTMaximumBoundingBoxSlow();
@@ -189,7 +189,7 @@ public:
 protected:
     virtual void UpdateLights();
     
-//    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
+//    virtual Entity* CopyDataTo(Entity *dstNode);
     
     
     Vector<Light*> nearestLights;
