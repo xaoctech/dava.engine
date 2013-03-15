@@ -36,6 +36,10 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterLineEditWidgetForProperty(propertiesMap, TEXT_PROPERTY_NAME, ui->textLineEdit);
     RegisterColorButtonWidgetForProperty(propertiesMap, TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
+
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
+    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -43,6 +47,10 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterPushButtonWidget(ui->fontSelectButton);
     UnregisterSpinBoxWidget(ui->fontSizeSpinBox);
     UnregisterColorButtonWidget(ui->textColorPushButton);
+
+    UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
+    UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
+    UnregisterColorButtonWidget(ui->shadowColorButton);
     
     BasePropertyGridWidget::Cleanup();
 }
