@@ -4,6 +4,7 @@
 #include "HierarchyTree.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
@@ -80,7 +81,10 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
 			screenItem->setText(0, screenNode->GetName());
-			screenItem->setIcon(0, QIcon(":/icons/068.png"));
+			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
+				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+			else
+				screenItem->setIcon(0, QIcon(":/icons/068.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
