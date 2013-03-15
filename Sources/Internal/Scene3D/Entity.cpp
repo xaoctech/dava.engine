@@ -1076,18 +1076,18 @@ Matrix4 Entity::AccamulateLocalTransform(Entity * fromParent)
 	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
 
-void Entity::FindAllSwitchComponentsRecursive(List<DAVA::Entity*> & switchComponents)
+void Entity::FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components)
 {
-	SwitchComponent * switchComponent = cast_if_equal<SwitchComponent*>(GetComponent(Component::SWITCH_COMPONENT));
-	if (switchComponent)
+	Component * component = GetComponent(type);
+	if (component)
 	{
-		switchComponents.push_back(this);
+		components.push_back(this);
 	}
 
 	uint32 childCount = GetChildrenCount();
 	for(uint32 i = 0 ; i < childCount; ++i)
 	{
-		GetChild(i)->FindAllSwitchComponentsRecursive(switchComponents);
+		GetChild(i)->FindComponentsByTypeRecursive(type, components);
 	}
 }
 

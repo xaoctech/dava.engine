@@ -25,6 +25,8 @@ class QSlider;
 class QComboBox;
 class ModificationWidget;
 class QSpinBox;
+class QCheckBox;
+class QDoubleSpinBox;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -62,6 +64,10 @@ public:
 	//set switch index
 	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
     void SetSwitchIndexWidgetsState(bool state);
+
+	//hanging objects
+	void RegisterHangingObjectsWidgets(QCheckBox*, QDoubleSpinBox*, QPushButton*);
+    void SetHangingObjectsWidgetsState(bool state);
 
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
@@ -121,6 +127,9 @@ public slots:
 	//set switch index
 	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
 
+	//hanging objects
+	void ToggleHangingObjects(float value);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
@@ -178,6 +187,11 @@ private:
 	QSpinBox*		editSwitchIndexValue;
 	QRadioButton*	rBtnSelection;
 	QRadioButton*	rBtnScene;
+
+	//hanging objects
+	QPushButton*	hangingObjectsToggleButton;
+	QDoubleSpinBox*	editHangingObjectsValue;
+	QCheckBox *		checkBoxHangingObjects;
 
 	//custom colors
 	QPushButton* customColorsToggleButton;

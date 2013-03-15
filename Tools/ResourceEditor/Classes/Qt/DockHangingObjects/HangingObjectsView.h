@@ -19,13 +19,14 @@ public:
 	~HangingObjectsView();
 
 	void Init();
-/*
+	
 signals:
-	void Clicked(DAVA::uint32 value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX selectionState);
+	void Clicked(float value);
 
 private slots:
 	void Clicked();
-*/
+	void CheckBoxChangeState(int);
+
 private:
 	Ui::HangingObjectsView *ui;
 };
