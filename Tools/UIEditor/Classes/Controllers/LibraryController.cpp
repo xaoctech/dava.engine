@@ -38,6 +38,7 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UIStaticText", new UIStaticText());
 	AddControl("UIList", new UIList());
 	AddControl("UIScrollBar", new UIScrollBar());
+	AddControl("UISpinner", new UISpinner());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
