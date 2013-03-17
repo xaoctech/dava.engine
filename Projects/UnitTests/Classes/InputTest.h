@@ -40,6 +40,9 @@ private:
 	
 	UIWebView* webView1;
 	UIWebView* webView2;
+	UIWebView* webView3;
+	
+	void* delegate;
 
 	bool testFinished;
 	float onScreenTime;
