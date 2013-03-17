@@ -206,7 +206,7 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
     
 void ParticleEmitter::RemoveLayer(int32 index)
 {
-    DVASSERT(0 <= index && index < layers.size());
+    DVASSERT(0 <= index && index < (int32)layers.size());
 
     RemoveLayer(layers[index]);
 }
