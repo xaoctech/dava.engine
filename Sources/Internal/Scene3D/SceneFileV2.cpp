@@ -791,7 +791,16 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
             if (oldShadowVolumeNode)
             {
                 ShadowVolume * newShadowVolume = new ShadowVolume();
-                newShadowVolume->SetPolygonGroup(oldShadowVolumeNode->GetPolygonGroup());
+				PolygonGroup * pg = oldShadowVolumeNode->GetPolygonGroup();
+				Matrix4 matrix = oldMeshInstanceNode->GetLocalTransform();
+				if(matrix != Matrix4::IDENTITY)
+				{
+					matrix.Inverse();
+					pg->ApplyMatrix(matrix);
+					pg->BuildBuffers();
+				}
+
+                newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
                 mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
