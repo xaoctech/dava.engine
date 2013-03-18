@@ -66,6 +66,22 @@ private:
 	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
 };
 
+class CreateAggregatorCommand: public UndoableHierarchyTreeNodeCommand
+{
+public:
+	CreateAggregatorCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect);
+	
+	virtual void Execute();
+	virtual void Rollback();
+	
+	virtual bool IsUndoRedoSupported() {return true;};
+	
+private:
+	QString name;
+	HierarchyTreeNode::HIERARCHYTREENODEID platformId;
+	Rect rect;
+};
+
 class CreateControlCommand: public BaseCommand
 {
 public:
