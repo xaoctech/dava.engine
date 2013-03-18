@@ -10,6 +10,7 @@
 
 #include "PlatformMetadata.h"
 #include "ScreenMetadata.h"
+#include "AggregatorMetadata.h"
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
@@ -28,6 +29,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     screenWidget = new ScreenPropertyGridWidget();
     registeredWidgets.push_back(screenWidget);
+	
+	aggregatorWidget = new AggregatorPropertyGridWidget();
+	registeredWidgets.push_back(aggregatorWidget);
     
     controlWidget = new ControlPropertyGridWidget();
     registeredWidgets.push_back(controlWidget);
@@ -97,6 +101,14 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(screenWidget);
         return resultList;
     }
+	
+	// aggregator node
+	const AggregatorMetadata* aggregatorMetadata = dynamic_cast<const AggregatorMetadata*>(metaData);
+	if (aggregatorMetadata)
+	{
+		resultList.push_back(aggregatorWidget);
+		return resultList;
+	}
 
     // UI Button/Static Text Nodes - they require the same widgets.
     const UIButtonMetadata* uiButtonMetadata = dynamic_cast<const UIButtonMetadata*>(metaData);

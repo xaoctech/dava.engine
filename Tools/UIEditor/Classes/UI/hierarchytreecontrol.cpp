@@ -8,7 +8,7 @@
 #include "CopyPasteController.h"
 
 #define TREE_MIME_DATA 0
-#define ITEM_ID 0, 1
+#define ITEM_ID 0, Qt::UserRole
 
 HierarchyTreeControlMimeData::HierarchyTreeControlMimeData(const QList<QTreeWidgetItem*> items)
 {
