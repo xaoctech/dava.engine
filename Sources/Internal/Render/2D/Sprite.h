@@ -230,7 +230,7 @@ public:
 	/** 
 		\brief Function to get rect & offset of sprite frame position in texture
 	 */
-	float32 GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType);
+	float32 GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const;
 
 	/** 
 		\brief Access to texCoords private field

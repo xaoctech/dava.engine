@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QSplitter>
 #include <QMainWindow>
+#include <QTreeView>
 #include "DAVAEngine.h"
 
 class QtPosSaver
@@ -13,7 +14,7 @@ public:
 	QtPosSaver();
 	virtual ~QtPosSaver();
 
-	void Attach(QWidget *widget);
+	void Attach(QWidget *widget, const QString &name = QString());
 
 	void SaveGeometry(QWidget *widget);
 	void LoadGeometry(QWidget *widget);
@@ -23,6 +24,9 @@ public:
 
 	void SaveState(QMainWindow *mainwindow);
 	void LoadState(QMainWindow *mainwindow);
+
+	void SaveValue(const QString &key, const DAVA::VariantType &value);
+	DAVA::VariantType LoadValue(const QString &key);
 
 protected:
 	QWidget *attachedWidget;

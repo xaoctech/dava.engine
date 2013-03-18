@@ -5,10 +5,7 @@
 #include <QProgressDialog>
 #include "Base/Singleton.h"
 #include "QtPosSaver/QtPosSaver.h"
-
-namespace Ui {
-class MainWindow;
-}
+#include "ui_mainwindow.h"
 
 class LibraryModel;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
@@ -16,11 +13,12 @@ class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
     Q_OBJECT
     
 public:
-   explicit QtMainWindow(QWidget *parent = 0);
-   ~QtMainWindow();
+	explicit QtMainWindow(QWidget *parent = 0);
+	~QtMainWindow();
+
+	Ui::MainWindow* GetUI();
     
     virtual bool eventFilter(QObject *, QEvent *);
-
     
 private:
 	void OpenLastProject();
@@ -39,13 +37,16 @@ private:
 	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
 
 public slots:
-	void TextureCheckConvetAndWait(bool forceConvertAll = false);
+	
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
+	void returnToOldMaxMinSizesForDockSceneGraph();
 
+	//return true if conversion has been started
+	bool TextureCheckConvetAndWait(bool forceConvertAll = false);
 	void UpdateParticleSprites();
 
-	void returnToOldMaxMinSizesForDockSceneGraph();
+	void RepackAndReloadScene();
 
 private slots:
 	void ProjectOpened(const QString &path);
@@ -57,21 +58,26 @@ private slots:
 	void ConvertWaitDone(QObject *destroyed);
 	void ConvertWaitStatus(const QString &curPath, int curJob, int jobCount);
 
+	void RepackSpritesWaitDone(QObject *destroyed);
+
 signals:
 	// Library File Types.
 	void LibraryFileTypesChanged(bool showDAEFiles, bool showSC2Files);
+	void RepackAndReloadFinished();
 
 private:
     Ui::MainWindow *ui;
 	QtPosSaver posSaver;
 
 	QProgressDialog *convertWaitDialog;
+	QProgressDialog *repackSpritesWaitDialog;
     
     //LibraryModel *libraryModel;
 	
 	QSize oldDockSceneGraphMaxSize;
 	QSize oldDockSceneGraphMinSize;
 
+	bool emitRepackAndReloadFinished;
 };
 
 

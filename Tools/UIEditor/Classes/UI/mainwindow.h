@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
 #include "ScreenWrapper.h"
+#include "EditorSettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +21,7 @@ public:
 protected:
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void showEvent(QShowEvent * event);
+	virtual void closeEvent(QCloseEvent * event);
 
 private slots:
     void on_scaleSpin_valueChanged(double arg1);
@@ -30,9 +33,10 @@ private slots:
 	
 	void OnNewProject();
 	void OnSaveProject();
-	void OnSaveAsProject();
-	void OnLoadProject();
+    void OnOpenProject();
 	void OnCloseProject();
+	void OnExitApplication();
+	
 	void OnNewPlatform();
 	void OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
 	
@@ -41,6 +45,20 @@ private slots:
 	
 	void OnUpdateScaleRequest(float scaleDelta);
 	void OnUpdateScreenPositionRequest(const QPoint& posDelta);
+	
+	void FileMenuTriggered(QAction *resentScene);
+	void MenuFileWillShow();
+
+	void OnUndoRequested();
+	void OnRedoRequested();
+	
+	void OnZoomInRequested();
+	void OnZoomOutRequested();
+	
+	void OnUndoRedoAvailabilityChanged();
+	void OnChangePropertySucceeded();
+
+	void OnUnsavedChangesNumberChanged();
 
 private:
 	bool CloseProject();
@@ -50,9 +68,16 @@ private:
 	
 	void InitMenu();
 	void UpdateMenu();
+	void UpdateProjectSettings(const QString& filename);
+	// Save/restore positions of DockWidgets and main window geometry
+	void SaveMainWindowState();
+	void RestoreMainWindowState();
+	// Create toolbar for HierarchyTreeDockWidget
+	void CreateHierarchyDockWidgetToolbar();
 
 private:
     Ui::MainWindow *ui;
+	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
 	
 	bool screenChangeUpdate;
 };

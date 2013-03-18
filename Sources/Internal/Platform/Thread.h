@@ -34,6 +34,11 @@
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
 
+#if defined (__DAVAENGINE_ANDROID__)
+	#include <EGL/eglplatform.h>
+	#include <EGL/egl.h>
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+
 namespace DAVA
 {
 /**
@@ -136,6 +141,13 @@ private:
     
     static pid_t mainThreadId;
     
+	static EGLContext currentContext;
+	static EGLDisplay currentDisplay;
+	static EGLSurface currentDrawSurface;
+	static EGLSurface currentReadSurface;
+
+	EGLContext localContext;
+
 public:
 
 	static void		InitMainThread();

@@ -31,6 +31,9 @@ public:
     
     // Get all property values. isPropertyValueDiffers will be set to TRUE in case the values are different
     // for different properties.
+	template<typename T>
+		static inline T GetAllPropertyValues(BaseMetadata* activeMetadata, const QString& propertyName);
+
     template<typename T>
         static inline T GetAllPropertyValues(BaseMetadata* activeMetadata, const QString& propertyName,
                                              bool& isPropertyValueDiffers);
@@ -68,6 +71,14 @@ template<typename T>
     activeMetadata->SetActiveParamID(paramID);
     activeMetadata->setProperty(propertyName.toStdString().c_str(), QVariant::fromValue<T>(value));
     activeMetadata->SetActiveParamID(currentParamID);
+}
+
+template<typename T>
+    inline T PropertiesHelper::GetAllPropertyValues(BaseMetadata* activeMetadata,
+                                                    const QString& propertyName)
+{
+	bool propertyValueDiffers = false;
+	return GetAllPropertyValues<T>(activeMetadata, propertyName, propertyValueDiffers);
 }
 
 

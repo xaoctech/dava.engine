@@ -7,16 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0260581316E77271003BE248 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0260581116E77270003BE248 /* DeviceInfo.cpp */; };
+		0260581516E775AE003BE248 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0260581416E775AE003BE248 /* DeviceInfoiOS.mm */; };
 		184BFAC6161C83E700BFBD83 /* ResultScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */; };
-		184BFADC161DB6EF00BFBD83 /* ScreenShotHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 184BFADB161DB6EF00BFBD83 /* ScreenShotHelper.mm */; };
 		185A26A61611921E00C2554E /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 185A26A3161190A700C2554E /* libFramework.a */; };
 		187C016616135179000A1E2C /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 187C016516135179000A1E2C /* Data */; };
 		187C01A5161ADD7B000A1E2C /* Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187C01A4161ADD7B000A1E2C /* Test.cpp */; };
-		187C01AA161B3BA5000A1E2C /* FileManagerWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */; };
 		18B1F5121622FEC8007FBF1B /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */; };
+		C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */; };
+		C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */; };
+		C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C110F03216C2537A001EEAB2 /* SettingsManager.cpp */; };
 		FE76D9EE1163F2F0009E83B6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */; };
 		FE76D9EF1163F2F0009E83B6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */; };
 		FE76D9F71163F304009E83B6 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9F51163F304009E83B6 /* AVFoundation.framework */; };
@@ -42,24 +46,29 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0260580016E646A0003BE248 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		0260581116E77270003BE248 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
+		0260581216E77270003BE248 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
+		0260581416E775AE003BE248 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
 		184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResultScreen.cpp; sourceTree = "<group>"; };
 		184BFAC7161C83FA00BFBD83 /* ResultScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResultScreen.h; sourceTree = "<group>"; };
-		184BFAC8161D70E900BFBD83 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		184BFADB161DB6EF00BFBD83 /* ScreenShotHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ScreenShotHelper.mm; sourceTree = "<group>"; };
-		184BFADD161DB70800BFBD83 /* ScreenShotHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScreenShotHelper.h; sourceTree = "<group>"; };
 		185A2697161190A600C2554E /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../iPhoneFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		187C016516135179000A1E2C /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		187C01A4161ADD7B000A1E2C /* Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test.cpp; sourceTree = "<group>"; };
 		187C01A8161ADDA2000A1E2C /* Test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
-		187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FileManagerWrapper.mm; path = Classes/FileManagerWrapper.mm; sourceTree = "<group>"; };
 		187C01AC161B3BBB000A1E2C /* FileManagerWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FileManagerWrapper.h; path = Classes/FileManagerWrapper.h; sourceTree = "<group>"; };
 		18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* LevelPerformanceTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LevelPerformanceTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		32CA4F630368D1EE00C91783 /* LevelPerformanceTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelPerformanceTest_Prefix.pch; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* LevelPerformanceTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LevelPerformanceTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureHelper.cpp; sourceTree = "<group>"; };
+		4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureHelper.h; sourceTree = "<group>"; };
+		C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileManagerWrapper.cpp; sourceTree = "<group>"; };
+		C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTestData.cpp; sourceTree = "<group>"; };
+		C110F03116C2537A001EEAB2 /* LandscapeTestData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTestData.h; sourceTree = "<group>"; };
+		C110F03216C2537A001EEAB2 /* SettingsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsManager.cpp; sourceTree = "<group>"; };
+		C110F03316C2537A001EEAB2 /* SettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
 		FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		FE76D9F51163F304009E83B6 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -104,6 +113,11 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C110F02F16C2537A001EEAB2 /* FileManagerWrapper.cpp */,
+				C110F03016C2537A001EEAB2 /* LandscapeTestData.cpp */,
+				C110F03116C2537A001EEAB2 /* LandscapeTestData.h */,
+				C110F03216C2537A001EEAB2 /* SettingsManager.cpp */,
+				C110F03316C2537A001EEAB2 /* SettingsManager.h */,
 				FEC3CBC21284374A00541220 /* AppScreens.h */,
 				FEC3CBC51284374A00541220 /* FrameworkMain.cpp */,
 				FEC3CBC61284374A00541220 /* FrameworkMain.h */,
@@ -113,7 +127,12 @@
 				187C01A8161ADDA2000A1E2C /* Test.h */,
 				184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */,
 				184BFAC7161C83FA00BFBD83 /* ResultScreen.h */,
-				184BFAC8161D70E900BFBD83 /* Constants.h */,
+				4929815C16E0ACAF00F2C7B6 /* TextureHelper.cpp */,
+				4929815D16E0ACAF00F2C7B6 /* TextureHelper.h */,
+				0260580016E646A0003BE248 /* Config.h */,
+				0260581116E77270003BE248 /* DeviceInfo.cpp */,
+				0260581216E77270003BE248 /* DeviceInfo.h */,
+				0260581416E775AE003BE248 /* DeviceInfoiOS.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -151,7 +170,6 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* LevelPerformanceTest_Prefix.pch */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -159,15 +177,11 @@
 		29B97317FDCFA39411CA2CEA /* Platform Dependant */ = {
 			isa = PBXGroup;
 			children = (
-				184BFADB161DB6EF00BFBD83 /* ScreenShotHelper.mm */,
-				184BFADD161DB70800BFBD83 /* ScreenShotHelper.h */,
-				187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */,
 				187C01AC161B3BBB000A1E2C /* FileManagerWrapper.h */,
 				FEC9200B13BA2D7D006F347F /* iPhoneProjectDelegate.h */,
 				FEC9200C13BA2D7D006F347F /* iPhoneProjectDelegate.mm */,
 				FEC9200D13BA2D7D006F347F /* main.mm */,
 				FEC9200E13BA2D7D006F347F /* MainWindow.xib */,
-				8D1107310486CEB800E47090 /* LevelPerformanceTest-Info.plist */,
 			);
 			name = "Platform Dependant";
 			sourceTree = "<group>";
@@ -216,7 +230,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LevelPerformanceTest" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LevelPerformanceTestiPhone" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -289,9 +303,13 @@
 				FEC9200F13BA2D7D006F347F /* iPhoneProjectDelegate.mm in Sources */,
 				FEC9201013BA2D7D006F347F /* main.mm in Sources */,
 				187C01A5161ADD7B000A1E2C /* Test.cpp in Sources */,
-				187C01AA161B3BA5000A1E2C /* FileManagerWrapper.mm in Sources */,
 				184BFAC6161C83E700BFBD83 /* ResultScreen.cpp in Sources */,
-				184BFADC161DB6EF00BFBD83 /* ScreenShotHelper.mm in Sources */,
+				C110F03416C2537A001EEAB2 /* FileManagerWrapper.cpp in Sources */,
+				C110F03516C2537A001EEAB2 /* LandscapeTestData.cpp in Sources */,
+				C110F03616C2537A001EEAB2 /* SettingsManager.cpp in Sources */,
+				4929815E16E0ACAF00F2C7B6 /* TextureHelper.cpp in Sources */,
+				0260581316E77271003BE248 /* DeviceInfo.cpp in Sources */,
+				0260581516E775AE003BE248 /* DeviceInfoiOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,14 +324,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = LevelPerformanceTest_Prefix.pch;
+				GCC_PREFIX_HEADER = LevelPerformanceTestiPhone_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-				);
-				INFOPLIST_FILE = "LevelPerformanceTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
+				INFOPLIST_FILE = "LevelPerformanceTestiPhone-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = LevelPerformanceTest;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -325,13 +339,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = LevelPerformanceTest_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
-				);
-				INFOPLIST_FILE = "LevelPerformanceTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
+				GCC_PREFIX_HEADER = LevelPerformanceTestiPhone_Prefix.pch;
+				INFOPLIST_FILE = "LevelPerformanceTestiPhone-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = LevelPerformanceTest;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -348,11 +358,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
+				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",
@@ -375,11 +386,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../dava.framework/Sources/Internal,
-					./../dava.framework/Sources/External,
+					./../../Sources/Internal,
+					./../../Sources/External,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
+				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lz",
@@ -403,7 +415,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LevelPerformanceTest" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LevelPerformanceTestiPhone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

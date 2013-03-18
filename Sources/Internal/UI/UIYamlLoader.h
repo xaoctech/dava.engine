@@ -88,6 +88,7 @@ public:
 	
     String GetColorInheritTypeNodeValue(int32 colorInheritType);
     String GetDrawTypeNodeValue(int32 drawType);
+	YamlNode * GetAlignNodeValue(int32 align);
 	
 	Map<String, Font*> fontMap;
 };

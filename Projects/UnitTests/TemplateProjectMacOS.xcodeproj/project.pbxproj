@@ -17,6 +17,10 @@
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C151B18E16D37E2700E09BAF /* WebKit.framework */; };
+		C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */; };
+		C177F28016D227A70036F02B /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C177F27E16D227A70036F02B /* InputTest.cpp */; };
+		C18046CA16D52ECA00DC24D8 /* DPITest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18046C816D52EC900DC24D8 /* DPITest.cpp */; };
 		E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */; };
 		E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */; };
 		E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */; };
@@ -67,8 +71,9 @@
 		029E4D8B15D403F6004A4167 /* SplitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SplitTest.h; path = Classes/SplitTest.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
-		17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
+		172382C116D2735F0078DEE3 /* InputTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputTest.cpp; path = Classes/InputTest.cpp; sourceTree = "<group>"; };
+		172382C216D2735F0078DEE3 /* InputTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputTest.h; path = Classes/InputTest.h; sourceTree = "<group>"; };
+		172382C416D276920078DEE3 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
@@ -92,6 +97,13 @@
 		5CF2253E157E555D00DF5395 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseScreen.cpp; path = Classes/BaseScreen.cpp; sourceTree = "<group>"; };
 		5CF2253F157E555D00DF5395 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseScreen.h; path = Classes/BaseScreen.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C151B18E16D37E2700E09BAF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eMailTest.cpp; path = Classes/eMailTest.cpp; sourceTree = "<group>"; };
+		C151B1BF16D50BDA00E09BAF /* eMailTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eMailTest.h; path = Classes/eMailTest.h; sourceTree = "<group>"; };
+		C177F27E16D227A70036F02B /* InputTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputTest.cpp; path = Classes/InputTest.cpp; sourceTree = "<group>"; };
+		C177F27F16D227A70036F02B /* InputTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputTest.h; path = Classes/InputTest.h; sourceTree = "<group>"; };
+		C18046C816D52EC900DC24D8 /* DPITest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DPITest.cpp; path = Classes/DPITest.cpp; sourceTree = "<group>"; };
+		C18046C916D52ECA00DC24D8 /* DPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DPITest.h; path = Classes/DPITest.h; sourceTree = "<group>"; };
 		E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompilerTest.cpp; path = Classes/MaterialCompilerTest.cpp; sourceTree = "<group>"; };
 		E81F2AEF16BFA4A600C4545E /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompilerTest.h; path = Classes/MaterialCompilerTest.h; sourceTree = "<group>"; };
 		E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveTest.cpp; path = Classes/KeyedArchiveTest.cpp; sourceTree = "<group>"; };
@@ -128,6 +140,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C151B19116D37E8300E09BAF /* WebKit.framework in Frameworks */,
 				5CDC2501156CC93300742348 /* libz.dylib in Frameworks */,
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -168,13 +181,13 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		17EACFAC16C3FF3600F6D3D2 /* DLCTest */ = {
+		172382C016D272DE0078DEE3 /* InputTests */ = {
 			isa = PBXGroup;
 			children = (
-				17EACFAD16C3FF5900F6D3D2 /* DLCSystemTests.cpp */,
-				17EACFAE16C3FF5900F6D3D2 /* DLCSystemTests.h */,
+				172382C116D2735F0078DEE3 /* InputTest.cpp */,
+				172382C216D2735F0078DEE3 /* InputTest.h */,
 			);
-			name = DLCTest;
+			name = InputTests;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
@@ -188,6 +201,7 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				C151B18E16D37E2700E09BAF /* WebKit.framework */,
 				5CDC2500156CC93300742348 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
 				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
@@ -252,6 +266,9 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C18046C616D52E6E00DC24D8 /* DPITest */,
+				C151B1BC16D50BD000E09BAF /* eMailTest */,
+				C177F27C16D2279B0036F02B /* InputTest */,
 				E81F2AEA16BFA49100C4545E /* MaterialCompilerTest */,
 				49B774CA16B1889A00A80FA3 /* DLCTest */,
 				E8EF77FE1669248300DA7BD2 /* CloneTest */,
@@ -296,6 +313,33 @@
 				5CDC24FD156CC72400742348 /* TestTemplate.h */,
 			);
 			name = TestSuite;
+			sourceTree = "<group>";
+		};
+		C151B1BC16D50BD000E09BAF /* eMailTest */ = {
+			isa = PBXGroup;
+			children = (
+				C151B1BE16D50BDA00E09BAF /* eMailTest.cpp */,
+				C151B1BF16D50BDA00E09BAF /* eMailTest.h */,
+			);
+			name = eMailTest;
+			sourceTree = "<group>";
+		};
+		C177F27C16D2279B0036F02B /* InputTest */ = {
+			isa = PBXGroup;
+			children = (
+				C177F27E16D227A70036F02B /* InputTest.cpp */,
+				C177F27F16D227A70036F02B /* InputTest.h */,
+			);
+			name = InputTest;
+			sourceTree = "<group>";
+		};
+		C18046C616D52E6E00DC24D8 /* DPITest */ = {
+			isa = PBXGroup;
+			children = (
+				C18046C816D52EC900DC24D8 /* DPITest.cpp */,
+				C18046C916D52ECA00DC24D8 /* DPITest.h */,
+			);
+			name = DPITest;
 			sourceTree = "<group>";
 		};
 		E81F2AEA16BFA49100C4545E /* MaterialCompilerTest */ = {
@@ -517,6 +561,9 @@
 				49C432081675E370000EA877 /* DXTTest.cpp in Sources */,
 				E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */,
 				49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */,
+				C177F28016D227A70036F02B /* InputTest.cpp in Sources */,
+				C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */,
+				C18046CA16D52ECA00DC24D8 /* DPITest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

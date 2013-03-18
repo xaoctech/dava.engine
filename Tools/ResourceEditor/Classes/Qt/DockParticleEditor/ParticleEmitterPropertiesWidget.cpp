@@ -118,9 +118,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   colorOverLife.GetPropLine(),
 							   size.GetPropLine(),
 							   life);
-	CommandsManager::Instance()->Execute(commandUpdateEmitter);
-	SafeRelease(commandUpdateEmitter);
-	
+	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter);
+
 	Init(emitter, false);
 	emit ValueChanged();
 }
@@ -153,7 +152,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	emitterRadius->Init(0.f, emitterLifeTime, updateMinimize);
 	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
 
-	emitterColorWidget->Init(0.f, 1.0f, "color over life");
+	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
 	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
 
 	emitterSize->Init(0.f, emitterLifeTime, updateMinimize, true);

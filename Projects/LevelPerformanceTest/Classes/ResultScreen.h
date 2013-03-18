@@ -40,6 +40,8 @@ private:
 	void DrawStatImage(DAVA::Rect rect);
 	void DrawMinFpsTargets(DAVA::Rect rect);
     
+    void SaveResults();
+    
 	Texture* texture;
 	Sprite* textureSprite;
     Sprite* resultSprite;

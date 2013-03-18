@@ -2,8 +2,10 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Platform/Android/CorePlatformAndroid.h"
-#include "Platform/Android/EGLRenderer.h"
+#include <EGL/eglplatform.h>
+#include <EGL/egl.h>
+
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
 
 namespace DAVA
 {
@@ -13,20 +15,147 @@ namespace DAVA
 
 pid_t Thread::mainThreadId = 0;
 
+EGLContext Thread::currentContext;
+EGLDisplay Thread::currentDisplay;
+EGLSurface Thread::currentDrawSurface;
+EGLSurface Thread::currentReadSurface;
+
+
+
+bool GetConfig(EGLDisplay disp, EGLConfig& bestConfig)
+{
+	EGLint count = 0;
+	if (!eglGetConfigs(disp, NULL, 0, &count))
+	{
+		Logger::Error("[GetConfig] cannot query count of all configs");
+		return false;
+	}
+
+	Logger::Info("[GetConfig] Count = %d", count);
+
+	EGLConfig* configs = new EGLConfig[count];
+	if (!eglGetConfigs(disp, configs, count, &count))
+	{
+		Logger::Error("[GetConfig] cannot query all configs");
+		return false;
+	}
+
+	int bestMatch = 1<<30;
+	int bestIndex = -1;
+
+	int i;
+	for (i = 0; i < count; i++)
+	{
+		int match = 0;
+		EGLint surfaceType = 0;
+		EGLint blueBits = 0;
+		EGLint greenBits = 0;
+		EGLint redBits = 0;
+		EGLint alphaBits = 0;
+		EGLint depthBits = 0;
+		EGLint stencilBits = 0;
+		EGLint renderableFlags = 0;
+
+		EGLint configId = 0;
+
+		eglGetConfigAttrib(disp, configs[i], EGL_SURFACE_TYPE, &surfaceType);
+		eglGetConfigAttrib(disp, configs[i], EGL_BLUE_SIZE, &blueBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_GREEN_SIZE, &greenBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_RED_SIZE, &redBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_ALPHA_SIZE, &alphaBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_DEPTH_SIZE, &depthBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_STENCIL_SIZE, &stencilBits);
+		eglGetConfigAttrib(disp, configs[i], EGL_RENDERABLE_TYPE, &renderableFlags);
+
+		eglGetConfigAttrib(disp, configs[i], EGL_CONFIG_ID, &configId);
+
+
+		Logger::Info("Config[%d]: R%dG%dB%dA%d D%dS%d Type=%04x Render=%04x id = %d",
+			i, redBits, greenBits, blueBits, alphaBits, depthBits, stencilBits, surfaceType, renderableFlags, configId);
+
+		if ((surfaceType & EGL_WINDOW_BIT) == 0)
+			continue;
+		if ((renderableFlags & EGL_OPENGL_ES2_BIT) == 0)
+			continue;
+		if ((depthBits < 16) || (stencilBits < 8))
+			continue;
+		if ((redBits < 8) || (greenBits < 8) || (blueBits < 8) || (alphaBits < 8))
+			continue;
+
+		int penalty = depthBits - 16;
+		match += penalty * penalty;
+		penalty = redBits - 8;
+		match += penalty * penalty;
+		penalty = greenBits - 8;
+		match += penalty * penalty;
+		penalty = blueBits - 8;
+		match += penalty * penalty;
+		penalty = alphaBits - 8;
+		match += penalty * penalty;
+		penalty = stencilBits;
+		match += penalty * penalty;
+
+		if ((match < bestMatch) || (bestIndex == -1))
+		{
+			bestMatch = match;
+			bestIndex = i;
+			Logger::Info("Config[%d] is the new best config", i, configs[i]);
+		}
+	}
+
+	if (bestIndex < 0)
+	{
+		delete[] configs;
+		return false;
+	}
+
+	bestConfig = configs[bestIndex];
+	delete[] configs;
+
+	return true;
+}
+
+
 
 void * PthreadMain (void * param)
 {
-	Logger::Info("[Thread::ThreadFunction] param = %p", param);
+	Logger::Info("[PthreadMain] param = %p", param);
 
 	Thread * t = (Thread*)param;
 
-    ThreadContext *context = NULL;
-    CorePlatformAndroid *core = (CorePlatformAndroid *)Core::Instance();
-
 	if(t->needCopyContext)
     {
-        context = core->CreateThreadContext();
-        core->BindThreadContext(context);
+    	EGLConfig localConfig;
+    	bool ret = GetConfig(Thread::currentDisplay, localConfig);
+		Logger::Info("[PthreadMain] GetConfig returned = %d", ret);
+
+    	if(ret)
+    	{
+        	EGLint contextAttrs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+        	t->localContext = eglCreateContext(t->currentDisplay, localConfig, t->currentContext, contextAttrs);
+//        	t->localContext = eglCreateContext(t->currentDisplay, localConfig, EGL_NO_CONTEXT, contextAttrs);
+    	}
+
+    	if(t->localContext == EGL_NO_CONTEXT)
+    	{
+    		Logger::Error("[PthreadMain] Can't create local context");
+    	}
+
+    	GLint surfAttribs[] =
+    	{
+    			EGL_HEIGHT, 768,
+    			EGL_WIDTH, 1024,
+    			EGL_NONE
+    	};
+
+        
+    	EGLSurface readSurface = eglCreatePbufferSurface(t->currentDisplay, localConfig, surfAttribs);
+//    	EGLSurface drawSurface = eglCreatePbufferSurface(t->currentDisplay, localConfig, surfAttribs);
+
+        //TODO: set context
+//		bool ret2 = eglMakeCurrent(t->currentDisplay, t->currentDrawSurface, t->currentReadSurface, t->localContext);
+		bool ret2 = eglMakeCurrent(t->currentDisplay, readSurface, readSurface, t->localContext);
+		Logger::Info("[PthreadMain] set eglMakeCurrent returned = %d", ret2);
     }
 
 	t->state = Thread::STATE_RUNNING;
@@ -34,9 +163,9 @@ void * PthreadMain (void * param)
 
     if(t->needCopyContext)
 	{
-        core->UnbindThreadContext(context);
-        core->ReleaseThreadContext(context);
-        context = NULL;
+        //TODO: Restore context
+		bool ret = eglMakeCurrent(t->currentDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+		Logger::Info("[PthreadMain] restore eglMakeCurrent returned = %d", ret);
 	}
 
 	t->state = Thread::STATE_ENDED;
@@ -51,7 +180,9 @@ void Thread::StartAndroid()
 {
     if(needCopyContext)
 	{
-//
+    	localContext = EGL_NO_CONTEXT;
+//		bool ret = eglMakeCurrent(currentDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+//		Logger::Info("[PthreadMain] restore eglMakeCurrent returned = %d", ret);
 	}
     
     pthread_t threadId;
@@ -68,6 +199,32 @@ bool Thread::IsMainThread()
 void Thread::InitMainThread()
 {
     mainThreadId = gettid();
+
+    currentContext = eglGetCurrentContext();
+    if(currentContext == EGL_NO_CONTEXT)
+    {
+		Logger::Error("[Thread::InitMainThread] EGL_NO_CONTEXT");
+    }
+
+    currentDisplay = eglGetCurrentDisplay();
+	if (currentDisplay == EGL_NO_DISPLAY)
+	{
+		Logger::Error("[Thread::InitMainThread] EGL_NO_DISPLAY");
+	}
+
+    currentDrawSurface = eglGetCurrentSurface(EGL_DRAW);
+    if(currentDrawSurface == EGL_NO_SURFACE)
+    {
+		Logger::Error("[Thread::InitMainThread] EGL_NO_SURFACE | EGL_DRAW");
+    }
+
+    currentReadSurface = eglGetCurrentSurface(EGL_READ);
+    if(currentReadSurface == EGL_NO_SURFACE)
+    {
+		Logger::Error("[Thread::InitMainThread] EGL_NO_SURFACE | EGL_READ");
+    }
+
+
     Logger::Info("[Thread::InitMainThread] %ld", mainThreadId);
 }
 

@@ -27,17 +27,28 @@ public:
 	HierarchyTreeControlNode* GetControlNode() const;
 	UIControl* GetUIObject() const {return uiObject;};
 	
-	virtual void SetParent(HierarchyTreeNode* node);
-	HierarchyTreeNode* GetParent() {return parent;};
+	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
+	virtual HierarchyTreeNode* GetParent() {return parent;};
 	
 	Vector2 GetParentDelta(bool skipControl = false) const;
+
+	// Remove/return Tree Node from the scene.
+	virtual void RemoveTreeNodeFromScene();
+	virtual void ReturnTreeNodeToScene();
 	
+	Rect GetRect() const;
+
 private:
 	void AddControlToParent();
 	
 private:
 	HierarchyTreeNode* parent;
+
 	UIControl* uiObject;
+
+	UIControl* parentUIObject;
+	UIControl* childUIObjectAbove;
+	bool needReleaseUIObjects;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeControlNode__) */

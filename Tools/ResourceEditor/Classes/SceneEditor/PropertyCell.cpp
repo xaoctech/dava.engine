@@ -29,7 +29,8 @@ PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect,
 
     property = prop;
     keyName = new UIStaticText(Rect(0, 0, size.x, size.y));
-    keyName->SetFont(ControlsFactory::GetFontLight());
+    keyName->SetFont(ControlsFactory::GetFont12());
+	keyName->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(keyName);
 }
 
@@ -62,16 +63,18 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
   
     float32 activeWidth = width - keyName->size.x;
     
-    Font * font = ControlsFactory::GetFontLight();
+    Font * font = ControlsFactory::GetFont12();
     editableText = new UITextField(Rect(keyName->size.x, 0, activeWidth, size.y));
     ControlsFactory::CustomizeEditablePropertyCell(editableText);
     editableText->SetFont(font);
+	editableText->SetTextColor(ControlsFactory::GetColorLight());
     editableText->SetDelegate(this);
     
     uneditableTextContainer = new UIControl(Rect( keyName->size.x, 0, activeWidth, size.y));
     ControlsFactory::CustomizeUneditablePropertyCell(uneditableTextContainer);
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
     uneditableText->SetFont(font);
+	uneditableText->SetTextColor(ControlsFactory::GetColorLight());
     uneditableTextContainer->AddControl(uneditableText);
 
     uneditableTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyTextCell::OnHint));
@@ -311,7 +314,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     keyName->size.y = size.y/2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
     
-    Font * font = ControlsFactory::GetFontLight();
+    Font * font = ControlsFactory::GetFont12();
     
     bool clearDataEnabled = prop->GetClearDataEnabled();
     float32 xOffset = (clearDataEnabled) ? (size.y/2 + 5.0f) : 0.0f;
@@ -320,6 +323,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     ControlsFactory::CustomizeEditablePropertyCell(pathTextContainer);
     pathText = new UIStaticText(Rect(0, 0, pathTextContainer->size.x, pathTextContainer->size.y));
     pathText->SetFont(font);
+	pathText->SetTextColor(ControlsFactory::GetColorLight());
     pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
     pathTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnHint));
@@ -691,12 +695,14 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
         textWidth = 50.f;
 
         minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
-        minValue->SetFont(ControlsFactory::GetFontLight());
+        minValue->SetFont(ControlsFactory::GetFont12());
+		minValue->SetTextColor(ControlsFactory::GetColorLight());
         minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
         AddControl(minValue);
 
         maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
-        maxValue->SetFont(ControlsFactory::GetFontLight());
+        maxValue->SetFont(ControlsFactory::GetFont12());
+		maxValue->SetTextColor(ControlsFactory::GetColorLight());
         maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
         AddControl(maxValue);
     }

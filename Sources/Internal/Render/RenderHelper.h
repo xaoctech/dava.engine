@@ -123,25 +123,25 @@ public:
         \param polygon the polygon we want to draw
         \param closed you should set this flag to true if you want to connect last point of polygon with first point
      */
-    void DrawPolygon(Polygon2 & polygon, bool closed);
+    void DrawPolygon(const Polygon2 & polygon, bool closed);
     /**
         \brief Draws all concecutive lines from given polygon
         \param polygon the polygon we want to draw
         \param closed you should set this flag to true if you want to connect last point of polygon with first point
      */
-    void DrawPolygon(Polygon3 & polygon, bool closed);
+    void DrawPolygon(const Polygon3 & polygon, bool closed);
 
     /**
         \brief Fill convex polygon with color. As all other draw functions this function use global color that can be set with RenderManager::Instance()->SetColor function. 
         \param polygon the polygon we want to draw
      */
-    void FillPolygon(Polygon2 & polygon);
+    void FillPolygon(const Polygon2 & polygon);
     
     /**
         \brief Fill convex polygon with color. As all other draw functions this function use global color that can be set with RenderManager::Instance()->SetColor function. 
         \param polygon the polygon we want to draw
      */
-    void FillPolygon(Polygon3 & polygon);
+    void FillPolygon(const Polygon3 & polygon);
     
     /**
         \brief Draws all concecutive lines from given polygon after transformation
@@ -149,39 +149,41 @@ public:
         \param closed you should set this flag to true if you want to connect last point of polygon with first point
         \param transform transform that will be applied to polygon before it will be drawn
      */
-	void DrawPolygonTransformed(Polygon2 & polygon, bool closed, const Matrix3 & transform);
+	void DrawPolygonTransformed(const Polygon2 & polygon, bool closed, const Matrix3 & transform);
     
     /**
         \brief Draws all points from given polygon
         \param polygon the polygon we want to draw
      */
-    void DrawPolygonPoints(Polygon2 & polygon);
+    void DrawPolygonPoints( const Polygon2 & polygon);
 
     /**
         \brief Draws all points from given polygon
         \param polygon the polygon we want to draw
      */
-    void DrawPolygonPoints(Polygon3 & polygon);
+    void DrawPolygonPoints(const Polygon3 & polygon);
     
     /**
         \brief Draws 2D bounding box
         \param box given bounding box
      */
-	void DrawBox(const AABBox2 & box);
+	void DrawBox(const AABBox2 & box, float32 lineWidth = 1.f);
 
     /**
         \brief Draws 3D bounding box
         \param box given bounding box
      */
-	void DrawBox(const AABBox3 & box);
+	void DrawBox(const AABBox3 & box, float32 lineWidth = 1.f);
 	
     /**
 	 \brief Draws 3D bounding box with corners
 	 \param box given bounding box
      */
-	void DrawCornerBox(const AABBox3 & bbox);
+	void DrawCornerBox(const AABBox3 & bbox, float32 lineWidth = 1.f);
 	
 	void DrawSphere(float32 r);
+
+	void DrawArrow(const Vector3 &from, const Vector3 &to, float32 lineWidth = 1.f);
 
 	
     // Other debug functions  

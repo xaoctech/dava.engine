@@ -36,8 +36,8 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 	newLod->SetEntity(toEntity);
 
 	newLod->lodLayers = lodLayers;
-	const List<LodData>::const_iterator endLod = newLod->lodLayers.end();
-	for (List<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
+	const Vector<LodData>::const_iterator endLod = newLod->lodLayers.end();
+	for (Vector<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
 	{
 		LodData & ld = *it;
 		ld.nodes.clear();
@@ -94,6 +94,8 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 
 void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 {
+	Component::Serialize(archive, sceneFile);
+
 	if(NULL != archive)
 	{
 		uint32 i;
@@ -106,27 +108,41 @@ void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		KeyedArchive *lodDistArch = new KeyedArchive();
 		for (i = 0; i < MAX_LOD_LAYERS; ++i)
 		{
-			lodDistArch->SetFloat(KeyedArchive::GenKeyFromIndex(i), lodLayersArray[i].GetDistance());
+			KeyedArchive *lodDistValuesArch = new KeyedArchive();
+			lodDistValuesArch->SetFloat("ld.distance", lodLayersArray[i].distance);
+			lodDistValuesArch->SetFloat("ld.neardist", lodLayersArray[i].nearDistance);
+			lodDistValuesArch->SetFloat("ld.fardist", lodLayersArray[i].farDistance);
+			lodDistValuesArch->SetFloat("ld.neardistsq", lodLayersArray[i].nearDistanceSq);
+			lodDistValuesArch->SetFloat("ld.fardistsq", lodLayersArray[i].farDistanceSq);
+
+			lodDistArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), lodDistValuesArch);
+			lodDistValuesArch->Release();
 		}
 		archive->SetArchive("lc.loddist", lodDistArch);
 		lodDistArch->Release();
 
 		i = 0;
 		KeyedArchive *lodDataArch = new KeyedArchive();
-		List<LodData>::iterator it = lodLayers.begin();
+		Vector<LodData>::iterator it = lodLayers.begin();
 		for(; it != lodLayers.end(); ++it)
 		{
+			KeyedArchive *lodDataValuesArch = new KeyedArchive();
 			KeyedArchive *lodDataIndexesArch = new KeyedArchive();
+
 			for(uint32 j = 0; j < it->indexes.size(); ++j)
 			{
 				lodDataIndexesArch->SetInt32(KeyedArchive::GenKeyFromIndex(j), it->indexes[j]);
 			}
 
-			lodDataArch->SetInt32("layer", it->layer);
-			lodDataArch->SetBool("isdummy", it->isDummy);
-			lodDataArch->SetArchive("indexes", lodDataIndexesArch);
-			lodDataArch->SetUInt32("indexescount", it->indexes.size());
+			lodDataValuesArch->SetArchive("indexes", lodDataIndexesArch);
+			lodDataValuesArch->SetInt32("layer", it->layer);
+			lodDataValuesArch->SetBool("isdummy", it->isDummy);
+			lodDataValuesArch->SetUInt32("indexescount", it->indexes.size());
+
+			lodDataArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), lodDataValuesArch);
+
 			lodDataIndexesArch->Release();
+			lodDataValuesArch->Release();
 			++i;
 		}
 		archive->SetUInt32("lc.loddatacount", lodLayers.size());
@@ -149,7 +165,15 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		{
 			for(uint32 i = 0; i < MAX_LOD_LAYERS; ++i)
 			{
-				lodLayersArray[i].SetDistance(lodDistArch->GetFloat(KeyedArchive::GenKeyFromIndex(i)));
+				KeyedArchive *lodDistValuesArch = lodDistArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+				if(NULL != lodDistValuesArch)
+				{
+					lodLayersArray[i].distance = lodDistValuesArch->GetFloat("ld.distance");
+					lodLayersArray[i].nearDistance = lodDistValuesArch->GetFloat("ld.neardist");
+					lodLayersArray[i].farDistance = lodDistValuesArch->GetFloat("ld.fardist");
+					lodLayersArray[i].nearDistanceSq = lodDistValuesArch->GetFloat("ld.neardistsq");
+					lodLayersArray[i].farDistanceSq = lodDistValuesArch->GetFloat("ld.fardistsq");
+				}
 			}
 		}
 
@@ -158,24 +182,31 @@ void LodComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 		{
 			for(uint32 i = 0; i < archive->GetUInt32("lc.loddatacount"); ++i)
 			{
-				LodData data;
-
-				if(lodDataArch->IsKeyExists("layer")) data.layer = lodDataArch->GetUInt32("layer");
-				if(lodDataArch->IsKeyExists("isdummy")) data.isDummy = lodDataArch->GetBool("isdummy");
-
-				KeyedArchive *lodDataIndexesArch = lodDataArch->GetArchive("indexes");
-				if(NULL != lodDataIndexesArch)
+				KeyedArchive *lodDataValuesArch = lodDataArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+				if(NULL != lodDataValuesArch)
 				{
-					for(uint32 j = 0; j < lodDataArch->GetUInt32("indexescount"); ++j)
-					{
-						data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
-					}
-				}
+					LodData data;
 
-				lodLayers.push_back(data);
+					if(lodDataValuesArch->IsKeyExists("layer")) data.layer = lodDataValuesArch->GetInt32("layer");
+					if(lodDataValuesArch->IsKeyExists("isdummy")) data.isDummy = lodDataValuesArch->GetBool("isdummy");
+
+					KeyedArchive *lodDataIndexesArch = lodDataValuesArch->GetArchive("indexes");
+					if(NULL != lodDataIndexesArch)
+					{
+						for(uint32 j = 0; j < lodDataValuesArch->GetUInt32("indexescount"); ++j)
+						{
+							data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
+						}
+					}
+
+					lodLayers.push_back(data);
+				}
 			}
 		}
 	}
+
+	flags |= NEED_UPDATE_AFTER_LOAD;
+	Component::Deserialize(archive, sceneFile);
 }
 
 LodComponent::LodComponent()
@@ -234,12 +265,12 @@ float32 LodComponent::GetForceDistance() const
     return forceDistance;
 }
 
-void LodComponent::GetLodData(List<LodData*> &retLodLayers)
+void LodComponent::GetLodData(Vector<LodData*> &retLodLayers)
 {
 	retLodLayers.clear();
 
-	List<LodData>::const_iterator endIt = lodLayers.end();
-	for(List<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
+	Vector<LodData>::const_iterator endIt = lodLayers.end();
+	for(Vector<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
 	{
 		LodData *ld = &(*it);
 		retLodLayers.push_back(ld);
@@ -286,8 +317,8 @@ int32 LodComponent::GetForceLodLayer()
 int32 LodComponent::GetMaxLodLayer()
 {
 	int32 ret = -1;
-	const List<LodData>::const_iterator &end = lodLayers.end();
-	for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+	const Vector<LodData>::const_iterator &end = lodLayers.end();
+	for (Vector<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
 	{
 		LodData & ld = *it;
 		if(ld.layer > ret)

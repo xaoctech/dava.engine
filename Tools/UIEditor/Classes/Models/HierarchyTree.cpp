@@ -15,13 +15,17 @@
 
 #include "MetadataFactory.h"
 #include "ResourcesManageHelper.h"
+#include "EditorFontManager.h"
 
 #include <QFile>
+#include <QDir>
 
 #define PLATFORMS_NODE "platforms"
 #define LOCALIZATION_NODE "localization"
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
+#define DEFAULT_FONT "font"
+#define DEFAULT_FONT_PATH "DefaultFontPath"
 
 HierarchyTree::HierarchyTree()
 {
@@ -36,29 +40,13 @@ void HierarchyTree::Clear()
 bool HierarchyTree::Load(const QString& projectPath)
 {
 	CreateProject();
-    
-/*	HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, "Platform1");
-	platformNode->SetSize(700, 500);
-	rootNode.AddTreeNode(platformNode);
-	HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(platformNode, "Screen1");
-	platformNode->AddTreeNode(screenNode);
-		
-	FileSystem::Instance()->ReplaceBundleName("/Users/adebt/Downloads/Project1/platform1/Data/");
-	screenNode->Load("/Users/adebt/Downloads/Project1/platform1/Data/UI/Intro.yaml");
-	
-	platformNode = new HierarchyTreePlatformNode(&rootNode, "Platform2");
-    screenNode = new HierarchyTreeScreenNode(platformNode, "Screen1");
-    platformNode->AddTreeNode(screenNode);
-	platformNode->SetSize(300, 200);
-    rootNode.AddTreeNode(platformNode);
-	
-	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);*/
-		
+
+	// Attempt to create a project
 	YamlParser* project = YamlParser::Create(projectPath.toStdString());
 	if (!project)
 		return false;
-	
-	rootNode.SetProjectPath(projectPath);
+	// Set current project file path
+	rootNode.SetProjectFilePath(projectPath);
 	
 	YamlNode* projectRoot = project->GetRootNode();
 	if (!projectRoot)
@@ -89,6 +77,31 @@ bool HierarchyTree::Load(const QString& projectPath)
         // Remember the platform to load its localization later.
         loadedPlatforms.insert(std::make_pair(platformNode, platform));
 	}
+	
+	// Get font node
+	YamlNode *font = projectRoot->Get(DEFAULT_FONT);
+	if (font)
+	{
+		// Get default font node
+		YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH);
+		if (fontPath)
+		{
+			// Get font values into array
+			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
+			EditorFontManager::DefaultFontPath defaultFontPath("","");
+			// True type font
+			if (fontPathArray.size() == 1)
+			{
+				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+			}
+			else if (fontPathArray.size() == 2) // Graphics font
+			{
+				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+				defaultFontPath.fontSpritePath = fontPathArray[1]->AsString();
+			}
+			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
+		}
+	}
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens. The update direction is FROM Control TO Extra Data.
@@ -108,12 +121,21 @@ bool HierarchyTree::Load(const QString& projectPath)
     // Localization File is loaded.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
 
-	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>((*rootNode.GetChildNodes().begin()));
-	HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>((*platformNode->GetChildNodes().begin()));
+	HierarchyTreePlatformNode* platformNode = NULL;
+	HierarchyTreeScreenNode* screenNode = NULL;
+	
+	if (!rootNode.GetChildNodes().empty())
+	{
+		platformNode = dynamic_cast<HierarchyTreePlatformNode*>((*rootNode.GetChildNodes().begin()));
+	}
+	
+	if (platformNode && !platformNode->GetChildNodes().empty())
+	{
+		screenNode = dynamic_cast<HierarchyTreeScreenNode*>((*platformNode->GetChildNodes().begin()));
+	}
     
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens.
-    
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);
 
 	return result;
@@ -130,26 +152,35 @@ void HierarchyTree::CloseProject()
 	Clear();
 }
 
-void HierarchyTree::AddPlatform(const QString& name, const Vector2& size)
+HierarchyTreePlatformNode* HierarchyTree::AddPlatform(const QString& name, const Vector2& size)
 {
     HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, name);
 	platformNode->SetSize(size.dx, size.dy);
 	rootNode.AddTreeNode(platformNode);
+	
+	return platformNode;
 }
 
-bool HierarchyTree::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId)
+HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId)
 {
 	HierarchyTreeNode* baseNode = FindNode(&rootNode, platformId);
 	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(baseNode);
 	if (!platformNode)
-		return false;
+	{
+		return NULL;
+	}
 	
-	platformNode->AddTreeNode(new HierarchyTreeScreenNode(platformNode, name));
-	return true;
+	HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(platformNode, name);
+	platformNode->AddTreeNode(screenNode);
+
+	return screenNode;
 }
 
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
 {
+	if (rootNode.GetId() == id)
+		return (HierarchyTreeNode*)&rootNode;
+		
 	return FindNode(&rootNode, id);
 }
 
@@ -205,7 +236,7 @@ const HierarchyTreeNode::HIERARCHYTREENODESLIST& HierarchyTree::GetPlatforms() c
 	return rootNode.GetChildNodes();
 }
 
-void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
+void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory, bool deleteNodeFromScene)
 {
 	//copy id for safe delete
 	Set<HierarchyTreeControlNode::HIERARCHYTREENODEID> ids;
@@ -226,21 +257,21 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 		HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
 		if (controlNode)
 		{
-			controlNode->GetParent()->RemoveTreeNode(controlNode);
+			controlNode->GetParent()->RemoveTreeNode(controlNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
-			screenNode->GetPlatform()->RemoveTreeNode(screenNode);
+			screenNode->GetPlatform()->RemoveTreeNode(screenNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 		
 		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(node);
 		if (platformNode)
 		{
-			rootNode.RemoveTreeNode(platformNode);
+			rootNode.RemoveTreeNode(platformNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
 		}
 	}
@@ -250,16 +281,50 @@ bool HierarchyTree::Save(const QString& projectPath)
 {
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
-	Map<String, YamlNode*> &rootMap = root.AsMap();
+	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
+
+	// Get paths for default font
+	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
+	String fontPath = defaultFontPath.fontPath;
+	String fontSpritePath = defaultFontPath.fontSpritePath;
+	// Check if default font path exist
+	if (!fontPath.empty())
+	{
+		// Create font node
+		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
+		rootMap.erase(DEFAULT_FONT);
+		rootMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT, fontNode));
+	
+		// Create fonts array
+		MultiMap<String, YamlNode*> &fontMap = fontNode->AsMap();	
+		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
+		
+		// Put font path
+		fontPathNode->AddValueToArray(fontPath);
+		// Put font sprite path if it available
+		if (!fontSpritePath.empty())
+		{
+			fontPathNode->AddValueToArray(fontSpritePath);
+		}
+		// Insert array into node
+		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH, fontPathNode));
+	}
+	
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
-	rootMap[PLATFORMS_NODE] = platforms;
+	rootMap.erase(PLATFORMS_NODE);
+	rootMap.insert(std::pair<String, YamlNode*>(PLATFORMS_NODE, platforms));
 
     // Prior to Save we need to put the Localization Keys FROM the ExtraData TO the
     // appropriate text controls to save the localization keys, and not values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_RAW);
 
-	QString oldPath = rootNode.GetProjectPath();
-	rootNode.SetProjectPath(projectPath);
+	QString oldPath = rootNode.GetProjectFilePath();
+	
+	// Get project file
+	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+	
+	rootNode.SetProjectFilePath(projectFile);
+
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();
 		 iter != rootNode.GetChildNodes().end();
 		 ++iter)
@@ -272,7 +337,11 @@ bool HierarchyTree::Save(const QString& projectPath)
 	}
 
 	YamlParser* parser = YamlParser::Create();
-	result &= parser->SaveToYamlFile(projectPath.toStdString(), &root, true);
+	// Create project sub-directories
+	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
+
+	// Save project file
+	result &= parser->SaveToYamlFile(projectFile.toStdString(), &root, true);
 	
     // Return the Localized Values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
@@ -280,7 +349,7 @@ bool HierarchyTree::Save(const QString& projectPath)
 	if (!result)
 	{
 		//restore project path
-		rootNode.SetProjectPath(oldPath);
+		rootNode.SetProjectFilePath(oldPath);
 	}
 
 	return result;

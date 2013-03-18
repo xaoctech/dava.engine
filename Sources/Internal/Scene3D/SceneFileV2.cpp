@@ -54,7 +54,9 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/ShadowVolumeNode.h"
+#include "Scene3D/UserNode.h"
 
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
@@ -75,6 +77,9 @@ SceneFileV2::SceneFileV2()
     isDebugLogEnabled = false;
     isSaveForGame = false;
     lastError = ERROR_NO_ERROR;
+
+	UserNode *n = new UserNode();
+	n->Release();
 }
 
 SceneFileV2::~SceneFileV2()
@@ -526,8 +531,6 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     bool skipNode = false;
     bool removeChildren = false;
     
-    
-    
     if (name == "LandscapeNode")
     {
         node = new SceneNode();
@@ -788,12 +791,22 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
             if (oldShadowVolumeNode)
             {
                 ShadowVolume * newShadowVolume = new ShadowVolume();
-                newShadowVolume->SetPolygonGroup(oldShadowVolumeNode->GetPolygonGroup());
+				PolygonGroup * pg = oldShadowVolumeNode->GetPolygonGroup();
+				Matrix4 matrix = oldMeshInstanceNode->GetLocalTransform();
+				if(matrix != Matrix4::IDENTITY)
+				{
+					matrix.Inverse();
+					pg->ApplyMatrix(matrix);
+					pg->BuildBuffers();
+				}
+
+                newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
                 mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
                 
                 parent->RemoveNode(oldShadowVolumeNode);
+                SafeRelease(newShadowVolume);
             }
         }
         
@@ -923,6 +936,26 @@ bool SceneFileV2::ReplaceNodeAfterLoad(SceneNode * node)
 		{
 			parent->InsertBeforeNode(newNode, sw);
 			parent->RemoveNode(sw);
+		}
+
+		newNode->Release();
+		return true;
+	}
+
+	UserNode *un = dynamic_cast<UserNode*>(node);
+	if(un)
+	{
+		SceneNode * newNode = new SceneNode();
+		un->Clone(newNode);
+
+		newNode->AddComponent(new UserComponent());
+
+		SceneNode * parent = un->GetParent();
+		DVASSERT(parent);
+		if(parent)
+		{
+			parent->InsertBeforeNode(newNode, un);
+			parent->RemoveNode(un);
 		}
 
 		newNode->Release();

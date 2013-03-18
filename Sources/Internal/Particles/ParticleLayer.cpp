@@ -105,7 +105,7 @@ ParticleLayer::~ParticleLayer()
 	SafeRelease(renderBatch);
 	SafeRelease(sprite);
 	head = 0;
-	CleanupParticleForces();
+	CleanupForces();
 	// dynamic cache automatically delete all particles
 }
 
@@ -147,10 +147,10 @@ ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 		dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
 
 	// Copy the forces.
-	for (int32 f = 0; f < (int32)particleForces.size(); ++ f)
+	for (int32 f = 0; f < (int32)forces.size(); ++ f)
 	{
-		ParticleForce* clonedForce = new ParticleForce(this->particleForces[f]);
-		dstLayer->AddParticleForce(clonedForce);
+		ParticleForce* clonedForce = new ParticleForce(this->forces[f]);
+		dstLayer->AddForce(clonedForce);
 	}
 
 	if (spin)
@@ -299,13 +299,6 @@ void ParticleLayer::Restart(bool isDeleteAllParticles)
 
 void ParticleLayer::Update(float32 timeElapsed)
 {
-	if (this->isDisabled)
-	{
-		// Yuri Coder, 2013/02/15. Temporary code - the last particle layer frame
-		// is freezed in this case. Return to this code later.
-		return;
-	}
-
 	// increment timer	
 	layerTime += timeElapsed;
 
@@ -490,7 +483,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 //	}
 
 	// Add the forces.
-    int32 forcesCount = (int32)particleForces.size();
+    int32 forcesCount = (int32)forces.size();
     for(int i = 0; i < forcesCount; i++)
 	{
 		Vector3 toAddForceDirection;
@@ -498,7 +491,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		float32 toAddForceOverlife = 0;
 		bool toAddForceOvelifeEnabled = false;
 
-		RefPtr<PropertyLine<Vector3> > currentForce = particleForces[i]->GetForce();
+		RefPtr<PropertyLine<Vector3> > currentForce = forces[i]->GetForce();
         if(currentForce && currentForce.Get())
 		{
 			const Vector3 & force = currentForce->GetValue(layerTime);
@@ -514,7 +507,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		}
 		
 		// Check the forces variations.
-		RefPtr<PropertyLine<Vector3> > currentForceVariation = particleForces[i]->GetForceVariation();
+		RefPtr<PropertyLine<Vector3> > currentForceVariation = forces[i]->GetForceVariation();
         if(currentForceVariation && currentForceVariation.Get())
 		{
 			const Vector3 & force = currentForceVariation->GetValue(layerTime) * randCoeff;
@@ -526,7 +519,7 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		}
 		
 		// Now check the overlife flag.
-		RefPtr<PropertyLine<float32> > currentForceOverlife = particleForces[i]->GetForceOverlife();
+		RefPtr<PropertyLine<float32> > currentForceOverlife = forces[i]->GetForceOverlife();
 		if(currentForceOverlife && currentForceOverlife.Get())
 		{
 			toAddForceOverlife = currentForceOverlife->GetValue(layerTime);
@@ -587,12 +580,12 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		}
 	}
     
-	int32 forcesCount = (int32)particleForces.size();
+	int32 forcesCount = (int32)forces.size();
     for(int i = 0; i < forcesCount; i++)
 	{
-        if (particleForces[i]->GetForceOverlife() && particleForces[i]->GetForceOverlife().Get())
+        if (forces[i]->GetForceOverlife() && forces[i]->GetForceOverlife().Get())
 		{
-			particle->UpdateForceOverlife(i, particleForces[i]->GetForceOverlife()->GetValue(t));
+			particle->UpdateForceOverlife(i, forces[i]->GetForceOverlife()->GetValue(t));
 		}
 	}
 }
@@ -748,7 +741,7 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		RefPtr< PropertyLine<float32> > forceOverLife = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, Format("forceOverLife%d", k));
 
 		ParticleForce* particleForce = new ParticleForce(force, forceVariation, forceOverLife);
-		AddParticleForce(particleForce);
+		AddForce(particleForce);
 	}
 
 	spin = PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(node, "spin");
@@ -884,7 +877,7 @@ void ParticleLayer::SaveToYamlNode(YamlNode* parentNode, int32 layerIndex)
 
 void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 {
-    int32 forceCount = (int32)this->particleForces.size();
+    int32 forceCount = (int32)this->forces.size();
     if (forceCount == 0)
     {
         // No forces to write.
@@ -894,7 +887,7 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(layerNode, "forceCount", forceCount);
     for (int32 i = 0; i < forceCount; i ++)
     {
-		ParticleForce* currentForce = this->particleForces[i];
+		ParticleForce* currentForce = this->forces[i];
         String forceDataName = Format("force%d", i);
 		
         PropertyLineYamlWriter::WritePropertyLineToYamlNode<Vector3>(layerNode, forceDataName, currentForce->GetForce());
@@ -953,51 +946,51 @@ void ParticleLayer::SetAdditive(bool additive)
 	this->additive = additive;
 }
 
-void ParticleLayer::AddParticleForce(ParticleForce* particleForce)
+void ParticleLayer::AddForce(ParticleForce* force)
 {
-	this->particleForces.push_back(particleForce);
+	this->forces.push_back(force);
 }
 
-void ParticleLayer::UpdateParticleForce(int32 particleForceIndex, RefPtr< PropertyLine<Vector3> > force,
+void ParticleLayer::UpdateForce(int32 forceIndex, RefPtr< PropertyLine<Vector3> > force,
 										RefPtr< PropertyLine<Vector3> > forceVariation,
 										RefPtr< PropertyLine<float32> > forceOverLife)
 {
-	if (particleForceIndex <= (int32)this->particleForces.size())
+	if (forceIndex <= (int32)this->forces.size())
 	{
-		this->particleForces[particleForceIndex]->Update(force, forceVariation, forceOverLife);
+		this->forces[forceIndex]->Update(force, forceVariation, forceOverLife);
 	}
 }
 
-void ParticleLayer::RemoveParticleForce(ParticleForce* particleForce)
+void ParticleLayer::RemoveForce(ParticleForce* force)
 {
-	Vector<ParticleForce*>::iterator iter = std::find(this->particleForces.begin(),
-													  this->particleForces.end(),
-													  particleForce);
-	if (iter != this->particleForces.end())
+	Vector<ParticleForce*>::iterator iter = std::find(this->forces.begin(),
+													  this->forces.end(),
+													  force);
+	if (iter != this->forces.end())
 	{
-		this->particleForces.erase(iter);
+		this->forces.erase(iter);
 		SafeDelete(*iter);
 	}
 }
 
-void ParticleLayer::RemoveParticleForce(int32 particleForceIndex)
+void ParticleLayer::RemoveForce(int32 forceIndex)
 {
-	if (particleForceIndex <= (int32)this->particleForces.size())
+	if (forceIndex <= (int32)this->forces.size())
 	{
-		SafeDelete(this->particleForces[particleForceIndex]);
-		this->particleForces.erase(this->particleForces.begin() + particleForceIndex);
+		SafeDelete(this->forces[forceIndex]);
+		this->forces.erase(this->forces.begin() + forceIndex);
 	}
 }
 
-void ParticleLayer::CleanupParticleForces()
+void ParticleLayer::CleanupForces()
 {
-	for (Vector<ParticleForce*>::iterator iter = this->particleForces.begin();
-		 iter != this->particleForces.end(); iter ++)
+	for (Vector<ParticleForce*>::iterator iter = this->forces.begin();
+		 iter != this->forces.end(); iter ++)
 	{
 		SafeDelete(*iter);
 	}
 	
-	this->particleForces.clear();
+	this->forces.clear();
 }
 
 }

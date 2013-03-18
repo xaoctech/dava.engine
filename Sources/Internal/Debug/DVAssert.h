@@ -68,22 +68,49 @@
 
 
 // Runtime assert
+#include "Debug/DVAssertMessage.h"
 
-#if defined(__DAVAENGINE_WIN32__)
-#define DebugBreak() { __debugbreak(); }
-#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
-#include <signal.h>
-#define DebugBreak() { kill( getpid(), SIGINT ) ; }
-#else //PLATFORMS
-	//other platforms
-#endif //PLATFORMS
-	
+
+
 #if defined(__DAVAENGINE_DEBUG__)
+
+    #if defined(__DAVAENGINE_WIN32__)
+
+        #define DebugBreak() { __debugbreak(); }
+
+    #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__) // Mac & iPhone & Android
+
+        #include <signal.h>
+        #include <unistd.h>
+        #define DebugBreak() { kill( getpid(), SIGINT ) ; }
+
+    #else //PLATFORMS
+        //other platforms
+    #endif //PLATFORMS
+
+#else
+
+#define DebugBreak() 
+
+#endif  //__DAVAENGINE_DEBUG__
+
+
+#if !defined(__DAVAENGINE_DEBUG__) && !defined(ENABLE_ASSERT_MESSAGE)
+
+	// no assert functions in release builds
+	#define DVASSERT(expr)
+	#define DVASSERT_MSG(expr, msg)
+	#define DVWARNING(expr, msg)
+
+	#define DVVERIFY(expr) (expr)
+
+#else
 
 #define DVASSERT(expr)\
 	if (!(expr))\
 	{\
 		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
@@ -91,6 +118,7 @@
 	if (!(expr))\
 	{\
 		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
@@ -98,19 +126,12 @@
     if (!(expr))\
     {\
         DAVA::Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+		DAVA::DVAssertMessage::ShowMessage("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
     }\
 
 #define DVVERIFY(expr) DVASSERT(expr)
 
-#else // no assert functions in release builds
+#endif// ndef __DAVAENGINE_DEBUG__ && ndef ENABLE_ASSERT_MESSAGE
 
-#define DVASSERT(expr)
-#define DVASSERT_MSG(expr, msg)
-#define DVWARNING(expr, msg) 
-	
-#define DVVERIFY(expr) (expr)
-
-#endif
-
-#endif
+#endif// __LOGENGINE_ASSERT_H__
 

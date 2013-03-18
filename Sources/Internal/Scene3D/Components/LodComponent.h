@@ -80,10 +80,10 @@ public:
 	inline float32 GetLodLayerNearSquare(int32 layerNum);
 	inline float32 GetLodLayerFarSquare(int32 layerNum);
 
-	void GetLodData(List<LodData*> &retLodLayers);
+	void GetLodData(Vector<LodData*> &retLodLayers);
 
 	LodData *currentLod;
-	List<LodData> lodLayers;
+	Vector<LodData> lodLayers;
 	Vector<LodDistance> lodLayersArray;
 	int32 forceLodLayer;
 

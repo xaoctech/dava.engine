@@ -10,10 +10,9 @@ class ParticleEmitter;
 class SceneNode;
 class RenderObject;
 class Light;
-class LightComponent;
-class LodComponent;
-class SwitchComponent;
 class LandscapeNode;
+class Camera;
+class LodComponent;
 
 ParticleEmitter * GetEmitter(SceneNode * fromEntity);
 RenderObject * GetRenerObject(SceneNode * fromEntity);
@@ -21,6 +20,11 @@ RenderObject * GetRenerObject(SceneNode * fromEntity);
 Light *GetLight(SceneNode * fromEntity);
 LandscapeNode *GetLandscape(SceneNode * fromEntity);
 
+Camera * GetCamera(SceneNode * fromEntity);
+
+LodComponent * GetLodComponent(SceneNode *fromEntity);
+void RecursiveProcessMeshNode(SceneNode * curr, void * userData, void(*process)(SceneNode*, void *));
+void RecursiveProcessLodNode(SceneNode * curr, int32 lod, void * userData, void(*process)(SceneNode*, void*));
 
 }
 
