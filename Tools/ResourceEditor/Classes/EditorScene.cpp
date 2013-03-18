@@ -64,9 +64,10 @@ EditorScene::~EditorScene()
 
 void EditorScene::Update(float32 timeElapsed)
 {    
+	Scene::Update(timeElapsed);
+
 	CheckNodes(this);
 	UpdateBullet(this);
-	Scene::Update(timeElapsed);
 
 	collisionWorld->updateAabbs();
 }
@@ -136,7 +137,6 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_LIGHT_NODE);
 			}
 
-			// create bullet object for camera (allow selecting it)
 			if(NULL == bulletComponent)
 			{
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -152,7 +152,6 @@ void EditorScene::CheckNodes(Entity * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_USERNODE);
 			}
 
-			// create bullet object for user node (allow selecting it)
 			if(NULL == bulletComponent)
 			{
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -164,9 +163,10 @@ void EditorScene::CheckNodes(Entity * curr)
 		RenderComponent * renderComponent = (RenderComponent*) curr->GetComponent(Component::RENDER_COMPONENT);
 		if(NULL != renderComponent)
 		{
-			if(NULL != renderComponent->GetRenderObject() && curr->IsLodMain(0))
+			RenderObject *rObj = renderComponent->GetRenderObject();
+
+			if(NULL != rObj && rObj->GetType() != RenderObject::TYPE_LANDSCAPE && curr->IsLodMain(0))
 			{
-				// create bullet object for camera (allow selecting it)
 				if(NULL == bulletComponent)
 				{
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);

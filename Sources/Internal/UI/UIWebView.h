@@ -31,6 +31,8 @@ public:
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
+	void SetDelegate(IUIWebViewDelegate* delegate);
+
 protected:
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;

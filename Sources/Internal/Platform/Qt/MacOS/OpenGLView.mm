@@ -254,7 +254,7 @@ void NSEventToUIEvent(NSEvent *nsEvent, DAVA::UIEvent &uiEvent, const NSRect &vi
     uiEvent.physPoint.x -= 3.0;
     uiEvent.physPoint.y -= 3.0;
 
-    printf("phys _ [%f][%f][%lu], offset [%f][%f]\n", uiEvent.physPoint.x, uiEvent.physPoint.y, nsEvent.type, offset.x, offset.y);
+//    printf("phys _ [%f][%f][%lu], offset [%f][%f]\n", uiEvent.physPoint.x, uiEvent.physPoint.y, nsEvent.type, offset.x, offset.y);
 
     uiEvent.timestamp = nsEvent.timestamp;
     uiEvent.tapCount = nsEvent.clickCount;
