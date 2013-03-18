@@ -289,7 +289,7 @@ private:
     
     
     Texture * textures[TEXTURE_COUNT];
-    Vector<FilePath> names;
+    Vector<String> names;
 //    String names[TEXTURE_COUNT];
     
     String textureSlotNames[TEXTURE_COUNT];
@@ -405,8 +405,7 @@ Texture * Material::GetTexture(eTextureLevel level) const
 inline const String & Material::GetTextureName(eTextureLevel level) const
 {
 	DVASSERT(level < TEXTURE_COUNT);
-//	return names[level];
-	return names[level].GetAbsolutePath();
+	return names[level];
 }
 
 inline void Material::SetBlendSrc(eBlendMode _blendSrc)

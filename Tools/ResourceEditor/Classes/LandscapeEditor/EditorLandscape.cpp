@@ -66,7 +66,7 @@ void EditorLandscape::SetNestedLandscape(DAVA::Landscape *landscapeNode)
     // SetDebugFlags(nestedLandscape->GetDebugFlags());
     
     SetHeightmap(nestedLandscape->GetHeightmap());
-    heightmapPath.InitFromAbsolutePath(nestedLandscape->GetHeightmapPathname());
+    heightmapPath = nestedLandscape->GetHeightmapPathname();
 
     SetTexture(TEXTURE_TILE_FULL, nestedLandscape->GetTexture(TEXTURE_TILE_FULL));
     
