@@ -12,8 +12,86 @@
 #import <UIKit/UIKit.h>
 #import <HelperAppDelegate.h>
 
+@interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
+{
+	DAVA::IUIWebViewDelegate* delegate;
+	DAVA::UIWebView* webView;
+}
+
+- (id)init;
+
+- (void)setDelegate:(DAVA::IUIWebViewDelegate*)d andWebView:(DAVA::UIWebView*)w;
+
+- (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
+
+@end
+
+@implementation WebViewURLDelegate
+
+- (id)init
+{
+	self = [super init];
+	if (self)
+	{
+		delegate = NULL;
+		webView = NULL;
+	}
+	return self;
+}
+
+- (void)setDelegate:(DAVA::IUIWebViewDelegate *)d andWebView:(DAVA::UIWebView *)w
+{
+	if (d && w)
+	{
+		delegate = d;
+		webView = w;
+	}
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+	BOOL process = YES;
+	
+	if (delegate && self->webView)
+	{
+		NSString* url = [[request URL] absoluteString];
+		
+		if (url)
+		{
+			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+			
+			switch (action) {
+				case DAVA::IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
+					DAVA::Logger::Debug("PROCESS_IN_WEBVIEW");
+					process = YES;
+					break;
+					
+				case DAVA::IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
+					DAVA::Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					[[UIApplication sharedApplication] openURL:[request URL]];
+					process = NO;
+					break;
+					
+				case DAVA::IUIWebViewDelegate::NO_PROCESS:
+					DAVA::Logger::Debug("NO_PROCESS");
+					
+				default:
+					process = NO;
+					break;
+			}
+		}
+	}
+	
+	return process;
+}
+
+@end
+
+
 namespace DAVA
 {
+	typedef DAVA::UIWebView DAVAWebView;
+
 	//Use unqualified UIWebView and UIScreen from global namespace, i.e. from UIKit
 	using ::UIWebView;
 	using ::UIScreen;
@@ -26,6 +104,11 @@ WebViewControl::WebViewControl()
 	UIWebView* localWebView = (UIWebView*)webViewPtr;
 	HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
 	[[[appDelegate glController] view] addSubview:localWebView];
+
+	webViewURLDelegatePtr = [[WebViewURLDelegate alloc] init];
+	[localWebView setDelegate:(WebViewURLDelegate*)webViewURLDelegatePtr];
+
+	[localWebView becomeFirstResponder];
 }
 
 WebViewControl::~WebViewControl()
@@ -35,6 +118,16 @@ WebViewControl::~WebViewControl()
 	[innerWebView removeFromSuperview];
 	[innerWebView release];
 	webViewPtr = nil;
+
+	WebViewURLDelegate* w = (WebViewURLDelegate*)webViewURLDelegatePtr;
+	[w release];
+	webViewURLDelegatePtr = nil;
+}
+	
+void WebViewControl::SetDelegate(IUIWebViewDelegate *delegate, DAVAWebView* webView)
+{
+	WebViewURLDelegate* w = (WebViewURLDelegate*)webViewURLDelegatePtr;
+	[w setDelegate:delegate andWebView:webView];
 }
 
 void WebViewControl::Initialize(const Rect& rect)
@@ -46,7 +139,7 @@ void WebViewControl::Initialize(const Rect& rect)
 void WebViewControl::OpenURL(const String& urlToOpen)
 {
 	NSString* nsURLPathToOpen = [NSString stringWithUTF8String:urlToOpen.c_str()];
-	NSURL* url = [NSURL URLWithString:nsURLPathToOpen];
+	NSURL* url = [NSURL URLWithString:[nsURLPathToOpen stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 	
 	NSURLRequest* requestObj = [NSURLRequest requestWithURL:url];
 	[(UIWebView*)webViewPtr loadRequest:requestObj];

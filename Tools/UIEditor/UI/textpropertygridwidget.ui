@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>200</height>
+    <height>262</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>200</height>
+    <height>262</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,13 +25,13 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>199</height>
+     <height>261</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>199</height>
+     <height>261</height>
     </size>
    </property>
    <property name="title">
@@ -153,6 +153,97 @@ QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 
     </property>
     <property name="text">
      <string>Set font for all states</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="shadowOffsetLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Shadow offset:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="offsetYLabel">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>200</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Y:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="shadowColorLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Shadow Color:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="shadowOffsetXSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>196</y>
+      <width>57</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-99</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="shadowOffsetYSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>196</y>
+      <width>57</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-99</number>
+    </property>
+   </widget>
+   <widget class="QColorButton" name="shadowColorButton">
+    <property name="geometry">
+     <rect>
+      <x>105</x>
+      <y>228</y>
+      <width>185</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="offsetXLabel">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>200</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X:</string>
     </property>
    </widget>
   </widget>

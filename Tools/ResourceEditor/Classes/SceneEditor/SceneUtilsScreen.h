@@ -27,13 +27,13 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __EXPORTER_SCREEN_H__
-#define __EXPORTER_SCREEN_H__
+#ifndef __SCENE_UTILS_SCREEN_H__
+#define __SCENE_UTILS_SCREEN_H__
 
 #include "DAVAEngine.h"
 using namespace DAVA;
 
-class ExporterScreen: public UIScreen
+class SceneUtilsScreen: public UIScreen
 {
 public:
 
@@ -42,12 +42,16 @@ public:
 	virtual void WillAppear();
 	virtual void DidAppear();
     
-    
 protected:    
-
+    
+    void CleanFolder();
+    void Export();
+    void Save();
+    
+    
     Set<String> errorLog;
     
 };
 
 
-#endif // __EXPORTER_SCREEN_H__
+#endif // __SCENE_UTILS_SCREEN_H__

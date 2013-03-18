@@ -23,8 +23,8 @@ public:
 	bool Read(const String & filename);
 	void Write(const String & filename);
 	
-	void DrawImage(int sx, int sy, PngImageExt * image);
-	void DrawImage(int sx, int sy, PngImageExt * image, const Rect2i & srcRect);
+	void DrawImage(int32 sx, int32 sy, PngImageExt * image);
+	void DrawImage(int32 sx, int32 sy, PngImageExt * image, const Rect2i & srcRect);
 
 	void DrawRect(const Rect2i & rect, uint32 color);
 	
@@ -39,8 +39,8 @@ private:
 
     inline uint8 * GetData() const;
 
-    bool IsHorzLineOpaque(int y);
-	bool IsVertLineOpaque(int x);
+    bool IsHorzLineOpaque(int32 y);
+	bool IsVertLineOpaque(int32 x);
 
     Color GetDitheredColorForPoint(int32 x, int32 y);
     
