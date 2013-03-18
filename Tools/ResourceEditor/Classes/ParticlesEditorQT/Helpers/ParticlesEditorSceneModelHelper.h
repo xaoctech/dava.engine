@@ -96,6 +96,12 @@ protected:
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
 
+	void BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
+						   Set<Entity*>& entitiesInParticleEditor,
+						   Set<Entity*>& entitiesInSceneGraph);
+	void AddNewNodesToSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode);
+	void RemoveExcessiveNodesFromSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode);
+
 	// Move item to parent functionality.
 	bool IsItemBelongToParticleEditor(GraphItem* item);
 

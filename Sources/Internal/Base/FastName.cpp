@@ -68,10 +68,7 @@ FastName::FastName(const char *name)
 }
 
 FastName::FastName(const FastName &_name)
-    : index(-1)
 {
-	RemRef(index);
-
 	index = _name.index;
 
 #ifdef DAVA_DEBUG

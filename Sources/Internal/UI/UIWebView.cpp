@@ -39,6 +39,11 @@ UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
 	this->webViewControl->Initialize(rect);
 }
 
+void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
+{
+	webViewControl->SetDelegate(delegate, this);
+}
+
 void UIWebView::OpenURL(const String& urlToOpen)
 {
 	this->webViewControl->OpenURL(urlToOpen);
