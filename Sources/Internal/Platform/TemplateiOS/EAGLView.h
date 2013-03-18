@@ -63,7 +63,13 @@
 	DAVA::Vector<DAVA::UIEvent> activeTouches;
 	
 	DAVA::int32 currFPS;
-
+	
+	// Yuri Coder, 2013/02/06. Temporary solution to block drawView() call
+	// in case if ASSERTion happened. This is introduced to do not stuck on the RenderManager::Lock()
+	// mutex (since assertion might be called in the middle of drawing, DAVA::RenderManager::Instance()->Lock()
+	// mutex might be already locked so we'll got a deadlock.
+	// Return to this code after RenderManager mutex will be removed.
+	bool blockDrawViewIfAssertHappened;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
@@ -75,6 +81,10 @@
 - (void) drawView:(id)sender;
 
 - (void) setCurrentContext;
+
+// Yuri Coder, 2013/02/06. This method is introduced to block rendering
+// when assertion happened.
+- (void) blockDrawing;
 
 @end
 

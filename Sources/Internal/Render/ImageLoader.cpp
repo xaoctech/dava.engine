@@ -29,11 +29,13 @@
 =====================================================================================*/
 #include "Render/ImageLoader.h"
 #include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 #include "Render/RenderBase.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 #include "Platform/SystemTimer.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
@@ -168,6 +170,9 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 
 void ImageLoader::Save(DAVA::Image *image, const String &pathname)
 {
+    String extension = FileSystem::Instance()->GetExtension(pathname);
+    DVASSERT_MSG( 0 != CompareCaseInsensitive(extension, ".tex") , "Need to save image to PNG file");
+    
     DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
     LibPngWrapper::WritePngFile(pathname.c_str(), image->width, image->height, image->data, image->format);
 }

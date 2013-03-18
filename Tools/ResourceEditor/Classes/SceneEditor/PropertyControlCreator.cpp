@@ -69,19 +69,10 @@ PropertyControlCreator::ePropertyControlIDs PropertyControlCreator::DetectNodeTy
         return EPCID_LODNODE;
     }
 
-    
-    
-    RenderComponent *rc = static_cast<RenderComponent *>(node->GetComponent(Component::RENDER_COMPONENT));
-    if(rc)
+    if(GetLandscape(node))
     {
-        RenderObject *ro = rc->GetRenderObject();
-        
-        if(dynamic_cast<LandscapeNode *>(ro))
-        {
-            return EPCID_LANDSCAPE;
-        }
+        return EPCID_LANDSCAPE;
     }
-    
     
     return EPCID_NODE;
 }

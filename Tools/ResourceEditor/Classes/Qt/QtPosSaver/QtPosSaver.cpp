@@ -1,4 +1,5 @@
 #include "QtPosSaver/QtPosSaver.h"
+#include <QHeaderView>
 
 bool QtPosSaver::settingsArchiveIsLoaded = false;
 DAVA::KeyedArchive QtPosSaver::settingsArchive;
@@ -37,13 +38,21 @@ QtPosSaver::~QtPosSaver()
 	}
 }
 
-void QtPosSaver::Attach(QWidget *widget)
+void QtPosSaver::Attach(QWidget *widget, const QString &name)
 {
 	attachedWidget = widget;
 
 	if(NULL != attachedWidget)
 	{
-		attachedWidgetName = attachedWidget->objectName();
+		if(name.isEmpty())
+		{
+			attachedWidgetName = attachedWidget->objectName();
+		}
+		else
+		{
+			attachedWidgetName = name;
+		}
+
 		LoadGeometry(attachedWidget);
 	}
 }
@@ -82,7 +91,7 @@ void QtPosSaver::SaveState(QSplitter *splitter)
 	if(NULL != splitter && !attachedWidgetName.isEmpty())
 	{
 		QString key = attachedWidgetName + "-splitter-" + splitter->objectName();
-		Save(key, splitter->saveState());
+			Save(key, splitter->saveState());
 	}
 }
 
@@ -111,6 +120,32 @@ void QtPosSaver::LoadState(QMainWindow *mainwindow)
 		QString key = attachedWidgetName + "-mainwindow-" + mainwindow->objectName();
 		mainwindow->restoreState(Load(key));
 	}
+}
+
+void QtPosSaver::SaveValue(const QString &key, const DAVA::VariantType &value)
+{
+	if(settingsArchiveIsLoaded && !key.isEmpty())
+	{
+		QString k = attachedWidgetName + "-" + key;
+		settingsArchive.SetVariant(k.toStdString(), value);
+	}
+}
+
+DAVA::VariantType QtPosSaver::LoadValue(const QString &key)
+{
+	DAVA::VariantType v;
+
+	if(settingsArchiveIsLoaded && !key.isEmpty())
+	{
+		QString k = attachedWidgetName + "-" + key;
+		DAVA::VariantType *val = settingsArchive.GetVariant(k.toStdString());
+		if(NULL != val)
+		{
+			v = *val;
+		}
+	}
+
+	return v;
 }
 
 void QtPosSaver::Save(const QString &key, const QByteArray &data)

@@ -7,6 +7,7 @@ Command::Command(eCommandType _type)
     :   BaseObject()
     ,   commandType(_type)
     ,   commandState(STATE_VALID)
+	,	commandName("")
 {
     RegisterPointerType<Command *>(String("Command *"));
 }

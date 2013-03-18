@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-               BuildableName = "LevelPerformanceTestiPhone.app"
-               BlueprintName = "LevelPerformanceTestiPhone"
+               BuildableName = "LevelPerformanceTest.app"
+               BlueprintName = "LevelPerformanceTest"
                ReferencedContainer = "container:LevelPerformanceTestiPhone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-            BuildableName = "LevelPerformanceTestiPhone.app"
-            BlueprintName = "LevelPerformanceTestiPhone"
+            BuildableName = "LevelPerformanceTest.app"
+            BlueprintName = "LevelPerformanceTest"
             ReferencedContainer = "container:LevelPerformanceTestiPhone.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -53,8 +53,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-            BuildableName = "LevelPerformanceTestiPhone.app"
-            BlueprintName = "LevelPerformanceTestiPhone"
+            BuildableName = "LevelPerformanceTest.app"
+            BlueprintName = "LevelPerformanceTest"
             ReferencedContainer = "container:LevelPerformanceTestiPhone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -71,8 +71,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-            BuildableName = "LevelPerformanceTestiPhone.app"
-            BlueprintName = "LevelPerformanceTestiPhone"
+            BuildableName = "LevelPerformanceTest.app"
+            BlueprintName = "LevelPerformanceTest"
             ReferencedContainer = "container:LevelPerformanceTestiPhone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

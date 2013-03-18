@@ -79,9 +79,19 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
         return;
     }
     
+	// Don't update the property if the text wasn't actually changed.
+    Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue->IsEqual(resultFont))
+	{
+		SafeRelease(resultFont);
+		return;
+	}
+
     BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
     CommandsController::Instance()->ExecuteCommand(command);
-    SAFE_DELETE(command);
+    SafeRelease(command);
+	// TODO - probable memory leak. Need to investigate how to fix it
+	// SafeRelease(resultFont);
 }
 
 void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)

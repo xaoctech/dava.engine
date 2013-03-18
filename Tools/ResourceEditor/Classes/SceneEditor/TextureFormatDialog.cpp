@@ -60,7 +60,8 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
     textRect.dx = mipmapEnabled->GetPosition().x + ControlsFactory::BUTTON_WIDTH * PVR_COUNT - textRect.x;
     textRect.dy = mipmapEnabled->GetSize().y;
     UIStaticText *t = new UIStaticText(textRect);
-    t->SetFont(ControlsFactory::GetFontLight());
+    t->SetFont(ControlsFactory::GetFont12());
+	t->SetTextColor(ControlsFactory::GetColorLight());
     t->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
     t->SetText(LocalizedString(L"textureformatdialog.generatemipmap"));
     draggableDialog->AddControl(t);

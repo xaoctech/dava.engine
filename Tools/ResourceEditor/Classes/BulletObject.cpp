@@ -22,7 +22,8 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Mesh
 	collisionObject(0),
 	trimesh(0),
 	userNode(0),
-	entity(0)
+	entity(0),
+	box(0)
 {    
 	CreateCollisionObject();
 }
@@ -36,7 +37,8 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, User
 	collisionObject(0),
 	trimesh(0),
 	meshNode(0),
-	entity(0)
+	entity(0),
+	box(0)
 {
 	CreateBoxObject();
 }
@@ -50,9 +52,26 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Scen
 	collisionObject(0),
 	trimesh(0),
 	meshNode(0),
-	entity(_entity)
+	entity(_entity),
+	box(0)
 {
 	CreateFromEntity();
+}
+
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, SceneNode * _entity, const AABBox3 &_box, const Matrix4 &pWorldTransform)
+:	collWorld(collisionWorld),
+	collisionPartTransform(&((Matrix4&)pWorldTransform)),
+	userNode(0),
+	updateFlag(true),
+	shape(NULL),
+	collisionObject(0),
+	trimesh(0),
+	meshNode(0),
+	entity(_entity),
+	box(0)
+{
+	box = new AABBox3(_box);
+	CreateFromAABox();
 }
 
 
@@ -61,6 +80,7 @@ BulletObject::~BulletObject()
 	DeleteCollisionObject();
 	collWorld = 0;
 	collisionPartTransform = 0;
+	SafeDelete(box);
 }
 
 void BulletObject::DeleteCollisionObject()
@@ -194,6 +214,20 @@ void BulletObject::CreateBoxObject()
 	collWorld->addCollisionObject(collisionObject);
 }
 
+void BulletObject::CreateFromAABox()
+{
+	createdWith = entity->GetWorldTransform();
+	collisionObject = new btCollisionObject();
+	shape = new btBoxShape(btVector3(box->max.x, box->max.y, box->max.z));
+	collisionObject->setCollisionShape(shape);
+
+	btTransform trans;
+	trans.setIdentity();
+	trans.setFromOpenGLMatrix(createdWith.data);
+	collisionObject->setWorldTransform(trans);
+
+	collWorld->addCollisionObject(collisionObject);
+}
 
 void BulletObject::UpdateCollisionObject()
 {
@@ -202,7 +236,10 @@ void BulletObject::UpdateCollisionObject()
 	if (!(*collisionPartTransform == createdWith))
 	{
 		DeleteCollisionObject();
-		if(entity)
+
+		if(box)
+			CreateFromAABox();
+		else if(entity)
 			CreateFromEntity();
 		else if(meshNode)
 			CreateCollisionObject();

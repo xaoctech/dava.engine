@@ -21,9 +21,14 @@ public:
 
 protected:
     virtual void OnPropertiesChangedFromExternalSource();
+	virtual void HandleChangePropertySucceeded(const QString& propertyName);
 
 private:
     Ui::RectPropertyGridWidget *ui;
+	void UpdateWidgetStates(bool updateHorizontalWidgets = true);
+	void UpdateHorizontalWidgetsState();
+	void UpdateVerticalWidgetsState();
+	bool IsTwoAlignsEnabled(bool first, bool center, bool second);
 };
 
 #endif // RECTPROPERTYGRIDWIDGET_H

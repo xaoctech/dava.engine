@@ -64,43 +64,117 @@ EditorScene::~EditorScene()
 
 void EditorScene::Update(float32 timeElapsed)
 {    
-    Scene::Update(timeElapsed);
 	CheckNodes(this);
+	UpdateBullet(this);
+	Scene::Update(timeElapsed);
+
 	collisionWorld->updateAabbs();
+}
+
+void EditorScene::UpdateBullet(SceneNode * curr)
+{
+	if(NULL != curr)
+	{
+		BulletComponent *bulletComponent = (BulletComponent*) curr->GetComponent(Component::BULLET_COMPONENT);
+		if(NULL != bulletComponent && NULL != bulletComponent->GetBulletObject())
+		{
+			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
+		}
+
+		int size = curr->GetChildrenCount();
+		for (int i = 0; i < size; i++)
+		{
+			UpdateBullet(curr->GetChild(i));
+		}
+	}
 }
 
 void EditorScene::CheckNodes(SceneNode * curr)
 {
-	RenderComponent * renderComponent = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
-	BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
-	UserNode * userNode = dynamic_cast<UserNode *> (curr);	
-	if(renderComponent && renderComponent->GetRenderObject())
+	if(NULL != curr)
 	{
-		if (bulletComponent == 0 && curr->IsLodMain(0))
+		bool newDebugComp = false;
+		DebugRenderComponent *dbgComp = NULL;
+		BulletComponent * bulletComponent = (BulletComponent*)curr->GetComponent(Component::BULLET_COMPONENT);
+
+		// create debug render component for all nodes
+		dbgComp = (DebugRenderComponent *) curr->GetComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(NULL == dbgComp)
 		{
-			bulletComponent = (BulletComponent*)curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
-			bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
+			dbgComp = new DebugRenderComponent();
+			newDebugComp = true;
+			curr->AddComponent(dbgComp);
 		}
-		else if(bulletComponent && bulletComponent->GetBulletObject())
+
+		// check other debug settings
+
+		// is camera?
+		CameraComponent *camComp = (CameraComponent *) curr->GetComponent(Component::CAMERA_COMPONENT);
+		if(NULL != camComp)
 		{
-			((BulletObject*)bulletComponent->GetBulletObject())->UpdateCollisionObject();
+			// set flags to show it
+			if(newDebugComp)
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_CAMERA);
+			}
+
+			// create bullet object for camera (allow selecting it)
+			/*
+			if(NULL == bulletComponent)
+			{
+				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+				bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, camComp->GetCamera(), camComp->GetCamera()->GetMatrix()));
+			}
+			*/
+		}
+
+		// is light?
+		if(NULL != curr->GetComponent(Component::LIGHT_COMPONENT))
+		{
+			if(newDebugComp)
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_LIGHT_NODE);
+			}
+
+			// create bullet object for camera (allow selecting it)
+			if(NULL == bulletComponent)
+			{
+				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+				bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform()));
+			}
+		}
+
+		// is user node
+		if(NULL != curr->GetComponent(Component::USER_COMPONENT))
+		{
+			if(newDebugComp)
+			{
+				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_USERNODE);
+			}
+
+			// create bullet object for user node (allow selecting it)
+			if(NULL == bulletComponent)
+			{
+				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+				bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, AABBox3(Vector3(), 2.5f), curr->GetWorldTransform()));
+			}
+		}
+
+		// is render object?
+		RenderComponent * renderComponent = (RenderComponent*) curr->GetComponent(Component::RENDER_COMPONENT);
+		if(NULL != renderComponent)
+		{
+			if(NULL != renderComponent->GetRenderObject() && curr->IsLodMain(0))
+			{
+				// create bullet object for camera (allow selecting it)
+				if(NULL == bulletComponent)
+				{
+					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
+					bulletComponent->SetBulletObject(new BulletObject(this, collisionWorld, curr, curr->GetWorldTransform()));
+				}
+			}
 		}
 	}
-	//else if (userNode)
-	//{
-	//	if (userNode->GetUserData() == 0)
-	//	{
-	//		SceneNodeUserData * data = new SceneNodeUserData();
-	//		curr->SetUserData(data);
-	//		data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
-	//		SafeRelease(data);
-	//	}
-	//	else if (userNode->GetUserData())
-	//	{
-	//		SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
-	//		data->bulletObject->UpdateCollisionObject();
-	//	}
-	//}
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -297,34 +371,30 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 
 LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return land;
-	}
-	
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(!landscape)
     {
-        SceneNode * child = node->GetChild(ci);
-		LandscapeNode * result = GetLandscape(child);
-		if (result)
-			return result;
+        for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+        {
+            landscape = EditorScene::GetLandscape(node->GetChild(ci));
+            if(landscape)
+            {
+                break;
+            }
+        }
+
     }
-	return 0;
+	return landscape;
 }
 
 SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 {
-	RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
-	if (renderComponent)
-	{
-		LandscapeNode* land = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
-		if (land)
-			return node;
-	}
-	
+    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    if(landscape)
+    {
+        return node;
+    }
+    
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         SceneNode * child = node->GetChild(ci);
@@ -332,6 +402,7 @@ SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 		if (result)
 			return result;
     }
+    
 	return NULL;
 }
 
@@ -399,6 +470,11 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
+        if(solid == 0 && (selection->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || GetEmitter(selection)))
+        {
+            // Magic fix for correct node selection
+            solid = selection;
+        }
 		if(solid == 0)
 		{
 			solid = GetLodParent(selection);
@@ -407,11 +483,8 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		{
 			selection = solid;
 		}
-			
-		
-		proxy = GetHighestProxy(selection);
-		if (proxy == 0)
-			proxy = selection;
+
+        proxy = selection;
 	}
 	else
 	{
@@ -438,25 +511,6 @@ void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
 }
 
 
-SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
-{
-    if(!curr) return NULL;
-    
-	int32 cc = curr->GetChildrenCount();
-	if (cc == 0)
-		return GetHighestProxy(curr->GetParent());
-	if (cc > 1)
-		return 0;
-	if (cc == 1)
-    {
-        SceneNode * result = GetHighestProxy(curr->GetParent());
-	    if (result == 0)
-            return curr;
-        else return result;
-        
-    }
-    return NULL;
-}
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {
@@ -531,7 +585,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SceneNode *n = node;
     
     do {
-        LodComponent *lc = static_cast<LodComponent *>(n->GetComponent(Component::LOD_COMPONENT));
+        LodComponent *lc = GetLodComponent(n);
         if(lc)
         {
             lc->SetForceLodLayer(layer);
@@ -545,7 +599,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
 
 void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 {
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
     {
         lc->SetForceLodLayer(layer);
@@ -563,7 +617,7 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 {
     if(!node)   return -1;
 
-    LodComponent *lc = static_cast<LodComponent *>(node->GetComponent(Component::LOD_COMPONENT));
+    LodComponent *lc = GetLodComponent(node);
     if(lc)
         return lc->GetForceLodLayer();
     

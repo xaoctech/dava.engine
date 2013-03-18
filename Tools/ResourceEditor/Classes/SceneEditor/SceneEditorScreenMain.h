@@ -156,7 +156,8 @@ private:
     TextureTrianglesDialog *textureTrianglesDialog;
     
     // general
-    Font *font;
+    Font *font12;
+	Color font12Color;
     
 	bool useConvertedTextures;
     

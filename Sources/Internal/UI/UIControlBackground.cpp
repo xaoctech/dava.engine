@@ -89,27 +89,27 @@ Sprite*	UIControlBackground::GetSprite()
 {
 	return spr;	
 }
-int32	UIControlBackground::GetFrame()
+int32	UIControlBackground::GetFrame() const
 {
 	return frame;
 }
-int32	UIControlBackground::GetAlign()
+int32	UIControlBackground::GetAlign() const
 {
 	return align;
 }
 
-int32	UIControlBackground::GetModification()
+int32	UIControlBackground::GetModification() const
 {
 	return spriteModification;
 }
 
-UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType()
+UIControlBackground::eColorInheritType UIControlBackground::GetColorInheritType() const
 {
 	return (eColorInheritType)colorInheritType;
 }
 
 
-UIControlBackground::eDrawType	UIControlBackground::GetDrawType()
+UIControlBackground::eDrawType	UIControlBackground::GetDrawType() const
 {
 	return (UIControlBackground::eDrawType)type;
 }
@@ -124,6 +124,13 @@ void UIControlBackground::SetSprite(const String &spriteName, int32 drawFrame)
 
 void UIControlBackground::SetSprite(Sprite* drawSprite, int32 drawFrame)
 {
+	if (drawSprite == this->spr)
+	{
+		// Sprite is not changed - update frame only.
+		frame = drawFrame;
+		return;
+	}
+
 	SafeRelease(spr);
 	spr = SafeRetain(drawSprite);
 	frame =  drawFrame;
@@ -159,16 +166,21 @@ void UIControlBackground::SetPerPixelAccuracyType(ePerPixelAccuracyType accuracy
     perPixelAccuracyType = accuracyType;
 }
     
-UIControlBackground::ePerPixelAccuracyType UIControlBackground::GetPerPixelAccuracyType()
+UIControlBackground::ePerPixelAccuracyType UIControlBackground::GetPerPixelAccuracyType() const
 {
     return perPixelAccuracyType;
 }
 	
-const Color &UIControlBackground::GetDrawColor()
+const Color &UIControlBackground::GetDrawColor() const
 {
 	return drawColor;
 }
-	
+
+void UIControlBackground::SetDrawColor(const Color &c)
+{
+	drawColor = c;
+}
+
 void UIControlBackground::SetParentColor(const Color &parentColor)
 {
 	switch (colorInheritType) 
@@ -282,7 +294,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			drawState.scale = geometricData.scale;
 			drawState.pivotPoint = spr->GetDefaultPivotPoint();
 //			spr->SetScale(geometricData.scale);
-            if (drawState.scale.x == 1.0 && drawState.scale.y == 1.0)
+            //if (drawState.scale.x == 1.0 && drawState.scale.y == 1.0)
             {
                 switch(perPixelAccuracyType)
                 {
@@ -317,6 +329,24 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			drawState.pivotPoint.x = geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx);
 			drawState.pivotPoint.y = geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy);
 			drawState.angle = geometricData.angle;
+			{
+				switch(perPixelAccuracyType)
+				{
+				case PER_PIXEL_ACCURACY_ENABLED:
+					if(lastDrawPos == drawState.position)
+					{
+						drawState.usePerPixelAccuracy = true;
+					}
+					break;
+				case PER_PIXEL_ACCURACY_FORCED:
+					drawState.usePerPixelAccuracy = true;
+					break;
+				default:
+					break;
+				}
+			}
+
+			lastDrawPos = drawState.position;
 
 //			spr->SetPosition(geometricData.position);
 //			spr->SetScale(drawRect.dx / spr->GetSize().dx, drawRect.dy / spr->GetSize().dy);
@@ -403,6 +433,24 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //				spr->SetAngle(geometricData.angle);
 			}
 //			spr->SetPosition((float32)x, (float32)y);
+			{
+				switch(perPixelAccuracyType)
+				{
+				case PER_PIXEL_ACCURACY_ENABLED:
+					if(lastDrawPos == drawState.position)
+					{
+						drawState.usePerPixelAccuracy = true;
+					}
+					break;
+				case PER_PIXEL_ACCURACY_FORCED:
+					drawState.usePerPixelAccuracy = true;
+					break;
+				default:
+					break;
+				}
+			}
+
+			lastDrawPos = drawState.position;
 			
 			spr->Draw(&drawState);
 		}
@@ -723,12 +771,12 @@ void UIControlBackground::SetTopBottomStretchCap(float32 _topStretchCap)
 	topStretchCap = _topStretchCap;
 }
 	
-float32 UIControlBackground::GetLeftRightStretchCap()
+float32 UIControlBackground::GetLeftRightStretchCap() const
 {
     return leftStretchCap;
 }
 	
-float32 UIControlBackground::GetTopBottomStretchCap()
+float32 UIControlBackground::GetTopBottomStretchCap() const
 {
     return topStretchCap;
 }	

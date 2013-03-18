@@ -235,10 +235,10 @@ private:
 	bool isEnabled;
 };
 
-class CommandUpdateParticleLayerForce: public Command
+class CommandUpdateParticleForce: public Command
 {
 public:
-	CommandUpdateParticleLayerForce(ParticleLayer* layer, uint32 forceId);
+	CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId);
 	
 	void Init(RefPtr< PropertyLine<Vector3> > force,
 			  RefPtr< PropertyLine<Vector3> > forcesVariation,

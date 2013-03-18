@@ -23,10 +23,13 @@ public:
     virtual ~BaseCommand();
 
     // Execute command.
-    virtual void Execute() {};
+    virtual void Execute() = 0;
     
-    // Rollback command.
+    // Rollback command (only for the commands which does support Undo/Redo).
     virtual void Rollback() {};
+	
+	// Is the Undo/Redo supported for this command?
+	virtual bool IsUndoRedoSupported() = 0;
     
 protected:
     // Get the Metadata for the tree node passed.

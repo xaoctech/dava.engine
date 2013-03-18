@@ -1,8 +1,8 @@
 ifeq ($(OS),Windows_NT)
 	os_mkdir=-(pushd $1 && popd) || mkdir $1
-	OS_UIC:="$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe"
-	OS_MOC:="$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"
-	OS_RCC:="$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe"
+	OS_UIC:="$(QT_HOME)\bin\uic.exe"
+	OS_MOC:="$(QT_HOME)\bin\moc.exe"
+	OS_RCC:="$(QT_HOME)\bin\rcc.exe"
 	OS_INFO:=Windows
 else
 	os_mkdir=mkdir -p $1

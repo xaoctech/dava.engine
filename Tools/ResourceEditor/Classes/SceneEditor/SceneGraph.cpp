@@ -12,6 +12,9 @@
 #include "../Qt/Main/QtUtils.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 
+#include "../Commands/CommandsManager.h"
+#include "../Commands/SceneGraphCommands.h"
+
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
     ,   workingNode(NULL)
@@ -138,7 +141,7 @@ void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
         
         UpdatePropertyPanel();
         
-        Camera * cam = dynamic_cast<Camera*>(workingNode);
+        Camera * cam = GetCamera(workingNode);
         if (cam)
         {
             if (IsKeyModificatorPressed(DVKEY_ALT))
@@ -270,26 +273,9 @@ void SceneGraph::OnRefreshGraph(BaseObject *, void *, void *)
 
 void SceneGraph::RemoveWorkingNode()
 {
-    if (workingNode)
-    {
-        SceneNode * parentNode = workingNode->GetParent();
-        if (parentNode)
-        {
-			workingScene->ReleaseUserData(workingNode);
-			workingScene->SetSelection(0);
-
-			SceneNode * tempNode = SafeRetain(workingNode);
-            parentNode->RemoveNode(workingNode);
-            workingNode = NULL;
-
-            UpdatePropertyPanel();
-
-			SafeRelease(tempNode);
-            
-            graphTree->Refresh();
-            
-            SceneValidator::Instance()->EnumerateSceneTextures();
-        }
+	if (workingNode)
+	{
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandInternalRemoveSceneNode(workingNode));
     }
 }
 
