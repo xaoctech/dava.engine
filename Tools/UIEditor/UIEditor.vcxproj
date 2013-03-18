@@ -785,6 +785,9 @@
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>../../libs/imagemagick-6.7.4-windows/magick++/lib/magick++;../../libs/imagemagick-6.7.4-windows/magick++/lib;../../Libs/ImageMagick-6.7.4-Windows;$(QT_HOME)\include\QtCore;$(QT_HOME)\include\QtNetwork;$(QT_HOME)\include\QtGui;$(QT_HOME)\include\QtOpenGL;$(QT_HOME)\include\ActiveQt;$(QT_HOME)\include;$(QT_HOME)\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;.\Classes;.\Classes\ResourcePacker;.\Classes\Helpers;.\Classes\Models;.\Classes\Controllers;.\Classes\Metadata;.\Classes\Commands;.\Classes\UI;.\Classes\UI\Dialogs;.\Classes\UI\PropertyGridWidgets;.;$Configuration;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
