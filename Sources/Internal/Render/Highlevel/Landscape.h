@@ -338,8 +338,7 @@ protected:
     
     uint16 * indices;
     Texture * textures[TEXTURE_COUNT];
-//    String textureNames[TEXTURE_COUNT];
-    Vector<FilePath> textureNames;
+    Vector<String> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //
@@ -387,8 +386,7 @@ protected:
     bool BuildHeightmap();
     void BuildLandscape();
     Heightmap *heightmap;
-//    String heightmapPath;
-    FilePath heightmapPath;
+    String heightmapPath;
     
 //     static const float32 TEXTURE_TILE_FULL_SIZE = 2048;
 	static const uint32 TEXTURE_TILE_FULL_SIZE = 2048;

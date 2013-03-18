@@ -29,152 +29,294 @@
 =====================================================================================*/
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
-	
+
+String FilePath::projectPathname = String();
+
+void FilePath::SetProjectPathname(const String &pathname)
+{
+    projectPathname = NormalizePathname(pathname);
+}
+
+String & FilePath::GetProjectPathname()
+{
+    return projectPathname;
+}
+    
 FilePath::FilePath()
 {
-    sourcePathname = String("");
-    absolutePathname = String("");
-    relativePathname = String("");
-    relativeFolder = String("");
+    absolutePathname = String();
 }
 
 FilePath::FilePath(const FilePath &path)
 {
-    sourcePathname = path.sourcePathname;
     absolutePathname = path.absolutePathname;
-    relativePathname = path.relativePathname;
-    relativeFolder = path.relativeFolder;
 }
     
-//FilePath::FilePath(const String &sourcePath)
-//{
-//	InitFromPathname(sourcePath);
-//}
+FilePath::FilePath(const String &pathname)
+{
+    absolutePathname = NormalizePathname(pathname);
+}
+    
+FilePath::FilePath(const String &directory, const String &filename)
+{
+    absolutePathname = NormalizePathname(directory + filename);
+}
     
 FilePath::~FilePath()
 {
     
 }
 
-
-    
-//void FilePath::InitFromPathname(const String &sourcePath)
-//{
-//    InitFromAbsolutePath(sourcePath);
-////    sourcePathname = sourcePath;
-////    absolutePathname = FileSystem::Instance()->SystemPathForFrameworkPath(sourcePath);
-////
-////	relativePathname = String("");
-////	relativeFolder = String("");
-//}
-    
-void FilePath::InitFromAbsolutePath(const String &absolutePath)
-{
-    sourcePathname = absolutePath;
-    absolutePathname = absolutePath;//FileSystem::Instance()->SystemPathForFrameworkPath(absolutePath);
-	
-	relativePathname = String("");
-	relativeFolder = String("");
-}
-    
-void FilePath::InitFromRelativePath(const String &relativePath)
-{
-    return InitFromRelativePath(relativePath, FileSystem::Instance()->GetCurrentWorkingDirectory());
-}
-    
-void FilePath::InitFromRelativePath(const String &relativePath, const String &folder)
-{
-    sourcePathname = folder + relativePath;
-    SetRelativePath(relativePath, folder);
-}
-    
-	
-void FilePath::SetSourcePath(const String &sourcePath)
-{
-    sourcePathname = sourcePath;
-}
-
-void FilePath::SetAbsolutePath(const String &absolutePath)
-{
-    absolutePathname = absolutePath;
-}
-
-void FilePath::SetRelativePath(const String &relativePath)
-{
-    SetRelativePath(relativeFolder, FileSystem::Instance()->GetCurrentWorkingDirectory());
-}
-
-void FilePath::SetRelativePath(const String &relativePath, const String &folder)
-{
-    relativePathname = relativePath;
-    relativeFolder = FileSystem::Instance()->GetCanonicalPath(folder);
-    
-    absolutePathname = CreateAbsoluteFromRelative(relativePathname, relativeFolder);
-}
-    
 FilePath& FilePath::operator=(const FilePath &path)
 {
-    this->sourcePathname = path.sourcePathname;
     this->absolutePathname = path.absolutePathname;
-    this->relativePathname = path.relativePathname;
-    this->relativeFolder = path.relativeFolder;
-
     return *this;
 }
     
-//FilePath& FilePath::operator=(const String &pathname)
-//{
-//	this->InitFromPathname(pathname);
-//
-//    return *this;
-//}
-//
-//    
-//FilePath::operator String()
-//{
-//    return GetSourcePath();
-//}
-
-const String & FilePath::GetSourcePath() const
+FilePath FilePath::operator+(const FilePath &path)
 {
-    return sourcePathname;
+    DVASSERT(IsDirectoryPathname());
+    
+    FilePath pathname(*this);
+    pathname.absolutePathname = pathname.absolutePathname + path.absolutePathname;
+    
+    return pathname;
 }
-
-const String & FilePath::GetAbsolutePath() const
-{
-    return absolutePathname;
-}
-
-const String FilePath::GetRelativePath() const
-{
-    return GetRelativePath(FileSystem::Instance()->GetCurrentWorkingDirectory());
-}
-
-const String FilePath::GetRelativePath(const String &folder) const
-{
-    String path = FileSystem::Instance()->AbsoluteToRelativePath(folder, absolutePathname);
-    return path;
-}
-
-const String FilePath::CreateAbsoluteFromRelative(const String &relativePath, const String &folder)
-{
-    String path = folder + String("/") + relativePath;
-    return FileSystem::Instance()->GetCanonicalPath(path);
-}
+    
     
 const bool FilePath::Initalized() const
 {
-    return (!sourcePathname.empty());
+    return (!absolutePathname.empty());
+}
+
+const bool FilePath::IsDirectoryPathname() const
+{
+    if(!Initalized())
+    {
+        return false;
+    }
+
+    const int32 lastPosition = absolutePathname.length() - 1;
+    return (absolutePathname.at(lastPosition) == '/');
+}
+
+
+const String FilePath::GetFilename() const
+{
+    return GetFilename(absolutePathname);
+}
+    
+const String FilePath::GetFilename(const String &pathname)
+{
+    String::size_type dotpos = pathname.rfind(String("/"));
+    if (dotpos == String::npos)
+        return String();
+    
+    return pathname.substr(dotpos+1);
+}
+
+
+
+const String FilePath::GetBasename() const
+{
+    const String filename = GetFilename();
+    
+    const String::size_type dotpos = filename.rfind(String("."));
+	if (dotpos == String::npos)
+		return filename;
+    
+	return filename.substr(0, dotpos);
 }
 
 const String FilePath::GetExtension() const
 {
-    String ext = FileSystem::Instance()->GetExtension(absolutePathname);
-    return ext;
+    const String filename = GetFilename();
+    
+    const String::size_type dotpos = filename.rfind(String("."));
+	if (dotpos == String::npos)
+        return String();
+    
+    return filename.substr(dotpos);
 }
 
+    
+const String FilePath::GetDirectory() const
+{
+    return GetDirectory(absolutePathname);
+}
+
+const String FilePath::GetDirectory(const String &pathname)
+{
+    const String::size_type dotpos = pathname.rfind(String("/"));
+    if (dotpos == String::npos)
+        return String();
+    
+    return pathname.substr(0, dotpos + 1);
+}
+
+    
+const String FilePath::GetRelativePathname() const
+{
+    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory());
+}
+    
+const String FilePath::GetRelativePathname(const String &forDirectory) const
+{
+    return AbsoluteToRelative(forDirectory, absolutePathname);
+}
+    
+    
+void FilePath::ReplaceFilename(const String &filename)
+{
+    const String directory = GetDirectory();
+    absolutePathname = NormalizePathname(directory + filename);
+}
+    
+void FilePath::ReplaceBasename(const String &basename)
+{
+    const String directory = GetDirectory();
+    const String extension = GetExtension();
+    absolutePathname = NormalizePathname(directory + basename + extension);
+}
+    
+void FilePath::ReplaceExtension(const String &extension)
+{
+    const String directory = GetDirectory();
+    const String basename = GetBasename();
+    absolutePathname = NormalizePathname(directory + basename + extension);
+    
+}
+    
+void FilePath::ReplaceDirectory(const String &directory)
+{
+    const String filename = GetFilename();
+    absolutePathname = NormalizePathname(directory + filename);
+}
+
+    
+const String FilePath::NormalizePathname(const String &pathname)
+{
+	if(pathname.empty())
+		return String();
+	
+	String path = pathname;
+    std::replace(path.begin(), path.end(),'\\','/');
+    
+    Vector<String> tokens;
+    Split(path, "/", tokens);
+    
+    //TODO: correctly process situation ../../folders/filename
+    for (int32 i = 0; i < (int32)tokens.size(); ++i)
+    {
+        if (String(".") == tokens[i])
+        {
+            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
+            {
+                tokens[k - 1] = tokens[k];
+            }
+            --i;
+            tokens.pop_back();
+        }
+        else if ((1 <= i) && (String("..") == tokens[i] && String("..") != tokens[i-1]))
+        {
+            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
+            {
+                tokens[k - 2] = tokens[k];
+            }
+            i-=2;
+            tokens.pop_back();
+            tokens.pop_back();
+        }
+    }
+    
+    String result = "";
+    if('/' == path[0])
+		result = "/";
+    
+    for (int32 k = 0; k < (int32)tokens.size(); ++k)
+    {
+        result += tokens[k];
+        if (k + 1 != (int32)tokens.size())
+            result += String("/");
+    }
+    
+	//process last /
+	if(('/' == path[path.length() - 1]) && (path.length() != 1))
+		result += String("/");
+    
+    return result;
+}
+
+const String FilePath::MakeDirectory(const String &pathname)
+{
+    if(pathname.empty())
+    {
+        return String();
+    }
+    
+    const int32 lastPosition = pathname.length() - 1;
+    if(pathname.at(lastPosition) != '/')
+    {
+        return pathname + String("/");
+    }
+    
+    return pathname;
+}
+    
+const String FilePath::AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname)
+{
+    String workingDirectoryPath = directoryPathname;
+    String workingFilePath = absolutePathname;
+    
+    std::replace(workingDirectoryPath.begin(),workingDirectoryPath.end(),'\\','/');
+    std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
+    
+    if((absolutePathname.empty()) || ('/' != absolutePathname[0]))
+        return absolutePathname;
+    
+    String filePath;
+    String fileName;
+    SplitPath(workingFilePath, filePath, fileName);
+    
+    Vector<String> folders;
+    Split(workingDirectoryPath, "/", folders);
+    Vector<String> fileFolders;
+    Split(filePath, "/", fileFolders);
+    
+    Vector<String>::size_type equalCount = 0;
+    for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
+    {
+        if(folders[equalCount] != fileFolders[equalCount])
+        {
+            break;
+        }
+    }
+    
+    String retPath = "";
+    for(Vector<String>::size_type i = equalCount; i < folders.size(); ++i)
+    {
+        retPath += "../";
+    }
+    
+    for(Vector<String>::size_type i = equalCount; i < fileFolders.size(); ++i)
+    {
+        retPath += fileFolders[i] + "/";
+    }
+    
+    return (retPath + fileName);
+}
+    
+
+void FilePath::SplitPath(const String & filePath, String & path, String & filename)
+{
+    String fullPath = NormalizePathname(filePath);
+    path = GetDirectory(fullPath);
+    filename = GetFilename(fullPath);
+}
+  
     
 }

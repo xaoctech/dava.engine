@@ -42,78 +42,64 @@ namespace DAVA
 class FilePath: public BaseObject
 {
 public:
-	/*
-	
-	TODO: new interface
-
-	FilePath();
-	FilePath(const FilePath &path);
-	FilePath(const char* path);
-	FilePath(const String &path);
-	virtual ~FilePath();
-
-	FilePath& operator=(const FilePath &path);
-	String& operator()(const FilePath &path);
-
-	String AbsolutePath();
-	String RelativePath(const FilePath &path = String());
-	String AbsoluteDir();
-	String RelativeDir(const FilePath &path = String());
-	String Filename();
-	String Basename();
-	String Extension();
-	*/	
-
 
 	FilePath();
     FilePath(const FilePath &path);
-//    FilePath(const String &sourcePath); 
+    FilePath(const String &sourcePath);
+    FilePath(const String &directory, const String &filename);
+
 	virtual ~FilePath();
 
-    
-//    void InitFromPathname(const String &sourcePath);
-    void InitFromAbsolutePath(const String &absolutePath);
-    void InitFromRelativePath(const String &relativePath);
-    void InitFromRelativePath(const String &relativePath, const String &folder);
-    
-    void SetSourcePath(const String &sourcePath);
-    void SetAbsolutePath(const String &absolutePath);
-    void SetRelativePath(const String &relativePath);
-    void SetRelativePath(const String &relativePath, const String &folder);
-
     FilePath& operator=(const FilePath &path);
-//    FilePath& operator=(const String &pathname);
-
-//	operator String();
-
-    const String & GetSourcePath() const;
-    const String & GetAbsolutePath() const;
-    const String GetRelativePath() const;
-    const String GetRelativePath(const String &folder) const;
-    
-    const String GetExtension() const;
+    FilePath operator+(const FilePath &path);
     
     const bool Initalized() const;
-    
-protected:
-    
-    static const String CreateAbsoluteFromRelative(const String &relativePath, const String &folder);
-    
-protected:
+    const bool IsDirectoryPathname() const;
 
-    String sourcePathname;
-    String absolutePathname;
+    const String GetFilename() const;
+    const String GetBasename() const;
+    const String GetExtension() const;
+    const String GetDirectory() const;
     
-    String relativePathname;
-    String relativeFolder;
+    const String GetRelativePathname() const;
+    const String GetRelativePathname(const String &forDirectory) const;
+    
+    void ReplaceFilename(const String &filename);
+    void ReplaceBasename(const String &basename);
+    void ReplaceExtension(const String &extension);
+    void ReplaceDirectory(const String &directory);
+    
+    static void SetProjectPathname(const String &pathname);
+    static String & GetProjectPathname();
+    
+protected:
+    
+    static const String NormalizePathname(const String &pathname);
+    static const String MakeDirectory(const String &pathname);
+
+    static const String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
+
+    /**
+         \brief Split path to file into path and filename
+         \param[in] filepath inputpath to some file
+         \param[out] path path to the input file (always with trailing backslash character ('/').)
+         \param[out] filename filename of the input file
+	 */
+	static void	SplitPath(const String & filepath, String & path, String & filename);
+
+    static const String GetFilename(const String &pathname);
+    static const String GetDirectory(const String &pathname);
+
+    
+    
+protected:
+    
+    String absolutePathname;
+    static String projectPathname;
 
 public:
     INTROSPECTION_EXTEND(FilePath, BaseObject,
-        MEMBER(sourcePathname, "Source Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(absolutePathname, "Absolute Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-                         
-        MEMBER(relativePathname, "Relative Pathname", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(relativeFolder, "Relative Folder", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        NULL
     );
 };
 };
