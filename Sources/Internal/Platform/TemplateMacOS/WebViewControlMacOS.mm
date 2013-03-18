@@ -37,7 +37,7 @@ using namespace DAVA;
 
 WebViewControl::WebViewControl()
 {
-	NSRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+	NSRect emptyRect;// = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
 	webViewPtr = [[WebView alloc] initWithFrame:emptyRect frameName:nil groupName:nil];
 
 	WebView* localWebView = (WebView*)webViewPtr;
