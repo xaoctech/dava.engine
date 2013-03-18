@@ -78,6 +78,8 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
     textColor = t->textColor;
     shadowColor = t->shadowColor;
     shadowOffset = t->shadowOffset;
+    SafeRelease(shadowBg);
+    shadowBg = t->shadowBg->Clone();
 }
 	
 UIStaticText *UIStaticText::CloneStaticText()
@@ -186,6 +188,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 		shadowGeomData.unrotatedRect += shadowOffset;
 
 		shadowBg->SetAlign(background->GetAlign());
+        shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
 		shadowBg->SetDrawColor(shadowColor);
 		shadowBg->Draw(shadowGeomData);
 	}
