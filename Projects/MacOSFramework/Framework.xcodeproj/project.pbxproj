@@ -17,6 +17,9 @@
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		4910CBF6167B73EC00CF948A /* libdxt_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4910CBF5167B73EC00CF948A /* libdxt_macos.a */; };
+		496AD24916F7608900117AA8 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499574EF16F369A400A34C2C /* DeviceInfo.cpp */; };
+		496AD24A16F7608D00117AA8 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 499574EB16F368A600A34C2C /* DeviceInfo.h */; };
+		496AD24B16F7609400117AA8 /* DeviceInfoMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E516F7523900AC57C6 /* DeviceInfoMacOS.mm */; };
 		497BF6E616F7523900AC57C6 /* DeviceInfoMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E516F7523900AC57C6 /* DeviceInfoMacOS.mm */; };
 		499574ED16F368A600A34C2C /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 499574EB16F368A600A34C2C /* DeviceInfo.h */; };
 		499574F016F369A400A34C2C /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499574EF16F369A400A34C2C /* DeviceInfo.cpp */; };
@@ -3597,6 +3600,7 @@
 				CCC7A48016F1D64D0061EA5D /* RenderState.h in Headers */,
 				CCC7A48616F1D6700061EA5D /* UpdateSystem.h in Headers */,
 				CCC7A48C16F1D6B80061EA5D /* Entity.h in Headers */,
+				496AD24A16F7608D00117AA8 /* DeviceInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4252,6 +4256,8 @@
 				CCC7A47E16F1D64D0061EA5D /* RenderState.cpp in Sources */,
 				CCC7A48416F1D6700061EA5D /* UpdateSystem.cpp in Sources */,
 				CCC7A48A16F1D6B80061EA5D /* Entity.cpp in Sources */,
+				496AD24916F7608900117AA8 /* DeviceInfo.cpp in Sources */,
+				496AD24B16F7609400117AA8 /* DeviceInfoMacOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
