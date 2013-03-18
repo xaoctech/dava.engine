@@ -26,6 +26,8 @@ protected:
     void CopyTextures(Scene *scene, Set<String> &errorLog);
     void CopyTexture(const String &texturePathname, Set<String> &errorLog);
 
+	void CopyReferencedObject(Entity *node, Set<String> &errorLog);
+
 protected:
     
     SceneUtils sceneUtils;
