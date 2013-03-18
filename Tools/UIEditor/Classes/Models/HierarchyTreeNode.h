@@ -44,7 +44,7 @@ public:
     // Access to the nodes list.
     const HIERARCHYTREENODESLIST& GetChildNodes() const;
     
-	void SetName(const QString name) {this->name = name;};
+	virtual void SetName(const QString& name) {this->name = name;};
     const QString& GetName() const {return name;};
 	
 	HIERARCHYTREENODEID GetId() const {return id;};

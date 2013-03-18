@@ -9,6 +9,7 @@
 #include "CopyPasteController.h"
 #include "PasteCommand.h"
 #include "CommandsController.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 
 using namespace DAVA;
 
@@ -86,7 +87,13 @@ void CopyPasteController::CopyControls(const HierarchyTreeController::SELECTEDCO
 		if (ControlIsChild(items, control))
 			continue;
 		
-		HierarchyTreeControlNode* copy = new HierarchyTreeControlNode(NULL, control);
+		HierarchyTreeControlNode* copy = NULL;
+		const HierarchyTreeAggregatorControlNode* aggregatorControl = dynamic_cast<const HierarchyTreeAggregatorControlNode*>(control);
+		if (aggregatorControl)
+			copy = new HierarchyTreeAggregatorControlNode(NULL, aggregatorControl);
+		else
+			copy = new HierarchyTreeControlNode(NULL, control);
+		
 		this->items.push_back(copy);
 	}
 	if (this->items.size())
