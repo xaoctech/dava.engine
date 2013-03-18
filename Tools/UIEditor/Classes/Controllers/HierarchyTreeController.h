@@ -19,6 +19,7 @@
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorNode.h"
 #include <set>
 
 using namespace DAVA;
@@ -42,6 +43,7 @@ public:
 
 	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
 	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform);
+	HierarchyTreeAggregatorNode* AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform, const Rect& rect);
 	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
 
 	// Return any kind of node (one or multiple) back to the scene.

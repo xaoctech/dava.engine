@@ -15,6 +15,7 @@
 
 #include "platformpropertygridwidget.h"
 #include "screenpropertygridwidget.h"
+#include "aggregatorpropertygridwidget.h"
 
 #include "basepropertygridwidget.h"
 #include "controlpropertygridwidget.h"
@@ -50,6 +51,7 @@ private:
     // List of all PropertyGridWidgets.
     PlatformPropertyGridWidget* platformWidget;
     ScreenPropertyGridWidget* screenWidget;
+	AggregatorPropertyGridWidget* aggregatorWidget;
     
     ControlPropertyGridWidget* controlWidget;
     RectPropertyGridWidget* rectWidget;
