@@ -14,6 +14,7 @@
     <ClInclude Include="Classes\BaseScreen.h" />
     <ClInclude Include="Classes\CloneTest.h" />
     <ClInclude Include="Classes\Config.h" />
+    <ClInclude Include="Classes\DeviceInfoTest.h" />
     <ClInclude Include="Classes\DLCSystemTests.h" />
     <ClInclude Include="Classes\DPITest.h" />
     <ClInclude Include="Classes\DXTTest.h" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ClCompile Include="Classes\BaseScreen.cpp" />
     <ClCompile Include="Classes\CloneTest.cpp" />
+    <ClCompile Include="Classes\DeviceInfoTest.cpp" />
     <ClCompile Include="Classes\DLCSystemTests.cpp" />
     <ClCompile Include="Classes\DPITest.cpp" />
     <ClCompile Include="Classes\DXTTest.cpp" />
