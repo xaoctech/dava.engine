@@ -59,6 +59,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 	    
     flagsWidget = new FlagsPropertyGridWidget();
     registeredWidgets.push_back(flagsWidget);
+	
+	spinnerWidget = new SpinnerPropertyGridWidget();
+	registeredWidgets.push_back(spinnerWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -180,6 +183,7 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
 		resultList.push_back(alignWidget);
+		resultList.push_back(spinnerWidget);
         resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);

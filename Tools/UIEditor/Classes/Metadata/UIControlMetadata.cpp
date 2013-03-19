@@ -168,7 +168,8 @@ void UIControlMetadata::SetSizeX(float value)
 	
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dx = value;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 float UIControlMetadata::GetSizeY() const
@@ -190,7 +191,8 @@ void UIControlMetadata::SetSizeY(float value)
 
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dy = value;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 float UIControlMetadata::GetPivotX() const
@@ -371,7 +373,8 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.x = controlPosition.x;
 	rect.y = controlPosition.y;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& newRect)
@@ -381,7 +384,7 @@ void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& ne
         return;
     }
     
-    GetActiveUIControl()->SetRect(newRect);
+	SetActiveControlRect(newRect);
 }
                  
 QColor UIControlMetadata::GetColor()
@@ -850,6 +853,11 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetBottomAlignEnabled(value);
+}
+
+void UIControlMetadata::SetActiveControlRect(const Rect& rect)
+{
+	GetActiveUIControl()->SetRect(rect);
 }
 
 };

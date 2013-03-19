@@ -30,12 +30,16 @@ public:
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
+	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+
 protected:
 	//A pointer to MacOS WebView.
 	void* webViewPtr;
 	
 	// A pointer to the WebView delegate.
 	void* webViewDelegatePtr;
+
+	void* webViewPolicyDelegatePtr;
 };
 
 };

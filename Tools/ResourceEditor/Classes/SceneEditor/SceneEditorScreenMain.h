@@ -122,6 +122,8 @@ public:
 
     void ProcessIsSolidChanging();
 
+	void ActivateLevelBodyItem();
+
 private:
     
     void InitControls();
@@ -165,15 +167,6 @@ private:
     
     void ReleaseResizedControl(UIControl *control);
 
-	//for save to folder with Childs
-	//////////////////////////////
-	void CopyFile(const String & file);
-	void CheckNodes(Entity * node);
-	String inputFolder;
-	String outputFolder;
-	//////////////////////////////
-	
-    
 public: //For Qt integration
     void OpenFileAtScene(const String &pathToFile);
     void NewScene();
