@@ -1837,7 +1837,7 @@ namespace DAVA
 		// Control Type      
 		node->Set("type", "UIControl");
 		// Control name
-		node->Set("name", this->GetName());
+		//node->Set("name", this->GetName());
 		// Visible
 		if (baseControl->GetVisible() != this->GetVisible())
 		{
@@ -1881,7 +1881,7 @@ namespace DAVA
 		Rect rect = this->GetRect();
 		if (baseControl->GetRect() != rect)
 		{
-			Vector4 rectVector4(rect.x, rect.y, rect.dx, rect.dy);
+			Vector4 rectVector4(rect.x + pivotPoint.x, rect.y + pivotPoint.y, rect.dx, rect.dy);
 			nodeValue->SetVector4(rectVector4);
 			node->Set("rect", nodeValue);
 		}

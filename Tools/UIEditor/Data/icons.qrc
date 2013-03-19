@@ -1,5 +1,12 @@
 <RCC>
   <qresource>
+    <file>Icons/uiaggregatorcontrol.png</file>
+    <file>Icons/uibutton.png</file>
+    <file>Icons/uilist.png</file>
+    <file>Icons/uicontrol.png</file>
+    <file>Icons/uiscrollbar.png</file>
+    <file>Icons/uispinner.png</file>
+    <file>Icons/uistatictext.png</file>
     <file>icons/170.png</file>
     <file>icons/068.png</file>
     <file>icons/079.png</file>
