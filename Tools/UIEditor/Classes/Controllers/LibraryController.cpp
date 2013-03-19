@@ -11,6 +11,7 @@
 #include "MetadataFactory.h"
 #include "ScreenWrapper.h"
 #include "DefaultScreen.h"
+#include "IconHelper.h"
 
 using namespace DAVA;
 
@@ -45,7 +46,7 @@ void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
 {
 	const QString& name = node->GetName();
 	DVASSERT(controls.find(node) == controls.end());
-	controls[node] = widget->AddControl(name);
+	controls[node] = widget->AddControl(name, IconHelper::GetIconPathForClassName("UIAggregatorControl"));
 }
 
 void LibraryController::RemoveControl(HierarchyTreeAggregatorNode* node)
@@ -69,7 +70,8 @@ void LibraryController::UpdateControl(HierarchyTreeAggregatorNode* node)
 
 void LibraryController::AddControl(const QString& name, UIControl* control)
 {
-	controls[new HierarchyTreeControlNode(NULL, control, name)] = widget->AddControl(name);
+	QString iconPath = IconHelper::GetIconPathForUIControl(control);
+	controls[new HierarchyTreeControlNode(NULL, control, name)] = widget->AddControl(name, iconPath);
 }
 
 HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position)
