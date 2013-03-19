@@ -40,7 +40,7 @@
      <widget class="QDoubleSpinBox" name="doubleSpinBoxHeight">
       <property name="geometry">
        <rect>
-        <x>109</x>
+        <x>118</x>
         <y>2</y>
         <width>62</width>
         <height>22</height>
@@ -50,8 +50,8 @@
      <widget class="QCheckBox" name="checkBoxEnable">
       <property name="geometry">
        <rect>
-        <x>2</x>
-        <y>7</y>
+        <x>0</x>
+        <y>5</y>
         <width>71</width>
         <height>18</height>
        </rect>
@@ -64,7 +64,7 @@
       <property name="geometry">
        <rect>
         <x>184</x>
-        <y>2</y>
+        <y>-1</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -76,7 +76,7 @@
      <widget class="QLabel" name="labelHeight">
       <property name="geometry">
        <rect>
-        <x>63</x>
+        <x>66</x>
         <y>8</y>
         <width>46</width>
         <height>13</height>
