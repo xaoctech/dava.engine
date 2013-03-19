@@ -53,7 +53,7 @@ public:
     FilePath& operator=(const FilePath &path);
     FilePath operator+(const FilePath &path);
     
-    const bool Initalized() const;
+    const bool IsInitalized() const;
     const bool IsDirectoryPathname() const;
 
     const String GetFilename() const;
@@ -71,6 +71,8 @@ public:
     
     static void SetProjectPathname(const String &pathname);
     static String & GetProjectPathname();
+
+    const String ResolvePathname() const;
     
 protected:
     
@@ -78,14 +80,6 @@ protected:
     static const String MakeDirectory(const String &pathname);
 
     static const String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
-
-    /**
-         \brief Split path to file into path and filename
-         \param[in] filepath inputpath to some file
-         \param[out] path path to the input file (always with trailing backslash character ('/').)
-         \param[out] filename filename of the input file
-	 */
-	static void	SplitPath(const String & filepath, String & path, String & filename);
 
     static const String GetFilename(const String &pathname);
     static const String GetDirectory(const String &pathname);

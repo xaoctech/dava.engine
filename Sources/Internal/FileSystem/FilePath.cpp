@@ -38,7 +38,7 @@ String FilePath::projectPathname = String();
 
 void FilePath::SetProjectPathname(const String &pathname)
 {
-    projectPathname = NormalizePathname(pathname);
+    projectPathname = NormalizePathname(MakeDirectory(pathname));
 }
 
 String & FilePath::GetProjectPathname()
@@ -82,20 +82,20 @@ FilePath FilePath::operator+(const FilePath &path)
     DVASSERT(IsDirectoryPathname());
     
     FilePath pathname(*this);
-    pathname.absolutePathname = pathname.absolutePathname + path.absolutePathname;
+    pathname.absolutePathname = NormalizePathname(pathname.absolutePathname + path.absolutePathname);
     
     return pathname;
 }
     
     
-const bool FilePath::Initalized() const
+const bool FilePath::IsInitalized() const
 {
     return (!absolutePathname.empty());
 }
 
 const bool FilePath::IsDirectoryPathname() const
 {
-    if(!Initalized())
+    if(!IsInitalized())
     {
         return false;
     }
@@ -197,6 +197,33 @@ void FilePath::ReplaceDirectory(const String &directory)
     absolutePathname = NormalizePathname(directory + filename);
 }
 
+const String FilePath::ResolvePathname() const
+{
+    if(!IsInitalized() || absolutePathname[0] != '~')
+    {
+		return absolutePathname;
+    }
+        
+    String retPath = absolutePathname;
+    String::size_type find = absolutePathname.find("~res:");
+	if(find != String::npos)
+	{
+		retPath = retPath.erase(0, 5);
+		retPath = projectPathname + retPath;
+	}
+	else
+	{
+		find = retPath.find("~doc:");
+		if(find != String::npos)
+		{
+			retPath = retPath.erase(0, 5);
+			retPath = FileSystem::Instance()->FilepathInDocuments("") + retPath;
+		}
+	}
+    
+    return NormalizePathname(retPath);
+}
+    
     
 const String FilePath::NormalizePathname(const String &pathname)
 {
@@ -278,9 +305,8 @@ const String FilePath::AbsoluteToRelative(const String &directoryPathname, const
     if((absolutePathname.empty()) || ('/' != absolutePathname[0]))
         return absolutePathname;
     
-    String filePath;
-    String fileName;
-    SplitPath(workingFilePath, filePath, fileName);
+    String filePath = GetDirectory(workingFilePath);
+    String fileName = GetFilename(workingFilePath);
     
     Vector<String> folders;
     Split(workingDirectoryPath, "/", folders);
@@ -309,14 +335,5 @@ const String FilePath::AbsoluteToRelative(const String &directoryPathname, const
     
     return (retPath + fileName);
 }
-    
-
-void FilePath::SplitPath(const String & filePath, String & path, String & filename)
-{
-    String fullPath = NormalizePathname(filePath);
-    path = GetDirectory(fullPath);
-    filename = GetFilename(fullPath);
-}
-  
     
 }
