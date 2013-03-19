@@ -89,18 +89,16 @@ LandscapeNode::LandscapeNode()
     SetTiledShaderMode(TILED_MODE_MIXED);
     
     heightmap = new Heightmap();
-    
-    Stats::Instance()->RegisterEvent("Scene.LandscapeNode", "Everything related to LandscapeNode");
-    // Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Update", "Time spent in LandscapeNode Update");
-    Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
-    
+        
     prevLodLayer = -1;
     
     isFogEnabled = false;
     fogDensity = 0.006f;
     fogColor = Color::White();
     
-    AddRenderBatch(new LandscapeChunk(this));
+    LandscapeChunk * chunk = new LandscapeChunk(this);
+    AddRenderBatch(chunk);
+    SafeRelease(chunk);
 }
 
 LandscapeNode::~LandscapeNode()
@@ -281,7 +279,7 @@ bool LandscapeNode::BuildHeightmap()
     String extension = heightmapPath.GetExtension();
     if(".png" == extension)
     {
-        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetAbsolutePath());
+        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath.GetSourcePath());
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -300,7 +298,7 @@ bool LandscapeNode::BuildHeightmap()
     }
     else if(Heightmap::FileExtension() == extension)
     {
-        retValue = heightmap->Load(heightmapPath.GetAbsolutePath());
+        retValue = heightmap->Load(heightmapPath.GetSourcePath());
     }
     else 
     {
@@ -1140,8 +1138,7 @@ void LandscapeNode::UnbindMaterial()
     
 void LandscapeNode::Draw(Camera * camera)
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
-    //uint64 time = SystemTimer::Instance()->AbsoluteMS();
+    TIME_PROFILE("LandscapeNode.Draw");
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
@@ -1322,8 +1319,6 @@ void LandscapeNode::Draw(Camera * camera)
     //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
     //Logger::Debug("landscape draw time: %lld", drawTime);
-    
-    Stats::Instance()->EndTimeMeasure("Scene.LandscapeNode.Draw", this);
 }
 
 
@@ -1420,6 +1415,7 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+		archive->SetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
     }
     
     archive->SetByteArrayAsType("fogcolor", fogColor);
@@ -1458,6 +1454,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         {
             SetTexture((eTextureLevel)k, absPath);
             textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+
+			tileColor[k] = archive->GetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
         }
         else
         {
@@ -1604,6 +1602,8 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, Matrix4::IDENTITY);
     Matrix4 projection;
     projection.glOrtho(0, (float32)TEXTURE_TILE_FULL_SIZE, 0, (float32)TEXTURE_TILE_FULL_SIZE, 0, 1);
+    
+    Matrix4 oldProjection = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
     
@@ -1619,6 +1619,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
 	RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
     
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, oldProjection);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 

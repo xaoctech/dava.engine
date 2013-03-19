@@ -37,10 +37,6 @@
 #include "Core/DisplayMode.h"
 #include "FileSystem/KeyedArchive.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Android/AndroidSpecifics.h"
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 /**
 	\defgroup core Core
 	Application entry point and place where you can find all information about platform indepedent and platform dependent initialization and 
@@ -255,6 +251,7 @@ public:
 	virtual int32 GetDesirableResourceIndex();
 	virtual int32 GetBaseResourceIndex();
 	
+    virtual uint32 GetScreenDPI();
 	
 	/*
 		\brief Mouse cursor for the platforms where it make sense (Win32, MacOS X) 
@@ -323,9 +320,14 @@ public:
     eDeviceFamily GetDeviceFamily();
     
     void EnableReloadResourceOnResize(bool enable);
+	
+	// Needs to be overriden for the platforms where it has sence (MacOS only for now).
+	virtual void* GetOpenGLView() { return NULL; };
+	
+protected:
+	int32 screenOrientation;
 
 private:
-	int32 screenOrientation;
 	float32 screenWidth;
 	float32 screenHeight;
 	

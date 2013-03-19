@@ -7,6 +7,8 @@
 namespace DAVA
 {
 
+REGISTER_CLASS(ParticleEmitter3D);
+
 ParticleEmitter3D::ParticleEmitter3D()
 {
 	is3D = true;
@@ -56,7 +58,14 @@ void ParticleEmitter3D::Draw(Camera * camera)
 
 void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex)
 {
-	Vector3 tempPosition = particlesFollow ? Vector3() : position;
+	Vector3 tempPosition = Vector3();
+	Matrix4 * worldTransformPtr = GetWorldTransformPtr();
+	if(worldTransformPtr)
+	{
+		tempPosition = worldTransformPtr->GetTranslationVector();
+	}
+
+	//Vector3 tempPosition = particlesFollow ? Vector3() : position;
     if (emitterType == EMITTER_POINT)
     {
         particle->position = tempPosition;
@@ -154,6 +163,13 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
     }
 	
     particle->angle = atanf(particle->direction.z/particle->direction.x);
+
+	if(worldTransformPtr)
+	{
+		Matrix4 newTransform = *worldTransformPtr;
+		newTransform._30 = newTransform._31 = newTransform._32 = 0;
+		particle->direction = particle->direction*newTransform;
+	}
 }
 
 void ParticleEmitter3D::LoadParticleLayerFromYaml(YamlNode* yamlNode, bool isLong)

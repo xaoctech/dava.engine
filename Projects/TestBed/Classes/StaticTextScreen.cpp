@@ -40,14 +40,14 @@ void StaticTextScreen::LoadResources()
 	fnt->SetSize(7.5f);
 //	fnt->SetSize(12);
 //	fnt->SetVerticalSpacing(-1);
-	fnt->SetColor(.82f, .81f, 0.73f, 1.0f);
+//	fnt->SetColor(.82f, .81f, 0.73f, 1.0f);
 	float32 sizeX = 50;
 	float32 sizeY = 80;
 
     
 	UIControl *tc = new UIControl(Rect(0, 0, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	UIStaticText *tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 //	tx->SetMultiline(true);
@@ -61,7 +61,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect((size.x - sizeX)/2, 0, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -75,7 +75,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect(size.x - sizeX, 0, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -91,7 +91,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect(0, (size.y - sizeY)/2, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -105,7 +105,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect((size.x - sizeX)/2, (size.y - sizeY)/2, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -119,7 +119,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect(size.x - sizeX, (size.y - sizeY)/2, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -134,7 +134,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect(0, size.y - sizeY, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -147,7 +147,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect((size.x - sizeX)/2, size.y - sizeY, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -160,7 +160,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect(size.x - sizeX, size.y - sizeY, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -175,7 +175,7 @@ void StaticTextScreen::LoadResources()
 	
 	tc = new UIControl(Rect((size.x - sizeX)/2, (size.y - sizeY)/2 - 70, sizeX, sizeY));
 	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
-	tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
+	//tc->GetBackground()->color = Color(0,0,0.4f,1.0f);
 	tx = new UIStaticText(Rect(0, 0, sizeX, sizeY));
 	tx->SetFont(fnt);
 	tx->SetMultiline(true);
@@ -185,7 +185,26 @@ void StaticTextScreen::LoadResources()
 	AddControl(tc);
 	SafeRelease(tc);
 	SafeRelease(tx);
-	
+
+
+	//fnt->SetColor(1.0f, 0.3f, 0.3f, 1.0f);
+	fnt->SetVerticalSpacing(5);
+	tc = new UIControl(Rect(100, 100, 600, 400));
+	tc->SetSpriteDrawType(UIControlBackground::DRAW_FILL);
+	tc->GetBackground()->color = Color(0.5f,0.5,0.5f,1.0f);
+	tx = new UIStaticText(Rect(10, 10, 400, 200));
+	tx->SetFont(fnt);
+	tx->SetMultiline(true);
+	tx->SetAlign(ALIGN_HJUSTIFY|ALIGN_TOP);
+	tx->SetText(L"Test test shadow, shadow test ABCDEFGHJIKLMNOPQRSTUVWXYZ\nTest test shadow, shadow test ABCDEFGHJIKLMNOPQRSTUVWXYZ\nTest test shadow, shadow test ABCDEFGHJIKLMNOPQRSTUVWXYZ");
+	tx->SetTextColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
+	tx->SetShadowColor(Color(0.0f, 0.0f, 0.0f, 0.25f));
+	tx->SetShadowOffset(Vector2(2.0f, 2.0f));
+	tc->AddControl(tx);
+	AddControl(tc);
+	SafeRelease(tc);
+	SafeRelease(tx);
+
 	
 	SafeRelease(fnt);
 }

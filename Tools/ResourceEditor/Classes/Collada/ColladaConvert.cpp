@@ -1,16 +1,17 @@
 #include "ColladaConvert.h"
 #include "ColladaDocument.h"
 
-
-void ConvertDaeToSce(const DAVA::String & pathToFile)
+eColladaErrorCodes ConvertDaeToSce(const DAVA::String & pathToFile)
 {
     FCollada::Initialize();
     
     DAVA::ColladaDocument colladaDocument;
-    if (!colladaDocument.Open(pathToFile.c_str()))
+    
+    eColladaErrorCodes code = colladaDocument.Open(pathToFile.c_str());
+    if (code != COLLADA_OK)
     {
-        printf("*** ERROR: Failed to read %s\n", pathToFile.c_str());
-        return;
+        DAVA::Logger::Error("[ConvertDaeToSce] Failed to read %s with error %d", pathToFile.c_str(), (int32)code);
+        return code;
     }
     
     /*
@@ -28,4 +29,6 @@ void ConvertDaeToSce(const DAVA::String & pathToFile)
     colladaDocument.Close();
     
     FCollada::Release();
+    
+    return COLLADA_OK;
 }

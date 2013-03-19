@@ -33,23 +33,17 @@ const BackgroundGridWidgetHelper::ColorInheritTypesData BackgroundGridWidgetHelp
 
 const BackgroundGridWidgetHelper::AlignTypesData BackgroundGridWidgetHelper::alignTypesData[] =
 {
-    {ALIGN_LEFT,                    "Left"},
     {ALIGN_LEFT | ALIGN_TOP,        "Left & Top"},
-    {ALIGN_LEFT | ALIGN_BOTTOM,     "Left & Bottom"},
-    {ALIGN_LEFT | ALIGN_HCENTER,    "Left & Horz Center"},
     {ALIGN_LEFT | ALIGN_VCENTER,    "Left & Vert Center"},
+    {ALIGN_LEFT | ALIGN_BOTTOM,     "Left & Bottom"},
 
-    {ALIGN_RIGHT,                   "Right"},
+	{ALIGN_HCENTER | ALIGN_TOP,     "Horz Center & Top"},
+    {ALIGN_HCENTER | ALIGN_VCENTER, "Horz Center & Vert Center"},
+    {ALIGN_HCENTER | ALIGN_BOTTOM,  "Horz Center & Bottom"},
+
     {ALIGN_RIGHT | ALIGN_TOP,       "Right & Top"},
-    {ALIGN_RIGHT | ALIGN_BOTTOM,    "Right & Bottom"},
-    {ALIGN_RIGHT | ALIGN_HCENTER,   "Right & Horz Center"},
     {ALIGN_RIGHT | ALIGN_VCENTER,   "Right & Vert Center"},
-  
-    {ALIGN_TOP,                     "Top"},
-    {ALIGN_BOTTOM,                  "Bottom"},
-    {ALIGN_HCENTER,                 "Horizontal Center"},
-    {ALIGN_VCENTER,                 "Vertical Center"},
-    {ALIGN_HCENTER | ALIGN_VCENTER, "Horz & Vert Center"},
+    {ALIGN_RIGHT | ALIGN_BOTTOM,    "Right & Bottom"},
     
     {ALIGN_HJUSTIFY,                "Horizontal Justify"}
 };

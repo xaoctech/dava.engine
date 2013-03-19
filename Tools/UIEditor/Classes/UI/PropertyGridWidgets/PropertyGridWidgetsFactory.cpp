@@ -15,6 +15,9 @@
 #include "UIButtonMetadata.h"
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
+#include "UISliderMetadata.h"
+#include "UIListMetadata.h"
+#include "UISpinnerMetadata.h"
 
 using namespace DAVA;
 
@@ -31,9 +34,15 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     rectWidget = new RectPropertyGridWidget();
     registeredWidgets.push_back(rectWidget);
+	
+	alignWidget = new AlignsPropertyGridWidget();
+	registeredWidgets.push_back(alignWidget);
   
     stateWidget = new StatePropertyGridWidget();
     registeredWidgets.push_back(stateWidget);
+	
+	sliderWidget = new SliderPropertyGridWidget();
+	registeredWidgets.push_back(sliderWidget);
 
     textWidget = new TextPropertyGridWidget();
     registeredWidgets.push_back(textWidget);
@@ -43,7 +52,7 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
 
     backgroundWidget = new BackGroundPropertyGridWidget();
     registeredWidgets.push_back(backgroundWidget);
-    
+	    
     flagsWidget = new FlagsPropertyGridWidget();
     registeredWidgets.push_back(flagsWidget);
 }
@@ -96,7 +105,11 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
-        resultList.push_back(stateWidget);
+        resultList.push_back(alignWidget);
+        if(uiButtonMetadata)
+        {
+            resultList.push_back(stateWidget);
+        }
         resultList.push_back(textWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -110,6 +123,7 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
         resultList.push_back(stateWidget);
         resultList.push_back(uiTextFieldWidget);
         resultList.push_back(backgroundWidget);
@@ -117,8 +131,50 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         
         return resultList;
     }
+	
+	// Slider
+	const UISliderMetadata* uiSliderMetadata = dynamic_cast<const UISliderMetadata*>(metaData);
+	if (uiSliderMetadata)
+	{
+	    resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);		
+      	resultList.push_back(stateWidget);
+		resultList.push_back(sliderWidget);
+	 	resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+				
+		return resultList;
+	}
 
-    
+    // UI List.
+	const UIListMetadata* uiListMetadata = dynamic_cast<const UIListMetadata*>(metaData);
+    if (uiListMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
+	// UI Spinner.
+	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+    if (uiSpinnerMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for
     // all UI Controls and used as a "last chance" if we are unable to determine the control type.
@@ -127,6 +183,7 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
         resultList.push_back(stateWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);

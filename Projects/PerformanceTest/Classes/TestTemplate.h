@@ -104,6 +104,7 @@ void TestTemplate<T>::LogError(PerfFuncData * data, const String &errorMessage)
 template <class T>
 void TestTemplate<T>::SubmitTime(PerfFuncData * data, uint64 time)
 {
+    data->testData.eachRunTime.push_back(time);
 	data->testData.totalTime += time;
 	if (runIndex == 0)
 	{
@@ -156,7 +157,7 @@ bool TestTemplate<T>::RunTest(int32 testNum)
 		PerfFuncData * data = &(perfFuncs[testNum]);
 		if(runIndex < data->testData.runCount)
 		{
-			uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+			uint64 startTime = SystemTimer::Instance()->GetAbsoluteNano();
 			if(0 == runIndex)
 			{
 				data->testData.startTime = startTime;
@@ -164,7 +165,7 @@ bool TestTemplate<T>::RunTest(int32 testNum)
 			
             (data->screen->*data->func)(data);
             
-			uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+			uint64 endTime = SystemTimer::Instance()->GetAbsoluteNano();
 			SubmitTime(data, endTime-startTime);
             
 			++runIndex;

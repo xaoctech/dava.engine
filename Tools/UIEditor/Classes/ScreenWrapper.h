@@ -34,10 +34,9 @@ public:
     explicit ScreenWrapper(QObject *parent = 0);
     ~ScreenWrapper();
 	
-	void SetQtScreen(const QWidget* widget);
+	void SetQtScreen(QWidget* widget);
     
-	int GetWidth() const;
-	int GetHeight() const;
+	QRect GetRect() const;
 	void SetViewPos(int posX, int posY, const QRect& size);
 	void RequestViewMove(const Vector2& delta);
 	void RequestUpdateView();
@@ -46,14 +45,12 @@ public:
 	float GetScale() const;
 	void UpdateScale(float scaleDelta);
 		
-	Vector2 TranslateScreenPoint(const Vector2& point);
 	DefaultScreen* GetActiveScreen();
 	
-	void RequestUpdateCursor();
-	Qt::CursorShape GetCursorType(const QPoint& pos);
-	void CursorMove(const QPoint& pos);
-	
 	void BacklightControl(const QPoint& pos);
+	
+	void RequestUpdateCursor();
+	void SetCursor(Qt::CursorShape cursor);
 	
 signals:
 	void UpdateScaleRequest(float scaleDelta);
@@ -62,7 +59,7 @@ signals:
 private:
 	QWidget* GetMainWindow();
 	
-	const QWidget* qtScreen;
+	QWidget* qtScreen;
 	QWidget* mainWindow;
 };
 

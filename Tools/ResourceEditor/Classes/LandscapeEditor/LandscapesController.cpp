@@ -66,12 +66,14 @@ void LandscapesController::SetScene(DAVA::Scene *scene)
     
     if(scene)
     {
-        Vector<LandscapeNode *>landscapes;
-        scene->GetChildNodes(landscapes);
-        
-        if(0 < landscapes.size())
+        EditorScene *editorScene = dynamic_cast<EditorScene *>(scene);
+        if(editorScene)
         {
-            SaveLandscape(landscapes[0]);
+           LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+            if(landscape)
+            {
+                SaveLandscape(landscape);
+            }
         }
     }
 }

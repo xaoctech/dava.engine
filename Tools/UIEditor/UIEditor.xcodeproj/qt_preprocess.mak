@@ -8,6 +8,8 @@
 
 MOC       = ~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc
 UIC       = ~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic
+RCC =~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc
+
 LEX       = flex
 LEXFLAGS  = 
 YACC      = yacc
@@ -32,6 +34,7 @@ mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 COMP_DIR = GeneratedFiles/
 UI_DIR = UI/
 SOURCE_DIR = Classes/
+QRC_DIR = Data/
 
 compilers: \
 	$(COMP_DIR)moc_mainwindow.cpp \
@@ -43,9 +46,12 @@ compilers: \
 	$(COMP_DIR)moc_BaseMetadata.cpp \
 	$(COMP_DIR)moc_UIControlMetadata.cpp \
 	$(COMP_DIR)moc_UIButtonMetadata.cpp \
+	$(COMP_DIR)moc_UISliderMetadata.cpp \
 	$(COMP_DIR)moc_UITextControlMetadata.cpp \
 	$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 	$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+	$(COMP_DIR)moc_UIListMetadata.cpp \
+	$(COMP_DIR)moc_UISpinnerMetadata.cpp \
 	$(COMP_DIR)moc_PlatformMetadata.cpp \
 	$(COMP_DIR)moc_ScreenMetadata.cpp \
 	$(COMP_DIR)moc_HierarchyTreeController.cpp \
@@ -73,6 +79,10 @@ compilers: \
 	$(COMP_DIR)ui_textpropertygridwidget.h \
 	$(COMP_DIR)moc_statepropertygridwidget.cpp \
 	$(COMP_DIR)ui_statepropertygridwidget.h \
+	$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
+	$(COMP_DIR)ui_sliderpropertygridwidget.h \
+	$(COMP_DIR)moc_alignspropertygridwidget.cpp \
+	$(COMP_DIR)ui_alignspropertygridwidget.h \
 	$(COMP_DIR)moc_backgroundpropertygridwidget.cpp \
 	$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 	$(COMP_DIR)moc_uitextfieldpropertygridwidget.cpp \
@@ -89,7 +99,8 @@ compilers: \
 	$(COMP_DIR)moc_qcolorbutton.cpp \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_localizationeditordialog.cpp \
-	$(COMP_DIR)ui_localizationeditordialog.h
+	$(COMP_DIR)ui_localizationeditordialog.h \
+	$(COMP_DIR)qrc_icons.cpp
 	
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
@@ -104,6 +115,9 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_UITextControlMetadata.cpp \
 	$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 	$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+	$(COMP_DIR)moc_UIListMetadata.cpp \
+	$(COMP_DIR)moc_UISpinnerMetadata.cpp \
+	$(COMP_DIR)moc_UISliderMetadata.cpp \
 	$(COMP_DIR)moc_PlatformMetadata.cpp \
 	$(COMP_DIR)moc_ScreenMetadata.cpp \
 	$(COMP_DIR)moc_HierarchyTreeController.cpp \
@@ -120,6 +134,8 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_librarywidget.cpp \
 	$(COMP_DIR)moc_textpropertygridwidget.cpp \
 	$(COMP_DIR)moc_statepropertygridwidget.cpp \
+	$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
+	$(COMP_DIR)moc_alignspropertygridwidget.cpp \
 	$(COMP_DIR)moc_platformpropertygridwidget.cpp \
 	$(COMP_DIR)moc_screenpropertygridwidget.cpp \
 	$(COMP_DIR)moc_textpropertygridwidget.cpp \
@@ -132,7 +148,8 @@ compiler_moc_header_make_all: \
 	$(COMP_DIR)moc_qcolorbutton.cpp \
 	$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
 	$(COMP_DIR)moc_createscreendlg.cpp \
-	$(COMP_DIR)moc_localizationeditordialog.cpp
+	$(COMP_DIR)moc_localizationeditordialog.cpp \
+	$(COMP_DIR)qrc_icons.cpp
 
 compiler_moc_header_clean:
 	-$(DEL_FILE) \
@@ -146,6 +163,9 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_UITextControlMetadata.cpp \
 		$(COMP_DIR)moc_UITextFieldMetadata.cpp \
 		$(COMP_DIR)moc_UIStaticTextMetadata.cpp \
+		$(COMP_DIR)moc_UIListMetadata.cpp \
+		$(COMP_DIR)moc_UISpinnerMetadata.cpp \
+		$(COMP_DIR)moc_UISliderMetadata.cpp \
 		$(COMP_DIR)moc_PlatformMetadata.cpp \
 		$(COMP_DIR)moc_ScreenMeadata.cpp \
 		$(COMP_DIR)moc_HierarchyTreeController.cpp \
@@ -161,6 +181,8 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_librarywidget.cpp \
 		$(COMP_DIR)moc_textpropertygridwidget.cpp \
 		$(COMP_DIR)moc_statepropertygridwidget.cpp \
+		$(COMP_DIR)moc_sliderpropertygridwidget.cpp \
+		$(COMP_DIR)moc_alignspropertygridwidget.cpp \
 		$(COMP_DIR)moc_platformpropertygridwidget.cpp \
 		$(COMP_DIR)moc_screenpropertygridwidget.cpp \
 		$(COMP_DIR)moc_textpropertygridwidget.cpp \
@@ -173,7 +195,8 @@ compiler_moc_header_clean:
 		$(COMP_DIR)moc_hierarchytreecontrol.cpp \
 		$(COMP_DIR)moc_qcolorbutton.cpp \
 		$(COMP_DIR)moc_statecomboboxitemdelegate.cpp \
-		$(COMP_DIR)moc_localizationeditordialog.cpp
+		$(COMP_DIR)moc_localizationeditordialog.cpp \
+		$(COMP_DIR)qrc_icons.cpp
 
 $(COMP_DIR)moc_mainwindow.cpp: $(SOURCE_DIR)UI/mainwindow.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/mainwindow.h -o $(COMP_DIR)moc_mainwindow.cpp
@@ -204,6 +227,15 @@ $(COMP_DIR)moc_UIButtonMetadata.cpp: $(SOURCE_DIR)Metadata/UIButtonMetadata.h
 
 $(COMP_DIR)moc_UIStaticTextMetadata.cpp: $(SOURCE_DIR)Metadata/UIStaticTextMetadata.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UIStaticTextMetadata.h -o $(COMP_DIR)moc_UIStaticTextMetadata.cpp
+
+$(COMP_DIR)moc_UIListMetadata.cpp: $(SOURCE_DIR)Metadata/UIListMetadata.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UIListMetadata.h -o $(COMP_DIR)moc_UIListMetadata.cpp
+
+$(COMP_DIR)moc_UISpinnerMetadata.cpp: $(SOURCE_DIR)Metadata/UISpinnerMetadata.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UISpinnerMetadata.h -o $(COMP_DIR)moc_UISpinnerMetadata.cpp
+
+$(COMP_DIR)moc_UISliderMetadata.cpp: $(SOURCE_DIR)Metadata/UISliderMetadata.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/UISliderMetadata.h -o $(COMP_DIR)moc_UISliderMetadata.cpp
 
 $(COMP_DIR)moc_PlatformMetadata.cpp: $(SOURCE_DIR)Metadata/PlatformMetadata.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)Metadata/PlatformMetadata.h -o $(COMP_DIR)moc_PlatformMetadata.cpp
@@ -256,6 +288,12 @@ $(COMP_DIR)moc_textpropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/t
 $(COMP_DIR)moc_statepropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/statepropertygridwidget.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/statepropertygridwidget.h -o $(COMP_DIR)moc_statepropertygridwidget.cpp
 
+$(COMP_DIR)moc_sliderpropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/sliderpropertygridwidget.h 
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/sliderpropertygridwidget.h -o $(COMP_DIR)moc_sliderpropertygridwidget.cpp
+
+$(COMP_DIR)moc_alignspropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/alignspropertygridwidget.h 
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/alignspropertygridwidget.h -o $(COMP_DIR)moc_alignspropertygridwidget.cpp
+
 $(COMP_DIR)moc_backgroundpropertygridwidget.cpp: $(SOURCE_DIR)UI/PropertyGridWidgets/backgroundpropertygridwidget.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/PropertyGridWidgets/backgroundpropertygridwidget.h -o $(COMP_DIR)moc_backgroundpropertygridwidget.cpp
 
@@ -286,8 +324,12 @@ $(COMP_DIR)moc_statecomboboxitemdelegate.cpp: $(SOURCE_DIR)UI/statecomboboxitemd
 $(COMP_DIR)moc_localizationeditordialog.cpp: $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h 
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $(SOURCE_DIR)UI/Dialogs/localizationeditordialog.h -o $(COMP_DIR)moc_localizationeditordialog.cpp
 
-compiler_rcc_make_all:
+$(COMP_DIR)qrc_icons.cpp : $(QRC_DIR)icons.qrc
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc -name icons $(QRC_DIR)icons.qrc -o $(COMP_DIR)qrc_icons.cpp
+
+compiler_rcc_make_all:  $(COMP_DIR)qrc_icons.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) $(COMP_DIR)qrc_icons.cpp
 compiler_image_collection_make_all: qmake_image_collection.cpp
 compiler_image_collection_clean:
 	-$(DEL_FILE) qmake_image_collection.cpp
@@ -308,6 +350,8 @@ compiler_uic_make_all: \
 	$(COMP_DIR)ui_librarywidget.h \
 	$(COMP_DIR)ui_propertygridcontainerwidget.h \
 	$(COMP_DIR)ui_textpropertygridwidget.h \
+	$(COMP_DIR)ui_sliderpropertygridwidget.h \
+	$(COMP_DIR)ui_alignspropertygridwidget.h \
 	$(COMP_DIR)ui_statepropertygridwidget.h \
 	$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 	$(COMP_DIR)ui_uitextfieldpropertygridwidget.h \
@@ -330,6 +374,8 @@ compiler_uic_clean:
 		$(COMP_DIR)ui_librarywidget.h \
 		$(COMP_DIR)ui_propertygridcontainerwidget.h \
 		$(COMP_DIR)ui_textpropertygridwidget.h \
+		$(COMP_DIR)ui_sliderpropertygridwidget.h \
+		$(COMP_DIR)ui_alignspropertygridwidget.h \
 		$(COMP_DIR)ui_statepropertygridwidget.h \
 		$(COMP_DIR)ui_backgroundpropertygridwidget.h \
 		$(COMP_DIR)ui_uitextfieldpropertygridwidget.h \
@@ -376,6 +422,12 @@ $(COMP_DIR)ui_textpropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/textproper
 
 $(COMP_DIR)ui_statepropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/statepropertygridwidget.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/statepropertygridwidget.ui -o $(COMP_DIR)ui_statepropertygridwidget.h
+
+$(COMP_DIR)ui_sliderpropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/sliderpropertygridwidget.ui
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/sliderpropertygridwidget.ui -o $(COMP_DIR)ui_sliderpropertygridwidget.h
+
+$(COMP_DIR)ui_alignspropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/alignspropertygridwidget.ui
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/alignspropertygridwidget.ui -o $(COMP_DIR)ui_alignspropertygridwidget.h
 
 $(COMP_DIR)ui_backgroundpropertygridwidget.h: $(UI_DIR)/PropertyGridWidgets/backgroundpropertygridwidget.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic $(UI_DIR)/PropertyGridWidgets/backgroundpropertygridwidget.ui -o $(COMP_DIR)ui_backgroundpropertygridwidget.h

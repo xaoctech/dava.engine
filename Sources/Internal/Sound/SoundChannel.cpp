@@ -245,6 +245,28 @@ float32 SoundChannel::GetVolume()
 	return volume;
 }
 
+void SoundChannel::SetPosition(const Vector3 & position)
+{
+#ifdef __DAVASOUND_AL__
+	AL_VERIFY(alSource3f(source, AL_POSITION, position.x, position.y, position.z));
+#endif //#ifdef __DAVASOUND_AL__
+}
 
+void SoundChannel::SetIgnorePosition(bool ignorePosition)
+{
+#ifdef __DAVASOUND_AL__
+	if(ignorePosition)
+	{
+		AL_VERIFY(alSourcef(source, AL_GAIN, .2f));
+		AL_VERIFY(alSource3f(source, AL_POSITION, 0, 0, 0));
+		AL_VERIFY(alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE));
+	}
+	else
+	{
+		AL_VERIFY(alSourcef(source, AL_GAIN, volume));
+		AL_VERIFY(alSourcei(source, AL_SOURCE_RELATIVE, AL_FALSE));
+	}
+#endif //#ifdef __DAVASOUND_AL__
+}
 
 };

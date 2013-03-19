@@ -29,10 +29,13 @@
 =====================================================================================*/
 #include "QtLayerMacOS.h"
 
+
 #if defined(__DAVAENGINE_MACOS__)
 
 #import "AppKit/NSView.h"
 #include "OpenGLView.h"
+
+#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 
 extern void FrameworkWillTerminate();
 
@@ -76,7 +79,7 @@ void QtLayerMacOS::Resize(int32 width, int32 height)
     
 void  QtLayerMacOS::Move(int32 x, int32 y)
 {
-    [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
+    // [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
 }
 
     
@@ -101,7 +104,7 @@ void QtLayerMacOS::AppFinished()
 #endif
 }
     
-void QtLayerMacOS::MouseMoved(int32 x, int32 y)
+void QtLayerMacOS::MouseMoved(float32 x, float32 y)
 {
     [openGLView MouseMoved:x y: y];
 }
@@ -123,6 +126,10 @@ void QtLayerMacOS::ReleaseAutoreleasePool(void *pool)
     [autoreleasePool release];
 }
 
+void* QtLayerMacOS::GetOpenGLView()
+{
+	return openGLView;
+}
 
 };
 
