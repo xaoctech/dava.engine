@@ -16,7 +16,6 @@ public:
     explicit LibraryWidget(QWidget *parent = 0);
     ~LibraryWidget();
 	
-//	QTreeWidgetItem* AddControl(const QString& name);
 	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath);
 	void RemoveControl(QTreeWidgetItem* item);
 	void UpdateControl(QTreeWidgetItem* item, const QString& name);
