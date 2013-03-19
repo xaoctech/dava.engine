@@ -518,9 +518,9 @@ void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchInd
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
-void QtMainWindowHandler::ToggleHangingObjects(float value)
+void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
 {
-	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
 }
 
 void QtMainWindowHandler::ToggleCustomColors()

@@ -22,7 +22,7 @@ HangingObjectsView::~HangingObjectsView()
 void HangingObjectsView::Init()
 {
 	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-	connect(this, SIGNAL(Clicked(float)), handler, SLOT(ToggleHangingObjects(float)));
+	connect(this, SIGNAL(Clicked(float,bool)), handler, SLOT(ToggleHangingObjects(float,bool)));
 	connect(ui->btnUpdate, SIGNAL(clicked()), this, SLOT(Clicked()));
 	connect(ui->checkBoxEnable, SIGNAL(stateChanged(int)), this, SLOT(CheckBoxChangeState(int )));
 	
@@ -39,7 +39,7 @@ void HangingObjectsView::Init()
 void HangingObjectsView::Clicked()
 {
 	float value = (float)ui->doubleSpinBoxHeight->value();
-	emit Clicked(value);
+	emit Clicked(value, ui->checkBoxEnable->isChecked());
 }
 
 void HangingObjectsView::CheckBoxChangeState(int newState)
@@ -53,6 +53,6 @@ void HangingObjectsView::CheckBoxChangeState(int newState)
 	{
 		ui->doubleSpinBoxHeight->setEnabled(true);
 		ui->btnUpdate->setEnabled(true);
-		this->Clicked();
 	}
+	this->Clicked();
 }

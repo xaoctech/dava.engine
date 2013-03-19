@@ -11,10 +11,11 @@ namespace DAVA
 class CommandToggleHangingObjects: public Command
 {
 public:
-	CommandToggleHangingObjects(float value);
+	CommandToggleHangingObjects(float value,bool isEnabled);
 
 protected:
 	float	value;
+	bool	isEnabled;
 	
     virtual void Execute();
 };

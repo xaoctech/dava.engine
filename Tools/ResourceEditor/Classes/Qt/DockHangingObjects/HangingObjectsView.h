@@ -21,7 +21,7 @@ public:
 	void Init();
 	
 signals:
-	void Clicked(float value);
+	void Clicked(float value, bool isEnabled);
 
 private slots:
 	void Clicked();
