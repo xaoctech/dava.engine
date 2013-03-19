@@ -42,6 +42,7 @@
 #include "Autotesting/MongodbUpdateObject.h"
 
 #define AUTOTESTING_DB_IP    "10.128.128.5"
+//#define AUTOTESTING_DB_IP    "192.168.1.2"
 #define AUTOTESTING_DB_PORT  27017
 #define AUTOTESTING_DB_NAME  "Autotesting"
 
@@ -99,10 +100,17 @@ public:
     void RegisterHelperInDB();
     
 protected:
+    String GetCurrentTimeString();
     //DB
+    KeyedArchive *FindOrInsertTestArchive(MongodbUpdateObject *dbUpdateObject, const String &testId);
+    KeyedArchive *FindOrInsertTestStepArchive(KeyedArchive *testArchive, const String &stepId);
+    KeyedArchive *FindOrInsertTestStepLogEntryArchive(KeyedArchive *testStepArchive, const String &logId);
+    
     bool ConnectToDB();
-    void AddTestResult(const String &text, bool isPassed, const String & error = "");
-    void SaveTestToDB();
+//    void AddTestResult(const String &text, bool isPassed, const String & error = "");
+//    void SaveTestToDB();
+    void SaveTestStepToDB(const String &stepDescription, bool isPassed, const String &error = "");
+    void SaveTestStepLogEntryToDB(const String &type, const String &time, const String &message);
     
     String ReadMasterIDFromDB(); //TODO: get first available master
     
@@ -123,19 +131,21 @@ protected:
     uint32 testsId;
     uint32 testsDate;
     int32 testIndex;
+    int32 stepIndex;
+    int32 logIndex;
 
     String testName;
     String testFileName;
     String testFilePath;
-    struct TestResult
-    {
-        TestResult(const String &_name, bool _isPassed, const String &_error) : name(_name), isPassed(_isPassed), error(_error) {}
-        
-        String name;
-        bool isPassed;
-        String error;
-    };
-    Vector< TestResult > testResults;
+//    struct TestResult
+//    {
+//        TestResult(const String &_name, bool _isPassed, const String &_error) : name(_name), isPassed(_isPassed), error(_error) {}
+//        
+//        String name;
+//        bool isPassed;
+//        String error;
+//    };
+//    Vector< TestResult > testResults;
 
     MongodbClient *dbClient;
     bool isDB;
