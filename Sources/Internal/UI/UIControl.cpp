@@ -1837,7 +1837,7 @@ namespace DAVA
 		// Control Type      
 		node->Set("type", "UIControl");
 		// Control name
-		node->Set("name", this->GetName());
+		//node->Set("name", this->GetName());
 		// Visible
 		if (baseControl->GetVisible() != this->GetVisible())
 		{
