@@ -150,9 +150,6 @@ void FontManagerDialog::OkButtonClicked()
            
         if (returnFont)
         {
-            //TODO: We don't have font color property for now.
-            //Initialize created font with white color
-            returnFont->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
             //Set dialog resulting font - it corresponds to selected font by user
             dialogResultFont = returnFont->Clone();
 			SafeRelease(returnFont);
@@ -173,10 +170,9 @@ void FontManagerDialog::SetDefaultButtonClicked()
         
         if (returnFont)
         {
-            //TODO: We don't have font color property for now.
-            //Initialize created font with white color
-            returnFont->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
 			EditorFontManager::Instance()->SetDefaultFont(returnFont);
+			// Update table view to show new default font
+			UpdateTableViewContents();
 			SafeRelease(returnFont);
         }
 	}

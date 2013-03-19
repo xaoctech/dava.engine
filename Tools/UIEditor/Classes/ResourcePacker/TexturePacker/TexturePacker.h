@@ -29,6 +29,7 @@ class TexturePacker
 {
 public:
 	TexturePacker();
+    ~TexturePacker();
 	
 	// pack textures to single texture
 	void PackToTextures(const char * excludeFolder, const char* outputPath, std::list<DefinitionFile*> & defsList);

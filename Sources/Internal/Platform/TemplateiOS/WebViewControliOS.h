@@ -30,6 +30,8 @@ public:
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
+	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+
 protected:
 	// Get the scale divider for Retina devices.
 	float GetScaleDivider();
@@ -39,6 +41,8 @@ protected:
 	
 	// A pointer to the WebView delegate.
 	void* webViewDelegatePtr;
+
+	void* webViewURLDelegatePtr;
 };
 
 };

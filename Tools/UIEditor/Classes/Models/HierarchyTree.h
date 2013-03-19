@@ -12,6 +12,7 @@
 #include "HierarchyTreeRootNode.h"
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeControlNode.h"
+#include "HierarchyTreeAggregatorNode.h"
 
 #include "BaseMetadata.h"
 
@@ -34,6 +35,7 @@ public:
 
 	HierarchyTreePlatformNode* AddPlatform(const QString& name, const Vector2& size);
 	HierarchyTreeScreenNode* AddScreen(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+	HierarchyTreeAggregatorNode* AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect);
 
 	void DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes, bool deleteNodeFromMemory,
 					 bool deleteNodeFromScene);

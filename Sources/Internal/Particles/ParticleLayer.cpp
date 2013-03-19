@@ -233,7 +233,7 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
 
 		String spritePath = FileSystem::GetCanonicalPath(sprite->GetRelativePathname());
-		const String configPath = emitter->GetConfigPath();
+		const String configPath = FileSystem::Instance()->GetCanonicalPath(emitter->GetConfigPath());
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
 		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
@@ -683,7 +683,9 @@ void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 		relativeSpriteName = relativePathName;
 		String configFolder, configFile;
 		FileSystem::SplitPath(configPath, configFolder, configFile);
-		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
+		
+		String path = FileSystem::Instance()->GetCanonicalPath(configFolder+relativePathName);
+		Sprite * _sprite = Sprite::Create(path);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{
