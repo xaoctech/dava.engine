@@ -115,7 +115,7 @@ public:
 		return unrotatedRect;
 	}
 	
-private:
+//private:
 	Rect unrotatedRect;
 	float32 oldAngle;
 
@@ -893,6 +893,8 @@ public:
 	 \param[in] hierarchic Is value need to be changed in all coltrol children.
 	 */
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
+	void	SetDebugDrawColor(const Color& color);
+	Color	GetDebugDrawColor() const;
 	
 public:
 	
@@ -1094,6 +1096,10 @@ public:
     
     /// sets rect to match background sprite, also moves pivot point to center
     void SetSizeFromBg(bool pivotToCenter = true);
+
+	// Recalculate the size and positions for the child controls according to their Align Options.
+	void ApplyAlignSettingsForChildren();
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1151,6 +1157,7 @@ protected:
 	bool needToRecalcFromAbsoluteCoordinates;
 	
 	bool debugDrawEnabled;
+	Color debugDrawColor;
 	
 	void SetParent(UIControl *newParent);
 	virtual ~UIControl();

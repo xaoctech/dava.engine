@@ -59,7 +59,7 @@ public:
     void Toggle();
     bool IsActive();
     
-    LandscapeNode *GetLandscape();
+    Landscape *GetLandscape();
     
     LandscapeToolsPanel *GetToolPanel();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
@@ -100,7 +100,7 @@ protected:
     eLEState state;
 
     HeightmapNode *heightmapNode;
-    LandscapeNode *workingLandscape;
+    Landscape *workingLandscape;
 
     LandscapeTool *currentTool;
 
@@ -121,7 +121,7 @@ protected:
 	Texture * cursorTexture;
 
     
-    LandscapeNode::eTiledShaderMode savedShaderMode;
+    Landscape::eTiledShaderMode savedShaderMode;
 };
 
 

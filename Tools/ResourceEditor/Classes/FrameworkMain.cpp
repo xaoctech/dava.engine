@@ -17,6 +17,7 @@
 
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
+#include "SceneEditor/SceneSaver.h"
 
 #include "SceneEditor/PVRConverter.h"
 #include "version.h"
@@ -36,7 +37,7 @@ void PrintUsage()
     printf("resourcepacker [src_dir] - will pack resources from src_dir\n");
     
     printf("\n");
-    printf("-sceneexporter [-clean [directory]] [-export [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format]\n");
+    printf("-sceneexporter [-clean [directory]] [-export [-indir [directory]] [-outdir [directory]] [-processdir [directory]] [-processfile [directory]] [-format] [-forceclose]\n");
     printf("\t-clean - will delete all files from Data/3d/\n"); 
     printf("\t-export - will export level to Data/3d/\n"); 
     printf("\t-indir - path for Poject/DataSource/3d/ folder \n"); 
@@ -44,13 +45,27 @@ void PrintUsage()
     printf("\t-processdir - foldername from DataSource/3d/ for exporting\n"); 
     printf("\t-processfile - filename from DataSource/3d/ for exporting\n"); 
     printf("\t-format - png, pvr, dxt\n"); 
-    printf("\t-force - to don't display error dialogs");
+    printf("\t-forceclose - to don't display error dialogs");
+
+    printf("\n");
+    printf("-scenesaver [-clean [directory]] [-save [-indir [directory]] [-outdir [directory]] [-processfile [directory]] [-forceclose]\n");
+    printf("\t-clean - will delete all files from Data/3d/\n");
+    printf("\t-save - will save level to selected Data/3d/\n");
+    printf("\t-indir - path for Poject/DataSource/3d/ folder \n");
+    printf("\t-outdir - path for Poject/Data/3d/ folder\n");
+    printf("\t-processfile - filename from DataSource/3d/ for saving\n");
+    printf("\t-forceclose - to don't display error dialogs");
+
     
     printf("\n");
     printf("Samples:");
     printf("-sceneexporter -clean /Users/User/Project/Data/3d/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
-    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -force\n");
+    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
+    
+    printf("\n");
+    printf("-scenesaver -clean /Users/User/Project/Data/3d/\n");
+    printf("-scenesaver -save -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -forceclose\n");
 }
 
 
@@ -175,10 +190,9 @@ void FrameworkDidLaunched()
     uint32 size = sizeof(EntityX);
     uint32 size2 = sizeof(EntitySTL);
     
-//	EntityTest();
-
     new CommandLineTool();
     new SceneExporter();
+    new SceneSaver();
     new EditorSettings();
 	new EditorConfig();
     new SceneValidator();
@@ -195,7 +209,7 @@ void FrameworkDidLaunched()
             uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
             SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);
             creationTime = SystemTimer::Instance()->AbsoluteMS() - creationTime;
-            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
+//            Logger::Info("[CreateDefaultDescriptors time is %ldms]", creationTime);
         }
     }
     
@@ -221,7 +235,10 @@ void FrameworkDidLaunched()
             CommandLineParser::Instance()->SetExtendedOutput(true);
         }
 		
-        if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
+        if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+           &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
+           &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+           )
         {
             ProcessRecourcePacker();
             return;  
@@ -272,5 +289,7 @@ void FrameworkWillTerminate()
 	EditorConfig::Instance()->Release();
 	EditorSettings::Instance()->Release();
     SceneExporter::Instance()->Release();
+    SceneSaver::Instance()->Release();
+
 	CommandLineTool::Instance()->Release();
 }

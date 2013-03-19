@@ -91,7 +91,7 @@ void QtPosSaver::SaveState(QSplitter *splitter)
 	if(NULL != splitter && !attachedWidgetName.isEmpty())
 	{
 		QString key = attachedWidgetName + "-splitter-" + splitter->objectName();
-		Save(key, splitter->saveState());
+			Save(key, splitter->saveState());
 	}
 }
 
@@ -122,24 +122,30 @@ void QtPosSaver::LoadState(QMainWindow *mainwindow)
 	}
 }
 
-void QtPosSaver::SaveState(QTreeView *treeView)
+void QtPosSaver::SaveValue(const QString &key, const DAVA::VariantType &value)
 {
-	if(NULL != treeView && !attachedWidgetName.isEmpty())
+	if(settingsArchiveIsLoaded && !key.isEmpty())
 	{
-		QString key = attachedWidgetName + "-treeview-header" + treeView->objectName();
-		QByteArray arr = treeView->header()->saveState();
-		Save(key, arr);
+		QString k = attachedWidgetName + "-" + key;
+		settingsArchive.SetVariant(k.toStdString(), value);
 	}
 }
 
-void QtPosSaver::LoadState(QTreeView *treeView)
+DAVA::VariantType QtPosSaver::LoadValue(const QString &key)
 {
-	if(NULL != treeView && !attachedWidgetName.isEmpty())
+	DAVA::VariantType v;
+
+	if(settingsArchiveIsLoaded && !key.isEmpty())
 	{
-		QString key = attachedWidgetName + "-treeview-header" + treeView->objectName();
-		QByteArray arr = Load(key);
-		treeView->header()->restoreState(arr);
+		QString k = attachedWidgetName + "-" + key;
+		DAVA::VariantType *val = settingsArchive.GetVariant(k.toStdString());
+		if(NULL != val)
+		{
+			v = *val;
+		}
 	}
+
+	return v;
 }
 
 void QtPosSaver::Save(const QString &key, const QByteArray &data)

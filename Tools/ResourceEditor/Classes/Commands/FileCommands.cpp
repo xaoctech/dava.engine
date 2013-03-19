@@ -175,7 +175,7 @@ void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
 	}
 }
 
-void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
+void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 {
 	bool needSaveThisLevelNode = true;
 	ParticleEmitter * emitter = GetEmitter(parentNode);

@@ -12,27 +12,122 @@
 #import <UIKit/UIKit.h>
 #import <HelperAppDelegate.h>
 
+@interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
+{
+	DAVA::IUIWebViewDelegate* delegate;
+	DAVA::UIWebView* webView;
+}
+
+- (id)init;
+
+- (void)setDelegate:(DAVA::IUIWebViewDelegate*)d andWebView:(DAVA::UIWebView*)w;
+
+- (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
+
+@end
+
+@implementation WebViewURLDelegate
+
+- (id)init
+{
+	self = [super init];
+	if (self)
+	{
+		delegate = NULL;
+		webView = NULL;
+	}
+	return self;
+}
+
+- (void)setDelegate:(DAVA::IUIWebViewDelegate *)d andWebView:(DAVA::UIWebView *)w
+{
+	if (d && w)
+	{
+		delegate = d;
+		webView = w;
+	}
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+	BOOL process = YES;
+	
+	if (delegate && self->webView)
+	{
+		NSString* url = [[request URL] absoluteString];
+		
+		if (url)
+		{
+			DAVA::IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+			
+			switch (action) {
+				case DAVA::IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
+					DAVA::Logger::Debug("PROCESS_IN_WEBVIEW");
+					process = YES;
+					break;
+					
+				case DAVA::IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
+					DAVA::Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					[[UIApplication sharedApplication] openURL:[request URL]];
+					process = NO;
+					break;
+					
+				case DAVA::IUIWebViewDelegate::NO_PROCESS:
+					DAVA::Logger::Debug("NO_PROCESS");
+					
+				default:
+					process = NO;
+					break;
+			}
+		}
+	}
+	
+	return process;
+}
+
+@end
+
+
 namespace DAVA
 {
+	typedef DAVA::UIWebView DAVAWebView;
 
+	//Use unqualified UIWebView and UIScreen from global namespace, i.e. from UIKit
+	using ::UIWebView;
+	using ::UIScreen;
 
 WebViewControl::WebViewControl()
 {
 	CGRect emptyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-	webViewPtr = [[::UIWebView alloc] initWithFrame:emptyRect];
+	webViewPtr = [[UIWebView alloc] initWithFrame:emptyRect];
 
-	::UIWebView* localWebView = (::UIWebView*)webViewPtr;
+	UIWebView* localWebView = (UIWebView*)webViewPtr;
 	HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
 	[[[appDelegate glController] view] addSubview:localWebView];
+
+	webViewURLDelegatePtr = [[WebViewURLDelegate alloc] init];
+	[localWebView setDelegate:(WebViewURLDelegate*)webViewURLDelegatePtr];
+
+	[localWebView becomeFirstResponder];
 }
 
 WebViewControl::~WebViewControl()
 {
-	::UIWebView* innerWebView = (::UIWebView*)webViewPtr;
+	UIWebView* innerWebView = (UIWebView*)webViewPtr;
 
 	[innerWebView removeFromSuperview];
 	[innerWebView release];
 	webViewPtr = nil;
+
+	WebViewURLDelegate* w = (WebViewURLDelegate*)webViewURLDelegatePtr;
+	[w release];
+	webViewURLDelegatePtr = nil;
+}
+	
+void WebViewControl::SetDelegate(IUIWebViewDelegate *delegate, DAVAWebView* webView)
+{
+	WebViewURLDelegate* w = (WebViewURLDelegate*)webViewURLDelegatePtr;
+	[w setDelegate:delegate andWebView:webView];
 }
 
 void WebViewControl::Initialize(const Rect& rect)
@@ -44,15 +139,15 @@ void WebViewControl::Initialize(const Rect& rect)
 void WebViewControl::OpenURL(const String& urlToOpen)
 {
 	NSString* nsURLPathToOpen = [NSString stringWithUTF8String:urlToOpen.c_str()];
-	NSURL* url = [NSURL URLWithString:nsURLPathToOpen];
+	NSURL* url = [NSURL URLWithString:[nsURLPathToOpen stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 	
 	NSURLRequest* requestObj = [NSURLRequest requestWithURL:url];
-	[(::UIWebView*)webViewPtr loadRequest:requestObj];
+	[(UIWebView*)webViewPtr loadRequest:requestObj];
 }
 
 void WebViewControl::SetRect(const Rect& rect)
 {
-	CGRect webViewRect = [(::UIWebView*)webViewPtr frame];
+	CGRect webViewRect = [(UIWebView*)webViewPtr frame];
 
 	Core::eScreenOrientation screenOrientation = Core::Instance()->GetScreenOrientation();
 	switch (screenOrientation)
@@ -70,7 +165,7 @@ void WebViewControl::SetRect(const Rect& rect)
 			webViewRect.size.width = rect.dy * DAVA::Core::GetVirtualToPhysicalFactor();
 			webViewRect.size.height = rect.dx * DAVA::Core::GetVirtualToPhysicalFactor();
 			
-			((::UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
+			((UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
 			break;
 		}
 
@@ -84,7 +179,7 @@ void WebViewControl::SetRect(const Rect& rect)
 			webViewRect.size.width = rect.dy * DAVA::Core::GetVirtualToPhysicalFactor();
 			webViewRect.size.height = rect.dx * DAVA::Core::GetVirtualToPhysicalFactor();
 			
-			((::UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(90.0f));
+			((UIWebView*)webViewPtr).transform = CGAffineTransformMakeRotation(DAVA::DegToRad(90.0f));
 			break;
 		}
 
@@ -117,12 +212,12 @@ void WebViewControl::SetRect(const Rect& rect)
 	webViewRect.size.height /= scaleDivider;
 	webViewRect.size.width /= scaleDivider;
 
-	[(::UIWebView*)webViewPtr setFrame: webViewRect];
+	[(UIWebView*)webViewPtr setFrame: webViewRect];
 }
 
 void WebViewControl::SetVisible(bool isVisible, bool hierarchic)
 {
-	[(::UIWebView*)webViewPtr setHidden:!isVisible];
+	[(UIWebView*)webViewPtr setHidden:!isVisible];
 }
 
 float WebViewControl::GetScaleDivider()
@@ -130,10 +225,10 @@ float WebViewControl::GetScaleDivider()
     float scaleDivider = 1.f;
     if (DAVA::Core::IsAutodetectContentScaleFactor())
     {
-        if ([::UIScreen instancesRespondToSelector: @selector(scale) ]
-            && [::UIView instancesRespondToSelector: @selector(contentScaleFactor) ])
+        if ([UIScreen instancesRespondToSelector: @selector(scale) ]
+            && [UIView instancesRespondToSelector: @selector(contentScaleFactor) ])
         {
-            scaleDivider = [[::UIScreen mainScreen] scale];
+            scaleDivider = [[UIScreen mainScreen] scale];
         }
 	}
 

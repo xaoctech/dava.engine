@@ -33,6 +33,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, oldDockSceneGraphMinSize(-1, -1)
 	, oldDockSceneGraphMaxSize(-1, -1)
 	, repackSpritesWaitDialog(NULL)
+	, emitRepackAndReloadFinished(false)
 {
 	new ProjectManager();
 	new SceneDataManager();
@@ -260,9 +261,9 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addAction(ui->actionRulerTool);
 
     ui->mainToolBar->addSeparator();
-    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
+    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Check, repack and reload textures"));
     DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/QtIcons/reloadtextures.png"));
-    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(ReloadTexturesFromFileSystem()));
+    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RepackAndReloadTextures()));
     ui->mainToolBar->addSeparator();
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
@@ -311,7 +312,9 @@ void QtMainWindow::SetupModificationToolBar()
 
 void QtMainWindow::OpenLastProject()
 {
-    if(!CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
+    if(     !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
+       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
     {
         DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
 
@@ -338,7 +341,7 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
+    connect(ui->actionRefreshSceneGraph, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ValueChanged()), ui->dockParticleEditor->widget(), SLOT(OnUpdate()));
@@ -417,11 +420,11 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if(qApp == obj)
+    if(qApp == obj && ProjectManager::Instance()->IsOpened())
     {
         if(QEvent::ApplicationActivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationActivate");
+//            Logger::Debug("QEvent::ApplicationActivate");
             
             if(QtLayer::Instance())
             {
@@ -429,18 +432,11 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
                 Core::Instance()->GetApplicationCore()->OnResume();
             }
 
-			bool convertionStarted = TextureCheckConvetAndWait();
-			if(!convertionStarted)
-			{
-				// conversion hasn't been started, run repack immediately 
-				// in another case repack will be invoked in finishing callback (ConvertWaitDone)
-				UpdateParticleSprites();
-			}
-			
+			// RepackAndReloadScene();			
         }
         else if(QEvent::ApplicationDeactivate == event->type())
         {
-            Logger::Debug("QEvent::ApplicationDeactivate");
+//            Logger::Debug("QEvent::ApplicationDeactivate");
             if(QtLayer::Instance())
             {
                 QtLayer::Instance()->OnSuspend();
@@ -472,14 +468,17 @@ void QtMainWindow::ProjectOpened(const QString &path)
 	}
 
 	this->setWindowTitle(strVer + QString("Project - ") + path);
-	UpdateParticleSprites();
 	UpdateLibraryFileTypes();
+	UpdateParticleSprites();
 }
 
 bool QtMainWindow::TextureCheckConvetAndWait(bool forceConvertAll)
 {
 	bool ret = false;
-	if(CommandLineTool::Instance() && !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")) && !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
+	if(     CommandLineTool::Instance()
+       &&   !CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+       &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))
+       &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")) && NULL == convertWaitDialog)
 	{
 		// check if we have textures to convert - 
 		// if we have function will return true and conversion will start in new thread
@@ -525,6 +524,17 @@ void QtMainWindow::UpdateParticleSprites()
 	repackSpritesWaitDialog->show();
 }
 
+void QtMainWindow::RepackAndReloadScene()
+{
+	emitRepackAndReloadFinished = true;
+	if(!TextureCheckConvetAndWait())
+	{
+		// conversion hasn't been started, run repack immediately 
+		// in another case repack will be invoked in finishing callback (ConvertWaitDone)
+		UpdateParticleSprites();
+	}
+}
+
 void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 {
 	convertWaitDialog = NULL;
@@ -533,6 +543,12 @@ void QtMainWindow::ConvertWaitDone(QObject *destroyed)
 
 void QtMainWindow::RepackSpritesWaitDone(QObject *destroyed)
 {
+	if(emitRepackAndReloadFinished)
+	{
+		emit RepackAndReloadFinished();
+	}
+
+	emitRepackAndReloadFinished = false;
 	repackSpritesWaitDialog = NULL;
 }
 

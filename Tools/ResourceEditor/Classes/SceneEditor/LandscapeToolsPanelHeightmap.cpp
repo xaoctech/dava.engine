@@ -53,7 +53,8 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     
     UIStaticText *textControl = new UIStaticText(heightRect);
     textControl->SetText(LocalizedString(L"landscapeeditor.height"));
-    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetFont(ControlsFactory::GetFont12());
+	textControl->SetTextColor(ControlsFactory::GetColorLight());
     textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
     AddControl(textControl);
     SafeRelease(textControl);
@@ -172,10 +173,11 @@ void LandscapeToolsPanelHeightmap::Input(DAVA::UIEvent *currentInput)
 
 UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
 {
-    Font * font = ControlsFactory::GetFontLight();
+    Font * font = ControlsFactory::GetFont12();
     UITextField *tf = new UITextField(rect);
     ControlsFactory::CustomizeEditablePropertyCell(tf);
     tf->SetFont(font);
+	tf->SetTextColor(ControlsFactory::GetColorLight());
     tf->SetDelegate(this);
     
     return tf;

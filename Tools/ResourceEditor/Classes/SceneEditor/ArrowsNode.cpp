@@ -6,7 +6,7 @@
 #define GREEN Color(0.f, 1.f, 0.f, 1.f)
 #define BLUE Color(0.f, 0.f, 1.f, 1.f)
 #define YELLOW Color(1.f, 1.f, 0.f, 1.f)
-#define GRAY Color(0.5f, 0.5f, 0.5f, 1.f)
+#define GRAY Color(0.3f, 0.3f, 0.3f, 1.f)
 
 #define SELECTED_COLOR YELLOW
 #define INACTIVE_COLOR GRAY
@@ -260,7 +260,7 @@ void ArrowsRenderBatch::Draw(Camera* camera)
 	manager->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
 	uint32 oldState = manager->GetState();
-	manager->SetState(RenderStateBlock::STATE_COLORMASK_ALL);
+	manager->SetState(RenderState::STATE_COLORMASK_ALL);
 
 	Color colors[COLORS_COUNT];
 	PrepareColors(colors);

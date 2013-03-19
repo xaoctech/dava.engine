@@ -46,16 +46,14 @@ public:
 	virtual void OnSuspend();
 	virtual void OnResume();
 	virtual void OnBackground();
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	virtual void OnDeviceLocked();
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	
 	virtual void BeginFrame();
 	virtual void Update(DAVA::float32 update);
 	virtual void Draw();
 	
-#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-	virtual void OnDeviceLocked() { };
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-
-    
 private:
 	DAVA::Cursor * cursor;
 	TestScreen * testScreen;

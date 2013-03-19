@@ -21,7 +21,7 @@ public:
 	void SetScale(const Vector2& scale);
 	void SetPos(const Vector2& pos);
 
-	Vector2 LocalToInternal(const Vector2& localPoint);
+	Vector2 LocalToInternal(const Vector2& localPoint) const;
 	
 	virtual void Input(UIEvent * touch);
 	virtual bool SystemInput(UIEvent *currentInput);
@@ -30,6 +30,7 @@ public:
 	void MouseInputMove(const Vector2& pos);
 	
 	void BacklightControl(const Vector2& pos);
+	bool IsDropEnable(const Vector2& pos)const;
 	
 private:
 	enum InputState
@@ -92,6 +93,7 @@ private:
 	void DeleteSelectedControls();
 	
 	void ApplySizeDelta(const Vector2& delta);
+	bool IsNeedApplyResize() const;
 	void ResetSizeDelta();
 	void ResizeControl();
 	ResizeType GetResizeType(const HierarchyTreeControlNode* selectedControlNode, const Vector2& point) const;

@@ -16,9 +16,8 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
-#include "UNDOManager.h"
-
 #include "SceneExporter.h"
+#include "SceneSaver.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -37,12 +36,12 @@ SceneEditorScreenMain::SceneEditorScreenMain()
 void SceneEditorScreenMain::LoadResources()
 {
     new HintManager();
-    new UNDOManager();
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::GetFontLight();
+    font12 = ControlsFactory::GetFont12();
+	font12Color = ControlsFactory::GetColorLight();
 
     helpDialog = new HelpDialog();
     
@@ -85,7 +84,6 @@ void SceneEditorScreenMain::UnloadResources()
 
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
-    UNDOManager::Instance()->Release();
 }
 
 
@@ -188,6 +186,17 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
 }
 
+void SceneEditorScreenMain::ActivateLevelBodyItem()
+{
+	// "Level" body item is always first.
+	static const int32 LEVEL_BODY_ITEM_INDEX = 0;
+	if (bodies.empty() || !bodies[LEVEL_BODY_ITEM_INDEX]->headerButton)
+	{
+		return;
+	}
+	
+	OnSelectBody(bodies[LEVEL_BODY_ITEM_INDEX]->headerButton, NULL, NULL);
+}
 
 void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
 {
@@ -285,9 +294,7 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
-		CommandCreateNodeSceneEditor* command = new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNodeSceneEditor(nodeDialog->GetSceneNode()));
     }
 }
 
@@ -382,7 +389,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             if(0 <= key && key < 8)
             {
                 BodyItem *iBody = FindCurrentBody();
-                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                Entity *node = iBody->bodyControl->GetSelectedSGNode();
                 EditorScene *editorScene = iBody->bodyControl->GetScene();
                 editorScene->SetForceLodLayer(node, key);
             }
@@ -424,6 +431,12 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
+	// In case the current scene isn't the "level" one, switch to it firstly.
+	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
+	{
+		ActivateLevelBodyItem();
+	}
+
     //опен всегда загружает только уровень, но не отдельные части сцены
     SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
@@ -509,48 +522,8 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	}
 }
 
-void SceneEditorScreenMain::CopyFile(const String & file)
-{
-	FileSystem * inst = FileSystem::Instance();
-
-	String fileName = outputFolder + file;
-	
-	String path, name;
-	inst->SplitPath(fileName, path, name);
-	inst->CreateDirectory(path, true);
-	inst->DeleteFile(fileName);
-	if (!inst->CopyFile(inputFolder + file, fileName))
-	{
-		Logger::Error("Referenced file %s is not found!", file.c_str());
-	}
-}
-
-void SceneEditorScreenMain::CheckNodes(SceneNode * node)
-{
-    KeyedArchive *customProperties = node->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-    {
-        String path = customProperties->GetString("editor.referenceToOwner");
-				
-		String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-		String::size_type pos = path.find(dataSourcePath);
-		if(String::npos != pos)
-		{
-			path = path.replace(pos, dataSourcePath.length(), "");
-		}
-		
-		CopyFile(path);
-    }
-	for (int i = 0; i < node->GetChildrenCount(); i++)
-	{
-		CheckNodes(node->GetChild(i));
-	}
-}
-
 void SceneEditorScreenMain::SaveToFolder(const String & folder)
 {
-	String formatStr = String("png");
-    
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
@@ -571,28 +544,18 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     String projectPath = keyedArchieve->GetString(String("ProjectPath"));
     
-    if(!SceneExporter::Instance()) new SceneExporter();
+    if(!SceneSaver::Instance()) new SceneSaver();
     
     String inFolder = projectPath + String("DataSource/3d/");
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetOutFolder(folder);
-    
-	inputFolder = inFolder;
-	outputFolder = folder;
-    
-	SceneExporter::Instance()->SetExportingFormat(formatStr);
+    SceneSaver::Instance()->SetInFolder(inFolder);
+    SceneSaver::Instance()->SetOutFolder(folder);
     
     Set<String> errorsLog;
-    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    SceneSaver::Instance()->SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
     ShowErrorDialog(errorsLog);
-
-	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
-	CopyFile(filePath);
-	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
-	CheckNodes(iBody->bodyControl->GetScene());
 }
 
 void SceneEditorScreenMain::ExportAs(ImageFileFormat format)
@@ -754,7 +717,7 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
 }
 
-void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
+void SceneEditorScreenMain::SelectNodeQt(DAVA::Entity *node)
 {
     BodyItem *iBody = FindCurrentBody();
 	if (iBody)

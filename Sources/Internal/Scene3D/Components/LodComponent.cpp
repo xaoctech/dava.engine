@@ -1,5 +1,5 @@
 #include "Scene3D/Components/LodComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -30,14 +30,14 @@ void LodComponent::LodDistance::SetFarDistance(const float32 &newDistance)
 	farDistanceSq = farDistance * farDistance;
 }
 
-Component * LodComponent::Clone(SceneNode * toEntity)
+Component * LodComponent::Clone(Entity * toEntity)
 {
 	LodComponent * newLod = new LodComponent();
 	newLod->SetEntity(toEntity);
 
 	newLod->lodLayers = lodLayers;
-	const List<LodData>::const_iterator endLod = newLod->lodLayers.end();
-	for (List<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
+	const Vector<LodData>::const_iterator endLod = newLod->lodLayers.end();
+	for (Vector<LodData>::iterator it = newLod->lodLayers.begin(); it != endLod; ++it)
 	{
 		LodData & ld = *it;
 		ld.nodes.clear();
@@ -55,7 +55,7 @@ Component * LodComponent::Clone(SceneNode * toEntity)
 	//			int32 count = entity->GetChildrenCount();
 	//			for (int32 i = 0; i < count; i++) 
 	//			{
-	//				SceneNode * child = entity->GetChild(i);
+	//				Entity * child = entity->GetChild(i);
 	//				if(child == ld.nodes[idx])
 	//				{
 	//					ld.nodes[idx] = toEntity->GetChild(i);
@@ -123,7 +123,7 @@ void LodComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 		i = 0;
 		KeyedArchive *lodDataArch = new KeyedArchive();
-		List<LodData>::iterator it = lodLayers.begin();
+		Vector<LodData>::iterator it = lodLayers.begin();
 		for(; it != lodLayers.end(); ++it)
 		{
 			KeyedArchive *lodDataValuesArch = new KeyedArchive();
@@ -265,12 +265,12 @@ float32 LodComponent::GetForceDistance() const
     return forceDistance;
 }
 
-void LodComponent::GetLodData(List<LodData*> &retLodLayers)
+void LodComponent::GetLodData(Vector<LodData*> &retLodLayers)
 {
 	retLodLayers.clear();
 
-	List<LodData>::const_iterator endIt = lodLayers.end();
-	for(List<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
+	Vector<LodData>::const_iterator endIt = lodLayers.end();
+	for(Vector<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
 	{
 		LodData *ld = &(*it);
 		retLodLayers.push_back(ld);
@@ -317,8 +317,8 @@ int32 LodComponent::GetForceLodLayer()
 int32 LodComponent::GetMaxLodLayer()
 {
 	int32 ret = -1;
-	const List<LodData>::const_iterator &end = lodLayers.end();
-	for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+	const Vector<LodData>::const_iterator &end = lodLayers.end();
+	for (Vector<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
 	{
 		LodData & ld = *it;
 		if(ld.layer > ret)

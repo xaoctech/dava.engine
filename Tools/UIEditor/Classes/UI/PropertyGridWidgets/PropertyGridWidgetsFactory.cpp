@@ -10,12 +10,15 @@
 
 #include "PlatformMetadata.h"
 #include "ScreenMetadata.h"
+#include "AggregatorMetadata.h"
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
 #include "UISliderMetadata.h"
+#include "UIListMetadata.h"
+#include "UISpinnerMetadata.h"
 
 using namespace DAVA;
 
@@ -26,6 +29,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     screenWidget = new ScreenPropertyGridWidget();
     registeredWidgets.push_back(screenWidget);
+	
+	aggregatorWidget = new AggregatorPropertyGridWidget();
+	registeredWidgets.push_back(aggregatorWidget);
     
     controlWidget = new ControlPropertyGridWidget();
     registeredWidgets.push_back(controlWidget);
@@ -95,6 +101,14 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(screenWidget);
         return resultList;
     }
+	
+	// aggregator node
+	const AggregatorMetadata* aggregatorMetadata = dynamic_cast<const AggregatorMetadata*>(metaData);
+	if (aggregatorMetadata)
+	{
+		resultList.push_back(aggregatorWidget);
+		return resultList;
+	}
 
     // UI Button/Static Text Nodes - they require the same widgets.
     const UIButtonMetadata* uiButtonMetadata = dynamic_cast<const UIButtonMetadata*>(metaData);
@@ -103,8 +117,11 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
     {
         resultList.push_back(controlWidget);
         resultList.push_back(rectWidget);
-		resultList.push_back(alignWidget);
-        resultList.push_back(stateWidget);
+        resultList.push_back(alignWidget);
+        if(uiButtonMetadata)
+        {
+            resultList.push_back(stateWidget);
+        }
         resultList.push_back(textWidget);
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
@@ -141,7 +158,35 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 				
 		return resultList;
 	}
-    
+
+    // UI List.
+	const UIListMetadata* uiListMetadata = dynamic_cast<const UIListMetadata*>(metaData);
+    if (uiListMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
+	// UI Spinner.
+	const UISpinnerMetadata* uiSpinnerMetadata = dynamic_cast<const UISpinnerMetadata*>(metaData);
+    if (uiSpinnerMetadata)
+    {
+        resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+        resultList.push_back(stateWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+    }
+
     // TODO: add other Metadatas here as soon as they will be implemented.
     // UI Control Node. Should be at the very bottom of this factory since it is a parent for
     // all UI Controls and used as a "last chance" if we are unable to determine the control type.

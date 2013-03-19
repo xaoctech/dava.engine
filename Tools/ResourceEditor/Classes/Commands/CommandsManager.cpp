@@ -117,6 +117,12 @@ void CommandsManager::Execute(Command *command)
 	QtMainWindowHandler::Instance()->UpdateUndoActionsState();
 }
 
+void CommandsManager::ExecuteAndRelease(Command* command)
+{
+	Execute(command);
+	SafeRelease(command);
+}
+
 void CommandsManager::Undo()
 {
 	if ((activeQueue->commandIndex >= 0) &&

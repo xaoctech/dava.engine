@@ -39,6 +39,7 @@ private slots:
 	
 	void OnNewPlatform();
 	void OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
+	void OnNewAggregator(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
 	
 	void OnProjectCreated();
 	void OnSelectedScreenChanged();
@@ -52,8 +53,13 @@ private slots:
 	void OnUndoRequested();
 	void OnRedoRequested();
 	
+	void OnZoomInRequested();
+	void OnZoomOutRequested();
+	
 	void OnUndoRedoAvailabilityChanged();
 	void OnChangePropertySucceeded();
+
+	void OnUnsavedChangesNumberChanged();
 
 private:
 	bool CloseProject();

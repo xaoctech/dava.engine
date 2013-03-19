@@ -381,12 +381,12 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Landscape.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
@@ -425,7 +425,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h" />
@@ -457,7 +457,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.h" />
@@ -471,7 +470,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
@@ -480,22 +478,18 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Entity.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
@@ -508,7 +502,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
@@ -523,6 +517,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIAggregatorControl.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIButton.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIControl.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIControlBackground.h" />
@@ -550,6 +545,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UISpinner.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UISwitch.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h" />
@@ -727,11 +723,11 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeChunk.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
@@ -767,7 +763,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
@@ -798,7 +794,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\BulletComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\CameraComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ComponentHelpers.cpp" />
@@ -812,7 +807,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
@@ -821,15 +815,12 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
@@ -848,7 +839,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
@@ -862,6 +853,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIAggregatorControl.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIButton.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIControl.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIControlBackground.cpp" />
@@ -886,12 +878,13 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

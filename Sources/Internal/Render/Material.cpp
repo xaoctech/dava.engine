@@ -42,6 +42,7 @@
 #include "Render/TextureDescriptor.h"
 #include "Platform/SystemTimer.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA 
 {
@@ -121,9 +122,31 @@ void InstanceMaterialState::Save(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		archive->SetVector2("ims.uvoffset", uvOffset);
-		archive->SetVector2("ims.uvscale", uvScale);
-		archive->SetString("ims.lightmapname", lightmapName);
+		if(uvOffset != Vector2())
+		{
+			archive->SetVector2("ims.uvoffset", uvOffset);
+		}
+        
+		if(uvScale != Vector2())
+		{
+			archive->SetVector2("ims.uvscale", uvScale);
+		}
+		
+		if(!lightmapName.empty())
+		{
+            String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), lightmapName);
+            archive->SetString("ims.lightmapname", filename);
+		}
+		
+		if(flatColor != Color::White())
+		{
+			archive->SetByteArrayAsType("ims.flatColor", flatColor);
+		}
+		
+		if(texture0Shift != Vector2())
+		{
+			archive->SetVector2("ims.texture0Shift", texture0Shift);
+		}
 	}
 }
 
@@ -131,17 +154,25 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 {
 	if(NULL != archive)
 	{
-		if(archive->IsKeyExists("ims.uvoffset")) uvOffset = archive->GetVector2("ims.uvoffset");
-		if(archive->IsKeyExists("ims.uvscale")) uvScale = archive->GetVector2("ims.uvscale");
+		uvOffset = archive->GetVector2("ims.uvoffset");
+		uvScale = archive->GetVector2("ims.uvscale");
 
-		String lName = archive->GetString("ims.lightmapname");
-
-		if(!lName.empty())
+		String filename = archive->GetString("ims.lightmapname");
+		if(!filename.empty())
 		{
-			Texture* lTextute = Texture::CreateFromFile(lName);
-			SetLightmap(lTextute, lName);
-			lTextute->Release();
+            String lName = FileSystem::Instance()->GetCanonicalPath(sceneFile->GetScenePath() + filename);
+
+			Texture* lTexture = Texture::CreateFromFile(lName);
+			SetLightmap(lTexture, lName);
+			lTexture->Release();
 		}
+        else
+        {
+			SetLightmap(NULL, String(""));
+        }
+
+		flatColor = archive->GetByteArrayAsType("ims.flatColor", Color::White());
+		texture0Shift = archive->GetVector2("ims.texture0Shift");
 	}
 }
 
@@ -229,7 +260,7 @@ Material::Material()
     names.resize(TEXTURE_COUNT);
     
     
-	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
+	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
 
 //    if (scene)
 //    {
@@ -520,15 +551,6 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-//        if (names[k].length() > 0)
-//        {
-//            String filename = sceneFile->AbsoluteToRelative(names[k]);
-//            keyedArchive->SetString(Format("mat.tex%d", k), filename);
-//            
-//            if(sceneFile->DebugLogEnabled())
-//                Logger::Debug("--- save material texture: %s", filename.c_str());
-//        }
-        
         if (names[k].Initalized())
         {
             String filename = names[k].GetRelativePath(sceneFile->GetScenePath());
@@ -557,6 +579,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.fogcolor", fogColor);
     keyedArchive->SetFloat("mat.fogdencity", fogDensity);
     keyedArchive->SetBool("mat.isFogEnabled", isFogEnabled);
+
+	keyedArchive->SetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
+	keyedArchive->SetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
 }
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -566,27 +591,6 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     int32 texCount = keyedArchive->GetInt32("mat.texCount");
     for (int32 k = 0; k < texCount; ++k)
     {
-//        String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
-//        if (relativePathname.length() > 0)
-//        {
-//			String absolutePathname = relativePathname;
-//			if(!absolutePathname.empty() && absolutePathname[0] != '~') //not path like ~res:/Gfx...
-//			{
-//				absolutePathname = sceneFile->RelativeToAbsolute(relativePathname);
-//			}
-//
-//            names[k] = absolutePathname;
-//            if(sceneFile->DebugLogEnabled())
-//                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
-//            
-//            textures[k] = Texture::CreateFromFile(names[k]);
-//        }
-//        
-////        if (names[k].size())
-////        {
-////            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
-////        }
-        
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
         if (!relativePathname.empty())
         {
@@ -625,6 +629,9 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
 	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
 	fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
+
+	isFlatColorEnabled = keyedArchive->GetBool("mat.isFlatColorEnabled", isFlatColorEnabled);
+	isTexture0ShiftEnabled = keyedArchive->GetBool("mat.isTexture0ShiftEnabled", isTexture0ShiftEnabled);
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
@@ -773,27 +780,27 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
 	if (isTranslucent || isTwoSided)
 	{
-		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
+		renderStateBlock.state &= ~RenderState::STATE_CULL;
 	}
 	else
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_CULL;
+		renderStateBlock.state |= RenderState::STATE_CULL;
 	}
 
 
 	if(isAlphablend)
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_BLEND;
 		//Dizz: temporary solution
-		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode((eBlendMode)blendSrc, (eBlendMode)blendDst);
 	}
 	else
 	{
 		//Dizz: temporary solution
-		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
-		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_BLEND;
 	}
 
 	if(isWireframe)
@@ -1028,7 +1035,7 @@ bool Material::GetAlphablend()
 	return isAlphablend;
 }
 
-RenderStateBlock * Material::GetRenderStateBlock()
+RenderState * Material::GetRenderState()
 {
 	return &renderStateBlock;
 }

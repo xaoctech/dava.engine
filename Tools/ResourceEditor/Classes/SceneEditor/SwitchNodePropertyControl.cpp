@@ -6,7 +6,7 @@ SwitchNodePropertyControl::SwitchNodePropertyControl(const Rect & rect, bool cre
 
 }
 
-void SwitchNodePropertyControl::ReadFrom(SceneNode * sceneNode)
+void SwitchNodePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

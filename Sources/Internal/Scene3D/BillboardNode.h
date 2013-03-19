@@ -31,12 +31,12 @@
 #ifndef __DAVAENGINE_BILLBOARD_NODE_H__
 #define __DAVAENGINE_BILLBOARD_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/RenderDataObject.h"
 
 namespace DAVA 
 {
-class BillboardNode : public SceneNode
+class BillboardNode : public Entity
 {
 public:
     BillboardNode();

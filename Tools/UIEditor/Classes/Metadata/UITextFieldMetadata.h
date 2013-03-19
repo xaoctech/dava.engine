@@ -41,6 +41,15 @@ protected:
 
     QColor GetTextColor() const;
     void SetTextColor(const QColor& color);
+	
+	virtual float GetShadowOffsetX() const;
+	virtual void SetShadowOffsetX(float offset);
+	
+	virtual float GetShadowOffsetY() const;
+	virtual void SetShadowOffsetY(float offset);
+	
+	virtual QColor GetShadowColor() const;
+	virtual void SetShadowColor(const QColor& value);
 };
 
 };

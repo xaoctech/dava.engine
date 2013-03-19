@@ -23,7 +23,7 @@
 #include "SceneEditor/PVRConverter.h"
 
 #include "SceneEditor/CommandLineTool.h"
-#include "SceneEditor/ExporterScreen.h"
+#include "SceneEditor/SceneUtilsScreen.h"
 
 #include "ImageSplitter/ImageSplitterScreen.h"
 
@@ -69,22 +69,22 @@ void GameCore::OnAppStarted()
 
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
-    exporterScreen = new ExporterScreen();
+    sceneUtilsScreen = new SceneUtilsScreen();
 
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
-
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_UTILS, sceneUtilsScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_IMAGE_SPLITTER, imageSplitterScreen);
 
     
-    if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+    if(     CommandLineTool::Instance()
+       &&   (CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter"))
+       ||   CommandLineTool::Instance()->CommandIsFound(String("-scenesaver"))))
     {
-        UIScreenManager::Instance()->SetFirst(SCREEN_EXPORTER);
+        UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_UTILS);
     }
     else if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
@@ -93,6 +93,7 @@ void GameCore::OnAppStarted()
     else
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
+        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 	
 	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using
@@ -110,7 +111,7 @@ void GameCore::OnAppFinished()
 
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
-    SafeRelease(exporterScreen);
+    SafeRelease(sceneUtilsScreen);
     SafeRelease(imageSplitterScreen);
 }
 

@@ -6,7 +6,7 @@ namespace DAVA
 {
     
 
-void GlobalEventSystem::Event(SceneNode * entity, Component * component, uint32 event)
+void GlobalEventSystem::Event(Entity * entity, Component * component, uint32 event)
 {
     if (entity)
     {
@@ -22,7 +22,7 @@ void GlobalEventSystem::Event(SceneNode * entity, Component * component, uint32 
 	list.push_back(event);
 }
     
-void GlobalEventSystem::PerformAllEventsFromCache(SceneNode * entity)
+void GlobalEventSystem::PerformAllEventsFromCache(Entity * entity)
 {
     for (uint32 k = 0; k < Component::COMPONENT_COUNT; ++k)
     {

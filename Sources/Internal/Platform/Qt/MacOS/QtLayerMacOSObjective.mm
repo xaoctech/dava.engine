@@ -46,7 +46,6 @@ namespace DAVA
 NSView *qtNSView = NULL;
 OpenGLView *openGLView = NULL;
     
-    
 void QtLayerMacOS::InitializeGlWindow(void *qtView, int32 width, int32 height)
 {
     qtNSView = (NSView *)qtView;
@@ -80,7 +79,7 @@ void QtLayerMacOS::Resize(int32 width, int32 height)
     
 void  QtLayerMacOS::Move(int32 x, int32 y)
 {
-    [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
+    // [openGLView setWindowOffset:Vector2((float32)x, (float32)y)];
 }
 
     
@@ -105,7 +104,7 @@ void QtLayerMacOS::AppFinished()
 #endif
 }
     
-void QtLayerMacOS::MouseMoved(int32 x, int32 y)
+void QtLayerMacOS::MouseMoved(float32 x, float32 y)
 {
     [openGLView MouseMoved:x y: y];
 }

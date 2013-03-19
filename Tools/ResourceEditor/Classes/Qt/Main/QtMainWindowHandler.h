@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QVector>
 #include <QAbstractButton>
+#include <QRadioButton.h>
 
 #include "DAVAEngine.h"
 #include "../Constants.h"
@@ -12,6 +13,7 @@
 
 #include "TextureBrowser/TextureBrowser.h"
 #include "MaterialBrowser/MaterialBrowser.h"
+#include "Classes/Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
 
 class Command;
 class QMenu;
@@ -22,6 +24,7 @@ class QPushButton;
 class QSlider;
 class QComboBox;
 class ModificationWidget;
+class QSpinBox;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -55,7 +58,11 @@ public:
 	//custom colors
 	void RegisterCustomColorsWidgets(QPushButton*, QPushButton*, QSlider*, QComboBox*, QPushButton*);
     void SetCustomColorsWidgetsState(bool state);
-	
+
+	//set switch index
+	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
+    void SetSwitchIndexWidgetsState(bool state);
+
 	//visibility check tool
 	void RegisterWidgetsVisibilityTool(QPushButton*, QPushButton*, QPushButton*, QPushButton*, QSlider*);
 	void SetWidgetsStateVisibilityTool(bool state);
@@ -111,6 +118,9 @@ public slots:
     //scene graph
     void RefreshSceneGraph();
     
+	//set switch index
+	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
+
     //custom colors
     void ToggleCustomColors();
     void SaveTextureCustomColors();
@@ -126,7 +136,7 @@ public slots:
 	void SetVisibilityAreaVisibilityTool();
 
     //
-    void ReloadTexturesFromFileSystem();
+    void RepackAndReloadTextures();
 
 	//particles editor
 	void CreateParticleEmitterNode();
@@ -144,8 +154,10 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
-signals:
 
+	void ReloadSceneTextures();
+
+signals:
 	void ProjectChanged();
 
 private:
@@ -153,9 +165,7 @@ private:
     void CreateNode(ResourceEditor::eNodeType type);
     //viewport
     void SetViewport(ResourceEditor::eViewportType type);
-    
-    void Execute(Command *command);
-    
+
     void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
     
     void ClearActions(int32 count, QAction **actions);
@@ -163,6 +173,12 @@ private:
 	void UpdateModificationActions();
 
 private:
+	//set switch index
+	QPushButton*	setSwitchIndexToggleButton;
+	QSpinBox*		editSwitchIndexValue;
+	QRadioButton*	rBtnSelection;
+	QRadioButton*	rBtnScene;
+
 	//custom colors
 	QPushButton* customColorsToggleButton;
 	QPushButton* customColorsSaveTextureButton;

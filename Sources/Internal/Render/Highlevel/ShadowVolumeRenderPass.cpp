@@ -66,13 +66,13 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		}
         
 		//2nd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
 		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
         
 		RenderManager::Instance()->ClearStencilBuffer(0);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
+		RenderManager::Instance()->AppendState(RenderState::STATE_STENCIL_TEST);
 		
 		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
 		RenderManager::State()->SetStencilRef(1);
@@ -91,8 +91,8 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
         shadowVolumesLayer->Draw(camera);
         
 		//3rd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		RenderManager::Instance()->RemoveState(RenderState::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_TEST);
 		
 		RenderManager::State()->SetStencilRef(0);
 		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
@@ -104,5 +104,11 @@ void ShadowVolumeRenderPass::Draw(Camera * camera)
 		shadowRect->Draw();
 	}
 }
+    
+ShadowRect * ShadowVolumeRenderPass::GetShadowRect() const
+{
+    return shadowRect;
+}
+
     
 };

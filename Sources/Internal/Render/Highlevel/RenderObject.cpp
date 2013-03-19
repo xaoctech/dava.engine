@@ -79,6 +79,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
+    if (removeIndex != -1)
+    {
+        DVASSERT(renderSystem);
+		renderSystem->RemoveRenderBatch(batch);
+    }
+    
     batch->SetRenderObject(0);
 	batch->Release();
 
@@ -123,7 +129,9 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 	uint32 size = GetRenderBatchCount();
 	for(uint32 i = 0; i < size; ++i)
 	{
-		newObject->AddRenderBatch(GetRenderBatch(i)->Clone());
+        RenderBatch *batch = GetRenderBatch(i)->Clone();
+		newObject->AddRenderBatch(batch);
+        batch->Release();
 	}
     newObject->ownerDebugInfo = ownerDebugInfo;
 

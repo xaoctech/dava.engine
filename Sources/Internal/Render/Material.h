@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 
 #include "FileSystem/FilePath.h"
 #include "Base/FastName.h"
@@ -277,12 +277,7 @@ public:
 	inline Texture * GetTexture(eTextureLevel level) const;
 	inline const String & GetTextureName(eTextureLevel level) const;
 
-	RenderStateBlock * GetRenderStateBlock();
-    
-    inline void SetUvOffset(const Vector2 & uvOffset);
-    inline void SetUvScale(const Vector2 & uvScale);
-    inline const Vector2 & GetUvOffset() const;
-    inline const Vector2 & GetUvScale() const;
+	RenderState * GetRenderState();
     
     inline void SetBlendSrc(eBlendMode _blendSrc);
     inline void SetBlendDest(eBlendMode _blendDest);
@@ -299,9 +294,6 @@ private:
     
     String textureSlotNames[TEXTURE_COUNT];
     uint32 textureSlotCount;
-    
-    Vector2 uvOffset;
-	Vector2 uvScale;
 
 //	eBlendMode blendSrc; //TODO: waiting for enums at introspection
 //	eBlendMode blendDst; //TODO: waiting for enums at introspection
@@ -354,7 +346,7 @@ private:
     int32 uniformFlatColor;
     int32 uniformTexture0Shift;
 
-	RenderStateBlock renderStateBlock;
+	RenderState renderStateBlock;
     
     
     /*
@@ -415,24 +407,6 @@ inline const String & Material::GetTextureName(eTextureLevel level) const
 	DVASSERT(level < TEXTURE_COUNT);
 //	return names[level];
 	return names[level].GetAbsolutePath();
-}
-    
-inline void Material::SetUvOffset(const Vector2 & _uvOffset)
-{
-    uvOffset = _uvOffset;
-}
-
-inline void Material::SetUvScale(const Vector2 & _uvScale)
-{
-    uvScale = _uvScale;
-}
-inline const Vector2 & Material::GetUvOffset() const
-{
-    return uvOffset;
-}
-inline const Vector2 & Material::GetUvScale() const
-{
-    return uvScale;
 }
 
 inline void Material::SetBlendSrc(eBlendMode _blendSrc)

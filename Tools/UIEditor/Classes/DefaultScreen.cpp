@@ -4,6 +4,7 @@
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 
 #define SIZE_CURSOR_DELTA 4
 #define MIN_DRAG_DELTA 3
@@ -86,7 +87,7 @@ bool DefaultScreen::IsPointInside(const Vector2& /*point*/, bool /*expandWithFoc
 }
 
 
-Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint)
+Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint) const
 {
 	Vector2 point = -pos;
 	point.x += localPoint.x / scale.x;
@@ -118,7 +119,7 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 		}break;
 		case UIEvent::PHASE_MOVE:
 		{
-			//MouseInputMove(event);
+			ScreenWrapper::Instance()->SetCursor(GetCursor(event->point));
 		}break;
 		case UIEvent::PHASE_ENDED:
 		{
@@ -498,6 +499,8 @@ DefaultScreen::ResizeType DefaultScreen::GetResizeType(const HierarchyTreeContro
 	 
 	//check is resize
 	Rect rect = GetControlRect(selectedControlNode);
+	if (!rect.PointInside(pos))
+		return ResizeTypeNoResize;
 	
 	bool horLeft = false;
 	bool horRight = false;
@@ -615,6 +618,9 @@ void DefaultScreen::ResetSizeDelta()
 
 void DefaultScreen::ResizeControl()
 {
+	if (!IsNeedApplyResize())
+		return;
+	
 	if (!lastSelectedControl)
 		return;
 	
@@ -635,6 +641,15 @@ void DefaultScreen::ResizeControl()
 	ControlResizeCommand* cmd = new ControlResizeCommand(lastSelectedControl->GetId(), resizeRect, rect);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
+}
+
+bool DefaultScreen::IsNeedApplyResize() const
+{
+	if (!lastSelectedControl)
+		return false;
+
+	Rect rect = lastSelectedControl->GetUIObject()->GetRect();
+	return rect != resizeRect;
 }
 
 void DefaultScreen::ApplyMouseSelection(const Vector2& rectSize)
@@ -696,11 +711,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	lastSelectedControl = NULL;
 	useMouseUpSelection = true;
 	
-#ifdef WIN32
 	Vector2 localPoint = event->point;
-#else
-	Vector2 localPoint = ScreenWrapper::Instance()->TranslateScreenPoint(event->point);
-#endif
 	Vector2 point = LocalToInternal(localPoint);
 
 	HierarchyTreeControlNode* selectedControlNode = GetSelectedControl(point);
@@ -720,9 +731,10 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 			selectedControlNode = NULL;
 			break;
 		}
-		
+
 		ResizeType resize = GetResizeType(selectedControlNode, point);
-		if (resize != ResizeTypeNoResize)
+		if (resize != ResizeTypeNoResize &&
+			HierarchyTreeController::Instance()->IsControlSelected(selectedControlNode))
 		{
 			resizeType = resize;
 			lastSelectedControl = selectedControlNode;
@@ -769,7 +781,7 @@ void DefaultScreen::CopySelectedControls()
 {
 	//Set copy flag
 	copyControlsInProcess = true;
-	HierarchyTreeNode* parentConrol;
+	HierarchyTreeNode* parentConrol = NULL;
 	//Get current selected controls on screen
 	const HierarchyTreeController::SELECTEDCONTROLNODES &selectedNodes = HierarchyTreeController::Instance()->GetActiveControlNodes();
 	//Get firt parent control from list of selected controls
@@ -869,11 +881,7 @@ void DefaultScreen::MouseInputEnd(const DAVA::UIEvent* event)
 	//located in the same area
 	if ((inputState == InputStateSelection) && useMouseUpSelection)
 	{		
-#ifdef WIN32
 		Vector2 localPoint = event->point;
-#else
-		Vector2 localPoint = ScreenWrapper::Instance()->TranslateScreenPoint(event->point);
-#endif
 		Vector2 point = LocalToInternal(localPoint);
 		
 		HierarchyTreeControlNode* selectedControlNode = SmartGetSelectedControl(point);
@@ -1024,6 +1032,15 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 	{
 		HierarchyTreeController::Instance()->ResetSelectedControl();
 	}
+}
+
+bool DefaultScreen::IsDropEnable(const DAVA::Vector2 &position) const
+{
+	Vector2 pos = LocalToInternal(position);
+	HierarchyTreeAggregatorControlNode* newSelectedNode = dynamic_cast<HierarchyTreeAggregatorControlNode*>(GetSelectedControl(pos, HierarchyTreeController::Instance()->GetActiveScreen()));
+	if (newSelectedNode)
+		return false;
+	return true;
 }
 
 Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode) const

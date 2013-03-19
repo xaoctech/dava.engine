@@ -177,12 +177,11 @@ void UISliderMetadata::SetSliderThumbSpriteFrame(int value)
 		return;
 	}	
 	
-	Sprite* thumbSprite = thumbButton->GetBackground()->GetSprite();	
+	Sprite* thumbSprite = thumbButton->GetBackground()->GetSprite();
 	if (thumbSprite && thumbSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetThumbSprite(thumbSprite, value);
-		SafeRelease(thumbSprite);
-	}	
+	}
 }
 
 QString UISliderMetadata::GetSliderMinSprite() const
@@ -258,12 +257,11 @@ void UISliderMetadata::SetSliderMinSpriteFrame(int value)
 		return;
 	}
 		
-	Sprite* minSprite = bgMin->GetSprite();	
+	Sprite* minSprite = bgMin->GetSprite();
 	if (minSprite && minSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetMinSprite(minSprite, value);
-		SafeRelease(minSprite);
-	}	
+	}
 }
 
 int UISliderMetadata::GetSliderMinDrawType() const
@@ -363,8 +361,7 @@ void UISliderMetadata::SetSliderMaxSpriteFrame(int value)
 	if (maxSprite && maxSprite->GetFrameCount() > value)
 	{
 		GetActiveUISlider()->SetMaxSprite(maxSprite, value);
-		SafeRelease(maxSprite);
-	}	
+	}
 }
 
 int UISliderMetadata::GetSliderMaxDrawType() const

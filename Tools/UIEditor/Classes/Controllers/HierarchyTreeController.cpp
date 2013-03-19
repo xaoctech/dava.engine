@@ -12,6 +12,7 @@
 
 #include "BaseMetadata.h"
 #include "MetadataFactory.h"
+#include "LibraryController.h"
 
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
@@ -48,8 +49,10 @@ bool HierarchyTreeController::Save(const QString& projectPath)
 void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
 											  const HierarchyTreeScreenNode* activeScreen)
 {
+	bool updateLibrary = false;
 	if (this->activePlatform != activePlatform)
 	{
+		updateLibrary = true;
 		ResetSelectedControl();
 		this->activePlatform = (HierarchyTreePlatformNode*)activePlatform;
 		if (this->activePlatform)
@@ -57,15 +60,20 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 
         // The platform is changed - update the Localization System.
         UpdateLocalization(false);
-
 		emit SelectedPlatformChanged(this->activePlatform);
 	}
 	if (this->activeScreen != activeScreen)
 	{
+		updateLibrary = true;
+		if (this->activeScreen)
+			this->activeScreen->RemoveSelection();
+		
 		ResetSelectedControl();
 		this->activeScreen = (HierarchyTreeScreenNode*)activeScreen;
 		emit SelectedScreenChanged(this->activeScreen);
 	}
+	if (updateLibrary)
+		LibraryController::Instance()->UpdateLibrary();
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeItem)
@@ -88,23 +96,65 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	//add selection
 	activeControlNodes.insert(control);
-	control->GetUIObject()->SetDebugDraw(true);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(true);
+		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
+	
+		//YZ draw parent rect
+		UIControl* parentUiControl = uiControl->GetParent();
+		if (parentUiControl)
+		{
+			parentUiControl->SetDebugDrawColor(Color(0.55f, 0.55f, 0.55f, 1.f));
+			parentUiControl->SetDebugDraw(true);
+		}
+	}
+	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
 	UpdateSelection(control);
 }
 
-void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control)
+void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
 {
 	if (activeControlNodes.find(control) == activeControlNodes.end())
 		return;
 	
 	//remove selection
-	//activeControlNodes.erase(iter);
 	activeControlNodes.erase(control);
-	control->GetUIObject()->SetDebugDraw(false);
+	UIControl* uiControl = control->GetUIObject();
+	if (uiControl)
+	{
+		uiControl->SetDebugDraw(false);
+		
+		//YZ draw parent rect
+		UIControl* parentToRemove = uiControl->GetParent();
+		if (parentToRemove)
+		{
+			bool removeParentDraw = true;
+			for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin(); iter != activeControlNodes.end(); ++iter)
+			{
+				HierarchyTreeControlNode* control = (*iter);
+				UIControl* uiControl = control->GetUIObject();
+				if (uiControl)
+				{
+					UIControl* parentUiControl = uiControl->GetParent();
+					if (parentToRemove == uiControl ||
+						parentToRemove == parentUiControl)
+					{
+						removeParentDraw = false;
+						break;
+					}
+				}
+			}
+			if (removeParentDraw)
+				parentToRemove->SetDebugDraw(false);
+		}
+	}
 	emit RemoveSelectedControl(control);
-	emit SelectedControlNodesChanged(activeControlNodes);
+	if (emitSelectedControlNodesChanged)
+		emit SelectedControlNodesChanged(activeControlNodes);
 }
 
 bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* control) const
@@ -114,16 +164,11 @@ bool HierarchyTreeController::IsControlSelected(HierarchyTreeControlNode* contro
 
 void HierarchyTreeController::ResetSelectedControl()
 {
-	for (SELECTEDCONTROLNODES::iterator iter = activeControlNodes.begin();
-		 iter != activeControlNodes.end();
-		 ++iter)
+	while (activeControlNodes.size())
 	{
-		HierarchyTreeControlNode* activeControl = (*iter);
-		activeControl->GetUIObject()->SetDebugDraw(false);
-		emit RemoveSelectedControl(activeControl);
+		UnselectControl(*(activeControlNodes.begin()), false);
 	}
-
-	activeControlNodes.clear();
+	
 	emit SelectedControlNodesChanged(activeControlNodes);
 }
 
@@ -145,13 +190,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 		
     // Create the control itself.
 	String type = strType.toStdString();
-	BaseObject* object = ObjectFactory::Instance()->New(type);
-	UIControl* control = dynamic_cast<UIControl*>(object);
-	if (!control)
-	{
-		SafeRelease(object);
-		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
-	}
+	String newName = activeScreen->GetNewControlName(type);
 
 	HierarchyTreeNode* parentNode = activeScreen;
 	Vector2 parentDelta(0, 0);
@@ -162,33 +201,17 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 		//parentDelta = parentControlNode->GetUIObject()->GetPosition();
 		parentDelta = parentControlNode->GetParentDelta();
 	}
-
-    // Add the tree node - we need it before initializing control.
-    String newName = activeScreen->GetNewControlName(type);
-	HierarchyTreeControlNode* controlNode = new HierarchyTreeControlNode(parentNode, control,
-                                                                         QString::fromStdString(newName));
-	parentNode->AddTreeNode(controlNode);
-
-    // Initialize a control through its metadata.
-    BaseMetadata* newControlMetadata = MetadataFactory::Instance()->GetMetadataForUIControl(control);
-
-    METADATAPARAMSVECT params;
-    params.push_back(BaseMetadataParams(controlNode->GetId(), control));
-    newControlMetadata->SetupParams(params);
-
-    // Pre-calculate the values needed for initialization.
-    Vector2 point = Vector2(position.x(), position.y());
+	
+	Vector2 point = Vector2(position.x(), position.y());
 	DefaultScreen* screen = ScreenWrapper::Instance()->GetActiveScreen();
 	if (screen)
 		point = screen->LocalToInternal(point);
 	point -= parentDelta;
 
-    // Ready to do initialization!
-    newControlMetadata->InitializeControl(newName, point);
-
-    SAFE_DELETE(newControlMetadata);
-    
-	SafeRelease(object);
+    // Add the tree node - we need it before initializing control.
+	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, strType, QString::fromStdString(newName), point);
+	if (!controlNode)
+		return HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 
 	emit HierarchyTreeUpdated();
 	ResetSelectedControl();
@@ -298,6 +321,18 @@ HierarchyTreeScreenNode* HierarchyTreeController::AddScreen(const QString& name,
 	HierarchyTreeScreenNode* screenNode = hierarchyTree.AddScreen(name, platform);
 	if (screenNode)
 	{
+		UpdateSelection(screenNode->GetPlatform(), screenNode);
+		EmitHierarchyTreeUpdated();
+	}
+	
+	return screenNode;
+}
+
+HierarchyTreeAggregatorNode* HierarchyTreeController::AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platform, const Rect& rect)
+{
+	HierarchyTreeAggregatorNode* screenNode = hierarchyTree.AddAggregator(name, platform, rect);
+	if (screenNode)
+	{
 		EmitHierarchyTreeUpdated();
 	}
 	
@@ -307,11 +342,11 @@ HierarchyTreeScreenNode* HierarchyTreeController::AddScreen(const QString& name,
 void HierarchyTreeController::CloseProject()
 {
 	activeControlNodes.clear();
-	hierarchyTree.CloseProject();
-
-	CleanupNodesDeletedFromScene();
 	ResetSelectedControl();
 	UpdateSelection(NULL, NULL);
+	
+	hierarchyTree.CloseProject();
+	CleanupNodesDeletedFromScene();
 
 	EmitHierarchyTreeUpdated();
 	emit ProjectClosed();

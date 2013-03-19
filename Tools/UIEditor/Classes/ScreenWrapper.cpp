@@ -26,7 +26,7 @@ ScreenWrapper::~ScreenWrapper()
     
 }
 
-void ScreenWrapper::SetQtScreen(const QWidget* widget)
+void ScreenWrapper::SetQtScreen(QWidget* widget)
 {
 	this->qtScreen = widget;
 }
@@ -77,21 +77,6 @@ DefaultScreen* ScreenWrapper::GetActiveScreen()
 {
 	DefaultScreen* screen = dynamic_cast<DefaultScreen*>(ScreenManager::Instance()->GetScreen());
 	return screen;
-}
-
-Vector2 ScreenWrapper::TranslateScreenPoint(const Vector2& point)
-{
-	Vector2 newPoint = point;
-	QWidget* mainWindow = GetMainWindow();
-	if (qtScreen && mainWindow)
-	{
-		QPoint qtPoint(point.x, point.y);
-		qtPoint = qtScreen->mapFrom(mainWindow, qtPoint);
-		newPoint.x = qtPoint.x();
-		newPoint.y = qtPoint.y();
-	}
-
-	return newPoint;
 }
 
 QWidget* ScreenWrapper::GetMainWindow()
@@ -156,30 +141,31 @@ void ScreenWrapper::SetViewPos(int posX, int posY, const QRect& size)
 	activeScreen->SetPos(Vector2(posX, posY));
 }
 
-Qt::CursorShape ScreenWrapper::GetCursorType(const QPoint& pos)
-{
-	return GetActiveScreen()->GetCursor(Vector2(pos.x(), pos.y()));
-}
-
-void ScreenWrapper::CursorMove(const QPoint& pos)
-{
-	DefaultScreen* screen = GetActiveScreen();
-	if (screen)
-		screen->MouseInputMove(Vector2(pos.x(), pos.y()));
-}
-
 void ScreenWrapper::RequestUpdateCursor()
 {
 	QCursor::setPos(QCursor::pos()); //emulate mouse move for update cursor
 }
 
-void ScreenWrapper::BacklightControl(const QPoint& pos)
+bool ScreenWrapper::IsDropEnable(const QPoint& pos)
 {
-	GetActiveScreen()->BacklightControl(Vector2(pos.x(), pos.y()));
+	DefaultScreen* activeScreen = GetActiveScreen();
+	if (!activeScreen)
+		return false;
+	
+	Vector2 _pos = Vector2(pos.x(), pos.y());
+	bool res = activeScreen->IsDropEnable(_pos);
+	activeScreen->BacklightControl(_pos);
+	return res;
 }
 
 void ScreenWrapper::RequestUpdateView()
 {
 	UpdateScaleRequest(1);
 	UpdateScaleRequest(-1);
+}
+
+void ScreenWrapper::SetCursor(Qt::CursorShape cursor)
+{
+	if (qtScreen)
+		qtScreen->setCursor(cursor);
 }

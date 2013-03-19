@@ -9,7 +9,7 @@
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "../LandscapeEditor/LandscapeRenderer.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -282,7 +282,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 		float32 scaleSize = (float32)((int32)currentTool->size);
 		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2.f;
 
-        LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
+        Landscape *landscape = landscapesController->GetCurrentLandscape();
 		landscape->SetCursorTexture(cursorTexture);
 		landscape->SetBigTextureSize((float32)landscapeSize);
 		landscape->SetCursorPosition(pos);
@@ -418,7 +418,7 @@ void LandscapeEditorHeightmap::HideAction()
     
     SafeRelease(toolImage);
 
-    landscapesController->ReleaseEditorLandscapeNode();
+    landscapesController->ReleaseEditorLandscape();
     SafeRelease(landscapesController);
 
 	if (tilemaskWasChanged)
@@ -436,9 +436,9 @@ void LandscapeEditorHeightmap::HideAction()
     // RETURN TO THIS CODE LATER
     // workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~DebugRenderComponent::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
-    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
+    workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, tilemaskPathname);
 
-	Texture* texture = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
+	Texture* texture = workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
 	texture->Reload();
 }
 
@@ -449,7 +449,7 @@ void LandscapeEditorHeightmap::ShowAction()
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     landscapesController = activeScene->GetLandscapesController();
     
-    landscapesController->CreateEditorLandscapeNode();    
+    landscapesController->CreateEditorLandscape();    
     
     SafeRetain(landscapesController);
     
@@ -475,7 +475,7 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     copyFromCenter = Vector2(-1.0f, -1.0f);
     copyToCenter = Vector2(-1.0f, -1.0f);
     
-    Texture *mask = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
+    Texture *mask = workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK);
     if(mask)
     {
         tilemaskPathname = mask->GetPathname();
@@ -483,7 +483,7 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
         tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
     }
     
-    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskTexture);
+    workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, tilemaskTexture);
     workingLandscape->UpdateFullTiledTexture();
 }
 
@@ -573,7 +573,7 @@ void LandscapeEditorHeightmap::OnShowGrid(bool show)
     
     if(landscapesController)
     {
-        LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
+        Landscape *landscape = landscapesController->GetCurrentLandscape();
         // RETURN TO THIS CODE LATER
         //landscape->SetDebugFlags(workingLandscape->GetDebugFlags());
     }
@@ -604,7 +604,7 @@ void LandscapeEditorHeightmap::RecreateHeightmapNode()
 {
     SafeRelease(heightmapNode);
     
-    LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
+    Landscape *landscape = landscapesController->GetCurrentLandscape();
     heightmapNode = new HeightmapNode(workingScene, landscape);
     
     workingScene->AddNode(heightmapNode);
@@ -622,9 +622,7 @@ void LandscapeEditorHeightmap::CreateHeightmapUndo()
 {
 	if (oldHeightmap)
 	{
-		CommandDrawHeightmap* command = new CommandDrawHeightmap(oldHeightmap, GetHeightmap());
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawHeightmap(oldHeightmap, GetHeightmap()));
 		SafeRelease(oldHeightmap);
 	}
 }
@@ -637,15 +635,13 @@ void LandscapeEditorHeightmap::CreateCopyPasteUndo()
 		Texture* texture = tilemaskTexture;
 		Image* image = texture->CreateImageFromMemory();
 
-		CommandCopyPasteHeightmap* command = new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
-																		   currentTool->copyTilemask,
-																		   oldHeightmap,
-																		   GetHeightmap(),
-																		   oldTilemap,
-																		   image,
-																		   tilemaskPathname);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandCopyPasteHeightmap(currentTool->copyHeightmap,
+																					 currentTool->copyTilemask,
+																					 oldHeightmap,
+																					 GetHeightmap(),
+																					 oldTilemap,
+																					 image,
+																					 tilemaskPathname));
 		SafeRelease(oldHeightmap);
 		SafeRelease(oldTilemap);
 		SafeRelease(image);
@@ -661,7 +657,7 @@ void LandscapeEditorHeightmap::UpdateLandscapeTilemap(Texture* texture)
 	tilemaskTexture = SafeRetain(texture);
 	tilemaskImage = tilemaskTexture->CreateImageFromMemory();
 
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskTexture);
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, tilemaskTexture);
 	workingLandscape->UpdateFullTiledTexture();
 
 	tilemaskWasChanged = true;

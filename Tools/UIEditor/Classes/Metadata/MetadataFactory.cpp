@@ -12,11 +12,13 @@
 
 #include "UIControlMetadata.h"
 #include "UIButtonMetadata.h"
-#include "PlatformMetadata.h"
 
 #include "UIStaticTextMetadata.h"
 #include "UITextFieldMetadata.h"
 #include "UISliderMetadata.h"
+#include "UIListMetadata.h"
+#include "UISpinnerMetadata.h"
+#include "UIAggregatorMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -43,6 +45,11 @@ ScreenMetadata* MetadataFactory::GetScreenMetadata() const
     return new ScreenMetadata();
 }
 
+AggregatorMetadata* MetadataFactory::GetAggregatorMetadata() const
+{
+	return new AggregatorMetadata();
+}
+
 BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiControl) const
 {
     if (dynamic_cast<const UIStaticText*>(uiControl))
@@ -64,6 +71,21 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
 	{
 		return new UISliderMetadata();
 	}
+	
+	if (dynamic_cast<const UIList*>(uiControl))
+	{
+		return new UIListMetadata();
+	}
+
+	if (dynamic_cast<const UISpinner*>(uiControl))
+	{
+		return new UISpinnerMetadata();
+	}
+
+	if (dynamic_cast<const UIAggregatorControl*>(uiControl))
+	{
+		return new UIAggregatorMetadata();
+	}
     // Add metadata for other Controls here.
 
     return new UIControlMetadata();
@@ -78,6 +100,11 @@ BaseMetadata* MetadataFactory::GetMetadataForTreeNode(const HierarchyTreeNode* t
     }
 
     // First try pre-defined nodes.
+	if (dynamic_cast<const HierarchyTreeAggregatorNode*>(treeNode))
+	{
+		return GetAggregatorMetadata();
+	}
+	
     if (dynamic_cast<const HierarchyTreeScreenNode*>(treeNode))
     {
         return GetScreenMetadata();

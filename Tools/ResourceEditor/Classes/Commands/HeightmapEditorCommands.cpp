@@ -109,13 +109,15 @@ void HeightmapModificationCommand::UpdateLandscapeHeightmap(String filename)
 	SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
 	LandscapesController* landscapesController = activeScene->GetLandscapesController();
 	
-	LandscapeNode* landscapeNode = landscapesController->GetCurrentLandscape();
+	Landscape* landscapeNode = landscapesController->GetCurrentLandscape();
 	
 	Heightmap* heightmap = new Heightmap();
 	heightmap->Load(filename);
 	
 	landscapeNode->SetHeightmap(heightmap);
 	heightmap->Save(landscapeNode->GetHeightmapPathname());
+
+	SafeRelease(heightmap);
 }
 
 
@@ -287,9 +289,9 @@ void CommandCopyPasteHeightmap::UpdateLandscapeTilemap(DAVA::Image *image)
 	{
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		EditorScene* scene = screen->FindCurrentBody()->bodyControl->GetScene();
-		LandscapeNode* landscape = scene->GetLandscape(scene);
+		Landscape* landscape = scene->GetLandscape(scene);
 
-		landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+		landscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 		landscape->UpdateFullTiledTexture();
 		ImageLoader::Save(image, tilemapSavedPathname);
 	}

@@ -67,6 +67,7 @@ namespace DAVA
 		
 //		absoluteRect = Rect(0,0,0,0);
 		debugDrawEnabled = false;
+		debugDrawColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 		absolutePosition = Vector2(0, 0);
 		
 		pivotPoint = Vector2(0, 0);
@@ -1450,13 +1451,6 @@ namespace DAVA
 			Draw(drawData);
 		}
 		
-		if (debugDrawEnabled)
-		{//TODO: Add debug draw for rotated controls
-			RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		}
-		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
@@ -1473,7 +1467,15 @@ namespace DAVA
 		if(clipContents)
 		{
 			RenderManager::Instance()->ClipPop();
-		}	
+		}
+		
+		if (debugDrawEnabled)
+		{//TODO: Add debug draw for rotated controls
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
+			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
+			RenderManager::Instance()->SetColor(oldColor);
+		}
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &point, bool expandWithFocus/* = false*/)
@@ -1932,12 +1934,10 @@ namespace DAVA
 		{
 			node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
 		}
-		// Draw type
+		// Draw type, obligatory for UI controls.
 		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
-		if (baseControl->GetBackground()->GetDrawType() != drawType)
-		{
-			node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
-		}
+		node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
+
 		// LeftRightStretchCapNode
 		if (baseControl->GetBackground()->GetLeftRightStretchCap() != this->GetBackground()->GetLeftRightStretchCap())
 		{
@@ -1957,6 +1957,11 @@ namespace DAVA
 		if (baseControl->tag != this->tag)
 		{
 			node->Set("tag", this->tag);
+		}
+		// spriteModification
+		if (baseControl->GetBackground()->GetModification() != this->GetBackground()->GetModification())
+		{
+			node->Set("spriteModification", this->GetBackground()->GetModification());
 		}
         
 		// Release variantType variable
@@ -1989,6 +1994,8 @@ namespace DAVA
 		
 		YamlNode * angleNode = node->Get("angle");
 		YamlNode * tagNode = node->Get("tag");
+
+		YamlNode * spriteModificationNode = node->Get("spriteModification");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -2139,6 +2146,12 @@ namespace DAVA
 		{
 			tag = tagNode->AsInt();
 		}
+
+		if(spriteModificationNode)
+        {
+			int32 spriteModification = spriteModificationNode->AsInt32();
+            GetBackground()->SetModification(spriteModification);
+        }
 	}
 	
 	Animation *	UIControl::WaitAnimation(float32 time, int32 track)
@@ -2298,6 +2311,16 @@ namespace DAVA
 			}
 		}
 	}
+	
+	void UIControl::SetDebugDrawColor(const Color& color)
+	{
+		debugDrawColor = color;
+	}
+	
+	Color UIControl::GetDebugDrawColor() const
+	{
+		return debugDrawColor;
+	}
     
     bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
     {
@@ -2397,7 +2420,8 @@ namespace DAVA
 	
 	void UIControl::RecalculateChildsSize()
 	{
-		const List<UIControl*>& realChildren = this->GetRealChildren();
+//		const List<UIControl*>& realChildren = this->GetRealChildren();
+		const List<UIControl*>& realChildren = this->GetChildren();	//YZ recalculate size for all controls
 		for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
 		{
 			UIControl* child = (*iter);
@@ -2516,5 +2540,10 @@ namespace DAVA
 	float32 UIControl::Round(float32 value)
 	{
 		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
+	}
+
+	void UIControl::ApplyAlignSettingsForChildren()
+	{
+		RecalculateChildsSize();
 	}
 }

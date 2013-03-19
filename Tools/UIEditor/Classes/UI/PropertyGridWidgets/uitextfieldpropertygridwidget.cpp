@@ -36,6 +36,10 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     
     RegisterLineEditWidgetForProperty(propertiesMap, TEXT_PROPERTY_NAME, ui->textLineEdit);
     RegisterColorButtonWidgetForProperty(propertiesMap, TEXT_COLOR_PROPERTY_NAME, ui->textColorPushButton);
+
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_X, ui->shadowOffsetXSpinBox);
+    RegisterSpinBoxWidgetForProperty(propertiesMap, SHADOW_OFFSET_Y, ui->shadowOffsetYSpinBox);
+    RegisterColorButtonWidgetForProperty(propertiesMap, SHADOW_COLOR, ui->shadowColorButton);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()
@@ -43,6 +47,10 @@ void UITextFieldPropertyGridWidget::Cleanup()
     UnregisterPushButtonWidget(ui->fontSelectButton);
     UnregisterSpinBoxWidget(ui->fontSizeSpinBox);
     UnregisterColorButtonWidget(ui->textColorPushButton);
+
+    UnregisterSpinBoxWidget(ui->shadowOffsetXSpinBox);
+    UnregisterSpinBoxWidget(ui->shadowOffsetYSpinBox);
+    UnregisterColorButtonWidget(ui->shadowColorButton);
     
     BasePropertyGridWidget::Cleanup();
 }
@@ -90,6 +98,8 @@ void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *sender
     BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
+	// TODO - probable memory leak. Need to investigate how to fix it
+	// SafeRelease(resultFont);
 }
 
 void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
