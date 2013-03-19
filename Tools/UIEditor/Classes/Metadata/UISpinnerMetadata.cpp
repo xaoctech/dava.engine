@@ -7,6 +7,7 @@
 //
 
 #include "UISpinnerMetadata.h"
+#include "StringUtils.h"
 
 namespace DAVA {
 
@@ -47,7 +48,7 @@ QString UISpinnerMetadata::GetPrevButtonText()
 	UIStaticText* textControl = GetPrevButton()->GetStateTextControl(this->uiControlState);
 	if (textControl)
 	{
-		return QString::fromStdWString(textControl->GetText());
+		return WideString2QStrint(textControl->GetText());
 	}
 	
 	return QString();
@@ -60,7 +61,7 @@ void UISpinnerMetadata::SetPrevButtonText(const QString& value)
         return;
     }
 
-	GetPrevButton()->SetStateText(this->uiControlState, value.toStdWString());
+	GetPrevButton()->SetStateText(this->uiControlState, QStrint2WideString(value));
 }
 	
 QString UISpinnerMetadata::GetNextButtonText()
@@ -73,7 +74,7 @@ QString UISpinnerMetadata::GetNextButtonText()
 	UIStaticText* textControl = GetNextButton()->GetStateTextControl(this->uiControlState);
 	if (textControl)
 	{
-		return QString::fromStdWString(textControl->GetText());
+		return WideString2QStrint(textControl->GetText());
 	}
 	
 	return QString();
@@ -86,7 +87,7 @@ void UISpinnerMetadata::SetNextButtonText(const QString& value)
         return;
     }
 	
-	GetNextButton()->SetStateText(this->uiControlState, value.toStdWString());
+	GetNextButton()->SetStateText(this->uiControlState, QStrint2WideString(value));
 }
 
 UISpinner* UISpinnerMetadata::GetActiveUISpinner()
