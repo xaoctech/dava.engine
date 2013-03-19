@@ -5,17 +5,17 @@
 #include "../Qt/Main/GUIState.h"
 #include <QFileDialog>
 #include "../SceneEditor/EditorBodyControl.h"
-//#include "../Qt/DockSetSwitchIndex/SetSwitchIndexHelper.h"
+#include "../Qt/DockHangingObjects/HangingObjectsHelper.h"
 
 
-CommandToggleHangingObjects::CommandToggleHangingObjects(float value)
+CommandToggleHangingObjects::CommandToggleHangingObjects(float value, bool isEnabled)
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
     this->value = value;
+	this->isEnabled = isEnabled;
 }
 
 void CommandToggleHangingObjects::Execute()
 {
-	//SetSwitchIndexHelper::ProcessSwitchIndexUpdate(this->value, this->swtichState);
-	int k =0;
+	HangingObjectsHelper::ProcessHangingObjectsUpdate(value, isEnabled);
 }

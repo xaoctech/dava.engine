@@ -128,7 +128,7 @@ public slots:
 	void ToggleSetSwitchIndex(DAVA::uint32  value, DAVA::SetSwitchIndexHelper::eSET_SWITCH_INDEX state);
 
 	//hanging objects
-	void ToggleHangingObjects(float value);
+	void ToggleHangingObjects(float value, bool isEnabled);
 
     //custom colors
     void ToggleCustomColors();
