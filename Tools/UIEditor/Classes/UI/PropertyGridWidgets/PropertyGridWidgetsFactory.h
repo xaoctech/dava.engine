@@ -27,6 +27,7 @@
 #include "backgroundpropertygridwidget.h"
 #include "sliderpropertygridwidget.h"
 #include "alignspropertygridwidget.h"
+#include "spinnerpropertygridwidget.h"
 
 namespace DAVA {
     
@@ -62,6 +63,7 @@ private:
     BackGroundPropertyGridWidget* backgroundWidget;
 	SliderPropertyGridWidget* sliderWidget;
 	AlignsPropertyGridWidget* alignWidget;
+	SpinnerPropertyGridWidget* spinnerWidget;
     
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;
