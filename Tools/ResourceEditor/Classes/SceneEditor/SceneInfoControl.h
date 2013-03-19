@@ -31,9 +31,11 @@ protected:
     void RedrawCells();
     
     PropertyList *sceneInfo;
-    Scene *workingScene;
     
     RenderManager::Stats renderStats;
+    
+    
+    Scene * GetWorkingScene() const;
 };
 
 

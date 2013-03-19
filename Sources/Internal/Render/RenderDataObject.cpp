@@ -51,7 +51,7 @@ RenderDataStream::~RenderDataStream()
 {
 }
 
-void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, void * _pointer)
+void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, const void * _pointer)
 {
     type = _type;
     size = _size;
@@ -94,6 +94,11 @@ RenderDataObject::~RenderDataObject()
     //streamMap.clear();
     
 #if defined(__DAVAENGINE_OPENGL__)
+
+    //TODO: ios build has assert without LockNonMain()
+	RenderManager::Instance()->LockNonMain();
+
+
     #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
         if (vboBuffer)
             RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
@@ -105,11 +110,15 @@ RenderDataObject::~RenderDataObject()
         if (indexBuffer)
             RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
     #endif
+    
+    RenderManager::Instance()->UnlockNonMain();
+    //ENDOF TODO
+
 #endif
     
 }
 
-RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer)
+RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer)
 {
     Map<eVertexFormat, RenderDataStream *>::iterator iter = streamMap.find(formatMark);
     RenderDataStream * stream = 0;

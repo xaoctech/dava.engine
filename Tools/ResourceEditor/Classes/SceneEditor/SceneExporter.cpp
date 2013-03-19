@@ -73,6 +73,8 @@ void SceneExporter::SetExportingFormat(const String &newFormat)
 
 void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 {
+    Logger::Info("[SceneExporter::ExportFile] %s", fileName.c_str());
+    
     //Load scene with *.sc2
     Scene *scene = new Scene();
     SceneNode *rootNode = scene->GetRootNode(dataSourceFolder + fileName);
@@ -113,6 +115,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     FileSystem::SplitPath(normalizedFileName, workingFolder, workingFile);
     FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder, true); 
     
+    scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
 
@@ -129,11 +132,20 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     ReleaseTextures();
     
     //save scene to new place
+    String scenePath, sceneName;
+    FileSystem::Instance()->SplitPath(fileName, scenePath, sceneName);
+
+    String tempSceneName = scenePath + FileSystem::Instance()->ReplaceExtension(sceneName, ".exported.sc2");
+    
     SceneFileV2 * outFile = new SceneFileV2();
     outFile->EnableSaveForGame(true);
     outFile->EnableDebugLog(false);
-    outFile->SaveScene(dataFolder + fileName, scene);
+//    outFile->SaveScene(dataFolder + fileName, scene);
+    
+    outFile->SaveScene(dataSourceFolder + tempSceneName, scene);
     SafeRelease(outFile);
+
+    FileSystem::Instance()->MoveFile(dataSourceFolder + tempSceneName, dataFolder + fileName);
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
@@ -209,6 +221,13 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
             String extension = FileSystem::Instance()->GetExtension(pathname);
             if(String(".sc2") == extension)
             {
+                String::size_type exportedPos = pathname.find(".exported.sc2");
+                if(exportedPos != String::npos)
+                {
+                    //Skip temporary files, created during export
+                    continue;
+                }
+                
                 String workingPathname = RemoveFolderFromPath(pathname, dataSourceFolder);
                 ExportFile(workingPathname, errorLog);
             }
@@ -234,19 +253,11 @@ String SceneExporter::NormalizeFolderPath(const String &pathname)
 
 void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportLandscape]");
+    DVASSERT(scene);
 
-    Vector<LandscapeNode *> landscapes;
-    scene->GetChildNodes(landscapes);
-    
-    if(0 < landscapes.size())
+    LandscapeNode *landscape = EditorScene::GetLandscape(scene);
+    if (landscape)
     {
-        if(1 < landscapes.size())
-        {
-            errorLog.insert(String("There are more than one landscapes at level."));
-        }
-        
-        LandscapeNode *landscape = landscapes[0];
         ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
         ExportLandscapeFullTiledTexture(landscape, errorLog);
     }
@@ -315,8 +326,6 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
 
 bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &errorLog)
 {
-    //    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
-
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
     
@@ -351,85 +360,38 @@ void SceneExporter::PrepareFolderForCopy(const String &filePathname, Set<String>
 
 bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
 {
-    //TODO: Create correct export
+    bool wasDescriptorExported = ExportTextureDescriptor(texturePathname, errorLog);
+    if(!wasDescriptorExported)
+        return false;
     
-    ExportTextureDescriptor(texturePathname, errorLog);
     CompressTextureIfNeed(texturePathname, errorLog);
     
-    bool ret = ExportFileDirectly(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat), errorLog);
-//    if(!ret)
-//    {
-//        //TODO: blen textures
-//        RenderManager::Instance()->LockNonMain();
-//
-//        Texture *tex = Texture::CreateFromFile(texturePathname);
-//        if(tex)
-//        {
-//            Sprite *fbo = Sprite::CreateAsRenderTarget((float32)tex->width, (float32)tex->height, FORMAT_RGBA8888);
-//            Sprite *texSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
-//            if(fbo && texSprite)
-//            {
-//                
-//                RenderManager::Instance()->SetRenderTarget(fbo);
-//                texSprite->SetPosition(0.f, 0.f);
-//                texSprite->Draw();
-//                
-//                RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 1.0f, 0.5f));
-//                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)tex->width, (float32)tex->height));
-//
-//                RenderManager::Instance()->RestoreRenderTarget();
-//                
-//                //Save new texture
-//                String workingPathname = RemoveFolderFromPath(texturePathname, dataSourceFolder);
-//                PrepareFolderForCopy(workingPathname, errorLog);
-//                exportedPathname = dataFolder + workingPathname;
-//                
-//                Image *image = fbo->GetTexture()->CreateImageFromMemory();
-//                if(image)
-//                {
-//                    ImageLoader::Save(image, exportedPathname);
-//                }
-//                else 
-//                {
-//                    errorLog.insert(String(Format("Can't create image from fbo for file %s", texturePathname.c_str())));
-//                }
-//                
-//                SafeRelease(image);
-//            }
-//            else 
-//            {
-//                errorLog.insert(String(Format("Can't create FBO for file %s", texturePathname.c_str())));
-//            }
-//            
-//            SafeRelease(texSprite);
-//            SafeRelease(fbo);
-//            SafeRelease(tex);
-//        }
-//        else 
-//        {
-//            errorLog.insert(String(Format("Can't create texture for file %s", texturePathname.c_str())));
-//        }
-//        RenderManager::Instance()->UnlockNonMain();
-//        
-//    }
-    
-    return ret;
+    return ExportFileDirectly(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat), errorLog);;
 }
 
-void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
+bool SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
 {
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(!descriptor)
     {
-        Logger::Error("[SceneExporter::ExportTextureDescriptor] Can't cerate descriptor for pathname% %s", texturePathname.c_str());
-        return;
+        errorLog.insert(Format("Can't create descriptor for pathname %s", texturePathname.c_str()));
+        return false;
     }
 
+    if(     (exportFormat == PVR_FILE && descriptor->pvrCompression.format == FORMAT_INVALID)
+       ||   (exportFormat == DXT_FILE && descriptor->dxtCompression.format == FORMAT_INVALID))
+    {
+        errorLog.insert(Format("Not selected export format for pathname %s", texturePathname.c_str()));
+        
+        SafeRelease(descriptor);
+        return false;
+    }
+    
     descriptor->textureFileFormat = exportFormat;
     
     String workingPathname = RemoveFolderFromPath(descriptor->pathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
-    
+
 #if defined TEXTURE_SPLICING_ENABLED
     descriptor->ExportAndSlice(dataFolder + workingPathname, GetExportedTextureName(texturePathname));
 #else //#if defined TEXTURE_SPLICING_ENABLED
@@ -437,6 +399,8 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
     SafeRelease(descriptor);
+    
+    return true;
 }
 
 
@@ -460,7 +424,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				if(exportFormat == PVR_FILE)
 				{
 					PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, *descriptor);
-					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(PVR_FILE);
+					bool wasUpdated = descriptor->UpdateCrcForFormat(PVR_FILE);
                     if(wasUpdated)
                     {
                         descriptor->Save();
@@ -469,7 +433,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 				else if(exportFormat == DXT_FILE)
 				{
 					DXTConverter::ConvertPngToDxt(sourceTexturePathname, *descriptor);
-					bool wasUpdated = descriptor->UpdateDateAndCrcForFormat(DXT_FILE);
+					bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
                     if(wasUpdated)
                     {
                         descriptor->Save();

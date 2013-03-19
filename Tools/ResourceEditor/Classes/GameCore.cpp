@@ -46,15 +46,8 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-	String ss("    ");
-	const char8 * uu = ss.c_str();
-	String cc = "\r\n" + ss + "{ ";
-	const char8 * vv = cc.c_str();
-
 	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
-    
-    Stats::Instance()->EnableStatsOutputEventNFrame(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");
@@ -81,8 +74,6 @@ void GameCore::OnAppStarted()
 	new ParticlesEditorController();
     imageSplitterScreen = new ImageSplitterScreen();
 
-    Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
-
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
@@ -100,6 +91,7 @@ void GameCore::OnAppStarted()
     else
     {
         UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
+        Texture::SetDefaultFileFormat((ImageFileFormat)EditorSettings::Instance()->GetTextureViewFileFormat());
     }
 	
 	// Yuri Coder, 2013/01/23. The call below is needed for Win32 linker to notify it we are using

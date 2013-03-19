@@ -44,6 +44,9 @@ namespace DAVA
 {
 
 class UITextField;
+#ifdef __DAVAENGINE_ANDROID__
+class UITextFieldAndroid;
+#endif
 /**
     \brief  The UITextFieldDelegate interface defines the messages sent to a text field delegate as part of the sequence of editing its text. 
             All the methods of the interface is optional.
@@ -139,9 +142,6 @@ public:
 	void OpenKeyboard();
 	void CloseKeyboard();
 	
-	void SetFontColor(float r, float g, float b, float a);
-	void SetFontSize(float size);
-
 	virtual void SetSpriteAlign(int32 align);
     
 	const WideString & GetText();
@@ -169,17 +169,10 @@ public:
     virtual bool IsLostFocusAllowed(UIControl *newFocus);
 
     
-    void SetFont(Font * font)
-    {
-        SafeRelease(textFont);
-        textFont = SafeRetain(font);
-		staticText->SetFont(textFont);
-    }
-
-    void SetFontColor(const Color& fontColor)
-    {
-        staticText->SetFontColor(fontColor);
-    }
+    void SetFont(Font * font);
+    void SetTextColor(const Color& fontColor);
+    DAVA_DEPRECATED(void SetFontColor(const Color& fontColor));
+    void SetFontSize(float size);
 
     virtual void SetSize(const DAVA::Vector2 &newSize);
 	
@@ -188,6 +181,9 @@ public:
 	 \returns list of control children without internal controls.
 	 */
 	virtual List<UIControl* >& GetRealChildren();
+	
+	virtual UIControl *Clone();
+	virtual void CopyDataFrom(UIControl *srcControl);
 
 protected:
     bool needRedraw;
@@ -205,7 +201,10 @@ private:
 
 #ifdef __DAVAENGINE_IPHONE__
 	UITextFieldiPhone * textFieldiPhone;
+#elif defined(__DAVAENGINE_ANDROID__)
+	UITextFieldAndroid* textFieldAndroid;
 #endif
+
 
     UIStaticText * staticText;
     float32 cursorTime;

@@ -30,6 +30,10 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
+#ifdef __DAVAENGINE_ANDROID__
+#include "Debug/DVAssert.h"
+#endif
+
 #define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
 	#if defined(__DAVAENGINE_WIN32__)
@@ -73,7 +77,8 @@ namespace DAVA
     if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        OGLDebugBreak(); \
+        DVASSERT(false);\
+		OGLDebugBreak(); \
     }\
 }
 #else

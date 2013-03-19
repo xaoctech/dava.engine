@@ -64,6 +64,9 @@ public:
 	virtual void OnSuspend();
 	virtual void OnResume();
 	virtual void OnBackground();
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+	virtual void OnDeviceLocked();
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 
     virtual void BeginFrame();
 	virtual void Update(DAVA::float32 update);
@@ -74,6 +77,7 @@ public:
     void RegisterError(const String &command, const String &fileName, int32 line, TestData *testData);
 
     void LogMessage(const String &message);
+    
     
 protected:
     

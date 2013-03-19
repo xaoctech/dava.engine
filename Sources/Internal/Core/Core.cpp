@@ -43,6 +43,7 @@
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
 #include "Input/InputSystem.h"
+#include "Platform/DPIHelper.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -76,6 +77,8 @@ Core::Core()
 	isConsoleMode = false;
 	options = new KeyedArchive();
 	fixedProportions = true;
+    
+    desirableIndex = 0;
     
     EnableReloadResourceOnResize(true);
 }
@@ -112,7 +115,7 @@ void Core::CreateSingletons()
 		 */
 		Logger::Instance()->SetLogLevel(Logger::LEVEL_INFO);
 	}
-	Logger::Debug("[Core::Create] successfull");
+//	Logger::Debug("[Core::Create] successfull");
 
     new InputSystem();
     
@@ -600,6 +603,9 @@ void Core::SystemAppFinished()
 
 void Core::SystemProcessFrame()
 {
+    Stats::Instance()->BeginFrame();
+    TIME_PROFILE("Core::SystemProcessFrame");
+    
 	if (!core) return;
 	if (!isActive)return;
 	
@@ -660,6 +666,7 @@ void Core::SystemProcessFrame()
 // 		core->BeginFrame();
 // #endif
 	}
+    Stats::Instance()->EndFrame();
 	globalFrameIndex++;
 }
 
@@ -738,8 +745,10 @@ void Core::EnableReloadResourceOnResize(bool enable)
 {
     enabledReloadResourceOnResize = enable;
 }
-
-
-
+    
+uint32 Core::GetScreenDPI()
+{
+	return DPIHelper::GetScreenDPI();
+}
 
 };

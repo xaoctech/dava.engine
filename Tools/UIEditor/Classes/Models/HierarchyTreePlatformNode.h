@@ -24,10 +24,12 @@ public:
 	void SetSize(int width, int height);
 	int GetWidth() const;
 	int GetHeight() const;
-	
+
+	virtual HierarchyTreeNode* GetParent();
+
 	HierarchyTreeNode* GetRoot() {return rootNode;};
 	
-	QString GetResourceFolder() const;
+	QString GetPlatformFolder() const;
 	void ActivatePlatform();
 	
 	bool Load(YamlNode* node);
@@ -44,6 +46,11 @@ public:
     void SetLocalizationPath(const String& localizationPath);
     void SetLocale(const String& locale);
     
+	// Return the Platform Node back to scene after deletion when performing Undo.
+	virtual void ReturnTreeNodeToScene();
+	
+	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
+
 private:
 	int width;
 	int height;

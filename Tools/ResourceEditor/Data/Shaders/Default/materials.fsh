@@ -14,8 +14,10 @@ precision highp float;
 //#define VERTEX_FOG
 
 // DECLARATIONS
+#if defined(MATERIAL_TEXTURE)
 uniform sampler2D texture0;
 varying mediump vec2 varTexCoord0;
+#endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 uniform sampler2D texture1;
@@ -66,18 +68,22 @@ uniform lowp vec4 flatColor;
 void main()
 {
     // FETCH PHASE
+#if defined(MATERIAL_TEXTURE)
 #if defined(GLOSS) || defined(OPAQUE) || defined(ALPHABLEND)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #endif
+#endif
 
+#if defined(MATERIAL_TEXTURE)
 #if defined(OPAQUE)
     float alpha = textureColor0.a;
     #if defined(VERTEX_COLOR)
         alpha *= varVertexColor.a;
     #endif
     if (alpha < 0.5)discard;
+#endif
 #endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
@@ -146,15 +152,15 @@ void main()
 	}
 #endif
 	
+#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
+    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
-#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP)
-    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-#elif defined(MATERIAL_DETAIL)
-    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+#else
+	vec3 color = vec3(1.0);
 #endif
 
-#if defined(ALPHABLEND)
+#if defined(ALPHABLEND) && defined(MATERIAL_TEXTURE)
 	gl_FragColor = vec4(color, textureColor0.a);
 #else
     gl_FragColor = vec4(color, 1.0);

@@ -203,7 +203,7 @@ void KeyedArchiveTest::FillArchive(KeyedArchive *arch)
     VariantType varType;
     varType.SetInt32(VARTYPEVALUE);
     
-    arch->SetVariant(VARTYPEMAPID, &varType);
+    arch->SetVariant(VARTYPEMAPID, varType);
     
     
     int64   int64Value = INT64VALUE;

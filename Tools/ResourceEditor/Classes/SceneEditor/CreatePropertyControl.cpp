@@ -42,7 +42,8 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
 
 	presetText = new UIStaticText(textRect);
 	presetText->SetText(LocalizedString(L"createproperty.preset"));
-	presetText->SetFont(ControlsFactory::GetFontLight());
+	presetText->SetFont(ControlsFactory::GetFont12());
+	presetText->SetTextColor(ControlsFactory::GetColorLight());
 	AddControl(presetText);
 
 	presetCombo = new ComboBox(controlRect, this, presetNames);
@@ -54,7 +55,8 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
 
     UIStaticText *t = new UIStaticText(textRect);
     t->SetText(LocalizedString(L"createproperty.type"));
-    t->SetFont(ControlsFactory::GetFontLight());
+    t->SetFont(ControlsFactory::GetFont12());
+	t->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(t);
     SafeRelease(t);
     
@@ -66,14 +68,16 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     
     t = new UIStaticText(textRect);
     t->SetText(LocalizedString(L"createproperty.name"));
-    t->SetFont(ControlsFactory::GetFontLight());
+    t->SetFont(ControlsFactory::GetFont12());
+	t->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(t);
     SafeRelease(t);
     
     nameField = new UITextField(controlRect);
     ControlsFactory::CustomizeEditablePropertyCell(nameField);
     nameField->SetDelegate(this);
-    nameField->SetFont(ControlsFactory::GetFontLight());
+    nameField->SetFont(ControlsFactory::GetFont12());
+	nameField->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(nameField);
 }
     

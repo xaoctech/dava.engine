@@ -154,7 +154,7 @@ int32 Polygon3::RemoveSmallSegments(float32 removalSize)
 }
 
 //! Move by polyline and get position on polyline based on distance
-void Polygon3::InterpolatePositionFromDistance(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex)
+void Polygon3::InterpolatePositionFromDistance(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex) const
 {
 	float32 currentDistance = distance;
 	
@@ -183,7 +183,7 @@ void Polygon3::InterpolatePositionFromDistance(float32 distance, int startSegmen
 }
 	
 //! Move by polyline and get position on polyline based on distance
-void Polygon3::InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex)
+void Polygon3::InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex) const
 {
 	float32 currentDistance = distance;
 	
@@ -227,7 +227,7 @@ void Polygon3::RemovePointsInSphere(const Vector3 & center, float32 radius)
 }
 	
 //! Square length of poly segments
-float32 Polygon3::SquareLength()
+float32 Polygon3::SquareLength() const
 {
 	float32 squareLength = 0.0f;
 	for(int32 i = 0; i < pointCount - 1;++i)
@@ -239,7 +239,7 @@ float32 Polygon3::SquareLength()
 }
 
 //! Length
-float32 Polygon3::Length()
+float32 Polygon3::Length() const
 {
 	float32 length = 0.0f;
 	for(int32 i = 0; i < pointCount - 1;++i)
@@ -279,7 +279,7 @@ void Polygon3::Transform(const Matrix4 & matrix)
 	
 }
 
-void Polygon3::CalculateCenterPoint(Vector3 & center)
+void Polygon3::CalculateCenterPoint(Vector3 & center) const
 {
 	center.Set(0.0f, 0.0f, 0.0f);
 	for (int p = 0; p < pointCount; ++p)
@@ -289,7 +289,7 @@ void Polygon3::CalculateCenterPoint(Vector3 & center)
 	center /= (float32)pointCount;
 }
 	
-float32 Polygon3::CalculateSquareRadius(const Vector3 & center)
+float32 Polygon3::CalculateSquareRadius(const Vector3 & center) const
 {
 	float32 radius = 0.0f;
 	for (int p = 0; p < pointCount; ++p)
@@ -303,7 +303,7 @@ float32 Polygon3::CalculateSquareRadius(const Vector3 & center)
 	
 //! Merge all segments triangle's height of which bigger or equal than minTriangleHeight 
 // http://www.math.ru/dic/276
-void Polygon3::MergeFlatPolygonSegments(Polygon3 &srcPolygon, Polygon3 &destPolygon, float32 minTriangleHeight)
+void Polygon3::MergeFlatPolygonSegments(const Polygon3 &srcPolygon, Polygon3 &destPolygon, float32 minTriangleHeight)
 {
 	float mh2	= minTriangleHeight * minTriangleHeight;
 	

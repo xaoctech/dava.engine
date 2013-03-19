@@ -1,13 +1,14 @@
 TIMEOUT = 10.0
 TIMECLICK = 0.2
 
--- local variable
+-- this code for step counting
 local step_num = 0
 local function next_step()
 	step_num = step_num + 1
-	print("")
+	print()
 end
 
+-- API setup
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
 	
@@ -15,49 +16,53 @@ function SetPackagePath(path)
 	require "coxpcall"
 end
 
+----------------------------------------------------------------------------------------------------
+-- High-level test function
+----------------------------------------------------------------------------------------------------
+-- This function for simple test step without any assertion. Fail while error throwing
+-- Parameters:
+--		func - link to step function
+--		... - input parameters for step function
 function Step (func, ...)
     print("Start step: " .. description[step_num])
     
 	local status, err = copcall(func, ...)
-	if status then
-		autotestingSystem:OnTestStep(description[step_num], true)
-		next_step()
-	else
-		autotestingSystem:OnTestStep(description[step_num], false, err)
-	end
+	--print("STEP: Status " .. tostring(status) .. " -- Error " .. tostring(err))
+	OnTestStep(status, err)
 end
 
+-- This function for test step with assertion. Fail when step is returned NIL or FALSE
+-- Parameters:
+--		func - link to step function
+--		... - input parameters for step function
+function Assert(func, ...)
+	print("Start assertion: " .. description[step_num])
+    
+	local status, err = copcall(func, ...)
+	--print("ASSERT: Status " .. tostring(status) .. " -- Error " .. tostring(err))
+	OnTestStep(status and err, err)
+end
+
+function OnTestStep(state, err)
+	--print("ONSTEP: Status " .. tostring(state) .. " -- Error " .. tostring(err))
+	if state then
+		autotestingSystem:OnTestStep(description[step_num], true)
+	else
+	    print("Error on step " .. description[step_num])
+		print(err)
+		print()
+		
+		autotestingSystem:OnTestStep(description[step_num], false, tostring(err))
+	end
+	next_step()
+end
+
+--
 function Yield()
     --print("Yield")
     coroutine.yield()
 end
 
-function OnError(msg)
-    print("Error on step " .. description[step_num])
-    print(msg)
-    print()
-    print()
-    autotestingSystem:OnError(description[step_num])
-end
-
-function Assert(func, ...)
-    --local isPassed = (expression)
-    --autotestingSystem:OnTestAssert(msg, isPassed)
-    --if not isPassed then
-        --while true do
-            --Yield()
-        --end
-    --end
-	print("Start assertion: " .. description[step_num])
-    
-	local status, err = copcall(func, ...)
-	if status then
-		autotestingSystem:OnTestStep(description[step_num], err)
-		next_step()
-	else
-		autotestingSystem:OnTestStep(description[step_num], false, err)
-    end
-end
 
 function ResumeTest()
     --print("ResumeTest")
@@ -244,9 +249,10 @@ function SetText(path, text)
 end
 
 function CheckText(name, txt)
-	error("Method not implemented")
-	if autotestingSystem:FindControl(name) then
+	print("Check that text '" .. txt .. "' is present on control " .. name)
 		local control = autotestingSystem:FindControl(name)
+	
+	if control then
 		return autotestingSystem:CheckText(control, txt)
 	else
 		error("Control " .. name .. " not found")
@@ -254,9 +260,10 @@ function CheckText(name, txt)
 end
 
 function CheckMsgText(name, key)
-	print("Check that text witk key [" .. key .. "] is present on control " .. name)
-	if autotestingSystem:FindControl(name) then
+	print("Check that text with key [" .. key .. "] is present on control " .. name)
 		local control = autotestingSystem:FindControl(name)
+	
+	if control then
 		return autotestingSystem:CheckMsgText(control, key)
 	else
 		error("Control " .. name .. " not found")

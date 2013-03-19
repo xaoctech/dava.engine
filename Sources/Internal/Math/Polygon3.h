@@ -73,7 +73,8 @@ public:
 	inline void UpdatePlaneFromPoints();
 	
 	//! Get point array
-	inline Vector3 * GetPoints();
+    inline Vector3 * GetPoints();
+	inline const Vector3 * GetPoints() const;
 	
 	//! Remove segment with index
 	void RemoveSegmentAtIndex(int32 index);
@@ -85,10 +86,10 @@ public:
 	void RemovePointsInSphere(const Vector3 & center, float32 radius);
 	
 	//! Move by polyline and get position on polyline based on distance
-	void InterpolatePositionFromDistance(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex);
+	void InterpolatePositionFromDistance(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex) const;
 
 	//! Move by polyline and get position on polyline based on distance
-	void InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex);
+	void InterpolatePositionFromDistanceReverse(float32 distance, int startSegment, Vector3 & resultPosition, int & resultSegmentIndex) const;
 
 	//! Clip poly by plane (TODO: not tested)
 	void ClipByPlane(const Plane & plane);
@@ -97,10 +98,10 @@ public:
 	bool IsPointInside(const Vector3 & pt);
 	
 	//! Square length of poly segments
-	float32 SquareLength();
+	float32 SquareLength() const;
 
 	//! Length of poly segments
-	float32 Length();
+	float32 Length() const;
 
 	//! Translate whole polygon
 	void	Translate(const Vector3 & translatePos);
@@ -113,13 +114,13 @@ public:
 	
 
 	//! Calculate center point for the polygon
-	void CalculateCenterPoint(Vector3 & center); 
+	void CalculateCenterPoint(Vector3 & center) const;
 	
 	//! Calculate center point and radius for polygon
-	float32 CalculateSquareRadius(const Vector3 & center);
+	float32 CalculateSquareRadius(const Vector3 & center) const;
 	
 	//! Merge all segments triangle's height of which bigger or equal than minTriangleHeight 
-	static void MergeFlatPolygonSegments(Polygon3 &srcPolygon3, Polygon3 &destPolygon3, float32 minTriangleHeight);
+	static void MergeFlatPolygonSegments(const Polygon3 &srcPolygon3, Polygon3 &destPolygon3, float32 minTriangleHeight);
 };
 
 
@@ -178,6 +179,10 @@ inline void Polygon3::UpdatePlaneFromPoints()
 	
 //! Get point array
 inline Vector3 * Polygon3::GetPoints()
+{
+	return &points.front();
+}
+inline const Vector3 * Polygon3::GetPoints() const
 {
 	return &points.front();
 }

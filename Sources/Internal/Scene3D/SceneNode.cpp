@@ -45,6 +45,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Components/SwitchComponent.h"
 
 namespace DAVA
 {
@@ -592,19 +593,24 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     return dstNode;
 }
 
-void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
+void SceneNode::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 {
-    if (_debugFlags != 0)
+	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+
+	if(!debugComponent)
+	{
+		AddComponent(new DebugRenderComponent());
+		debugComponent = cast_if_equal<DebugRenderComponent*>(components[Component::DEBUG_RENDER_COMPONENT]);
+		debugComponent->SetDebugFlags(DebugRenderComponent::DEBUG_AUTOCREATED);
+	}
+
+    debugComponent->SetDebugFlags(debugFlags);
+	if(0 == debugFlags)
     {
-        if (GetComponent(Component::DEBUG_RENDER_COMPONENT) == 0)
-        {
-            AddComponent(new DebugRenderComponent());
-        }
-        DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
-        debugComponent->SetDebugFlags(_debugFlags);
-    }else
-    {
-        RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+		if(debugComponent->GetDebugFlags() & DebugRenderComponent::DEBUG_AUTOCREATED)
+		{
+			RemoveComponent(Component::DEBUG_RENDER_COMPONENT);
+		}
     }
     
     if (isRecursive)
@@ -614,7 +620,7 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
         for(; it != childrenEnd; it++)
         {
             SceneNode *n = (*it);
-            n->SetDebugFlags(_debugFlags, isRecursive);
+            n->SetDebugFlags(debugFlags, isRecursive);
         }
     }
 }
@@ -942,6 +948,7 @@ Matrix4 & SceneNode::ModifyLocalTransform()
 
 void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
+    TIME_PROFILE("SceneNode::SetLocalTransform");
     ((TransformComponent*)GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&newMatrix);
 }
 
@@ -1069,7 +1076,20 @@ Matrix4 SceneNode::AccamulateLocalTransform(SceneNode * fromParent)
 	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
 
+void SceneNode::FindAllSwitchComponentsRecursive(List<DAVA::SceneNode*> & switchComponents)
+{
+	SwitchComponent * switchComponent = cast_if_equal<SwitchComponent*>(GetComponent(Component::SWITCH_COMPONENT));
+	if (switchComponent)
+	{
+		switchComponents.push_back(this);
+	}
 
+	uint32 childCount = GetChildrenCount();
+	for(uint32 i = 0 ; i < childCount; ++i)
+	{
+		GetChild(i)->FindAllSwitchComponentsRecursive(switchComponents);
+	}
+}
 
 
 

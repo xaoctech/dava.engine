@@ -65,12 +65,14 @@ void GameObjectTestScreen::LoadResources()
 //	bigBoxEmitter->AddObject(centerTest.Get());
 
 	smallCircle->AddObject(bigBoxEmitter.Get());
-	
+
+#if 0
 	ParticleEmitterObject* bigBoxEmitterClone = new ParticleEmitterObject();
 	bigBoxEmitterClone->SetEmitter(bigBoxEmitter->GetEmitter()->Clone());
 	bigBoxEmitterClone->SetPriority(10);
 	bigBoxEmitterClone->SetPosition(Vector2(300, 300));
 	manager->AddObject(bigBoxEmitterClone);
+#endif
 }
 
 void GameObjectTestScreen::UnloadResources()

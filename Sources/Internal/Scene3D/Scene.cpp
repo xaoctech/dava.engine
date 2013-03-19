@@ -96,10 +96,6 @@ Scene::Scene()
 
 	CreateComponents();
 	CreateSystems();
-
-    Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
-    Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
-    Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
 }
 
 void Scene::CreateComponents()
@@ -496,7 +492,7 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
 	if (it != rootNodes.end())
 	{
         ProxyNode * node = it->second;
-        int32 nowCount = node->GetNode()->GetChildrenCountRecursive();
+        //int32 nowCount = node->GetNode()->GetChildrenCountRecursive();
 		return node->GetNode();
 	}
     return 0;
@@ -580,9 +576,10 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
+    TIME_PROFILE("Scene::Update");
+    
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
-
+    
     
 	updatableSystem->UpdatePreTransform();
 
@@ -613,18 +610,17 @@ void Scene::Update(float timeElapsed)
 		mesh->Update(timeElapsed);
 	}
 
-	if(imposterManager)
-	{
-		imposterManager->Update(timeElapsed);
-	}
+	//if(imposterManager)
+	//{
+	//	imposterManager->Update(timeElapsed);
+	//}
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
-    Stats::Instance()->EndTimeMeasure("Scene.Update", this);
-}		
+}
 
 void Scene::Draw()
 {
-    Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
+    TIME_PROFILE("Scene::Draw");
 
     //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
@@ -677,7 +673,6 @@ void Scene::Draw()
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
-    Stats::Instance()->EndTimeMeasure("Scene.Draw", this);
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
 	//RENDER_VERIFY(glReadPixels(0, 0, 512, 512, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image->data));
 	//image->Save("img.png");
