@@ -1,6 +1,7 @@
 #include "Classes/UI/librarywidget.h"
 #include "ui_librarywidget.h"
 #include "LibraryController.h"
+#include "IconHelper.h"
 
 using namespace DAVA;
 
@@ -20,10 +21,20 @@ LibraryWidget::~LibraryWidget()
     delete ui;
 }
 
-QTreeWidgetItem* LibraryWidget::AddControl(const QString& name)
+//QTreeWidgetItem* LibraryWidget::AddControl(const QString& name)
+//{
+//	QTreeWidgetItem* control = new QTreeWidgetItem();
+//	control->setText(TEXT_ID, name);
+//	control->setIcon(TEXT_ID, QIcon(IconHelper::GetIconPathForClassName(name)));
+//	ui->treeWidget->addTopLevelItem(control);
+//	return control;
+//}
+
+QTreeWidgetItem* LibraryWidget::AddControl(const QString& name, const QString& iconPath)
 {
 	QTreeWidgetItem* control = new QTreeWidgetItem();
 	control->setText(TEXT_ID, name);
+	control->setIcon(TEXT_ID, QIcon(iconPath));
 	ui->treeWidget->addTopLevelItem(control);
 	return control;
 }

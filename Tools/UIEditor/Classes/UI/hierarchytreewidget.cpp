@@ -11,6 +11,7 @@
 #include <QVariant>
 #include <QMenu>
 #include <QMessageBox>
+#include "IconHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -111,6 +112,9 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		QTreeWidgetItem* controlItem = new QTreeWidgetItem();
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
+
+		DecorateWithIcon(controlItem, controlNode->GetUIObject());
+
 		parent->insertChild(parent->childCount(), controlItem);
 		
 		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
@@ -118,6 +122,17 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
 			controlItem->setExpanded(true);
 	}
+}
+
+void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
+{
+	if (!item || !uiControl)
+	{
+		return;
+	}
+
+	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
+	item->setIcon(0, QIcon(iconPath));
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
