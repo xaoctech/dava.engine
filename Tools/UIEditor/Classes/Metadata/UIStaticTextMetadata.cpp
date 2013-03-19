@@ -126,13 +126,7 @@ QColor UIStaticTextMetadata::GetFontColor() const
         return QColor();
     }
 
-    Font* font = GetActiveStaticText()->GetFont();
-    if (font)
-    {
-        return DAVAColorToQTColor(font->GetColor());
-    }
-    
-    return QColor();
+	return DAVAColorToQTColor(GetActiveStaticText()->GetTextColor());
 }
 
 void UIStaticTextMetadata::SetFontColor(const QColor& value)
@@ -142,7 +136,67 @@ void UIStaticTextMetadata::SetFontColor(const QColor& value)
         return;
     }
 
-    GetActiveStaticText()->SetFontColor(QTColorToDAVAColor(value));
+	GetActiveStaticText()->SetTextColor(QTColorToDAVAColor(value));
+}
+
+float UIStaticTextMetadata::GetShadowOffsetX() const
+{
+	if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	return GetActiveStaticText()->GetShadowOffset().x;
+}
+
+void UIStaticTextMetadata::SetShadowOffsetX(float offset)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	Vector2 shadowOffset = GetOffsetX(GetActiveStaticText()->GetShadowOffset(), offset);
+	GetActiveStaticText()->SetShadowOffset(shadowOffset);
+}
+
+float UIStaticTextMetadata::GetShadowOffsetY() const
+{
+	if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	return GetActiveStaticText()->GetShadowOffset().y;
+}
+
+void UIStaticTextMetadata::SetShadowOffsetY(float offset)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }	
+	Vector2 shadowOffset = GetOffsetY(GetActiveStaticText()->GetShadowOffset(), offset);
+	GetActiveStaticText()->SetShadowOffset(shadowOffset);
+}
+
+QColor UIStaticTextMetadata::GetShadowColor() const
+{
+    if (!VerifyActiveParamID())
+    {
+    	return QColor();
+    }
+	
+	return DAVAColorToQTColor(GetActiveStaticText()->GetShadowColor());
+}
+
+void UIStaticTextMetadata::SetShadowColor(const QColor& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveStaticText()->SetShadowColor(QTColorToDAVAColor(value));
 }
 
 int UIStaticTextMetadata::GetAlign()

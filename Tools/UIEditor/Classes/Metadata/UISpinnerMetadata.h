@@ -18,6 +18,9 @@ namespace DAVA {
 class UISpinnerMetadata : public UIControlMetadata
 {
 	Q_OBJECT
+	
+    Q_PROPERTY(QString PrevButtonText READ GetPrevButtonText WRITE SetPrevButtonText);
+    Q_PROPERTY(QString NextButtonText READ GetNextButtonText WRITE SetNextButtonText);
 
 public:
 	UISpinnerMetadata(QObject* parent = 0);
@@ -28,6 +31,20 @@ protected:
 	virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
 	virtual QString GetUIControlClassName() { return "UISpinner"; };
+	
+	QString GetPrevButtonText();
+	void SetPrevButtonText(const QString& value);
+
+	QString GetNextButtonText();
+	void SetNextButtonText(const QString& value);
+	
+	// Helper methods.
+	UISpinner* GetActiveUISpinner();
+	UIButton* GetPrevButton();
+	UIButton* GetNextButton();
+
+	virtual void SetActiveControlRect(const Rect& rect);
+	void RecalculateSpinnerButtons();
 };
 	
 };

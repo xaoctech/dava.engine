@@ -34,6 +34,10 @@ namespace PropertyNames
     static const char* TEXT_PROPERTY_NAME = "Text";
     static const char* TEXT_COLOR_PROPERTY_NAME = "TextColor";
 	
+	static const char* SHADOW_OFFSET_X = "ShadowOffsetX";
+	static const char* SHADOW_OFFSET_Y = "ShadowOffsetY";
+	static const char* SHADOW_COLOR = "ShadowColor";
+
 	// Slider properties
 	static const char* SLIDER_VALUE_PROPERTY_NAME = "SliderValue";
 	static const char* SLIDER_MIN_VALUE_PROPERTY_NAME = "SliderMinValue";
@@ -60,6 +64,10 @@ namespace PropertyNames
 	static const char* VCENTER_ALIGN_ENABLED = "VCenterAlignEnabled";
 	static const char* BOTTOM_ALIGN = "BottomAlign";
 	static const char* BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
+	
+	// UI Spinner properties.
+	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
+	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";
 }
 };
 
