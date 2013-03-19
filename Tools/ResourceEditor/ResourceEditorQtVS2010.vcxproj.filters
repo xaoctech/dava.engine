@@ -267,9 +267,6 @@
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -1521,6 +1518,15 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneSaver.cpp">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneUtils.cpp">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneUtilsScreen.cpp">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1584,9 +1590,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ExporterScreen.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h">
@@ -2695,6 +2698,15 @@
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
       <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneSaver.h">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneUtils.h">
+      <Filter>Sources\SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneUtilsScreen.h">
+      <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
