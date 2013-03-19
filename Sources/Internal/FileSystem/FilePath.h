@@ -52,10 +52,14 @@ public:
 
     FilePath& operator=(const FilePath &path);
     FilePath operator+(const FilePath &path);
+    bool operator==(const FilePath &path) const;
+	bool operator!=(const FilePath &path) const;
+
     
     const bool IsInitalized() const;
     const bool IsDirectoryPathname() const;
 
+    const String GetAbsolutePathname() const;
     const String GetFilename() const;
     const String GetBasename() const;
     const String GetExtension() const;
@@ -84,6 +88,7 @@ protected:
     static const String GetFilename(const String &pathname);
     static const String GetDirectory(const String &pathname);
 
+    static const String GetSystemPathname(const String &pathname);
     
     
 protected:

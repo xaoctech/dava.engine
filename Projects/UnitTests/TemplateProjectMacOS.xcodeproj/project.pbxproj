@@ -22,6 +22,7 @@
 		C177F28016D227A70036F02B /* InputTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C177F27E16D227A70036F02B /* InputTest.cpp */; };
 		C18046CA16D52ECA00DC24D8 /* DPITest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18046C816D52EC900DC24D8 /* DPITest.cpp */; };
 		E81F2AF016BFA4A600C4545E /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */; };
+		E835640A16F86C3D00170344 /* FilePathTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E835640816F86C3D00170344 /* FilePathTest.cpp */; };
 		E83604F1163FEB4C0061A636 /* KeyedArchiveTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */; };
 		E83604F2163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */; };
 		E87BB1E4162D5CCB001A5448 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E87BB1E2162D5CCB001A5448 /* TextureUtils.cpp */; };
@@ -103,6 +104,8 @@
 		C18046C916D52ECA00DC24D8 /* DPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DPITest.h; path = Classes/DPITest.h; sourceTree = "<group>"; };
 		E81F2AEE16BFA4A600C4545E /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompilerTest.cpp; path = Classes/MaterialCompilerTest.cpp; sourceTree = "<group>"; };
 		E81F2AEF16BFA4A600C4545E /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompilerTest.h; path = Classes/MaterialCompilerTest.h; sourceTree = "<group>"; };
+		E835640816F86C3D00170344 /* FilePathTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FilePathTest.cpp; path = Classes/FilePathTest.cpp; sourceTree = "<group>"; };
+		E835640916F86C3D00170344 /* FilePathTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FilePathTest.h; path = Classes/FilePathTest.h; sourceTree = "<group>"; };
 		E83604ED163FEB4C0061A636 /* KeyedArchiveTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveTest.cpp; path = Classes/KeyedArchiveTest.cpp; sourceTree = "<group>"; };
 		E83604EE163FEB4C0061A636 /* KeyedArchiveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyedArchiveTest.h; path = Classes/KeyedArchiveTest.h; sourceTree = "<group>"; };
 		E83604EF163FEB4C0061A636 /* KeyedArchiveYamlTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyedArchiveYamlTest.cpp; path = Classes/KeyedArchiveYamlTest.cpp; sourceTree = "<group>"; };
@@ -254,6 +257,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E835640616F86C2E00170344 /* FilePathTest */,
 				C18046C616D52E6E00DC24D8 /* DPITest */,
 				C151B1BC16D50BD000E09BAF /* eMailTest */,
 				C177F27C16D2279B0036F02B /* InputTest */,
@@ -337,6 +341,15 @@
 				E81F2AEF16BFA4A600C4545E /* MaterialCompilerTest.h */,
 			);
 			name = MaterialCompilerTest;
+			sourceTree = "<group>";
+		};
+		E835640616F86C2E00170344 /* FilePathTest */ = {
+			isa = PBXGroup;
+			children = (
+				E835640816F86C3D00170344 /* FilePathTest.cpp */,
+				E835640916F86C3D00170344 /* FilePathTest.h */,
+			);
+			name = FilePathTest;
 			sourceTree = "<group>";
 		};
 		E83604EC163FEB370061A636 /* KeyedArchiveTest */ = {
@@ -552,6 +565,7 @@
 				C177F28016D227A70036F02B /* InputTest.cpp in Sources */,
 				C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */,
 				C18046CA16D52ECA00DC24D8 /* DPITest.cpp in Sources */,
+				E835640A16F86C3D00170344 /* FilePathTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

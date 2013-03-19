@@ -63,7 +63,22 @@ FilePath::FilePath(const String &pathname)
     
 FilePath::FilePath(const String &directory, const String &filename)
 {
-    absolutePathname = NormalizePathname(directory + filename);
+    if((!directory.empty()) && (directory[0] == '~'))
+    {
+        String resType = directory.substr(0, 6);
+        String bundlePathname = GetSystemPathname(resType);
+        
+        absolutePathname = NormalizePathname(GetSystemPathname(directory) + filename);
+        
+        String::size_type find = absolutePathname.find(bundlePathname);
+        DVASSERT(find != String::npos)
+
+        absolutePathname = resType + absolutePathname.erase(find, bundlePathname.length());
+    }
+    else
+    {
+        absolutePathname = NormalizePathname(directory + filename);
+    }
 }
     
 FilePath::~FilePath()
@@ -87,11 +102,22 @@ FilePath FilePath::operator+(const FilePath &path)
     return pathname;
 }
     
+bool FilePath::operator==(const FilePath &path) const
+{
+    return absolutePathname == path.absolutePathname;
+}
+
+bool FilePath::operator!=(const FilePath &path) const
+{
+    return absolutePathname != path.absolutePathname;
+}
+
     
 const bool FilePath::IsInitalized() const
 {
     return (!absolutePathname.empty());
 }
+    
 
 const bool FilePath::IsDirectoryPathname() const
 {
@@ -102,6 +128,11 @@ const bool FilePath::IsDirectoryPathname() const
 
     const int32 lastPosition = absolutePathname.length() - 1;
     return (absolutePathname.at(lastPosition) == '/');
+}
+
+const String FilePath::GetAbsolutePathname() const
+{
+    return absolutePathname;
 }
 
 
@@ -166,7 +197,10 @@ const String FilePath::GetRelativePathname() const
     
 const String FilePath::GetRelativePathname(const String &forDirectory) const
 {
-    return AbsoluteToRelative(forDirectory, absolutePathname);
+    if(!IsInitalized())
+        return String();
+    
+    return AbsoluteToRelative(GetSystemPathname(forDirectory), ResolvePathname());
 }
     
     
@@ -194,22 +228,34 @@ void FilePath::ReplaceExtension(const String &extension)
 void FilePath::ReplaceDirectory(const String &directory)
 {
     const String filename = GetFilename();
-    absolutePathname = NormalizePathname(directory + filename);
+    absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
 }
 
 const String FilePath::ResolvePathname() const
 {
-    if(!IsInitalized() || absolutePathname[0] != '~')
+    return GetSystemPathname(absolutePathname);
+}
+    
+const String FilePath::GetSystemPathname(const String &pathname)
+{
+    if(pathname.empty() || pathname[0] != '~')
     {
-		return absolutePathname;
+		return pathname;
     }
-        
-    String retPath = absolutePathname;
-    String::size_type find = absolutePathname.find("~res:");
+    
+    String retPath = pathname;
+    String::size_type find = pathname.find("~res:");
 	if(find != String::npos)
 	{
-		retPath = retPath.erase(0, 5);
-		retPath = projectPathname + retPath;
+        if(projectPathname.empty())
+        {
+            retPath = FileSystem::Instance()->SystemPathForFrameworkPath(retPath);
+        }
+        else
+        {
+            retPath = retPath.erase(0, 5);
+            retPath = projectPathname + retPath;
+        }
 	}
 	else
 	{
