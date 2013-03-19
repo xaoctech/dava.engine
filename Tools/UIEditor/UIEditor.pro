@@ -60,7 +60,9 @@ SOURCES += \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/uitextfieldpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.cpp \
-    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.cpp
+    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.cpp \
+    UI/spinnerpropertygridwidget.cpp \
+    Classes/UI/PropertyGridWidgets/spinnerpropertygridwidget.cpp
 
 HEADERS  += \
         Classes/AppScreens.h \
@@ -107,7 +109,9 @@ HEADERS  += \
     Classes/Metadata/UITextFieldMetadata.h \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.h \
     Classes/UI/PropertyGridWidgets/sliderpropertygridwidget.h \
-    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.h
+    Classes/UI/PropertyGridWidgets/alignspropertygridwidget.h \
+    UI/spinnerpropertygridwidget.h \
+    Classes/UI/PropertyGridWidgets/spinnerpropertygridwidget.h
 
 FORMS    += \
         UI/mainwindow.ui \
@@ -127,7 +131,6 @@ FORMS    += \
 	UI/createscreendlg.ui \
     UI/textpropertygridwidget.ui \
     UI/backgroundpropertygridwidget.ui \
-    UI/statepropertygridwidget.ui \
     UI/Dialogs/fontmanagerdialog.ui \
     UI/Dialogs/createscreendlg.ui \
     UI/Dialogs/createplatformdlg.ui \
@@ -144,7 +147,9 @@ FORMS    += \
     UI/Dialogs/localizationeditordialog.ui \
     UI/PropertyGridWidgets/uitextfieldpropertygridwidget.ui \
     UI/PropertyGridWidgets/sliderpropertygridwidget.ui \
-    UI/PropertyGridWidgets/alignspropertygridwidget.ui
+    UI/PropertyGridWidgets/alignspropertygridwidget.ui \
+    UI/statepropertygridwidget.ui \
+    UI/spinnerpropertygridwidget.ui
 
 
 #debug dependent
