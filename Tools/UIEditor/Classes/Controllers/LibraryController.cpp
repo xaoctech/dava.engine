@@ -38,7 +38,7 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UIButton", new UIButton());
 	AddControl("UIStaticText", new UIStaticText());
 	AddControl("UIList", new UIList());
-	AddControl("UIScrollBar", new UIScrollBar());
+	AddControl("UISlider", new UISlider());
 	AddControl("UISpinner", new UISpinner());
 }
 
