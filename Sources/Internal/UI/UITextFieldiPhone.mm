@@ -180,7 +180,13 @@ namespace DAVA
     void UITextFieldiPhone::SetFontSize(float size)
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-        textFieldHolder->textField.font = [UIFont systemFontOfSize:size * Core::GetVirtualToPhysicalFactor()];
+        float scaledSize = size * Core::GetVirtualToPhysicalFactor();
+        
+        if( [[::UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)])
+        {
+            scaledSize /= [::UIScreen mainScreen].scale;
+        }
+        textFieldHolder->textField.font = [UIFont systemFontOfSize:scaledSize];
     }
     
     void UITextFieldiPhone::SetAlign(DAVA::int32 align)
