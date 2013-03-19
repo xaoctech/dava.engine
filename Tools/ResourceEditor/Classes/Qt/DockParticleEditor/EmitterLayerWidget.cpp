@@ -562,9 +562,8 @@ void EmitterLayerWidget::OnValueChanged()
 						 frameOverlifeCheckBox->isChecked(),
 						 (float32)frameOverlifeFPSSpin->value());
 
-	CommandsManager::Instance()->Execute(updateLayerCmd);
-	SafeRelease(updateLayerCmd);
-	
+	CommandsManager::Instance()->ExecuteAndRelease(updateLayerCmd);
+
 	Init(this->emitter, this->layer, false);
 	emit ValueChanged();
 }

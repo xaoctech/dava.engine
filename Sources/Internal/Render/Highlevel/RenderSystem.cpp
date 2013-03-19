@@ -28,14 +28,15 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/Highlevel/RenderSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Render/Highlevel/ShadowRect.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Frustum.h"
+#include "Render/Highlevel/Frustum.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/Systems/ParticleEmitterSystem.h"
@@ -354,5 +355,28 @@ RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, const Fas
 
 	return newLayer;
 }
+    
+void RenderSystem::SetShadowRectColor(const Color &color)
+{
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    DVASSERT(shadowVolume);
+
+    ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+    DVASSERT(shadowRect);
+
+    shadowRect->SetColor(color);
+}
+    
+const Color & RenderSystem::GetShadowRectColor()
+{
+    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(renderPassesMap[PASS_SHADOW_VOLUME]);
+    DVASSERT(shadowVolume);
+    
+    ShadowRect *shadowRect = shadowVolume->GetShadowRect();
+    DVASSERT(shadowRect);
+    
+    return shadowRect->GetColor();
+}
+
 
 };

@@ -183,9 +183,9 @@ String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
 
-void RemoveDeepCamera(SceneNode * curr)
+void RemoveDeepCamera(Entity * curr)
 {
-	SceneNode * cam;
+	Entity * cam;
 	
 	cam = curr->FindByName("editor.main-camera");
 	while (cam)
@@ -255,21 +255,18 @@ void EditorBodyControl::ReleaseModificationPanel()
 
 void EditorBodyControl::PlaceOnLandscape()
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	if (selection && InModificationMode())
 	{
         PlaceOnLandscape(selection);
 	}
 }
 
-void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
+void EditorBodyControl::PlaceOnLandscape(Entity *node)
 {
 	if (node)
 	{
-		CommandPlaceOnLandscape* command;
-		command = new CommandPlaceOnLandscape(node, this);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandPlaceOnLandscape(node, this));
 	}
 }
 
@@ -397,7 +394,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
 
 bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	//selection with second mouse button
     
 	if (event->tid == UIEvent::BUTTON_1)
@@ -428,9 +425,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 						isDrag = true;
 						if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
 						{//copy object
-							CommandCloneObject* command = new CommandCloneObject(selection, this, scene->collisionWorld);
-							CommandsManager::Instance()->Execute(command);
-							SafeRelease(command);
+							CommandsManager::Instance()->ExecuteAndRelease(new CommandCloneObject(selection, this, scene->collisionWorld));
 
 							selection = scene->GetProxy();
 							modifiedNode = scene->GetProxy();
@@ -466,7 +461,7 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			{
 				if (selection && InModificationMode())
 				{
-                    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(selection);
+                    Landscape *landscape = dynamic_cast<Landscape *>(selection);
                     if(!landscape)
                     {
                         PrepareModMatrix(event->point);
@@ -491,11 +486,9 @@ bool EditorBodyControl::ProcessMouse(UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
-				CommandTransformObject* command = new CommandTransformObject(modifiedNode,
-																			 transformBeforeModification,
-																			 modifiedNode->GetLocalTransform());
-				CommandsManager::Instance()->Execute(command);
-				SafeRelease(command);
+				CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(modifiedNode,
+																						  transformBeforeModification,
+																						  modifiedNode->GetLocalTransform()));
 
 				if (selection)
 				{
@@ -687,7 +680,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-	SceneNode * selection = scene->GetProxy();
+	Entity * selection = scene->GetProxy();
 	if (selection)
 	{
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
@@ -726,9 +719,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 
-		Command *reloadTextures = new CommandReloadTextures();
-		CommandsManager::Instance()->Execute(reloadTextures);
-		SafeRelease(reloadTextures);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
 	}
 }
 
@@ -752,17 +743,17 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     Refresh();
 }
 
-void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
+void EditorBodyControl::ReloadNode(Entity *node, const String &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
     if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile) 
     {
-        SceneNode *newNode = scene->GetRootNode(pathToFile)->Clone();
+        Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
         newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
         newNode->SetSolid(true);
         
-        SceneNode *parent = node->GetParent();
+        Entity *parent = node->GetParent();
         AddedNode addN;
         addN.nodeToAdd = newNode;
         addN.nodeToRemove = node;
@@ -775,7 +766,7 @@ void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
     int32 csz = node->GetChildrenCount();
     for (int ci = 0; ci < csz; ++ci)
     {
-        SceneNode * child = node->GetChild(ci);
+        Entity * child = node->GetChild(ci);
         ReloadNode(child, pathToFile);
     }
 }
@@ -814,13 +805,13 @@ EditorScene * EditorBodyControl::GetScene()
     return scene;
 }
 
-void EditorBodyControl::AddNode(SceneNode *node)
+void EditorBodyControl::AddNode(Entity *node)
 {
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->AddSceneNode(node);
 }
 
-SceneNode * EditorBodyControl::GetSelectedSGNode()
+Entity * EditorBodyControl::GetSelectedSGNode()
 {
     return scene->GetSelection();
 }
@@ -838,7 +829,7 @@ void EditorBodyControl::Refresh()
 }
 
 
-void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
+void EditorBodyControl::SelectNodeAtTree(DAVA::Entity *node)
 {
     SceneData *sceneData = SceneDataManager::Instance()->SceneGetActive();
     sceneData->SelectNode(node);
@@ -936,7 +927,7 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 
 void EditorBodyControl::RecreteFullTilingTexture()
 {
-    LandscapeNode *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = scene->GetLandscape(scene);
     if (landscape)
     {
         landscape->UpdateFullTiledTexture();
@@ -1056,7 +1047,7 @@ void EditorBodyControl::LandscapeEditorStarted()
         AddControl(toolsPanel);
     }
     
-	SceneNode* sceneNode = EditorScene::GetLandscapeNode(scene);
+	Entity* sceneNode = EditorScene::GetLandscapeNode(scene);
 	if (sceneNode)
 	{
 		scene->SetSelection(sceneNode);
@@ -1169,7 +1160,7 @@ void EditorBodyControl::SetCameraController(CameraController *newCameraControlle
     cameraController = SafeRetain(newCameraController);
 }
 
-void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
+void EditorBodyControl::SelectNodeQt(DAVA::Entity *node)
 {
     sceneGraph->SelectNode(node);
 }
@@ -1200,11 +1191,11 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
 
 void EditorBodyControl::ProcessIsSolidChanging()
 {
-    SceneNode *selectedNode = scene->GetSelection();
+    Entity *selectedNode = scene->GetSelection();
     if(selectedNode)
     {
         KeyedArchive *customProperties = selectedNode->GetCustomProperties();
-        if(customProperties && customProperties->IsKeyExists(String(SceneNode::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
+        if(customProperties && customProperties->IsKeyExists(String(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME)))
         {
             bool isSolid = selectedNode->GetSolid();
             selectedNode->SetSolid(!isSolid);
@@ -1311,12 +1302,12 @@ void EditorBodyControl::VisibilityToolSetAreaSize(uint32 size)
 	landscapeEditorVisibilityTool->SetVisibilityAreaSize(size);
 }
 
-void EditorBodyControl::RemoveNode(SceneNode *node)
+void EditorBodyControl::RemoveNode(Entity *node)
 {
 	scene->RemoveNode(node);
 }
 
-void EditorBodyControl::SelectNode(SceneNode *node)
+void EditorBodyControl::SelectNode(Entity *node)
 {
 	scene->SetSelection(node);
 	SelectNodeAtTree(node);
@@ -1332,15 +1323,13 @@ ArrowsNode* EditorBodyControl::GetArrowsNode(bool createIfNotExist)
 		arrowsNode = new ArrowsNode();
 		arrowsNode->SetName(ARROWS_NODE_NAME);
 		AddNode(arrowsNode);
-		SafeRelease(arrowsNode);
-
-		arrowsNode = dynamic_cast<ArrowsNode*>(scene->FindByName(ARROWS_NODE_NAME));
+		arrowsNode->Release();
 	}
 
 	return arrowsNode;
 }
 
-void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
+void EditorBodyControl::UpdateArrowsNode(Entity* node)
 {
 	ArrowsNode* arrowsNode = GetArrowsNode(false);
 	if (node && arrowsNode)
@@ -1351,7 +1340,7 @@ void EditorBodyControl::UpdateArrowsNode(SceneNode* node)
 			return;
 		}
 
-		Matrix4 nodeWT = node->GetLocalTransform();
+		Matrix4 nodeWT = node->GetWorldTransform();
 		Matrix4 arrowsNodeTransform;
 		arrowsNodeTransform.CreateTranslation(nodeWT.GetTranslationVector());
 		arrowsNode->SetLocalTransform(arrowsNodeTransform);
@@ -1396,10 +1385,8 @@ void EditorBodyControl::RestoreOriginalTransform()
 	if (!InModificationMode())
 		return;
 
-	SceneNode* selection = scene->GetProxy();
-	CommandRestoreOriginalTransform* command = new CommandRestoreOriginalTransform(selection);
-	CommandsManager::Instance()->Execute(command);
-	SafeRelease(command);
+	Entity* selection = scene->GetProxy();
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandRestoreOriginalTransform(selection));
 }
 
 void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
@@ -1407,7 +1394,7 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 	if (!InModificationMode())
 		return;
 
-    SceneNode *selectedNode = scene->GetProxy();
+    Entity *selectedNode = scene->GetProxy();
     if(selectedNode)
 	{
 		Matrix4 modification;
@@ -1448,11 +1435,9 @@ void EditorBodyControl::ApplyTransform(float32 x, float32 y, float32 z)
 			modification = modification * GetLandscapeOffset(modification);
 		}
 
-		CommandTransformObject* command = new CommandTransformObject(selectedNode,
-																	 originalTransform,
-																	 modification);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandTransformObject(selectedNode,
+																				  originalTransform,
+																				  modification));
 	}
 }
 
@@ -1464,7 +1449,7 @@ Matrix4 EditorBodyControl::GetLandscapeOffset(const Matrix4& transform)
 	Vector3 p = Vector3(0, 0, 0) * transform;
 
 	Vector3 result;
-	LandscapeNode* landscape = scene->GetLandscape(scene);
+	Landscape* landscape = scene->GetLandscape(scene);
 	bool res = landscape->PlacePoint(p, result);
 	if (res)
 	{

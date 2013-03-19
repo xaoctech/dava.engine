@@ -47,6 +47,8 @@ public:
     
     virtual void Draw(Camera * camera);
     
+    ShadowRect * GetShadowRect() const;
+    
 private:
     ShadowRect * shadowRect;
 };

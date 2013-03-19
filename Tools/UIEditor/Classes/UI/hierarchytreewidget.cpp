@@ -4,13 +4,15 @@
 #include "HierarchyTree.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
 #include <QVariant>
 #include <QMenu>
+#include <QMessageBox>
 
-#define ITEM_ID 0, 1
+#define ITEM_ID 0, Qt::UserRole
 
 #define MENU_ITEM_DELETE tr("Delete")
 #define MENU_ITEM_COPY tr("Copy")
@@ -67,17 +69,23 @@ void HierarchyTreeWidget::OnTreeUpdated()
 		QTreeWidgetItem* platformItem = new QTreeWidgetItem();
 		platformItem->setData(ITEM_ID, platformNode->GetId());
 		platformItem->setText(0, platformNode->GetName());
+		platformItem->setIcon(0, QIcon(":/icons/079.png"));
 		ui->treeWidget->insertTopLevelItem(ui->treeWidget->topLevelItemCount(), platformItem);
 		
 		for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = platformNode->GetChildNodes().begin();
 			 iter != platformNode->GetChildNodes().end();
 			 ++iter)
 		{
-			const HierarchyTreeScreenNode* screenNode = (const HierarchyTreeScreenNode*)(*iter);
+			const HierarchyTreeScreenNode* screenNode = dynamic_cast<const HierarchyTreeScreenNode*>(*iter);
+			DVASSERT(screenNode);
 
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
 			screenItem->setText(0, screenNode->GetName());
+			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
+				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+			else
+				screenItem->setIcon(0, QIcon(":/icons/068.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
@@ -298,6 +306,7 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 	if (!items.size())
 		return;
 
+	bool needConfirm = false;
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
@@ -305,8 +314,30 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 		QVariant data = item->data(ITEM_ID);
 		HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(id);
+		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
+			needConfirm |= (childs.size() > 0);
+			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+			{
+				nodes.push_back((*iter));
+			}
+		}
+		
 		nodes.push_back(node);
 	}
+	
+	if (needConfirm)
+	{
+		if (QMessageBox::No == QMessageBox::information(this,
+								 "",
+								 "Selected aggregator control has child controls. Do you want delete aggregator with all child controls?",
+								 QMessageBox::Yes | QMessageBox::No))
+			return;
+	}
+	
 	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);

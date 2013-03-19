@@ -17,7 +17,7 @@ namespace DAVA {
 class EmitterParticleEditorNode : public EmitterContainerNode
 {
 public:
-    EmitterParticleEditorNode(SceneNode* rootNode, SceneNode* emitter,
+    EmitterParticleEditorNode(Entity* rootNode, Entity* emitter,
                               const QString& nodeName);
     
     // Get the layers count.

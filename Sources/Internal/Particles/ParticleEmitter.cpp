@@ -37,6 +37,8 @@
 #include "Utils/StringFormat.h"
 #include "Animation/LinearAnimation.h"
 #include "Scene3D/Scene.h"
+#include "FileSystem/FileSystem.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -88,13 +90,10 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
 void ParticleEmitter::CleanupLayers()
 {
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
-	{
-		SafeRelease(*it);
-	}
-
-	layers.clear();
+    while(!layers.empty())
+    {
+        RemoveLayer(layers[0]);
+    }
 }
 
 //ParticleEmitter * ParticleEmitter::Clone()
@@ -146,7 +145,8 @@ void ParticleEmitter::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
 
 	if(NULL != archive)
 	{
-		archive->SetString("pe.configpath", configPath);
+        String filename = FileSystem::Instance()->AbsoluteToRelativePath(sceneFile->GetScenePath(), configPath);
+		archive->SetString("pe.configpath", filename);
 	}
 }
 
@@ -158,7 +158,9 @@ void ParticleEmitter::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
 	{
 		if(archive->IsKeyExists("pe.configpath"))
 		{
-			configPath = archive->GetString("pe.configpath");
+            String filename = archive->GetString("pe.configpath");
+            String sceneFilePath = FileSystem::Instance()->SystemPathForFrameworkPath(sceneFile->GetScenePath());
+            configPath = FileSystem::Instance()->GetCanonicalPath(sceneFilePath + filename);
 			LoadFromYaml(configPath);
 		}
 	}
@@ -195,10 +197,20 @@ void ParticleEmitter::RemoveLayer(ParticleLayer * layer)
 	if (layerIter != this->layers.end())
 	{
 		layers.erase(layerIter);
+
+        RemoveRenderBatch(layer->GetRenderBatch());
 		layer->SetEmitter(NULL);
 		SafeRelease(layer);
 	}
 }
+    
+void ParticleEmitter::RemoveLayer(int32 index)
+{
+    DVASSERT(0 <= index && index < (int32)layers.size());
+
+    RemoveLayer(layers[index]);
+}
+
 	
 void ParticleEmitter::MoveLayer(ParticleLayer * layer, ParticleLayer * layerToMoveAbove)
 {
@@ -284,7 +296,8 @@ void ParticleEmitter::Update(float32 timeElapsed)
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
-		(*it)->Update(timeElapsed);
+        if(!(*it)->isDisabled)
+            (*it)->Update(timeElapsed);
 	}
 }
 
@@ -395,10 +408,12 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+    Cleanup(true);
+    
 	YamlParser * parser = YamlParser::Create(filename);
 	if(!parser)
 	{
-		Logger::Error("ParticleEmitter::LoadFromYaml failed");
+		Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.c_str());
 		return;
 	}
 

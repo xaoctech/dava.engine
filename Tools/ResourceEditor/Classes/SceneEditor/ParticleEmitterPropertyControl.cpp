@@ -13,7 +13,7 @@ ParticleEmitterPropertyControl::~ParticleEmitterPropertyControl()
 
 }
 
-void ParticleEmitterPropertyControl::ReadFrom(SceneNode * sceneNode)
+void ParticleEmitterPropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

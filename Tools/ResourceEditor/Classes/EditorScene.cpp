@@ -64,14 +64,15 @@ EditorScene::~EditorScene()
 
 void EditorScene::Update(float32 timeElapsed)
 {    
+	Scene::Update(timeElapsed);
+
 	CheckNodes(this);
 	UpdateBullet(this);
-	Scene::Update(timeElapsed);
 
 	collisionWorld->updateAabbs();
 }
 
-void EditorScene::UpdateBullet(SceneNode * curr)
+void EditorScene::UpdateBullet(Entity * curr)
 {
 	if(NULL != curr)
 	{
@@ -89,7 +90,7 @@ void EditorScene::UpdateBullet(SceneNode * curr)
 	}
 }
 
-void EditorScene::CheckNodes(SceneNode * curr)
+void EditorScene::CheckNodes(Entity * curr)
 {
 	if(NULL != curr)
 	{
@@ -136,7 +137,6 @@ void EditorScene::CheckNodes(SceneNode * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_LIGHT_NODE);
 			}
 
-			// create bullet object for camera (allow selecting it)
 			if(NULL == bulletComponent)
 			{
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -152,7 +152,6 @@ void EditorScene::CheckNodes(SceneNode * curr)
 				dbgComp->SetDebugFlags(dbgComp->GetDebugFlags() | DebugRenderComponent::DEBUG_DRAW_USERNODE);
 			}
 
-			// create bullet object for user node (allow selecting it)
 			if(NULL == bulletComponent)
 			{
 				bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -164,9 +163,10 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		RenderComponent * renderComponent = (RenderComponent*) curr->GetComponent(Component::RENDER_COMPONENT);
 		if(NULL != renderComponent)
 		{
-			if(NULL != renderComponent->GetRenderObject() && curr->IsLodMain(0))
+			RenderObject *rObj = renderComponent->GetRenderObject();
+
+			if(NULL != rObj && rObj->GetType() != RenderObject::TYPE_LANDSCAPE && curr->IsLodMain(0))
 			{
-				// create bullet object for camera (allow selecting it)
 				if(NULL == bulletComponent)
 				{
 					bulletComponent = (BulletComponent*) curr->GetOrCreateComponent(Component::BULLET_COMPONENT);
@@ -183,7 +183,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	}
 }
 
-void EditorScene::ReleaseUserData(SceneNode * curr)
+void EditorScene::ReleaseUserData(Entity * curr)
 {
 	if(curr)
 	{
@@ -197,12 +197,12 @@ void EditorScene::ReleaseUserData(SceneNode * curr)
 	}
 }
 
-SceneNode * GetSolidParent(SceneNode* curr)
+Entity * GetSolidParent(Entity* curr)
 {
 	if (curr == 0)
 		return 0;
 	
-	SceneNode * parentResult = GetSolidParent(curr->GetParent());
+	Entity * parentResult = GetSolidParent(curr->GetParent());
 	
 	if (curr->GetSolid() && parentResult == 0)
 	{
@@ -212,7 +212,7 @@ SceneNode * GetSolidParent(SceneNode* curr)
 		return parentResult;
 }
 
-SceneNode * GetLodParent(SceneNode * curr)
+Entity * GetLodParent(Entity * curr)
 {
 	bool hasLod = (curr->GetComponent(Component::LOD_COMPONENT) != 0);
 	if(hasLod)
@@ -221,7 +221,7 @@ SceneNode * GetLodParent(SceneNode * curr)
 	}
 	else 
 	{
-		SceneNode * parent = curr->GetParent();
+		Entity * parent = curr->GetParent();
 		if (parent == 0)
 			return 0;
 		return GetLodParent(parent);
@@ -369,9 +369,9 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
     return false;
 }
 
-LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
+Landscape * EditorScene::GetLandscape(Entity *node)
 {
-    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    Landscape *landscape = DAVA::GetLandscape(node);
     if(!landscape)
     {
         for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
@@ -387,9 +387,9 @@ LandscapeNode * EditorScene::GetLandscape(SceneNode *node)
 	return landscape;
 }
 
-SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
+Entity* EditorScene::GetLandscapeNode(Entity *node)
 {
-    LandscapeNode *landscape = DAVA::GetLandscape(node);
+    Landscape *landscape = DAVA::GetLandscape(node);
     if(landscape)
     {
         return node;
@@ -397,8 +397,8 @@ SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
     
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
-        SceneNode * child = node->GetChild(ci);
-		SceneNode * result = GetLandscapeNode(child);
+        Entity * child = node->GetChild(ci);
+		Entity * result = GetLandscapeNode(child);
 		if (result)
 			return result;
     }
@@ -406,7 +406,7 @@ SceneNode* EditorScene::GetLandscapeNode(SceneNode *node)
 	return NULL;
 }
 
-HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject * coll)
+HeightmapNode * EditorScene::FindHeightmap(Entity * curr, btCollisionObject * coll)
 {
 	HeightmapNode * node = dynamic_cast<HeightmapNode *> (curr);
 	if (node && node->collisionObject == coll)
@@ -426,9 +426,9 @@ HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject *
 }
 
 
-SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
+Entity * EditorScene::FindSelected(Entity * curr, btCollisionObject * coll)
 {
-	SceneNode * node = curr;
+	Entity * node = curr;
 // LIGHT
 //	if (node == 0)
 //		node = dynamic_cast<LightNode *> (curr);
@@ -447,14 +447,14 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{
-		SceneNode * result = FindSelected(curr->GetChild(i), coll);
+		Entity * result = FindSelected(curr->GetChild(i), coll);
 		if (result)
 			return result;
 	}
 	return 0;
 }
 
-void EditorScene::SetSelection(SceneNode *newSelection)
+void EditorScene::SetSelection(Entity *newSelection)
 {
     if (selection)
     {
@@ -469,7 +469,12 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     
 	if (selection)
 	{
-		SceneNode * solid = GetSolidParent(selection);
+		Entity * solid = GetSolidParent(selection);
+        if(solid == 0 && (selection->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || GetEmitter(selection)))
+        {
+            // Magic fix for correct node selection
+            solid = selection;
+        }
 		if(solid == 0)
 		{
 			solid = GetLodParent(selection);
@@ -478,11 +483,8 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		{
 			selection = solid;
 		}
-			
-		
-		proxy = GetHighestProxy(selection);
-		if (proxy == 0)
-			proxy = selection;
+
+        proxy = selection;
 	}
 	else
 	{
@@ -499,7 +501,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
     }
 }
 
-void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
+void EditorScene::SetNodeDebugFlags(Entity *selectedNode, uint32 flags)
 {
     selectedNode->SetDebugFlags(flags);
     if(selectedEntity && selectedEntity != selectedNode)
@@ -509,27 +511,8 @@ void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
 }
 
 
-SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
-{
-    if(!curr) return NULL;
-    
-	int32 cc = curr->GetChildrenCount();
-	if (cc == 0)
-		return GetHighestProxy(curr->GetParent());
-	if (cc > 1)
-		return 0;
-	if (cc == 1)
-    {
-        SceneNode * result = GetHighestProxy(curr->GetParent());
-	    if (result == 0)
-            return curr;
-        else return result;
-        
-    }
-    return NULL;
-}
 
-void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
+void EditorScene::SetBulletUpdate(Entity* curr, bool value)
 {
 	if(lastSelectedPhysics)
 	{
@@ -567,7 +550,7 @@ void EditorScene::Draw()
 void EditorScene::DrawGrid()
 {
     uint32 oldState = RenderManager::Instance()->GetState();	
-	RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
+	RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST); 
 	RenderManager::Instance()->SetColor(0.7f, 0.7f, 0.7f, 1.0f);
 	for (float32 x = -GRIDMAX; x <= GRIDMAX; x+=GRIDSTEP)
 	{
@@ -595,11 +578,11 @@ void EditorScene::SetDrawGrid(bool newDrawGrid)
     drawGrid = newDrawGrid;
 }
 
-void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
+void EditorScene::SetForceLodLayer(Entity *node, int32 layer)
 {
     if(!node)   return;
     
-    SceneNode *n = node;
+    Entity *n = node;
     
     do {
         LodComponent *lc = GetLodComponent(n);
@@ -614,7 +597,7 @@ void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
     SetForceLodLayerRecursive(node, layer);
 }
 
-void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
+void EditorScene::SetForceLodLayerRecursive(Entity *node, int32 layer)
 {
     LodComponent *lc = GetLodComponent(node);
     if(lc)
@@ -630,7 +613,7 @@ void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
 }
 
 
-int32 EditorScene::GetForceLodLayer(SceneNode *node)
+int32 EditorScene::GetForceLodLayer(Entity *node)
 {
     if(!node)   return -1;
 

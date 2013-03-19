@@ -12,9 +12,11 @@
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreeController.h"
+#include "LibraryController.h"
 
 #include "MetadataFactory.h"
 #include "ResourcesManageHelper.h"
+#include "EditorFontManager.h"
 
 #include <QFile>
 #include <QDir>
@@ -23,6 +25,8 @@
 #define LOCALIZATION_NODE "localization"
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
 #define LOCALIZATION_LOCALE_NODE "Locale"
+#define DEFAULT_FONT "font"
+#define DEFAULT_FONT_PATH "DefaultFontPath"
 
 HierarchyTree::HierarchyTree()
 {
@@ -73,6 +77,31 @@ bool HierarchyTree::Load(const QString& projectPath)
         
         // Remember the platform to load its localization later.
         loadedPlatforms.insert(std::make_pair(platformNode, platform));
+	}
+	
+	// Get font node
+	YamlNode *font = projectRoot->Get(DEFAULT_FONT);
+	if (font)
+	{
+		// Get default font node
+		YamlNode *fontPath = font->Get(DEFAULT_FONT_PATH);
+		if (fontPath)
+		{
+			// Get font values into array
+			Vector<YamlNode*> fontPathArray = fontPath->AsVector();
+			EditorFontManager::DefaultFontPath defaultFontPath("","");
+			// True type font
+			if (fontPathArray.size() == 1)
+			{
+				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+			}
+			else if (fontPathArray.size() == 2) // Graphics font
+			{
+				defaultFontPath.fontPath = fontPathArray[0]->AsString();
+				defaultFontPath.fontSpritePath = fontPathArray[1]->AsString();
+			}
+			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
+		}
 	}
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
@@ -146,6 +175,21 @@ HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, Hierarchy
 	platformNode->AddTreeNode(screenNode);
 
 	return screenNode;
+}
+
+HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect)
+{
+	HierarchyTreeNode* baseNode = FindNode(&rootNode, platformId);
+	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(baseNode);
+	if (!platformNode)
+	{
+		return NULL;
+	}
+	
+	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect);
+	platformNode->AddTreeNode(aggregatorNode);
+	
+	return aggregatorNode;
 }
 
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
@@ -233,6 +277,12 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 			continue;
 		}
 		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			LibraryController::Instance()->RemoveControl(aggregatorNode);
+		}
+		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
@@ -254,6 +304,34 @@ bool HierarchyTree::Save(const QString& projectPath)
 	bool result = true;
 	YamlNode root(YamlNode::TYPE_MAP);
 	MultiMap<String, YamlNode*> &rootMap = root.AsMap();
+
+	// Get paths for default font
+	const EditorFontManager::DefaultFontPath& defaultFontPath = EditorFontManager::Instance()->GetDefaultFontPath();
+	String fontPath = defaultFontPath.fontPath;
+	String fontSpritePath = defaultFontPath.fontSpritePath;
+	// Check if default font path exist
+	if (!fontPath.empty())
+	{
+		// Create font node
+		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
+		rootMap.erase(DEFAULT_FONT);
+		rootMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT, fontNode));
+	
+		// Create fonts array
+		MultiMap<String, YamlNode*> &fontMap = fontNode->AsMap();	
+		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
+		
+		// Put font path
+		fontPathNode->AddValueToArray(fontPath);
+		// Put font sprite path if it available
+		if (!fontSpritePath.empty())
+		{
+			fontPathNode->AddValueToArray(fontSpritePath);
+		}
+		// Insert array into node
+		fontMap.insert(std::pair<String, YamlNode*>(DEFAULT_FONT_PATH, fontPathNode));
+	}
+	
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
 	rootMap.erase(PLATFORMS_NODE);
 	rootMap.insert(std::pair<String, YamlNode*>(PLATFORMS_NODE, platforms));

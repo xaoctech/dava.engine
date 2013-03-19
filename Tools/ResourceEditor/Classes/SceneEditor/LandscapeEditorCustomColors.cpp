@@ -9,7 +9,7 @@
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "EditorBodyControl.h"
 #include "SceneGraph.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
@@ -100,7 +100,7 @@ void LandscapeEditorCustomColors::PerformLandscapeDraw()
     texSurf->GenerateMipmaps();
     RenderManager::Instance()->RestoreRenderTarget();
 
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, sprTargetSurf->GetTexture());
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, sprTargetSurf->GetTexture());
 	
 	SafeRelease(sprTargetSurf);
 	SafeRelease(sprLandscape);
@@ -233,7 +233,7 @@ void LandscapeEditorCustomColors::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(radius, radius)/2;
 		UpdateCircleTexture(false);
 		workingLandscape->SetCursorTexture(circleTexture);
-		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		
 		workingLandscape->SetCursorScale(radius*2);
@@ -384,13 +384,13 @@ void LandscapeEditorCustomColors::HideAction()
 
 void LandscapeEditorCustomColors::ShowAction()
 {
-    landscapeSize = GetLandscape()->GetTexture(LandscapeNode::TEXTURE_TILE_FULL)->GetWidth();
+    landscapeSize = GetLandscape()->GetTexture(Landscape::TEXTURE_TILE_FULL)->GetWidth();
 
 	workingLandscape->CursorEnable();
 	//save fog status and disable it for more convenience
 	isFogEnabled = workingLandscape->IsFogEnabled();
 	workingLandscape->SetFog(false);
-	texSurf = SafeRetain( workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+	texSurf = SafeRetain( workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 
 	String loadFileName = GetCurrentSaveFileName();
 	if(!loadFileName.empty())
@@ -398,7 +398,7 @@ void LandscapeEditorCustomColors::ShowAction()
 
 	if(NULL == colorSprite)
 	{
-		Texture* tex =  workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+		Texture* tex =  workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
 		colorSprite = Sprite::CreateAsRenderTarget(tex->width, tex->height, FORMAT_RGBA8888);
 		RenderManager::Instance()->SetRenderTarget(colorSprite);
 		const Vector<Color> & colors = EditorConfig::Instance()->GetColorPropertyValues("LandscapeCustomColors");
@@ -481,7 +481,7 @@ NodesPropertyControl *LandscapeEditorCustomColors::GetPropertyControl(const Rect
 		(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingScene, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 		//(LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::COLORIZE_EDITOR_MODE);
 
-	workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+	workingLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
 	propsControl->SetDelegate(this);
 	LandscapeEditorSettingsChanged(propsControl->Settings());
 
@@ -513,10 +513,10 @@ void LandscapeEditorCustomColors::RecreateHeightmapNode()
 
 bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandscape(newScene));
+    EditorLandscape *editorLandscape = dynamic_cast<EditorLandscape *>(newScene->GetLandscape(newScene));
     if(editorLandscape)
     {
-        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscapeNode from scene"));
+        ShowErrorDialog(String("Cannot start color editor. Remove EditorLandscape from scene"));
         return false;
     }
 
@@ -532,7 +532,7 @@ void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
 String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
 	String currentSaveName = "";
-	Map<LandscapeNode*, String>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
+	Map<Landscape*, String>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
 	if (saveFileNameIter != saveFileNamesMap.end())
 	{
 		currentSaveName = saveFileNameIter->second;
@@ -597,9 +597,7 @@ void LandscapeEditorCustomColors::SaveTexture()
 {
 	if (unsavedChanges)
 	{
-		Command * saveCommand = new CommandSaveTextureCustomColors;
-		CommandsManager::Instance()->Execute(saveCommand);
-		SafeRelease(saveCommand);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors());
 	}
 	Close();
 }
@@ -612,17 +610,17 @@ void LandscapeEditorCustomColors::ClearSceneResources()
 
 void LandscapeEditorCustomColors::UpdateLandscapeTilemap(Texture* texture)
 {
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texSurf);
-	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, texSurf);
+	workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 	workingLandscape->UpdateFullTiledTexture();
 	
-	Image* image = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	Image* image = workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 	ImageLoader::Save(image, texture->GetPathname());
 	SafeRelease(image);
 	
 	SafeRelease(texSurf);
 	
-	texSurf = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+	texSurf = SafeRetain(workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 	wasTileMaskToolUpdate = true;
 }
 
@@ -631,9 +629,7 @@ void LandscapeEditorCustomColors::CreateUndoPoint()
 	if (originalTexture)
 	{
 		Image* newTexture = StoreState();
-		CommandDrawCustomColors* command = new CommandDrawCustomColors(originalTexture, newTexture);
-		CommandsManager::Instance()->Execute(command);
-		SafeRelease(command);
+		CommandsManager::Instance()->ExecuteAndRelease(new CommandDrawCustomColors(originalTexture, newTexture));
 		SafeRelease(originalTexture);
 		SafeRelease(newTexture);
 	}

@@ -103,6 +103,39 @@ void CreateScreenCommand::Rollback()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+CreateAggregatorCommand::CreateAggregatorCommand(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect) :
+UndoableHierarchyTreeNodeCommand()
+{
+	this->name = name;
+	this->platformId = platformId;
+	this->rect = rect;
+}
+
+void CreateAggregatorCommand::Execute()
+{
+	if (this->redoNode == NULL)
+	{
+		SetRedoNode(HierarchyTreeController::Instance()->AddAggregator(name, platformId, rect));
+	}
+	else
+	{
+		ReturnRedoNodeToScene();
+	}
+}
+
+void CreateAggregatorCommand::Rollback()
+{
+	PrepareRemoveFromSceneInformation();
+	
+	if (this->redoNode)
+	{
+		// Remove the created node from the scene, but keep it in memory.
+		HierarchyTreeController::Instance()->DeleteNode(this->redoNode->GetId(), false, true);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& pos)
 {
 	this->type = type;
@@ -274,8 +307,22 @@ void ChangeNodeHeirarchy::Execute()
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode((*iter));
 		if (node)
 		{
+			//YZ backlight parent rect
+			bool isNodeSelected = false;
+			HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
+			if (controlNode)
+			{
+				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
+				HierarchyTreeController::Instance()->UnselectControl(controlNode);
+			}
+
 			node->SetParent(targetNode, insertAfterNode);
 			//insertAfterNode = node;
+			
+			if (isNodeSelected)
+			{
+				HierarchyTreeController::Instance()->SelectControl(controlNode);
+			}
 		}
 	}
 	

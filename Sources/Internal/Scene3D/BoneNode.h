@@ -30,13 +30,13 @@
 #ifndef __DAVAENGINE_BONE_NODE_H__
 #define __DAVAENGINE_BONE_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {
 	
 class SkeletonNode;
-class BoneNode : public SceneNode
+class BoneNode : public Entity
 {
 public:
 	BoneNode(SkeletonNode * owner = 0);

@@ -8,7 +8,7 @@
 
 class EditorScene;
 class LandscapesController;
-class EditorLandscapeNode;
+class EditorLandscape;
 
 class SceneData: public QObject
 {
@@ -22,7 +22,7 @@ public:
     virtual ~SceneData();
 
 	// Rebuild the scene graph for particular node.
-	void RebuildSceneGraphNode(DAVA::SceneNode* node);
+	void RebuildSceneGraphNode(DAVA::Entity* node);
 	
 	// Rebuild the whole scene graph.
     void RebuildSceneGraph();
@@ -30,11 +30,11 @@ public:
     void SetScene(EditorScene *newScene);
     EditorScene * GetScene();
     
-    void AddSceneNode(DAVA::SceneNode *node);
-    void RemoveSceneNode(DAVA::SceneNode *node);
+    void AddSceneNode(DAVA::Entity *node);
+    void RemoveSceneNode(DAVA::Entity *node);
 
-    void SelectNode(DAVA::SceneNode *node);
-    DAVA::SceneNode * GetSelectedNode();
+    void SelectNode(DAVA::Entity *node);
+    DAVA::Entity * GetSelectedNode();
     
     void LockAtSelectedNode();
     
@@ -59,38 +59,39 @@ public:
 	// Emit the SceneChanged singal.
 	void EmitSceneChanged();
 
-	void GetAllParticleEffects(DAVA::List<DAVA::SceneNode*> & particleEffects);
+	void GetAllParticleEffects(DAVA::List<DAVA::Entity*> & particleEffects);
+
 signals:
 	void SceneChanged(EditorScene *scene);
-	void SceneNodeSelected(DAVA::SceneNode *node);
+	void SceneNodeSelected(DAVA::Entity *node);
 	
 	// Signals are specific for Scene Graph Model.
-	void SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node);
+	void SceneGraphModelNeedsRebuildNode(DAVA::Entity *node);
 	void SceneGraphModelNeedsRebuild();
 	
 	void SceneGraphModelNeedSetScene(EditorScene* scene);
-	void SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node);
+	void SceneGraphModelNeedsSelectNode(DAVA::Entity* node);
 
 protected:
     
-    void BakeNode(DAVA::SceneNode *node);
-    void FindIdentityNodes(DAVA::SceneNode *node);
-    void RemoveIdentityNodes(DAVA::SceneNode *node);
+    void BakeNode(DAVA::Entity *node);
+    void FindIdentityNodes(DAVA::Entity *node);
+    void RemoveIdentityNodes(DAVA::Entity *node);
     
-    void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
+    void ReloadNode(DAVA::Entity *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
 
-	void FindAllParticleEffectsRecursive(DAVA::SceneNode *node , DAVA::List<DAVA::SceneNode*> & particleEffects);
+	void FindAllParticleEffectsRecursive(DAVA::Entity *node , DAVA::List<DAVA::Entity*> & particleEffects);
 
 protected slots:
-    void SceneNodeSelectedInGraph(DAVA::SceneNode *node);
+    void SceneNodeSelectedInGraph(DAVA::Entity *node);
 
 protected:
     EditorScene *scene;
 
 	// Node currently selected.
-	DAVA::SceneNode* selectedNode;
+	DAVA::Entity* selectedNode;
 	
 	// Controllers related to SceneData.
     DAVA::WASDCameraController *cameraController;

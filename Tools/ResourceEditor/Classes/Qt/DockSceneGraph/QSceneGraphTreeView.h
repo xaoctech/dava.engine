@@ -20,7 +20,7 @@ public:
 
 protected slots:
 	// This signal is called by the model when selection in Scene Graph changed.
-	void OnSceneNodeSelectedInGraph(DAVA::SceneNode *node);
+	void OnSceneNodeSelectedInGraph(DAVA::Entity *node);
 
 	// Called by Scene Data Manager when scene is Created/Released.
 	void OnSceneCreated(SceneData* scene);
@@ -31,11 +31,11 @@ protected slots:
 
 	// Called by Scene Data manager when Scene Graph needs to be updated in a some way.
 	void OnSceneGraphNeedSetScene(SceneData *sceneData, EditorScene *scene);
-	void OnSceneGraphNeedSelectNode(SceneData *sceneData, DAVA::SceneNode* node);
+	void OnSceneGraphNeedSelectNode(SceneData *sceneData, DAVA::Entity* node);
 	
 	// Called by Scene Data Manager when the Scene Graph needs to be rebuilt
 	// for the particular node or for the whole graph.
-	void OnSceneGraphNeedRebuildNode(DAVA::SceneNode* node);
+	void OnSceneGraphNeedRebuildNode(DAVA::Entity* node);
 	void OnSceneGraphNeedRebuild();
 
 	void OnSceneGraphNeedRefreshLayer(DAVA::ParticleLayer* layer);
@@ -57,12 +57,12 @@ protected:
 
 	// Context Menu Action Support.
 	void ProcessContextMenuAction(QAction *action);
-	void ExecuteCommand(Command *command);
 
 	// Our model.
     SceneGraphModel *sceneGraphModel;
 	
     void keyPressEvent(QKeyEvent *event);
+	void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif //#ifndef __QSCENE_GRAPH_TREE_VIEW_H__

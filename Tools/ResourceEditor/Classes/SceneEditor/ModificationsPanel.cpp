@@ -38,12 +38,14 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 		modificationPanel->AddControl(btnAxis[i]);
 	}
 	UIStaticText * st = new UIStaticText(Rect(55.f, 0, 70.f, (float32)BUTTON_W));
-    st->SetFont(ControlsFactory::GetFontLight());
+    st->SetFont(ControlsFactory::GetFont12());
+	st->SetTextColor(ControlsFactory::GetColorLight());
 	st->SetText(L"w, e, r");
     modificationPanel->AddControl(st);
     
 	st = new UIStaticText(Rect(55.f, (float32)(BUTTON_W + BUTTON_B), 80.f, (float32)BUTTON_W));
-    st->SetFont(ControlsFactory::GetFontLight());
+    st->SetFont(ControlsFactory::GetFont12());
+	st->SetTextColor(ControlsFactory::GetColorLight());
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
 	
@@ -150,7 +152,7 @@ void ModificationsPanel::OnLandscapeRelative(BaseObject *, void *, void *)
 	}
 }
 
-void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
+void ModificationsPanel::ChangeCollisionModeShow(Entity * node)
 {
 	if (!node)
 		return;
@@ -387,7 +389,7 @@ void ModificationsPanel::Update(float32 timeElapsed)
 {
     if(workingScene)
     {
-        SceneNode * selection = workingScene->GetProxy();
+        Entity * selection = workingScene->GetProxy();
         modificationPopUp->SetSelection(selection);
         if (isModeModification && selection && modificationPanel->GetParent() == 0)
         {

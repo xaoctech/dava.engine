@@ -46,7 +46,7 @@ public:
     
     virtual void Update(float32 timeElapsed) {};
 
-    inline void SetSelection(SceneNode * _selection)
+    inline void SetSelection(Entity * _selection)
 	{
 		selection = _selection;
 	}
@@ -56,7 +56,7 @@ public:
 
 protected:
     Scene * currScene;
-    SceneNode *selection;
+    Entity *selection;
     float32 speed;
 };
     

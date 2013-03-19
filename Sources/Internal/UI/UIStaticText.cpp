@@ -43,17 +43,23 @@ REGISTER_CLASS(UIStaticText);
 
 UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/) 
 :	UIControl(rect, rectInAbsoluteCoordinates)
-	,tempSize(0, 0)
+	, textColor(1.0f, 1.0f, 1.0f, 1.0f)
+	, tempSize(0, 0)
+	, shadowOffset(0, 0)
+	, shadowColor(0, 0, 0, 1)
 {
 	inputEnabled = false;
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
 	background->SetAlign(ALIGN_TOP|ALIGN_LEFT);
 	background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
+
+	shadowBg = new UIControlBackground();
 }
 
 UIStaticText::~UIStaticText()
 {
 	SafeRelease(textBlock);
+	SafeRelease(shadowBg);
 }
 
 	
@@ -69,6 +75,11 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
 	UIControl::CopyDataFrom(srcControl);
     UIStaticText *t = (UIStaticText *)srcControl;
     textBlock = t->textBlock->Clone();
+    textColor = t->textColor;
+    shadowColor = t->shadowColor;
+    shadowOffset = t->shadowOffset;
+    SafeRelease(shadowBg);
+    shadowBg = t->shadowBg->Clone();
 }
 	
 UIStaticText *UIStaticText::CloneStaticText()
@@ -97,11 +108,19 @@ void UIStaticText::SetFont(Font * _font)
 	PrepareSprite();
 }
 
-void UIStaticText::SetFontColor(const Color& fontColor)
+void UIStaticText::SetTextColor(const Color& color)
 {
-    textBlock->SetRectSize(size);
-	textBlock->SetFontColor(fontColor);
-	PrepareSprite();
+	textColor = color;
+}
+
+void UIStaticText::SetShadowOffset(const Vector2 &offset)
+{
+	shadowOffset = offset;
+}
+
+void UIStaticText::SetShadowColor(const Color &color)
+{
+	shadowColor = color;
 }
     
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
@@ -140,12 +159,47 @@ const Vector2 &UIStaticText::GetTextSize()
 	return tempSize;
 }
 
+const Color &UIStaticText::GetTextColor() const
+{
+	return textColor;
+}
+
+const Color &UIStaticText::GetShadowColor() const
+{
+	return shadowColor;
+}
+
+const Vector2 &UIStaticText::GetShadowOffset() const
+{
+	return shadowOffset;
+}
+
 void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
 	textBlock->SetRectSize(size);
 	PrepareSprite();
 	textBlock->PreDraw();
-	UIControl::Draw(geometricData);	
+
+	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
+	{
+		UIGeometricData shadowGeomData = geometricData;
+
+		shadowGeomData.position += shadowOffset;
+		shadowGeomData.unrotatedRect += shadowOffset;
+
+		shadowBg->SetAlign(background->GetAlign());
+        shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
+		shadowBg->SetDrawColor(shadowColor);
+		shadowBg->Draw(shadowGeomData);
+	}
+
+	background->SetDrawColor(textColor);
+	UIControl::Draw(geometricData);
+}
+
+void UIStaticText::SetFontColor(const Color& fontColor)
+{
+	SetTextColor(fontColor);
 }
     
 const Vector<WideString> & UIStaticText::GetMultilineStrings()
@@ -167,6 +221,9 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	YamlNode * multilineNode = node->Get("multiline");
     YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
     YamlNode * fittingNode = node->Get("fitting");
+	YamlNode * textColorNode = node->Get("textcolor");
+	YamlNode * shadowColorNode = node->Get("shadowcolor");
+	YamlNode * shadowOffsetNode = node->Get("shadowoffset");
 
 	if (fontNode)
 	{
@@ -205,6 +262,23 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		SetText(LocalizedString(textNode->AsWString()));
 	}
 
+	if(textColorNode)
+	{
+		Vector4 c = textColorNode->AsVector4();
+		SetTextColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(shadowColorNode)
+	{
+		Vector4 c = shadowColorNode->AsVector4();
+		SetShadowColor(Color(c.x, c.y, c.z, c.w));
+	}
+
+	if(shadowOffsetNode)
+	{
+		SetShadowOffset(shadowOffsetNode->AsVector2());
+	}
+
 	YamlNode * alignNode = node->Get("align");
 	SetAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
 }
@@ -233,6 +307,18 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
 
+	//TextColor
+	nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
+	node->Set("textcolor", nodeValue);
+
+	// ShadowColor
+	nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
+	node->Set("shadowcolor", nodeValue);
+
+	// ShadowOffset
+	nodeValue->SetVector2(GetShadowOffset());
+	node->Set("shadowoffset", nodeValue);
+
     //Text
     nodeValue->SetWideString(GetText());
     node->Set("text", nodeValue);    
@@ -254,6 +340,9 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     
 	// Align
 	node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetAlign()));
+
+	// Draw type. Must be overriden for UITextControls.
+	node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
 
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);

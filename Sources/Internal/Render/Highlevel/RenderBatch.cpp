@@ -36,6 +36,8 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Debug/DVAssert.h"
+
 
 namespace DAVA
 {
@@ -74,6 +76,9 @@ void RenderBatch::SetPolygonGroup(PolygonGroup * _polygonGroup)
 	if(NULL != dataSource)
 	{
 		aabbox = dataSource->GetBoundingBox();
+        DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
+                 aabbox.min.y != AABBOX_INFINITY &&
+                 aabbox.min.z != AABBOX_INFINITY);
 	}
 }
 
@@ -217,8 +222,8 @@ void RenderBatch::Save(KeyedArchive * archive, SceneFileV2* sceneFile)
 		archive->SetUInt32("rb.indexCount", indexCount);
 		archive->SetUInt32("rb.startIndex", startIndex);
 		archive->SetVariant("rb.aabbox", VariantType(aabbox));
-		archive->SetVariant("rb.datasource", VariantType(dataSource));
-		archive->SetVariant("rb.maretial", VariantType(GetMaterial()));
+		archive->SetVariant("rb.datasource", VariantType((uint64)dataSource));
+		archive->SetVariant("rb.material", VariantType((uint64)GetMaterial()));
 		
 		KeyedArchive *mia = new KeyedArchive();
 		materialInstance->Save(mia, sceneFile);
@@ -236,8 +241,8 @@ void RenderBatch::Load(KeyedArchive * archive, SceneFileV2 *sceneFile)
 		startIndex = archive->GetUInt32("rb.startIndex", startIndex);
 		aabbox = archive->GetVariant("rb.aabbox")->AsAABBox3();
 
-		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.datasource")->AsPointer()));
-		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer((uint64) archive->GetVariant("rb.maretial")->AsPointer()));
+		PolygonGroup *pg = dynamic_cast<PolygonGroup*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.datasource")->AsUInt64()));
+		Material *mat = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(archive->GetVariant("rb.material")->AsUInt64()));
 
 		SetPolygonGroup(pg);
 		SetMaterial(mat);

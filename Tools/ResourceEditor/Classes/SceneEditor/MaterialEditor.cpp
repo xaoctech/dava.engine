@@ -73,14 +73,16 @@ MaterialEditor::MaterialEditor()
     ControlsFactory::CusomizeListControl(materialsList);
     AddControl(materialsList);
     UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, ControlsFactory::BUTTON_HEIGHT));
-    text->SetFont(ControlsFactory::GetFontLight());
+    text->SetFont(ControlsFactory::GetFont12());
     text->SetText(LocalizedString(L"materialeditor.materials"));
+	text->SetTextColor(ControlsFactory::GetColorLight());
     AddControl(text);
     SafeRelease(text);
     
     float32 textY = (GetRect().dy - ControlsFactory::BUTTON_HEIGHT ) / 2.f;
     noMaterials = new UIStaticText(Rect(materialListWidth, textY, GetRect().dx - materialListWidth, (float32)ControlsFactory::BUTTON_HEIGHT));
-    noMaterials->SetFont(ControlsFactory::GetFontLight());
+    noMaterials->SetFont(ControlsFactory::GetFont12());
+	noMaterials->SetTextColor(ControlsFactory::GetColorLight());
     noMaterials->SetText(LocalizedString(L"materialeditor.nomaterials"));
     
     selectedMaterial = -1;
@@ -172,6 +174,22 @@ void MaterialEditor::WillAppear()
     OnAllPressed(NULL, NULL, NULL);
 }
 
+void MaterialEditor::DidAppear()
+{
+    for (int32 wnm = 0; wnm < (int32)workingNodeMaterials.size(); ++wnm)
+    {
+        Material *m = workingNodeMaterials[wnm];
+        for(int32 i = 0; i < (int32)materials.size(); ++i)
+        {
+            if(m == materials[i])
+            {
+                materialsList->ScrollToElement(i);
+                break;
+            }
+        }
+    }
+}
+
 void MaterialEditor::WillDisappear()
 {
 	for_each(materials.begin(), materials.end(),  SafeRelease<Material>);
@@ -212,7 +230,7 @@ void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *newWorkingMa
 }
 
 
-void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode)
+void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, Entity *newWorkingSceneNode)
 {
     if ((newWorkingScene == workingScene) && (workingSceneNode == newWorkingSceneNode))
     {
@@ -346,7 +364,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         found = true;
     }
     
-    ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+    ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()), false);
     UIControl *sceneFlagBox = c->FindByName("flagBox");
     sceneFlagBox->SetVisible(found, false);
     
@@ -498,7 +516,7 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
         EditorScene *editorScene = dynamic_cast<EditorScene *>(workingScene);
         if(editorScene)
         {
-            LandscapeNode *landscape = editorScene->GetLandscape(editorScene);
+            Landscape *landscape = editorScene->GetLandscape(editorScene);
             if (landscape)
             {
                 landscape->SetFog(enabled);

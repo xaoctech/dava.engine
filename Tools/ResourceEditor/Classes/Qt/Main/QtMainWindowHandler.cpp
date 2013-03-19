@@ -16,6 +16,7 @@
 #include "../Commands/TilemapEditorCommands.h"
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
+#include "../Commands/SetSwitchIndexCommands.h"
 #include "../Commands/EditCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -39,6 +40,7 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QStatusBar>
+#include <QSpinBox.h>
 
 #include "Render/LibDxtHelper.h"
 
@@ -66,8 +68,10 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     }
 
 	SceneDataManager* sceneDataManager = SceneDataManager::Instance();
+
 	connect(sceneDataManager, SIGNAL(SceneActivated(SceneData*)), this, SLOT(OnSceneActivated(SceneData*)));
 	connect(sceneDataManager, SIGNAL(SceneReleased(SceneData*)), this, SLOT(OnSceneReleased(SceneData*)));
+	connect(QtMainWindow::Instance(), SIGNAL(RepackAndReloadFinished()), this, SLOT(ReloadSceneTextures()));
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
@@ -96,29 +100,22 @@ void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
     }
 }
 
-void QtMainWindowHandler::Execute(Command *command)
-{
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
-}
-
-
 void QtMainWindowHandler::NewScene()
 {
-    Execute(new CommandNewScene());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandNewScene());
 }
 
 
 void QtMainWindowHandler::OpenScene()
 {
-    Execute(new CommandOpenScene());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene());
 }
 
 
 void QtMainWindowHandler::OpenProject()
 {
 	/*
-    Execute(new CommandOpenProject());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenProject());
 	emit ProjectChanged();
 	*/
 
@@ -128,42 +125,42 @@ void QtMainWindowHandler::OpenProject()
 
 void QtMainWindowHandler::OpenResentScene(int32 index)
 {
-    Execute(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
 }
 
 void QtMainWindowHandler::SaveScene()
 {
-    Execute(new CommandSaveScene());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveScene());
 }
 
 void QtMainWindowHandler::ExportAsPNG()
 {
-    Execute(new CommandExport(PNG_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PNG_FILE));
 }
 
 void QtMainWindowHandler::ExportAsPVR()
 {
-    Execute(new CommandExport(PVR_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(PVR_FILE));
 }
 
 void QtMainWindowHandler::ExportAsDXT()
 {
-    Execute(new CommandExport(DXT_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandExport(DXT_FILE));
 }
 
 void QtMainWindowHandler::SaveToFolderWithChilds()
 {
-    Execute(new CommandSaveToFolderWithChilds());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveToFolderWithChilds());
 }
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 {
-    Execute(new CommandCreateNode(type));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandCreateNode(type));
 }
 
 void QtMainWindowHandler::Materials()
 {
-    Execute(new CommandMaterials());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandMaterials());
 
 	/*
 	MaterialBrowser *materialBrowser = new MaterialBrowser((QWidget *) parent());
@@ -185,12 +182,12 @@ void QtMainWindowHandler::Materials()
 
 void QtMainWindowHandler::HeightmapEditor()
 {
-    Execute(new CommandHeightmapEditor());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandHeightmapEditor());
 }
 
 void QtMainWindowHandler::TilemapEditor()
 {
-    Execute(new CommandTilemapEditor());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandTilemapEditor());
 }
 
 void QtMainWindowHandler::ConvertTextures()
@@ -205,7 +202,7 @@ void QtMainWindowHandler::ConvertTextures()
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
 {
-    Execute(new CommandViewport(type));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandViewport(type));
 }
 
 
@@ -400,23 +397,23 @@ void QtMainWindowHandler::RestoreViews()
 
 void QtMainWindowHandler::RefreshSceneGraph()
 {
-    Execute(new CommandRefreshSceneGraph());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandRefreshSceneGraph());
 }
 
 void QtMainWindowHandler::ToggleSceneInfo()
 {
-    Execute(new CommandSceneInfo());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSceneInfo());
 }
 
 void QtMainWindowHandler::ShowSettings()
 {
-    Execute(new CommandSettings());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSettings());
 }
 
 
 void QtMainWindowHandler::Beast()
 {
-    Execute(new CommandBeast());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandBeast());
 }
 
 void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)
@@ -435,9 +432,9 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 }
 
 
-void QtMainWindowHandler::ReloadTexturesFromFileSystem()
+void QtMainWindowHandler::RepackAndReloadTextures()
 {
-    Execute(new CommandReloadTextures());
+	QtMainWindow::Instance()->RepackAndReloadScene();
 }
 
 void QtMainWindowHandler::CreateParticleEmitterNode()
@@ -447,7 +444,7 @@ void QtMainWindowHandler::CreateParticleEmitterNode()
 
 void QtMainWindowHandler::ToggleNotPassableTerrain()
 {
-	Execute(new CommandNotPassableTerrain());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandNotPassableTerrain());
 }
 
 void QtMainWindowHandler::RegisterStatusBar(QStatusBar *registeredSatusBar)
@@ -494,45 +491,55 @@ void QtMainWindowHandler::MenuViewOptionsWillShow()
 
 void QtMainWindowHandler::RulerTool()
 {
-    Execute(new CommandRulerTool());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandRulerTool());
 }
 
 void QtMainWindowHandler::ReloadAsPNG()
 {
-    Execute(new ReloadTexturesAsCommand(PNG_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PNG_FILE));
 }
 void QtMainWindowHandler::ReloadAsPVR()
 {
-    Execute(new ReloadTexturesAsCommand(PVR_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(PVR_FILE));
 }
 void QtMainWindowHandler::ReloadAsDXT()
 {
-    Execute(new ReloadTexturesAsCommand(DXT_FILE));
+    CommandsManager::Instance()->ExecuteAndRelease(new ReloadTexturesAsCommand(DXT_FILE));
+}
+
+void QtMainWindowHandler::ReloadSceneTextures()
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandReloadTextures());
+}
+
+void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchIndexHelper::eSET_SWITCH_INDEX state)
+{
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
 void QtMainWindowHandler::ToggleCustomColors()
 {
-    Execute(new CommandToggleCustomColors());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
 }
 
 void QtMainWindowHandler::SaveTextureCustomColors()
 {
-    Execute(new CommandSaveTextureCustomColors());
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureCustomColors());
 }
 
 void QtMainWindowHandler::LoadTextureCustomColors()
 {
-	Execute(new CommandLoadTextureCustomColors());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandLoadTextureCustomColors());
 }
 
 void QtMainWindowHandler::ChangeBrushSizeCustomColors(int newSize)
 {
-    Execute(new CommandChangeBrushSizeCustomColors(newSize));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeBrushSizeCustomColors(newSize));
 }
 
 void QtMainWindowHandler::ChangeColorCustomColors(int newColorIndex)
 {
-    Execute(new CommandChangeColorCustomColors(newColorIndex));
+    CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeColorCustomColors(newColorIndex));
 }
 
 void QtMainWindowHandler::RegisterCustomColorsWidgets(QPushButton* toggleButton, QPushButton* saveTextureButton, QSlider* brushSizeSlider, QComboBox* colorComboBox, QPushButton* loadTextureButton)
@@ -576,29 +583,53 @@ void QtMainWindowHandler::SetCustomColorsWidgetsState(bool state)
 	}
 }
 
+void QtMainWindowHandler::RegisterSetSwitchIndexWidgets(QSpinBox* spinBox, QRadioButton* rBtnSelection, QRadioButton* rBtnScene, QPushButton* btnOK)
+{
+	this->setSwitchIndexToggleButton = btnOK;
+	this->editSwitchIndexValue = spinBox;
+	this->rBtnSelection = rBtnSelection;
+	this->rBtnScene = rBtnScene;
+}
+
+void QtMainWindowHandler::SetSwitchIndexWidgetsState(bool state)
+{
+	DVASSERT(setSwitchIndexToggleButton &&
+		 editSwitchIndexValue &&
+		 rBtnSelection &&
+		 rBtnScene );
+
+	setSwitchIndexToggleButton->blockSignals(true);
+	setSwitchIndexToggleButton->setEnabled(state);
+	setSwitchIndexToggleButton->blockSignals(false);
+
+	editSwitchIndexValue->setEnabled(state);
+	rBtnSelection->setEnabled(state);
+	rBtnScene->setEnabled(state);
+}
+
 void QtMainWindowHandler::ToggleVisibilityTool()
 {
-	Execute(new CommandToggleVisibilityTool());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleVisibilityTool());
 }
 
 void QtMainWindowHandler::SaveTextureVisibilityTool()
 {
-	Execute(new CommandSaveTextureVisibilityTool());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandSaveTextureVisibilityTool());
 }
 
 void QtMainWindowHandler::ChangleAreaSizeVisibilityTool(int newSize)
 {
-	Execute(new CommandChangeAreaSizeVisibilityTool(newSize));
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandChangeAreaSizeVisibilityTool(newSize));
 }
 
 void QtMainWindowHandler::SetVisibilityPointVisibilityTool()
 {
-	Execute(new CommandSetPointVisibilityTool());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetPointVisibilityTool());
 }
 
 void QtMainWindowHandler::SetVisibilityAreaVisibilityTool()
 {
-	Execute(new CommandSetAreaVisibilityTool());
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandSetAreaVisibilityTool());
 }
 
 void QtMainWindowHandler::RegisterWidgetsVisibilityTool(QPushButton* toggleButton, QPushButton* saveTextureButton, QPushButton* setPointButton, QPushButton* setAreaButton, QSlider* areaSizeSlider)
@@ -699,7 +730,7 @@ void QtMainWindowHandler::SetModificationMode(ResourceEditor::eModificationActio
 
 void QtMainWindowHandler::ModificationPlaceOnLand()
 {
-	Execute(new ModificationPlaceOnLandCommand());
+	CommandsManager::Instance()->ExecuteAndRelease(new ModificationPlaceOnLandCommand());
 }
 
 void QtMainWindowHandler::ModificationSnapToLand()
@@ -760,23 +791,23 @@ void QtMainWindowHandler::UpdateModificationActions()
 
 void QtMainWindowHandler::OnApplyModification(double x, double y, double z)
 {
-	Execute(new ModificationApplyCommand(x, y, z));
+	CommandsManager::Instance()->ExecuteAndRelease(new ModificationApplyCommand(x, y, z));
 }
 
 void QtMainWindowHandler::OnResetModification()
 {
-	Execute(new ModificationResetCommand());
+	CommandsManager::Instance()->ExecuteAndRelease(new ModificationResetCommand());
 }
 
 void QtMainWindowHandler::UndoAction()
 {
-	Execute(new UndoCommand());
+	CommandsManager::Instance()->ExecuteAndRelease(new UndoCommand());
 	UpdateUndoActionsState();
 }
 
 void QtMainWindowHandler::RedoAction()
 {
-	Execute(new RedoCommand());
+	CommandsManager::Instance()->ExecuteAndRelease(new RedoCommand());
 	UpdateUndoActionsState();
 }
 

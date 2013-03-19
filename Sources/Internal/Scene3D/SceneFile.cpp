@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Scene3D/SceneFile.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Texture.h"
 #include "Render/Material.h"
@@ -195,7 +195,7 @@ bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBun
 				continue;
 			}
 			String & name = anim->bindName;
-			SceneNode * bindNode = rootNode->FindByName(name);
+			Entity * bindNode = rootNode->FindByName(name);
 			anim->SetBindNode(bindNode);
 			if (!bindNode)
 			{
@@ -501,7 +501,7 @@ bool SceneFile::ReadAnimatedMesh()
 }
 
 
-bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
+bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
 {
 	if (sceneFP->IsEof())return false;
 
@@ -517,10 +517,10 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 	nodeType[0] = 0;
 	
 	
-	SceneNode * node = 0;
+	Entity * node = 0;
 	if (def.nodeType == SceneNodeDef::SCENE_NODE_BASE)
 	{
-		node = new SceneNode();
+		node = new Entity();
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
@@ -731,7 +731,7 @@ bool SceneFile::ReadLight()
 	return true;
 }
 
-void SceneFile::ProcessLOD(SceneNode *forRootNode)
+void SceneFile::ProcessLOD(Entity *forRootNode)
 {
 //    if (scene->GetLodLayersCount() <= 0) 
 //    {
@@ -740,13 +740,13 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
 //    
 
     const int maxLodCount = 10;
-    List<SceneNode*> lodNodes;
+    List<Entity*> lodNodes;
     forRootNode->FindNodesByNamePart("_lod0", lodNodes);
     if (debugLogEnabled) 
     {
         Logger::Debug("Find %d nodes with LOD", lodNodes.size());
     }
-    for (List<SceneNode*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
+    for (List<Entity*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
     {
         String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
         if (debugLogEnabled) 
@@ -754,12 +754,12 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
             Logger::Debug("Processing LODs for %s", nodeName.c_str());
         }
 
-        SceneNode *oldParent = (*it)->GetParent();
+        Entity *oldParent = (*it)->GetParent();
         LodNode *lodNode = new LodNode();
         lodNode->SetName(nodeName);
         for (int i = maxLodCount; i >= 0; i--) 
         {
-            SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
+            Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
             if (ln) 
             {//if layer is not a dummy
                 if (debugLogEnabled) 
@@ -774,7 +774,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
             }
             else 
             {//if layer is dummy
-                SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
+                Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
                 if (ln) 
                 {
                     if (debugLogEnabled) 
@@ -798,13 +798,13 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
     }
     
     
-//    List<SceneNode*> lodNodes;
+//    List<Entity*> lodNodes;
 //    forRootNode->FindNodesByNamePart("_lod0", lodNodes);
 //    if (debugLogEnabled) 
 //    {
 //        Logger::Debug("Find %d nodes with LOD", lodNodes.size());
 //    }
-//    for (List<SceneNode*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
+//    for (List<Entity*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
 //    {
 //        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
 //        if (debugLogEnabled) 
@@ -812,7 +812,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
 //            Logger::Debug("Processing LODs for %s", nodeName.c_str());
 //        }
 //        bool isNeedInit = true;
-//        SceneNode *newNode = new SceneNode(scene);
+//        Entity *newNode = new Entity(scene);
 //        newNode->SetName(nodeName);
 //        MeshInstanceNode *meshToAdd = new MeshInstanceNode(scene);
 //        meshToAdd->SetName("instance_0");
@@ -820,7 +820,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
 //        (*it)->GetParent()->AddNode(newNode);
 //        for (int i = scene->GetLodLayersCount(); i >= 0; i--) 
 //        {
-//            SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
+//            Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
 //            if (ln) 
 //            {//if layer is not a dummy
 //                MeshInstanceNode *mn = (MeshInstanceNode *)ln->FindByName("instance_0");
@@ -834,7 +834,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
 //                    {//we should init our new node from the first appeared real(not a dummy) node
 //                        isNeedInit = false;
 //                        newNode->SetLocalTransform(ln->GetLocalTransform());
-//                        SceneNode *hnode = mn;
+//                        Entity *hnode = mn;
 //                        while (true)
 //                        {
 //                            if (hnode->GetParent() == ln) 
@@ -855,7 +855,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
 //            }
 //            else 
 //            {//if layer is dummy
-//                SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
+//                Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
 //                if (ln) 
 //                {
 //                    if (debugLogEnabled) 
