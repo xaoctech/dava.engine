@@ -31,7 +31,6 @@
 #define __DAVAENGINE_FILE_PATH_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
 
 namespace DAVA
 {
@@ -39,7 +38,7 @@ namespace DAVA
 	\ingroup filesystem
 	\brief class to work with file pathname
  */
-class FilePath: public BaseObject
+class FilePath
 {
 public:
 
@@ -55,54 +54,123 @@ public:
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 
-    
+	/*
+        \brief Function to check is filepath empty or no
+        \returns true if absolutePathname is not empty
+	 */
     const bool IsInitalized() const;
+
+	/*
+        \brief Function to check is filepath represent folder path
+        \returns true if absolutePathname has '/' as last charachter
+	 */
     const bool IsDirectoryPathname() const;
 
-    const String GetAbsolutePathname() const;
-    const String GetFilename() const;
-    const String GetBasename() const;
-    const String GetExtension() const;
-    const String GetDirectory() const;
+	/**
+        \brief Function to retrieve pathname
+        \returns pathname value
+	 */
+    const String & GetAbsolutePathname() const;
     
-    const String GetRelativePathname() const;
-    const String GetRelativePathname(const String &forDirectory) const;
+	/**
+        \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
+        \returns filename value
+	 */
+    String GetFilename() const;
+
+    /**
+        \brief Function to retrieve basename from pathname. Basename for path "/Users/Folder/image.png" is "image".
+        \returns basename value
+	 */
+    String GetBasename() const;
     
+	/**
+        \brief Function to retrieve extension from pathname. Extension for path "/Users/Folder/image.png" is ".png".
+        \returns extension value
+	 */
+    String GetExtension() const;
+
+	/**
+        \brief Function to retrieve directory from pathname. Directory for path "/Users/Folder/image.png" is "/Users/Folder/".
+        \returns directory value
+	 */
+    String GetDirectory() const;
+    
+    
+	/**
+        \brief Function to retrieve relative pathname for current working directory
+        \returns relative path value
+	 */
+    String GetRelativePathname() const;
+
+	/**
+        \brief Function to retrieve relative pathname for exact directory
+        \param[in] forDirectory is exact directory for relative path calculation
+        \returns relative path value
+	 */
+    String GetRelativePathname(const String &forDirectory) const;
+    
+    
+	/**
+        \brief Function for replacement of original filename
+        \param[in] filename is new filename
+	 */
     void ReplaceFilename(const String &filename);
+
+	/**
+        \brief Function for replacement of original basename
+        \param[in] basename is new basename
+	 */
     void ReplaceBasename(const String &basename);
+
+	/**
+        \brief Function for replacement of original extension
+        \param[in] extension is new extension
+	 */
     void ReplaceExtension(const String &extension);
+
+	/**
+        \brief Function for replacement of original directory
+        \param[in] directory is new directory
+	 */
     void ReplaceDirectory(const String &directory);
     
+	/**
+        \brief Function for setup of project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \param[in] pathname is project path
+	 */
     static void SetProjectPathname(const String &pathname);
-    static String & GetProjectPathname();
 
-    const String ResolvePathname() const;
+	/**
+        \brief Function to retrive project path for resolving pathnames such as "~res:/Gfx/image.png"
+        \returns project path 
+	 */
+    static const String & GetProjectPathname();
+
     
-//    const char8 * c_str() const;
-    
+	/**
+        \brief Function to retrive system path for resolving pathnames such as "~res:/Gfx/image.png", "~doc:/Project/cache.dat"
+        \returns resolved pathname in system style. For example "~doc:/Project/cache.dat" will be resolved as "/User/Documents/Project/cache.dat"
+	 */
+    String ResolvePathname() const;
     
 protected:
     
-    static const String NormalizePathname(const String &pathname);
-    static const String MakeDirectory(const String &pathname);
+    static String NormalizePathname(const String &pathname);
+    static String MakeDirectory(const String &pathname);
 
-    static const String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
+    static String AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname);
 
-    static const String GetFilename(const String &pathname);
-    static const String GetDirectory(const String &pathname);
+    static String GetFilename(const String &pathname);
+    static String GetDirectory(const String &pathname);
 
-    static const String GetSystemPathname(const String &pathname);
+    static String GetSystemPathname(const String &pathname);
     
     
 protected:
     
     String absolutePathname;
     static String projectPathname;
-
-public:
-    INTROSPECTION_EXTEND(FilePath, BaseObject,
-        NULL
-    );
 };
 };
 
