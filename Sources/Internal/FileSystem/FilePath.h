@@ -44,16 +44,16 @@ class FilePath: public BaseObject
 public:
 
 	FilePath();
-    FilePath(const FilePath &path);
-    FilePath(const String &sourcePath);
-    FilePath(const String &directory, const String &filename);
+    FilePath(const FilePath & path);
+    FilePath(const String & sourcePath);
+    FilePath(const String & directory, const String & filename);
 
 	virtual ~FilePath();
 
-    FilePath& operator=(const FilePath &path);
-    FilePath operator+(const FilePath &path);
-    bool operator==(const FilePath &path) const;
-	bool operator!=(const FilePath &path) const;
+    FilePath& operator=(const FilePath & path);
+    FilePath operator+(const FilePath & path) const;
+    bool operator==(const FilePath & path) const;
+	bool operator!=(const FilePath & path) const;
 
     
     const bool IsInitalized() const;
@@ -77,6 +77,9 @@ public:
     static String & GetProjectPathname();
 
     const String ResolvePathname() const;
+    
+//    const char8 * c_str() const;
+    
     
 protected:
     

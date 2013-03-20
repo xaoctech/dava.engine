@@ -648,7 +648,7 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
 //	SafeRelease(image);
 }
 	
-Texture * Texture::CreateFromFile(const String & pathName)
+Texture * Texture::CreateFromFile(const FilePath & pathName)
 {
 	Texture * texture = PureCreate(pathName);
 	if(!texture)
@@ -659,7 +659,7 @@ Texture * Texture::CreateFromFile(const String & pathName)
 	return texture;
 }
 
-Texture * Texture::PureCreate(const String & pathName)
+Texture * Texture::PureCreate(const FilePath & pathName)
 {
     //TODO::temporary workaround to optimize old scenes loading
     String descriptorPathname = FileSystem::Instance()->ReplaceExtension(pathName, TextureDescriptor::GetDescriptorExtension());

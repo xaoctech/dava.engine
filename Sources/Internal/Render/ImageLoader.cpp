@@ -40,7 +40,7 @@
 namespace DAVA 
 {
 
-Vector<Image *> ImageLoader::CreateFromFile(const String & pathname)
+Vector<Image *> ImageLoader::CreateFromFile(const FilePath & pathname)
 {
     File *file = File::Create(pathname, File::OPEN | File::READ);
     
@@ -168,9 +168,9 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
     return Vector<Image *>();
 }
 
-void ImageLoader::Save(DAVA::Image *image, const String &pathname)
+void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
 {
-    String extension = FileSystem::Instance()->GetExtension(pathname);
+    String extension = pathname.GetExtension();
     DVASSERT_MSG( 0 != CompareCaseInsensitive(extension, ".tex") , "Need to save image to PNG file");
     
     DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));

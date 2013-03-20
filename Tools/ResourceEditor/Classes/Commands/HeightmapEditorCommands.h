@@ -22,9 +22,9 @@ public:
 
 protected:
 	static String TimeString();
-	static String SaveHeightmap(Heightmap* heightmap);
+	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
-	static void UpdateLandscapeHeightmap(String filename);
+	static void UpdateLandscapeHeightmap(FilePath filename);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
@@ -44,12 +44,12 @@ protected:
 class CommandCopyPasteHeightmap: public HeightmapModificationCommand
 {
 public:
-	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const String& tilemapSavedPath);
+	CommandCopyPasteHeightmap(bool copyHeightmap, bool copyTilemap, Heightmap* originalHeightmap, Heightmap* newHeightmap, Image* originalTilemap, Image* newTilemap, const FilePath& tilemapSavedPath);
 	virtual ~CommandCopyPasteHeightmap();
 
 protected:
-	String heightmapUndoFilename;
-	String heightmapRedoFilename;
+	FilePath heightmapUndoFilename;
+	FilePath heightmapRedoFilename;
 
 	Image* tilemapUndoImage;
 	Image* tilemapRedoImage;

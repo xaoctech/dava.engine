@@ -55,13 +55,13 @@ File::~File()
 	}
 }
 	
-File * File::Create(const String &filePath, uint32 attributes)
+File * File::Create(const FilePath &filePath, uint32 attributes)
 {
 	return FileSystem::Instance()->CreateFileForFrameworkPath(filePath, attributes);
 }
 
 
-File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
+File * File::CreateFromSystemPath(const FilePath &filename, uint32 attributes)
 {
 	FileSystem * fileSystem = FileSystem::Instance();
 	for (List<FileSystem::ResourceArchiveItem>::iterator ai = fileSystem->resourceArchiveList.begin();
@@ -69,7 +69,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	{
 		FileSystem::ResourceArchiveItem & item = *ai;
 
-		String filenamecpp = filename;
+		String filenamecpp = filename.GetAbsolutePathname();
 
 		String::size_type pos = filenamecpp.find(item.attachPath);
 		if (pos == 0)
@@ -100,7 +100,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	uint32 size = 0;
 	if ((attributes & File::OPEN) && (attributes & File::READ))
 	{
-		file = fopen(filename.c_str(),"rb");
+		file = fopen(filename.ResolvePathname().c_str(),"rb");
 		if (!file)return NULL;
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
@@ -108,12 +108,12 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	}
 	else if ((attributes & File::CREATE) && (attributes & File::WRITE))
 	{
-		file = fopen(filename.c_str(),"wb");
+		file = fopen(filename.ResolvePathname().c_str(),"wb");
 		if (!file)return NULL;
 	}
 	else if ((attributes & File::APPEND) && (attributes & File::WRITE))
 	{
-		file = fopen(filename.c_str(),"ab");
+		file = fopen(filename.ResolvePathname().c_str(),"ab");
 		if (!file)return NULL;
 		fseek(file, 0, SEEK_END);
 		size = ftell(file);
@@ -131,15 +131,9 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 	return fileInstance;
 }
 
-const String File::GetFilename()
+const FilePath & File::GetFilename()
 {
 	return filename;
-}
-
-const String File::GetPathname()
-{
-	Logger::Debug("[AnsiFile::GetPathname] not implemented; allways return NULL;");
-	return 0;
 }
 
 uint32 File::Write(const void * pointerToData, uint32 dataSize)
@@ -293,9 +287,9 @@ bool File::WriteLine(const String & string)
 
 }
 
-String File::GetModificationDate(const String & filePathname)
+String File::GetModificationDate(const FilePath & filePathname)
 {
-    String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
+    String realPathname = filePathname.ResolvePathname();
     
     struct stat fileInfo = {0};
     int32 ret = stat(realPathname.c_str(), &fileInfo);

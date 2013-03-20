@@ -42,7 +42,6 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     
     tilemaskWasChanged = false;
     tilemaskImage = NULL;
-    tilemaskPathname = "";
     tilemaskTexture = NULL;
     toolImageTile = NULL;
 
@@ -487,19 +486,18 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     workingLandscape->UpdateFullTiledTexture();
 }
 
-void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
+void LandscapeEditorHeightmap::SaveTextureAction(const FilePath &pathToFile)
 {
     Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
     if(heightmap)
     {
-        String heightmapPath = pathToFile;
-        String extension = FileSystem::Instance()->GetExtension(pathToFile);
-        if(Heightmap::FileExtension() != extension)
+        FilePath heightmapPath = pathToFile;
+        if(Heightmap::FileExtension() != heightmapPath.GetExtension())
         {
-            heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
+            heightmapPath.ReplaceExtension(Heightmap::FileExtension());
         }
         savedPath = heightmapPath;
-        heightmap->Save(heightmapPath);
+        heightmap->Save(heightmapPath.GetAbsolutePathname());
     }
 }
 
@@ -522,7 +520,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
 {
     if("property.landscape.texture.heightmap" == forKey)
     {
-        if(savedPath.length())
+        if(savedPath.IsInitalized())
         {
             SaveTextureAction(savedPath);
 

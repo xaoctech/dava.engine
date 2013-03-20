@@ -142,22 +142,19 @@ void Heightmap::SetTileSize(int32 newSize)
     tileSize = newSize;
 }
 
-void Heightmap::Save(const String &filePathname)
+void Heightmap::Save(const FilePath &filePathname)
 {
-    String filename = filePathname;
-    
-    String extension = FileSystem::Instance()->GetExtension(filePathname);
-    if(FileExtension() != extension)
+    if(FileExtension() != filePathname.GetExtension())
     {
-        Logger::Error("Heightmap::Save wrong extension: %s", filePathname.c_str());
+        Logger::Error("Heightmap::Save wrong extension: %s", filePathname.GetAbsolutePathname().c_str());
         return;
     }
 
     
-    File * file = File::Create(filename, File::CREATE | File::WRITE);
+    File * file = File::Create(filePathname.GetAbsolutePathname(), File::CREATE | File::WRITE);
     if (!file)
     {
-        Logger::Error("Heightmap::Save failed to create file: %s", filename.c_str());
+        Logger::Error("Heightmap::Save failed to create file: %s", filePathname.GetAbsolutePathname().c_str());
         return;
     }
     
@@ -184,20 +181,19 @@ void Heightmap::Save(const String &filePathname)
     SafeRelease(file);
 }
     
-bool Heightmap::Load(const String &filePathname)
+bool Heightmap::Load(const FilePath &filePathname)
 {
-    String extension = FileSystem::Instance()->GetExtension(filePathname);
-    if(FileExtension() != extension)
+    if(FileExtension() != filePathname.GetExtension())
     {
-        Logger::Error("Heightmap::Load failed with wrong extension: %s", filePathname.c_str());
+        Logger::Error("Heightmap::Load failed with wrong extension: %s", filePathname.GetAbsolutePathname().c_str());
         return false;
     }
 
     
-    File * file = File::Create(filePathname, File::OPEN | File::READ);
+    File * file = File::Create(filePathname.GetAbsolutePathname(), File::OPEN | File::READ);
     if (!file)
     {
-        Logger::Error("Heightmap::Load failed to create file: %s", filePathname.c_str());
+        Logger::Error("Heightmap::Load failed to create file: %s", filePathname.GetAbsolutePathname().c_str());
         return false;
     }
     

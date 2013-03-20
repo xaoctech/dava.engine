@@ -53,7 +53,7 @@ protected:
     virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
-    virtual void SaveTextureAction(const String &pathToFile);
+    virtual void SaveTextureAction(const FilePath &pathToFile);
 	virtual void UpdateCursor();
 
 	void StoreOriginalState();

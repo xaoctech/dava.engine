@@ -147,7 +147,7 @@ public:
         \brief Builds landscape from heightmap image and bounding box of this landscape block
         \param[in] landscapeBox axial-aligned bounding box of the landscape block
      */
-    virtual void BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & landscapeBox);
+    virtual void BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & landscapeBox);
     
     enum eTextureLevel
     {
@@ -184,7 +184,7 @@ public:
         \param[in] level level of texture you want to set
         \param[in] textureName name of texture you want to open and set to specific level
      */
-    void SetTexture(eTextureLevel level, const String & textureName);
+    void SetTexture(eTextureLevel level, const FilePath & textureName);
 
     
     /**
@@ -212,14 +212,14 @@ public:
         \param[in] level level of texture you want to get name
         \returns current texture name
 	 */
-    const String & GetTextureName(eTextureLevel level);
+    const FilePath & GetTextureName(eTextureLevel level);
 
 	/**
         \brief Set texture name for export.
         \param[in] level level of texture you want to set name
         \param[in] newTextureName new texture name
 	 */
-    void SetTextureName(eTextureLevel level, const String &newTextureName);
+    void SetTextureName(eTextureLevel level, const FilePath &newTextureName);
     
     
 	/**
@@ -255,7 +255,7 @@ public:
         \brief Function to receive pathname of heightmap object
         \returns pathname of heightmap
      */
-    const String & GetHeightmapPathname();
+    const FilePath & GetHeightmapPathname();
 
     
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
@@ -276,7 +276,7 @@ public:
     virtual void SetHeightmap(Heightmap *height);
     
     virtual void UpdateFullTiledTexture();
-    String SaveFullTiledTexture();
+    FilePath SaveFullTiledTexture();
     
     void SetFog(bool _fogEnabled);
     bool IsFogEnabled() const;
@@ -328,7 +328,7 @@ protected:
     void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
-    Texture * CreateTexture(eTextureLevel level, const String & textureName);
+    Texture * CreateTexture(eTextureLevel level, const FilePath & textureName);
     
     int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
@@ -338,7 +338,7 @@ protected:
     
     uint16 * indices;
     Texture * textures[TEXTURE_COUNT];
-    Vector<String> textureNames;
+    Vector<FilePath> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //
@@ -386,11 +386,9 @@ protected:
     bool BuildHeightmap();
     void BuildLandscape();
     Heightmap *heightmap;
-    String heightmapPath;
+    FilePath heightmapPath;
     
-//     static const float32 TEXTURE_TILE_FULL_SIZE = 2048;
 	static const uint32 TEXTURE_TILE_FULL_SIZE = 2048;
-// 	static const float32 TEXTURE_TILE_FULL_SIZE;
     
     Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
     Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
@@ -415,8 +413,8 @@ protected:
 public:
     
     INTROSPECTION_EXTEND(Landscape, RenderObject,
-        MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        MEMBER(heightmapPath, "Heightmap Path", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        COLLECTION(textureNames, "Texture Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 

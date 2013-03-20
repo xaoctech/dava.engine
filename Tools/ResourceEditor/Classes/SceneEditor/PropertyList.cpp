@@ -121,10 +121,10 @@ void PropertyList::SetFloatPropertyValue(const String &propertyName, float32 new
     }
 }
 
-void PropertyList::SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath)
+void PropertyList::SetFilepathPropertyValue(const String &propertyName, const FilePath &currentFilepath)
 {
     PropertyCellData *p = PropertyByName(propertyName);
-    p->SetString(currentFilepath);
+    p->SetFilePath(currentFilepath);
     if (p->currentCell) 
     {
         p->currentCell->SetData(p);
@@ -160,10 +160,10 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
     return p->GetFloat();   
 }
 
-const String &PropertyList::GetFilepathPropertyValue(const String &propertyName)
+const FilePath &PropertyList::GetFilepathPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
-    return p->GetString();   
+    return p->GetFilePath();
 }
 
 bool PropertyList::GetBoolPropertyValue(const String &propertyName)

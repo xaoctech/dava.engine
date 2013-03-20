@@ -92,7 +92,7 @@ FilePath& FilePath::operator=(const FilePath &path)
     return *this;
 }
     
-FilePath FilePath::operator+(const FilePath &path)
+FilePath FilePath::operator+(const FilePath &path) const
 {
     DVASSERT(IsDirectoryPathname());
     
@@ -192,7 +192,7 @@ const String FilePath::GetDirectory(const String &pathname)
     
 const String FilePath::GetRelativePathname() const
 {
-    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory());
+    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory().GetAbsolutePathname());
 }
     
 const String FilePath::GetRelativePathname(const String &forDirectory) const
@@ -222,7 +222,6 @@ void FilePath::ReplaceExtension(const String &extension)
     const String directory = GetDirectory();
     const String basename = GetBasename();
     absolutePathname = NormalizePathname(directory + basename + extension);
-    
 }
     
 void FilePath::ReplaceDirectory(const String &directory)
@@ -235,6 +234,12 @@ const String FilePath::ResolvePathname() const
 {
     return GetSystemPathname(absolutePathname);
 }
+    
+//const char8 * FilePath::c_str() const
+//{
+//    return absolutePathname.c_str();
+//}
+
     
 const String FilePath::GetSystemPathname(const String &pathname)
 {
@@ -249,7 +254,7 @@ const String FilePath::GetSystemPathname(const String &pathname)
 	{
         if(projectPathname.empty())
         {
-            retPath = FileSystem::Instance()->SystemPathForFrameworkPath(retPath);
+            retPath = FileSystem::Instance()->SystemPathForFrameworkPath(retPath).GetAbsolutePathname();
         }
         else
         {
@@ -263,7 +268,7 @@ const String FilePath::GetSystemPathname(const String &pathname)
 		if(find != String::npos)
 		{
 			retPath = retPath.erase(0, 5);
-			retPath = FileSystem::Instance()->FilepathInDocuments("") + retPath;
+			retPath = FileSystem::Instance()->FilepathInDocuments("").GetAbsolutePathname() + retPath;
 		}
 	}
     

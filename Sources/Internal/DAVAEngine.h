@@ -96,6 +96,7 @@
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/Parser.h"
+#include "FileSystem/FilePath.h"
 
 
 // Collisions

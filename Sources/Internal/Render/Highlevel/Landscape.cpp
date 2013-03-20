@@ -258,7 +258,7 @@ void Landscape::SetLods(const Vector4 & lods)
         lodSqDistance[ll] = lodDistance[ll] * lodDistance[ll];
 }
     
-void Landscape::BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & _box)
+void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathname, const AABBox3 & _box)
 {
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
@@ -625,7 +625,7 @@ void Landscape::SetTexture(eTextureLevel level, const String & textureName)
     }
 }
     
-Texture * Landscape::CreateTexture(eTextureLevel level, const String & textureName)
+Texture * Landscape::CreateTexture(eTextureLevel level, const FilePath & textureName)
 {
     if(TEXTURE_TILE_FULL == level)
     {

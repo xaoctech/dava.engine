@@ -79,7 +79,7 @@ void LandscapeEditorColor::CreateMaskTexture()
     }
     else 
     {
-        savedPath = "";
+        savedPath = FilePath();
     }
     
     CreateMaskFromTexture(savedTexture);
@@ -324,19 +324,19 @@ void LandscapeEditorColor::ShowAction()
 	workingLandscape->CursorEnable();
 }
 
-void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
+void LandscapeEditorColor::SaveTextureAction(const FilePath &pathToFile)
 {
     if(maskSprite)
     {
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            ImageLoader::Save(img, pathToFile);
+            ImageLoader::Save(img, pathToFile.GetAbsolutePathname());
             SafeRelease(img);
             
             SafeRelease(savedTexture);
             
-            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToFile);
+            FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathToFile);
             workingLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, descriptorPathname);
 
             savedTexture = SafeRetain(workingLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK));
@@ -363,7 +363,7 @@ void LandscapeEditorColor::TextureWillChanged(const String &forKey)
 {
     if("property.landscape.texture.tilemask" == forKey)
     {
-        if(savedPath.length())
+        if(savedPath.IsInitalized())
         {
             SaveTextureAction(savedPath);
         }

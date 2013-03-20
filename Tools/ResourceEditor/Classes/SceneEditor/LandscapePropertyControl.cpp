@@ -250,7 +250,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 		bool isValid = (newValue.empty()) ? true: SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
 		if(isValid)
 		{
-            String descriptorPathname = String("");
+            FilePath descriptorPathname;
             if(!newValue.empty())
             {
                 descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
@@ -297,7 +297,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 }
 
-void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel level, const String &texturePathname)
+void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel level, const FilePath &texturePathname)
 {
 	Landscape *landscape = GetLandscape();
 	if (!landscape)
@@ -406,8 +406,8 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
 	if (!landscape)
 		return;
 
-    String texPathname = landscape->SaveFullTiledTexture();
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
+    FilePath texPathname = landscape->SaveFullTiledTexture();
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texPathname);
     
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor)
@@ -430,8 +430,8 @@ void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void
 		return;
 
     Heightmap * heightmap = landscape->GetHeightmap();
-    String heightmapPath = landscape->GetHeightmapPathname();
-    heightmapPath = FileSystem::ReplaceExtension(heightmapPath, ".png");
+    FilePath heightmapPath = landscape->GetHeightmapPathname();
+    heightmapPath.ReplaceExtension(".png");
     heightmap->SaveToImage(heightmapPath);
 }
 

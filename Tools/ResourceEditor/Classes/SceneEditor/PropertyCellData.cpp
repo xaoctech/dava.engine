@@ -309,3 +309,15 @@ void PropertyCellData::SetDistance(float32 newDistance, int32 index)
     distances[index] = newDistance;
 }
 
+void PropertyCellData::SetFilePath(const DAVA::FilePath &pathname)
+{
+    DVASSERT(valueType == PROP_VALUE_FILEPATH);
+    filePath = pathname;
+}
+
+const FilePath & PropertyCellData::GetFilePath() const
+{
+    DVASSERT(valueType == PROP_VALUE_FILEPATH);
+    return filePath;
+}
+

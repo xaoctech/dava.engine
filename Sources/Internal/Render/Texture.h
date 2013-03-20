@@ -36,6 +36,7 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -133,14 +134,14 @@ public:
 		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * CreateFromFile(const String & pathName);
+	static Texture * CreateFromFile(const FilePath & pathName);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
 		If file cannot be opened, returns 0
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * PureCreate(const String & pathName);
+	static Texture * PureCreate(const FilePath & pathName);
     
 	/**
         \brief Create FBO from given width, height and format
@@ -157,7 +158,7 @@ public:
         \param[in] level level of mip map you want to replace
         \param[in] pathName path to file you want to use for texture
      */
-	void LoadMipMapFromFile(int32 level, const String & pathName);
+	void LoadMipMapFromFile(int32 level, const FilePath & pathName);
 
 	/**
         \brief Sets default RGBA format that is used for textures loaded from files. 
@@ -201,7 +202,7 @@ public:
         \brief Function to receive pathname of texture object
         \returns pathname of texture
      */
-    inline const String & GetPathname() const;
+    inline const FilePath & GetPathname() const;
     
     Image * CreateImageFromMemory();
 
@@ -258,7 +259,7 @@ public:							// properties for fast access
 	
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
-	String		relativePathname;
+	FilePath relativePathname;
 
 	String		debugInfo;
 	uint32		width;			// texture width 
@@ -275,7 +276,7 @@ public:							// properties for fast access
 
 	void SetDebugInfo(const String & _debugInfo);
 
-	static const Map<String, Texture*> & GetTextureMap();
+	static const Map<FilePath, Texture*> & GetTextureMap();
     
     int32 GetDataSize() const;
     
@@ -291,11 +292,11 @@ public:							// properties for fast access
     
 private:
     
-	static Map<String, Texture*> textureMap;	
-	static Texture * Get(const String & name);
+	static Map<FilePath, Texture*> textureMap;
+	static Texture * Get(const FilePath & name);
     
-	static Texture * CreateFromDescriptor(const String & pathname, TextureDescriptor *descriptor);
-	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromDescriptor(const FilePath & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const FilePath & pathname, TextureDescriptor *descriptor);
 	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 
     bool LoadFromImage(File *file, const TextureDescriptor *descriptor);
@@ -323,7 +324,7 @@ private:
     
     static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
     
-    static String GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    static String GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions
@@ -333,7 +334,7 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
     renderTargetAutosave = isEnabled;
 #endif //#if defined(__DAVAENGINE_DIRECTX9__) //|| defined(__DAVAENGINE_ANDROID__)
 }
-inline const String & Texture::GetPathname() const
+inline const FilePath & Texture::GetPathname() const
 {
 	return relativePathname;
 }

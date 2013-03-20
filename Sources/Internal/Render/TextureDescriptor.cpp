@@ -59,9 +59,9 @@ TextureDescriptor::~TextureDescriptor()
 {
 }
 
-TextureDescriptor *TextureDescriptor::CreateFromFile(const String &filePathname)
+TextureDescriptor *TextureDescriptor::CreateFromFile(const FilePath &filePathname)
 {
-    String descriptorPathname = GetDescriptorPathname(filePathname);
+    FilePath descriptorPathname = GetDescriptorPathname(filePathname);
     TextureDescriptor *descriptor = new TextureDescriptor();
     bool loaded = descriptor->Load(descriptorPathname);
     if(!loaded)

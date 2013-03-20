@@ -239,7 +239,7 @@ void EditorLandscape::UpdateFullTiledTexture()
     nestedLandscape->UpdateFullTiledTexture();
 }
 
-void EditorLandscape::BuildLandscapeFromHeightmapImage(const DAVA::String & heightmapPathname, const DAVA::AABBox3 & landscapeBox)
+void EditorLandscape::BuildLandscapeFromHeightmapImage(const DAVA::FilePath & heightmapPathname, const DAVA::AABBox3 & landscapeBox)
 {
     nestedLandscape->BuildLandscapeFromHeightmapImage(heightmapPathname, landscapeBox);
 }

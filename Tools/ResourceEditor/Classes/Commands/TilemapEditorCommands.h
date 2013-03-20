@@ -18,13 +18,13 @@ protected:
 class CommandDrawTilemap: public Command
 {
 public:
-	CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape);
+	CommandDrawTilemap(Image* originalImage, Image* newImage, const FilePath & pathname, Landscape* landscape);
 	virtual ~CommandDrawTilemap();
 
 protected:
 	Image* undoImage;
 	Image* redoImage;
-	String savedPathname;
+	FilePath savedPathname;
 
 	Landscape* landscape;
 
