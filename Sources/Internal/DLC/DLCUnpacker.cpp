@@ -15,8 +15,7 @@ void DLCUnpacker::Unpack(const FilePath & filePathSrc, const FilePath & unpackPa
 {
     Logger::Debug("DLC Complete");
     
-    FilePath filePathDest(filePathSrc);
-    filePathDest.ReplaceExtension("");
+    FilePath filePathDest = FilePath::CreateWithNewExtension(filePathSrc, "");
     
     File* sFile = File::Create( filePathSrc, File::OPEN|File::READ );
     File* dFile = File::Create( filePathDest, File::CREATE|File::WRITE);

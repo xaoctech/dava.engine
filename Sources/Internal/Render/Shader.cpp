@@ -281,15 +281,13 @@ void Shader::SetDefineList(const String & enableDefinesList)
     SetDefines(result);
 }
     
-bool Shader::LoadFromYaml(const String & pathname)
+bool Shader::LoadFromYaml(const FilePath & pathname)
 {
 //#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 //    relativeFileName = pathname;
 //#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
     uint64 shaderLoadTime = SystemTimer::Instance()->AbsoluteMS();
-    String pathOnly, shaderFilename;
-    FileSystem::SplitPath(pathname, pathOnly, shaderFilename);
     
     YamlParser * parser = YamlParser::Create(pathname);
     if (!parser)
@@ -333,6 +331,7 @@ bool Shader::LoadFromYaml(const String & pathname)
     fragmentShaderPath = glslFragmentNode->AsString();
     SafeRelease(parser);
 
+    FilePath pathOnly(pathname.GetDirectory());
     Load(pathOnly + vertexShaderPath, pathOnly + fragmentShaderPath);
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
@@ -341,7 +340,7 @@ bool Shader::LoadFromYaml(const String & pathname)
     return true;
 }
     
-bool Shader::Load(const String & _vertexShaderPath, const String & _fragmentShaderPath)
+bool Shader::Load(const FilePath & _vertexShaderPath, const FilePath & _fragmentShaderPath)
 {
     vertexShaderPath = _vertexShaderPath;
     fragmentShaderPath = _fragmentShaderPath;
@@ -374,13 +373,13 @@ bool Shader::Recompile()
     RenderManager::Instance()->LockNonMain();
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr(), vertexShaderDefines))
     {
-        Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.c_str());
+        Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
         return false;
     }
     
     if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderData->GetSize(), (GLchar*)fragmentShaderData->GetPtr(), fragmentShaderDefines))
     {
-        Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.c_str());
+        Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
         return false;
     }
     
@@ -390,7 +389,7 @@ bool Shader::Recompile()
     
     if (!LinkProgram(program))
     {
-        Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.c_str());
+        Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
 
         DeleteShaders();
         return false;

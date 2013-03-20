@@ -291,7 +291,7 @@ protected:
 	
     static Sprite* GetSpriteFromMap(const FilePath & pathname);
     static FilePath GetScaledName(const FilePath & spriteName);
-    static File* LoadLocalizedFile(const FilePath & spritePathname, const FilePath & texturePath);
+    static File* LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath);
     
 //private:
     

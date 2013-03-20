@@ -631,7 +631,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 	return retValue;
 }
 
-void Texture::LoadMipMapFromFile(int32 level, const String & pathname)
+void Texture::LoadMipMapFromFile(int32 level, const FilePath & pathname)
 {
     DVASSERT(false);
     return;

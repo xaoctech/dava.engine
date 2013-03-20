@@ -203,6 +203,12 @@ String FilePath::GetRelativePathname(const String &forDirectory) const
     return AbsoluteToRelative(GetSystemPathname(forDirectory), ResolvePathname());
 }
     
+String FilePath::GetRelativePathname(const FilePath &forDirectory) const
+{
+    return GetRelativePathname(forDirectory.GetAbsolutePathname());
+}
+
+    
     
 void FilePath::ReplaceFilename(const String &filename)
 {
@@ -234,6 +240,15 @@ String FilePath::ResolvePathname() const
 {
     return GetSystemPathname(absolutePathname);
 }
+    
+FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String &extension)
+{
+    FilePath path(pathname);
+    path.ReplaceExtension(extension);
+    return path;
+}
+
+    
     
     
 String FilePath::GetSystemPathname(const String &pathname)
@@ -381,5 +396,7 @@ String FilePath::AbsoluteToRelative(const String &directoryPathname, const Strin
     
     return (retPath + fileName);
 }
+    
+
     
 }

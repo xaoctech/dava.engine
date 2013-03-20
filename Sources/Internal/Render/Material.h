@@ -66,11 +66,11 @@ public:
     void SetLight(int32 lightIndex, Light * lightNode);
     Light * GetLight(int32 lightIndex);
     
-    void SetLightmap(Texture * texture, const String & lightmapName);
+    void SetLightmap(Texture * texture, const FilePath & lightmapName);
     void SetUVOffsetScale(const Vector2 & uvOffset, const Vector2 uvScale);
     
     inline Texture * GetLightmap() const;
-	inline const String & GetLightmapName() const;
+	inline const FilePath & GetLightmapName() const;
     
     void SetFlatColor(const Color & color);
     const Color & GetFlatColor();
@@ -84,7 +84,7 @@ public:
 
 private:
     Texture * lightmapTexture;
-    String lightmapName;
+    FilePath lightmapName;
     Vector2 uvOffset;
     Vector2 uvScale;
     Color flatColor;
@@ -97,7 +97,7 @@ private:
 public:
     INTROSPECTION_EXTEND(InstanceMaterialState, BaseObject,
                          //MEMBER(lightmapTexture, "Texture:", INTROSPECTION_EDITOR)
-                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
+//                         MEMBER(lightmapName, "Lightmap Name:", INTROSPECTION_EDITOR)
                          MEMBER(uvOffset, "UV Offset", INTROSPECTION_EDITOR)
                          MEMBER(uvScale, "UV Scale", INTROSPECTION_EDITOR)
                          
@@ -273,9 +273,9 @@ public:
     
     
     void SetTexture(eTextureLevel level, Texture * texture);
-    void SetTexture(eTextureLevel level, const String & textureName);
+    void SetTexture(eTextureLevel level, const FilePath & textureName);
 	inline Texture * GetTexture(eTextureLevel level) const;
-	inline const String & GetTextureName(eTextureLevel level) const;
+	inline const FilePath & GetTextureName(eTextureLevel level) const;
 
 	RenderState * GetRenderState();
     
@@ -289,8 +289,7 @@ private:
     
     
     Texture * textures[TEXTURE_COUNT];
-    Vector<String> names;
-//    String names[TEXTURE_COUNT];
+    Vector<FilePath> names;
     
     String textureSlotNames[TEXTURE_COUNT];
     uint32 textureSlotCount;
@@ -392,7 +391,7 @@ public:
                          
 		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+//        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 
@@ -402,7 +401,7 @@ Texture * Material::GetTexture(eTextureLevel level) const
 	return textures[level];
 }
 
-inline const String & Material::GetTextureName(eTextureLevel level) const
+inline const FilePath & Material::GetTextureName(eTextureLevel level) const
 {
 	DVASSERT(level < TEXTURE_COUNT);
 	return names[level];
@@ -431,7 +430,7 @@ inline Texture * InstanceMaterialState::GetLightmap() const
     return lightmapTexture;
 }
 
-inline const String & InstanceMaterialState::GetLightmapName() const
+inline const FilePath & InstanceMaterialState::GetLightmapName() const
 {
     return lightmapName;
 }
