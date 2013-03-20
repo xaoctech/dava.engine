@@ -16,12 +16,12 @@ void SetSwitchIndexHelper::ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_IN
 			Entity *selectedNode = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
 			if(NULL != selectedNode)
 			{
-				selectedNode->FindAllSwitchComponentsRecursive(switchComponents);
+				selectedNode->FindComponentsByTypeRecursive(Component::SWITCH_COMPONENT, switchComponents);
 			}
 		}
 		if( SetSwitchIndexHelper::FOR_SCENE == state)
 		{
-			sceneData->GetScene()->FindAllSwitchComponentsRecursive( switchComponents);
+			sceneData->GetScene()->FindComponentsByTypeRecursive(Component::SWITCH_COMPONENT, switchComponents);
 		}
 		
 		for(List<Entity*>::const_iterator it = switchComponents.begin(); it != switchComponents.end(); ++it)

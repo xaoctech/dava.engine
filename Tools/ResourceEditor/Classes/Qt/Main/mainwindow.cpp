@@ -118,6 +118,8 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     QAction *actionCustomColors = ui->dockCustomColors->toggleViewAction();
 	QAction *actionVisibilityCheckTool = ui->dockVisibilityTool->toggleViewAction();
+	QAction *actionHangingObjects = ui->dockHangingObjects->toggleViewAction();
+	QAction *actionSetSwitchIndex = ui->dockSetSwitchIndex->toggleViewAction();
 	QAction *actionParticleEditor = ui->dockParticleEditor->toggleViewAction();
 	QAction *actionParticleEditorTimeLine = ui->dockParticleEditorTimeLine->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
@@ -131,13 +133,17 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuView->insertAction(actionCustomColors, actionVisibilityCheckTool);
 	ui->menuView->insertAction(actionVisibilityCheckTool, actionParticleEditor);
 	ui->menuView->insertAction(actionParticleEditor, actionParticleEditorTimeLine);
+	ui->menuView->insertAction(actionParticleEditorTimeLine, actionHangingObjects);
+	ui->menuView->insertAction(actionHangingObjects, actionSetSwitchIndex);
     
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar, actionReferences, actionCustomColors, actionVisibilityCheckTool, actionParticleEditor);
+                                       actionProperties, actionLibrary, actionToolBar, 
+									   actionReferences, actionCustomColors, actionVisibilityCheckTool, 
+									   actionParticleEditor, actionHangingObjects, actionSetSwitchIndex);
 
 
     ui->dockDataGraph->hide();
