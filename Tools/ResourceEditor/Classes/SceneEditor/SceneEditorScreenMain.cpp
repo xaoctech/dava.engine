@@ -522,48 +522,8 @@ void SceneEditorScreenMain::UpdateModificationPanel(void)
 	}
 }
 
-void SceneEditorScreenMain::CopyFile(const String & file)
-{
-	FileSystem * inst = FileSystem::Instance();
-
-	String fileName = outputFolder + file;
-	
-	String path, name;
-	inst->SplitPath(fileName, path, name);
-	inst->CreateDirectory(path, true);
-	inst->DeleteFile(fileName);
-	if (!inst->CopyFile(inputFolder + file, fileName))
-	{
-		Logger::Error("Referenced file %s is not found!", file.c_str());
-	}
-}
-
-void SceneEditorScreenMain::CheckNodes(Entity * node)
-{
-    KeyedArchive *customProperties = node->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
-    {
-        String path = customProperties->GetString("editor.referenceToOwner");
-				
-		String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-		String::size_type pos = path.find(dataSourcePath);
-		if(String::npos != pos)
-		{
-			path = path.replace(pos, dataSourcePath.length(), "");
-		}
-		
-		CopyFile(path);
-    }
-	for (int i = 0; i < node->GetChildrenCount(); i++)
-	{
-		CheckNodes(node->GetChild(i));
-	}
-}
-
 void SceneEditorScreenMain::SaveToFolder(const String & folder)
 {
-//	String formatStr = String("png");
-    
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
@@ -590,20 +550,12 @@ void SceneEditorScreenMain::SaveToFolder(const String & folder)
     SceneSaver::Instance()->SetInFolder(inFolder);
     SceneSaver::Instance()->SetOutFolder(folder);
     
-	inputFolder = inFolder;
-	outputFolder = folder;
-    
     Set<String> errorsLog;
     SceneSaver::Instance()->SaveScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
     
     ShowErrorDialog(errorsLog);
-
-//	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
-//	CopyFile(filePath);
-//	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
-	CheckNodes(iBody->bodyControl->GetScene());
 }
 
 void SceneEditorScreenMain::ExportAs(ImageFileFormat format)

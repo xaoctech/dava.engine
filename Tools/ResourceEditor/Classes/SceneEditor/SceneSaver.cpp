@@ -77,14 +77,16 @@ void SceneSaver::SaveScene(Scene *scene, const String &fileName, Set<String> &er
     SceneDataManager::EnumerateTextures(scene, texturesForSave);
 
     CopyTextures(scene, errorLog);
-    Landscape *landscape = EditorScene::GetLandscape(scene);
+	ReleaseTextures();
+
+	Landscape *landscape = EditorScene::GetLandscape(scene);
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
     }
 
-    ReleaseTextures();
-    
+	CopyReferencedObject(scene, errorLog);
+
     //save scene to new place
     String scenePath, sceneName;
     FileSystem::Instance()->SplitPath(fileName, scenePath, sceneName);
@@ -126,6 +128,21 @@ void SceneSaver::CopyTexture(const String &texturePathname, Set<String> &errorLo
 
     sceneUtils.CopyFile(descriptorPathname, errorLog);
     sceneUtils.CopyFile(pngPathname, errorLog);
+}
+
+void SceneSaver::CopyReferencedObject( Entity *node, Set<String> &errorLog )
+{
+	KeyedArchive *customProperties = node->GetCustomProperties();
+	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+	{
+		String path = customProperties->GetString("editor.referenceToOwner");
+		sceneUtils.CopyFile(path, errorLog);
+	}
+	for (int i = 0; i < node->GetChildrenCount(); i++)
+	{
+		CopyReferencedObject(node->GetChild(i), errorLog);
+	}
+
 }
 
 

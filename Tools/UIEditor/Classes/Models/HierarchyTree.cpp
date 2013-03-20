@@ -12,6 +12,7 @@
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreeController.h"
+#include "LibraryController.h"
 
 #include "MetadataFactory.h"
 #include "ResourcesManageHelper.h"
@@ -176,6 +177,21 @@ HierarchyTreeScreenNode* HierarchyTree::AddScreen(const QString& name, Hierarchy
 	return screenNode;
 }
 
+HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, HierarchyTreeNode::HIERARCHYTREENODEID platformId, const Rect& rect)
+{
+	HierarchyTreeNode* baseNode = FindNode(&rootNode, platformId);
+	HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(baseNode);
+	if (!platformNode)
+	{
+		return NULL;
+	}
+	
+	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect);
+	platformNode->AddTreeNode(aggregatorNode);
+	
+	return aggregatorNode;
+}
+
 HierarchyTreeNode* HierarchyTree::GetNode(HierarchyTreeNode::HIERARCHYTREENODEID id) const
 {
 	if (rootNode.GetId() == id)
@@ -259,6 +275,12 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 		{
 			controlNode->GetParent()->RemoveTreeNode(controlNode, deleteNodeFromMemory, deleteNodeFromScene);
 			continue;
+		}
+		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			LibraryController::Instance()->RemoveControl(aggregatorNode);
 		}
 		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);

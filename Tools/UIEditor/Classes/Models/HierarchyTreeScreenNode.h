@@ -10,11 +10,13 @@
 #define __UIEditor__HierarchyTreeScreenNode__
 
 #include "HierarchyTreeNode.h"
-#include "HierarchyTreePlatformNode.h"
 #include "ScreenControl.h"
 
 using namespace DAVA;
-    
+
+class HierarchyTreeControlNode;
+class HierarchyTreePlatformNode;
+
 // "Screen" node for the Hierarchy Tree.
 class HierarchyTreeScreenNode: public HierarchyTreeNode
 {
@@ -45,13 +47,17 @@ public:
 	bool Save(const QString& path);
 	
 	virtual void ReturnTreeNodeToScene();
+	virtual Rect GetRect() const;
 	
-	Rect GetRect() const;
+	virtual void RemoveSelection() {};
+	
+protected:
+	void CombineRectWithChild(Rect& rect) const;
 
 private:
 	void BuildHierarchyTree(HierarchyTreeNode* parent, List<UIControl*> child);
 	
-private:
+protected:
 	HierarchyTreePlatformNode* parent;
 	ScreenControl* screen;
 	

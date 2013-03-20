@@ -17,6 +17,7 @@
 #include "../Commands/HeightmapEditorCommands.h"
 #include "../Commands/ModificationOptionsCommands.h"
 #include "../Commands/SetSwitchIndexCommands.h"
+#include "../Commands/HangingObjectsCommands.h"
 #include "../Commands/EditCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -517,6 +518,11 @@ void QtMainWindowHandler::ToggleSetSwitchIndex(DAVA::uint32  value, SetSwitchInd
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleSetSwitchIndex(value,state));
 }
 
+void QtMainWindowHandler::ToggleHangingObjects(float value, bool isEnabled)
+{
+	CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleHangingObjects(value, isEnabled));
+}
+
 void QtMainWindowHandler::ToggleCustomColors()
 {
     CommandsManager::Instance()->ExecuteAndRelease(new CommandToggleCustomColors());
@@ -605,6 +611,27 @@ void QtMainWindowHandler::SetSwitchIndexWidgetsState(bool state)
 	editSwitchIndexValue->setEnabled(state);
 	rBtnSelection->setEnabled(state);
 	rBtnScene->setEnabled(state);
+}
+
+void QtMainWindowHandler::RegisterHangingObjectsWidgets(QCheckBox* chBox, QDoubleSpinBox* dSpinBox, QPushButton* btnUpdate)
+{
+	this->hangingObjectsToggleButton= btnUpdate;
+	this->editHangingObjectsValue	= dSpinBox;
+	this->checkBoxHangingObjects	= chBox;
+}
+
+void QtMainWindowHandler::SetHangingObjectsWidgetsState(bool state)
+{
+		DVASSERT(hangingObjectsToggleButton &&
+		 editHangingObjectsValue &&
+		 checkBoxHangingObjects );
+
+	hangingObjectsToggleButton->blockSignals(true);
+	hangingObjectsToggleButton->setEnabled(state);
+	hangingObjectsToggleButton->blockSignals(false);
+
+	editHangingObjectsValue->setEnabled(state);
+	checkBoxHangingObjects->setEnabled(state);
 }
 
 void QtMainWindowHandler::ToggleVisibilityTool()
