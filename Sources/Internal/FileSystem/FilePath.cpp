@@ -41,7 +41,7 @@ void FilePath::SetProjectPathname(const String &pathname)
     projectPathname = NormalizePathname(MakeDirectory(pathname));
 }
 
-String & FilePath::GetProjectPathname()
+const String & FilePath::GetProjectPathname()
 {
     return projectPathname;
 }
@@ -130,18 +130,18 @@ const bool FilePath::IsDirectoryPathname() const
     return (absolutePathname.at(lastPosition) == '/');
 }
 
-const String FilePath::GetAbsolutePathname() const
+const String & FilePath::GetAbsolutePathname() const
 {
     return absolutePathname;
 }
 
 
-const String FilePath::GetFilename() const
+String FilePath::GetFilename() const
 {
     return GetFilename(absolutePathname);
 }
     
-const String FilePath::GetFilename(const String &pathname)
+String FilePath::GetFilename(const String &pathname)
 {
     String::size_type dotpos = pathname.rfind(String("/"));
     if (dotpos == String::npos)
@@ -152,7 +152,7 @@ const String FilePath::GetFilename(const String &pathname)
 
 
 
-const String FilePath::GetBasename() const
+String FilePath::GetBasename() const
 {
     const String filename = GetFilename();
     
@@ -163,7 +163,7 @@ const String FilePath::GetBasename() const
 	return filename.substr(0, dotpos);
 }
 
-const String FilePath::GetExtension() const
+String FilePath::GetExtension() const
 {
     const String filename = GetFilename();
     
@@ -175,12 +175,12 @@ const String FilePath::GetExtension() const
 }
 
     
-const String FilePath::GetDirectory() const
+String FilePath::GetDirectory() const
 {
     return GetDirectory(absolutePathname);
 }
 
-const String FilePath::GetDirectory(const String &pathname)
+String FilePath::GetDirectory(const String &pathname)
 {
     const String::size_type dotpos = pathname.rfind(String("/"));
     if (dotpos == String::npos)
@@ -190,12 +190,12 @@ const String FilePath::GetDirectory(const String &pathname)
 }
 
     
-const String FilePath::GetRelativePathname() const
+String FilePath::GetRelativePathname() const
 {
     return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory().GetAbsolutePathname());
 }
     
-const String FilePath::GetRelativePathname(const String &forDirectory) const
+String FilePath::GetRelativePathname(const String &forDirectory) const
 {
     if(!IsInitalized())
         return String();
@@ -230,18 +230,13 @@ void FilePath::ReplaceDirectory(const String &directory)
     absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
 }
 
-const String FilePath::ResolvePathname() const
+String FilePath::ResolvePathname() const
 {
     return GetSystemPathname(absolutePathname);
 }
     
-//const char8 * FilePath::c_str() const
-//{
-//    return absolutePathname.c_str();
-//}
-
     
-const String FilePath::GetSystemPathname(const String &pathname)
+String FilePath::GetSystemPathname(const String &pathname)
 {
     if(pathname.empty() || pathname[0] != '~')
     {
@@ -276,7 +271,7 @@ const String FilePath::GetSystemPathname(const String &pathname)
 }
     
     
-const String FilePath::NormalizePathname(const String &pathname)
+String FilePath::NormalizePathname(const String &pathname)
 {
 	if(pathname.empty())
 		return String();
@@ -329,7 +324,7 @@ const String FilePath::NormalizePathname(const String &pathname)
     return result;
 }
 
-const String FilePath::MakeDirectory(const String &pathname)
+String FilePath::MakeDirectory(const String &pathname)
 {
     if(pathname.empty())
     {
@@ -345,7 +340,7 @@ const String FilePath::MakeDirectory(const String &pathname)
     return pathname;
 }
     
-const String FilePath::AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname)
+String FilePath::AbsoluteToRelative(const String &directoryPathname, const String &absolutePathname)
 {
     String workingDirectoryPath = directoryPathname;
     String workingFilePath = absolutePathname;
