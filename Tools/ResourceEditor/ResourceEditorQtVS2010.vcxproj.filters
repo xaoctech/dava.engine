@@ -205,6 +205,12 @@
     <Filter Include="QtGenerated\DockSetSwitchIndex">
       <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="QtGenerated\DockHangingObjects">
+      <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\DockHangingObjects">
+      <UniqueIdentifier>{06e43fbc-e3e3-484d-93ff-02f41732442e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1518,6 +1524,18 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorLandscape.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp">
+      <Filter>QtGenerated\DockHangingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\HangingObjectsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneSaver.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -2699,6 +2717,15 @@
     <ClInclude Include="Classes\LandscapeEditor\EditorLandscape.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\HangingObjectsCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h">
+      <Filter>Sources\Qt\DockHangingObjects</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneSaver.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
@@ -2902,6 +2929,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\texturebrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\HangingObjectsView.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
