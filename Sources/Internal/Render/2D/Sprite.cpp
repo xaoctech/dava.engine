@@ -163,23 +163,20 @@ FilePath Sprite::GetScaledName(const FilePath &spriteName)
     String::size_type pos = spriteName.GetAbsolutePathname().find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
     if(String::npos != pos)
 	{
-        return spriteName.substr(0, pos)
+        String pathname = spriteName.GetAbsolutePathname();
+        return pathname.substr(0, pos)
                         + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex())
-                        + spriteName.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+                        + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	}
     
     return spriteName;
 }
 
-File * Sprite::LoadLocalizedFile(const FilePath &spritePathname, FilePath & texturePath)
+File * Sprite::LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath)
 {
-    String fileName, folderName;
-    FileSystem::Instance()->SplitPath(spritePathname, folderName, fileName);
+    FilePath localizedScaledPath = FilePath(spritePathname.GetDirectory()) + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/" + spritePathname.GetFilename());
     
-    String localizedScaledPath = folderName + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-//    Logger::Info("[Sprite::LoadLocalizedFile] (%s).", localizedScaledPath.c_str());
-    
-    texturePath = "";
+    texturePath = FilePath();
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
     if(fp)
     {
@@ -203,7 +200,7 @@ void Sprite::InitFromFile(File *file, const FilePath &pathName, const FilePath &
 
 //	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
 
-    String texturePath = texturePathname;
+    String texturePath = texturePathname.GetAbsolutePathname();
 	size_t tpos = texturePath.rfind("/");
 	if(tpos != String::npos)
 	{
@@ -1405,13 +1402,15 @@ float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueTy
 
 void Sprite::PrepareForNewSize()
 {
-	int pos = (int)relativePathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
-	String scaledName = relativePathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + relativePathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
+    String pathname = relativePathname.GetAbsolutePathname();
+    
+	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
+	String scaledName = pathname.substr(0, pos) + Core::Instance()->GetResourceFolder(Core::Instance()->GetDesirableResourceIndex()) + pathname.substr(pos + Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()).length());
 	
 	Logger::Instance()->Debug("Seraching for file: %s", scaledName.c_str());
 	
 	
-	File *fp = File::Create(scaledName, File::READ|File::OPEN);
+	File *fp = File::Create(FilePath(scaledName), File::READ|File::OPEN);
 	
 	if (!fp)
 	{

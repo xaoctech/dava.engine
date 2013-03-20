@@ -109,6 +109,7 @@ public:
         \returns relative path value
 	 */
     String GetRelativePathname(const String &forDirectory) const;
+    String GetRelativePathname(const FilePath &forDirectory) const;
     
     
 	/**
@@ -123,12 +124,14 @@ public:
 	 */
     void ReplaceBasename(const String &basename);
 
+protected:
 	/**
         \brief Function for replacement of original extension
         \param[in] extension is new extension
 	 */
     void ReplaceExtension(const String &extension);
-
+public:
+    
 	/**
         \brief Function for replacement of original directory
         \param[in] directory is new directory
@@ -153,6 +156,14 @@ public:
         \returns resolved pathname in system style. For example "~doc:/Project/cache.dat" will be resolved as "/User/Documents/Project/cache.dat"
 	 */
     String ResolvePathname() const;
+    
+	/**
+        \brief Function to retrive FilePath with new extension without changing of source FilePath object
+        \param[in] pathname is source FilePath object
+        \param[in] extension is new extension
+        \returns resolved FilePath object with new extension
+	 */
+    static FilePath CreateWithNewExtension(const FilePath &pathname, const String &extension);
     
 protected:
     

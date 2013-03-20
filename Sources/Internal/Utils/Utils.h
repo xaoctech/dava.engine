@@ -35,6 +35,7 @@
  */
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -119,9 +120,9 @@ inline String TruncateFileExtension(const String& fileName, const String& extens
     return truncatedName;
 }
 
-inline String TruncateTxtFileExtension(const String& fileName)
+inline String TruncateTxtFileExtension(const FilePath & fileName)
 {
-    return TruncateFileExtension(fileName, ".txt");
+    return TruncateFileExtension(fileName.GetAbsolutePathname(), ".txt");
 }
     
 template<class T>

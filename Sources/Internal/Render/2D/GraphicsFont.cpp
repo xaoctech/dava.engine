@@ -209,7 +209,7 @@ YamlNode * GraphicsFont::SaveToYamlNode()
     if (sprite)
     {
         //Truncate sprite ".txt" extension before save       
-        node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
+        node->Set("sprite", TruncateTxtFileExtension(sprite->GetRelativePathname()));
     }    
     //Font Definition
     node->Set("definition", this->GetFontDefinitionName());

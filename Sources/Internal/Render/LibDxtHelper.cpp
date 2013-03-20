@@ -371,8 +371,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 	
     
 	OutputOptions outputOptions;
-	FilePath fileName = fileNameOriginal;
-    fileName.ReplaceExtension("_dds");
+	FilePath fileName = FilePath::CreateWithNewExtension(fileNameOriginal, "_dds");
 	outputOptions.setFileName(fileName.GetAbsolutePathname().c_str());
 	
 	Compressor compressor;
