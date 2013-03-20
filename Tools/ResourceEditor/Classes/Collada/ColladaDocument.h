@@ -28,7 +28,7 @@ public:
 	bool	IsEmptyNode(ColladaSceneNode * node);
 	
 	void	SaveScene(const String & scenePath, const String & sceneName);
-    String  GetTextureName(const String & scenePath, ColladaTexture * texture);
+    String  GetTextureName(const FilePath & scenePath, ColladaTexture * texture);
 
 	void	WriteTexture(SceneFile::TextureDef * texture);
 	void	WriteMaterial(SceneFile::MaterialDef * material);

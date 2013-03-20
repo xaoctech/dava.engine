@@ -207,11 +207,11 @@ void ColladaDocument::Render()
 	colladaScene->Render();
 }
     
-String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture * texture)
+String ColladaDocument::GetTextureName(const FilePath & scenePath, ColladaTexture * texture)
 {
     String textureRelativePathName = String(texture->texturePathName.c_str());
     printf("+ get texture name: %s", textureRelativePathName.c_str());
-    CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath);
+    CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath.GetAbsolutePathname());
     
     if (textureRelativePathName.c_str()[0] == '/')
         textureRelativePathName.erase(0, 1);

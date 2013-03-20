@@ -70,18 +70,18 @@ namespace DAVA
 		return filePath;
 	}
 #elif defined(__DAVAENGINE_MACOS__)
-    NSString * FilepathRelativeToBundleObjC(const String &virtualBundlePath,
+    NSString * FilepathRelativeToBundleObjC(const FilePath &virtualBundlePath,
                                             NSString * relativePathname)
 	{
         NSString * filePath;
-        if(virtualBundlePath.empty())
+        if(virtualBundlePath.IsInitalized())
         {
-            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/Data"];
+            NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.GetAbsolutePathname().c_str()];
             filePath = [bundlePath stringByAppendingString: relativePathname];
         }
         else
         {
-            NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.c_str()];
+            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/Data"];
             filePath = [bundlePath stringByAppendingString: relativePathname];
         }
 		
@@ -97,23 +97,23 @@ namespace DAVA
 		return [filePath UTF8String];
 	}
 	
-    const String FileSystem::GetUserDocumentsPath()
+    const FilePath FileSystem::GetUserDocumentsPath()
     {
         NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString * bundlePath = [paths objectAtIndex:0];
         NSString * filePath = [bundlePath stringByAppendingString: @"/"];
-        return String([filePath cStringUsingEncoding: NSUTF8StringEncoding]);
+        return FilePath(String([filePath cStringUsingEncoding: NSUTF8StringEncoding]));
     }
     
-    const String FileSystem::GetPublicDocumentsPath()
+    const FilePath FileSystem::GetPublicDocumentsPath()
     {
-        return String("/Users/Shared/");
+        return FilePath("/Users/Shared/");
     }
 
-    const String FileSystem::GetHomePath()
+    const FilePath FileSystem::GetHomePath()
     {
         NSString * dirPath = NSHomeDirectory();
-        return String([[dirPath stringByAppendingString: @"/"] cStringUsingEncoding:NSUTF8StringEncoding]);
+        return FilePath(String([[dirPath stringByAppendingString: @"/"] cStringUsingEncoding:NSUTF8StringEncoding]));
     }
 
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	

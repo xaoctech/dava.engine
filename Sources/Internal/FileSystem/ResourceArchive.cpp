@@ -182,12 +182,12 @@ String ResourceArchive::GetResourcePathname(const uint32 resourceIndex) const
 }
 
 // Open code
-bool ResourceArchive::Open(const String & archiveName)
+bool ResourceArchive::Open(const FilePath & archiveName)
 {
 	lastResourceIndex = -1;
 	lastResourceName = "";
 
-	archiveFile = File::Create(archiveName.c_str(), File::OPEN | File::READ);
+	archiveFile = File::Create(archiveName, File::OPEN | File::READ);
 	if (!archiveFile)return false;
 
 	if (sizeof(Header) != archiveFile->Read(&header, sizeof(Header)))
