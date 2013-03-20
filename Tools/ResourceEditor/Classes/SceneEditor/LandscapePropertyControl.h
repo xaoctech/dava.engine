@@ -23,7 +23,7 @@ public:
 protected:
     Vector<String> tiledModes;
 
-    void SetLandscapeTexture(Landscape::eTextureLevel level, const String &texturePathname);
+    void SetLandscapeTexture(Landscape::eTextureLevel level, const FilePath &texturePathname);
 
     void GenerateFullTiledTexture(BaseObject * object, void * userData, void * callerData);
     

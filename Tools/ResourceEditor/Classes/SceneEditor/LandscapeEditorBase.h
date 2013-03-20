@@ -79,12 +79,12 @@ public:
 protected:
 
     virtual void SaveTexture();
-    void SaveTextureAs(const String &pathToFile, bool closeLE);
+    void SaveTextureAs(const FilePath &pathToFile, bool closeLE);
 
     virtual void InputAction(int32 phase, bool intersects) = 0;
     virtual void HideAction() = 0;
     virtual void ShowAction() = 0;
-    virtual void SaveTextureAction(const String &pathToFile) = 0;
+    virtual void SaveTextureAction(const FilePath &pathToFile) = 0;
 	virtual void UpdateCursor() = 0;
     
     virtual void RecreateHeightmapNode() = 0;
@@ -104,7 +104,7 @@ protected:
 
     LandscapeTool *currentTool;
 
-    String savedPath;
+    FilePath savedPath;
     int32 landscapeSize;
 
     EditorScene *workingScene;    

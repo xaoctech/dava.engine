@@ -220,7 +220,7 @@ void Sprite::InitFromFile(File *file, const String &pathName, const String &text
 	file->ReadLine(tempBuf, 1024);
 	sscanf(tempBuf, "%d", &textureCount);
 	textures = new Texture*[textureCount];
-	textureNames = new String[textureCount];
+	textureNames = new FilePath[textureCount];
 //	timeSpriteRead = SystemTimer::Instance()->AbsoluteMS() - timeSpriteRead;
 
 	char textureCharName[128];
@@ -426,7 +426,7 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	this->type = SPRITE_FROM_TEXTURE;
 	this->textureCount = 1;
 	this->textures = new Texture*[this->textureCount];
-	this->textureNames = new String[this->textureCount];
+	this->textureNames = new FilePath[this->textureCount];
 
 
 	this->textures[0] = SafeRetain(fromTexture);

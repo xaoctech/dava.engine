@@ -23,65 +23,37 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky
 =====================================================================================*/
+#include "Utils/UTF8Utils.h"
+#include "Utils/Utils.h"
+#include "FileSystem/Logger.h"
 
-#ifndef __DAVAENGINE_HEIGHT_MAP_H__
-#define __DAVAENGINE_HEIGHT_MAP_H__
+#if defined(__DAVAENGINE_ANDROID__)
 
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-
-namespace DAVA
+namespace DAVA 
 {
-    
-class Image;
-class Heightmap: public BaseObject
+
+void  UTF8Utils::EncodeToWideString(uint8 * string, int32 size, WideString & resultString)
 {
-public:
+    resultString = L"";
+    
+    for(int32 i = 0; i < size; ++i)
+    {
+        wchar_t c = string[i];
+        resultString.append(1, c);
+    }
+    
+    resultString.append(1, 0);
+};
 
-    static const int32 MAX_VALUE = 65535;
-    static const int32 IMAGE_CORRECTION = MAX_VALUE / 255;
-    
-    Heightmap();
-	virtual ~Heightmap();
-    
-    bool BuildFromImage( const Image *image);
-    void SaveToImage(const String & filename);
-    
-    virtual void Save(const FilePath &filePathname);
-    virtual bool Load(const FilePath &filePathname);
-    
-    uint16 * Data();
-    int32 Size() const;
-    
-    int32 GetTileSize() const;
-    void SetTileSize(int32 newSize);
-    
-    static const String FileExtension();
-
-    Heightmap *Clone(Heightmap *clonedHeightmap);
-
-protected:
-    
-    Heightmap *CreateHeightmapForSize(int32 newSize);
-    
-    bool AllocateData(int32 newSize);
-    void ReleaseData();    
-    
-protected:
-    
-	uint16 *data;
-    int32 size;
-    int32 tileSize;
-    
-public:
-    
-    INTROSPECTION_EXTEND(Heightmap, BaseObject,
-        MEMBER(size, "Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(tileSize, "Tile Size", INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-    );
+String UTF8Utils::EncodeToUTF8(const WideString& wstring)
+{
+	return WStringToString(wstring);
 };
 
 };
 
-#endif //__DAVAENGINE_HEIGHT_MAP_H__
+#endif

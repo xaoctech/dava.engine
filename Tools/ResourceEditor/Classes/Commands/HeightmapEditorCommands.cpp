@@ -47,13 +47,15 @@ String HeightmapModificationCommand::TimeString()
     return timeString;
 }
 
-String HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
+FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 {
 	String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
-	String folderPathname = documentsPath + "History";
-	FileSystem::Instance()->CreateDirectory(folderPathname);
-	folderPathname = folderPathname + "/Heightmap";
-	FileSystem::Instance()->CreateDirectory(folderPathname);
+
+	FilePath folderPathname("~doc:/History/");
+	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
+
+	folderPathname = folderPathname + FilePath("/Heightmap/");
+	FileSystem::Instance()->CreateDirectory(folderPathname.ResolvePathname());
 	
 	FileList* fileList = new FileList(folderPathname);
 	

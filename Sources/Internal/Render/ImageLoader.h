@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -42,10 +43,10 @@ class ImageLoader
 {
 public:
 
-	static Vector<Image *> CreateFromFile(const String & pathname);
+	static Vector<Image *> CreateFromFile(const FilePath & pathname);
 	static Vector<Image *> CreateFromFile(File *file);
     
-    static void Save(Image *image, const String & pathname);
+    static void Save(Image *image, const FilePath & pathname);
     
 private:
 

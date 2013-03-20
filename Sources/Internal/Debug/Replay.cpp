@@ -53,31 +53,32 @@ Replay::~Replay()
 	StopRecord();
 }
 
-void Replay::StartRecord(const String & dirName)
+void Replay::StartRecord(const FilePath & dirName)
 {	
 	DVASSERT(!isRecord);
 	DVASSERT(!isPlayback);
 	isRecord = true;
 	pauseReplay = false;
 
-	String fullDirName = Format("./%s/", dirName.c_str());
-	FileSystem::Instance()->DeleteDirectoryFiles(fullDirName, false);
-	FileSystem::Instance()->CreateDirectory(fullDirName);
+//	String fullDirName = Format("./%s/", dirName.c_str());
+	FileSystem::Instance()->DeleteDirectoryFiles(dirName, false);
+	FileSystem::Instance()->CreateDirectory(dirName);
     
-    FileList * list = new FileList("~doc:/");
+    FileList * list = new FileList(FilePath("~doc:/"));
     int32 listSize = list->GetCount();
     for(int32 i = 0; i < listSize; ++i)
     {
-        String fileName = list->GetFilename(i);
+        String fileName = list->GetPathname(i).GetFilename();
         if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i) && fileName != "LastReplay.rep")
         {
-            FileSystem::Instance()->CopyFile(list->GetPathname(i), Format("%s%s", fullDirName.c_str(), fileName.c_str()));
+            FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + FilePath(fileName));
         }
     }
 
     list->Release();
 
-    file = File::Create(Format("./%s/LastReplay.rep", dirName.c_str()), File::CREATE | File::WRITE);
+    FilePath filePath = dirName + FilePath("LastReplay.rep");
+    file = File::Create(filePath, File::CREATE | File::WRITE);
 
     Random::Instance()->Seed();
 }

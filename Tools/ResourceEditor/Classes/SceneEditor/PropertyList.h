@@ -71,7 +71,7 @@ public:
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
     void SetFloatPropertyValue(const String &propertyName, float32 newFloatValue);
-    void SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath);
+    void SetFilepathPropertyValue(const String &propertyName, const FilePath &currentFilepath);
     void SetBoolPropertyValue(const String &propertyName, bool newBoolValue);
     void SetComboPropertyStrings(const String &propertyName, const Vector<String> &strings);
     void SetComboPropertyIndex(const String &propertyName, int32 currentStringIndex);
@@ -86,7 +86,7 @@ public:
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
     float32 GetFloatPropertyValue(const String &propertyName);
-    const String &GetFilepathPropertyValue(const String &propertyName);
+    const FilePath &GetFilepathPropertyValue(const String &propertyName);
     bool GetBoolPropertyValue(const String &propertyName);
     const String &GetComboPropertyValue(const String &propertyName);
     const int32 GetComboPropertyIndex(const String &propertyName);

@@ -251,12 +251,12 @@ void LandscapeEditorCustomColors::SetColor(const Color &newColor)
 	paintColor = newColor;
 }
 
-void LandscapeEditorCustomColors::SaveColorLayer(const String &pathName)
+void LandscapeEditorCustomColors::SaveColorLayer(const FilePath &pathName)
 {
 	SaveTextureAction(pathName);
 }
 
-void LandscapeEditorCustomColors::LoadColorLayer(const String &pathName)
+void LandscapeEditorCustomColors::LoadColorLayer(const FilePath &pathName)
 {
 	LoadTextureAction(pathName);
 }
@@ -414,25 +414,22 @@ void LandscapeEditorCustomColors::ShowAction()
 	QtMainWindowHandler::Instance()->SetCustomColorsWidgetsState(true);
 }
 
-void LandscapeEditorCustomColors::SaveTextureAction(const String &pathToFile)
+void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
 {
-	if(pathToFile.empty())
+	if(!pathToFile.IsInitalized())
 		return;
 
     if(colorSprite)
     {
-		if(!pathToFile.empty())
-		{
-			Image *img = colorSprite->GetTexture()->CreateImageFromMemory();   
-			if(img)
-			{
-				StoreSaveFileName(pathToFile);
-				ImageLoader::Save(img, pathToFile);
-				SafeRelease(img);
-
-				unsavedChanges = false;
-			}
-		}
+        Image *img = colorSprite->GetTexture()->CreateImageFromMemory();
+        if(img)
+        {
+            StoreSaveFileName(pathToFile.GetAbsolutePathname());
+            ImageLoader::Save(img, pathToFile.GetAbsolutePathname());
+            SafeRelease(img);
+            
+            unsavedChanges = false;
+        }
 	}
 }
 

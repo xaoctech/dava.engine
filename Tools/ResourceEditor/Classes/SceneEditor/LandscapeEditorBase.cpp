@@ -30,8 +30,6 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     workingLandscape = NULL;
     workingScene = NULL;
 
-    savedPath = "";
-    
     currentTool = NULL;
     heightmapNode = NULL;
     
@@ -39,7 +37,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     
     landscapeSize = 0;
 
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture = Texture::CreateFromFile(FilePath("~res:/LandscapeEditor/Tools/cursor/cursor.png"));
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
     savedShaderMode = Landscape::TILED_MODE_MIXED;
@@ -47,8 +45,6 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 
 LandscapeEditorBase::~LandscapeEditorBase()
 {
-    savedPath = "";
-    
     SafeRelease(toolsPanel);
     
     SafeRelease(heightmapNode);
@@ -237,9 +233,10 @@ void LandscapeEditorBase::SaveTexture()
 {
     state = ELE_SAVING_TEXTURE;
     
-    if(savedPath.length())
+    if(savedPath.IsInitalized())
     {
-        String pathToSave = FileSystem::Instance()->ReplaceExtension(savedPath, ".png");
+        FilePath pathToSave = savedPath;
+        pathToSave.ReplaceExtension(".png");
         SaveTextureAs(pathToSave, true);
     }
     else if(!fileSystemDialog->GetParent())
@@ -254,7 +251,7 @@ void LandscapeEditorBase::SaveTexture()
     }
 }
 
-void LandscapeEditorBase::SaveTextureAs(const String &pathToFile, bool closeLE)
+void LandscapeEditorBase::SaveTextureAs(const FilePath &pathToFile, bool closeLE)
 {
     SaveTextureAction(pathToFile);
     

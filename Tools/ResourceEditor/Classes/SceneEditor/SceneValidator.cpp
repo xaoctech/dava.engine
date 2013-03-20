@@ -623,7 +623,7 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation, const Str
     return IsPathCorrectForProject(pathForValidation);
 }
 
-bool SceneValidator::IsPathCorrectForProject(const String &pathname)
+bool SceneValidator::IsPathCorrectForProject(const FilePath &pathname)
 {
     String normalizedPath = FileSystem::GetCanonicalPath(pathname);
     String::size_type foundPos = normalizedPath.find(pathForChecking);

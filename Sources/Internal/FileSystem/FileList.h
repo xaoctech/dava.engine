@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "FileSystem/FileSystem.h"
+#include "FileSystem/FilePath.h"
 #include "Utils/Utils.h"
 
 namespace DAVA
@@ -43,7 +44,7 @@ namespace DAVA
 class	FileList : public BaseObject
 {
 public:
-	FileList(const String & filepath);
+	FileList(const FilePath & filepath);
 	virtual ~FileList();
 
 	/**
@@ -70,13 +71,10 @@ public:
 		\brief Get current path 
 		
 	 */
-	const String & GetCurrentPath();
+	const FilePath & GetCurrentPath();
 	
-	//! Get file name
-	const String & GetFilename(int32 index);
-    
 	//! Get path name
-	const String & GetPathname(int32 index);
+	const FilePath & GetPathname(int32 index);
 
 	/**
 		\brief is file with given index in this list is a directory
@@ -96,8 +94,7 @@ public:
 private:
 	struct FileEntry
 	{
-		String name;
-		String pathName;
+		FilePath path;
 		uint32		size;
 		bool		isDirectory;
         
@@ -112,10 +109,10 @@ private:
                 return true;
             }
             
-            return (CompareCaseInsensitive(name, other.name) < 0);
+            return (CompareCaseInsensitive(path.GetAbsolutePathname(), other.path.GetAbsolutePathname()) < 0);
         }
 	};
-	String					path;
+	FilePath            path;
 	Vector< FileEntry >	fileList;
 	int32				fileCount;
 	int32				directoryCount;
