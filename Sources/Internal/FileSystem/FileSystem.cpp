@@ -430,24 +430,31 @@ bool FileSystem::IsFile(const String & pathToCheck)
 {
     String pathname = SystemPathForFrameworkPath(pathToCheck);
     
-    struct stat s;
-    if(stat(pathname.c_str(),&s) == 0)
-    {
-        return (0 != (s.st_mode & S_IFREG));
-    }
+	struct stat s;
+ 	if(stat(pathname.c_str(),&s) == 0)
+	{
+		return (0 != (s.st_mode & S_IFREG));
+	}
+
     return false;
 }
-	  
+
 bool FileSystem::IsDirectory(const String & pathToCheck)
 {
     String pathname = SystemPathForFrameworkPath(pathToCheck);
+
+#if defined (__DAVAENGINE_WIN32__)
+	DWORD stats = GetFileAttributesA(pathname.c_str());
+	return FILE_ATTRIBUTE_DIRECTORY == stats;
+#else //#if defined (__DAVAENGINE_WIN32__)
+	struct stat s;
+	if(stat(pathname.c_str(), &s) == 0)
+	{
+		return (0 != (s.st_mode & S_IFDIR));
+	}
+#endif //#if defined (__DAVAENGINE_WIN32__)
     
-    struct stat s;
-    if(stat(pathname.c_str(), &s) == 0)
-    {
-        return (0 != (s.st_mode & S_IFDIR));
-    }
-    return false;
+	return false;
 }
 
 const String & FileSystem::GetCurrentDocumentsDirectory()
