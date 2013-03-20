@@ -38,7 +38,7 @@ FileDownloader::FileDownloader()
         FileDownloader::isCURLInit = true;
     }
 }
-FileDownloader::FileDownloader(const std::string& _sourceUrl, const std::string& _savePath, bool reload)
+FileDownloader::FileDownloader(const FilePath & _sourceUrl, const FilePath & _savePath, bool reload)
     : BaseObject()
     , sourceUrl(_sourceUrl)
     , savePath(_savePath)
@@ -116,30 +116,29 @@ uint32 FileDownloader::DownloadFile()
 
     fileForWrite = NULL;
     
-    std::string path = "";
-    std::string fileName = "";
-    FileSystem::Instance()->SplitPath( GetSourceUrl(), path, fileName );
-    std::string fullSavePath = FileSystem::Instance()->RealPath( FileSystem::Instance()->SystemPathForFrameworkPath( GetSavePath() ) + "/" + fileName );
+    FilePath path = GetSourceUrl().GetDirectory();
+    String fileName = GetSourceUrl().GetFilename();
+    
+    FilePath fullSavePath = GetSavePath() + FilePath("/" + fileName);
     
     // Check file exist
-    fileForWrite = FileSystem::Instance()->CreateFileForFrameworkPath(fullSavePath, File::OPEN | File::READ);
-    
+    fileForWrite = File::Create(fullSavePath, File::OPEN | File::READ);
     if (fileForWrite == NULL)
     {
         // If fole not exist create new file
-        fileForWrite = FileSystem::Instance()->CreateFileForFrameworkPath(fullSavePath, File::CREATE | File::WRITE);
+        fileForWrite = File::Create(fullSavePath, File::CREATE | File::WRITE);
     }
     else if (reloadFile == false)
     {
         // Open file for APPEND and get pos to resume download
         SafeRelease(fileForWrite);
-        fileForWrite = FileSystem::Instance()->CreateFileForFrameworkPath(fullSavePath, File::APPEND | File::WRITE);
+        fileForWrite = File::Create(fullSavePath, File::APPEND | File::WRITE);
     }
     else
     {
         // Reload exist file from server
         SafeRelease(fileForWrite);
-        fileForWrite = FileSystem::Instance()->CreateFileForFrameworkPath(fullSavePath, File::CREATE | File::WRITE);
+        fileForWrite = File::Create(fullSavePath, File::CREATE | File::WRITE);
     }
     
     // Error read, write or create file
@@ -185,7 +184,7 @@ uint32 FileDownloader::CurlDownload()
     curl_handle = curl_easy_init();
     
     /* set URL to get */ 
-    curl_easy_setopt(curl_handle, CURLOPT_URL, GetSourceUrl().c_str());
+    curl_easy_setopt(curl_handle, CURLOPT_URL, GetSourceUrl().ResolvePathname().c_str());
     
     /* no progress meter please */ 
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
@@ -247,22 +246,22 @@ CURL * FileDownloader::GetCurlHandler() const
     return curl_handle;
 }
 
-const std::string& FileDownloader::GetSourceUrl() const
+const FilePath & FileDownloader::GetSourceUrl() const
 {
     return sourceUrl;
 }
 
-void FileDownloader::SetSourceUrl(const std::string& _sourceUrl)
+void FileDownloader::SetSourceUrl(const FilePath & _sourceUrl)
 {
     sourceUrl = _sourceUrl;
 }
     
-const std::string& FileDownloader::GetSavePath() const
+const FilePath & FileDownloader::GetSavePath() const
 {
     return savePath;
 }
     
-void FileDownloader::SetSavePath(const std::string& _savePath)
+void FileDownloader::SetSavePath(const FilePath & _savePath)
 {
     savePath = _savePath;
 }

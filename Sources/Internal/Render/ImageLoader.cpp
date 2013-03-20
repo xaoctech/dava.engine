@@ -46,7 +46,7 @@ Vector<Image *> ImageLoader::CreateFromFile(const FilePath & pathname)
     
     if(!file)
     {
-        Logger::Error("[ImageLoader::CreateFromFile] Cannot open file %s", pathname.c_str());
+        Logger::Error("[ImageLoader::CreateFromFile] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
         return Vector<Image *>();
     }
     
@@ -157,7 +157,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
         bool read = LibPVRHelper::ReadFile(file, imageSet);
         if(!read)
         {
-            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().c_str());
+            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().GetAbsolutePathname().c_str());
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
@@ -174,7 +174,7 @@ void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
     DVASSERT_MSG( 0 != CompareCaseInsensitive(extension, ".tex") , "Need to save image to PNG file");
     
     DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
-    LibPngWrapper::WritePngFile(pathname.c_str(), image->width, image->height, image->data, image->format);
+    LibPngWrapper::WritePngFile(pathname.GetAbsolutePathname().c_str(), image->width, image->height, image->data, image->format);
 }
     
     

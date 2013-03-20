@@ -40,6 +40,7 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleForce.h"
 #include "Particles/ParticlePropertyLine.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -118,7 +119,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
+	virtual void LoadFromYaml(const FilePath & configPath, YamlNode * node);
 
 	/**
      \brief Function to save layer to yaml node.

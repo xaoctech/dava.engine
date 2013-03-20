@@ -39,6 +39,8 @@
 #include "Render/Texture.h"
 #include "Render/RenderDataObject.h"
 
+#include "FileSystem/FilePath.h"
+
 namespace DAVA
 {
 
@@ -116,7 +118,7 @@ public:
 	 \param spriteName path to sprite name relative to application bundle
 	 \return sprite pointer in any case will be returned
 	 */	
-	static Sprite* Create(const String &spriteName);// Creating sprite by name
+	static Sprite* Create(const FilePath &spriteName);// Creating sprite by name
 
 	/**
 	 \brief Function to create sprite as render target. 
@@ -137,8 +139,8 @@ public:
 		\param forPointer you can create sprite in the allready allocated space or send NULL and memory will be allocated.
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */	
-	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL); 
-    void InitFromFile(File *file, const String &pathName, const String &texturePathname);
+	static Sprite* PureCreate(const FilePath & spriteName, Sprite* forPointer = NULL); 
+    void InitFromFile(File *file, const FilePath &pathName, const FilePath &texturePathname);
 
 	/**
 	 \brief Function to create sprite from the already created texture.
@@ -225,9 +227,7 @@ public:
 	inline int32 GetResourceSizeIndex() const;
 
 	
-	const String &GetName() const { return relativePathname; }
-
-	/** 
+	/**
 		\brief Function to get rect & offset of sprite frame position in texture
 	 */
 	float32 GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const;
@@ -271,7 +271,7 @@ public:
 	*/
 	void ConvertToVirtualSize();
 
-	const String & GetRelativePathname() const;
+	const FilePath & GetRelativePathname() const;
 
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
@@ -289,9 +289,9 @@ protected:
 	void Clear();
 
 	
-    static Sprite* GetSpriteFromMap(const String &pathname);
-    static String GetScaledName(const String &spriteName);
-    static File* LoadLocalizedFile(const String &spritePathname, String &texturePath);
+    static Sprite* GetSpriteFromMap(const FilePath & pathname);
+    static FilePath GetScaledName(const FilePath & spriteName);
+    static File* LoadLocalizedFile(const FilePath & spritePathname, const FilePath & texturePath);
     
 //private:
     
@@ -306,8 +306,8 @@ protected:
 	float32 tempVertices[8];
 
 	
-	String  relativePathname;
-	String  relativeTexturePathname;
+	FilePath  relativePathname;
+	FilePath  relativeTexturePathname;
 	
 	Texture ** textures;
 	FilePath *textureNames;

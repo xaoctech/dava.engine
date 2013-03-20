@@ -59,7 +59,7 @@ public:
 	
 	const static PairNvttPixelGLFormat formatNamesMap[];
 
-	static bool InitDecompressor(nvtt::Decompressor & dec, const String & fileName);
+	static bool InitDecompressor(nvtt::Decompressor & dec, const FilePath & fileName);
 	static bool InitDecompressor(nvtt::Decompressor & dec, File * file);
 	static bool InitDecompressor(nvtt::Decompressor & dec, const uint8 * mem, uint32 size);
 	
@@ -146,7 +146,7 @@ nvtt::Format NvttHelper::GetNVTTFormatByPixelFormat(PixelFormat pixelFormat)
 	return retValue;
 }
 
-bool LibDxtHelper::ReadDxtFile(const String &fileName, Vector<Image*> &imageSet)
+bool LibDxtHelper::ReadDxtFile(const FilePath &fileName, Vector<Image*> &imageSet)
 {
 	nvtt::Decompressor dec;
 
@@ -325,7 +325,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 }
 
 
-bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 * data, PixelFormat compressionFormat, bool generateMipmaps)
 {
 	if(!( (compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)|| (compressionFormat == FORMAT_RGBA8888)) )
 	{
@@ -334,10 +334,10 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
 	}
 
 	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
-	String extension = FileSystem::Instance()->GetExtension(fileNameOriginal);
+	String extension = fileNameOriginal.GetExtension();
     if(0 != CompareCaseInsensitive(extension, ".dds"))
     {
-		Logger::Error("[LibDxtHelper::WriteDxtFile] Wrong input file name (%s).", fileNameOriginal.c_str());
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Wrong input file name (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
         return false;
     }
     
@@ -371,8 +371,9 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
 	
     
 	OutputOptions outputOptions;
-	String fileName = FileSystem::Instance()->ReplaceExtension(fileNameOriginal, "_dds");
-	outputOptions.setFileName(fileName.c_str());
+	FilePath fileName = fileNameOriginal;
+    fileName.ReplaceExtension("_dds");
+	outputOptions.setFileName(fileName.GetAbsolutePathname().c_str());
 	
 	Compressor compressor;
 	bool ret = compressor.process(inputOptions, compressionOptions, outputOptions);
@@ -387,16 +388,16 @@ bool LibDxtHelper::WriteDxtFile(const String & fileNameOriginal, int32 width, in
     }
     else
     {
-		Logger::Error("[LibDxtHelper::WriteDxtFile] Error during writing DDS file (%s).", fileName.c_str());
+		Logger::Error("[LibDxtHelper::WriteDxtFile] Error during writing DDS file (%s).", fileName.GetAbsolutePathname().c_str());
     }
     
 	return ret;
 }
 
-bool LibDxtHelper::IsDxtFile(const String & filePathname)
+bool LibDxtHelper::IsDxtFile(const FilePath & filePathname)
 {
 	nvtt::Decompressor dec;
-	return dec.initWithDDSFile(filePathname.c_str());
+	return dec.initWithDDSFile(filePathname.GetAbsolutePathname().c_str());
 }
 
 bool LibDxtHelper::IsDxtFile(File * file)
@@ -405,7 +406,7 @@ bool LibDxtHelper::IsDxtFile(File * file)
 	return NvttHelper::InitDecompressor(dec,file);
 }
 
-PixelFormat LibDxtHelper::GetPixelFormat(const String & fileName)
+PixelFormat LibDxtHelper::GetPixelFormat(const FilePath & fileName)
 {
 	nvtt::Decompressor dec;
 
@@ -429,7 +430,7 @@ PixelFormat LibDxtHelper::GetPixelFormat(File * file)
 	return NvttHelper::GetPixelFormat(dec);
 }
 
-uint32 LibDxtHelper::GetMipMapLevelsCount(const String & fileName)
+uint32 LibDxtHelper::GetMipMapLevelsCount(const FilePath & fileName)
 {
 	nvtt::Decompressor dec;
 
@@ -453,7 +454,7 @@ uint32 LibDxtHelper::GetMipMapLevelsCount(File * file)
 	return NvttHelper::GetMipMapLevelsCount(dec);
 }
 
-uint32 LibDxtHelper::GetDataSize(const String & fileName)
+uint32 LibDxtHelper::GetDataSize(const FilePath & fileName)
 {
 	nvtt::Decompressor dec;
 
@@ -478,7 +479,7 @@ uint32 LibDxtHelper::GetDataSize(File * file)
 }
 
 
-bool LibDxtHelper::GetTextureSize(const String & fileName, uint32 & width, uint32 & height)
+bool LibDxtHelper::GetTextureSize(const FilePath & fileName, uint32 & width, uint32 & height)
 {
 	nvtt::Decompressor dec;
 
@@ -566,17 +567,17 @@ void NvttHelper::SwapBRChannels(uint8* data, uint32 size)
 	}
 }
 
-bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const String & fileName)
+bool NvttHelper::InitDecompressor(nvtt::Decompressor & dec, const FilePath & fileName)
 {
-	if(fileName.empty())
+	if(!fileName.IsInitalized())
 	{
 		Logger::Error("[NvttHelper::InitDecompressor] try init with empty name");
 		return false;
 	}
 
-	if(!dec.initWithDDSFile(fileName.c_str()))
+	if(!dec.initWithDDSFile(fileName.GetAbsolutePathname().c_str()))
 	{
-		Logger::Error("[NvttHelper::InitDecompressor] Wrong dds file (%s).", fileName.c_str());
+		Logger::Error("[NvttHelper::InitDecompressor] Wrong dds file (%s).", fileName.GetAbsolutePathname().c_str());
 		return false;
 	}
     

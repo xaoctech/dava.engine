@@ -103,7 +103,7 @@ public:
 	//! \brief function to open resource archive
 	//! \param archiveName path to archive we want to open
 	//! \param withPaths can use relative paths to open resources
-	bool	Open(const String & archiveName);
+	bool	Open(const FilePath & archiveName);
 
 	// Saving resources functions
 
