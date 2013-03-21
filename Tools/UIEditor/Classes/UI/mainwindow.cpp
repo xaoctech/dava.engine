@@ -8,6 +8,7 @@
 #include "createplatformdlg.h"
 #include "createplatformdlg.h"
 #include "createscreendlg.h"
+#include "Dialogs/createaggregatordlg.h"
 #include "fontmanagerdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "ItemsCommand.h"
@@ -153,6 +154,7 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
 	// Set actions for toolbar
  	toolBar->addAction(ui->actionNew_platform);
 	toolBar->addAction(ui->actionNew_screen);
+	toolBar->addAction(ui->actionNew_aggregator);
 	// Disable moving of toolbar
 	toolBar->setMovable(false);
 	// Set toolbar position
@@ -314,6 +316,7 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_platform, SIGNAL(triggered()), this, SLOT(OnNewPlatform()));
 	connect(ui->actionNew_screen, SIGNAL(triggered()), this, SLOT(OnNewScreen()));
+	connect(ui->actionNew_aggregator, SIGNAL(triggered()), this, SLOT(OnNewAggregator()));
 
 	connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(OnExitApplication()));
 	
@@ -348,6 +351,7 @@ void MainWindow::UpdateMenu()
 	ui->menuProject->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_screen->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
+	ui->actionNew_aggregator->setEnabled(HierarchyTreeController::Instance()->GetTree().GetPlatforms().size());
 }
 
 void MainWindow::OnNewProject()
@@ -399,6 +403,18 @@ void MainWindow::OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id/* = Hiera
 	if (dlg.exec() == QDialog::Accepted)
 	{
 		CreateScreenCommand* cmd = new CreateScreenCommand(dlg.GetScreenName(), dlg.GetPlatformId());
+		CommandsController::Instance()->ExecuteCommand(cmd);
+		SafeRelease(cmd);
+	}
+}
+
+void MainWindow::OnNewAggregator(HierarchyTreeNode::HIERARCHYTREENODEID id)
+{
+	CreateAggregatorDlg dlg(this);
+	dlg.SetDefaultPlatform(id);
+	if (dlg.exec() == QDialog::Accepted)
+	{
+		CreateAggregatorCommand* cmd = new CreateAggregatorCommand(dlg.GetName(), dlg.GetPlatformId(), dlg.GetRect());
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
 	}

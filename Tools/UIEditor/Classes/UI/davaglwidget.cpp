@@ -194,10 +194,13 @@ void DavaGLWidget::dragMoveEvent(QDragMoveEvent *event)
 {
 	const QMimeData* data = event->mimeData();
 	const ControlMimeData* controlData = dynamic_cast<const ControlMimeData*>(data);
-	if (controlData && HierarchyTreeController::Instance()->GetActiveScreen())
+	if (controlData && ScreenWrapper::Instance()->IsDropEnable(event->pos()))
 	{
 		event->accept();
-		ScreenWrapper::Instance()->BacklightControl(event->pos());
+	}
+	else
+	{
+		event->ignore();
 	}
 }
 

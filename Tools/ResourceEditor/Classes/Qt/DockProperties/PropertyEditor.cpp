@@ -62,7 +62,23 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
             Component *component = curNode->GetComponent(i);
             if(component)
             {
-                AppendIntrospectionInfo(component, component->GetTypeInfo());
+                QtPropertyData *componentData = AppendIntrospectionInfo(component, component->GetTypeInfo());
+
+				if(NULL != componentData)
+				{
+					// Add optional button to track "remove this component" command
+					QPushButton *removeButton = new QPushButton();
+
+					QIcon removeIcon;
+					removeIcon.addFile(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"), QSize(), QIcon::Normal, QIcon::Off);
+
+					removeButton->setIcon(removeIcon);
+					removeButton->setIconSize(QSize(12, 12));
+					removeButton->setFlat(true);
+
+					componentData->SetOptionalWidget(removeButton);
+					componentData->SetOptionalWidgetOverlay(true);
+				}
             }
         }
 	}
@@ -79,8 +95,10 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 	}
 }
 
-void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
+QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo *info)
 {
+	QtPropertyData* propData = NULL;
+
 	if(NULL != info)
 	{
 		bool hasMembers = false;
@@ -104,8 +122,7 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 
 			if(hideReadOnly) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
 
-			QtPropertyData* propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
-
+			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
 			if(propData->ChildCount() > 0)
 			{
 				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
@@ -116,9 +133,12 @@ void PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA::Introspec
 			else
 			{
 				delete propData;
+				propData = NULL;
 			}
         }
     }
+
+	return propData;
 }
 
 void PropertyEditor::sceneChanged(SceneData *sceneData)

@@ -51,7 +51,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">_$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</IgnoreImportLibrary>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">false</LinkIncremental>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">PrepareForBuild</CustomBuildBeforeTargets>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
@@ -64,7 +64,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions);__DAVAENGINE_BEAST__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -328,6 +328,7 @@
     <ClCompile Include="Classes\Commands\EditCommands.cpp" />
     <ClCompile Include="Classes\Commands\EditorBodyControlCommands.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
+    <ClCompile Include="Classes\Commands\HangingObjectsCommands.cpp" />
     <ClCompile Include="Classes\Commands\HeightmapEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
@@ -362,6 +363,8 @@
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.cpp" />
     <ClCompile Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.cpp" />
     <ClCompile Include="Classes\Qt\DockCustomColors\CustomColorsView.cpp" />
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockHangingObjects\HangingObjectsView.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\DockLibrary\LibraryView.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp" />
@@ -518,6 +521,7 @@
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="_GeneratedQt\DockCustomColors\CustomColorsView_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DockHangingObjects\HangingObjectsView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLibrary\LibraryView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp" />
@@ -555,11 +559,16 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPosSaver\QtPosSaver_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyBrowser\Dava\qtDavaVectorPropertyManager_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneDataManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
@@ -806,6 +815,7 @@
     <ClInclude Include="Classes\Commands\EditCommands.h" />
     <ClInclude Include="Classes\Commands\EditorBodyControlCommands.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
+    <ClInclude Include="Classes\Commands\HangingObjectsCommands.h" />
     <ClInclude Include="Classes\Commands\HeightmapEditorCommands.h" />
     <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
@@ -843,6 +853,8 @@
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\ForceParticleEditorNode.h" />
     <ClInclude Include="Classes\ParticlesEditorQT\Nodes\LayerParticleEditorNode.h" />
     <ClInclude Include="Classes\Qt\DockCustomColors\CustomColorsView.h" />
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsHelper.h" />
+    <ClInclude Include="Classes\Qt\DockHangingObjects\HangingObjectsView.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\DockLibrary\LibraryView.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h" />
@@ -1006,6 +1018,7 @@
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataQt\HangingObjectsView.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
     </None>
