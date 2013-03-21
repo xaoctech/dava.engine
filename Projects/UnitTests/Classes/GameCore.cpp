@@ -50,6 +50,7 @@
 #include "EMailTest.h"
 #include "InputTest.h"
 #include "FilePathTest.h"
+#include "DeviceInfoTest.h"
 
 using namespace DAVA;
 
@@ -75,6 +76,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new DeviceInfoTest();
     new FilePathTest();
 //    new SampleTest();
 //    new EntityTest(); 
