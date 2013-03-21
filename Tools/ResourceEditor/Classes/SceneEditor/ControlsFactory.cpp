@@ -135,7 +135,7 @@ Font * ControlsFactory::GetFont12()
 {
 	if (!font12) 
 	{
-		font12 = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+		font12 = FTFont::Create(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
 		font12->SetSize(12);
 	}
 	return font12;
@@ -146,7 +146,7 @@ Font * ControlsFactory::GetFont20()
 {
 	if (!font20) 
 	{
-		font20 = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+		font20 = FTFont::Create(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
 		font20->SetSize(20);
 	}
 	return font12;
@@ -401,7 +401,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     
     Rect fr = l->GetRect();
     
-    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    Sprite *scrollSpr = Sprite::Create(FilePath("~res:/Gfx/UI/scroll"));
     
     UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
                                              UIScrollBar::ORIENTATION_VERTICAL);
@@ -440,7 +440,7 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     
     Rect fr = h->GetRect();
     
-    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    Sprite *scrollSpr = Sprite::Create(FilePath("~res:/Gfx/UI/scroll"));
     
     UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
                                              UIScrollBar::ORIENTATION_VERTICAL);

@@ -146,7 +146,7 @@ void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
     }
     else 
     {
-        propertyList->SetFilepathPropertyValue(textureNames[type], "");
+        propertyList->SetFilepathPropertyValue(textureNames[type], FilePath());
     }
 
 }
@@ -256,7 +256,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
 		return;
 	}
     
-    String descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
     for (int32 i = 0; i < ME_TEX_COUNT; i++)
     {
         if (forKey == textureNames[i]) 
@@ -272,7 +272,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             }
             else 
             {
-                propertyList->SetFilepathPropertyValue(textureNames[i], "");
+                propertyList->SetFilepathPropertyValue(textureNames[i], FilePath());
             }
             break;
         }

@@ -21,9 +21,9 @@ PVRConverter::~PVRConverter()
 
 }
 
-String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
+FilePath PVRConverter::ConvertPngToPvr(const FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String outputName;
+	FilePath outputName;
 	String command = GetCommandLinePVR(fileToConvert, descriptor);
     Logger::Info("[PVRConverter::ConvertPngToPvr] (%s)", command.c_str());
     
@@ -36,19 +36,19 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, const DAVA::T
 	return outputName;
 }
 
-String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor)
+String PVRConverter::GetCommandLinePVR(const DAVA::FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor)
 {
-	String command = pvrTexToolPathname;
+	String command = pvrTexToolPathname.ResolvePathname();
 	String format = pixelFormatToPVRFormat[descriptor.pvrCompression.format];
 
 	if(command != "" && format != "")
 	{
-		String outputFile = GetPVRToolOutput(fileToConvert);
+		FilePath outputFile = GetPVRToolOutput(fileToConvert);
 
 		// assemble command
 
 		// input file
-		command += Format(" -i \"%s\"", fileToConvert.c_str());
+		command += Format(" -i \"%s\"", fileToConvert.ResolvePathname().c_str());
 
 		// output format
 		command += Format(" -f%s", format.c_str());
@@ -69,31 +69,31 @@ String PVRConverter::GetCommandLinePVR(const DAVA::String & fileToConvert, const
 		}
 
 		// output file
-		command += Format(" -o \"%s\"", outputFile.c_str());
+		command += Format(" -o \"%s\"", outputFile.ResolvePathname().c_str());
 	}
     else
     {
-        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.c_str());
+        Logger::Error("[PVRConverter::GetCommandLinePVR] Can't create command line for file (%s)", fileToConvert.GetAbsolutePathname().c_str());
         command = "";
     }
 
 	return command;
 }
 
-String PVRConverter::GetPVRToolOutput(const DAVA::String &inputPVR)
+FilePath PVRConverter::GetPVRToolOutput(const DAVA::FilePath &inputPVR)
 {
-	return FileSystem::ReplaceExtension(inputPVR, ".pvr");
+    FilePath path = FilePath::CreateWithNewExtension(inputPVR, ".pvr");
+	return path;
 }
 
-void PVRConverter::SetPVRTexTool(const DAVA::String &textToolPathname)
+void PVRConverter::SetPVRTexTool(const DAVA::FilePath &textToolPathname)
 {
-	pvrTexToolPathname = FileSystem::Instance()->SystemPathForFrameworkPath(textToolPathname);
-	pvrTexToolPathname = FileSystem::Instance()->GetCanonicalPath(pvrTexToolPathname);
+	pvrTexToolPathname = textToolPathname;
 
 	if(!FileSystem::Instance()->IsFile(pvrTexToolPathname))
 	{
-		Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.c_str());
-		pvrTexToolPathname = "";
+		Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.GetAbsolutePathname().c_str());
+		pvrTexToolPathname = FilePath();
 	}
 }
 

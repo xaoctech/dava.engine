@@ -18,7 +18,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     ,   touchID(INVALID_TOUCH_ID)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-    fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    fileSystemDialog = new UIFileSystemDialog(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
     fileSystemDialog->SetDelegate(this);
 
     String path = EditorSettings::Instance()->GetDataSourcePath();

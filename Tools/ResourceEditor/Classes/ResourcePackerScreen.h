@@ -33,17 +33,17 @@ public:
 	// Packing of resources section
 	void PackResources();
 	
-	String inputGfxDirectory;
-	String outputGfxDirectory;
-	String excludeDirectory;
+	FilePath inputGfxDirectory;
+	FilePath outputGfxDirectory;
+	FilePath excludeDirectory;
 	String gfxDirName;
 
-	void RecursiveTreeWalk(const String & inputPath,const String & outputPath);
-	bool IsMD5ChangedDir(const String & processDirectoryPath, const String & pathname, const String & psdName, bool isRecursive);
-	bool IsMD5ChangedFile(const String & processDirectoryPath, const String & pathname, const String & psdName);
-	DefinitionFile * ProcessPSD(const String & processDirectoryPath, const String & psdPathname, const String & psdName);
-	void ProcessFlags(const String & flagsPathname);
-	String GetProcessFolderName();
+	void RecursiveTreeWalk(const FilePath & inputPath,const FilePath & outputPath);
+	bool IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName, bool isRecursive);
+	bool IsMD5ChangedFile(const String & processDirectoryPath, const FilePath & pathname, const FilePath & psdName);
+	DefinitionFile * ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName);
+	void ProcessFlags(const FilePath & flagsPathname);
+	FilePath GetProcessFolderName();
 	String currentFlags;
 
 	// Resource Tree
@@ -53,7 +53,7 @@ public:
 	virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index);
 
 	// Sprite Editor Logic
-	void OpenSpriteEditor(const String & spriteName);
+	void OpenSpriteEditor(const FilePath & spriteName);
 	UISpriteEditor * spriteEditor;
 
 	

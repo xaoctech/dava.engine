@@ -33,7 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Render/2D/FTFont.h"
-
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -58,10 +58,10 @@ public:
 		\param[in, out]	rootControl		we add all created control classes to this control
 		\param[in]						we get config file using this pathname
 	 */
-	static void Load(UIControl * rootControl, const String & yamlPathname);
+	static void Load(UIControl * rootControl, const FilePath & yamlPathname);
 
 	//Internal functions that do actual loading and saving.
-	void ProcessLoad(UIControl * rootControl, const String & yamlPathname);
+	void ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname);
 	void LoadFromNode(UIControl * rootControl, YamlNode * node, bool needParentCallback);
 	
 	/**
@@ -72,10 +72,10 @@ public:
      \param[in]			yamlPathName	path to store hierarchy too
      \return            true if the save was successful
 	 */
-	static bool Save(UIControl * rootControl, const String & yamlPathname, bool skipRootNode);
+	static bool Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 	
     YamlNode* SaveToNode(UIControl * parentControl, YamlNode * rootNode, int relativeDepth = 0);
-	bool ProcessSave(UIControl * rootControl, const String & yamlPathname, bool skipRootNode);
+	bool ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode);
 
 	Font * GetFontByName(const String & fontName);
 	
