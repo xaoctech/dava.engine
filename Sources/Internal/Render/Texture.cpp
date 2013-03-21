@@ -122,11 +122,11 @@ Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
 // Main constructurs
-Texture * Texture::Get(const String & pathName)
+Texture * Texture::Get(const FilePath & pathName)
 {
 	Texture * texture = NULL;
 	Map<String, Texture *>::iterator it;
-	it = textureMap.find(pathName);
+	it = textureMap.find(pathName.GetAbsolutePathname());
 	if (it != textureMap.end())
 	{
 		texture = it->second;
@@ -218,12 +218,12 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	RenderManager::Instance()->UnlockNonMain();
     
 	if (!addInfo)
-		tx->relativePathname = Format("Text texture %d", textureFboCounter);
+		tx->relativePathname = FilePath(Format("Text texture %d", textureFboCounter));
 	else 
-		tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
+		tx->relativePathname = FilePath(Format("Text texture %d info:%s", textureFboCounter, addInfo));
 
 	textureFboCounter++;
-    textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname.GetAbsolutePathname()] = tx;
 	return tx;
 }
 	
@@ -480,12 +480,12 @@ void Texture::GeneratePixelesation()
 }
     
 
-Texture * Texture::CreateFromImage(const String &pathname, DAVA::TextureDescriptor *descriptor)
+Texture * Texture::CreateFromImage(const FilePath &pathname, DAVA::TextureDescriptor *descriptor)
 {
     File *file = File::Create(pathname, File::OPEN | File::READ);
     if(!file)
     {
-        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.c_str());
+        Logger::Error("[Texture::CreateFromImage] Cannot open file %s", pathname.GetAbsolutePathname().c_str());
         return NULL;
     }
 
@@ -662,7 +662,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName)
 Texture * Texture::PureCreate(const FilePath & pathName)
 {
     //TODO::temporary workaround to optimize old scenes loading
-    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(pathName, TextureDescriptor::GetDescriptorExtension());
+    FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
 //    Texture * texture = Texture::Get(pathName);
 	if (texture) return texture;
@@ -672,7 +672,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
-	String extension = FileSystem::GetExtension(pathName);
+	String extension = pathName.GetExtension();
     if(TextureDescriptor::GetDescriptorExtension() == extension)
     {
 		texture = CreateFromDescriptor(pathName, descriptor);
@@ -693,7 +693,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     if(texture)
     {
 		texture->relativePathname = descriptor->pathname;
-        textureMap[texture->relativePathname] = texture;
+        textureMap[texture->relativePathname.GetAbsolutePathname()] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -701,7 +701,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(const FilePath &pathName, TextureDescriptor *descriptor)
 {
 #if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = Texture::Get(pathName);
@@ -718,7 +718,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     ImageFileFormat formatForLoading = (NOT_FILE == defaultFileFormat) ? (ImageFileFormat)descriptor->textureFileFormat : defaultFileFormat;
     if((NOT_FILE == defaultFileFormat) || IsLoadAvailable(formatForLoading, descriptor))
     {
-        String imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
+        FilePath imagePathname = GetActualFilename(pathName, formatForLoading, descriptor);
         texture = CreateFromImage(imagePathname, descriptor);
         if(texture)
         {
@@ -731,7 +731,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     return texture;
 }
 
-String Texture::GetActualFilename(const String &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
+FilePath Texture::GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor)
 {
     if(descriptor->IsCompressedFile())
     {
@@ -776,7 +776,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 	
 	DVASSERT(NULL != descriptor);
     
-    String imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
+    FilePath imagePathname = TextureDescriptor::GetPathnameForFormat(descriptor->pathname, fileFormat);
     File *file = File::Create(imagePathname, File::OPEN | File::READ);
 
     bool loaded = false;
@@ -799,7 +799,7 @@ void Texture::ReloadAs(DAVA::ImageFileFormat fileFormat, const TextureDescriptor
 #endif //#if defined(__DAVAENGINE_OPENGL__)
         RenderManager::Instance()->UnlockNonMain();
         
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.c_str());
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", imagePathname.GetAbsolutePathname().c_str());
         
         
         uint32 dataSize = width * height * GetPixelFormatSizeInBytes(format);
@@ -851,7 +851,7 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-		textureMap.erase(relativePathname);
+		textureMap.erase(relativePathname.GetAbsolutePathname());
 	}
 	return BaseObject::Release();
 }
@@ -946,8 +946,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 
 	tx->isRenderTarget = true;
-	tx->relativePathname = Format("FBO texture %d", textureFboCounter);
-    textureMap[tx->relativePathname] = tx;
+	tx->relativePathname = FilePath(Format("FBO texture %d", textureFboCounter));
+    textureMap[tx->relativePathname.GetAbsolutePathname()] = tx;
 	
 	textureFboCounter++;
 	
@@ -964,7 +964,7 @@ void Texture::DumpTextures()
 	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
-		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
+		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.GetAbsolutePathname().c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
 		cnt++;
         
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));

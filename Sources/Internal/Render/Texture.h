@@ -276,7 +276,7 @@ public:							// properties for fast access
 
 	void SetDebugInfo(const String & _debugInfo);
 
-	static const Map<FilePath, Texture*> & GetTextureMap();
+	static const Map<String, Texture*> & GetTextureMap();
     
     int32 GetDataSize() const;
     
@@ -292,7 +292,7 @@ public:							// properties for fast access
     
 private:
     
-	static Map<FilePath, Texture*> textureMap;
+	static Map<String, Texture*> textureMap;
 	static Texture * Get(const FilePath & name);
     
 	static Texture * CreateFromDescriptor(const FilePath & pathname, TextureDescriptor *descriptor);
@@ -324,7 +324,7 @@ private:
     
     static bool IsLoadAvailable(const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
     
-    static String GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
+    static FilePath GetActualFilename(const FilePath &pathname, const ImageFileFormat fileFormat, const TextureDescriptor *descriptor);
 };
     
 // Implementation of inline functions

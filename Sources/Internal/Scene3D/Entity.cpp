@@ -726,7 +726,7 @@ void Entity::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = sceneFileV2->AbsoluteToRelative(savedPath);
+        String newPath = FilePath(savedPath).GetRelativePathname(sceneFileV2->GetScenePath().GetDirectory());
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
     
@@ -787,8 +787,11 @@ void Entity::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
-            String newPath = sceneFileV2->RelativeToAbsolute(customProperties->GetString("editor.referenceToOwner"));
-            customProperties->SetString("editor.referenceToOwner", newPath);
+            FilePath newPath(sceneFileV2->GetScenePath().GetDirectory());
+            newPath += FilePath(customProperties->GetString("editor.referenceToOwner"));
+
+            //TODO: why we use absolute pathname instead of relative?
+            customProperties->SetString("editor.referenceToOwner", newPath.GetAbsolutePathname());
         }
     }
 
