@@ -4,6 +4,7 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -16,6 +17,7 @@ SwitchSystem::SwitchSystem(Scene * scene)
 
 void SwitchSystem::Process()
 {
+    TIME_PROFILE("SwitchSystem::Process");
 	Set<SceneNode*>::iterator it;
 	Set<SceneNode*>::const_iterator itEnd = updatableEntities.end();
 	for(it = updatableEntities.begin(); it != itEnd; ++it)
@@ -25,8 +27,11 @@ void SwitchSystem::Process()
 
 		if(sw->oldSwitchIndex != sw->newSwitchIndex)
 		{
-			int32 childrenCound = entity->GetChildrenCount();
-			for(int32 i = 0; i < childrenCound; ++i)
+			int32 childrenCount = entity->GetChildrenCount();
+
+			sw->newSwitchIndex = Clamp(sw->newSwitchIndex, 0, (childrenCount - 1));//start counting from zero
+
+			for(int32 i = 0; i < childrenCount; ++i)
 			{
 				SetVisibleHierarchy(entity->GetChild(i), (sw->newSwitchIndex == i));
 			}

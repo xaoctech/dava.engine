@@ -67,11 +67,26 @@ namespace DAVA
 		
 //		absoluteRect = Rect(0,0,0,0);
 		debugDrawEnabled = false;
+		debugDrawColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 		absolutePosition = Vector2(0, 0);
 		
 		pivotPoint = Vector2(0, 0);
 		scale = Vector2(1.0f, 1.0f);
 		angle = 0;
+		
+		_leftAlign = 0;
+		_hcenterAlign = 0;
+		_rightAlign = 0;
+		_topAlign = 0;
+		_vcenterAlign = 0;
+		_bottomAlign = 0;
+		
+		_leftAlignEnabled = false;
+		_hcenterAlignEnabled = false;
+		_rightAlignEnabled = false;
+		_topAlignEnabled = false;
+		_vcenterAlignEnabled = false;
+		_bottomAlignEnabled = false;
 
 		tag = 0;
 		
@@ -123,8 +138,8 @@ namespace DAVA
 		return parent;
 	}
 	
-	bool UIControl::GetExclusiveInput()
-	{
+    bool UIControl::GetExclusiveInput() const
+    {
 		return exclusiveInput;
 	}
 	
@@ -142,8 +157,8 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetMultiInput()
-	{
+    bool UIControl::GetMultiInput() const
+    {
 		return multiInput;
 	}
 	
@@ -205,8 +220,8 @@ namespace DAVA
 	}
 	
 
-	const List<UIControl*> &UIControl::GetChildren()
-	{
+    const List<UIControl*> & UIControl::GetChildren() const
+    {
 		return childs;
 	}
 
@@ -223,8 +238,8 @@ namespace DAVA
 		name = _name;
 	}
 	
-	const String & UIControl::GetName()
-	{
+    const String & UIControl::GetName() const
+    {
 		return name;
 	}
 	
@@ -233,8 +248,8 @@ namespace DAVA
 		tag = _tag;
 	}
 	
-	int32 UIControl::GetTag()
-	{
+    DAVA::int32 UIControl::GetTag() const
+    {
 		return tag;
 	}
 	
@@ -258,8 +273,8 @@ namespace DAVA
 
 	
 	
-	int32 UIControl::GetState()
-	{
+    DAVA::int32 UIControl::GetState() const
+    {
 		return controlState;
 	}
 	
@@ -272,16 +287,17 @@ namespace DAVA
 	{
 		return background->GetSprite();
 	}
-	int32 UIControl::GetFrame()
+
+	int32 UIControl::GetFrame() const
 	{
 		return background->GetFrame();
 	}
 	
-	UIControlBackground::eDrawType UIControl::GetSpriteDrawType()
+	UIControlBackground::eDrawType UIControl::GetSpriteDrawType() const
 	{
 		return background->GetDrawType();
 	}
-	int32 UIControl::GetSpriteAlign()
+	int32 UIControl::GetSpriteAlign() const
 	{
 		return background->GetAlign();
 	}
@@ -306,6 +322,368 @@ namespace DAVA
 		background->SetAlign(align);
 	}
 	
+	void UIControl::SetLeftAlign(int32 align)
+	{ 
+		// Set a property value		
+		_leftAlign = align;
+		
+		if (!_leftAlignEnabled)
+			return;
+			
+		// Get current right and horizontal align
+		int32 rightAlign = this->GetRightAlign();
+		int32 hcenterAlign = this->GetHCenterAlign();
+		
+		// Change the relative position of control
+		Vector2 relativePosition = this->GetPosition(false);
+    	relativePosition.x = (float32)align;
+   		this->SetPosition(relativePosition, false);
+		
+		// Change the size of control if other align option is set.
+		// We need a proper parent for this operation
+		UIControl *parentControl = this->GetParent();
+		Vector2 controlSize = this->GetSize();
+
+		if (!parentControl)
+			return;
+			
+		// Get the new size of control
+		if (this->GetRightAlignEnabled())
+		{
+    		controlSize.x = GetSizeX(parentControl, align, rightAlign);
+		}
+		else if (this->GetHCenterAlignEnabled())
+		{
+			controlSize.x = GetSizeX(parentControl, align, (-1)*hcenterAlign, true);
+		}
+		// Update the size of control
+		this->SetSize(controlSize);
+	}
+
+	int32 UIControl::GetLeftAlign()
+	{
+		return _leftAlign;
+	}
+
+	void UIControl::SetHCenterAlign(int32 align)
+	{	
+		_hcenterAlign = align;
+		
+		if (!_hcenterAlignEnabled)
+			return;
+		
+		UIControl *parentControl = this->GetParent();		
+		if (!parentControl)
+			return;		
+			
+		int32 leftAlign = this->GetLeftAlign();
+		int32 rightAlign = this->GetRightAlign();
+		Vector2 relativePosition = this->GetPosition(false);
+		Vector2 controlSize = this->GetSize();
+		
+		// Check if two align options selected simultaneously
+		if (this->GetLeftAlignEnabled())
+		{
+			relativePosition.x = (float32)leftAlign;
+			controlSize.x = GetSizeX(parentControl, (-1)*align, leftAlign, true);
+		}
+		else if (this->GetRightAlignEnabled())
+		{
+			relativePosition.x = GetRelativeX(parentControl, align);
+			controlSize.x = GetSizeX(parentControl, align, rightAlign, true);
+		}
+		else // If only hcenter option is selected - set center of this control relative to it's parent center
+		{
+			relativePosition.x = GetCenterX(parentControl, align, this);
+		}	
+		
+   	 	this->SetSize(controlSize);
+		this->SetPosition(relativePosition, false);
+	}
+
+	int32 UIControl::GetHCenterAlign()
+	{
+		return _hcenterAlign;
+	}
+
+	void UIControl::SetRightAlign(int32 align)
+	{
+		_rightAlign = align;				
+
+		if (!_rightAlignEnabled)
+			return;
+			
+		// Get current right and horizontal align
+		int32 leftAlign = this->GetLeftAlign();
+		int32 hcenterAlign = this->GetHCenterAlign();
+		// Get current position and size
+		Vector2 relativePosition = this->GetPosition(false);
+		UIControl *parentControl = this->GetParent();
+		Vector2 controlSize = this->GetSize();
+		
+		if (!parentControl)
+			return;    	
+   	
+		if (this->GetLeftAlignEnabled())
+		{
+			relativePosition.x = (float32)leftAlign;
+    		controlSize.x = GetSizeX(parentControl, leftAlign, align);
+		}
+		else if (this->GetHCenterAlignEnabled())
+		{
+			relativePosition.x =  GetRelativeX(parentControl, hcenterAlign);
+    		controlSize.x = GetSizeX(parentControl, align, hcenterAlign, true);
+		}
+		else // If only right option is on - just change relative position
+		{
+			relativePosition.x = GetRelativeX(parentControl, align, this);
+		}
+		
+		this->SetSize(controlSize);
+	 	this->SetPosition(relativePosition, false);
+	}
+
+	int32 UIControl::GetRightAlign()
+	{
+		return _rightAlign;
+	}
+
+	void UIControl::SetTopAlign(int32 align)
+	{
+		_topAlign = align;
+			
+		if (!_topAlignEnabled)
+			return;			
+		
+ 		//Get current top and vertical align
+		int32 bottomAlign = this->GetBottomAlign();
+		int32 vcenterAlign = this->GetVCenterAlign();
+		
+		// Set relative position of control
+		Vector2 relativePosition = this->GetPosition(false);
+    	relativePosition.y = (float32)align;
+    	this->SetPosition(relativePosition, false);	
+	
+		UIControl *parentControl = this->GetParent();
+		Vector2 controlSize = this->GetSize();
+
+		if (!parentControl)
+			return;
+	
+		if (this->GetBottomAlignEnabled())
+		{
+    		controlSize.y = GetSizeY(parentControl, align, bottomAlign);
+		}
+		else if (this->GetVCenterAlignEnabled())
+		{
+    		controlSize.y = GetSizeY(parentControl, align, (-1)*vcenterAlign, true);
+		}
+		
+		this->SetSize(controlSize);
+	}
+
+	int32 UIControl::GetTopAlign()
+	{
+		return _topAlign;
+	}
+
+	void UIControl::SetVCenterAlign(int32 align)
+	{
+		_vcenterAlign = align;
+			
+		if (!_vcenterAlignEnabled)
+			return;
+			
+		UIControl *parentControl = this->GetParent();
+		if (!parentControl)
+			return;
+
+		int32 topAlign = this->GetTopAlign();
+		int32 bottomAlign = this->GetBottomAlign();	
+		Vector2 relativePosition = this->GetPosition(false);
+		Vector2 controlSize = this->GetSize();		
+		
+		// Check if two align options selected simultaneously
+		if (this->GetTopAlignEnabled())
+		{
+			relativePosition.y = (float32)topAlign;
+			controlSize.y = GetSizeY(parentControl, (-1)*align, topAlign, true);
+		}
+		else if (this->GetBottomAlignEnabled())
+		{
+			relativePosition.y = GetRelativeY(parentControl, align);
+			controlSize.y = GetSizeY(parentControl, align, bottomAlign, true);
+		}
+		else
+		{
+			relativePosition.y = GetCenterY(parentControl, align, this);
+		}
+		
+   		this->SetSize(controlSize);
+    	this->SetPosition(relativePosition, false);
+	}
+
+	int32 UIControl::GetVCenterAlign()
+	{
+		return _vcenterAlign;
+	}
+
+	void UIControl::SetBottomAlign(int32 align)
+	{
+		_bottomAlign = align;
+		
+		if (!_bottomAlignEnabled)
+			return;
+
+		// Get current right and horizontal align
+		int32 topAlign = this->GetTopAlign();
+		int32 vcenterAlign = this->GetVCenterAlign();
+
+		// Get current positon and size
+		Vector2 relativePosition = this->GetPosition(false);
+		Vector2 controlSize = this->GetSize();
+		UIControl *parentControl = this->GetParent();		
+		
+		if (!parentControl)
+			return;    	
+   	
+		if (this->GetTopAlignEnabled())
+		{
+			relativePosition.y = (float32)topAlign;
+    		controlSize.y = GetSizeY(parentControl, topAlign, align);
+    		
+		}
+		else if (this->GetVCenterAlignEnabled())
+		{
+			relativePosition.y =  GetRelativeY(parentControl, vcenterAlign);
+    		controlSize.y = GetSizeY(parentControl, vcenterAlign, align, true);
+		}
+		else //If only bottom option is on - just change relative position
+		{
+			relativePosition.y = GetRelativeY(parentControl, align, this);
+		}
+		
+		this->SetSize(controlSize);
+		this->SetPosition(relativePosition, false);
+	}
+
+	int32 UIControl::GetBottomAlign()
+	{
+		return _bottomAlign;
+	}
+	
+	// Enable align options methods
+	void UIControl::SetLeftAlignEnabled(bool isEnabled)
+	{		
+		_leftAlignEnabled = isEnabled;
+		if (isEnabled)
+		{
+			SetLeftAlign(_leftAlign);
+		}
+		else
+		{
+			if (GetHCenterAlignEnabled())
+			{
+				SetHCenterAlign(_hcenterAlign);
+			}
+		}
+	}
+
+	bool UIControl::GetLeftAlignEnabled()
+	{
+		return _leftAlignEnabled;
+	}
+
+	void UIControl::SetHCenterAlignEnabled(bool isEnabled)
+	{
+		_hcenterAlignEnabled = isEnabled;
+		if (isEnabled)
+		{
+			SetHCenterAlign(_hcenterAlign);
+		}
+	}
+
+	bool UIControl::GetHCenterAlignEnabled()
+	{
+		return _hcenterAlignEnabled;
+	}
+
+	void UIControl::SetRightAlignEnabled(bool isEnabled)
+	{		
+		_rightAlignEnabled = isEnabled;
+		if (isEnabled)
+		{
+			SetRightAlign(_rightAlign);
+		}
+		else
+		{
+			if (GetHCenterAlignEnabled())
+			{
+				SetHCenterAlign(_hcenterAlign);
+			}
+		}
+	}
+
+	bool UIControl::GetRightAlignEnabled()
+	{
+		return _rightAlignEnabled;
+	}
+
+	void UIControl::SetTopAlignEnabled(bool isEnabled)
+	{		
+ 		_topAlignEnabled = isEnabled;
+		if(isEnabled)
+		{
+			SetTopAlign(_topAlign);
+		}
+		else
+		{
+			if (GetVCenterAlignEnabled())
+			{
+				SetVCenterAlign(_vcenterAlign);
+			}
+		}
+	}
+
+	bool UIControl::GetTopAlignEnabled()
+	{
+		return _topAlignEnabled;
+	}
+
+	void UIControl::SetVCenterAlignEnabled(bool isEnabled)
+	{
+		_vcenterAlignEnabled = isEnabled;
+		if (isEnabled)
+		{
+			SetVCenterAlign(_vcenterAlign);
+		}
+	}
+
+	bool UIControl::GetVCenterAlignEnabled()
+	{
+		return _vcenterAlignEnabled;
+	}
+
+	void UIControl::SetBottomAlignEnabled(bool isEnabled)
+	{
+		_bottomAlignEnabled = isEnabled;
+		if (isEnabled)
+		{
+			SetBottomAlign(_bottomAlign);
+		}
+		else
+		{
+			if (GetVCenterAlignEnabled())
+			{
+				SetVCenterAlign(_vcenterAlign);
+			}
+		}
+	}
+
+	bool UIControl::GetBottomAlignEnabled()
+	{
+		return _bottomAlignEnabled;
+	}	
 	
 	void UIControl::SetBackground(UIControlBackground *newBg)
 	{
@@ -375,16 +753,18 @@ namespace DAVA
 		}
 	}
 	
-	const Vector2 &UIControl::GetSize()
+	const Vector2 &UIControl::GetSize() const
 	{
 		return size;
 	}
 	void UIControl::SetSize(const Vector2 &newSize)
 	{
 		size = newSize;
+		// Update size and align of childs		
+		RecalculateChildsSize();
 	}
 	
-	float32 UIControl::GetAngle()
+	float32 UIControl::GetAngle() const
 	{
 		return angle;
 	}
@@ -409,6 +789,10 @@ namespace DAVA
 		t += pivotPoint;
 		SetPosition(t, rectInAbsoluteCoordinates);
 		
+		// Update aligns if control was resized manually
+		RecalculateAlignProperties();
+		
+		//childControlSize.x = abs(round(newSize.dx / 2) - hcenter - childLeftAlign - childRightAlign;
 		/*
 		scale.x = 1.0;
 		scale.y = 1.0;
@@ -464,7 +848,7 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::GetVisible()
+	bool UIControl::GetVisible() const
 	{
 		return visible;
 	}
@@ -490,7 +874,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetInputEnabled()
+	bool UIControl::GetInputEnabled() const
 	{
 		return inputEnabled;
 	}
@@ -508,7 +892,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetDisabled()
+	bool UIControl::GetDisabled() const
 	{
 		return ((controlState & STATE_DISABLED) != 0);
 	}
@@ -534,7 +918,7 @@ namespace DAVA
 		}
 	}
 	
-	bool UIControl::GetSelected()
+	bool UIControl::GetSelected() const
 	{
 		return ((controlState & STATE_SELECTED) != 0);
 	}
@@ -561,7 +945,7 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::GetClipContents()
+	bool UIControl::GetClipContents() const
 	{
 		return clipContents;
 	}
@@ -570,8 +954,8 @@ namespace DAVA
 		clipContents = isNeedToClipContents;
 	}
 
-	bool UIControl::GetHover()
-	{
+    bool UIControl::GetHover() const
+    {
 		return (controlState & STATE_HOVER) != 0;
 	}
 
@@ -804,8 +1188,23 @@ namespace DAVA
 		angle = srcControl->angle;
 		SafeRelease(background);
 		background = srcControl->background->Clone();
-        
+		
+		_leftAlign = srcControl->_leftAlign;
+		_hcenterAlign = srcControl->_hcenterAlign;
+		_rightAlign = srcControl->_rightAlign;
+		_topAlign = srcControl->_topAlign;
+		_vcenterAlign = srcControl->_vcenterAlign;
+		_bottomAlign = srcControl->_bottomAlign;
+		
+		_leftAlignEnabled = srcControl->_leftAlignEnabled;
+		_hcenterAlignEnabled = srcControl->_hcenterAlignEnabled;
+		_rightAlignEnabled = srcControl->_rightAlignEnabled;
+		_topAlignEnabled = srcControl->_topAlignEnabled;
+		_vcenterAlignEnabled = srcControl->_vcenterAlignEnabled;
+		_bottomAlignEnabled = srcControl->_bottomAlignEnabled;
+
         tag = srcControl->GetTag();
+        name = srcControl->name;
 
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
@@ -837,8 +1236,8 @@ namespace DAVA
 	}
 
 	
-	bool UIControl::IsOnScreen()
-	{
+    bool UIControl::IsOnScreen() const
+    {
 		if(parent)
 		{
 			return parent->IsOnScreen();
@@ -1054,9 +1453,10 @@ namespace DAVA
 		
 		if (debugDrawEnabled)
 		{//TODO: Add debug draw for rotated controls
-			RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+			Color oldColor = RenderManager::Instance()->GetColor();
+			RenderManager::Instance()->SetColor(debugDrawColor);
 			RenderHelper::Instance()->DrawRect(drawData.GetUnrotatedRect());
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			RenderManager::Instance()->SetColor(oldColor);
 		}
 		
 		isIteratorCorrupted = false;
@@ -1426,66 +1826,148 @@ namespace DAVA
 	
 	YamlNode* UIControl::SaveToYamlNode(UIYamlLoader * loader)
 	{
-		//Temp variables
+		// Temp variables
 		String stringValue;
 		VariantType *nodeValue = new VariantType();
-		//Return node
+		// Return node
 		YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
+		// Model UIControl to be used in comparing
+		UIControl *baseControl = new UIControl();		
         
-		//Control Type      
+		// Control Type      
 		node->Set("type", "UIControl");
-		//Control name
+		// Control name
 		node->Set("name", this->GetName());
-			//Visible
-		node->Set("visible", this->GetVisible());
-		//Enabled
-		node->Set("enabled", !this->GetDisabled());
-		//Clip contents       
-		node->Set("clip", this->GetClipContents());
-		//Input
-		node->Set("noInput", !this->GetInputEnabled());
-		//Sprite
+		// Visible
+		if (baseControl->GetVisible() != this->GetVisible())
+		{
+			node->Set("visible", this->GetVisible());
+		}
+		// Enabled
+		if (baseControl->GetDisabled() != this->GetDisabled())
+		{
+			node->Set("enabled", !this->GetDisabled());
+		}
+		// Clip contents
+		if (baseControl->GetClipContents() != this->GetClipContents())
+		{
+			node->Set("clip", this->GetClipContents());
+		}
+		// Input
+		if (baseControl->GetInputEnabled() != this->GetInputEnabled())
+		{
+			node->Set("noInput", !this->GetInputEnabled());
+		}
+		// Sprite
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
 			node->Set("sprite", TruncateTxtFileExtension(sprite->GetName()));
 		}
-
-		//Color
-		Color color =  this->GetBackground()->color;
-		Vector4 colorVector4(color.r, color.g, color.b, color.a);
-		nodeValue->SetVector4(colorVector4);        
-		node->Set("color", nodeValue);
-		//Frame
-		node->Set("frame", this->GetFrame());
-		//Rect
-		Rect rect = GetRect();
-		Vector4 rectVector4(rect.x, rect.y, rect.dx, rect.dy);
-		nodeValue->SetVector4(rectVector4);
-		node->Set("rect", nodeValue);        
-		//Align
-		node->Set("align", this->GetSpriteAlign());
-		//Pivot
-		nodeValue->SetVector2(pivotPoint);
-		node->Set("pivot", nodeValue);
-
-		//Color inherit
-		UIControlBackground::eColorInheritType colorInheritType =  this->GetBackground()->GetColorInheritType();   
-		node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
-		//Draw type
-		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType(); 
+		// Color
+		Color color =  this->GetBackground()->GetColor();
+		if (baseControl->GetBackground()->color != color)
+		{		
+			Vector4 colorVector4(color.r, color.g, color.b, color.a);
+			nodeValue->SetVector4(colorVector4);
+			node->Set("color", nodeValue);
+		}
+		// Frame
+		if (baseControl->GetFrame() != this->GetFrame())
+		{
+			node->Set("frame", this->GetFrame());
+		}
+		// Rect
+		Rect rect = this->GetRect();
+		if (baseControl->GetRect() != rect)
+		{
+			Vector4 rectVector4(rect.x, rect.y, rect.dx, rect.dy);
+			nodeValue->SetVector4(rectVector4);
+			node->Set("rect", nodeValue);
+		}
+		// Align
+		int32 align = this->GetSpriteAlign();
+		if (baseControl->GetSpriteAlign() != align)
+		{
+			node->AddNodeToMap("align", loader->GetAlignNodeValue(align));
+		}
+		// Left Align
+		if (this->GetLeftAlignEnabled())
+		{
+			node->Set("leftAlign", this->GetLeftAlign());
+		}
+		// Horizontal Center Align
+		if (this->GetHCenterAlignEnabled())
+		{
+			node->Set("hcenterAlign", this->GetHCenterAlign());
+		}
+		// Right Align
+		if (this->GetRightAlignEnabled())
+		{
+			node->Set("rightAlign", this->GetRightAlign());
+		}
+		// Top Align
+		if (this->GetTopAlignEnabled())
+		{
+			node->Set("topAlign", this->GetTopAlign());
+		}
+		// Vertical Center Align
+		if (this->GetVCenterAlignEnabled())
+		{
+			node->Set("vcenterAlign", this->GetVCenterAlign());
+		}
+		// Bottom Align
+		if (this->GetBottomAlignEnabled())
+		{
+			node->Set("bottomAlign", this->GetBottomAlign());
+		}
+		
+		// Pivot
+		if (baseControl->pivotPoint != this->pivotPoint)
+		{
+			nodeValue->SetVector2(this->pivotPoint);
+			node->Set("pivot", nodeValue);
+		}
+		// Color inherit
+		UIControlBackground::eColorInheritType colorInheritType =  this->GetBackground()->GetColorInheritType();
+		if (baseControl->GetBackground()->GetColorInheritType() != colorInheritType)
+		{
+			node->Set("colorInherit", loader->GetColorInheritTypeNodeValue(colorInheritType));
+		}
+		// Draw type, obligatory for UI controls.
+		UIControlBackground::eDrawType drawType =  this->GetBackground()->GetDrawType();
 		node->Set("drawType", loader->GetDrawTypeNodeValue(drawType));
-		//LeftRightStretchCapNode
-		node->Set("leftRightStretchCap", this->GetBackground()->GetLeftRightStretchCap());
-		//topBottomStretchCap
-		node->Set("topBottomStretchCap", this->GetBackground()->GetTopBottomStretchCap());
-		//Angle
-		node->Set("angle", this->angle);
-		//Tag
-		node->Set("tag", this->tag);
+
+		// LeftRightStretchCapNode
+		if (baseControl->GetBackground()->GetLeftRightStretchCap() != this->GetBackground()->GetLeftRightStretchCap())
+		{
+			node->Set("leftRightStretchCap", this->GetBackground()->GetLeftRightStretchCap());
+		}
+		// topBottomStretchCap
+		if (baseControl->GetBackground()->GetTopBottomStretchCap() != this->GetBackground()->GetTopBottomStretchCap())
+		{
+			node->Set("topBottomStretchCap", this->GetBackground()->GetTopBottomStretchCap());
+		}
+		// Angle
+		if (baseControl->angle != this->angle)
+		{
+			node->Set("angle", this->angle);
+		}
+		// Tag
+		if (baseControl->tag != this->tag)
+		{
+			node->Set("tag", this->tag);
+		}
+		// spriteModification
+		if (baseControl->GetBackground()->GetModification() != this->GetBackground()->GetModification())
+		{
+			node->Set("spriteModification", this->GetBackground()->GetModification());
+		}
         
-		//Release variantType variable
+		// Release variantType variable
 		SafeDelete(nodeValue);
+		// Release model variable
+		SafeRelease(baseControl);
 
 		return node;
 	}
@@ -1497,6 +1979,12 @@ namespace DAVA
 		YamlNode * frameNode = node->Get("frame"); 
 		YamlNode * rectNode = node->Get("rect");
 		YamlNode * alignNode = node->Get("align");
+		YamlNode * leftAlignNode = node->Get("leftAlign");
+		YamlNode * hcenterAlignNode = node->Get("hcenterAlign");
+		YamlNode * rightAlignNode = node->Get("rightAlign");
+		YamlNode * topAlignNode = node->Get("topAlign");
+		YamlNode * vcenterAlignNode = node->Get("vcenterAlign");
+		YamlNode * bottomAlignNode = node->Get("bottomAlign");
 		YamlNode * pivotNode = node->Get("pivot");
 		YamlNode * colorInheritNode = node->Get("colorInherit");
         
@@ -1506,6 +1994,8 @@ namespace DAVA
 		
 		YamlNode * angleNode = node->Get("angle");
 		YamlNode * tagNode = node->Get("tag");
+
+		YamlNode * spriteModificationNode = node->Get("spriteModification");
 		
 		Rect rect = GetRect();
 		if (rectNode)
@@ -1523,7 +2013,7 @@ namespace DAVA
 		
 		if(colorNode)
 		{
-			GetBackground()->color = loader->GetColorFromYamlNode(colorNode);
+			GetBackground()->SetColor( loader->GetColorFromYamlNode(colorNode) );
 			if(!spriteNode)
 			{
 				GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -1540,9 +2030,50 @@ namespace DAVA
 			SafeRelease(sprite);
 		}
 		
-		int32 align = loader->GetAlignFromYamlNode(alignNode);
-		SetSpriteAlign(align);
-        //GetBackground()->SetAlign(align);
+		if (alignNode)
+		{
+			int32 align = loader->GetAlignFromYamlNode(alignNode);
+			SetSpriteAlign(align);
+        	//GetBackground()->SetAlign(align);
+		}
+		
+		if (leftAlignNode)
+		{
+			int32 leftAlign = leftAlignNode->AsInt();
+			SetLeftAlignEnabled(true);
+			SetLeftAlign(leftAlign);			
+		}
+		if (hcenterAlignNode)
+		{
+			int32 hcenterAlign = hcenterAlignNode->AsInt();
+			SetHCenterAlignEnabled(true);
+			SetHCenterAlign(hcenterAlign);
+			
+		}
+		if (rightAlignNode)
+		{
+			int32 rightAlign = rightAlignNode->AsInt();
+			SetRightAlignEnabled(true);
+			SetRightAlign(rightAlign);			
+		}
+		if (topAlignNode)
+		{
+			int32 topAlign = topAlignNode->AsInt();
+			SetTopAlignEnabled(true);
+			SetTopAlign(topAlign);
+		}
+		if (vcenterAlignNode)
+		{
+			int32 vcenterAlign = vcenterAlignNode->AsInt();
+			SetVCenterAlignEnabled(true);
+			SetVCenterAlign(vcenterAlign);
+		}
+		if (bottomAlignNode)
+		{
+			int32 bottomAlign = bottomAlignNode->AsInt();
+			SetBottomAlignEnabled(true);
+			SetBottomAlign(bottomAlign);
+		}
 	
 		YamlNode * clipNode = node->Get("clip");
 		if (clipNode)
@@ -1615,6 +2146,12 @@ namespace DAVA
 		{
 			tag = tagNode->AsInt();
 		}
+
+		if(spriteModificationNode)
+        {
+			int32 spriteModification = spriteModificationNode->AsInt32();
+            GetBackground()->SetModification(spriteModification);
+        }
 	}
 	
 	Animation *	UIControl::WaitAnimation(float32 time, int32 track)
@@ -1774,8 +2311,18 @@ namespace DAVA
 			}
 		}
 	}
+	
+	void UIControl::SetDebugDrawColor(const Color& color)
+	{
+		debugDrawColor = color;
+	}
+	
+	Color UIControl::GetDebugDrawColor() const
+	{
+		return debugDrawColor;
+	}
     
-    bool UIControl::IsLostFocusAllowed(UIControl *newFocus)
+    bool UIControl::IsLostFocusAllowed( UIControl *newFocus ) const
     {
         return true;
     }
@@ -1807,7 +2354,195 @@ namespace DAVA
         if (pivotToCenter)
         {
             pivotPoint = GetSize()/2.f;
-        }        
+        }
     }
-    
+	
+	void UIControl::RecalculateAlignProperties()
+	{
+		// Set left align property
+		if (this->GetLeftAlignEnabled())
+		{
+			_leftAlign = (int32)this->GetPosition(false).x;
+		}
+		// Set top align property
+		if (this->GetTopAlignEnabled())
+		{
+			_topAlign = (int32)this->GetPosition(false).y;
+		}		
+		
+		UIControl *parent = this->GetParent();
+		if (!parent)
+			return;
+			
+		// Set right align property
+		if (this->GetRightAlignEnabled())
+		{
+			_rightAlign = (int32)(parent->GetSize().x - this->GetPosition(false).x - this->GetSize().x);
+		}
+		// Set hcenter align property
+		if (this->GetHCenterAlignEnabled())
+		{
+			if (this->GetLeftAlignEnabled())
+			{
+				_hcenterAlign = (int32)(this->GetPosition(false).x + this->GetSize().x - Round(parent->GetSize().x / 2));
+			}
+			else if (this->GetRightAlignEnabled())
+			{
+				_hcenterAlign = (int32)(this->GetPosition(false).x - Round(parent->GetSize().x / 2));
+			}
+			else
+			{
+				_hcenterAlign = (int32)(this->GetPosition(false).x - Round(parent->GetSize().x / 2) + Round(this->GetSize().x / 2));
+			}			
+		}
+		// Set bottom align property
+		if (this->GetBottomAlignEnabled())
+		{
+			_bottomAlign = (int32)(parent->GetSize().y - this->GetPosition(false).y - this->GetSize().y);
+		}
+		// Set Vcenter align property
+		if (this->GetVCenterAlignEnabled())
+		{
+			if (this->GetTopAlignEnabled())
+			{
+				_vcenterAlign = (int32)(this->GetPosition(false).y + this->GetSize().y - Round(parent->GetSize().y / 2));
+			}
+			else if (this->GetBottomAlignEnabled())
+			{
+				_vcenterAlign = (int32)(this->GetPosition(false).y - Round(parent->GetSize().y / 2));
+			}
+			else 
+			{
+				_vcenterAlign = (int32)(this->GetPosition(false).y - Round(parent->GetSize().y / 2) + Round(this->GetSize().y / 2));
+			}			
+		}		
+	}
+	
+	void UIControl::RecalculateChildsSize()
+	{
+		const List<UIControl*>& realChildren = this->GetRealChildren();
+		for(List<UIControl*>::const_iterator iter = realChildren.begin(); iter != realChildren.end(); ++iter)
+		{
+			UIControl* child = (*iter);
+			if (child)
+			{
+				// Recalculate horizontal aligns 
+				if (child->GetHCenterAlignEnabled())
+				{
+					int32 hcenterAlign = child->GetHCenterAlign();
+					child->SetHCenterAlign(hcenterAlign);
+				}
+				else if (child->GetRightAlignEnabled())
+				{
+					int32 rightAlign = child->GetRightAlign();
+					child->SetRightAlign(rightAlign);
+				}
+				// Recalculate vertical aligns
+				if (child->GetVCenterAlignEnabled())
+				{
+					int32 vcenterAlign = child->GetVCenterAlign();
+					child->SetVCenterAlign(vcenterAlign);
+				}
+				else if (child->GetBottomAlignEnabled())
+				{
+					int32 bottomAlign = child->GetBottomAlign();
+					child->SetBottomAlign(bottomAlign);
+				}
+			}
+		}
+	}
+	
+	float32 UIControl::GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize /* = FALSE*/)
+	{
+		if (!parent)
+			return 0;
+			
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().x / 2) : parent->GetSize().x;
+		float32 size = abs(parentSize - leftAlign - rightAlign);
+
+		return size;
+	}
+	
+	float32 UIControl::GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize /* = FALSE*/)
+	{
+		if (!parent)
+			return 0;
+			
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().y / 2) : parent->GetSize().y;
+		float32 size = abs(parentSize - topAlign - bottomAlign);
+		
+		return size;
+	}
+	
+	float32 UIControl::GetCenterX(UIControl *parent, int32 centerAlign, UIControl* child)
+	{
+		if (!parent || !child)
+			return 0;
+			
+		float32 position = Round(parent->GetSize().x / 2) + centerAlign - Round(child->GetSize().x / 2);
+		
+		return position;
+	}
+	
+	float32 UIControl::GetCenterY(UIControl *parent, int32 centerAlign, UIControl* child)
+	{
+		if (!parent || !child)
+			return 0;
+			
+		float32 position = Round(parent->GetSize().y / 2) + centerAlign - Round(child->GetSize().y / 2);
+		
+		return position;
+	}
+	
+	float32 UIControl::GetRelativeX(UIControl *parent, int32 align)
+	{
+		if (!parent)
+			return (float32)align;
+
+		float32 position = Round(parent->GetSize().x / 2) + align;
+		
+		return position;
+	}
+	
+	float32 UIControl::GetRelativeX(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
+	{
+		if (!parent || !child)
+			return (float32)align;
+			
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().x / 2) : parent->GetSize().x;
+		float32 position = parentSize - align - child->GetSize().x;
+		
+		return position;
+	}
+	
+	float32 UIControl::GetRelativeY(UIControl *parent, int32 align)
+	{
+		if (!parent)
+			return (float32)align;
+	
+		float32 position = Round(parent->GetSize().y / 2) + align;
+		
+		return position;
+	}
+	
+	float32 UIControl::GetRelativeY(UIControl *parent, int32 align, UIControl *child, bool useHalfParentSize /* = FALSE*/)
+	{
+		if (!parent || !child)
+			return (float32)align;
+			
+		float32 parentSize = useHalfParentSize ? Round(parent->GetSize().y / 2) : parent->GetSize().y;
+		float32 position = parentSize - align - child->GetSize().y;
+		
+		return position;
+	}
+
+	float32 UIControl::Round(float32 value)
+	{
+		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
+	}
+
+	void UIControl::ApplyAlignSettingsForChildren()
+	{
+		RecalculateChildsSize();
+	}
 }

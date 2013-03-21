@@ -466,25 +466,14 @@ void ShadowVolume::MakeShadowVolumeFromPolygonGroup(PolygonGroup * oldPolygonGro
 	SafeRelease(newPolygonGroup);
 }
 
-void ShadowVolume::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
-{
-	BaseObject::Save(archive);
-
-	archive->SetByteArrayAsType("pg", (uint64)shadowPolygonGroup);
-}
-
-void ShadowVolume::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
-{
-	BaseObject::Load(archive);
-
-	uint64 ptr = archive->GetByteArrayAsType("pg", (uint64)0);
-	shadowPolygonGroup = dynamic_cast<PolygonGroup*>(sceneFileV2->GetNodeByPointer(ptr));
-	SafeRetain(shadowPolygonGroup);
-}
-
 void ShadowVolume::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-	dataNodes.insert(shadowPolygonGroup);
+	RenderBatch::GetDataNodes(dataNodes);
+
+	if(shadowPolygonGroup)
+	{
+		InsertDataNode(shadowPolygonGroup, dataNodes);
+	}
 }
 
 RenderBatch * ShadowVolume::Clone(RenderBatch * dstNode /*= NULL*/)
@@ -500,6 +489,35 @@ RenderBatch * ShadowVolume::Clone(RenderBatch * dstNode /*= NULL*/)
 	nd->shadowPolygonGroup = SafeRetain(shadowPolygonGroup);
 
 	return nd;
+}
+
+void ShadowVolume::Save(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderBatch::Save(archive, sceneFile);
+
+	if(NULL != archive)
+	{
+		archive->SetVariant("sv.spg", VariantType((uint64)shadowPolygonGroup));
+	}
+}
+
+void ShadowVolume::Load(KeyedArchive *archive, SceneFileV2 *sceneFile)
+{
+	RenderBatch::Load(archive, sceneFile);
+
+	if(NULL != archive && NULL != sceneFile)
+	{
+		PolygonGroup *pg = NULL;
+
+		if(archive->IsKeyExists("sv.spg"))
+		{
+			pg = (PolygonGroup *) sceneFile->GetNodeByPointer(archive->GetVariant("sv.spg")->AsUInt64());
+			if(NULL != pg)
+			{
+				SetPolygonGroup(pg);
+			}
+		}
+	}
 }
     
 void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)

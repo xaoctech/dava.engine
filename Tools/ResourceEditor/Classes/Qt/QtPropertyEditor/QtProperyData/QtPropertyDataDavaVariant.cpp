@@ -18,7 +18,6 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:
-	case DAVA::VariantType::TYPE_POINTER:
 		SetFlags(FLAG_IS_DISABLED);
 		break;
             

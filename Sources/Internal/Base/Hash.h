@@ -129,15 +129,15 @@ namespace DAVA
 		}
 	};
     
-    // specialization for void *
-	template<> struct Hash <SceneNode *>
+    // specialization for all pointers
+	template<typename T> struct Hash <T*>
 	{
-		size_t operator()(SceneNode * pointer) const
+		size_t operator()(T * pointer) const
 		{
 			return (size_t)pointer;
 		}
         
-		bool Compare(SceneNode *ptr1, SceneNode *ptr2)
+		bool Compare(T *ptr1, T *ptr2)
 		{
 			return (ptr1 == ptr2);
 		}

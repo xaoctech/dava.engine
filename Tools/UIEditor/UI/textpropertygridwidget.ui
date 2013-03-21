@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextPropertyGridWidget</class>
+ <widget class="QWidget" name="TextPropertyGridWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>1</y>
+     <width>299</width>
+     <height>199</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>299</width>
+     <height>199</height>
+    </size>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QLineEdit" name="localizationKeyNameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>281</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="localizationKeyTextLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>55</y>
+      <width>281</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="fontNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Font:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="fontSizeSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>234</x>
+      <y>106</y>
+      <width>57</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="textForAllStatesCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set text for all states</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fontSelectButton">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>101</y>
+      <width>181</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {text-align:right; font-size: 11px; border-style: outset; border: 1px solid #969696; padding: 5px; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e3e3e3, stop: 1 #f9f9f9);} 
+QPushButton:pressed {background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7e7e7e, stop: 1 #e3e3e3); }</string>
+    </property>
+    <property name="text">
+     <string>default font</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="fontColorLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>168</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Font Color:</string>
+    </property>
+   </widget>
+   <widget class="QColorButton" name="fontColorButton">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>166</y>
+      <width>205</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="fontForAllStatesCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>143</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set font for all states</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QColorButton</class>
+   <extends>QPushButton</extends>
+   <header>qcolorbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>localizationKeyNameLineEdit</tabstop>
+  <tabstop>localizationKeyTextLineEdit</tabstop>
+  <tabstop>textForAllStatesCheckBox</tabstop>
+  <tabstop>fontSelectButton</tabstop>
+  <tabstop>fontSizeSpinBox</tabstop>
+  <tabstop>fontColorButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

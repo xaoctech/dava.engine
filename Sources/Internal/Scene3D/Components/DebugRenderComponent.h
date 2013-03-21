@@ -14,16 +14,19 @@ class DebugRenderComponent : public Component
 public:
     enum
 	{
-		DEBUG_DRAW_NONE = 0,
-		DEBUG_DRAW_AABBOX = 1,
-		DEBUG_DRAW_LOCAL_AXIS = 2,
-		DEBUG_DRAW_AABOX_CORNERS = 4,
-		DEBUG_DRAW_LIGHT_NODE = 8,
-        DEBUG_DRAW_NORMALS = 16,
-        DEBUG_DRAW_GRID = 32,
-		DEBUG_DRAW_USERNODE = 64,
-		DEBUG_DRAW_RED_AABBOX = 128,
-        DEBUG_DRAW_ALL = 0xFFFFFFFF,
+		DEBUG_DRAW_NONE			= 0x0,
+		DEBUG_DRAW_AABBOX		= 0x1,
+		DEBUG_DRAW_LOCAL_AXIS	= 0x2,
+		DEBUG_DRAW_AABOX_CORNERS= 0x4,
+		DEBUG_DRAW_LIGHT_NODE	= 0x8,
+        DEBUG_DRAW_NORMALS		= 0x10,
+        DEBUG_DRAW_GRID			= 0x20,
+		DEBUG_DRAW_USERNODE		= 0x40,
+		DEBUG_DRAW_RED_AABBOX	= 0x80,
+		DEBUG_DRAW_CAMERA		= 0x100,
+
+		DEBUG_AUTOCREATED		= 0x80000000,
+        DEBUG_DRAW_ALL			= 0xFFFFFFFF,
 	};
     
     DebugRenderComponent();
@@ -39,11 +42,11 @@ public:
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 private:
-    uint32 debugFlags;
+    uint32 curDebugFlags;
     
 public:
     INTROSPECTION_EXTEND(DebugRenderComponent, Component,
-        PROPERTY(debugFlags, "Debug Flags ", GetDebugFlags, SetDebugFlags, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY(curDebugFlags, "Debug Flags ", GetDebugFlags, SetDebugFlags, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

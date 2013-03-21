@@ -32,6 +32,7 @@ public:
     void OnButton(BaseObject * object, void * userData, void * callerData);
     
     virtual void WillAppear();
+    virtual void DidAppear();
     virtual void WillDisappear();
     virtual void UpdateInternalMaterialsVector();
     virtual void UpdateNodeMaterialsVector();

@@ -16,6 +16,8 @@ public:
 
 	SwitchComponent();
 	virtual Component * Clone(SceneNode * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
 	void SetSwitchIndex(const int32 & switchIndex);
 	int32 GetSwitchIndex() const;

@@ -81,6 +81,7 @@ private:
 	};
 	HierarchyTreeControlNode* SmartGetSelectedControl(const Vector2& point);
 	void SmartGetSelectedControl(SmartSelection* list, const HierarchyTreeNode* parent, const Vector2& point);
+	HierarchyTreeControlNode* GetSelectedControl(const Vector2& point);
 	
 	void ApplyMoveDelta(const Vector2& delta);
 	HierarchyTreeController::SELECTEDCONTROLNODES GetActiveMoveControls() const;
@@ -91,6 +92,7 @@ private:
 	void DeleteSelectedControls();
 	
 	void ApplySizeDelta(const Vector2& delta);
+	bool IsNeedApplyResize() const;
 	void ResetSizeDelta();
 	void ResizeControl();
 	ResizeType GetResizeType(const HierarchyTreeControlNode* selectedControlNode, const Vector2& point) const;
@@ -120,6 +122,8 @@ private:
 	MAP_START_CONTROL_POS startControlPos;
 	HierarchyTreeControlNode* lastSelectedControl;
 	bool copyControlsInProcess;
+	//This flag should prevent additional control selection in MouseInputEnd event handler
+	bool useMouseUpSelection;
 	
 	UIControl* selectorControl;
 	

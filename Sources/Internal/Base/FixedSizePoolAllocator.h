@@ -66,6 +66,7 @@ namespace DAVA
 //    }
 //};
     
+    
 class FixedSizePoolAllocator
 {
 public:

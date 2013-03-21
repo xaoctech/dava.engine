@@ -31,10 +31,28 @@
   <property name="dockOptions">
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
-  <widget class="DavaGLWidget" name="davaGLWidget">
-   <property name="focusPolicy">
-    <enum>Qt::StrongFocus</enum>
+  <widget class="QFrame" name="mainFrame">
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
    </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>1</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="DavaGLWidget" name="davaGLWidget" native="true">
+      <property name="focusPolicy">
+       <enum>Qt::StrongFocus</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QDockWidget" name="dockSceneGraph">
    <property name="floating">
@@ -58,11 +76,19 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="margin">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <item>
+      <widget class="QToolBar" name="propertiesToolBar_2">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <addaction name="actionRefreshSceneGraph"/>
+      </widget>
+     </item>
      <item>
       <widget class="QSceneGraphTreeView" name="sceneGraphTree">
        <property name="contextMenuPolicy">
@@ -80,13 +106,9 @@
        <property name="defaultDropAction">
         <enum>Qt::MoveAction</enum>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnRefresh">
-       <property name="text">
-        <string>Refresh</string>
-       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -192,7 +214,7 @@
    <property name="minimumSize">
     <size>
      <width>150</width>
-     <height>150</height>
+     <height>200</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -231,7 +253,38 @@
          <number>3</number>
         </property>
         <item>
+         <widget class="QToolBar" name="propertiesToolBar">
+          <addaction name="actionPropHideReadonly"/>
+         </widget>
+        </item>
+        <item>
          <widget class="PropertyEditor" name="propertyEditor">
+          <property name="styleSheet">
+           <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
+/*     border-image: url(:/QtImages/tree-vline.png) 0; */
+ }
+
+ QTreeView::branch:has-siblings:adjoins-item {
+/*     border-image: url(:/QtImages/tree-more.png) 0; */
+ }
+
+ QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+/*     border-image: url(:/QtImages/tree-end.png) 0; */
+ }
+
+ QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::AllEditTriggers</set>
           </property>
@@ -242,7 +295,7 @@
            <enum>QAbstractItemView::NoSelection</enum>
           </property>
           <property name="indentation">
-           <number>20</number>
+           <number>16</number>
           </property>
          </widget>
         </item>
@@ -270,6 +323,12 @@
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
     <string>Tool Bar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonIconOnly</enum>
@@ -347,7 +406,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -454,7 +513,15 @@
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuTools"/>
@@ -480,6 +547,46 @@
      </property>
      <item>
       <widget class="CustomColorsView" name="customColorsView" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockSetSwitchIndex">
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>70</height>
+    </size>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Set Switch Index</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6">
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>70</height>
+     </size>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_7">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="SetSwitchIndexView" name="setSwitchIndexView" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>70</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -535,6 +642,12 @@
   <widget class="QToolBar" name="modificationToolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -828,6 +941,47 @@
     <string>Select</string>
    </property>
   </action>
+  <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionPropHideReadonly">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide readonly</string>
+   </property>
+  </action>
+  <action name="actionRefreshSceneGraph">
+   <property name="text">
+    <string>refreshSceneGraph</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -874,6 +1028,11 @@
    <extends>QWidget</extends>
    <header>DockParticleEditor/particletimelinewidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SetSwitchIndexView</class>
+   <extends>QWidget</extends>
+   <header>DockSetSwitchIndex/SetSwitchIndexView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -59,7 +59,9 @@ public:
         PHYSICS_COMPONENT,
         ACTION_COMPONENT,       // actions, something simplier than scripts that can influence logic, can be multiple
         SCRIPT_COMPONENT,       // multiple instances, not now, it will happen much later.
-        COMPONENT_COUNT,
+		USER_COMPONENT,
+
+        COMPONENT_COUNT
     };
 
 	static Component * CreateByType(uint32 componentType);

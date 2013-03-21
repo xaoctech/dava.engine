@@ -108,6 +108,7 @@ public:
     
     const AABBox3 & GetBoundingBox() const;
 
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 	virtual RenderBatch * Clone(RenderBatch * destination = 0);
 	virtual void Save(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Load(KeyedArchive *archive, SceneFileV2 *sceneFile);
@@ -115,8 +116,10 @@ public:
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
      */
-    inline void SetSortingKey(uint32 key);
+    void SetSortingKey(uint32 key);
     inline uint32 GetSortingKey();
+
+	void SetVisibilityCriteria(uint32 criteria);
 
 protected:
     PolygonGroup * dataSource;
@@ -132,11 +135,13 @@ protected:
 //    ePrimitiveType type; //TODO: waiting for enums at introspection
     uint32 type;
     uint32 sortingKey;
-    
+    uint32 visiblityCriteria;
     RenderLayer * ownerLayer;
     uint32 removeIndex;
 
 	AABBox3 aabbox;
+
+	void InsertDataNode(DataNode *node, Set<DataNode*> & dataNodes);
     
 public:
     
@@ -210,11 +215,6 @@ inline void RenderBatch::SetRemoveIndex(RenderLayer * _ownerLayer, uint32 _remov
 {
     ownerLayer = _ownerLayer;
     removeIndex = _removeIndex;
-}
-    
-inline void RenderBatch::SetSortingKey(uint32 _key)
-{
-    sortingKey = _key;
 }
     
 inline uint32 RenderBatch::GetSortingKey()

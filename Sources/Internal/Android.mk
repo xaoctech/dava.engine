@@ -15,6 +15,7 @@ LOCAL_MODULE := libInternal
 
 # set path for includes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/Platform/TemplateAndroid/
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Libs/include
 
 # set exported includes
@@ -38,22 +39,25 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Network/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Particles/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Platform/*.cpp) \
-                     $(wildcard $(LOCAL_PATH)/Platform/Android/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Platform/TemplateAndroid/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/2D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/3D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Render/Effects/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Render/Highlevel/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Render/Material/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene2D/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Scene3D/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Scene3D/Components/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Scene3D/Systems/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Sound/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/UI/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Utils/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
-
-
 # set build flags
-LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
+LOCAL_CFLAGS := -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
+LOCAL_CFLAGS += -Wno-invalid-offsetof
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
@@ -81,7 +85,7 @@ LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
-LOCAL_STATIC_LIBRARIES += android_native_app_glue
+#LOCAL_STATIC_LIBRARIES += android_native_app_glue
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -92,4 +96,4 @@ $(call import-add-path,$(DAVA_ROOT)/../External/Box2D)
 $(call import-add-path,$(DAVA_ROOT))
 
 $(call import-module,box2d)
-$(call import-module,android/native_app_glue)
+#$(call import-module,android/native_app_glue)

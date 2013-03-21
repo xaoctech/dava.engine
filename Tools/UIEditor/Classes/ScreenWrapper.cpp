@@ -26,28 +26,26 @@ ScreenWrapper::~ScreenWrapper()
     
 }
 
-void ScreenWrapper::SetQtScreen(const QWidget* widget)
+void ScreenWrapper::SetQtScreen(QWidget* widget)
 {
 	this->qtScreen = widget;
 }
 
-
-int ScreenWrapper::GetWidth() const
+QRect ScreenWrapper::GetRect() const
 {
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
+	QRect rect;
 	HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-	if (activePlatform && activeScreen)
-		return activePlatform->GetWidth() * activeScreen->GetScale();
-	return 0;
-}
-
-int ScreenWrapper::GetHeight() const
-{
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
-	HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-	if (activePlatform && activeScreen)
-		return activePlatform->GetHeight() * activeScreen->GetScale();
-	return 0;
+	if (activeScreen)
+	{
+		float scale = GetScale();
+		Rect orgRect = activeScreen->GetRect();
+		orgRect.x *= scale;
+		orgRect.y *= scale;
+		orgRect.dx *= scale;
+		orgRect.dy *= scale;
+		rect = QRect(orgRect.x, orgRect.y, orgRect.dx, orgRect.dy);
+	}
+	return rect;
 }
 
 void ScreenWrapper::SetScale(float scale)
@@ -79,21 +77,6 @@ DefaultScreen* ScreenWrapper::GetActiveScreen()
 {
 	DefaultScreen* screen = dynamic_cast<DefaultScreen*>(ScreenManager::Instance()->GetScreen());
 	return screen;
-}
-
-Vector2 ScreenWrapper::TranslateScreenPoint(const Vector2& point)
-{
-	Vector2 newPoint = point;
-	QWidget* mainWindow = GetMainWindow();
-	if (qtScreen && mainWindow)
-	{
-		QPoint qtPoint(point.x, point.y);
-		qtPoint = qtScreen->mapFrom(mainWindow, qtPoint);
-		newPoint.x = qtPoint.x();
-		newPoint.y = qtPoint.y();
-	}
-
-	return newPoint;
 }
 
 QWidget* ScreenWrapper::GetMainWindow()
@@ -132,40 +115,30 @@ void ScreenWrapper::SetViewPos(int posX, int posY, const QRect& size)
 		screenNode->SetPosX(posX);
 		screenNode->SetPosY(posY);
 	}
-
-	if (GetWidth() < size.width())
+	
+	QRect screenRect = GetRect();
+	
+	if (screenRect.width() < size.width())
 	{
-		posX = size.width() - GetWidth();
-		posX *= 1/GetScale() * 0.5f;
+		posX = (size.width() - screenRect.width()) / 2 - screenRect.topLeft().x();
+		posX /= GetScale();
 	}
 	else
 	{
-		posX = -posX;
+		posX = -(screenRect.topLeft().x() + posX) / GetScale();
 	}
 
-	if (GetHeight() < size.height())
+	if (screenRect.height() < size.height())
 	{
-		posY =  size.height() - GetHeight();
-		posY *= 1/GetScale() * 0.5f;
+		posY = (size.height() - screenRect.height()) / 2 - screenRect.topLeft().y();
+		posY /= GetScale();
 	}
 	else
 	{
-		posY = -posY;
+		posY = -(screenRect.topLeft().y() + posY) / GetScale();
 	}
 	
 	activeScreen->SetPos(Vector2(posX, posY));
-}
-
-Qt::CursorShape ScreenWrapper::GetCursorType(const QPoint& pos)
-{
-	return GetActiveScreen()->GetCursor(Vector2(pos.x(), pos.y()));
-}
-
-void ScreenWrapper::CursorMove(const QPoint& pos)
-{
-	DefaultScreen* screen = GetActiveScreen();
-	if (screen)
-		screen->MouseInputMove(Vector2(pos.x(), pos.y()));
 }
 
 void ScreenWrapper::RequestUpdateCursor()
@@ -182,4 +155,10 @@ void ScreenWrapper::RequestUpdateView()
 {
 	UpdateScaleRequest(1);
 	UpdateScaleRequest(-1);
+}
+
+void ScreenWrapper::SetCursor(Qt::CursorShape cursor)
+{
+	if (qtScreen)
+		qtScreen->setCursor(cursor);
 }

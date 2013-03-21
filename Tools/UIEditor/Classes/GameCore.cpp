@@ -33,11 +33,13 @@
 #include "PropertiesGridController.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "UndoRedoController.h"
 
 #include "ScreenWrapper.h"
 #include "MetadataFactory.h"
 #include "EditorFontManager.h"
 #include "ScreenManager.h"
+#include "EditorSettings.h"
 #include "ResourcesManageHelper.h"
 
 #include <UI/UIButton.h>
@@ -56,6 +58,8 @@ GameCore::GameCore()
     new MetadataFactory();
 	new EditorFontManager();
 	new ScreenManager();
+	new EditorSettings();
+	new UndoRedoController();
 	
 	//Initialize internal resources of application
 	ResourcesManageHelper::InitInternalResources();
@@ -65,6 +69,7 @@ GameCore::GameCore()
 	tempControls.insert(new UIStaticText());
 	tempControls.insert(new UIList());
 	tempControls.insert(new UIScrollBar());
+	tempControls.insert(new UISpinner());
 }
 
 GameCore::~GameCore()
