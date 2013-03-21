@@ -150,8 +150,6 @@ void SoundInstance::SetVolume(float32 volume)
 	if(buddyChannel)
 		buddyChannel->SetVolume(volume);
 #endif //#if defined(__DAVAENGINE_IPHONE__)
-
-
 }
 
 float32 SoundInstance::GetVolume()
@@ -166,6 +164,31 @@ float32 SoundInstance::GetVolume()
     return parentSound ? parentSound->GetVolume() : 0.f;
 #else
 	return buddyChannel ? buddyChannel->GetVolume() : 0.f;
+#endif //#if defined(__DAVAENGINE_IPHONE__)
+}
+
+void SoundInstance::SetPosition(const Vector3 & position)
+{
+#if defined(__DAVAENGINE_IPHONE__)
+	//
+#elif defined(__DAVAENGINE_ANDROID__)
+	//
+#else
+	if(buddyChannel)
+		buddyChannel->SetPosition(position);
+#endif //#if defined(__DAVAENGINE_IPHONE__)
+}
+
+
+void SoundInstance::SetIgnorePosition(bool ignorePosition)
+{
+#if defined(__DAVAENGINE_IPHONE__)
+	//
+#elif defined(__DAVAENGINE_ANDROID__)
+	//
+#else
+	if(buddyChannel)
+		buddyChannel->SetIgnorePosition(ignorePosition);
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
@@ -235,5 +258,8 @@ void SoundInstance::Pause(bool pause)
     }
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
+
+
+
 
 };

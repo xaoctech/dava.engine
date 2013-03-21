@@ -2,57 +2,63 @@
 #define DAVAGLWIDGET_H
 
 #include <QWidget>
+#include <QTimer>
+
+#include "Platform/Qt/QtLayer.h"
 
 namespace Ui {
-class DavaGLWidget;
+	class DavaGLWidget;
 }
 
-class DavaGLWidget : public QWidget
+class DavaGLWidget : public QWidget, public DAVA::QtLayerDelegate
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit DavaGLWidget(QWidget *parent = 0);
-    ~DavaGLWidget();
-	
-protected:
+	explicit DavaGLWidget(QWidget *parent = 0);
+	~DavaGLWidget();
 
-	void resizeEvent(QResizeEvent *);
-    void paintEvent(QPaintEvent *);
+	void SetMaxFPS(int fps);
+	int GetMaxFPS();
+	int GetFPS();
 
-	void showEvent(QShowEvent *);
-	void hideEvent(QHideEvent *);
+	virtual QPaintEngine *paintEngine() const;
+	virtual void paintEvent(QPaintEvent *);
 
+	virtual void resizeEvent(QResizeEvent *);
+	virtual void wheelEvent(QWheelEvent *);
+
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
+
+	virtual void focusInEvent(QFocusEvent *);
+	virtual void focusOutEvent(QFocusEvent *);
+
+	void dropEvent(QDropEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+
+	virtual void keyPressEvent(QKeyEvent *);
+	virtual void keyReleaseEvent(QKeyEvent *);
+
+#if defined (Q_WS_MAC)
+	virtual void mouseMoveEvent(QMouseEvent *);
+#endif //#if defined (Q_WS_MAC)
 
 #if defined(Q_WS_WIN)
 	virtual bool winEvent(MSG *message, long *result);
 #endif //#if defined(Q_WS_WIN)
 
-	void dropEvent(QDropEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
-	
-	virtual void mouseMoveEvent(QMouseEvent *);
-	virtual void wheelEvent(QWheelEvent *);
-	
-	virtual void focusInEvent(QFocusEvent *e);
-	virtual void focusOutEvent(QFocusEvent *e);
-	
-	virtual void keyPressEvent(QKeyEvent *);
-    virtual void keyReleaseEvent(QKeyEvent *);
-
-	
-protected slots:
-    
-    void FpsTimerDone();
-    
-private:
-
-    QTimer *fpsTimer;
-    int frameTime;
+	protected slots:
+		void Render();
 
 private:
-    Ui::DavaGLWidget *ui;
+	Ui::DavaGLWidget *ui;
+
+	int maxFPS;
+	int minFrameTimeMs;
+
+	void Quit();
 };
 
 #endif // DAVAGLWIDGET_H

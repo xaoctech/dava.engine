@@ -25,6 +25,7 @@ public:
     ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
+	void UpdateBullet(SceneNode * curr);
 
     btCollisionWorld *collisionWorld;
 	btCollisionWorld *landCollisionWorld;
@@ -67,8 +68,6 @@ protected:
     void SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags);
     
     void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
-
-	SceneNode * GetHighestProxy(SceneNode* curr);
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;

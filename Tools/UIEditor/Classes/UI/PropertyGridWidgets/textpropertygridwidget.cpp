@@ -1,6 +1,5 @@
 #include "textpropertygridwidget.h"
 #include "ui_textpropertygridwidget.h"
-#include <QFileDialog>
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
@@ -26,6 +25,8 @@ TextPropertyGridWidget::TextPropertyGridWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     SetPropertyBlockName(TEXT_PROPERTY_BLOCK_NAME);
+	
+	BasePropertyGridWidget::InstallEventFiltersForWidgets(this);
 }
 
 TextPropertyGridWidget::~TextPropertyGridWidget()
@@ -109,7 +110,14 @@ void TextPropertyGridWidget::HandleLineEditEditingFinished(QLineEdit *senderWidg
             Logger::Error("OnLineEditValueChanged - unable to find attached property in the propertyGridWidgetsMap!");
             return;
         }
-        
+
+		// Don't update the property if the text wasn't actually changed.
+		QString curValue = PropertiesHelper::GetAllPropertyValues<QString>(this->activeMetadata, iter->second.getProperty().name());
+		if (curValue == senderWidget->text())
+		{
+			return;
+		}
+
         BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata,
                                                                   iter->second,
                                                                   senderWidget->text(),
@@ -152,12 +160,14 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
         // No control already assinged or not fontSelectButton
         return;
     }
+
+    bool setFontForAllStates = ui->fontForAllStatesCheckBox->isChecked();
    
     //Call font selection dialog
     FontManagerDialog *fontDialog = new FontManagerDialog(true);
     Font *resultFont = NULL;
     
-    if ( fontDialog->exec() == QDialog::Accepted )
+    if (fontDialog->exec() == QDialog::Accepted)
     {
         resultFont = fontDialog->ResultFont();
     }
@@ -176,10 +186,20 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
         Logger::Error("OnPushButtonClicked - unable to find attached property in the propertyGridWidgetsMap!");
         return;
     }
-    
-    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
+
+	// Don't update the property if the font wasn't actually changed.
+    Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue->IsEqual(resultFont))
+	{
+		SafeRelease(resultFont);
+		return;
+	}
+	// Set font for all states if checkbox is checked
+    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont, setFontForAllStates);
     CommandsController::Instance()->ExecuteCommand(command);
-    SAFE_DELETE(command);
+    SafeRelease(command);
+	// TODO - probable memory leak. Need to investigate how to fix it
+	// SafeRelease(resultFont);
 }
 
 void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)

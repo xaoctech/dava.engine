@@ -45,7 +45,7 @@ class TextureDescriptor: public BaseObject
 {
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 4;
+    static const int8 CURRENT_VERSION = 5;
     
 public:
 	enum eOptionsState
@@ -63,9 +63,7 @@ public:
     struct Compression
     {
         PixelFormat format;
-        mutable char8 modificationDate[DATE_BUFFER_SIZE];
-        mutable uint8 crc[MD5::DIGEST_SIZE];
-        
+        mutable uint32 crc;
         int32 compressToWidth;
         int32 compressToHeight;
         
@@ -79,7 +77,7 @@ public:
     static TextureDescriptor *CreateFromFile(const String &filePathname);
     
     
-    bool UpdateDateAndCrcForFormat(ImageFileFormat fileFormat) const;
+    bool UpdateCrcForFormat(ImageFileFormat fileFormat) const;
 
     bool Load(const String &filePathname);
 
@@ -102,13 +100,15 @@ public:
     static String GetDescriptorPathname(const String &texturePathname);
     static String GetDescriptorExtension();
     
-    bool IsSourceValidForFormat(ImageFileFormat fileFormat);
+    bool IsSourceChanged(ImageFileFormat fileFormat);
     
     static String GetPathnameForFormat(const String &pathname, ImageFileFormat fileFormat);
     static ImageFileFormat GetFormatForPathname(const String &pathname);
     static ImageFileFormat GetFormatForExtension(const String &extension);
 
     void SetDefaultValues();
+    
+    const bool IsCompressedFile() const;
     
 protected:
     
@@ -124,13 +124,19 @@ protected:
     
     void ReadCompression(File *file, Compression &compression);
 	void ReadCompressionWithDateOld(File *file, Compression &compression);
-    void WriteCompression(File *file, const Compression &compression) const;
+	void ReadCompressionWith16CRCOld(File *file, Compression &compression);
+
+	void WriteCompression(File *file, const Compression &compression) const;
     
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
+
     void LoadVersion2(int32 signature, File *file);
 	void LoadVersion3(int32 signature, File *file);
+	void LoadVersion4(int32 signature, File *file);
     
+	uint32 ReadSourceCRC() const;
+
 public:
     
     int8 wrapModeS;
@@ -152,6 +158,8 @@ public:
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
     String pathname;
+    
+    bool isCompressedFile;
 };
     
 };

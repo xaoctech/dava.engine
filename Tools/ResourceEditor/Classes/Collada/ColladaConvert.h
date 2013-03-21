@@ -2,7 +2,8 @@
 #define __COLLADA_CONVERT_H__
 
 #include "Base/BaseTypes.h"
+#include "ColladaErrorCodes.h"
 
-void ConvertDaeToSce(const DAVA::String & pathToFile);
+eColladaErrorCodes ConvertDaeToSce(const DAVA::String & pathToFile);
 
 #endif // __COLLADA_CONVERT_H__

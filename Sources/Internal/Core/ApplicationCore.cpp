@@ -72,7 +72,6 @@ void ApplicationCore::Draw()
 
 void ApplicationCore::BeginFrame()
 {
-    Stats::Instance()->BeginFrame();
 	RenderManager::Instance()->BeginFrame();
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
@@ -83,7 +82,6 @@ void ApplicationCore::EndFrame()
 {
 	RenderManager::Instance()->EndFrame();
     RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
 }
 
 void ApplicationCore::OnSuspend()

@@ -37,10 +37,6 @@
 #include "Core/DisplayMode.h"
 #include "FileSystem/KeyedArchive.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/Android/AndroidSpecifics.h"
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
 /**
 	\defgroup core Core
 	Application entry point and place where you can find all information about platform indepedent and platform dependent initialization and 
@@ -233,8 +229,9 @@ public:
 	virtual void CalculateScaleMultipliers();
 	
 	virtual void SetPhysicalScreenSize(int32 width, int32 height);//!< May be used only by the system
-	virtual void SetVirtualScreenSize(int32 width, int32 height);// Sets virtual screen size. You need to set size what takes into account screen orientation modifier
-	virtual void RegisterAvailableResourceSize(int32 width, int32 height, const String &resourcesFolderName);// Registers available sizes of resources. Can be called many times.
+	virtual void SetVirtualScreenSize(int32 width, int32 height);//!< Sets virtual screen size. You need to set size what takes into account screen orientation modifier
+	virtual void SetProportionsIsFixed(bool needFixed);
+	virtual void RegisterAvailableResourceSize(int32 width, int32 height, const String &resourcesFolderName);//!< Registers available sizes of resources. Can be called many times.
 	
 
 	virtual float32 GetPhysicalScreenWidth();//returns physical size what don't take intpo account screen orientation
@@ -254,6 +251,7 @@ public:
 	virtual int32 GetDesirableResourceIndex();
 	virtual int32 GetBaseResourceIndex();
 	
+    virtual uint32 GetScreenDPI();
 	
 	/*
 		\brief Mouse cursor for the platforms where it make sense (Win32, MacOS X) 
@@ -322,9 +320,14 @@ public:
     eDeviceFamily GetDeviceFamily();
     
     void EnableReloadResourceOnResize(bool enable);
+	
+	// Needs to be overriden for the platforms where it has sence (MacOS only for now).
+	virtual void* GetOpenGLView() { return NULL; };
+	
+protected:
+	int32 screenOrientation;
 
 private:
-	int32 screenOrientation;
 	float32 screenWidth;
 	float32 screenHeight;
 	
@@ -335,6 +338,9 @@ private:
 	
 	float32 virtualScreenWidth;
 	float32 virtualScreenHeight;
+	float32 requestedVirtualScreenWidth;
+	float32 requestedVirtualScreenHeight;
+	bool fixedProportions;
 	
 	Vector<AvailableSize> allowedSizes;
 	bool needTorecalculateMultipliers;

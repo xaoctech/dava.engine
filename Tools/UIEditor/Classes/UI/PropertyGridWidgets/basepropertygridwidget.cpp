@@ -143,6 +143,28 @@ void BasePropertyGridWidget::RegisterSpinBoxWidgetForProperty(const PROPERTIESMA
     connect(spinBoxWidget, SIGNAL(valueChanged(int)), this, SLOT(OnSpinBoxValueChanged(int)));
 }
 
+void BasePropertyGridWidget::RegisterDoubleSpinBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
+                                                              QDoubleSpinBox* spinBoxWidget,
+                                                              bool needUpdateTree, bool stateAware)
+{
+    spinBoxWidget->setKeyboardTracking(false);
+    PROPERTIESMAPCONSTITER iter = propertiesMap.find(propertyName);
+    if (iter == propertiesMap.end())
+    {
+        Logger::Error("Unable to found property named %s in the properties map!", propertyName);
+        return;
+    }
+    
+    const QMetaProperty& curProperty = iter->second;
+    propertyGridWidgetsMap.insert(std::make_pair(spinBoxWidget,
+                                                 PropertyGridWidgetData(curProperty, needUpdateTree, stateAware)));
+    
+    UpdateDoubleSpinBoxWidgetWithPropertyValue(spinBoxWidget, curProperty);
+    
+    // Register the signal for this widget.
+    connect(spinBoxWidget, SIGNAL(valueChanged(double)), this, SLOT(OnDoubleSpinBoxValueChanged(double)));
+}
+
 void BasePropertyGridWidget::RegisterCheckBoxWidgetForProperty(const PROPERTIESMAP& propertiesMap, const char* propertyName,
                                                                QCheckBox* checkBoxWidget,
                                                                bool needUpdateTree, bool stateAware)
@@ -161,7 +183,7 @@ void BasePropertyGridWidget::RegisterCheckBoxWidgetForProperty(const PROPERTIESM
     UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
 
     // Register the signal for this widget.
-    connect(checkBoxWidget, SIGNAL(toggled(bool)), this, SLOT(OnCheckBoxStateChanged(bool)));
+    connect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnCheckBoxStateChanged(int)));
 }
 
 
@@ -238,9 +260,14 @@ void BasePropertyGridWidget::UnregisterSpinBoxWidget(QSpinBox* spinBoxWidget)
     disconnect(spinBoxWidget, SIGNAL(valueChanged(int)), this, SLOT(OnSpinBoxValueChanged(int)));
 }
 
+void BasePropertyGridWidget::UnregisterDoubleSpinBoxWidget(QDoubleSpinBox* spinBoxWidget)
+{
+    disconnect(spinBoxWidget, SIGNAL(valueChanged(double)), this, SLOT(OnDoubleSpinBoxValueChanged(double)));
+}
+
 void BasePropertyGridWidget::UnregisterCheckBoxWidget(QCheckBox* checkBoxWidget)
 {
-    disconnect(checkBoxWidget, SIGNAL(toggled(bool)), this, SLOT(OnCheckBoxStateChanged(bool)));
+    disconnect(checkBoxWidget, SIGNAL(stateChanged(int)), this, SLOT(OnCheckBoxStateChanged(int)));
 }
 
 void BasePropertyGridWidget::UnregisterComboBoxWidget(QComboBox* comboBoxWidget)
@@ -285,6 +312,15 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
         return;
     }
     
+	
+	// Don't update the property if the text wasn't actually changed.
+    QString curValue = PropertiesHelper::GetAllPropertyValues<QString>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == senderWidget->text())
+	{
+		return;
+	}
+
+	// The property was indeed changed, call the command.
     BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
@@ -312,12 +348,44 @@ void BasePropertyGridWidget::OnSpinBoxValueChanged(int value)
         return;
     }
 
+	// Don't update the property if the text wasn't actually changed.
+    int curValue = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+	if (curValue == value)
+	{
+		return;
+	}
+
     BaseCommand* command = new ChangePropertyCommand<float>(activeMetadata, iter->second, value);
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
 
-void BasePropertyGridWidget::OnCheckBoxStateChanged(bool value)
+void BasePropertyGridWidget::OnDoubleSpinBoxValueChanged(double value)
+{
+    if (activeMetadata == NULL)
+    {
+        // No control already assinged.
+        return;
+    }
+
+    QDoubleSpinBox* senderWidget = dynamic_cast<QDoubleSpinBox*>(QObject::sender());
+    if (senderWidget == NULL)
+    {
+        Logger::Error("OnDoubleSpinBoxValueChanged - sender is NULL!");
+        return;
+    }
+
+    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
+    if (iter == propertyGridWidgetsMap.end())
+    {
+        Logger::Error("OnDoubleSpinBoxValueChanged - unable to find attached property in the propertyGridWidgetsMap!");
+        return;
+    }
+	
+	ProcessDoubleSpinBoxValueChanged(senderWidget, iter, value);
+}
+
+void BasePropertyGridWidget::OnCheckBoxStateChanged(int state)
 {
     if (activeMetadata == NULL)
     {
@@ -342,7 +410,19 @@ void BasePropertyGridWidget::OnCheckBoxStateChanged(bool value)
         return;
     }
 
-    BaseCommand* command = new ChangePropertyCommand<bool>(activeMetadata, iter->second, value);
+	// Don't update the property if the text wasn't actually changed.
+	bool isPropertyValueDiffers = false;
+    bool curValue = PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, iter->second.getProperty().name(),
+																 isPropertyValueDiffers);
+
+	// In case we have differences in property values for different widgets - force update the states too.
+	bool newValue = (state == Qt::Checked);
+	if ((curValue == newValue) && !isPropertyValueDiffers)
+	{
+		return;
+	}
+
+    BaseCommand* command = new ChangePropertyCommand<bool>(activeMetadata, iter->second, newValue);
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
@@ -387,22 +467,25 @@ void BasePropertyGridWidget::OnColorButtonClicked()
         return;
     }
 
-    QColor color = QColorDialog::getColor(Qt::white, this, "Select a color",  QColorDialog::DontUseNativeDialog);
+	PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
+
+	if (iter == propertyGridWidgetsMap.end())
+    {
+        Logger::Error("OpenSelectColorDialog - unable to find attached property in the propertyGridWidgetsMap!");
+        return;
+    }
+
+	QColor propertyValue = PropertiesHelper::GetPropertyValue<QColor>(this->activeMetadata, iter->second.getProperty().name(), false);
+
+    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog);
     if (color.isValid() == false)
     {
         return;
     }
         
-    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
-    if (iter == propertyGridWidgetsMap.end())
-    {
-        Logger::Error("OpenSelectColorDialog - unable to find attached property in the propertyGridWidgetsMap!");
-        return;
-    }
-        
     BaseCommand* command = new ChangePropertyCommand<QColor>(activeMetadata, iter->second, color);
     CommandsController::Instance()->ExecuteCommand(command);
-    SAFE_DELETE(command);
+    SafeRelease(command);
 }
 
 void BasePropertyGridWidget::OnPushButtonClicked()
@@ -464,6 +547,13 @@ void BasePropertyGridWidget::UpdateWidgetWithPropertyValue(const PROPERTYGRIDWID
     if (spinBoxWidget)
     {
         UpdateSpinBoxWidgetWithPropertyValue(spinBoxWidget, iter->second.getProperty());
+        return;
+    }
+
+    QDoubleSpinBox* doubleSpinBoxWidget = dynamic_cast<QDoubleSpinBox*>(widget);
+    if (doubleSpinBoxWidget)
+    {
+        UpdateDoubleSpinBoxWidgetWithPropertyValue(doubleSpinBoxWidget, iter->second.getProperty());
         return;
     }
 
@@ -570,6 +660,19 @@ void BasePropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* ch
     }
 }
 
+void BasePropertyGridWidget::UpdateDoubleSpinBoxWidgetWithPropertyValue(QDoubleSpinBox*, const QMetaProperty&)
+{
+    // In case Base handler is called, particular handler for the DoubleSpinBox is missed - this is treated as error.
+    Logger::Error("BasePropertyGridWidget::UpdateDoubleSpinBoxWidgetWithPropertyValue is called - you've forgot to create custom handler for some double spinbox!!!");
+}
+
+void BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *, const PROPERTYGRIDWIDGETSITER &,
+																const double)
+{
+    // In case Base handler is called, particular handler for the Combobox is missed - this is treated as error.
+    Logger::Error("BasePropertyGridWidget::ProcessComboboxValueChanged is called - you've forgot to create custom handler for some combo!!!");
+}
+
 void BasePropertyGridWidget::UpdateColorButtonWidgetWithPropertyValue(QColorButton *colorButtonWidget, const QMetaProperty &curProperty)
 {
     // Get the current value.
@@ -673,6 +776,26 @@ bool BasePropertyGridWidget::IsWidgetBoundToProperty(QWidget* widget, const QStr
     return (iter->second.getProperty().name() == propertyName);
 }
 
+int BasePropertyGridWidget::GetPropertyIntValue(const QString &propertyName)
+{
+	if (activeMetadata == NULL)
+    {
+        return 0;
+    }
+
+	return PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, propertyName);
+}
+
+bool BasePropertyGridWidget::GetPropertyBooleanValue(const QString& propertyName) const
+{
+	if (activeMetadata == NULL)
+    {
+        return false;
+    }
+
+	return PropertiesHelper::GetAllPropertyValues<bool>(this->activeMetadata, propertyName);	
+}
+
 bool BasePropertyGridWidget::IsActiveStatePropertyDirty(const QString& propertyName) const
 {
     if (activeMetadata == NULL)
@@ -733,4 +856,68 @@ const QPalette& BasePropertyGridWidget::GetWidgetPaletteForDirtyProperty() const
 const QPalette& BasePropertyGridWidget::GetWidgetPaletteForClearProperty() const
 {
     return this->clearPropertyPalette;
+}
+
+void BasePropertyGridWidget::InstallEventFiltersForWidgets(QWidget *widget)
+{
+	if (!widget)
+		return;
+		
+	// Install event filter for all spinboxes on this Widget
+	// We should block mouse wheel event for spinboxes which don't have focus
+	Q_FOREACH( QAbstractSpinBox *spinBoxWidget, widget->findChildren<QAbstractSpinBox*>() )
+	{
+        spinBoxWidget->installEventFilter( this );
+        spinBoxWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+	// Install event filter for all comboboxes on this Widget
+	// We should block mouse wheel event for comboboxes which don't have focus
+	Q_FOREACH( QComboBox *comboBoxWidget, widget->findChildren<QComboBox*>() )
+	{
+        comboBoxWidget->installEventFilter( this );
+        comboBoxWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+	// Install event filter for all sliders on this Widget
+	// We should block mouse wheel event for sliders which don't have focus
+	Q_FOREACH( QSlider *sliderWidget, widget->findChildren<QSlider*>() )
+	{
+        sliderWidget->installEventFilter( this );
+        sliderWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+}
+
+bool BasePropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	// Try to cast sender object to one of the types - QComboBox, QAbstractSpinBox or QSlider
+	// All these widget have to ignore mouse wheel event if they are not in focus
+	QWidget *eventWidget = qobject_cast<QAbstractSpinBox*>(obj);
+	if (!eventWidget)
+	{
+		eventWidget = qobject_cast<QComboBox*>(obj);
+		if (!eventWidget)
+		{
+			eventWidget = qobject_cast<QSlider*>(obj);
+		}
+	}
+	// If spinbox or combobox recieved a focus - we should allow to change its value with mouse wheel
+	if ( event->type() == QEvent::FocusIn && eventWidget )
+	{
+		eventWidget->setFocusPolicy(Qt::WheelFocus);
+	}
+	// If spinbox or combobox lost a focus - disable wheel events for it
+	if ( event->type() == QEvent::FocusOut && eventWidget )
+	{
+		eventWidget->setFocusPolicy(Qt::StrongFocus);
+	}
+	// Ignore wheel event if spinbox or combobox is not in focus
+    if ( event->type() == QEvent::Wheel && eventWidget )
+    {
+		if (!eventWidget->hasFocus())
+		{
+        	event->ignore();
+        	return true;
+		}
+    }
+    
+    return QWidget::eventFilter( obj, event );
 }

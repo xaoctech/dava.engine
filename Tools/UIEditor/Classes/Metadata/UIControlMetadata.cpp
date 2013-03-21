@@ -165,10 +165,10 @@ void UIControlMetadata::SetSizeX(float value)
     {
         return;
     }
-    
-    Vector2 controlSize = GetActiveUIControl()->GetSize();
-    controlSize.x = value;
-    GetActiveUIControl()->SetSize(controlSize);
+	
+	Rect rect = GetActiveUIControl()->GetRect();
+	rect.dx = value;
+	GetActiveUIControl()->SetRect(rect);
 }
 
 float UIControlMetadata::GetSizeY() const
@@ -187,10 +187,10 @@ void UIControlMetadata::SetSizeY(float value)
     {
         return;
     }
-    
-    Vector2 controlSize = GetActiveUIControl()->GetSize();
-    controlSize.y = value;
-    GetActiveUIControl()->SetSize(controlSize);
+
+	Rect rect = GetActiveUIControl()->GetRect();
+	rect.dy = value;
+	GetActiveUIControl()->SetRect(rect);
 }
 
 float UIControlMetadata::GetPivotX() const
@@ -367,7 +367,11 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 
     Vector2 controlPosition = GetActiveUIControl()->GetPosition();
     controlPosition += moveDelta;
-    GetActiveUIControl()->SetPosition(controlPosition);
+	
+	Rect rect = GetActiveUIControl()->GetRect();
+	rect.x = controlPosition.x;
+	rect.y = controlPosition.y;
+	GetActiveUIControl()->SetRect(rect);
 }
 
 void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& newRect)
@@ -536,6 +540,245 @@ int UIControlMetadata::GetSpriteFrame()
     }
     
     return GetActiveUIControl()->GetBackground()->GetFrame();
+}
+
+int UIControlMetadata::GetLeftAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	return GetActiveUIControl()->GetLeftAlign();
+}
+
+void UIControlMetadata::SetLeftAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetLeftAlign(value);
+}
+	
+int UIControlMetadata::GetHCenterAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	
+	return GetActiveUIControl()->GetHCenterAlign();
+}
+
+void UIControlMetadata::SetHCenterAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+	GetActiveUIControl()->SetHCenterAlign(value);
+}
+
+int UIControlMetadata::GetRightAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	
+	return GetActiveUIControl()->GetRightAlign();
+}
+
+void UIControlMetadata::SetRightAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetRightAlign(value);
+}
+
+int UIControlMetadata::GetTopAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	
+	return GetActiveUIControl()->GetTopAlign();
+}
+
+void UIControlMetadata::SetTopAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetTopAlign(value);
+}
+
+int UIControlMetadata::GetVCenterAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	
+	return GetActiveUIControl()->GetVCenterAlign();
+}
+
+void UIControlMetadata::SetVCenterAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetVCenterAlign(value);
+}
+
+int UIControlMetadata::GetBottomAlign()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0;
+    }
+	
+	return GetActiveUIControl()->GetBottomAlign();
+}
+
+void UIControlMetadata::SetBottomAlign(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetBottomAlign(value);
+}
+
+bool UIControlMetadata::GetLeftAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetLeftAlignEnabled();
+}
+
+void UIControlMetadata::SetLeftAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetLeftAlignEnabled(value);
+}
+	
+bool UIControlMetadata::GetHCenterAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetHCenterAlignEnabled();
+}
+
+void UIControlMetadata::SetHCenterAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetHCenterAlignEnabled(value);
+}
+	
+bool UIControlMetadata::GetRightAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetRightAlignEnabled();
+}
+
+void UIControlMetadata::SetRightAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetRightAlignEnabled(value);	
+}
+	
+bool UIControlMetadata::GetTopAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetTopAlignEnabled();
+}
+
+void UIControlMetadata::SetTopAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetTopAlignEnabled(value);
+}
+	
+bool UIControlMetadata::GetVCenterAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetVCenterAlignEnabled();
+}
+
+void UIControlMetadata::SetVCenterAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetVCenterAlignEnabled(value);
+}
+	
+bool UIControlMetadata::GetBottomAlignEnabled() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return false;
+    }
+	
+	return GetActiveUIControl()->GetBottomAlignEnabled();
+}
+
+void UIControlMetadata::SetBottomAlignEnabled(const bool value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUIControl()->SetBottomAlignEnabled(value);
 }
 
 };

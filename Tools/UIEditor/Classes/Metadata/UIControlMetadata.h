@@ -58,6 +58,22 @@ class UIControlMetadata : public BaseMetadata
     Q_PROPERTY(bool Enabled READ GetEnabled WRITE SetEnabled);
     Q_PROPERTY(bool Input READ GetInput WRITE SetInput);
     Q_PROPERTY(bool ClipContents READ GetClipContents WRITE SetClipContents);
+	
+	// Align Properties
+	Q_PROPERTY(int LeftAlign READ GetLeftAlign WRITE SetLeftAlign);
+	Q_PROPERTY(int HCenterAlign READ GetHCenterAlign WRITE SetHCenterAlign);
+	Q_PROPERTY(int RightAlign READ GetRightAlign WRITE SetRightAlign);
+	Q_PROPERTY(int TopAlign READ GetTopAlign WRITE SetTopAlign);
+	Q_PROPERTY(int VCenterAlign READ GetVCenterAlign WRITE SetVCenterAlign);
+	Q_PROPERTY(int BottomAlign READ GetBottomAlign WRITE SetBottomAlign);
+	
+	// Enable Align Properties
+	Q_PROPERTY(bool LeftAlignEnabled READ GetLeftAlignEnabled WRITE SetLeftAlignEnabled);
+	Q_PROPERTY(bool HCenterAlignEnabled READ GetHCenterAlignEnabled WRITE SetHCenterAlignEnabled);
+	Q_PROPERTY(bool RightAlignEnabled READ GetRightAlignEnabled WRITE SetRightAlignEnabled);
+	Q_PROPERTY(bool TopAlignEnabled READ GetTopAlignEnabled WRITE SetTopAlignEnabled);
+	Q_PROPERTY(bool VCenterAlignEnabled READ GetVCenterAlignEnabled WRITE SetVCenterAlignEnabled);
+	Q_PROPERTY(bool BottomAlignEnabled READ GetBottomAlignEnabled WRITE SetBottomAlignEnabled);
     
 public:
     UIControlMetadata(QObject* parent = 0);
@@ -137,6 +153,44 @@ protected:
 
     bool GetClipContents() const;
     void SetClipContents(const bool value);
+	
+	// Align getters/setters
+	int GetLeftAlign();
+	void SetLeftAlign(int value);
+	
+	int GetHCenterAlign();
+	void SetHCenterAlign(int value);
+	
+	int GetRightAlign();
+	void SetRightAlign(int value);
+	
+	int GetTopAlign();
+	void SetTopAlign(int value);
+	
+	int GetVCenterAlign();
+	void SetVCenterAlign(int value);
+	
+	int GetBottomAlign();
+	void SetBottomAlign(int value);
+	
+	// Enable align getters/setters
+	bool GetLeftAlignEnabled() const;
+	void SetLeftAlignEnabled(const bool value);
+	
+	bool GetHCenterAlignEnabled() const;
+	void SetHCenterAlignEnabled(const bool value);
+	
+	bool GetRightAlignEnabled() const;
+	void SetRightAlignEnabled(const bool value);
+	
+	bool GetTopAlignEnabled() const;
+	void SetTopAlignEnabled(const bool value);
+	
+	bool GetVCenterAlignEnabled() const;
+	void SetVCenterAlignEnabled(const bool value);
+	
+	bool GetBottomAlignEnabled() const;
+	void SetBottomAlignEnabled(const bool value);
 };
     
 }

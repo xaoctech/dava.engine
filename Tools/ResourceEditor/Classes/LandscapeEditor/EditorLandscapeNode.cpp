@@ -102,6 +102,7 @@ void EditorLandscapeNode::Draw(Camera * camera)
     //if (!(flags & NODE_VISIBLE)) return;
     if(!landscapeRenderer) return;
     
+    
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 	
     landscapeRenderer->BindMaterial(GetTexture(LandscapeNode::TEXTURE_TILE_FULL));

@@ -2,6 +2,7 @@
 #define __QT_PROPERTY_WIDGET_H__
 
 #include "PropertyEditorStateHelper.h"
+#include "QtPosSaver/QtPosSaver.h"
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "Scene/SceneData.h"
 
@@ -26,7 +27,11 @@ public slots:
 	void sceneReleased(SceneData *scene);
 	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
 
+	void actionHideReadOnly();
+
 protected:
+	bool hideReadOnly;
+	QtPosSaver posSaver;
 
 	DAVA::SceneNode *curNode;
 	PropertyEditorStateHelper treeStateHelper;

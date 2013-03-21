@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.6\\\"
+DEFINES += LAUNCER_VER=\\\"0.7\\\"
 
 QT       += core gui network
 
@@ -53,8 +53,8 @@ mac: DEPENDPATH += /System/Library/Frameworks/ApplicationServices.framework/Fram
 
 
 win32: INCLUDEPATH += $$PWD/../../../../Libs/include/libpng/
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/quazip-msvc2010/release/ -lquazip1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/quazip-msvc2010/debug/ -lquazip1
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../lib/ -lquazip1
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../lib/ -lquazip1d
 mac: LIBS += -lz
 mac: HEADERS += \
     quazip/JlCompress.h \

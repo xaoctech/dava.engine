@@ -79,13 +79,9 @@ public:
 	Component * GetOrCreateComponent(uint32 componentType);
     uint32 GetComponentCount();
     
-    
-    
     inline uint32 GetAvailableComponentFlags();
 
-    uint32 componentFlags;
-    uint32 componentUpdateMarks;
-    
+
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
     
@@ -338,6 +334,8 @@ public:
     
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
+
+	void FindAllSwitchComponentsRecursive(List<DAVA::SceneNode*> & switchComponents);
    
 protected:
 
@@ -359,6 +357,10 @@ protected:
     
 private:
 	Vector<Component *> components;
+    uint32 componentFlags;
+    uint32 componentUpdateMarks;
+    
+
     Matrix4 defaultLocalTransform;
    	friend class Scene;
     
@@ -366,11 +368,11 @@ public:
 	INTROSPECTION_EXTEND(SceneNode, BaseObject,
 		MEMBER(name, "Name", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 		MEMBER(customProperties, "Custom properties", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
-        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR | INTROSPECTION_EDITOR_READONLY)
+        MEMBER(tag, "Tag", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
 
-		COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-		COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE)
+		//COLLECTION(components, "Components", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+		//COLLECTION(children, "Children nodes", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 	
