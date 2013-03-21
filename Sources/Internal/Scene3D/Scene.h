@@ -148,7 +148,7 @@ public:
         \param[in] rootNodePath path of this root node
      */
 
-    void AddRootNode(Entity *node, const String &rootNodePath);
+    void AddRootNode(Entity *node, const FilePath &rootNodePath);
 
 	/**
         \brief Get root node by path.
@@ -159,13 +159,13 @@ public:
         \endcode
      */
     
-    Entity *GetRootNode(const String &rootNodePath);
+    Entity *GetRootNode(const FilePath &rootNodePath);
     
     /**
         \brief Release root node by name.
         \param[in] rootNodePath root node path you want to release.
      */
-    void ReleaseRootNode(const String &rootNodePath);
+    void ReleaseRootNode(const FilePath &rootNodePath);
     
     /**
         \brief Release root node by pointer to this node.

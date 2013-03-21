@@ -94,7 +94,7 @@ bool Heightmap::BuildFromImage(const DAVA::Image *image)
     return true;
 }
 
-void Heightmap::SaveToImage(const String & filename)
+void Heightmap::SaveToImage(const FilePath & filename)
 {
     Image * image = Image::Create(size, size, FORMAT_A16);
     

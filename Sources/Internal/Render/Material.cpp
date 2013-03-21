@@ -553,7 +553,6 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     {
         if (names[k].IsInitalized())
         {
-//            String filename = names[k].GetRelativePath(sceneFile->GetScenePath());
             String filename = names[k].GetRelativePathname(sceneFile->GetScenePath());
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
             

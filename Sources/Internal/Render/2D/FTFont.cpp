@@ -36,6 +36,7 @@
 #include "Core/Core.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/FilePath.h"
 
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
@@ -50,11 +51,11 @@ Map<String,FTInternalFont*> fontMap;
 class FTInternalFont : public BaseObject
 {
 	friend class FTFont;
-	String fontPath;
+	FilePath fontPath;
 	uint8 * memoryFont;
 	uint32 memoryFontSize;
 private:
-	FTInternalFont(const String& path);
+	FTInternalFont(const FilePath & path);
 	virtual ~FTInternalFont();
 
 public:
@@ -105,10 +106,10 @@ FTFont::~FTFont()
 	SafeRelease(internalFont);
 }
 
-FTFont * FTFont::Create(const String& path)
+FTFont * FTFont::Create(const FilePath& path)
 {
 	FTInternalFont * iFont = 0;
-	Map<String,FTInternalFont*>::iterator it = fontMap.find(path);
+	Map<String,FTInternalFont*>::iterator it = fontMap.find(path.GetAbsolutePathname());
 	if (it != fontMap.end())
 	{
 		iFont = it->second;
@@ -123,7 +124,7 @@ FTFont * FTFont::Create(const String& path)
             return NULL;
         }
 
-		fontMap[path] = iFont;
+		fontMap[path.GetAbsolutePathname()] = iFont;
 	}
 	
 	FTFont * font = new FTFont(iFont);
@@ -180,7 +181,7 @@ bool FTFont::IsCharAvaliable(char16 ch)
 	return internalFont->IsCharAvaliable(ch);
 }
 
-String FTFont::GetFontPath()
+const FilePath & FTFont::GetFontPath()
 {
 	return internalFont->fontPath;
 }
@@ -190,7 +191,7 @@ YamlNode * FTFont::SaveToYamlNode()
 	YamlNode *node = Font::SaveToYamlNode();
 	//Type
 	node->Set("type", "FTFont");
-	node->Set("name", internalFont->fontPath);
+	node->Set("name", internalFont->fontPath.GetAbsolutePathname());
 
 	return node;
 }
@@ -199,25 +200,22 @@ YamlNode * FTFont::SaveToYamlNode()
 
 
 	
-FTInternalFont::FTInternalFont(const String& path)
+FTInternalFont::FTInternalFont(const FilePath & path)
 :	face(NULL),
 	fontPath(path),
     memoryFont(NULL),
     memoryFontSize(0)
 {
-    File * fp = 0;
-    size_t pos = path.rfind("/");
-    String fileName = path.substr(pos + 1);
-    String pathName = path.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+    String fileName = path.GetFilename();
+    FilePath pathName(path.GetDirectory() + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName);
         
-    fp = File::Create(pathName, File::READ|File::OPEN);
-        
+    File * fp = File::Create(pathName, File::READ|File::OPEN);
     if (!fp)
     {    
         fp = File::Create(path, File::READ|File::OPEN);
         if (!fp)
         {
-            Logger::Error("Failed to open font: %s", path.c_str());
+            Logger::Error("Failed to open font: %s", path.GetAbsolutePathname().c_str());
             return;
         }
     }
@@ -249,7 +247,7 @@ int32 FTInternalFont::Release()
 {
 	if(1 == GetRetainCount())
 	{
-		fontMap.erase(fontPath);
+		fontMap.erase(fontPath.GetAbsolutePathname());
 	}
 	
 	return BaseObject::Release();

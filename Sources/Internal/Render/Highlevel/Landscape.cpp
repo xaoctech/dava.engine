@@ -121,7 +121,7 @@ void Landscape::InitShaders()
     ReleaseShaders();
     
     tileMaskShader = new Shader();
-    tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+    tileMaskShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/tilemask.shader"));
     
     String defines = "";
     
@@ -165,7 +165,7 @@ void Landscape::InitShaders()
     }
     
     fullTiledShader = new Shader();
-    fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
+    fullTiledShader->LoadFromYaml(FilePath("~res:/Shaders/Landscape/fulltiled_texture.shader"));
 	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         fullTiledShader->SetDefineList("VERTEX_FOG");   
@@ -275,7 +275,7 @@ void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathn
 bool Landscape::BuildHeightmap()
 {
     bool retValue = false;
-    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    String extension = heightmapPath.GetExtension();
     if(".png" == extension)
     {
         Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath);
@@ -607,7 +607,7 @@ const Color & Landscape::GetTileColor(eTextureLevel level)
 }
 
     
-void Landscape::SetTexture(eTextureLevel level, const String & textureName)
+void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
     SafeRelease(textures[level]);
     textureNames[level] = String("");
@@ -630,10 +630,11 @@ Texture * Landscape::CreateTexture(eTextureLevel level, const FilePath & texture
     if(TEXTURE_TILE_FULL == level)
     {
         //must not zero only for finalized maps
-        if(textureName.empty())
-            return NULL;
-        
-        return Texture::PureCreate(textureName);
+        if(textureName.IsInitalized())
+        {
+            return Texture::PureCreate(textureName);
+        }
+        return NULL;
     }
 
     return Texture::CreateFromFile(textureName);
@@ -1373,7 +1374,7 @@ void Landscape::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vector<
 //    return retBBox;
 //}
 
-const String & Landscape::GetHeightmapPathname()
+const FilePath & Landscape::GetHeightmapPathname()
 {
     return heightmapPath;
 }
@@ -1383,16 +1384,15 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     RenderObject::Save(archive, sceneFile);
         
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
-    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    String extension = heightmapPath.GetExtension();
     if(Heightmap::FileExtension() != extension)
     {
-        String heightPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
-        heightmapPath = heightPath;
+        heightmapPath.ReplaceExtension(Heightmap::FileExtension());
         heightmap->Save(heightmapPath);
     }
     //
     
-    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
+    archive->SetString("hmap", heightmapPath.GetRelativePathname(sceneFile->GetScenePath()));
     archive->SetInt32("tiledShaderMode", tiledShaderMode);
     
     archive->SetByteArrayAsType("bbox", bbox);
@@ -1400,13 +1400,12 @@ void Landscape::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         if(TEXTURE_DETAIL == k) continue;
 
-        String path = textureNames[k];
-        String relPath  = sceneFile->AbsoluteToRelative(path);
+        FilePath relPath  = textureNames[k].GetRelativePathname(sceneFile->GetScenePath());
         
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].c_str(), relPath.c_str());
+            Logger::Debug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.GetAbsolutePathname().c_str());
         
-        archive->SetString(Format("tex_%d", k), relPath);
+        archive->SetString(Format("tex_%d", k), relPath.GetAbsolutePathname());
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
 		archive->SetByteArrayAsType(Format("tilecolor_%d", k), tileColor[k]);
     }
@@ -1420,8 +1419,9 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	RenderObject::Load(archive, sceneFile);
 
-    String path = archive->GetString("hmap");
-    path = sceneFile->RelativeToAbsolute(path);
+    FilePath path(sceneFile->GetScenePath());
+    path += FilePath(archive->GetString("hmap"));
+
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
     
@@ -1439,9 +1439,19 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         if(TEXTURE_DETAIL == k) continue;
         
         String textureName = archive->GetString(Format("tex_%d", k));
-        String absPath = (textureName.empty()) ? String(""): sceneFile->RelativeToAbsolute(textureName);
+        
+        FilePath absPath;
+        if(!textureName.empty())
+        {
+            FilePath path(sceneFile->GetScenePath());
+            path += FilePath(archive->GetString("hmap"));
+
+            absPath = sceneFile->GetScenePath();
+            absPath += FilePath(textureName);
+        }
+
         if(sceneFile->DebugLogEnabled())
-            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
+            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.GetAbsolutePathname().c_str());
 
         if (sceneFile->GetVersion() >= 4)
         {
@@ -1464,13 +1474,13 @@ void Landscape::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     }
 }
 
-const String & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
+const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
     return textureNames[level];
 }
     
-void Landscape::SetTextureName(eTextureLevel level, const String &newTextureName)
+void Landscape::SetTextureName(eTextureLevel level, const FilePath &newTextureName)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
     textureNames[level] = newTextureName;
@@ -1618,19 +1628,16 @@ Texture * Landscape::CreateFullTiledTexture()
     return fullTiled;
 }
     
-String Landscape::SaveFullTiledTexture()
+FilePath Landscape::SaveFullTiledTexture()
 {
-    String pathToSave = String("");
+    FilePath pathToSave;
     
     if(textures[TEXTURE_TILE_FULL])
     {
         if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
         {
-            String colorTextureMame = GetTextureName(TEXTURE_COLOR);
-            String filename, pathname;
-            FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
-            
-            pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+            pathToSave = GetTextureName(TEXTURE_COLOR);
+            pathToSave.ReplaceExtension(".thumbnail.png");
             Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
             if(image)
             {
@@ -1644,13 +1651,13 @@ String Landscape::SaveFullTiledTexture()
         }
     }
     
-    Logger::Debug("[LN] SaveFullTiledTexture: %s", pathToSave.c_str());
+    Logger::Debug("[LN] SaveFullTiledTexture: %s", pathToSave.GetAbsolutePathname().c_str());
     return pathToSave;
 }
     
 void Landscape::UpdateFullTiledTexture()
 {
-    if(0 == textureNames[TEXTURE_TILE_FULL].length())
+    if(!textureNames[TEXTURE_TILE_FULL].IsInitalized())
     {
 		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
