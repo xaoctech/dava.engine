@@ -39,7 +39,7 @@
 namespace DAVA
 {
 
-UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
+UIFileSystemDialog::UIFileSystemDialog(const FilePath &_fontPath)
 : UIControl(Rect(GetScreenWidth()/2, GetScreenHeight()/2, GetScreenWidth()*2/3, GetScreenHeight()*4/5))
 {
     fontPath = _fontPath;
@@ -151,7 +151,7 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     files = NULL;
     
-    SetCurrentDir(FileSystem::Instance()->RealPath(FileSystem::Instance()->GetCurrentWorkingDirectory()));
+    SetCurrentDir(FileSystem::Instance()->GetCurrentWorkingDirectory());
 }
 
 void UIFileSystemDialog::ButtonPressed(BaseObject *obj, void *data, void *callerData)
@@ -199,14 +199,16 @@ void UIFileSystemDialog::SaveFinishing()
 {
     if (!textField->GetText().empty())
     {
+        FilePath selectedFile(currentDir);
         if (textField->GetText().find(L".") != textField->GetText().npos)
         {
-            OnFileSelected(currentDir + "/" + WStringToString(textField->GetText()));
+            selectedFile += FilePath(WStringToString(textField->GetText()));
         }
         else 
         {
-            OnFileSelected(currentDir + "/" + WStringToString(textField->GetText()) + extensionFilter[0]);
+            selectedFile += FilePath(WStringToString(textField->GetText()) + extensionFilter[0]);
         }
+        OnFileSelected(selectedFile);
         GetParent()->RemoveControl(this);
     }
 }
@@ -234,29 +236,15 @@ void UIFileSystemDialog::Show(UIControl *parentControl)
 }
 
 
-void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
+void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
 {
 
     //int32 ppos = newDirPath.rfind(".");
     //int32 spos = newDirPath.rfind("/");
     //if (ppos != newDirPath.npos && ppos > spos)
-    if (!FileSystem::Instance()->IsDirectory(newDirPath))
-    {
-        FileSystem::Instance()->SplitPath(newDirPath, currentDir, selectedFile);
-    }
-    else 
-    {
-        currentDir = newDirPath;
-        selectedFile = "";
-    }
+    currentDir = FilePath(newDirPath.GetDirectory());
+    selectedFile = FilePath(newDirPath.GetFilename());
     
-
-    if (currentDir.length() > 0 && currentDir[currentDir.length()-1] == '/') 
-    {
-        currentDir = currentDir.substr(0, currentDir.length()-1);
-    }
-
-
     //find current dir at folders history
     bool isInHistory = false;
     for(int32 iFolder = foldersHistory.size() - 1; iFolder >= 0 ; --iFolder)
@@ -285,7 +273,7 @@ void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
     }
 }
 
-const String &UIFileSystemDialog::GetCurrentDir()
+const FilePath &UIFileSystemDialog::GetCurrentDir()
 {
     return currentDir;
 }
@@ -317,8 +305,7 @@ void UIFileSystemDialog::OnIndexSelected(int32 index)
 {
     if (fileUnits[index].type == FUNIT_DIR_OUTSIDE) 
     {
-        int32 p = currentDir.rfind("/");
-        SetCurrentDir(String(currentDir, 0, p));
+        SetCurrentDir(currentDir);
     }
     else if (fileUnits[index].type == FUNIT_DIR_INSIDE)
     {
@@ -341,7 +328,7 @@ void UIFileSystemDialog::OnIndexSelected(int32 index)
 
 void UIFileSystemDialog::RefreshList()
 {
-    workingPath->SetText(StringToWString(currentDir));
+    workingPath->SetText(StringToWString(currentDir.GetAbsolutePathname()));
     if (operationType != OPERATION_CHOOSE_DIR) 
     {
         positiveButton->SetDisabled(true);
@@ -354,9 +341,11 @@ void UIFileSystemDialog::RefreshList()
     SafeRelease(files);
     lastSelected = NULL;
     lastSelectedIndex = -1;
-    Logger::Debug("Cur Dir: %s", currentDir.c_str());
-    if (currentDir.size() == 0)
-        currentDir = "/";
+    Logger::Debug("Cur Dir: %s", currentDir.GetAbsolutePathname().c_str());
+    if (!currentDir.IsInitalized())
+    {
+        currentDir += FilePath("/");
+    }
     
     files = new FileList(currentDir);
     files->Sort();
@@ -582,7 +571,7 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
     }
 }
     
-void UIFileSystemDialog::CreateHistoryForPath(const String &pathToFile)
+void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
 {
     Vector<String> folders;
     Split(pathToFile, "/", folders);

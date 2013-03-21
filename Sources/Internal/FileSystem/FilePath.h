@@ -52,6 +52,7 @@ public:
 
     FilePath& operator=(const FilePath & path);
     FilePath operator+(const FilePath & path) const;
+    FilePath& operator+=(const FilePath & path);
     bool operator==(const FilePath & path) const;
 	bool operator!=(const FilePath & path) const;
 

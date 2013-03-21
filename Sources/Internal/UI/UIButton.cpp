@@ -806,7 +806,7 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetName()));
+				spriteNode->AddValueToArray(TruncateTxtFileExtension(stateSprite->GetRelativePathname()));
 				spriteNode->AddValueToArray(stateFrame);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
 			}

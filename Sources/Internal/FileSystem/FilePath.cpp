@@ -102,6 +102,16 @@ FilePath FilePath::operator+(const FilePath &path) const
     return pathname;
 }
     
+FilePath& FilePath::operator+=(const FilePath & path)
+{
+    DVASSERT(IsDirectoryPathname());
+
+    absolutePathname = NormalizePathname(absolutePathname + path.GetAbsolutePathname());
+    
+    return (*this);
+}
+
+    
 bool FilePath::operator==(const FilePath &path) const
 {
     return absolutePathname == path.absolutePathname;
