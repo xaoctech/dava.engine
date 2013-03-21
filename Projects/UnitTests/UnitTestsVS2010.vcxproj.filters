@@ -23,6 +23,7 @@
     <ClCompile Include="Classes\InputTest.cpp" />
     <ClCompile Include="Classes\DPITest.cpp" />
     <ClCompile Include="Classes\eMailTest.cpp" />
+    <ClCompile Include="Classes\DeviceInfoTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -47,5 +48,6 @@
     <ClInclude Include="Classes\InputTest.h" />
     <ClInclude Include="Classes\DPITest.h" />
     <ClInclude Include="Classes\eMailTest.h" />
+    <ClInclude Include="Classes\DeviceInfoTest.h" />
   </ItemGroup>
 </Project>

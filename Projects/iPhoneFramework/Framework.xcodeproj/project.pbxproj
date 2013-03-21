@@ -19,6 +19,9 @@
 		17F53E3416D3705E004D5099 /* WebViewControliOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E3216D3705E004D5099 /* WebViewControliOS.h */; };
 		17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E3316D3705E004D5099 /* WebViewControliOS.mm */; };
 		496526D0167F173400107C70 /* libdxt_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 496526CF167F173400107C70 /* libdxt_ios.a */; };
+		497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */; };
+		49FDCEA016F3256D00889E47 /* DeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 49FDCE9D16F3256D00889E47 /* DeviceInfo.h */; };
+		49FDCEA316F3286B00889E47 /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */; };
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
@@ -671,6 +674,9 @@
 		17F53E3216D3705E004D5099 /* WebViewControliOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewControliOS.h; sourceTree = "<group>"; };
 		17F53E3316D3705E004D5099 /* WebViewControliOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewControliOS.mm; sourceTree = "<group>"; };
 		496526CF167F173400107C70 /* libdxt_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdxt_ios.a; path = ../../Libs/libs/libdxt_ios.a; sourceTree = "<group>"; };
+		497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceInfoiOS.mm; sourceTree = "<group>"; };
+		49FDCE9D16F3256D00889E47 /* DeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
+		49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceInfo.cpp; sourceTree = "<group>"; };
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
@@ -1731,6 +1737,7 @@
 		E8B3C8D916B9326D002BD35F /* TemplateiOS */ = {
 			isa = PBXGroup;
 			children = (
+				497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */,
 				17F53E3216D3705E004D5099 /* WebViewControliOS.h */,
 				17F53E3316D3705E004D5099 /* WebViewControliOS.mm */,
 				840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */,
@@ -2194,6 +2201,8 @@
 		E8B3CA7016B9326E002BD35F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				49FDCEA216F3286B00889E47 /* DeviceInfo.cpp */,
+				49FDCE9D16F3256D00889E47 /* DeviceInfo.h */,
 				E8B3CA7116B9326E002BD35F /* HTTPDownloader.h */,
 				E8B3CA7216B9326E002BD35F /* HTTPDownloader.mm */,
 				E8B3CA7416B9326E002BD35F /* MD5.cpp */,
@@ -2601,6 +2610,7 @@
 				CCC7A4A716F1D8200061EA5D /* RenderState.h in Headers */,
 				CCC7A4AB16F1D8480061EA5D /* Entity.h in Headers */,
 				CCC7A4AF16F1D88C0061EA5D /* UpdateSystem.h in Headers */,
+				49FDCEA016F3256D00889E47 /* DeviceInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2959,6 +2969,8 @@
 				CCC7A4A616F1D8200061EA5D /* RenderState.cpp in Sources */,
 				CCC7A4AA16F1D8480061EA5D /* Entity.cpp in Sources */,
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
+				49FDCEA316F3286B00889E47 /* DeviceInfo.cpp in Sources */,
+				497BF6E216F751ED00AC57C6 /* DeviceInfoiOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
