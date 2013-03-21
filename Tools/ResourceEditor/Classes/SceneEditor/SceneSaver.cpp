@@ -15,20 +15,20 @@ SceneSaver::~SceneSaver()
 }
 
 
-void SceneSaver::SetInFolder(const String &folderPathname)
+void SceneSaver::SetInFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetInFolder(folderPathname);
 }
 
-void SceneSaver::SetOutFolder(const String &folderPathname)
+void SceneSaver::SetOutFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
 }
 
 
-void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
+void SceneSaver::SaveFile(const FilePath &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneSaver::SaveFile] %s", fileName.c_str());
+    Logger::Info("[SceneSaver::SaveFile] %s", fileName.GetAbsolutePathname().c_str());
     
     //Load scene with *.sc2
     Scene *scene = new Scene();
