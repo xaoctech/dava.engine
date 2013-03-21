@@ -7,12 +7,12 @@ SpritesPacker::~SpritesPacker()
 
 }
 
-void SpritesPacker::SetInputDir(const String & _inputDir)
+void SpritesPacker::SetInputDir(const FilePath & _inputDir)
 {
 	inputDir = _inputDir;
 }
 
-void SpritesPacker::SetOutputDir(const String & _outputDir)
+void SpritesPacker::SetOutputDir(const FilePath & _outputDir)
 {
 	outputDir = _outputDir;
 }

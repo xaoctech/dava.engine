@@ -24,10 +24,10 @@ ResourcePackerScreen::ResourcePackerScreen()
 
 void ResourcePackerScreen::LoadResources()
 {
-	inputGfxDirectory = FileSystem::RealPath("/Sources/dava.framework/Tools/ResourceEditor/DataSource/Gfx/");
-    Logger::Debug("%s", inputGfxDirectory.c_str());
-	outputGfxDirectory = FileSystem::RealPath(inputGfxDirectory + "/../../Data/Gfx");
-	excludeDirectory = FileSystem::RealPath(inputGfxDirectory + "/../");
+	inputGfxDirectory = FilePath("/Sources/dava.framework/Tools/ResourceEditor/DataSource/Gfx/");
+    Logger::Debug("%s", inputGfxDirectory.GetAbsolutePathname().c_str());
+	outputGfxDirectory = inputGfxDirectory + FilePath("/../../Data/Gfx");
+	excludeDirectory = inputGfxDirectory + FilePath("/../");
 	
 	// PackResources();
 	

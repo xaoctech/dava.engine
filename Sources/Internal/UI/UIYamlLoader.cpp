@@ -253,7 +253,7 @@ Font * UIYamlLoader::GetFontByName(const String & fontName)
 	return 0;
 }
 
-void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname)
+void UIYamlLoader::Load(UIControl * rootControl, const FilePath & yamlPathname)
 {
 	UIYamlLoader * loader = new UIYamlLoader();
 	
@@ -262,7 +262,7 @@ void UIYamlLoader::Load(UIControl * rootControl, const String & yamlPathname)
 	loader->Release();
 }
 
-bool UIYamlLoader::Save(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+bool UIYamlLoader::Save(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
 	UIYamlLoader * loader = new UIYamlLoader();
 
@@ -272,13 +272,13 @@ bool UIYamlLoader::Save(UIControl * rootControl, const String & yamlPathname, bo
 	return savedOK;
 }
 
-void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathname)
+void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPathname)
 {
 	uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
 	YamlParser * parser = YamlParser::Create(yamlPathname);
 	if (!parser)
 	{
-		Logger::Error("Failed to open yaml file: %s", yamlPathname.c_str());
+		Logger::Error("Failed to open yaml file: %s", yamlPathname.GetAbsolutePathname().c_str());
 		return;
 	}
 	
@@ -286,7 +286,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
     if (!rootNode)
     {
         // Empty YAML file.
-        Logger::Warning("yaml file: %s is empty", yamlPathname.c_str());
+        Logger::Warning("yaml file: %s is empty", yamlPathname.GetAbsolutePathname().c_str());
         return;
     }
 	
@@ -395,10 +395,10 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
 	}
 	fontMap.clear();
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Load of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+	Logger::Debug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 }
 	
-bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathname, bool skipRootNode)
+bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
     uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
     YamlParser * parser = YamlParser::Create();
@@ -444,7 +444,7 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const String & yamlPathn
     SafeRelease(resultNode);
     
     uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("Save of %s time: %lld", yamlPathname.c_str(), t2 - t1);
+	Logger::Debug("Save of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
 
     return savedOK;
 }

@@ -9,7 +9,7 @@ EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();
     
-    settings->Load("~doc:/ResourceEditorOptions.archive");
+    settings->Load(FilePath("~doc:/ResourceEditorOptions.archive"));
 	ApplyOptions();
 }
     
@@ -26,7 +26,7 @@ KeyedArchive *EditorSettings::GetSettings()
 
 void EditorSettings::Save()
 {
-    settings->Save("~doc:/ResourceEditorOptions.archive");
+    settings->Save(FilePath("~doc:/ResourceEditorOptions.archive"));
 }
 
 void EditorSettings::ApplyOptions()

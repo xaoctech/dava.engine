@@ -150,8 +150,8 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 			
 			Set<String> errorsLog;
-			String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.length())
+			FilePath heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
+			if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.IsInitalized())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
 			}
