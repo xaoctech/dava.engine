@@ -355,10 +355,11 @@ void UIFileSystemDialog::RefreshList()
     int32 outCnt = 0;
     int32 p = -1;
     
+    String curDirPath = currentDir.GetDirectory();
     while (true) 
     {
-        p = currentDir.rfind("/", p);
-        if(p != currentDir.npos)
+        p = curDirPath.rfind("/", p);
+        if(p != curDirPath.npos)
         {
             p--;
             outCnt++;
@@ -376,7 +377,7 @@ void UIFileSystemDialog::RefreshList()
     if(outCnt >= 1)
     {
         DialogFileUnit fud;
-        fud.name = "..";
+        fud.name = FilePath("..");
         fud.type = FUNIT_DIR_OUTSIDE;
         fud.indexInFileList = -1;
         fileUnits.push_back(fud);
@@ -387,7 +388,7 @@ void UIFileSystemDialog::RefreshList()
         if (!files->IsNavigationDirectory(i))
         {
             DialogFileUnit fu;
-            fu.name = files->GetFilename(i);
+            fu.name = files->GetPathname(i);
             fu.indexInFileList = i;
             fu.type = FUNIT_FILE;
             if (files->IsDirectory(i)) 
@@ -404,9 +405,9 @@ void UIFileSystemDialog::RefreshList()
                 {
                     lastSelectedIndex = fileUnits.size();
                     positiveButton->SetDisabled(false);
-                    textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
+                    textField->SetText(StringToWString(files->GetPathname(fu.indexInFileList).GetFilename()));
                 }
-                String ext = FileSystem::GetExtension(fu.name);
+                String ext = fu.name.GetExtension();
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
                 bool isPresent = false;
@@ -480,11 +481,11 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
     UIStaticText *t = (UIStaticText *)c->FindByName("CellText");
     if (fileUnits[index].type == FUNIT_FILE) 
     {
-        t->SetText(StringToWString(fileUnits[index].name));
+        t->SetText(StringToWString(fileUnits[index].name.GetFilename()));
     }
     else 
     {
-        t->SetText(StringToWString("[" + fileUnits[index].name + "]"));
+        t->SetText(StringToWString("[" + fileUnits[index].name.GetFilename() + "]"));
     }
     
     if (index != lastSelectedIndex) 
@@ -541,16 +542,11 @@ void UIFileSystemDialog::OnCellSelected(UIList *forList, UIListCell *selectedCel
         {
             if (fileUnits[selectedCell->GetIndex()].type == FUNIT_FILE)
             {
-                textField->SetText(StringToWString(files->GetFilename(fileUnits[lastSelectedIndex].indexInFileList)));
+                textField->SetText(StringToWString(files->GetPathname(fileUnits[lastSelectedIndex].indexInFileList).GetFilename()));
                 positiveButton->SetDisabled(false);
             }
         }
-
-        
-
     }
-
-
 }
 
 void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void *callerData)
@@ -574,18 +570,20 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
 void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
 {
     Vector<String> folders;
-    Split(pathToFile, "/", folders);
+    Split(pathToFile.GetAbsolutePathname(), "/", folders);
 
     foldersHistory.clear();
-    foldersHistory.push_back("");
+    foldersHistory.push_back(FilePath(""));
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
-        foldersHistory.push_back(foldersHistory[iFolder] + "/" + folders[iFolder]);
+        FilePath f(foldersHistory[iFolder]);
+        f += FilePath("/" + folders[iFolder]);
+        foldersHistory.push_back(f);
     }
     historyPosition = foldersHistory.size() - 1;
 }
 
-void UIFileSystemDialog::OnFileSelected(const String &pathToFile)
+void UIFileSystemDialog::OnFileSelected(const FilePath &pathToFile)
 {
     if(delegate)
     {

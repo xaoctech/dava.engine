@@ -46,7 +46,7 @@ public:
 	virtual ~Heightmap();
     
     bool BuildFromImage( const Image *image);
-    void SaveToImage(const String & filename);
+    void SaveToImage(const FilePath & filename);
     
     virtual void Save(const FilePath &filePathname);
     virtual bool Load(const FilePath &filePathname);

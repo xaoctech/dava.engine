@@ -89,7 +89,7 @@ public:
     class DialogFileUnit 
     {
     public:
-        String name;
+        FilePath name;
         int32 indexInFileList;
         int32 type;
     };
@@ -169,7 +169,7 @@ protected:
     void OnIndexSelected(int32 index);
     void SaveFinishing();
     
-    String fontPath;
+    FilePath fontPath;
     int32 operationType;
     UIFileSystemDialogDelegate *delegate;
     Vector<String> extensionFilter;
