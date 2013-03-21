@@ -31,6 +31,7 @@
 #define __DAVAENGINE_FILE_PATH_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Introspection.h"
 
 namespace DAVA
 {
@@ -182,6 +183,13 @@ protected:
     
     String absolutePathname;
     static String projectPathname;
+    
+public:
+    
+    INTROSPECTION(FilePath,
+        MEMBER(absolutePathname, "absolutePathname", INTROSPECTION_EDITOR)
+    );
+    
 };
 };
 

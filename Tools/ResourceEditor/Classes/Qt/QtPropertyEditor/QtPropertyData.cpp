@@ -1,14 +1,21 @@
+#include <QPushButton>
 #include "QtPropertyEditor/QtPropertyData.h"
 
 QtPropertyData::QtPropertyData()
 	: curFlags(0)
 	, parent(NULL)
+	, optionalWidget()
+	, optionalWidgetViewport(NULL)
+	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value)
 	: curValue(value)
 	, curFlags(0)
 	, parent(NULL)
+	, optionalWidget()
+	, optionalWidgetViewport(NULL)
+	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::~QtPropertyData() 
@@ -23,6 +30,11 @@ QtPropertyData::~QtPropertyData()
 		{
 			delete data;
 		}
+	}
+
+	if(NULL != optionalWidget)
+	{
+		delete optionalWidget;
 	}
 }
 
@@ -139,6 +151,59 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 
 	return data;
 }
+
+QWidget* QtPropertyData::GetOptionalWidget()
+{
+	return optionalWidget;
+}
+
+void QtPropertyData::SetOptionalWidget(QWidget* widget)
+{
+	if(NULL != optionalWidget)
+	{
+		delete optionalWidget;
+	}
+
+	optionalWidget = widget;
+
+	if(NULL != optionalWidget)
+	{
+		optionalWidget->setParent(optionalWidgetViewport);
+	}
+}
+
+void QtPropertyData::SetOptionalWidgetViewport(QWidget *viewport)
+{
+	optionalWidgetViewport = viewport;
+
+	if(NULL != optionalWidget)
+	{
+		optionalWidget->setParent(viewport);
+	}
+
+	QHashIterator<QString, QtPropertyData*> i(children);
+	while (i.hasNext()) 
+	{
+		i.next();
+		i.value()->SetOptionalWidgetViewport(viewport);
+	}
+}
+
+QWidget* QtPropertyData::GetOptionalWidgetViewport()
+{
+	return optionalWidgetViewport;
+}
+
+bool QtPropertyData::GetOptionalWidgetOverlay()
+{
+	return optionalWidgetOverlay;
+}
+
+void QtPropertyData::SetOptionalWidgetOverlay(bool overlay)
+{
+	optionalWidgetOverlay = overlay;
+}
+
 
 QVariant QtPropertyData::GetValueInternal()
 {

@@ -391,7 +391,9 @@ public:
                          
 		MEMBER(type, "Type", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
                          
-//        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        COLLECTION(names, "Names", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+
+		MEMBER(renderStateBlock, "Render State", INTROSPECTION_EDITOR)
     );
 };
 

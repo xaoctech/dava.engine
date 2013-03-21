@@ -259,6 +259,9 @@
         </item>
         <item>
          <widget class="PropertyEditor" name="propertyEditor">
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
           <property name="styleSheet">
            <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
 /*     border-image: url(:/QtImages/tree-vline.png) 0; */

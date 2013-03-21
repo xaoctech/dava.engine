@@ -205,6 +205,9 @@
     <Filter Include="QtGenerated\DockSetSwitchIndex">
       <UniqueIdentifier>{778f9502-08bc-42b8-85a3-0f2c489748eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="QtGenerated\QtPropertyEditor\QtPropertyData">
+      <UniqueIdentifier>{f78cb3f2-cefe-4fa7-89e1-46628d2a20c6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="QtGenerated\DockHangingObjects">
       <UniqueIdentifier>{62b455cb-7b9d-4c52-b742-c03721be1449}</UniqueIdentifier>
     </Filter>
@@ -1544,6 +1547,21 @@
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneUtilsScreen.cpp">
       <Filter>Sources\SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
