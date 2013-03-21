@@ -30,6 +30,8 @@
 #ifndef __DAVAENGINE_STATIC_SINGLETON_H__
 #define __DAVAENGINE_STATIC_SINGLETON_H__
 
+#include "Debug/DVAssert.h"
+
 namespace DAVA
 {
 	
