@@ -5,8 +5,10 @@
 #include <QHash>
 #include <QIcon>
 
-class QtPropertyData
+class QtPropertyData : public QObject
 {
+	Q_OBJECT
+
 	friend class QtPropertyItem;
 
 public:
@@ -41,6 +43,19 @@ public:
 	int ChildCount();
 	QtPropertyData* ChildGet(const QString &key);
 	QPair<QString, QtPropertyData*> ChildGet(int i);
+
+	QWidget* GetOptionalWidget();
+	void SetOptionalWidget(QWidget* widget);
+	QWidget* GetOptionalWidgetViewport();
+	void SetOptionalWidgetViewport(QWidget *viewport);
+	void SetOptionalWidgetOverlay(bool overlay);
+	bool GetOptionalWidgetOverlay();
+	// TODO: implement
+	//void SetOptionalWidgetSize(QSize size);
+	//QSize GetOptionalWidgetSize();
+	//void SetOptionalWidgetAlign();
+	//void GetOptionalWidgetAlign();
+
     
 protected:
 	void ParentUpdate();
@@ -75,6 +90,10 @@ private:
 	QVariant curValue;
 	QIcon curIcon;
 	int curFlags;
+
+	QWidget *optionalWidget;
+	QWidget *optionalWidgetViewport;
+	bool optionalWidgetOverlay;
 
 	QtPropertyData *parent;
 	QHash<QString, QtPropertyData *> children;

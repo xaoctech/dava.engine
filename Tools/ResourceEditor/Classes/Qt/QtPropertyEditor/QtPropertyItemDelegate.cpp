@@ -2,11 +2,17 @@
 
 #include "QtPropertyItemDelegate.h"
 #include "QtPropertyModel.h"
+#include "QtPropertyItem.h"
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
+
+QtPropertyItemDelegate::QtPropertyItemDelegate(QWidget *parent /* = 0 */)
+	: QStyledItemDelegate(parent)
+{ }
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyledItemDelegate::paint(painter, option, index);
+	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
+	QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -17,17 +23,13 @@ QSize QtPropertyItemDelegate::sizeHint(const QStyleOptionViewItem &option, const
 QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QWidget* editWidget = NULL;
-	const QtPropertyModel *propertyModel = dynamic_cast<const QtPropertyModel *>(index.model());
+	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
+	
+	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
 
-	if(NULL != propertyModel)
+	if(NULL != data)
 	{
-		QtPropertyItem* item = (QtPropertyItem*) propertyModel->itemFromIndex(index);
-		QtPropertyData* data = item->GetPropertyData();
-		if(NULL != data)
-		{
-			editWidget = data->CreateEditor(parent, option);
-		}
-
+		editWidget = data->CreateEditor(parent, option);
 		TryEditorWorkarounds(editWidget);
 	}
 
@@ -83,6 +85,47 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 		QRect r = option.rect;
 		r.adjust(0, -2, 0, 2);
 		editor->setGeometry(r);
+	}
+}
+
+void QtPropertyItemDelegate::recalcOptionalWidget(const QModelIndex &index, QStyleOptionViewItem *option) const
+{
+	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
+
+	if(NULL != data)
+	{
+		QWidget *optionalWidget = data->GetOptionalWidget();
+		QWidget *optionalWidgetViewport = data->GetOptionalWidgetViewport();
+
+		if(NULL != optionalWidget && NULL != optionalWidgetViewport)
+		{
+			int widgetSize = 0;
+			QRect newWidgetRect = option->rect;
+
+			// TODO: take widget size from QtPropertyData
+			// ...
+			
+			widgetSize = 30;
+
+			// ...
+
+			if(0 != widgetSize)
+			{
+				newWidgetRect.setLeft(newWidgetRect.right() - widgetSize);
+				optionalWidget->setGeometry(newWidgetRect);
+				optionalWidget->show();
+
+				// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
+				if(!data->GetOptionalWidgetOverlay())
+				{
+					option->rect.setRight(newWidgetRect.left());
+				}
+			}
+			else
+			{
+				optionalWidget->hide();
+			}
+		}
 	}
 }
 

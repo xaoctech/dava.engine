@@ -298,6 +298,51 @@ public:
 		eStencilOp pass[2];
 		eStencilOp fail[2];
 		eStencilOp zFail[2];
+
+		void SetCmpFuncFront(int32 val){ func[0] = (eCmpFunc)val; }
+		int32 GetCmpFuncFront(){ return func[0]; }
+		void SetCmpFuncBack(int32 val){ func[1] = (eCmpFunc)val; }
+		int32 GetCmpFuncBack(){ return func[1]; }
+		
+		void SetPassFront(int32 val) { pass[0] = (eStencilOp)val; }
+		int32 GetPassFront() { return pass[0]; }
+		void SetPassBack(int32 val) { pass[1] = (eStencilOp)val; }
+		int32 GetPassBack() { return pass[1]; }
+
+		void SetFailFront(int32 val) { fail[0] = (eStencilOp)val; }
+		int32 GetFailFront() { return fail[0]; }
+		void SetFailBack(int32 val) { fail[1] = (eStencilOp)val; }
+		int32 GetFailBack() { return fail[1]; }
+
+		void SetZFailFront(int32 val) { zFail[0] = (eStencilOp)val; }
+		int32 GetZFailFront() { return zFail[0]; }
+		void SetZFailBack(int32 val) { zFail[1] = (eStencilOp)val; }
+		int32 GetZFailBack() { return zFail[1]; }
+
+		int32 iCmpFuncFront;
+		int32 iCmpFuncBack;
+		int32 iPassFront;
+		int32 iPassBack;
+		int32 iFailFront;
+		int32 iFailBack;
+		int32 iZFailFront;
+		int32 iZFailBack;
+		INTROSPECTION(StencilState, 
+			MEMBER(ref, "ref", INTROSPECTION_EDITOR)
+			MEMBER(mask, "mask", INTROSPECTION_EDITOR)
+
+			PROPERTY(iCmpFuncFront, "cmpFuncFront", GetCmpFuncFront, SetCmpFuncFront, INTROSPECTION_EDITOR)
+			PROPERTY(iCmpFuncBack, "cmpFuncBack", GetCmpFuncBack, SetCmpFuncBack, INTROSPECTION_EDITOR)
+
+			PROPERTY(iPassFront, "iPassFront", GetPassFront, SetPassFront, INTROSPECTION_EDITOR)
+			PROPERTY(iPassBack, "iPassBack", GetPassBack, SetPassBack, INTROSPECTION_EDITOR)
+
+			PROPERTY(iFailFront, "iFailFront", GetFailFront, SetFailFront, INTROSPECTION_EDITOR)
+			PROPERTY(iFailBack, "iFailBack", GetFailBack, SetFailBack, INTROSPECTION_EDITOR)
+
+			PROPERTY(iZFailFront, "iZFailFront", GetZFailFront, SetZFailFront, INTROSPECTION_EDITOR)
+			PROPERTY(iZFailBack, "iZFailBack", GetZFailBack, SetZFailBack, INTROSPECTION_EDITOR)
+			)
 	};
 	StencilState stencilState;
     
@@ -324,7 +369,8 @@ public:
     inline void SetShader(Shader * shader);
     
     // CULL MODE
-    inline void SetCullMode(eFace mode);
+	inline int32 GetCullMode();
+    inline void SetCullMode(int32 mode);
     
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
@@ -391,10 +437,18 @@ public:
      */
     bool IsEqual(RenderState * anotherState);
 
+	//introspection related
+
 
 #if defined(__DAVAENGINE_DIRECTX9__)
 	static IDirect3DDevice9 * direct3DDevice; 
 #endif
+	int32 iCullMode;
+	INTROSPECTION(RenderState, 
+		MEMBER(state, "state", INTROSPECTION_EDITOR)
+		PROPERTY(iCullMode, "Cull Mode", GetCullMode, SetCullMode, INTROSPECTION_EDITOR)
+		MEMBER(stencilState, "Stencil state", INTROSPECTION_EDITOR)
+		)
 };
 
 // Implementation of inline functions
@@ -457,11 +511,17 @@ inline void RenderState::SetShader(Shader * _shader)
 }
 
 // CULL MODE
-inline void RenderState::SetCullMode(eFace _cullMode)
+inline int32 RenderState::GetCullMode()
+{
+	return cullMode;
+}
+
+
+inline void RenderState::SetCullMode(int32 _cullMode)
 {
     //if (cullMode != _cullMode)
     {   
-        cullMode = _cullMode;
+        cullMode = (eFace)_cullMode;
         //changeSet |= STATE_CHANGED_CULLMODE;
     }
 }

@@ -5,7 +5,8 @@ QtPropertyItem::QtPropertyItem()
 	: QStandardItem()
 	, itemData(NULL)
 	, itemDataDeleteByParent(false)
-{ }
+{
+}
 
 QtPropertyItem::QtPropertyItem(QtPropertyData* data, QtPropertyItem *name)
 	: QStandardItem()
@@ -80,6 +81,9 @@ QVariant QtPropertyItem::data(int role /* = Qt::UserRole + 1 */) const
 		case Qt::DisplayRole:
 		case Qt::EditRole:
 			v = itemData->GetValue();
+			break;
+		case PropertyDataRole:
+			v = qVariantFromValue(GetPropertyData());
 			break;
 		default:
 			break;

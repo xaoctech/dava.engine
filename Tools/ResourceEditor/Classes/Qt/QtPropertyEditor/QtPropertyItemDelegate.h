@@ -8,7 +8,7 @@ class QtPropertyItemDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    QtPropertyItemDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
+    QtPropertyItemDelegate(QWidget *parent = 0);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -18,7 +18,9 @@ public:
 	void updateEditorGeometry(QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 protected:
-	void TryEditorWorkarounds(QWidget *editor) const;
+	void recalcOptionalWidget(const QModelIndex &index, QStyleOptionViewItem *option) const;
+
+	void TryEditorWorkarounds(QWidget * editor) const;
 };
 
 #endif // __QT_PROPERY_ITEM_DELEGATE_H__
