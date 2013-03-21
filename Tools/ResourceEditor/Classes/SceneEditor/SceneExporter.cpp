@@ -21,7 +21,7 @@ SceneExporter::~SceneExporter()
 }
 
 
-void SceneExporter::CleanFolder(const String &folderPathname, Set<String> &errorLog)
+void SceneExporter::CleanFolder(const FilePath &folderPathname, Set<String> &errorLog)
 {
     bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
     if(!ret)
@@ -29,17 +29,17 @@ void SceneExporter::CleanFolder(const String &folderPathname, Set<String> &error
         bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
         if(folderExists)
         {
-            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.GetAbsolutePathname().c_str())));
         }
     }
 }
 
-void SceneExporter::SetInFolder(const String &folderPathname)
+void SceneExporter::SetInFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetInFolder(folderPathname);
 }
 
-void SceneExporter::SetOutFolder(const String &folderPathname)
+void SceneExporter::SetOutFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
 }
@@ -67,9 +67,9 @@ void SceneExporter::SetExportingFormat(const String &newFormat)
     }
 }
 
-void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
+void SceneExporter::ExportFile(const FilePath &fileName, Set<String> &errorLog)
 {
-    Logger::Info("[SceneExporter::ExportFile] %s", fileName.c_str());
+    Logger::Info("[SceneExporter::ExportFile] %s", fileName.GetAbsolutePathname().c_str());
     
     //Load scene with *.sc2
     Scene *scene = new Scene();
@@ -92,23 +92,20 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
     }
 	else
 	{
-		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", fileName.c_str()));
+		errorLog.insert(Format("[SceneExporter::ExportFile] Can't open file %s", fileName.GetAbsolutePathname().c_str()));
 	}
 
     SafeRelease(scene);
 }
 
-void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
+void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
 {
     Logger::Info("export_Format = %d", exportFormat);
     
     DVASSERT(0 == texturesForExport.size())
     
     //Create destination folder
-    String normalizedFileName = FileSystem::Instance()->GetCanonicalPath(fileName);
-    
-    String workingFile;
-    FileSystem::SplitPath(normalizedFileName, sceneUtils.workingFolder, workingFile);
+    sceneUtils.workingFolder = fileName.GetDirectory();
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true); 
     
     scene->Update(0.1f);
@@ -128,10 +125,9 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     ReleaseTextures();
     
     //save scene to new place
-    String scenePath, sceneName;
-    FileSystem::Instance()->SplitPath(fileName, scenePath, sceneName);
-
-    String tempSceneName = scenePath + FileSystem::Instance()->ReplaceExtension(sceneName, ".exported.sc2");
+    FilePath sceneName(fileName.GetFilename());
+    sceneName.ReplaceExtension(".exported.sc2");
+    FilePath tempSceneName = FilePath(fileName.GetDirectory()) + sceneName;
     
     SceneFileV2 * outFile = new SceneFileV2();
     outFile->EnableSaveForGame(true);
@@ -194,28 +190,28 @@ void SceneExporter::ReleaseTextures()
     texturesForExport.clear();
 }
 
-void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog)
+void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorLog)
 {
-    String folderPathname = sceneUtils.dataSourceFolder + sceneUtils.NormalizeFolderPath(folderName);
+    FilePath folderPathname = sceneUtils.dataSourceFolder + folderName;
 	FileList * fileList = new FileList(folderPathname);
     for (int32 i = 0; i < fileList->GetCount(); ++i)
 	{
-        String pathname = fileList->GetPathname(i);
+        FilePath pathname = fileList->GetPathname(i);
 		if(fileList->IsDirectory(i))
 		{
-            String curFolderName = fileList->GetFilename(i);
+            String curFolderName = fileList->GetPathname(i).GetFilename();
             if((String(".") != curFolderName) && (String("..") != curFolderName))
             {
                 String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
-                ExportFolder(workingPathname, errorLog);
+                ExportFolder(FilePath(workingPathname), errorLog);
             }
         }
         else 
         {
-            String extension = FileSystem::Instance()->GetExtension(pathname);
+            String extension = pathname.GetExtension();
             if(String(".sc2") == extension)
             {
-                String::size_type exportedPos = pathname.find(".exported.sc2");
+                String::size_type exportedPos = pathname.GetAbsolutePathname().find(".exported.sc2");
                 if(exportedPos != String::npos)
                 {
                     //Skip temporary files, created during export
@@ -223,7 +219,7 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
                 }
                 
                 String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
-                ExportFile(workingPathname, errorLog);
+                ExportFile(FilePath(workingPathname), errorLog);
             }
         }
     }
@@ -252,8 +248,8 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
         return;
     }
     
-    String textureName = landscape->GetTextureName(Landscape::TEXTURE_TILE_FULL);
-    if(textureName.empty())
+    FilePath textureName = landscape->GetTextureName(Landscape::TEXTURE_TILE_FULL);
+    if(!textureName.IsInitalized())
     {
         String colorTextureMame = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
         String filename, pathname;
@@ -277,7 +273,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
                 descriptor->pvrCompression.format = FORMAT_PVR4;
             }
             
-            String descriptorPathname = TextureDescriptor::GetDescriptorPathname(workingPathname);
+            FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(workingPathname);
             descriptor->Save(sceneUtils.dataFolder + descriptorPathname);
             
             bool needToDeleteDescriptorFile = !FileSystem::Instance()->IsFile(sceneUtils.dataSourceFolder + descriptorPathname);
@@ -306,7 +302,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
 }
 
 
-bool SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
+bool SceneExporter::ExportTexture(const FilePath &texturePathname, Set<String> &errorLog)
 {
     bool wasDescriptorExported = ExportTextureDescriptor(texturePathname, errorLog);
     if(!wasDescriptorExported)
@@ -352,7 +348,7 @@ bool SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 }
 
 
-void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<String> &errorLog)
+void SceneExporter::CompressTextureIfNeed(const FilePath &texturePathname, Set<String> &errorLog)
 {
     String modificationDate = File::GetModificationDate(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat));
     
@@ -392,7 +388,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
 			}
 			else
 			{
-				errorLog.insert(String(Format("Can't load descriptor from path: %s", texturePathname.c_str())));
+				errorLog.insert(String(Format("Can't load descriptor from path: %s", texturePathname.GetAbsolutePathname().c_str())));
 			}
         }
     }

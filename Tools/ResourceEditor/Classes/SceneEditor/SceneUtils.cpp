@@ -4,16 +4,13 @@ using namespace DAVA;
 
 SceneUtils::SceneUtils()
 {
-    dataFolder = String("");
-    dataSourceFolder = String(""); 
-    workingFolder = String("");
 }
 
 SceneUtils::~SceneUtils()
 {
 }
 
-void SceneUtils::CleanFolder(const String &folderPathname, Set<String> &errorLog)
+void SceneUtils::CleanFolder(const FilePath &folderPathname, Set<String> &errorLog)
 {
     bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
     if(!ret)
@@ -21,75 +18,63 @@ void SceneUtils::CleanFolder(const String &folderPathname, Set<String> &errorLog
         bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
         if(folderExists)
         {
-            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.GetAbsolutePathname().c_str())));
         }
     }
 }
 
-void SceneUtils::SetInFolder(const String &folderPathname)
+void SceneUtils::SetInFolder(const FilePath &folderPathname)
 {
-    dataSourceFolder = NormalizeFolderPath(folderPathname);
+    DVASSERT(folderPathname.IsDirectoryPathname());
+    dataSourceFolder = folderPathname;
 }
 
-void SceneUtils::SetOutFolder(const String &folderPathname)
+void SceneUtils::SetOutFolder(const FilePath &folderPathname)
 {
-    dataFolder = NormalizeFolderPath(folderPathname);
-}
-
-
-String SceneUtils::NormalizeFolderPath(const String &pathname)
-{
-    String normalizedPathname = FileSystem::Instance()->GetCanonicalPath(pathname);
-
-    int32 lastPos = normalizedPathname.length() - 1;
-    if((0 <= lastPos) && ('/' != normalizedPathname.at(lastPos)))
-    {
-        normalizedPathname += "/";
-    }
-    
-    return normalizedPathname;
+    DVASSERT(folderPathname.IsDirectoryPathname());
+    dataFolder = folderPathname;
 }
 
 
-bool SceneUtils::CopyFile(const String &filePathname, Set<String> &errorLog)
+bool SceneUtils::CopyFile(const FilePath &filePathname, Set<String> &errorLog)
 {
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
     
-    bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + workingPathname, dataFolder + workingPathname);
+    bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + FilePath(workingPathname), dataFolder + FilePath(workingPathname));
     if(!retCopy)
     {
-        errorLog.insert(String(Format("Can't copy %s from %s to %s", workingPathname.c_str(), dataSourceFolder.c_str(), dataFolder.c_str())));
+        errorLog.insert(String(Format("Can't copy %s from %s to %s",
+                                      workingPathname.c_str(),
+                                      dataSourceFolder.GetAbsolutePathname().c_str(),
+                                      dataFolder.GetAbsolutePathname().c_str())));
     }
     
     return retCopy;
 }
 
-void SceneUtils::PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog)
+void SceneUtils::PrepareFolderForCopy(const FilePath &filePathname, Set<String> &errorLog)
 {
-    String folder, file;
-    FileSystem::SplitPath(filePathname, folder, file);
-    
-    String newFolderPath = dataFolder + folder;
+    FilePath newFolderPath = dataFolder + FilePath(filePathname.GetDirectory());
     if(!FileSystem::Instance()->IsDirectory(newFolderPath))
     {
         FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
         if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
         {
-            errorLog.insert(String(Format("Can't create folder %s", newFolderPath.c_str())));
+            errorLog.insert(String(Format("Can't create folder %s", newFolderPath.GetAbsolutePathname().c_str())));
         }
     }
     
     FileSystem::Instance()->DeleteFile(dataFolder + filePathname);
 }
 
-String SceneUtils::RemoveFolderFromPath(const String &pathname, const String &folderPathname)
+String SceneUtils::RemoveFolderFromPath(const FilePath &pathname, const FilePath &folderPathname)
 {
-    String workingPathname = pathname;
-    String::size_type pos = workingPathname.find(folderPathname);
+    String workingPathname = pathname.GetAbsolutePathname();
+    String::size_type pos = workingPathname.find(folderPathname.GetAbsolutePathname());
     if(String::npos != pos)
     {
-        workingPathname = workingPathname.replace(pos, folderPathname.length(), "");
+        workingPathname = workingPathname.replace(pos, folderPathname.GetAbsolutePathname().length(), "");
     }
 
     return workingPathname;
