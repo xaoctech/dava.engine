@@ -19,7 +19,7 @@ public:
 	void SetNode(DAVA::Entity *node);
 
 protected:
-    void AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
+    QtPropertyData* AppendIntrospectionInfo(void *object, const DAVA::IntrospectionInfo * info);
     
 public slots:
 	void sceneActivated(SceneData *scene);
