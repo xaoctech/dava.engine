@@ -7,7 +7,7 @@ QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DA
 	: object(_object)
 	, info(_info)
 {
-	while(NULL != _info && object)
+	while(NULL != _info && NULL != object)
 	{
 		for(DAVA::int32 i = 0; i < info->MembersCount(); ++i)
 		{
