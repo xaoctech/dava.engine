@@ -2,16 +2,15 @@
 
 #include "DAVAEngine.h"
 #include "Classes/Qt/Main/QtMainWindowHandler.h"
-#include "Classes/Qt/Main/GUIState.h"
 #include "Classes/Qt/Scene/SceneDataManager.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/Main/PointerHolder.h"
 #include "Classes/Qt/Project/ProjectManager.h"
 #include "DockLibrary/LibraryModel.h"
 
 #include <QToolBar>
+#include <QToolButton>
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
@@ -50,13 +49,12 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
     RegisterBasePointerTypes();
    
-    new GUIState();
-
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
+	SetupActions();
     SetupMainMenu();
-    SetupToolBar();
-    SetupDockWidgets();
+    SetupToolBars();
+    SetupDocks();
 
     QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -75,14 +73,12 @@ QtMainWindow::~QtMainWindow()
 {
 	posSaver.SaveState(this);
 
-	GUIState::Instance()->Release();
+	//GUIState::Instance()->Release();
 	delete ui;
     
 	QtMainWindowHandler::Instance()->Release();
 	SceneDataManager::Instance()->Release();
 	ProjectManager::Instance()->Release();
-
-    //SafeDelete(libraryModel);
 }
 
 Ui::MainWindow* QtMainWindow::GetUI()
@@ -90,25 +86,40 @@ Ui::MainWindow* QtMainWindow::GetUI()
 	return ui;
 }
 
+void QtMainWindow::SetupActions()
+{
+	QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
+
+	//File
+	connect(ui->menuFile, SIGNAL(triggered(QAction *)), actionHandler, SLOT(FileMenuTriggered(QAction *)));
+	connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
+	connect(ui->actionOpenScene, SIGNAL(triggered()), actionHandler, SLOT(OpenScene()));
+	connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
+	connect(ui->actionSaveScene, SIGNAL(triggered()), actionHandler, SLOT(SaveScene()));
+	connect(ui->actionSaveToFolder, SIGNAL(triggered()), actionHandler, SLOT(SaveToFolderWithChilds()));
+	connect(ui->actionPNG, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPNG()));
+	connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
+	connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
+	connect(ui->actionReloadAll, SIGNAL(triggered()), actionHandler, SLOT(RepackAndReloadTextures()));
+
+	//View
+	connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
+	connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
+
+	//Tools
+	connect(ui->actionMaterialEditor, SIGNAL(triggered()), actionHandler, SLOT(Materials()));
+	connect(ui->actionTextureConverter, SIGNAL(triggered()), actionHandler, SLOT(ConvertTextures()));
+	connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
+	connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
+	connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
+	connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+	connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+}
+
 void QtMainWindow::SetupMainMenu()
 {
     QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
-    //File
-    connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
-    connect(ui->menuFile, SIGNAL(triggered(QAction *)), actionHandler, SLOT(FileMenuTriggered(QAction *)));
-    connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
-    connect(ui->actionOpenScene, SIGNAL(triggered()), actionHandler, SLOT(OpenScene()));
-    connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
-    connect(ui->actionSaveScene, SIGNAL(triggered()), actionHandler, SLOT(SaveScene()));
-    connect(ui->actionSaveToFolder, SIGNAL(triggered()), actionHandler, SLOT(SaveToFolderWithChilds()));
-    connect(ui->actionPNG, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPNG()));
-    connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
-    connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
 
-    
-    //View
-    connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
-    connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
     QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
     QAction *actionEntities = ui->dockEntities->toggleViewAction();
@@ -139,6 +150,7 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertSeparator(ui->actionRestoreViews);
     ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
+
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
                                        actionProperties, actionLibrary, actionToolBar, 
@@ -165,17 +177,6 @@ void QtMainWindow::SetupMainMenu()
 									   ui->actionParticleEffectNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
-
-    //Tools
-    connect(ui->menuTools, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuToolsWillShow()));
-    connect(ui->actionMaterialEditor, SIGNAL(triggered()), actionHandler, SLOT(Materials()));
-    connect(ui->actionTextureConverter, SIGNAL(triggered()), actionHandler, SLOT(ConvertTextures()));
-    connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
-    connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
-    connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
-    
-    connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
-    connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
 
     
     //TODO: need enable flag in future
@@ -213,6 +214,8 @@ void QtMainWindow::SetupMainMenu()
 	connect(ui->actionModifyScale, SIGNAL(triggered()), actionHandler, SLOT(ModificationScale()));
 	connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationPlaceOnLand()));
 	connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), actionHandler, SLOT(ModificationSnapToLand()));
+	connect(ui->actionModifyReset, SIGNAL(triggered()), actionHandler, SLOT(OnResetModification()));
+
 	actionHandler->RegisterModificationActions(ResourceEditor::MODIFY_COUNT,
 											   ui->actionModifySelect,
 											   ui->actionModifyMove,
@@ -226,94 +229,33 @@ void QtMainWindow::SetupMainMenu()
  
 }
 
-void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename)
+void QtMainWindow::SetupToolBars()
 {
-	QIcon icon;
-	icon.addFile(iconFilename, QSize(), QIcon::Normal, QIcon::Off);
-	decoratedAction->setIcon(icon);
-}
-
-
-void QtMainWindow::SetupToolBar()
-{
- 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/QtIcons/newscene.png"));
- 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/QtIcons/openscene.png"));
- 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/QtIcons/openproject.png"));
- 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/QtIcons/savescene.png"));
-
- 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/QtIcons/materialeditor.png"));
- 	DecorateWithIcon(ui->actionTileMapEditor, QString::fromUtf8(":/QtIcons/tilemapeditor.png"));
- 	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/QtIcons/heightmapeditor.png"));
- 	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/QtIcons/rulertool.png"));
-    
- 	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/QtIcons/notpassableterrain.png"));
-
-	DecorateWithIcon(ui->actionUndo, QString::fromUtf8(":/QtIcons/edit_undo.png"));
-	DecorateWithIcon(ui->actionRedo, QString::fromUtf8(":/QtIcons/edit_redo.png"));
-
-	ui->mainToolBar->addAction(ui->actionNewScene);
-    ui->mainToolBar->addAction(ui->actionOpenScene);
-    ui->mainToolBar->addAction(ui->actionSaveScene);
-    ui->mainToolBar->addSeparator();
-
-	ui->mainToolBar->addAction(ui->actionUndo);
-	ui->mainToolBar->addAction(ui->actionRedo);
-	ui->mainToolBar->addSeparator();
-
-    ui->mainToolBar->addAction(ui->actionMaterialEditor);
-
-    ui->mainToolBar->addAction(ui->actionHeightMapEditor);
-    ui->mainToolBar->addAction(ui->actionTileMapEditor);
-    ui->mainToolBar->addAction(ui->actionRulerTool);
-
-    ui->mainToolBar->addSeparator();
-    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Check, repack and reload textures"));
-    DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/QtIcons/reloadtextures.png"));
-    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RepackAndReloadTextures()));
-    ui->mainToolBar->addSeparator();
-    
-    ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
-    ui->mainToolBar->addSeparator();
-	
-	//modification options
-	SetupModificationToolBar();
-}
-
-void QtMainWindow::SetupModificationToolBar()
-{
-	DecorateWithIcon(ui->actionModifySelect, QString::fromUtf8(":/QtIcons/modify_select.png"));
-	DecorateWithIcon(ui->actionModifyMove, QString::fromUtf8(":/QtIcons/modify_move.png"));
-	DecorateWithIcon(ui->actionModifyRotate, QString::fromUtf8(":/QtIcons/modify_rotate.png"));
-	DecorateWithIcon(ui->actionModifyScale, QString::fromUtf8(":/QtIcons/modify_scale.png"));
-	DecorateWithIcon(ui->actionModifyPlaceOnLandscape, QString::fromUtf8(":/QtIcons/modify_placeonland.png"));
-	DecorateWithIcon(ui->actionModifySnapToLandscape, QString::fromUtf8(":/QtIcons/modify_snaptoland.png"));
-
-	ui->modificationToolBar->addAction(ui->actionModifySelect);
-	ui->modificationToolBar->addSeparator();
-	ui->modificationToolBar->addAction(ui->actionModifyMove);
-	ui->modificationToolBar->addAction(ui->actionModifyRotate);
-	ui->modificationToolBar->addAction(ui->actionModifyScale);
-	ui->modificationToolBar->addSeparator();
-	ui->modificationToolBar->addAction(ui->actionModifyPlaceOnLandscape);
-	ui->modificationToolBar->addAction(ui->actionModifySnapToLandscape);
-	ui->modificationToolBar->addSeparator();
-
-	QtMainWindowHandler* handler = QtMainWindowHandler::Instance();
-
+	// add special modifications widget into modificationToolBar
 	ModificationWidget* modificationWidget = new ModificationWidget(this);
-	ui->modificationToolBar->addWidget(modificationWidget);
-	connect(modificationWidget, SIGNAL(ApplyModification(double, double, double)),
-			handler, SLOT(OnApplyModification(double, double, double)));
+	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
+	connect(modificationWidget, SIGNAL(ApplyModification(double, double, double)), QtMainWindowHandler::Instance(), SLOT(OnApplyModification(double, double, double)));
 
-	QAction* resetAction = new QAction(tr("Restore Original Transformation"), ui->modificationToolBar);
-	DecorateWithIcon(resetAction, QString::fromUtf8(":/QtIcons/modify_reset.png"));
+	// let "reload" action from mainToolBar be displayed as icon+text
+	ShowActionWithText(ui->mainToolBar, ui->actionReloadAll, true);
 
-	ui->modificationToolBar->addAction(resetAction);
-	connect(resetAction, SIGNAL(triggered()), handler, SLOT(OnResetModification()));
+	// align part of actions from SceneGraph toolbar to the right
+	QWidget* spacer = new QWidget(); 
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	ui->scenegraphToolBar->insertWidget(ui->actionAddNewEntity, spacer);
+	ui->scenegraphToolBar->insertSeparator(ui->actionAddNewEntity);
 
-	ui->modificationToolBar->addSeparator();
+	// let "add new entity" action from sceneGraphToolBar be displayed as icon+text
+	ShowActionWithText(ui->scenegraphToolBar, ui->actionAddNewEntity, true);
 
-	ui->actionModifySelect->setChecked(true);
+	// align part of actions from Properties toolbar to the right
+	spacer = new QWidget(); 
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	ui->propertiesToolBar->insertWidget(ui->actionAddNewComponent, spacer);
+	ui->propertiesToolBar->insertSeparator(ui->actionAddNewComponent);
+
+	// let "add new component" action from propertiesToolBar be displayed as icon+text
+	ShowActionWithText(ui->propertiesToolBar, ui->actionAddNewComponent, true);
 }
 
 void QtMainWindow::OpenLastProject()
@@ -340,13 +282,8 @@ void QtMainWindow::OpenLastProject()
     }
 }
 
-void QtMainWindow::SetupDockWidgets()
+void QtMainWindow::SetupDocks()
 {
-    ui->sceneGraphTree->setDragDropMode(QAbstractItemView::InternalMove);
-    ui->sceneGraphTree->setDragEnabled(true);
-    ui->sceneGraphTree->setAcceptDrops(true);
-    ui->sceneGraphTree->setDropIndicatorShown(true);
-
     connect(ui->actionRefreshSceneGraph, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 	connect(ui->dockParticleEditor->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockVisible(bool)));
 	connect(ui->dockParticleEditorTimeLine->widget(), SIGNAL(ChangeVisible(bool)), this, SLOT(ChangeParticleDockTimeLineVisible(bool)));
@@ -422,6 +359,25 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	Scene * scene = screen->FindCurrentBody()->bodyControl->GetScene();
 	scene->SetReferenceNodeSuffix(str);
+}
+
+void QtMainWindow::ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText)
+{
+	if(NULL != toolbar && NULL != action)
+	{
+		QToolButton *toolBnt = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
+		if(NULL != toolBnt)
+		{
+			if(showText)
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+			}
+			else
+			{
+				toolBnt->setToolButtonStyle(Qt::ToolButtonIconOnly);
+			}
+		}
+	}
 }
 
 bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
