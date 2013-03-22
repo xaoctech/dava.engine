@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
 		49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */; };
+		49C2B8F816F75A39006E24CB /* DeviceInfoTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */; };
 		49C432081675E370000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432061675E370000EA877 /* DXTTest.cpp */; };
-		50D646E816E4E65300785D8C /* IndexBitVectorTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D646E616E4E65300785D8C /* IndexBitVectorTest.cpp */; };
 		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
@@ -77,10 +77,10 @@
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
 		49B774CC16B188A900A80FA3 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
+		49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceInfoTest.cpp; path = Classes/DeviceInfoTest.cpp; sourceTree = "<group>"; };
+		49C2B8F716F75A39006E24CB /* DeviceInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceInfoTest.h; path = Classes/DeviceInfoTest.h; sourceTree = "<group>"; };
 		49C432061675E370000EA877 /* DXTTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DXTTest.cpp; path = Classes/DXTTest.cpp; sourceTree = "<group>"; };
 		49C432071675E370000EA877 /* DXTTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DXTTest.h; path = Classes/DXTTest.h; sourceTree = "<group>"; };
-		50D646E616E4E65300785D8C /* IndexBitVectorTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IndexBitVectorTest.cpp; path = Classes/IndexBitVectorTest.cpp; sourceTree = "<group>"; };
-		50D646E716E4E65300785D8C /* IndexBitVectorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexBitVectorTest.h; path = Classes/IndexBitVectorTest.h; sourceTree = "<group>"; };
 		5C44737515B5A0FD00028948 /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
 		5C44737615B5A0FD00028948 /* SoundTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -245,6 +245,15 @@
 			name = DLCTest;
 			sourceTree = "<group>";
 		};
+		49C2B8F416F75A2A006E24CB /* DeviceInfoTest */ = {
+			isa = PBXGroup;
+			children = (
+				49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */,
+				49C2B8F716F75A39006E24CB /* DeviceInfoTest.h */,
+			);
+			name = DeviceInfoTest;
+			sourceTree = "<group>";
+		};
 		49C432051675E35E000EA877 /* DXTTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -254,19 +263,10 @@
 			name = DXTTests;
 			sourceTree = "<group>";
 		};
-		50D646E316E4E63000785D8C /* IndexBitVectorTest */ = {
-			isa = PBXGroup;
-			children = (
-				50D646E616E4E65300785D8C /* IndexBitVectorTest.cpp */,
-				50D646E716E4E65300785D8C /* IndexBitVectorTest.h */,
-			);
-			name = IndexBitVectorTest;
-			sourceTree = "<group>";
-		};
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				50D646E316E4E63000785D8C /* IndexBitVectorTest */,
+				49C2B8F416F75A2A006E24CB /* DeviceInfoTest */,
 				C18046C616D52E6E00DC24D8 /* DPITest */,
 				C151B1BC16D50BD000E09BAF /* eMailTest */,
 				C177F27C16D2279B0036F02B /* InputTest */,
@@ -565,7 +565,7 @@
 				C177F28016D227A70036F02B /* InputTest.cpp in Sources */,
 				C151B1C016D50BDA00E09BAF /* eMailTest.cpp in Sources */,
 				C18046CA16D52ECA00DC24D8 /* DPITest.cpp in Sources */,
-				50D646E816E4E65300785D8C /* IndexBitVectorTest.cpp in Sources */,
+				49C2B8F816F75A39006E24CB /* DeviceInfoTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

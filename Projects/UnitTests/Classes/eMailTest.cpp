@@ -63,7 +63,7 @@ void EMailTest::LoadResources()
 	
 	address = new UITextField(Rect(100, 10, 600, 30));
 #ifdef __DAVAENGINE_IPHONE__
-	address->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	//address->SetFontColor(1.f, 1.f, 1.f, 1.f);
 #else
 	address->SetFont(font);
 #endif
@@ -75,7 +75,7 @@ void EMailTest::LoadResources()
 
 	subject = new UITextField(Rect(100, 50, 600, 30));
 #ifdef __DAVAENGINE_IPHONE__
-	subject->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	//subject->SetFontColor(1.f, 1.f, 1.f, 1.f);
 #else
 	subject->SetFont(font);
 #endif
@@ -87,7 +87,7 @@ void EMailTest::LoadResources()
 
 	text = new UITextField(Rect(100, 90, 600, 200));
 #ifdef __DAVAENGINE_IPHONE__
-	text->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	//text->SetFontColor(1.f, 1.f, 1.f, 1.f);
 #else
 	text->SetFont(font);
 #endif
