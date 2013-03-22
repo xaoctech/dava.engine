@@ -27,7 +27,10 @@ public:
 	HierarchyTree();
 
     bool Load(const QString& projectPath);
-	bool Save(const QString& projectPath);
+	
+	bool SaveOnlyChangedScreens(const QString& projectPath);
+	bool SaveAll(const QString& projectPath);
+
 	const QString& GetActiveProjectPath() const {return rootNode.GetProjectDir();};
 	
 	void CreateProject();
@@ -46,11 +49,19 @@ public:
 	HierarchyTreeNode* GetNode(const UIControl* control) const;
 	
 	const HierarchyTreeNode::HIERARCHYTREENODESLIST& GetPlatforms() const;
-	
+
+	// Whether the project is created?
 	bool IsProjectCreated() const {return projectCreated;};
-	
+
+	// Returns the list of screens currently unsaved. Might be empty.
+	List<HierarchyTreeScreenNode*> GetUnsavedScreens();
+
     // Update the localization for all controls.
     void UpdateLocalization();
+
+protected:
+	// Do the save itself for only changed screens or for all screens.
+	bool DoSave(const QString& projectPath, bool saveAll);
 
 private:
 	void Clear();

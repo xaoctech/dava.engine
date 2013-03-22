@@ -137,7 +137,7 @@ bool HierarchyTreeAggregatorNode::Load(YamlNode* node, const QString& path)
 	return result;
 }
 
-bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path)
+bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path, bool saveAll)
 {
 	String relPath = ResourcesManageHelper::GetResourceRelativePath(path, true).toStdString();
 	for (CHILDS::iterator iter = childs.begin(); iter != childs.end(); ++iter)
@@ -153,7 +153,7 @@ bool HierarchyTreeAggregatorNode::Save(YamlNode* node, const QString& path)
 	
 	node->Set(WIDTH_NODE, (int32)rect.dx);
 	node->Set(HEIGHT_NODE, (int32)rect.dy);
-	return HierarchyTreeScreenNode::Save(path);
+	return HierarchyTreeScreenNode::Save(path, saveAll);
 }
 
 void HierarchyTreeAggregatorNode::UpdateHierarchyTree()

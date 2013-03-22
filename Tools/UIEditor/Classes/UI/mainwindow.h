@@ -33,6 +33,7 @@ private slots:
 	
 	void OnNewProject();
 	void OnSaveProject();
+	void OnSaveProjectAll();
     void OnOpenProject();
 	void OnCloseProject();
 	void OnExitApplication();
@@ -75,6 +76,9 @@ private:
 	void RestoreMainWindowState();
 	// Create toolbar for HierarchyTreeDockWidget
 	void CreateHierarchyDockWidgetToolbar();
+
+	// Save the full project or changes only.
+	void DoSaveProject(bool changesOnly);
 
 private:
     Ui::MainWindow *ui;
