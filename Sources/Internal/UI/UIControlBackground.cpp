@@ -479,119 +479,235 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	if (!spr)return;
 	Texture *texture = spr->GetTexture(frame);
 	
-	float32 texX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
-	float32 texY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
-	float32 texDx = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
-	float32 texDy = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
-    float32 texOffX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_OFFSET_TO_ACTIVE);
-    float32 texOffY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_OFFSET_TO_ACTIVE);
-
-    const float32 spriteWidth = spr->GetWidth();
-    const float32 spriteHeight = spr->GetHeight();
-
-    const float32 leftOffset  = leftStretchCap - texOffX;
-    const float32 rightOffset = leftStretchCap - ( spriteWidth - texDx - texOffX );
-    const float32 topOffset   = topStretchCap  - texOffY;
-    const float32 bottomOffset= topStretchCap  - ( spriteHeight - texDy - texOffY );
-
-    const float32 realLeftStretchCap  = Max( 0.0f, leftOffset );
-    const float32 realRightStretchCap = Max( 0.0f, rightOffset );
-    const float32 realTopStretchCap   = Max( 0.0f, topOffset );
-    const float32 realBottomStretchCap= Max( 0.0f, bottomOffset );
-
-    const float32 scaleFactorX = drawRect.dx / spriteWidth;
-    const float32 scaleFactorY = drawRect.dy / spriteHeight;
-    const float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    const float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
-
-    const float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
-    const float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
-
-    const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
+	
+	float32 x = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
+	float32 y = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
+	float32 dx = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
+	float32 dy = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
 //	if (spr->IsUseContentScale()) 
 //	{
-		texDx *= resMulFactor;
-		texDy *= resMulFactor;
+		dx /= Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
+		dy /= Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
 //	}
-
-    const float32 leftCap  = realLeftStretchCap   * resMulFactor;
-    const float32 rightCap = realRightStretchCap  * resMulFactor;
-    const float32 topCap   = realTopStretchCap    * resMulFactor;
-    const float32 bottomCap= realBottomStretchCap * resMulFactor;
+	
+	float32 leftCap = leftStretchCap / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
+	float32 topCap = topStretchCap / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
 
 	float32 vertices[16 * 2];
 	float32 texCoords[16 * 2];
 	
-    float32 textureWidth = (float32)texture->GetWidth();
-    float32 textureHeight = (float32)texture->GetHeight();
+	float32 textureWidth = (float32)texture->GetWidth();
+	float32 textureHeight = (float32)texture->GetHeight();
 	
 	int32 vertInTriCount = 18;
 	int32 vertCount = 16;
-
 	switch (type) 
 	{
 		case DRAW_STRETCH_HORIZONTAL:
 		{
-            vertices[0] = vertices[8]  = x;
-            vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
-            vertices[4] = vertices[12] = x + dx - realRightStretchCap;
-
-            vertices[2] = vertices[10] = x + realLeftStretchCap;
-            vertices[9] = vertices[11] = vertices[13] = vertices[15] = y + dy;
-            vertices[6] = vertices[14] = x + dx;
-
-            texCoords[0] = texCoords[8]  = texX / textureWidth;
-            texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[4] = texCoords[12] = (texX + texDx - rightCap) / textureWidth;
-
-            texCoords[2] = texCoords[10] = (texX + leftCap) / textureWidth;
-            texCoords[9] = texCoords[11] = texCoords[13] = texCoords[15] = (texY + texDy) / textureHeight;
-            texCoords[6] = texCoords[14] = (texX + texDx) / textureWidth;
+			
+			vertices[0] = drawRect.x;
+			vertices[1] = drawRect.y;
+			
+			vertices[2] = drawRect.x + leftStretchCap;
+			vertices[3] = drawRect.y;
+			
+			vertices[4] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[5] = drawRect.y;
+			
+			vertices[6] = drawRect.x + drawRect.dx;
+			vertices[7] = drawRect.y;
+			
+			vertices[8] = drawRect.x;
+			vertices[9] = drawRect.y + drawRect.dy;
+			
+			vertices[10] = drawRect.x + leftStretchCap;
+			vertices[11] = drawRect.y + drawRect.dy;
+			
+			vertices[12] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[13] = drawRect.y + drawRect.dy;
+			
+			vertices[14] = drawRect.x + drawRect.dx;
+			vertices[15] = drawRect.y + drawRect.dy;
+			
+			
+			texCoords[0] = x / textureWidth;
+			texCoords[1] = y / textureHeight;
+			
+			texCoords[2] = (x + leftCap) / textureWidth;
+			texCoords[3] = y / textureHeight;
+			
+			texCoords[4] = (x + dx - leftCap) / textureWidth;
+			texCoords[5] = y / textureHeight;
+			
+			texCoords[6] = (x + dx) / textureWidth;
+			texCoords[7] = y / textureHeight;
+			
+			texCoords[8] = x / textureWidth;
+			texCoords[9] = (y + dy) / textureHeight;
+			
+			texCoords[10] = (x + leftCap) / textureWidth;
+			texCoords[11] = (y + dy) / textureHeight;
+			
+			texCoords[12] = (x + dx - leftCap) / textureWidth;
+			texCoords[13] = (y + dy) / textureHeight;
+			
+			texCoords[14] = (x + dx) / textureWidth;
+			texCoords[15] = (y + dy) / textureHeight;
 		}
 		break;
 		case DRAW_STRETCH_VERTICAL:
 		{
-            vertices[0] = vertices[2]  = vertices[4]  = vertices[6]  = x;
-            vertices[8] = vertices[10] = vertices[12] = vertices[14] = x + dx;
-
-            vertices[1] = vertices[9]  = y;
-            vertices[3] = vertices[11] = y + realTopStretchCap;
-            vertices[5] = vertices[13] = y + dy - realBottomStretchCap;
-            vertices[7] = vertices[15] = y + dy;
-
-            texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
-            texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
-
-            texCoords[1] = texCoords[9]  = texY / textureHeight;
-            texCoords[3] = texCoords[11] = (texY + topCap) / textureHeight;
-            texCoords[5] = texCoords[13] = (texY + texDy - bottomCap) / textureHeight;
-            texCoords[7] = texCoords[15] = (texY + texDy) / textureHeight;
+			vertices[0] = drawRect.x;
+			vertices[1] = drawRect.y;
+			
+			vertices[2] = drawRect.x;
+			vertices[3] = drawRect.y + topStretchCap;
+			
+			vertices[4] = drawRect.x;
+			vertices[5] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[6] = drawRect.x;
+			vertices[7] = drawRect.y + drawRect.dy;
+			
+			vertices[8] = drawRect.x + drawRect.dx;
+			vertices[9] = drawRect.y;
+			
+			vertices[10] = drawRect.x + drawRect.dx;
+			vertices[11] = drawRect.y + topStretchCap;
+			
+			vertices[12] = drawRect.x + drawRect.dx;
+			vertices[13] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[14] = drawRect.x + drawRect.dx;
+			vertices[15] = drawRect.y + drawRect.dy;
+			
+			texCoords[0] = x / textureWidth;
+			texCoords[1] = y / textureHeight;
+			
+			texCoords[2] = x / textureWidth;
+			texCoords[3] = (y + topCap) / textureHeight;
+			
+			texCoords[4] = x / textureWidth;
+			texCoords[5] = (y + dy - topCap) / textureHeight;
+			
+			texCoords[6] = x / textureWidth;
+			texCoords[7] = (y + dy) / textureHeight;
+			
+			texCoords[8] = (x + dx) / textureWidth;
+			texCoords[9] = y / textureHeight;
+			
+			texCoords[10] = (x + dx) / textureWidth;
+			texCoords[11] = (y + topCap) / textureHeight;
+			
+			texCoords[12] = (x + dx) / textureWidth;
+			texCoords[13] = (y + dy - topCap) / textureHeight;
+			
+			texCoords[14] = (x + dx) / textureWidth;
+			texCoords[15] = (y + dy) / textureHeight;
 		}
 		break;
 		case DRAW_STRETCH_BOTH:
 		{
-            vertInTriCount = 18 * 3;
-            vertCount = 32;
-
-            vertices[0] = vertices[8]  = vertices[16] = vertices[24] = x;
-            vertices[2] = vertices[10] = vertices[18] = vertices[26] = x + realLeftStretchCap;
-            vertices[4] = vertices[12] = vertices[20] = vertices[28] = x + dx - realRightStretchCap;
-            vertices[6] = vertices[14] = vertices[22] = vertices[30] = x + dx;
-
-            vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
-            vertices[9] = vertices[11] = vertices[13] = vertices[15] = y + realTopStretchCap;
-            vertices[17]= vertices[19] = vertices[21] = vertices[23] = y + dy - realBottomStretchCap;
-            vertices[25]= vertices[27] = vertices[29] = vertices[31] = y + dy;
-
-            texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
-            texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
-            texCoords[4] = texCoords[12] = texCoords[20] = texCoords[28] = (texX + texDx - rightCap) / textureWidth;
-            texCoords[6] = texCoords[14] = texCoords[22] = texCoords[30] = (texX + texDx) / textureWidth;
-
-            texCoords[1]  = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[9]  = texCoords[11] = texCoords[13] = texCoords[15] = (texY + topCap) / textureHeight;
-            texCoords[17] = texCoords[19] = texCoords[21] = texCoords[23] = (texY + texDy - bottomCap)  / textureHeight;
-            texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
+			vertInTriCount = 18 * 3;
+			vertCount = 32;
+			vertices[0] = drawRect.x;
+			vertices[1] = drawRect.y;
+			
+			vertices[2] = drawRect.x + leftStretchCap;
+			vertices[3] = drawRect.y;
+			
+			vertices[4] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[5] = drawRect.y;
+			
+			vertices[6] = drawRect.x + drawRect.dx;
+			vertices[7] = drawRect.y;
+			
+			vertices[8] = drawRect.x;
+			vertices[9] = drawRect.y + topStretchCap;
+			
+			vertices[10] = drawRect.x + leftStretchCap;
+			vertices[11] = drawRect.y + topStretchCap;
+			
+			vertices[12] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[13] = drawRect.y + topStretchCap;
+			
+			vertices[14] = drawRect.x + drawRect.dx;
+			vertices[15] = drawRect.y + topStretchCap;
+			
+			vertices[16] = drawRect.x;
+			vertices[17] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[18] = drawRect.x + leftStretchCap;
+			vertices[19] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[20] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[21] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[22] = drawRect.x + drawRect.dx;
+			vertices[23] = drawRect.y + drawRect.dy - topStretchCap;
+			
+			vertices[24] = drawRect.x;
+			vertices[25] = drawRect.y + drawRect.dy;
+			
+			vertices[26] = drawRect.x + leftStretchCap;
+			vertices[27] = drawRect.y + drawRect.dy;
+			
+			vertices[28] = drawRect.x + drawRect.dx - leftStretchCap;
+			vertices[29] = drawRect.y + drawRect.dy;
+			
+			vertices[30] = drawRect.x + drawRect.dx;
+			vertices[31] = drawRect.y + drawRect.dy;			
+			
+			// 
+			
+			texCoords[0] = x / textureWidth;
+			texCoords[1] = y / textureHeight;
+			
+			texCoords[2] = (x + leftCap) / textureWidth;
+			texCoords[3] = y / textureHeight;
+			
+			texCoords[4] = (x + dx - leftCap) / textureWidth;
+			texCoords[5] = y / textureHeight;
+			
+			texCoords[6] = (x + dx) / textureWidth;
+			texCoords[7] = y / textureHeight;
+			
+			texCoords[8] = x / textureWidth;
+			texCoords[9] = (y + topCap) / textureHeight;
+			
+			texCoords[10] = (x + leftCap) / textureWidth;
+			texCoords[11] = (y + topCap) / textureHeight;
+			
+			texCoords[12] = (x + dx - leftCap) / textureWidth;
+			texCoords[13] = (y + topCap) / textureHeight;
+			
+			texCoords[14] = (x + dx) / textureWidth;
+			texCoords[15] = (y + topCap) / textureHeight;
+			
+			texCoords[16] = x / textureWidth;
+			texCoords[17] = (y + dy - topCap) / textureHeight;
+			
+			texCoords[18] = (x + leftCap) / textureWidth;
+			texCoords[19] = (y + dy - topCap)  / textureHeight;
+			
+			texCoords[20] = (x + dx - leftCap) / textureWidth;
+			texCoords[21] = (y + dy - topCap)  / textureHeight;
+			
+			texCoords[22] = (x + dx) / textureWidth;
+			texCoords[23] = (y + dy - topCap)  / textureHeight;
+			
+			texCoords[24] = x / textureWidth;
+			texCoords[25] = (y + dy) / textureHeight;
+			
+			texCoords[26] = (x + leftCap) / textureWidth;
+			texCoords[27] = (y + dy) / textureHeight;
+			
+			texCoords[28] = (x + dx - leftCap) / textureWidth;
+			texCoords[29] = (y + dy) / textureHeight;
+			
+			texCoords[30] = (x + dx) / textureWidth;
+			texCoords[31] = (y + dy) / textureHeight;
 		}
 		break;
 	}
