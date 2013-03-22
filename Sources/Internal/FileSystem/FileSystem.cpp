@@ -381,14 +381,20 @@ const FilePath & FileSystem::SystemPathForFrameworkPath(const FilePath & framewo
     String::size_type find = pathname.find("~res:");
 	if(find != String::npos)
 	{
-		tempRetPath = FilePath(FilepathRelativeToBundle("")) + FilePath(pathname.erase(0, 5));
+        FilePath p(FilepathRelativeToBundle(""));
+        p.MakeDirectoryPathname();
+        
+		tempRetPath = p + FilePath(pathname.erase(0, 5));
 	}
 	else
 	{
 		find = pathname.find("~doc:");
 		if(find != String::npos)
 		{
-            tempRetPath = FilePath(FilepathInDocuments("")) + FilePath(pathname.erase(0, 5));
+            FilePath p(FilepathInDocuments(""));
+            p.MakeDirectoryPathname();
+            
+            tempRetPath = p + FilePath(pathname.erase(0, 5));
 		}
         else
         {

@@ -105,9 +105,18 @@ FileList::FileList(const FilePath & filepath)
 	{
 		while(n--)
 		{
-			entry.path = FilePath(namelist[n]->d_name);
+            if(String(namelist[n]->d_name) == String(".") || String(namelist[n]->d_name) == String(".."))
+            {
+                continue;
+            }
+            
+			entry.path = path + FilePath(namelist[n]->d_name);
 			entry.size = 0;
 			entry.isDirectory = namelist[n]->d_type == DT_DIR;
+            if(entry.isDirectory)
+            {
+                entry.path.MakeDirectoryPathname();
+            }
 			fileList.push_back(entry);
 			free(namelist[n]);
 		}
@@ -121,7 +130,7 @@ FileList::FileList(const FilePath & filepath)
 	{
 		if (IsDirectory(fi))
 		{
-			String filename = GetPathname(fi).GetFilename();
+			String filename = GetPathname(fi).GetLastDirectoryName();
 			if ((filename != ".") && (filename != ".."))
 				directoryCount++;
 		}else
@@ -153,22 +162,6 @@ const FilePath & FileList::GetPathname(int32 index)
 {
 	DVASSERT((index >= 0) && (index < (int32)fileList.size()));
 	return fileList[index].path;
-
-//	if (fileList[index].pathName.size() < fileList[index].name.size())
-//	{
-//		// create full name
-//		fileList[index].pathName = path;
-//
-//            //path.size() > 3 WTF?!!
-////		if (path.size() > 3 && path[path.length()-1] != '/')
-////			fileList[index].pathName.append("/");
-//		if ((0 < path.length()) && (path[path.length()-1] != '/'))
-//			fileList[index].pathName.append("/");
-//
-//		fileList[index].pathName.append(fileList[index].name);
-//	}
-//
-//	return fileList[index].pathName; 
 }
 
 bool FileList::IsDirectory(int32 index) 
