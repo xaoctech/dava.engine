@@ -1005,13 +1005,7 @@
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\GUIState.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp">
       <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp">
@@ -1253,9 +1247,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
-      <Filter>Sources\Qt\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\DockSceneGraph\GraphItem_moc.cpp">
       <Filter>QtGenerated\DockSceneGraph</Filter>
@@ -1562,6 +1553,12 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockSceneGraph\PointerHolder.cpp">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2384,13 +2381,7 @@
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\GUIState.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\mainwindow.h">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\PointerHolder.h">
       <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h">
@@ -2548,9 +2539,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
-      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\ImageSplitter\ImageSplitter.h">
       <Filter>Sources\ImageSplitter</Filter>
@@ -2753,6 +2741,12 @@
     <ClInclude Include="Classes\SceneEditor\SceneUtilsScreen.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockSceneGraph\PointerHolder.h">
+      <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -2950,6 +2944,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\HangingObjectsView.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\ModificationWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

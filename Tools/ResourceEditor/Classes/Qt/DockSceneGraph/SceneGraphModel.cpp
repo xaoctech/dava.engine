@@ -1,5 +1,6 @@
 #include "SceneGraphModel.h"
 #include "SceneGraphItem.h"
+#include "PointerHolder.h"
 
 #include "Qt/Scene/SceneData.h"
 #include "Qt/Scene/SceneDataManager.h"
@@ -8,7 +9,6 @@
 #include "GraphItem.h"
 #include "SceneGraphModelStateHelper.h"
 
-#include "Main/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/ArrowsNode.h"
 

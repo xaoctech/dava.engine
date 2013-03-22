@@ -12,7 +12,7 @@
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	: QtPropertyEditor(parent)
-	, hideReadOnly(false)
+	, advancedMode(false)
 	, curNode(NULL)
 	, treeStateHelper(this, this->curModel)
 {
@@ -23,9 +23,8 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneDataManager::Instance(), SIGNAL(SceneNodeSelected(SceneData *, DAVA::Entity *)), this, SLOT(sceneNodeSelected(SceneData *, DAVA::Entity *)));
 
 	// MainWindow actions
-	QObject::connect(QtMainWindow::Instance()->GetUI()->actionPropHideReadonly, SIGNAL(triggered()), this, SLOT(actionHideReadOnly()));
-
-	hideReadOnly = QtMainWindow::Instance()->GetUI()->actionPropHideReadonly->isChecked();
+	QObject::connect(QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp, SIGNAL(triggered()), this, SLOT(actionShowAdvanced()));
+	advancedMode = QtMainWindow::Instance()->GetUI()->actionShowAdvancedProp->isChecked();
 
 
 	posSaver.Attach(this, "DocPropetyEditor");
@@ -67,12 +66,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 				if(NULL != componentData)
 				{
 					// Add optional button to track "remove this component" command
-					QPushButton *removeButton = new QPushButton();
-
-					QIcon removeIcon;
-					removeIcon.addFile(QString::fromUtf8(":/QtIconsTextureDialog/editclear.png"), QSize(), QIcon::Normal, QIcon::Off);
-
-					removeButton->setIcon(removeIcon);
+					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/remove.png"), "");
 					removeButton->setIconSize(QSize(12, 12));
 					removeButton->setFlat(true);
 
@@ -92,6 +86,15 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 	{
 		// Expand the root elements as default value.
 		expandToDepth(0);
+	}
+}
+
+void PropertyEditor::SetAdvancedMode(bool set)
+{
+	if(advancedMode != set)
+	{
+		advancedMode = set;
+		SetNode(curNode);
 	}
 }
 
@@ -120,21 +123,22 @@ QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA
 			int hasFlags = DAVA::INTROSPECTION_EDITOR;
 			int hasNotFlags = 0;
 
-			if(hideReadOnly) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
+			if(!advancedMode) hasNotFlags |= DAVA::INTROSPECTION_EDITOR_READONLY;
 
 			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
-			if(propData->ChildCount() > 0)
+
+			//if(propData->ChildCount() > 0)
 			{
 				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
             
 	            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
 		        prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
 			}
-			else
-			{
-				delete propData;
-				propData = NULL;
-			}
+			//else
+			//{
+			//	delete propData;
+			//	propData = NULL;
+			//}
         }
     }
 
@@ -165,12 +169,11 @@ void PropertyEditor::sceneNodeSelected(SceneData *sceneData, DAVA::Entity *node)
 	SetNode(node);
 }
 
-void PropertyEditor::actionHideReadOnly()
+void PropertyEditor::actionShowAdvanced()
 {
-	QAction *hideAction = dynamic_cast<QAction *>(QObject::sender());
-	if(NULL != hideAction)
+	QAction *showAdvancedAction = dynamic_cast<QAction *>(QObject::sender());
+	if(NULL != showAdvancedAction)
 	{
-		hideReadOnly = hideAction->isChecked();
-		SetNode(curNode);
+		SetAdvancedMode(showAdvancedAction->isChecked());
 	}
 }

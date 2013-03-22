@@ -1,12 +1,12 @@
 #include "GraphModel.h"
 #include "GraphItem.h"
+#include "PointerHolder.h"
 
 #include <QTreeView>
 #include <QMimeData>
 #include <QApplication>
 
 #include "Main/QtUtils.h"
-#include "Main/PointerHolder.h"
 
 #include "DAVAEngine.h"
 using namespace DAVA;

@@ -378,8 +378,10 @@
     <ClCompile Include="Classes\Qt\DockParticleEditor\TimeLineWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\ExtraUserData.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\GraphModel.cpp" />
+    <ClCompile Include="Classes\Qt\DockSceneGraph\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneGraph\SceneGraphModel.cpp" />
@@ -389,11 +391,8 @@
     <ClCompile Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp" />
-    <ClCompile Include="Classes\Qt\Main\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
     <ClCompile Include="Classes\Qt\Main\ModificationWidget.cpp" />
-    <ClCompile Include="Classes\Qt\Main\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\Main\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\Main\ScenePreviewDialog.cpp" />
@@ -868,8 +867,10 @@
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditor.h" />
     <ClInclude Include="Classes\Qt\DockProperties\PropertyEditorStateHelper.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\ExtraUserData.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\GraphModel.h" />
+    <ClInclude Include="Classes\Qt\DockSceneGraph\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\QSceneGraphTreeView.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneGraph\SceneGraphModel.h" />
@@ -878,11 +879,8 @@
     <ClInclude Include="Classes\Qt\DockSetSwitchIndex\SetSwitchIndexView.h" />
     <ClInclude Include="Classes\Qt\DockVisibilityTool\VisibilityToolView.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h" />
-    <ClInclude Include="Classes\Qt\Main\GUIState.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h" />
-    <ClInclude Include="Classes\Qt\Main\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\Main\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\Main\QTreeViewStateHelper.h" />
     <ClInclude Include="Classes\Qt\Main\QtUtils.h" />
@@ -1024,6 +1022,7 @@
     </None>
     <None Include="DataQt\CustomColorsView.ui" />
     <None Include="DataQt\materialbrowser.ui" />
+    <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
