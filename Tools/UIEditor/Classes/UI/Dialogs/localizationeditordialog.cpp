@@ -3,6 +3,7 @@
 #include "LocalizationSystemHelper.h"
 #include "PropertiesGridController.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
 
 #include <QFileDialog>
@@ -118,8 +119,15 @@ void LocalizationEditorDialog::SetDefaultLanguage()
 
 void LocalizationEditorDialog::OnOpenLocalizationFileButtonClicked()
 {
-    QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ),
-																ResourcesManageHelper::GetResourceRootDirectory());
+	String relativeLocalizationPath = LocalizationSystem::Instance()->GetDirectoryPath();
+	QString absoluteLocalizationPath = QString::fromStdString(FileSystem::Instance()->SystemPathForFrameworkPath(relativeLocalizationPath));
+
+	if (absoluteLocalizationPath.isEmpty())
+	{
+		absoluteLocalizationPath = ResourcesManageHelper::GetResourceRootDirectory();
+	}
+
+    QString fileDirectory = QFileDialog::getExistingDirectory(this, tr( "Select localization files directory" ), absoluteLocalizationPath);
 
 	if(!fileDirectory.isNull() && !fileDirectory.isEmpty())
     {
