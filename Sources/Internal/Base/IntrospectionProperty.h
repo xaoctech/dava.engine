@@ -184,50 +184,50 @@ namespace DAVA
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV (TT::*)() const) _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), _g, _s, _flags);
+		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV (TT::*)() const) _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionProperty<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV (TT::*)() const) _g, _s, _flags);
 	}
 
 	// ret ref
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV& (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV& (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV& (TT::*)() const) _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV& (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV& (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV& (TT::*)() const) _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV& (TT::*_g)(), void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV& (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV& (TT::*)() const) _g, _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV& (TT::*_g)() const, void (TT::*_s)(const VV&), int _flags)
 	{
-		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV>(), (VV& (TT::*)() const) _g, _s, _flags);
+		return new IntrospectionPropertyReturnRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV>(), (VV& (TT::*)() const) _g, _s, _flags);
 	}
 
 
@@ -235,49 +235,49 @@ namespace DAVA
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV* (TT::*_g)(), void (TT::*_s)(const VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV* (TT::*_g)() const, void (TT::*_s)(const VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV* (TT::*_g)(), void (TT::*_s)(const VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV* (TT::*_g)() const, void (TT::*_s)(const VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV* (TT::*_g)(), void (TT::*_s)(VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, VV* (TT::*_g)() const, void (TT::*_s)(VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV* (TT::*_g)(), void (TT::*_s)(VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	template<typename TT, typename VV>
 	DAVA::IntrospectionMember* CreateIntrospectionProperty(const char *_name, const char *_desc, const VV* (TT::*_g)() const, void (TT::*_s)(VV*), int _flags)
 	{
-		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<typename VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
+		return new IntrospectionPropertyParamRef<TT,VV>(_name, _desc, DAVA::MetaInfo::Instance<VV*>(), (VV* (TT::*)()) _g, (void (TT::*)(VV *)) _s, _flags);
 	}
 
 	// param simple
