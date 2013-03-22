@@ -46,10 +46,9 @@ public:
 		RemoveChildren();
 	};
 	
-	void Set(int32 _level, const String & _name, const String & _pathname, bool _isDirectory)
+	void Set(int32 _level, const FilePath & _pathname, bool _isDirectory)
 	{
 		level = _level;
-		name = _name;
 		pathname = _pathname;
 		isDirectory = _isDirectory;
 		isExpanded = isDirectory ? (false) : (true);
@@ -57,8 +56,7 @@ public:
 	
 	void RemoveChildren();
 	int32 GetLevel() { return level; };
-	const String & GetName() {return name; };
-	const String & GetPathname() { return pathname; };
+	const FilePath & GetPathname() { return pathname; };
 	bool IsDirectory() { return isDirectory; };
 	bool IsExpanded() { return isExpanded; };
 	void ToggleExpanded();// { isExpanded = !isExpanded; };
@@ -71,8 +69,7 @@ public:
 private:
 	UIFileTree * ownerTree;
 	int32  level;
-	String name;
-	String pathname;
+	FilePath pathname;
 	Vector<UITreeItemInfo*> children;
 	bool isExpanded;
 	bool isDirectory;
@@ -91,7 +88,7 @@ public:
 		\param[in] path path to directory you want to set as head directory of the file tree
 		\param[in] extensions comma separated list of extensions you want to show, "" means that you accept all extensions
 	 */
-	void SetPath(const String & path, const String & extensions = "");
+	void SetPath(const FilePath & path, const String & extensions = "");
 	/**
 		\brief Set delegate to handle UIFileTree selections
 	 */
@@ -128,11 +125,11 @@ private:
 	void OnDirectoryChange(BaseObject * obj, void * userData, void * callerData);
 private:
 	
-	void RecursiveTreeWalk(const String & path, UITreeItemInfo * current);
+	void RecursiveTreeWalk(const FilePath & path, UITreeItemInfo * current);
 	
 	UIFileTreeDelegate * delegate;
 	UITreeItemInfo * treeHead;
-	String path;	
+	FilePath path;	
 	String originalExtensionsString;
 	Vector<String> extensions;
 	bool isFolderNavigationEnabled;

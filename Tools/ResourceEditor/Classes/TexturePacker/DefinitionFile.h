@@ -20,22 +20,22 @@ using namespace DAVA;
 class DefinitionFile 
 {
 public:
-	bool Load(const std::string & filename);
-	bool LoadPNGDef(const std::string & filename, const std::string & pathToProcess);
+	bool Load(const FilePath & filename);
+	bool LoadPNGDef(const FilePath & filename, const FilePath & pathToProcess);
 	
 	DefinitionFile();
 	~DefinitionFile();
 	
 	void ClearPackedFrames();
-	void LoadPNG(const String & fullname, const String & processDirectoryPath);
+	void LoadPNG(const FilePath & fullname, const FilePath & processDirectoryPath);
 
-	std::string filename;
+	FilePath    filename;
 	int			frameCount;
 	int			spriteWidth;
 	int			spriteHeight;
 	Rect2i		* frameRects;
 
-	std::vector<std::string> pathsInfo;
+	Vector<String> pathsInfo;
 };
 
 #endif

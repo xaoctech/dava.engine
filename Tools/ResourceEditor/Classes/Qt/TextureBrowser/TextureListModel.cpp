@@ -28,7 +28,7 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
-			return QVariant(QFileInfo(curTextureDescriptor->GetSourceTexturePathname().c_str()).fileName());
+			return QVariant(QFileInfo(curTextureDescriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()).fileName());
 			break;
 
 		default:
@@ -207,7 +207,7 @@ void TextureListModel::applyFilterAndSort()
 
 	for(int i = 0; i < (int) textureDescriptorsAll.size(); ++i)
 	{
-		if( (curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.find(curFilter.toStdString())) &&	// text filter
+		if( (curFilter.isEmpty() || DAVA::String::npos != textureDescriptorsAll[i]->pathname.GetAbsolutePathname().find(curFilter.toStdString())) &&	// text filter
 			(!curFilterBySelectedNode || textureDescriptorsHighlight.contains(textureDescriptorsAll[i])))						// cur selected node filter
 		{
 			textureDescriptorsFiltredSorted.push_back(textureDescriptorsAll[i]);
@@ -247,12 +247,12 @@ void TextureListModel::applyFilterAndSort()
 
 bool SortFnByName::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-	return QFileInfo(t1->pathname.c_str()).completeBaseName() < QFileInfo(t2->pathname.c_str()).completeBaseName();
+	return QFileInfo(t1->pathname.GetAbsolutePathname().c_str()).completeBaseName() < QFileInfo(t2->pathname.GetAbsolutePathname().c_str()).completeBaseName();
 }
 
 bool SortFnByFileSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-	return QFileInfo(t1->GetSourceTexturePathname().c_str()).size() < QFileInfo(t2->GetSourceTexturePathname().c_str()).size();
+	return QFileInfo(t1->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size() < QFileInfo(t2->GetSourceTexturePathname().GetAbsolutePathname().c_str()).size();
 }
 
 bool SortFnByImageSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)

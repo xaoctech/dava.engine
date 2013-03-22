@@ -40,7 +40,7 @@ public:
 
 	void RecursiveTreeWalk(const FilePath & inputPath,const FilePath & outputPath);
 	bool IsMD5ChangedDir(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName, bool isRecursive);
-	bool IsMD5ChangedFile(const String & processDirectoryPath, const FilePath & pathname, const FilePath & psdName);
+	bool IsMD5ChangedFile(const FilePath & processDirectoryPath, const FilePath & pathname, const FilePath & psdName);
 	DefinitionFile * ProcessPSD(const FilePath & processDirectoryPath, const FilePath & psdPathname, const FilePath & psdName);
 	void ProcessFlags(const FilePath & flagsPathname);
 	FilePath GetProcessFolderName();

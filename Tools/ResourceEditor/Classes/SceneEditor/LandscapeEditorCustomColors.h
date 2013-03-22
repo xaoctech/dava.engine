@@ -37,9 +37,9 @@ public:
 
 	void SetColor(const Color &newColor);
 	void SetRadius(int radius);
-	void SaveColorLayer(const String &pathName);
-	void LoadColorLayer(const String &pathName);
-	String GetCurrentSaveFileName();
+	void SaveColorLayer(const FilePath &pathName);
+	void LoadColorLayer(const FilePath &pathName);
+	FilePath GetCurrentSaveFileName();
 
 	void ClearSceneResources();
 
@@ -59,14 +59,14 @@ protected:
 	void StoreOriginalState();
 	void CreateUndoPoint();
 
-	String GetScenePath();
-	String GetRelativePathToScenePath(const String& absolutePath);
-	String GetAbsolutePathFromScenePath(const String& relativePath);
-	String GetRelativePathToProjectPath(const String& absolutePath);
-	String GetAbsolutePathFromProjectPath(const String& relativePath);
-	void StoreSaveFileName(const String& fileName);
+	FilePath GetScenePath();
+	FilePath GetRelativePathToScenePath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromScenePath(const FilePath& relativePath);
+	FilePath GetRelativePathToProjectPath(const FilePath& absolutePath);
+	FilePath GetAbsolutePathFromProjectPath(const FilePath& relativePath);
+	void StoreSaveFileName(const FilePath& fileName);
 
-	void LoadTextureAction(const String& pathToFile);
+	void LoadTextureAction(const FilePath& pathToFile);
 
     virtual void RecreateHeightmapNode();
 	void UpdateCircleTexture(bool setTransparent);
@@ -78,7 +78,7 @@ protected:
     void DrawCircle(Vector<Vector<bool> >& matrixForCircle) ;
     uint8*	DrawFilledCircleWithFormat(uint32 radius, DAVA::PixelFormat format, bool setTransparent);
 
-	Map<Landscape*, String> saveFileNamesMap;
+	Map<Landscape*, FilePath> saveFileNamesMap;
 	
 	bool wasTileMaskToolUpdate;
     

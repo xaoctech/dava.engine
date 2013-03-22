@@ -21,8 +21,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     fileSystemDialog = new UIFileSystemDialog(FilePath("~res:/Fonts/MyriadPro-Regular.otf"));
     fileSystemDialog->SetDelegate(this);
 
-    String path = EditorSettings::Instance()->GetDataSourcePath();
-    if(path.length())
+    FilePath path = EditorSettings::Instance()->GetDataSourcePath();
+    if(path.IsInitalized())
     {
         fileSystemDialog->SetCurrentDir(path);   
     }
@@ -301,7 +301,7 @@ void LandscapeEditorBase::ClearSceneResources()
 	}
 }
 
-void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
+void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const FilePath &pathToFile)
 {
     switch (fileSystemDialogOpMode) 
     {

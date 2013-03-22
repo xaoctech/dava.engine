@@ -65,7 +65,7 @@ public:
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
     
     //file dialog delegate
-    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const FilePath &pathToFile);
     virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
     //Tools Panel delegate

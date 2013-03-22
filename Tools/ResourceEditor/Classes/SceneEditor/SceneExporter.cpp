@@ -112,7 +112,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     //Export scene data
     RemoveEditorNodes(scene);
 
-    String oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
+    FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
@@ -251,11 +251,9 @@ void SceneExporter::ExportLandscapeFullTiledTexture(Landscape *landscape, Set<St
     FilePath textureName = landscape->GetTextureName(Landscape::TEXTURE_TILE_FULL);
     if(!textureName.IsInitalized())
     {
-        String colorTextureMame = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
-        String filename, pathname;
-        FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+        FilePath fullTiledPathname = landscape->GetTextureName(Landscape::TEXTURE_COLOR);
+        fullTiledPathname.ReplaceExtension(".thumbnail_exported.png");
         
-        String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail_exported.png");
         String workingPathname = sceneUtils.RemoveFolderFromPath(fullTiledPathname, sceneUtils.dataSourceFolder);
         sceneUtils.PrepareFolderForCopy(workingPathname, errorLog);
 
@@ -313,19 +311,19 @@ bool SceneExporter::ExportTexture(const FilePath &texturePathname, Set<String> &
     return sceneUtils.CopyFile(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat), errorLog);;
 }
 
-bool SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<String> &errorLog)
+bool SceneExporter::ExportTextureDescriptor(const FilePath &texturePathname, Set<String> &errorLog)
 {
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(texturePathname);
     if(!descriptor)
     {
-        errorLog.insert(Format("Can't create descriptor for pathname %s", texturePathname.c_str()));
+        errorLog.insert(Format("Can't create descriptor for pathname %s", texturePathname.GetAbsolutePathname().c_str()));
         return false;
     }
 
     if(     (exportFormat == PVR_FILE && descriptor->pvrCompression.format == FORMAT_INVALID)
        ||   (exportFormat == DXT_FILE && descriptor->dxtCompression.format == FORMAT_INVALID))
     {
-        errorLog.insert(Format("Not selected export format for pathname %s", texturePathname.c_str()));
+        errorLog.insert(Format("Not selected export format for pathname %s", texturePathname.GetAbsolutePathname().c_str()));
         
         SafeRelease(descriptor);
         return false;
@@ -352,7 +350,8 @@ void SceneExporter::CompressTextureIfNeed(const FilePath &texturePathname, Set<S
 {
     String modificationDate = File::GetModificationDate(TextureDescriptor::GetPathnameForFormat(texturePathname, exportFormat));
     
-    String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
+    FilePath sourceTexturePathname(texturePathname);
+    sourceTexturePathname.ReplaceExtension(".png");
     
     if(PNG_FILE != exportFormat)
     {

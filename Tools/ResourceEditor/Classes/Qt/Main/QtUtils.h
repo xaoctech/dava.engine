@@ -9,7 +9,7 @@
 
 DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname);
 
-DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter);
+DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter);
 
 
 DAVA::WideString SizeInBytesToWideString(DAVA::float32 size);

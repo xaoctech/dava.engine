@@ -19,8 +19,8 @@ SpritePackerHelper::SpritePackerHelper()
 
 void SpritePackerHelper::UpdateParticleSprites()
 {
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(projectPath.empty())
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(!projectPath.IsInitalized())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;
@@ -34,9 +34,9 @@ void SpritePackerHelper::UpdateParticleSprites()
 void SpritePackerHelper::Pack()
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-	String inputDir = projectPath+"DataSource/Gfx/Particles";
-	String outputDir = projectPath+"Data/Gfx/Particles";
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+	FilePath inputDir = projectPath + FilePath("DataSource/Gfx/Particles/");
+	FilePath outputDir = projectPath + FilePath("Data/Gfx/Particles/");
 
 	if(!FileSystem::Instance()->IsDirectory(inputDir))
 	{
@@ -45,7 +45,7 @@ void SpritePackerHelper::Pack()
 
 	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
 	
-	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+"DataSource/Gfx",inputDir,"particles.md5",true);
+	bool isChanged = resourcePackerScreen->IsMD5ChangedDir(projectPath+FilePath("DataSource/Gfx/"),inputDir,FilePath("particles.md5"),true);
 	
 	SafeRelease(resourcePackerScreen);
 	if(!isChanged)
@@ -114,8 +114,8 @@ void SpritePackerHelper::ReloadParticleSprites(SceneData* sceneData)
 
 void SpritePackerHelper::UpdateParticleSpritesAsync()
 {
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
-    if(projectPath.empty())
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
+    if(!projectPath.IsInitalized())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
         return;

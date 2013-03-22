@@ -433,7 +433,11 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 		{
 			//Create array yamlnode and add it to map
 			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetRelativePathname()));
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
 			spriteNode->AddValueToArray(spriteFrame);
 			node->AddNodeToMap("thumbSprite", spriteNode);
 		}
@@ -448,7 +452,11 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 		{
 			// Create array yamlnode and add it to map
 			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetRelativePathname()));
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
 			spriteNode->AddValueToArray(spriteFrame);
 			node->AddNodeToMap("minSprite", spriteNode);
 		}
@@ -467,7 +475,11 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 		{
 			// Create array yamlnode and add it to map
 			YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-			spriteNode->AddValueToArray(TruncateTxtFileExtension(sprite->GetRelativePathname()));
+            
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+			spriteNode->AddValueToArray(path.GetAbsolutePathname());
 			spriteNode->AddValueToArray(spriteFrame);
 			node->AddNodeToMap("maxSprite", spriteNode);
 		}

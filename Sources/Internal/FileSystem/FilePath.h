@@ -165,6 +165,31 @@ public:
         \returns resolved pathname in system style. For example "~doc:/Project/cache.dat" will be resolved as "/User/Documents/Project/cache.dat"
 	 */
     String ResolvePathname() const;
+
+    
+	/**
+        \brief Function to modify absolute to be path fo folder. For example "Users/Document" after function call will be "Users/Document/"
+	 */
+    void MakeDirectoryPathname();
+
+	/**
+        \brief Function to truncate extension from path
+	 */
+    void TruncateExtension();
+    
+    /**
+        \brief Function to retrive last directory name from FilePath that represents directory pathname
+        \returns last directory name
+	 */
+    String GetLastDirectoryName() const;
+    
+    
+	/**
+        \brief Function for replacement of pathname from absolutepath
+        \param[in] pathname is pathname for replacement
+	 */
+    void ReplacePath(const FilePath &pathname);
+    
     
 protected:
     

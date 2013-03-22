@@ -80,7 +80,7 @@ public:
      \param[in] pathname path to DataSource/3d folder
      \return old path for checking
 	 */
-    String SetPathForChecking(const FilePath &pathname);
+    FilePath SetPathForChecking(const FilePath &pathname);
     
     void EnumerateSceneTextures();
     void CollectSceneStats(const RenderManager::Stats &newStats);

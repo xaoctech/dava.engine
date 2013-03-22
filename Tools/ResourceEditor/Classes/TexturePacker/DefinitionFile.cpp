@@ -26,19 +26,18 @@ DefinitionFile::~DefinitionFile()
 	SafeDeleteArray(frameRects);
 }
 
-void DefinitionFile::LoadPNG(const String & _filename, const String & pathToProcess)
+void DefinitionFile::LoadPNG(const FilePath & _filename, const FilePath & pathToProcess)
 {
-	String path;
-	String name;
-	CommandLineParser::SplitFilePath(_filename, path, name);
-	String nameWithoutExt = name.substr(0, name.length() - 4);
-	String corespondingPngImage = path + String("/") + nameWithoutExt + String(".png");
+    DVASSERT(pathToProcess.IsDirectoryPathname());
+	
+    String nameWithoutExt = _filename.GetBasename();
+    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
 
-	filename = pathToProcess + String("/") + nameWithoutExt + String(".txt");
+	filename = pathToProcess + FilePath(nameWithoutExt + String(".txt"));
 	frameCount = 1;
 
 	PngImageExt image;
-	image.Read(corespondingPngImage.c_str());
+	image.Read(corespondingPngImage);
 	spriteWidth = image.GetWidth();
 	spriteHeight = image.GetHeight();
 
@@ -48,27 +47,26 @@ void DefinitionFile::LoadPNG(const String & _filename, const String & pathToProc
 	frameRects[0].dx = spriteWidth;
 	frameRects[0].dy = spriteHeight;
 
-	String fileWrite = pathToProcess + String("/") + nameWithoutExt + "0" + String(".png"); 
+	FilePath fileWrite = pathToProcess + FilePath(nameWithoutExt + "0" + String(".png"));
 	FileSystem::Instance()->CopyFile(_filename, fileWrite);
 }
 
-bool DefinitionFile::LoadPNGDef(const std::string & _filename, const std::string & pathToProcess)
+bool DefinitionFile::LoadPNGDef(const FilePath & _filename, const FilePath & pathToProcess)
 {
-	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.c_str()); 
+    DVASSERT(pathToProcess.IsDirectoryPathname());
+
+	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.GetAbsolutePathname().c_str());
 	
-	FILE * fp = fopen(_filename.c_str(), "rt");
+	FILE * fp = fopen(_filename.ResolvePathname().c_str(), "rt");
 	fscanf(fp, "%d", &frameCount);
 
-	String path;
-	String name;
-	CommandLineParser::SplitFilePath(_filename, path, name);
-	String nameWithoutExt = name.substr(0, name.length() - 7);
-	String corespondingPngImage = path + String("/") + nameWithoutExt + String(".png");
+	String nameWithoutExt = _filename.GetBasename();
+	FilePath corespondingPngImage = FilePath(_filename.GetDirectory()) +  FilePath(nameWithoutExt + String(".png"));
 
-	filename = pathToProcess + String("/") + nameWithoutExt + String(".txt");
+	filename = pathToProcess + FilePath(nameWithoutExt + String(".txt"));
 	
 	PngImageExt image;
-	image.Read(corespondingPngImage.c_str());
+	image.Read(corespondingPngImage);
 	spriteWidth = image.GetWidth() / frameCount;
 	spriteHeight = image.GetHeight();
 	
@@ -96,8 +94,8 @@ bool DefinitionFile::LoadPNGDef(const std::string & _filename, const std::string
 		
 		char number[10];
 		sprintf(number, "%d", k);
-		String fileWrite = pathToProcess + String("/") + nameWithoutExt + String(number) + String(".png"); 
-		frameX2.Write(fileWrite.c_str());		
+		FilePath fileWrite = pathToProcess + FilePath(nameWithoutExt + String(number) + String(".png"));
+		frameX2.Write(fileWrite);		
 	
 		frameRects[k].x = reducedRect.x;
 		frameRects[k].y = reducedRect.y;
@@ -134,13 +132,13 @@ bool DefinitionFile::LoadPNGDef(const std::string & _filename, const std::string
 	return true;
 }
 
-bool DefinitionFile::Load(const std::string & _filename)
+bool DefinitionFile::Load(const FilePath & _filename)
 {
 	filename = _filename;
-	FILE * fp = fopen(filename.c_str(), "rt");
+	FILE * fp = fopen(filename.ResolvePathname().c_str(), "rt");
 	if (!fp)
 	{
-		printf("*** ERROR: Can't open definition file: %s\n",filename.c_str()); 
+		printf("*** ERROR: Can't open definition file: %s\n",filename.GetAbsolutePathname().c_str());
 		return false;
 	}
 	fscanf(fp, "%d %d", &spriteWidth, &spriteHeight);
@@ -188,7 +186,7 @@ bool DefinitionFile::Load(const std::string & _filename)
 	
 	
 	fclose(fp);
-	printf("Loaded definition: %s frames: %d\n",filename.c_str(), frameCount); 
+	printf("Loaded definition: %s frames: %d\n",filename.GetAbsolutePathname().c_str(), frameCount);
 	
 	return true;
 }

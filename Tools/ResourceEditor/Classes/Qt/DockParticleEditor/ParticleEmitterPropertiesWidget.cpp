@@ -133,7 +133,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 
-	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath()));
+	emitterYamlPath->setText(QString::fromStdString(emitter->GetConfigPath().GetAbsolutePathname()));
 	emitterType->setCurrentIndex(emitter->emitterType);
 
 	emitterEmissionAngle->Init(0.f, emitterLifeTime, updateMinimize);

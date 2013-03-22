@@ -46,8 +46,10 @@ String DeviceInfo::GetRegion()
 
 String DeviceInfo::GetTimeZone()
 {
-	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
-	return [[localTime name] UTF8String];
+//	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
+//	return [[localTime name] UTF8String];
+    
+    return "";
 }
 
 }

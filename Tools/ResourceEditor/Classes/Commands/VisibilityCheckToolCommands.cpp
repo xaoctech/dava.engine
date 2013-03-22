@@ -56,15 +56,15 @@ CommandSaveTextureVisibilityTool::CommandSaveTextureVisibilityTool()
 
 void CommandSaveTextureVisibilityTool::Execute()
 {
-    String currentPath = FileSystem::Instance()->GetUserDocumentsPath();
+    FilePath currentPath = FileSystem::Instance()->GetUserDocumentsPath();
 	QString filePath = QFileDialog::getSaveFileName(NULL,
 													QString("Save texture"),
-													QString(currentPath.c_str()),
+													QString(currentPath.GetAbsolutePathname().c_str()),
 													QString("PNG image (*.png)"));
 
-	String selectedPathname = PathnameToDAVAStyle(filePath);
+	FilePath selectedPathname = PathnameToDAVAStyle(filePath);
 
-	if(selectedPathname.length() > 0)
+	if(selectedPathname.IsInitalized())
 	{
 		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 		if(screen)

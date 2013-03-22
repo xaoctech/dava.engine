@@ -22,7 +22,7 @@ PngImageExt::~PngImageExt()
     SafeRelease(internalData);
 }
 
-bool PngImageExt::Read(const String & filename)
+bool PngImageExt::Read(const FilePath & filename)
 {
     SafeRelease(internalData);
     
@@ -33,7 +33,7 @@ bool PngImageExt::Read(const String & filename)
     {
         if (CommandLineParser::Instance()->GetVerbose())
         {
-            Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.c_str());
+            Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
         }
 
         SafeRelease(internalData);
@@ -42,7 +42,7 @@ bool PngImageExt::Read(const String & filename)
 	return (internalData != NULL);
 }
 
-void PngImageExt::Write(const String & filename)
+void PngImageExt::Write(const FilePath & filename)
 {
     DVASSERT(internalData);
     ImageLoader::Save(internalData, filename);

@@ -251,6 +251,33 @@ String FilePath::ResolvePathname() const
     return GetSystemPathname(absolutePathname);
 }
     
+void FilePath::MakeDirectoryPathname()
+{
+    absolutePathname = MakeDirectory(absolutePathname);
+}
+    
+void FilePath::TruncateExtension()
+{
+    ReplaceExtension(String(""));
+}
+    
+String FilePath::GetLastDirectoryName() const
+{
+    DVASSERT(IsInitalized() && IsDirectoryPathname());
+    
+    String path = absolutePathname;
+    path = path.substr(0, path.length() - 1);
+    
+    return FilePath(path).GetFilename();
+}
+    
+void FilePath::ReplacePath(const FilePath &pathname)
+{
+    StringReplace(absolutePathname, pathname.GetAbsolutePathname(), String(""));
+}
+
+    
+    
 FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String &extension)
 {
     FilePath path(pathname);
@@ -258,8 +285,6 @@ FilePath FilePath::CreateWithNewExtension(const FilePath &pathname, const String
     return path;
 }
 
-    
-    
     
 String FilePath::GetSystemPathname(const String &pathname)
 {

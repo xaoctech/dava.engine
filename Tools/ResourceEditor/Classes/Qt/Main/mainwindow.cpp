@@ -52,7 +52,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
    
     new GUIState();
 
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + FilePath("EditorConfig.yaml"));
     
     SetupMainMenu();
     SetupToolBar();
@@ -322,20 +322,20 @@ void QtMainWindow::OpenLastProject()
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter"))
        &&   !CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
     {
-        DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
+        DAVA::FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 
-        if(projectPath.empty())
+        if(!projectPath.IsInitalized())
         {
-			projectPath = ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str();
+			projectPath = FilePath(ProjectManager::Instance()->ProjectOpenDialog().toStdString().c_str());
         }
 
-		if(projectPath.empty())
+        if(!projectPath.IsInitalized())
 		{
 			QtLayer::Instance()->Quit();
 		}
 		else
 		{
-			ProjectManager::Instance()->ProjectOpen(QString(projectPath.c_str()));
+			ProjectManager::Instance()->ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
 		}
     }
 }

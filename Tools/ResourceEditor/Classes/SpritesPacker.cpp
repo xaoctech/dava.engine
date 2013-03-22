@@ -9,11 +9,13 @@ SpritesPacker::~SpritesPacker()
 
 void SpritesPacker::SetInputDir(const FilePath & _inputDir)
 {
+    DVASSERT(_inputDir.IsDirectoryPathname());
 	inputDir = _inputDir;
 }
 
 void SpritesPacker::SetOutputDir(const FilePath & _outputDir)
 {
+    DVASSERT(_outputDir.IsDirectoryPathname());
 	outputDir = _outputDir;
 }
 
@@ -32,9 +34,9 @@ void SpritesPacker::Pack()
 	// to prevent long relative path in $process(in FileSystem::RealPath(const String & _path)
 	// '/' is skipped for win32!) and to avoid big code impact,  #ifdef(win32) was added  here
 #if defined(__DAVAENGINE_WIN32__) 
-	resourcePackerScreen->excludeDirectory = "/"+FileSystem::Instance()->RealPath(inputDir + "/../");
+	resourcePackerScreen->excludeDirectory = FilePath("/")+inputDir + FilePath("../");
 #else
-	resourcePackerScreen->excludeDirectory = FileSystem::Instance()->RealPath(inputDir + "/../");
+	resourcePackerScreen->excludeDirectory = inputDir + FilePath("../");
 #endif
 	resourcePackerScreen->isLightmapsPacking = true;
 
