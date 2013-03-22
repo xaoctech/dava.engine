@@ -311,6 +311,7 @@ void MainWindow::InitMenu()
 
 	connect(ui->actionNew_project, SIGNAL(triggered()), this, SLOT(OnNewProject()));
 	connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(OnSaveProject()));
+	connect(ui->actionSave_All, SIGNAL(triggered()), this, SLOT(OnSaveProjectAll()));
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(OnOpenProject()));
 	connect(ui->actionClose_project, SIGNAL(triggered()), this, SLOT(OnCloseProject()));
 
@@ -353,6 +354,7 @@ void MainWindow::UpdateMenu()
 {
 	//ui->actionNew
 	ui->actionSave_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
+	ui->actionSave_All->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionClose_project->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->menuProject->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
 	ui->actionNew_platform->setEnabled(HierarchyTreeController::Instance()->GetTree().IsProjectCreated());
@@ -484,14 +486,18 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
     }
 }
 
-void MainWindow::OnSaveProject()
+void MainWindow::DoSaveProject(bool changesOnly)
 {
 	QString projectPath = HierarchyTreeController::Instance()->GetTree().GetActiveProjectPath();
 
 	if (projectPath.isNull() || projectPath.isEmpty())
 		return;
-		
-	if (HierarchyTreeController::Instance()->Save(projectPath))
+
+	HierarchyTreeController* controller = HierarchyTreeController::Instance();
+	bool saveSucceeded = changesOnly ? controller->SaveOnlyChangedScreens(projectPath) :
+		controller->SaveAll(projectPath);
+
+	if (saveSucceeded)
 	{
 		// If project was successfully saved - we should save new project file path
 		// and add this project to recent files list
@@ -531,6 +537,16 @@ void MainWindow::OnOpenProject()
 	}
 }
 
+void MainWindow::OnSaveProject()
+{
+	DoSaveProject(true);
+}
+
+void MainWindow::OnSaveProjectAll()
+{
+	DoSaveProject(false);
+}
+
 void MainWindow::OnCloseProject()
 {
 	CloseProject();
@@ -546,7 +562,8 @@ void MainWindow::OnExitApplication()
 
 bool MainWindow::CloseProject()
 {
-	if (!CommandsController::Instance()->IsLastChangeSaved())
+	bool lastChangeSaved = HierarchyTreeController::Instance()->GetUnsavedScreens().empty();
+	if (!lastChangeSaved)
 	{
 		int ret = QMessageBox::warning(this, qApp->applicationName(),
 									   tr("The project has been modified.\n"
@@ -614,7 +631,8 @@ void MainWindow::OnChangePropertySucceeded()
 void MainWindow::OnUnsavedChangesNumberChanged()
 {
 	QString projectTitle = ResourcesManageHelper::GetProjectTitle();
-	if (CommandsController::Instance()->IsLastChangeSaved())
+	List<HierarchyTreeScreenNode*> unsavedScreens = HierarchyTreeController::Instance()->GetUnsavedScreens();
+	if (unsavedScreens.empty())
 	{
 		setWindowTitle(projectTitle);
 	}

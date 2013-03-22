@@ -82,7 +82,15 @@ void HierarchyTreeWidget::OnTreeUpdated()
 
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
-			screenItem->setText(0, screenNode->GetName());
+
+			// Check whether this screen was changed.
+			QString screenItemText = screenNode->GetName();
+			if (screenNode->GetUnsavedChanges() != 0)
+			{
+				screenItemText += " *";
+			}
+			screenItem->setText(0, screenItemText);
+
 			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
 				screenItem->setIcon(0, QIcon(":/icons/170.png"));
 			else
