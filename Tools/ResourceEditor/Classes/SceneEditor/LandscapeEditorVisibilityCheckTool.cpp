@@ -187,7 +187,7 @@ void LandscapeEditorVisibilityCheckTool::SetState(eVisibilityCheckToolState newS
 	}
 }
 
-void LandscapeEditorVisibilityCheckTool::SaveColorLayer(const String &pathName)
+void LandscapeEditorVisibilityCheckTool::SaveColorLayer(const FilePath &pathName)
 {
 	SaveTextureAction(pathName);
 }
@@ -556,7 +556,7 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 {
 	if(pointCursorTexture == NULL)
 	{
-		pointCursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png");
+		pointCursorTexture = Texture::CreateFromFile(FilePath("~res:/LandscapeEditor/Tools/cursor/setPointCursor.png"));
 		pointCursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	}
 	SetState(VCT_STATE_NORMAL);
@@ -580,7 +580,7 @@ void LandscapeEditorVisibilityCheckTool::ShowAction()
 	QtMainWindowHandler::Instance()->SetWidgetsStateVisibilityTool(true);
 }
 
-void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const String &pathToFile)
+void LandscapeEditorVisibilityCheckTool::SaveTextureAction(const FilePath &pathToFile)
 {
     if(visibilityAreaSprite)
     {

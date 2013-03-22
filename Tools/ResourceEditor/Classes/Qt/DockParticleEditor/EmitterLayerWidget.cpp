@@ -244,8 +244,7 @@ void EmitterLayerWidget::Init(ParticleEmitter* emitter, DAVA::ParticleLayer *lay
 	QString spriteName = "<none>";
 	if (sprite)
 	{
-		String spritePath = FileSystem::Instance()->GetCanonicalPath(sprite->GetName());
-		spriteName = QString::fromStdString(spritePath);
+		spriteName = QString::fromStdString(sprite->GetRelativePathname().GetAbsolutePathname());
 	}
 	spritePathLabel->setText(spriteName);
 
@@ -418,20 +417,20 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-	String projectPath = EditorSettings::Instance()->GetProjectPath();
+	FilePath projectPath = EditorSettings::Instance()->GetProjectPath();
 	
-	projectPath += "Data/Gfx/Particles/";
-	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath), QString("Effect File (*.txt)"));
+	projectPath += FilePath("Data/Gfx/Particles/");
+    
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
 	if (filePath.isEmpty())
 		return;
 	
 	// Yuri Coder. Verify that the path of the file opened is correct (i.e. inside the Project Path),
 	// this is according to the DF-551 issue.
-	String filePathToBeOpened;
-	String fileNameToBeOpened;
-	FileSystem::SplitPath(filePath.toStdString(), filePathToBeOpened, fileNameToBeOpened);
+    FilePath filePathToBeOpened(filePath.toStdString());
 
 #ifdef __DAVAENGINE_WIN32__
+    //TODO: fix this code on win32 on working FilePath
 	// Remove the drive name, if any.
 	String::size_type driveNamePos = filePathToBeOpened.find(":/");
 	if (driveNamePos != String::npos && filePathToBeOpened.length() > 2)
@@ -440,11 +439,11 @@ void EmitterLayerWidget::OnSpriteBtn()
 	}
 #endif
 
-	if (filePathToBeOpened != projectPath)
+	if (FilePath(filePathToBeOpened.GetDirectory()) != projectPath)
 	{
 		QString message = QString("You've opened Particle Sprite from incorrect path (%1).\n Correct one is %2.").
-			arg(QString::fromStdString(filePathToBeOpened)).
-			arg(QString::fromStdString(projectPath));
+			arg(QString::fromStdString(filePathToBeOpened.GetDirectory())).
+			arg(QString::fromStdString(projectPath.GetDirectory()));
 
 		QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
 		msgBox.exec();

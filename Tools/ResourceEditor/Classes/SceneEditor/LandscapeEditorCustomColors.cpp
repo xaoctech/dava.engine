@@ -392,8 +392,8 @@ void LandscapeEditorCustomColors::ShowAction()
 	workingLandscape->SetFog(false);
 	texSurf = SafeRetain( workingLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
 
-	String loadFileName = GetCurrentSaveFileName();
-	if(!loadFileName.empty())
+	FilePath loadFileName = GetCurrentSaveFileName();
+	if(loadFileName.IsInitalized())
 		LoadTextureAction(loadFileName);
 
 	if(NULL == colorSprite)
@@ -433,9 +433,9 @@ void LandscapeEditorCustomColors::SaveTextureAction(const FilePath &pathToFile)
 	}
 }
 
-void LandscapeEditorCustomColors::LoadTextureAction(const String &pathToFile)
+void LandscapeEditorCustomColors::LoadTextureAction(const FilePath &pathToFile)
 {
-	if(pathToFile.empty())
+	if(!pathToFile.IsInitalized())
 		return;
 
 	Vector<Image*> images = ImageLoader::CreateFromFile(pathToFile);
@@ -520,16 +520,16 @@ bool LandscapeEditorCustomColors::SetScene(EditorScene *newScene)
     return LandscapeEditorBase::SetScene(newScene);
 }
 
-void LandscapeEditorCustomColors::StoreSaveFileName(const String& fileName)
+void LandscapeEditorCustomColors::StoreSaveFileName(const FilePath& fileName)
 {
 	saveFileNamesMap[workingLandscape] = fileName;
 	parent->GetSceneGraph()->UpdatePropertyPanel();
 }
 
-String LandscapeEditorCustomColors::GetCurrentSaveFileName()
+FilePath LandscapeEditorCustomColors::GetCurrentSaveFileName()
 {
-	String currentSaveName = "";
-	Map<Landscape*, String>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
+	FilePath currentSaveName;
+	Map<Landscape*, FilePath>::iterator saveFileNameIter = this->saveFileNamesMap.find(workingLandscape);
 	if (saveFileNameIter != saveFileNamesMap.end())
 	{
 		currentSaveName = saveFileNameIter->second;
@@ -538,56 +538,43 @@ String LandscapeEditorCustomColors::GetCurrentSaveFileName()
 	return GetAbsolutePathFromScenePath(currentSaveName);
 }
 
-String LandscapeEditorCustomColors::GetScenePath()
+FilePath LandscapeEditorCustomColors::GetScenePath()
 {
-	String sceneFilePath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
-	String sceneFileName = "";
-	FileSystem::Instance()->SplitPath(sceneFilePath, sceneFilePath, sceneFileName);
-
-	return sceneFilePath;
+	FilePath sceneFilePath = SceneDataManager::Instance()->SceneGetActive()->GetScenePathname();
+	return FilePath(sceneFilePath.GetDirectory());
 }
 
-String LandscapeEditorCustomColors::GetRelativePathToScenePath(const String &absolutePath)
+FilePath LandscapeEditorCustomColors::GetRelativePathToScenePath(const FilePath &absolutePath)
 {
-	if(absolutePath.empty())
-		return "";
+	if(!absolutePath.IsInitalized())
+		return FilePath();
 
-	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(GetScenePath(), absolutePath);
-
-	return relativePath;
+	return FilePath(absolutePath.GetRelativePathname(GetScenePath()));
 }
 
-String LandscapeEditorCustomColors::GetRelativePathToProjectPath(const String& absolutePath)
+FilePath LandscapeEditorCustomColors::GetRelativePathToProjectPath(const FilePath& absolutePath)
 {
-	if(absolutePath.empty())
-		return "";
+	if(!absolutePath.IsInitalized())
+		return FilePath();
 
-	String relativePath = FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath(), absolutePath);
-
-	return relativePath;
+	return FilePath(absolutePath.GetRelativePathname(EditorSettings::Instance()->GetProjectPath()));
 }
 
-String LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const String &relativePath)
+FilePath LandscapeEditorCustomColors::GetAbsolutePathFromScenePath(const FilePath &relativePath)
 {
-	if(relativePath.empty())
-		return "";
+	if(!relativePath.IsInitalized())
+		return FilePath();
 
-	String absolutePath = GetScenePath() + relativePath;
-	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
-
-	return absolutePath;
+	return (GetScenePath() + FilePath(relativePath));
 }
 
 
-String LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const String& relativePath)
+FilePath LandscapeEditorCustomColors::GetAbsolutePathFromProjectPath(const FilePath& relativePath)
 {
-	if(relativePath.empty())
-		return "";
+	if(!relativePath.IsInitalized())
+		return FilePath();
 
-	String absolutePath = EditorSettings::Instance()->GetProjectPath() + relativePath;
-	absolutePath = FileSystem::Instance()->GetCanonicalPath(absolutePath);
-
-	return absolutePath;
+	return (EditorSettings::Instance()->GetProjectPath() + FilePath(relativePath));
 }
 
 void LandscapeEditorCustomColors::SaveTexture()

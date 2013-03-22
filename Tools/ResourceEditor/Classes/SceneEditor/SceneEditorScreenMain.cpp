@@ -704,19 +704,19 @@ void SceneEditorScreenMain::CustomColorsSetColor(uint32 indexInSet)
     iBody->bodyControl->SetColorIndex(indexInSet);
 }
 
-void SceneEditorScreenMain::CustomColorsSaveTexture(const String &path)
+void SceneEditorScreenMain::CustomColorsSaveTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SaveTexture(path);
 }
 
-void SceneEditorScreenMain::CustomColorsLoadTexture(const String &path)
+void SceneEditorScreenMain::CustomColorsLoadTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->CustomColorsLoadTexture(path);
 }
 
-String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
+FilePath SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 {
 	BodyItem *iBody = FindCurrentBody();
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
@@ -735,7 +735,7 @@ void SceneEditorScreenMain::OnReloadRootNodesQt()
     iBody->bodyControl->OnReloadRootNodesQt();
 }
 
-void SceneEditorScreenMain::ShowScenePreview(const String scenePathname)
+void SceneEditorScreenMain::ShowScenePreview(const FilePath & scenePathname)
 {
     if(scenePreviewDialog)
     {
@@ -824,7 +824,7 @@ void SceneEditorScreenMain::VisibilityToolTriggered()
     bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_VISIBILITY_CHECK_TOOL);
 }
 
-void SceneEditorScreenMain::VisibilityToolSaveTexture(const String &path)
+void SceneEditorScreenMain::VisibilityToolSaveTexture(const FilePath &path)
 {
 	BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SaveTexture(path);

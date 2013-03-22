@@ -20,8 +20,8 @@ public:
 	
 	bool Create(uint32 width, uint32 height);
 	
-	bool Read(const String & filename);
-	void Write(const String & filename);
+	bool Read(const FilePath & filename);
+	void Write(const FilePath & filename);
 	
 	void DrawImage(int32 sx, int32 sy, PngImageExt * image);
 	void DrawImage(int32 sx, int32 sy, PngImageExt * image, const Rect2i & srcRect);

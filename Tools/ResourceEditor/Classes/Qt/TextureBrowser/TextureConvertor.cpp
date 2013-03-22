@@ -179,7 +179,7 @@ QImage TextureConvertor::loadOriginalThread(JobItem *item)
     
 	if(NULL != item && NULL != item->descriptor)
 	{
-		img = QImage(item->descriptor->GetSourceTexturePathname().c_str());
+		img = QImage(item->descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
 	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
@@ -194,10 +194,10 @@ QImage TextureConvertor::convertThreadPVR(JobItem *item)
 
 	if(NULL != item && item->descriptorCopy.pvrCompression.format != DAVA::FORMAT_INVALID)
 	{
-		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::String outputPath = PVRConverter::Instance()->GetPVRToolOutput(sourcePath);
+		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		DAVA::FilePath outputPath = PVRConverter::Instance()->GetPVRToolOutput(sourcePath);
 
-		if(!outputPath.empty())
+		if(outputPath.IsInitalized())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
@@ -266,9 +266,9 @@ QImage TextureConvertor::convertThreadDXT(JobItem *item)
 
 	if (NULL != item && item->descriptorCopy.dxtCompression.format != DAVA::FORMAT_INVALID)
 	{
-		DAVA::String sourcePath = item->descriptorCopy.GetSourceTexturePathname();
-		DAVA::String outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
-		if(!outputPath.empty())
+		DAVA::FilePath sourcePath = item->descriptorCopy.GetSourceTexturePathname();
+		DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);//DXTConverter::ConvertPngToDxt(sourcePath, item->descriptorCopy);
+		if(outputPath.IsInitalized())
 		{
 			if(item->forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
 			{
@@ -331,11 +331,11 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 				{
 					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, PVR_FILE))
 					{
-						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
+						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()), j++, jobCount);
 
 						if(descriptor->pvrCompression.format != DAVA::FORMAT_INVALID)
 						{
-							DAVA::String sourcePath = descriptor->GetSourceTexturePathname();
+							DAVA::FilePath sourcePath = descriptor->GetSourceTexturePathname();
 
 							QString command = PVRConverter::Instance()->GetCommandLinePVR(sourcePath, *descriptor).c_str();
 							DAVA::Logger::Info("%s", command.toStdString().c_str());
@@ -354,13 +354,13 @@ void TextureConvertor::convertAllThread(DAVA::Map<DAVA::String, DAVA::Texture *>
 
 					if(forceConverAll || SceneValidator::Instance()->IsTextureChanged(i->first, DXT_FILE))
 					{
-						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().c_str()), j++, jobCount);
+						emit convertStatusFromThread(QString(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str()), j++, jobCount);
 
 						if(descriptor->dxtCompression.format != DAVA::FORMAT_INVALID)
 						{
-							DAVA::String sourcePath = descriptor->GetSourceTexturePathname();
-							DAVA::String outputPath = DXTConverter::GetDXTOutput(sourcePath);
-							if(!outputPath.empty())
+							DAVA::FilePath sourcePath = descriptor->GetSourceTexturePathname();
+							DAVA::FilePath outputPath = DXTConverter::GetDXTOutput(sourcePath);
+							if(outputPath.IsInitalized())
 							{
 								outputPath = DXTConverter::ConvertPngToDxt(sourcePath, *descriptor);
 								bool wasUpdated = descriptor->UpdateCrcForFormat(DXT_FILE);
@@ -387,7 +387,7 @@ void TextureConvertor::threadOriginalFinished()
 	{
 		emit readyOriginal(curJobOriginal->descriptor, loadOriginalWatcher.result());
 
-		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.c_str());
+		DAVA::Logger::Info("%s loaded", curJobOriginal->descriptorCopy.pathname.GetAbsolutePathname().c_str());
 
 		delete curJobOriginal;
 		curJobOriginal = NULL;

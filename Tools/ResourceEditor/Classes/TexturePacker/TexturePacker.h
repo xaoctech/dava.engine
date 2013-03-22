@@ -31,15 +31,15 @@ public:
 	TexturePacker();
 	
 	// pack textures to single texture
-	void PackToTextures(const char * excludeFolder, const char* outputPath, std::list<DefinitionFile*> & defsList);
+	void PackToTextures(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & defsList);
 	// page each PSD file to separate texture
-	void PackToTexturesSeparate(const char * excludeFolder, const char* outputPath, std::list<DefinitionFile*> & defsList);
+	void PackToTexturesSeparate(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & defsList);
 	// pack one sprite and use several textures if more than one needed
-	void PackToMultipleTextures(const char * excludeFolder, const char* outputPath, std::list<DefinitionFile*> & remainingList);
+	void PackToMultipleTextures(const FilePath & excludeFolder, const FilePath & outputPath, std::list<DefinitionFile*> & remainingList);
 
 	bool TryToPack(const Rect2i & textureRect, std::list<DefinitionFile*> & defsList);
-	bool WriteDefinition(const char * excludeFolder, const char * outputPath, const char * textureName, DefinitionFile * defFile);
-	bool WriteMultipleDefinition(const char * excludeFolder, const char * outputPath, const char * _textureName, DefinitionFile * defFile);
+	bool WriteDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & textureName, DefinitionFile * defFile);
+	bool WriteMultipleDefinition(const FilePath & excludeFolder, const FilePath & outputPath, const FilePath & _textureName, DefinitionFile * defFile);
 
 	int TryToPackFromSortVector(ImagePacker * packer, std::vector<SizeSortItem> & tempSortVector);
 	float TryToPackFromSortVectorWeight(ImagePacker * packer,std::vector<SizeSortItem> & tempSortVector);
@@ -52,15 +52,15 @@ public:
 	
 private:
     
-    void ExportImage(PngImageExt *image, const String &exportedPathname);
+    void ExportImage(PngImageExt *image, const FilePath &exportedPathname);
     DAVA::TextureDescriptor * CreateDescriptor();
     PixelFormat DetectPixelFormatFromFlags();
     
     
 	ImagePacker *			lastPackedPacker;
-	std::vector<ImagePacker*> usedPackers;
+	Vector<ImagePacker*> usedPackers;
 
-	std::vector<SizeSortItem> sortVector;
+	Vector<SizeSortItem> sortVector;
 	int32 maxTextureSize;
 
 	bool onlySquareTextures;

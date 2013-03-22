@@ -21,7 +21,7 @@ DAVA::FilePath PathnameToDAVAStyle(const QString &convertedPathname)
 
 DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &pathname, const DAVA::String &filter)
 {
-    QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.c_str()),
+    QString filePath = QFileDialog::getOpenFileName(NULL, QString(title.c_str()), QString(pathname.GetAbsolutePathname().c_str()),
                                                     QString(filter.c_str()));
     
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -30,8 +30,8 @@ DAVA::FilePath GetOpenFileName(const DAVA::String &title, const DAVA::FilePath &
     if(openedPathname.IsInitalized() && !SceneValidator::Instance()->IsPathCorrectForProject(openedPathname))
     {
         //Need to Show Error
-		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.c_str())));
-        openedPathname = String("");
+		ShowErrorDialog(String(Format("File(%s) was selected from incorect project.", openedPathname.GetAbsolutePathname().c_str())));
+        openedPathname = FilePath();
     }
     
     return openedPathname;
@@ -121,3 +121,5 @@ DAVA::Color QColorToColor(const QColor &qcolor)
 {
 	return Color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), qcolor.alphaF());
 }
+
+

@@ -34,6 +34,7 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/Image.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
@@ -48,9 +49,9 @@ public:
     
     static bool IsPngFile(File *file);
     
-	static int ReadPngFile(const String & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
+	static int ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
 	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static void WritePngFile(const String & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+	static void WritePngFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
 
 };
 
@@ -63,8 +64,8 @@ public:
 	bool Create(int32 _width, int32 _height);
 	bool CreateFromFBOSprite(Sprite * fboSprite);
 	
-	bool Load(const char * filename);
-	bool Save(const char * filename);
+	bool Load(const FilePath & filename);
+	bool Save(const FilePath & filename);
 	
 	void DrawImage(int sx, int sy, PngImage * image);
 	void DrawRect(const Rect2i & rect, uint32 color);

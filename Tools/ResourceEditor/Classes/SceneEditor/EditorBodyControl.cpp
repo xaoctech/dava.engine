@@ -145,7 +145,7 @@ void EditorBodyControl::SetColorIndex(uint32 indexInSet)
 	landscapeEditorCustomColors->SetColor(colorVector[indexInSet]);
 }
 
-void EditorBodyControl::SaveTexture(const String &path)
+void EditorBodyControl::SaveTexture(const FilePath &path)
 {
 	if(RulerToolIsActive())
         return;
@@ -161,7 +161,7 @@ void EditorBodyControl::SaveTexture(const String &path)
 		landscapeEditorVisibilityTool->SaveColorLayer(path);
 }
 
-void EditorBodyControl::CustomColorsLoadTexture(const String &path)
+void EditorBodyControl::CustomColorsLoadTexture(const FilePath &path)
 {
 	if(RulerToolIsActive())
 		return;
@@ -172,13 +172,13 @@ void EditorBodyControl::CustomColorsLoadTexture(const String &path)
 	landscapeEditorCustomColors->LoadColorLayer(path);
 }
 
-String EditorBodyControl::CustomColorsGetCurrentSaveFileName()
+FilePath EditorBodyControl::CustomColorsGetCurrentSaveFileName()
 {
 	if(RulerToolIsActive())
-		return "";
+		return FilePath();
 
 	if(!currentLandscapeEditor || currentLandscapeEditor != landscapeEditorCustomColors)
-		return "";
+		return FilePath();
 
 	return landscapeEditorCustomColors->GetCurrentSaveFileName();
 }
@@ -723,7 +723,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	}
 }
 
-void EditorBodyControl::ReloadRootScene(const String &pathToFile)
+void EditorBodyControl::ReloadRootScene(const FilePath &pathToFile)
 {
     scene->ReleaseRootNode(pathToFile);
     
@@ -743,14 +743,14 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     Refresh();
 }
 
-void EditorBodyControl::ReloadNode(Entity *node, const String &pathToFile)
+void EditorBodyControl::ReloadNode(Entity *node, const FilePath &pathToFile)
 {//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
-    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile) 
+    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile.GetAbsolutePathname())
     {
         Entity *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
-        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
+        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile.GetAbsolutePathname());
         newNode->SetSolid(true);
         
         Entity *parent = node->GetParent();

@@ -24,7 +24,7 @@ protected:
 	static String TimeString();
 	static FilePath SaveHeightmap(Heightmap* heightmap);
 	static LandscapeEditorHeightmap* GetEditor();
-	static void UpdateLandscapeHeightmap(FilePath filename);
+	static void UpdateLandscapeHeightmap(const FilePath & filename);
 };
 
 class CommandDrawHeightmap: public HeightmapModificationCommand
@@ -34,8 +34,8 @@ public:
 	virtual ~CommandDrawHeightmap();
 	
 protected:
-	String undoFilename;
-	String redoFilename;
+	FilePath undoFilename;
+	FilePath redoFilename;
 
 	virtual void Execute();
 	virtual void Cancel();
@@ -53,7 +53,7 @@ protected:
 
 	Image* tilemapUndoImage;
 	Image* tilemapRedoImage;
-	String tilemapSavedPathname;
+	FilePath tilemapSavedPathname;
 
 	Landscape* landscape;
 

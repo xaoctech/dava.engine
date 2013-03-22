@@ -16,22 +16,24 @@ void LightmapsPacker::ParseSpriteDescriptors()
 	int32 itemsCount = fileList->GetCount();
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
-		const String & fileName = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || (FileSystem::Instance()->GetExtension(fileName) != ".txt"))
+		const FilePath & fileName = fileList->GetPathname(i);
+		if(fileList->IsDirectory(i) || fileName.GetExtension() != ".txt")
 		{
 			continue;
 		}
 
 		LightmapAtlasingData data;
 
-		data.meshInstanceName = String(fileList->GetFilename(i), 0, fileList->GetFilename(i).length()-4);
-
+        FilePath meshname = FilePath(fileName);
+        meshname.TruncateExtension();
+		data.meshInstanceName = meshname.GetAbsolutePathname();
+        
 		File * file = File::Create(fileName, File::OPEN | File::READ);
 		
 		file->ReadLine(buf, sizeof(buf)); //textures count
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
-		String originalTextureName = outputDir + "/" + String(buf, readSize);
+		FilePath originalTextureName = outputDir + FilePath(String(buf, readSize));
 		data.textureName = originalTextureName;
 
 		file->ReadLine(buf, sizeof(buf)); //image size
@@ -58,11 +60,12 @@ void LightmapsPacker::ParseSpriteDescriptors()
 	fileList->Release();
 }
 
-Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
+Vector2 LightmapsPacker::GetTextureSize(const FilePath & filePath)
 {
 	Vector2 ret;
 
-	String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(filePath, TextureDescriptor::GetSourceTextureExtension());
+	FilePath sourceTexturePathname(filePath);
+    sourceTexturePathname.ReplaceExtension(TextureDescriptor::GetSourceTextureExtension());
     Image * image = CreateTopLevelImage(sourceTexturePathname);
     if(image)
     {
@@ -87,8 +90,8 @@ void LightmapsPacker::Compress()
 	int32 itemsCount = fileList->GetCount();
 	for(int32 i = 0; i < itemsCount; ++i)
 	{
-		const String & fileName = fileList->GetPathname(i);
-		if(fileList->IsDirectory(i) || (FileSystem::Instance()->GetExtension(fileName) != ".png"))
+		const FilePath & fileName = fileList->GetPathname(i);
+		if(fileList->IsDirectory(i) || fileName.GetExtension() != ".png")
 		{
 			continue;
 		}

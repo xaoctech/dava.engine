@@ -88,17 +88,28 @@ void ProcessRecourcePacker()
     
     ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
     
-    String path, lastDir;
-    FileSystem::SplitPath(commandLine[1], path, lastDir);
+    FilePath commandLinePath(commandLine[1]);
+    commandLinePath.MakeDirectoryPathname();
     
-    resourcePackerScreen->inputGfxDirectory = FileSystem::RealPath(commandLine[1]);// "/./../../ProjectDataSource/Gfx/");
-    resourcePackerScreen->outputGfxDirectory = FileSystem::RealPath(resourcePackerScreen->inputGfxDirectory + "/../../Data/" + lastDir);
-    resourcePackerScreen->excludeDirectory = FileSystem::RealPath(resourcePackerScreen->inputGfxDirectory + "/../");
+    FilePath lastDir(commandLinePath.GetDirectory());
     
     
-    String excludeDirPath, excludeDirLastDir;
-    FileSystem::SplitPath(resourcePackerScreen->excludeDirectory, excludeDirPath, excludeDirLastDir);
-    if (excludeDirLastDir != "DataSource")
+    resourcePackerScreen->inputGfxDirectory = commandLinePath;
+    resourcePackerScreen->outputGfxDirectory = resourcePackerScreen->inputGfxDirectory + FilePath("../../Data/") + lastDir;
+    resourcePackerScreen->outputGfxDirectory.MakeDirectoryPathname();
+    
+    resourcePackerScreen->excludeDirectory = resourcePackerScreen->inputGfxDirectory + FilePath("../");
+    resourcePackerScreen->excludeDirectory.MakeDirectoryPathname();
+    
+    if(!resourcePackerScreen->excludeDirectory.IsInitalized())
+    {
+        printf("[FATAL ERROR: Packer has wrong input pathname]");
+        return;
+    }
+    
+    String excludepath = resourcePackerScreen->excludeDirectory.GetAbsolutePathname();
+    FilePath dataSource(excludepath.substr(0, excludepath.length() - 1));
+    if (dataSource.GetFilename() != "DataSource")
     {
         printf("[FATAL ERROR: Packer working only inside DataSource directory]");
         return;
@@ -122,9 +133,9 @@ void ProcessRecourcePacker()
 
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
-    printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.c_str());
-    printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.c_str());
-    printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.c_str());
+    printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.GetAbsolutePathname().c_str());
+    printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.GetAbsolutePathname().c_str());
     
     Texture::InitializePixelFormatDescriptors();
     resourcePackerScreen->PackResources();
@@ -199,12 +210,12 @@ void FrameworkDidLaunched()
 
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
     
-    String dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
+    FilePath dataSourcePathname = EditorSettings::Instance()->GetDataSourcePath();
     String sourceFolder = String("DataSource/3d");
     
     if(!CommandLineTool::Instance()->CommandIsFound(String("-imagesplitter")))
     {
-        if(sourceFolder.length() <= dataSourcePathname.length())
+        if(sourceFolder.length() <= dataSourcePathname.GetAbsolutePathname().length())
         {
             uint64 creationTime = SystemTimer::Instance()->AbsoluteMS();
             SceneValidator::Instance()->CreateDefaultDescriptors(dataSourcePathname);

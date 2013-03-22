@@ -128,11 +128,8 @@ bool ColladaDocument::ExportNodeAnimations(FCDocument * exportDoc, FCDSceneNode 
 	GetAnimationTimeInfo(exportDoc, timeStart, timeEnd);
 	DAVA::Logger::Debug("== Additional animation: %s start: %0.3f end: %0.3f\n ", exportDoc->GetFileUrl().c_str(), timeStart, timeEnd);
 	
-	std::string fullPathName = exportDoc->GetFileUrl().c_str();
-	std::string path;
-	std::string name;
-	CommandLineParser::Instance()->SplitFilePath(fullPathName, path, name);
-	name = CommandLineParser::Instance()->ReplaceExtension(name, "");
+	FilePath fullPathName(exportDoc->GetFileUrl().c_str());
+	String name = fullPathName.GetBasename();
 	
 	ColladaAnimation * anim = new ColladaAnimation();
 	anim->name = name;//Format("animation:%d", colladaScene->colladaAnimations.size());

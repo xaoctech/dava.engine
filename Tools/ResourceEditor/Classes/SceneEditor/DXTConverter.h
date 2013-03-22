@@ -7,9 +7,9 @@ class DXTConverter
 {    
 public:
  
-	static DAVA::String ConvertPngToDxt(const DAVA::String & fileToConvert, const DAVA::TextureDescriptor &descriptor);
+	static DAVA::FilePath ConvertPngToDxt(const DAVA::FilePath & fileToConvert, const DAVA::TextureDescriptor &descriptor);
 
-	static DAVA::String GetDXTOutput(const DAVA::String &inputDXT);
+	static DAVA::FilePath GetDXTOutput(const DAVA::FilePath &inputDXT);
 };
 
 #endif // __DXT_CONVERTER_H__

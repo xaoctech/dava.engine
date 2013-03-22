@@ -1862,7 +1862,10 @@ namespace DAVA
 		Sprite *sprite =  this->GetSprite();
 		if (sprite)
 		{
-			node->Set("sprite", TruncateTxtFileExtension(sprite->GetRelativePathname()));
+            FilePath path(sprite->GetRelativePathname());
+            path.TruncateExtension();
+
+			node->Set("sprite", path.GetAbsolutePathname());
 		}
 		// Color
 		Color color =  this->GetBackground()->GetColor();

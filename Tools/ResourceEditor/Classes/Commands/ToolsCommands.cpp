@@ -100,7 +100,7 @@ void CommandRulerTool::Execute()
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();
     activeScene->RebuildSceneGraph();
     
-    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname().GetAbsolutePathname());
 }
 
 
