@@ -90,10 +90,13 @@ Sprite* Sprite::PureCreate(const FilePath & spriteName, Sprite* forPointer)
 {
 //	Logger::Debug("pure create: %s", spriteName.c_str());
 //	Logger::Info("Sprite pure creation");
-	FilePath pathName = spriteName + FilePath(".txt");
+	FilePath pathName(spriteName);
+    pathName.ReplaceExtension(".txt");
 	
 	FilePath scaledName = GetScaledName(spriteName);
-	FilePath scaledPath = scaledName + FilePath(".txt");
+	FilePath scaledPath(scaledName);
+    scaledPath.ReplaceExtension(".txt");
+    
     Sprite *sprForScaledPath = GetSpriteFromMap(scaledPath);
     if(sprForScaledPath)
     {
