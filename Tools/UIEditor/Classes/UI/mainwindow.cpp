@@ -325,7 +325,13 @@ void MainWindow::InitMenu()
 
     connect(ui->actionZoomIn, SIGNAL(triggered()), this, SLOT(OnZoomInRequested()));
     connect(ui->actionZoomOut, SIGNAL(triggered()), this, SLOT(OnZoomOutRequested()));
-	
+	// Remap zoom in/out shorcuts for windows platform
+#if defined(__DAVAENGINE_WIN32__)
+	QList<QKeySequence> shortcuts;
+	shortcuts.append(QKeySequence(Qt::CTRL + Qt::Key_Equal));
+	shortcuts.append(QKeySequence(Qt::CTRL + Qt::Key_Plus));
+	ui->actionZoomIn->setShortcuts(shortcuts);
+#endif
 	//Create empty actions for recent projects files
 	for(int32 i = 0; i < EditorSettings::RECENT_FILES_COUNT; ++i)
     {
