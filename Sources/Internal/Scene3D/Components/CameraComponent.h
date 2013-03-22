@@ -29,7 +29,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(CameraComponent, Component,
-        PROPERTY(camera, "Camera", GetCamera, SetCamera, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("camera", "Camera", GetCamera, SetCamera, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

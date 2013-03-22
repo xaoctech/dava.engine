@@ -319,29 +319,21 @@ public:
 		void SetZFailBack(int32 val) { zFail[1] = (eStencilOp)val; }
 		int32 GetZFailBack() { return zFail[1]; }
 
-		int32 iCmpFuncFront;
-		int32 iCmpFuncBack;
-		int32 iPassFront;
-		int32 iPassBack;
-		int32 iFailFront;
-		int32 iFailBack;
-		int32 iZFailFront;
-		int32 iZFailBack;
 		INTROSPECTION(StencilState, 
 			MEMBER(ref, "ref", INTROSPECTION_EDITOR)
 			MEMBER(mask, "mask", INTROSPECTION_EDITOR)
 
-			PROPERTY(iCmpFuncFront, "cmpFuncFront", GetCmpFuncFront, SetCmpFuncFront, INTROSPECTION_EDITOR)
-			PROPERTY(iCmpFuncBack, "cmpFuncBack", GetCmpFuncBack, SetCmpFuncBack, INTROSPECTION_EDITOR)
+			PROPERTY("cmpFuncFront", "cmpFuncFront", GetCmpFuncFront, SetCmpFuncFront, INTROSPECTION_EDITOR)
+			PROPERTY("cmpFuncBack", "cmpFuncBack", GetCmpFuncBack, SetCmpFuncBack, INTROSPECTION_EDITOR)
 
-			PROPERTY(iPassFront, "iPassFront", GetPassFront, SetPassFront, INTROSPECTION_EDITOR)
-			PROPERTY(iPassBack, "iPassBack", GetPassBack, SetPassBack, INTROSPECTION_EDITOR)
+			PROPERTY("passFront", "iPassFront", GetPassFront, SetPassFront, INTROSPECTION_EDITOR)
+			PROPERTY("passBack", "iPassBack", GetPassBack, SetPassBack, INTROSPECTION_EDITOR)
 
-			PROPERTY(iFailFront, "iFailFront", GetFailFront, SetFailFront, INTROSPECTION_EDITOR)
-			PROPERTY(iFailBack, "iFailBack", GetFailBack, SetFailBack, INTROSPECTION_EDITOR)
+			PROPERTY("failFront", "iFailFront", GetFailFront, SetFailFront, INTROSPECTION_EDITOR)
+			PROPERTY("failBack", "iFailBack", GetFailBack, SetFailBack, INTROSPECTION_EDITOR)
 
-			PROPERTY(iZFailFront, "iZFailFront", GetZFailFront, SetZFailFront, INTROSPECTION_EDITOR)
-			PROPERTY(iZFailBack, "iZFailBack", GetZFailBack, SetZFailBack, INTROSPECTION_EDITOR)
+			PROPERTY("IZFailFront", "iZFailFront", GetZFailFront, SetZFailFront, INTROSPECTION_EDITOR)
+			PROPERTY("IZFailBack", "iZFailBack", GetZFailBack, SetZFailBack, INTROSPECTION_EDITOR)
 			)
 	};
 	StencilState stencilState;
@@ -443,10 +435,9 @@ public:
 #if defined(__DAVAENGINE_DIRECTX9__)
 	static IDirect3DDevice9 * direct3DDevice; 
 #endif
-	int32 iCullMode;
 	INTROSPECTION(RenderState, 
 		MEMBER(state, "state", INTROSPECTION_EDITOR)
-		PROPERTY(iCullMode, "Cull Mode", GetCullMode, SetCullMode, INTROSPECTION_EDITOR)
+		PROPERTY("CullMode", "Cull Mode", GetCullMode, SetCullMode, INTROSPECTION_EDITOR)
 		MEMBER(stencilState, "Stencil state", INTROSPECTION_EDITOR)
 		)
 };
