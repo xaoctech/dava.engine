@@ -19,9 +19,9 @@
 
 
 #include "Main/QtUtils.h"
-#include "Main/PointerHolder.h"
+#include "../DockSceneGraph/PointerHolder.h"
 
-#include "DockLibrary//LibraryModel.h"
+#include "DockLibrary/LibraryModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>
