@@ -10,7 +10,7 @@
 #define __ResourceEditorQt__BaseParticleEditorNode__
 
 #include "Scene3D/ParticleEffectNode.h"
-#include "Main/ExtraUserData.h"
+#include "DockSceneGraph/ExtraUserData.h"
 
 namespace DAVA {
 
