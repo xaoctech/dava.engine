@@ -7,7 +7,7 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/SceneEditor/CommandLineTool.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/Main/PointerHolder.h"
+#include "Classes/Qt/DockSceneGraph/PointerHolder.h"
 #include "Classes/Qt/Project/ProjectManager.h"
 #include "DockLibrary/LibraryModel.h"
 
