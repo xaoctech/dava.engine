@@ -292,6 +292,8 @@
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		CCC7A49216F1D7680061EA5D /* EditorLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CCC7A49016F1D7680061EA5D /* EditorLandscape.cpp */; };
 		E80842DC1639277D002A6A77 /* TextureOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */; };
+		E8362647170057E000BC26CF /* ExtraUserData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8362646170057E000BC26CF /* ExtraUserData_moc.cpp */; };
+		E83626491700580600BC26CF /* PointerHolder_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E83626481700580600BC26CF /* PointerHolder_moc.cpp */; };
 		E838D56E16AFFED4006F1721 /* CustomColorsView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4D716AFFED4006F1721 /* CustomColorsView.cpp */; };
 		E838D56F16AFFED4006F1721 /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */; };
 		E838D57016AFFED4006F1721 /* LibraryView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4DC16AFFED4006F1721 /* LibraryView.cpp */; };
@@ -310,7 +312,6 @@
 		E838D57E16AFFED4006F1721 /* SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4FB16AFFED4006F1721 /* SceneGraphModel.cpp */; };
 		E838D57F16AFFED4006F1721 /* VisibilityToolView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D4FE16AFFED4006F1721 /* VisibilityToolView.cpp */; };
 		E838D58016AFFED4006F1721 /* davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D50116AFFED4006F1721 /* davaglwidget.cpp */; };
-		E838D58216AFFED4006F1721 /* GUIState.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D50516AFFED4006F1721 /* GUIState.cpp */; };
 		E838D58316AFFED4006F1721 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D50716AFFED4006F1721 /* mainwindow.cpp */; };
 		E838D58516AFFED4006F1721 /* QtMainWindowHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D50B16AFFED4006F1721 /* QtMainWindowHandler.cpp */; };
 		E838D58616AFFED4006F1721 /* QtUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D50D16AFFED4006F1721 /* QtUtils.cpp */; };
@@ -363,10 +364,7 @@
 		E838D7EF16B00511006F1721 /* SceneGraphModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7A516B00511006F1721 /* SceneGraphModel_moc.cpp */; };
 		E838D7F016B00511006F1721 /* VisibilityToolView_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7A716B00511006F1721 /* VisibilityToolView_moc.cpp */; };
 		E838D7F116B00511006F1721 /* davaglwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7A916B00511006F1721 /* davaglwidget_moc.cpp */; };
-		E838D7F216B00511006F1721 /* ExtraUserData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AA16B00511006F1721 /* ExtraUserData_moc.cpp */; };
-		E838D7F316B00511006F1721 /* GUIState_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AB16B00511006F1721 /* GUIState_moc.cpp */; };
 		E838D7F416B00511006F1721 /* mainwindow_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AC16B00511006F1721 /* mainwindow_moc.cpp */; };
-		E838D7F516B00511006F1721 /* PointerHolder_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AD16B00511006F1721 /* PointerHolder_moc.cpp */; };
 		E838D7F616B00511006F1721 /* QtMainWindowHandler_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AE16B00511006F1721 /* QtMainWindowHandler_moc.cpp */; };
 		E838D7F716B00511006F1721 /* QtUtils_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7AF16B00511006F1721 /* QtUtils_moc.cpp */; };
 		E838D7F816B00511006F1721 /* ScenePreviewDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E838D7B016B00511006F1721 /* ScenePreviewDialog_moc.cpp */; };
@@ -1091,6 +1089,8 @@
 		E80842DA1639277D002A6A77 /* TextureOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureOptionsCommands.cpp; path = Classes/Commands/TextureOptionsCommands.cpp; sourceTree = "<group>"; };
 		E80842DB1639277D002A6A77 /* TextureOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureOptionsCommands.h; path = Classes/Commands/TextureOptionsCommands.h; sourceTree = "<group>"; };
 		E824161216E51C5A009CBD17 /* ColladaErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaErrorCodes.h; path = Classes/Collada/ColladaErrorCodes.h; sourceTree = "<group>"; };
+		E8362646170057E000BC26CF /* ExtraUserData_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraUserData_moc.cpp; sourceTree = "<group>"; };
+		E83626481700580600BC26CF /* PointerHolder_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointerHolder_moc.cpp; sourceTree = "<group>"; };
 		E838D4D716AFFED4006F1721 /* CustomColorsView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomColorsView.cpp; sourceTree = "<group>"; };
 		E838D4D816AFFED4006F1721 /* CustomColorsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomColorsView.h; sourceTree = "<group>"; };
 		E838D4DA16AFFED4006F1721 /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryModel.cpp; sourceTree = "<group>"; };
@@ -1127,8 +1127,6 @@
 		E838D4FF16AFFED4006F1721 /* VisibilityToolView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisibilityToolView.h; sourceTree = "<group>"; };
 		E838D50116AFFED4006F1721 /* davaglwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = davaglwidget.cpp; sourceTree = "<group>"; };
 		E838D50216AFFED4006F1721 /* davaglwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = davaglwidget.h; sourceTree = "<group>"; };
-		E838D50516AFFED4006F1721 /* GUIState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIState.cpp; sourceTree = "<group>"; };
-		E838D50616AFFED4006F1721 /* GUIState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIState.h; sourceTree = "<group>"; };
 		E838D50716AFFED4006F1721 /* mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
 		E838D50816AFFED4006F1721 /* mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mainwindow.h; sourceTree = "<group>"; };
 		E838D50B16AFFED4006F1721 /* QtMainWindowHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtMainWindowHandler.cpp; sourceTree = "<group>"; };
@@ -1213,10 +1211,7 @@
 		E838D7A516B00511006F1721 /* SceneGraphModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraphModel_moc.cpp; sourceTree = "<group>"; };
 		E838D7A716B00511006F1721 /* VisibilityToolView_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisibilityToolView_moc.cpp; sourceTree = "<group>"; };
 		E838D7A916B00511006F1721 /* davaglwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = davaglwidget_moc.cpp; sourceTree = "<group>"; };
-		E838D7AA16B00511006F1721 /* ExtraUserData_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraUserData_moc.cpp; sourceTree = "<group>"; };
-		E838D7AB16B00511006F1721 /* GUIState_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIState_moc.cpp; sourceTree = "<group>"; };
 		E838D7AC16B00511006F1721 /* mainwindow_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow_moc.cpp; sourceTree = "<group>"; };
-		E838D7AD16B00511006F1721 /* PointerHolder_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointerHolder_moc.cpp; sourceTree = "<group>"; };
 		E838D7AE16B00511006F1721 /* QtMainWindowHandler_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtMainWindowHandler_moc.cpp; sourceTree = "<group>"; };
 		E838D7AF16B00511006F1721 /* QtUtils_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtUtils_moc.cpp; sourceTree = "<group>"; };
 		E838D7B016B00511006F1721 /* ScenePreviewDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewDialog_moc.cpp; sourceTree = "<group>"; };
@@ -2318,8 +2313,6 @@
 				49C89A3B16C3ABE6008AA6F0 /* ModificationWidget.h */,
 				E838D50116AFFED4006F1721 /* davaglwidget.cpp */,
 				E838D50216AFFED4006F1721 /* davaglwidget.h */,
-				E838D50516AFFED4006F1721 /* GUIState.cpp */,
-				E838D50616AFFED4006F1721 /* GUIState.h */,
 				E838D50716AFFED4006F1721 /* mainwindow.cpp */,
 				E838D50816AFFED4006F1721 /* mainwindow.h */,
 				E838D50B16AFFED4006F1721 /* QtMainWindowHandler.cpp */,
@@ -2542,6 +2535,8 @@
 		E838D7A016B00511006F1721 /* DockSceneGraph */ = {
 			isa = PBXGroup;
 			children = (
+				E83626481700580600BC26CF /* PointerHolder_moc.cpp */,
+				E8362646170057E000BC26CF /* ExtraUserData_moc.cpp */,
 				E838D7A116B00511006F1721 /* GraphItem_moc.cpp */,
 				E838D7A216B00511006F1721 /* GraphModel_moc.cpp */,
 				E838D7A316B00511006F1721 /* QSceneGraphTreeView_moc.cpp */,
@@ -2566,10 +2561,7 @@
 			children = (
 				49C89A3816C3AB72008AA6F0 /* ModificationWidget_moc.cpp */,
 				E838D7A916B00511006F1721 /* davaglwidget_moc.cpp */,
-				E838D7AA16B00511006F1721 /* ExtraUserData_moc.cpp */,
-				E838D7AB16B00511006F1721 /* GUIState_moc.cpp */,
 				E838D7AC16B00511006F1721 /* mainwindow_moc.cpp */,
-				E838D7AD16B00511006F1721 /* PointerHolder_moc.cpp */,
 				E838D7AE16B00511006F1721 /* QtMainWindowHandler_moc.cpp */,
 				E838D7AF16B00511006F1721 /* QtUtils_moc.cpp */,
 				E838D7B016B00511006F1721 /* ScenePreviewDialog_moc.cpp */,
@@ -3205,7 +3197,6 @@
 				E838D57E16AFFED4006F1721 /* SceneGraphModel.cpp in Build Sources */,
 				E838D57F16AFFED4006F1721 /* VisibilityToolView.cpp in Build Sources */,
 				E838D58016AFFED4006F1721 /* davaglwidget.cpp in Build Sources */,
-				E838D58216AFFED4006F1721 /* GUIState.cpp in Build Sources */,
 				E838D58316AFFED4006F1721 /* mainwindow.cpp in Build Sources */,
 				E838D58516AFFED4006F1721 /* QtMainWindowHandler.cpp in Build Sources */,
 				E838D58616AFFED4006F1721 /* QtUtils.cpp in Build Sources */,
@@ -3258,10 +3249,7 @@
 				E838D7EF16B00511006F1721 /* SceneGraphModel_moc.cpp in Build Sources */,
 				E838D7F016B00511006F1721 /* VisibilityToolView_moc.cpp in Build Sources */,
 				E838D7F116B00511006F1721 /* davaglwidget_moc.cpp in Build Sources */,
-				E838D7F216B00511006F1721 /* ExtraUserData_moc.cpp in Build Sources */,
-				E838D7F316B00511006F1721 /* GUIState_moc.cpp in Build Sources */,
 				E838D7F416B00511006F1721 /* mainwindow_moc.cpp in Build Sources */,
-				E838D7F516B00511006F1721 /* PointerHolder_moc.cpp in Build Sources */,
 				E838D7F616B00511006F1721 /* QtMainWindowHandler_moc.cpp in Build Sources */,
 				E838D7F716B00511006F1721 /* QtUtils_moc.cpp in Build Sources */,
 				E838D7F816B00511006F1721 /* ScenePreviewDialog_moc.cpp in Build Sources */,
@@ -3335,6 +3323,8 @@
 				84221F1016F8B02D000E7D74 /* HangingObjectsCommands.cpp in Build Sources */,
 				50474EDC16FD872600A17478 /* ExtraUserData.cpp in Build Sources */,
 				50474EDD16FD872600A17478 /* PointerHolder.cpp in Build Sources */,
+				E8362647170057E000BC26CF /* ExtraUserData_moc.cpp in Build Sources */,
+				E83626491700580600BC26CF /* PointerHolder_moc.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
