@@ -16,7 +16,7 @@ public:
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
 	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
-    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor);
 

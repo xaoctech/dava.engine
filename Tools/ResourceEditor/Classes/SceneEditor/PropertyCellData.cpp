@@ -105,13 +105,13 @@ const String& PropertyCellData::GetString()
 
 void PropertyCellData::SetExtensionFilter(const String& newString)
 {
-    DVASSERT(valueType == PROP_VALUE_STRING);
+    DVASSERT(valueType == PROP_VALUE_FILEPATH);
     extensionFilter = newString;
 }
 
 const String& PropertyCellData::GetExtensionFilter()
 {
-    DVASSERT(valueType == PROP_VALUE_STRING);
+    DVASSERT(valueType == PROP_VALUE_FILEPATH);
     return extensionFilter;
 }
 
@@ -191,13 +191,13 @@ void PropertyCellData::SetMessage(const Message &newMessage)
 
 bool PropertyCellData::GetClearDataEnabled()
 {
-    DVASSERT(valueType == PROP_VALUE_STRING);
+    DVASSERT(valueType == PROP_VALUE_STRING || valueType == PROP_VALUE_FILEPATH);
     return boolValue;
 }
 
 void PropertyCellData::SetClearDataEnabled(bool enabled)
 {
-    DVASSERT(valueType == PROP_VALUE_STRING);
+    DVASSERT(valueType == PROP_VALUE_STRING || valueType == PROP_VALUE_FILEPATH);
     boolValue = enabled;
 }
 

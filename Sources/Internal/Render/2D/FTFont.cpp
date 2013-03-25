@@ -206,9 +206,9 @@ FTInternalFont::FTInternalFont(const FilePath & path)
     memoryFont(NULL),
     memoryFontSize(0)
 {
-    String fileName = path.GetFilename();
-    FilePath pathName(path.GetDirectory() + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName);
-        
+    FilePath pathName(path);
+    pathName.ReplaceDirectory(path.GetDirectory() + LocalizationSystem::Instance()->GetCurrentLocale());
+    
     File * fp = File::Create(pathName, File::READ|File::OPEN);
     if (!fp)
     {    

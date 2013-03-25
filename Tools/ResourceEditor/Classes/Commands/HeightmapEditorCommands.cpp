@@ -75,7 +75,7 @@ FilePath HeightmapModificationCommand::SaveHeightmap(Heightmap* heightmap)
 		int32 i = 0;
 		for (; i < fileList->GetFileCount(); ++i)
 		{
-			if (fileList->GetPathname(i).GetFilename() == filename)
+			if (fileList->GetFilename(i) == filename)
 			{
 				++num;
 				break;

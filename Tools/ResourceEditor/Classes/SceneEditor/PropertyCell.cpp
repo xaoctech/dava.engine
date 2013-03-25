@@ -426,7 +426,7 @@ String PropertyFilepathCell::GetExtensionFilter()
 
 void PropertyFilepathCell::OnClear(BaseObject * , void * , void * )
 {
-    property->SetString("");
+    property->SetFilePath(FilePath());
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }

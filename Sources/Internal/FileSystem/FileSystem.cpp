@@ -249,9 +249,8 @@ bool FileSystem::CopyDirectory(const FilePath & sourceDirectory, const FilePath 
 	{
 		if(!fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
 		{
-			const FilePath & pathName = fileList.GetPathname(i);
-            const FilePath destinationPath = destinationDirectory + FilePath("/" + pathName.GetFilename());
-			if(!CopyFile(pathName, destinationPath))
+            const FilePath destinationPath = destinationDirectory + FilePath("/" + fileList.GetFilename(i));
+			if(!CopyFile(fileList.GetPathname(i), destinationPath))
 			{
 				ret = false;
 			}
@@ -365,7 +364,7 @@ File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uin
 	}
 
 #else //#if defined(__DAVAENGINE_ANDROID__)
-	return File::CreateFromSystemPath(SystemPathForFrameworkPath(frameworkPath), attributes);
+	return File::CreateFromSystemPath(frameworkPath, attributes);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 

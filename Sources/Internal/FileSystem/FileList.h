@@ -75,6 +75,9 @@ public:
 	
 	//! Get path name
 	const FilePath & GetPathname(int32 index);
+    
+    //! Get file or folder name
+	const String & GetFilename(int32 index);
 
 	/**
 		\brief is file with given index in this list is a directory
@@ -95,6 +98,7 @@ private:
 	struct FileEntry
 	{
 		FilePath path;
+        String name;
 		uint32		size;
 		bool		isDirectory;
         
@@ -109,7 +113,7 @@ private:
                 return true;
             }
             
-            return (CompareCaseInsensitive(path.GetAbsolutePathname(), other.path.GetAbsolutePathname()) < 0);
+            return (CompareCaseInsensitive(name, other.name) < 0);
         }
 	};
 	FilePath            path;

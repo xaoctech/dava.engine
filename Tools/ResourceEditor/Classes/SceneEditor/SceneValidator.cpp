@@ -689,11 +689,9 @@ void SceneValidator::CreateDefaultDescriptors(const FilePath &folderPathname)
 	{
 		if (fileList->IsDirectory(fi))
 		{
-            String name = fileList->GetPathname(fi).GetLastDirectoryName();
+            String name = fileList->GetFilename(fi);
             
-            if(0 != CompareCaseInsensitive(String(".svn"), name)
-               && 0 != CompareCaseInsensitive(String("."), name)
-                && 0 != CompareCaseInsensitive(String(".."), name))
+            if(0 != CompareCaseInsensitive(String(".svn"), name) && !fileList->IsNavigationDirectory(fi))
             {
                 CreateDefaultDescriptors(fileList->GetPathname(fi));
             }

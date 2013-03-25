@@ -43,7 +43,7 @@ void UIFileTree::SetPath(const FilePath & fullpath, const String & extensionsStr
 	SafeRelease(treeHead);
 	
 	treeHead = new UITreeItemInfo(this);
-	treeHead->Set(0, fullpath, true);
+	treeHead->Set(0, String(), fullpath, true);
 	treeHead->isExpanded = true;
     
 	RecursiveTreeWalk(fullpath, treeHead);
@@ -216,13 +216,13 @@ void UIFileTree::RecursiveTreeWalk(const FilePath & path, UITreeItemInfo * curre
 			if (fileList->IsNavigationDirectory(fi))
 				addElement = false;
 
-		if (fileList->GetPathname(fi).GetFilename() == ".")
+		if (fileList->GetFilename(fi) == ".")
 			addElement = false;
 
 		if (addElement)
 		{
 			UITreeItemInfo *child = new UITreeItemInfo(this);
-			child->Set(current->GetLevel() + 1, fileList->GetPathname(fi), fileList->IsDirectory(fi));
+			child->Set(current->GetLevel() + 1, fileList->GetFilename(fi), fileList->GetPathname(fi), fileList->IsDirectory(fi));
 			current->AddChild(child);
 
 //			if (fileList->IsDirectory(fi) )
@@ -240,9 +240,10 @@ void UIFileTree::RecursiveTreeWalk(const FilePath & path, UITreeItemInfo * curre
 	
 void UITreeItemInfo::ToggleExpanded()
 {
-    String name = GetPathname().GetFilename();
+    String name = GetName();
     
 	if ((name == "..") || (name == "."))return;
+    
 	isExpanded = !isExpanded;
 	if (isExpanded)
 	{
@@ -268,6 +269,8 @@ int32 UITreeItemInfo::GetTotalCount()
             UITreeItemInfo *inf = new UITreeItemInfo(ownerTree);
             inf->level = level;
             inf->pathname = GetPathname();
+            inf->name = GetName();
+            
             inf->isDirectory = isDirectory;
             inf->isExpanded = isExpanded;
             
@@ -281,7 +284,7 @@ int32 UITreeItemInfo::GetTotalCount()
                 bool wasFound = false;
                 for (int32 iNew = 0; iNew < (int32)inf->children.size(); ++iNew)
                 {
-                    if(item->pathname == inf->children[iNew]->pathname)
+                    if(item->name == inf->children[iNew]->name)
                     {
                         wasFound = true;
                         break;
@@ -306,7 +309,7 @@ int32 UITreeItemInfo::GetTotalCount()
                 bool wasFound = false;
                 for (int32 iOld = 0; iOld < (int32)children.size(); ++iOld)
                 {
-                    if(children[iOld]->pathname == inf->children[iNew]->pathname)
+                    if(children[iOld]->name == inf->children[iNew]->name)
                     {
                         wasFound = true;
                         break;
@@ -318,7 +321,7 @@ int32 UITreeItemInfo::GetTotalCount()
                     children.insert(it, SafeRetain(inf->children[iNew]));
                     for (it = children.begin(); it < children.end(); ++it)
                     {
-                        if((*it)->pathname == inf->children[iNew]->pathname)
+                        if((*it)->name == inf->children[iNew]->name)
                         {
                             break;
                         }

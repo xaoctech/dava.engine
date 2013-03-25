@@ -67,7 +67,7 @@ void Replay::StartRecord(const FilePath & dirName)
     int32 listSize = list->GetCount();
     for(int32 i = 0; i < listSize; ++i)
     {
-        String fileName = list->GetPathname(i).GetFilename();
+        String fileName = list->GetFilename(i);
         if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i) && fileName != "LastReplay.rep")
         {
             FileSystem::Instance()->CopyFile(list->GetPathname(i), dirName + FilePath(fileName));
@@ -134,7 +134,7 @@ void Replay::StartPlayback(const FilePath & dirName)
 	int32 listSize = list->GetCount();
 	for(int32 i = 0; i < listSize; ++i)
 	{
-		String fileName = list->GetPathname(i).GetFilename();
+		String fileName = list->GetFilename(i);
 		if(!list->IsNavigationDirectory(i) && !list->IsDirectory(i))
 		{
             FilePath existingFile = dirName + FilePath(fileName);

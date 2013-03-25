@@ -89,7 +89,9 @@ public:
     class DialogFileUnit 
     {
     public:
-        FilePath name;
+        FilePath path;
+        String name;
+        
         int32 indexInFileList;
         int32 type;
     };
@@ -174,7 +176,7 @@ protected:
     UIFileSystemDialogDelegate *delegate;
     Vector<String> extensionFilter;
     FilePath currentDir;
-    FilePath selectedFile;
+    String selectedFileName;
     int32 cellH;
     
     UIList *fileListView;

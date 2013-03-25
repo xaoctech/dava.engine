@@ -61,9 +61,9 @@ void PropertyList::AddFloatProperty(const String &propertyName, editableType pro
 
 void PropertyList::AddFilepathProperty(const String &propertyName, const String &extensionFilter, bool clearDataEnabled, editableType propEditType)
 {
-    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_FILEPATH);
     p->cellType = PropertyCell::PROP_CELL_FILEPATH;
-    p->SetString("");
+    p->SetFilePath(FilePath());
     p->SetClearDataEnabled(clearDataEnabled);
     p->SetExtensionFilter(extensionFilter);
     AddProperty(p, propertyName, propEditType);
@@ -205,9 +205,6 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
                 case PropertyCell::PROP_CELL_TEXT:
                     delegate->OnStringPropertyChanged(this, changedProperty->key, changedProperty->GetString());
                     break;
-                case PropertyCell::PROP_CELL_FILEPATH:
-                    delegate->OnFilepathPropertyChanged(this, changedProperty->key, changedProperty->GetString());
-                    break;
             }
         }
             break;
@@ -243,6 +240,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
             break;
         case PropertyCellData::PROP_VALUE_DISTANCE:
             delegate->OnDistancePropertyChanged(this, changedProperty->key, changedProperty->GetFloat(), changedProperty->GetInt());
+            break;
+        case PropertyCellData::PROP_VALUE_FILEPATH:
+            delegate->OnFilepathPropertyChanged(this, changedProperty->key, changedProperty->GetFilePath());
             break;
     }
 }

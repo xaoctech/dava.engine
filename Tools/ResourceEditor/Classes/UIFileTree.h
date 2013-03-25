@@ -40,15 +40,17 @@ public:
 		level = 0;
 		isExpanded = false;
 		isDirectory = false;
+        name = String();
 	}
 	~UITreeItemInfo() 
 	{
 		RemoveChildren();
 	};
 	
-	void Set(int32 _level, const FilePath & _pathname, bool _isDirectory)
+	void Set(int32 _level, const String & _name, const FilePath & _pathname, bool _isDirectory)
 	{
 		level = _level;
+        name = _name;
 		pathname = _pathname;
 		isDirectory = _isDirectory;
 		isExpanded = isDirectory ? (false) : (true);
@@ -57,6 +59,8 @@ public:
 	void RemoveChildren();
 	int32 GetLevel() { return level; };
 	const FilePath & GetPathname() { return pathname; };
+	const String & GetName() { return name; };
+    
 	bool IsDirectory() { return isDirectory; };
 	bool IsExpanded() { return isExpanded; };
 	void ToggleExpanded();// { isExpanded = !isExpanded; };
@@ -70,6 +74,7 @@ private:
 	UIFileTree * ownerTree;
 	int32  level;
 	FilePath pathname;
+    String name;
 	Vector<UITreeItemInfo*> children;
 	bool isExpanded;
 	bool isDirectory;

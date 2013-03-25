@@ -74,7 +74,9 @@ FileList::FileList(const FilePath & filepath)
 		{
 			do
 			{
+                //TODO: need to check for Win32
 				entry.path = FilePath(c_file.name);
+				entry.name = c_file.name;
 				entry.size = c_file.size;
 				entry.isDirectory = (_A_SUBDIR & c_file.attrib) != 0;
 				fileList.push_back(entry);
@@ -105,12 +107,8 @@ FileList::FileList(const FilePath & filepath)
 	{
 		while(n--)
 		{
-            if(String(namelist[n]->d_name) == String(".") || String(namelist[n]->d_name) == String(".."))
-            {
-                continue;
-            }
-            
 			entry.path = path + FilePath(namelist[n]->d_name);
+			entry.name = namelist[n]->d_name;
 			entry.size = 0;
 			entry.isDirectory = namelist[n]->d_type == DT_DIR;
             if(entry.isDirectory)
@@ -130,8 +128,7 @@ FileList::FileList(const FilePath & filepath)
 	{
 		if (IsDirectory(fi))
 		{
-			String filename = GetPathname(fi).GetLastDirectoryName();
-			if ((filename != ".") && (filename != ".."))
+			if (!IsNavigationDirectory(fi))
 				directoryCount++;
 		}else
 			fileCount++;
@@ -163,6 +160,13 @@ const FilePath & FileList::GetPathname(int32 index)
 	DVASSERT((index >= 0) && (index < (int32)fileList.size()));
 	return fileList[index].path;
 }
+    
+const String & FileList::GetFilename(int32 index)
+{
+    DVASSERT((index >= 0) && (index < (int32)fileList.size()));
+    return fileList[index].name;
+}
+    
 
 bool FileList::IsDirectory(int32 index) 
 {
@@ -177,7 +181,7 @@ bool FileList::IsNavigationDirectory(int32 index)
 	//if (isDir)
 	//{
     
-    String filename = GetPathname(index).GetFilename();
+    String filename = GetFilename(index);
 	if ((filename == ".") || (filename == ".."))return true;
 	//}
 	return false;

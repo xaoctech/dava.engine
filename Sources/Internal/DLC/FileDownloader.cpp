@@ -116,10 +116,8 @@ uint32 FileDownloader::DownloadFile()
 
     fileForWrite = NULL;
     
-    FilePath path = GetSourceUrl().GetDirectory();
-    String fileName = GetSourceUrl().GetFilename();
-    
-    FilePath fullSavePath = GetSavePath() + FilePath("/" + fileName);
+    FilePath fullSavePath(GetSourceUrl());
+    fullSavePath.ReplaceDirectory(GetSavePath());
     
     // Check file exist
     fileForWrite = File::Create(fullSavePath, File::OPEN | File::READ);

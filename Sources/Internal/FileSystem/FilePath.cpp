@@ -104,7 +104,10 @@ FilePath FilePath::operator+(const FilePath &path) const
     
 FilePath& FilePath::operator+=(const FilePath & path)
 {
-    DVASSERT(IsDirectoryPathname());
+    if(IsInitalized())
+    {
+        DVASSERT(IsDirectoryPathname());
+    }
 
     absolutePathname = NormalizePathname(absolutePathname + path.GetAbsolutePathname());
     
@@ -245,6 +248,14 @@ void FilePath::ReplaceDirectory(const String &directory)
     const String filename = GetFilename();
     absolutePathname = NormalizePathname(MakeDirectory(directory)) + filename;
 }
+    
+void FilePath::ReplaceDirectory(const FilePath &directory)
+{
+    DVASSERT(directory.IsDirectoryPathname())
+    const String filename = GetFilename();
+    absolutePathname = directory.GetAbsolutePathname() + filename;
+}
+    
 
 String FilePath::ResolvePathname() const
 {
