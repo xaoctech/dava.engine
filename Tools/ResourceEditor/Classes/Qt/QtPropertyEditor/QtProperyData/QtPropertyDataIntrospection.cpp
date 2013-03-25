@@ -1,6 +1,7 @@
 #include "DAVAEngine.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntrospection.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
+#include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataIntoCollection.h"
 
 QtPropertyDataIntrospection::QtPropertyDataIntrospection(void *_object, const DAVA::IntrospectionInfo *_info, int hasAnyFlags, int hasNotAnyFlags)
@@ -36,34 +37,39 @@ void QtPropertyDataIntrospection::AddMember(const DAVA::IntrospectionMember *mem
 	const DAVA::IntrospectionInfo *memberIntrospection = memberMetaInfo->GetIntrospection(memberObject);
 	bool isKeyedArchive = false;
 
-	// check if this member is keyed archive
-	// for keyed archives always will be variant type created
+	// keyed archive
 	if(NULL != memberIntrospection && (memberIntrospection->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive>()))
 	{
-		isKeyedArchive = true;
+		QtPropertyDataDavaKeyedArcive *childData = new QtPropertyDataDavaKeyedArcive((DAVA::KeyedArchive *) memberObject);
+		ChildAdd(member->Name(), childData);
 	}
-
-    if(NULL != memberObject && NULL != memberIntrospection && !isKeyedArchive)
+	// introspection
+	else if(NULL != memberObject && NULL != memberIntrospection)
     {
 		QtPropertyDataIntrospection *childData = new QtPropertyDataIntrospection(memberObject, memberIntrospection, hasAnyFlags, hasNotAnyFlags);
 		ChildAdd(member->Name(), childData);
     }
+	// any other value
     else
     {
-        if(memberMetaInfo->IsPointer() && !isKeyedArchive)
+		// pointer
+        if(memberMetaInfo->IsPointer())
         {
 			QString s;
             QtPropertyData* childData = new QtPropertyData(s.sprintf("[%p] Pointer", memberObject));
             childData->SetFlags(childData->GetFlags() | FLAG_IS_DISABLED);
             ChildAdd(member->Name(), childData);
         }
+		// other value
         else
         {
+			// collection
             if(member->Collection() && !isKeyedArchive)
             {
                 QtPropertyDataIntroCollection *childCollection = new QtPropertyDataIntroCollection(memberObject, member->Collection(), hasAnyFlags, hasNotAnyFlags);
                 ChildAdd(member->Name(), childCollection);
             }
+			// variant
             else
             {
                 QtPropertyDataDavaVariant *childData = new QtPropertyDataDavaVariant(member->Value(object));
