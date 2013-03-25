@@ -23,7 +23,6 @@
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
-#include "GUIState.h"
 #include "Scene/SceneDataManager.h"
 #include "Scene/SceneData.h"
 #include "Main/QtUtils.h"
@@ -244,8 +243,6 @@ void QtMainWindowHandler::SetResentAncorAction(QAction *ancorAction)
 
 void QtMainWindowHandler::MenuFileWillShow()
 {
-    if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
-    
     //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
 
@@ -271,25 +268,7 @@ void QtMainWindowHandler::MenuFileWillShow()
         menuResentScenes->insertActions(resentAncorAction, resentActions);
         menuResentScenes->insertSeparator(resentAncorAction);
     }
- 
-    GUIState::Instance()->SetNeedUpdatedFileMenu(false);
 }
-
-void QtMainWindowHandler::MenuToolsWillShow()
-{
-    if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
-
-    //TODO: need code here
-
-//    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-//    if(screen)
-//    {
-////        screen->;
-//    }
-    
-    GUIState::Instance()->SetNeedUpdatedToolsMenu(false);
-}
-
 
 void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 {

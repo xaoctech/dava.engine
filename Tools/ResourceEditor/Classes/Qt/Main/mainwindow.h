@@ -23,21 +23,23 @@ public:
 private:
 	void OpenLastProject();
 
+	void SetupActions();
     void SetupMainMenu();
-	void SetupToolBar();
-	void SetupModificationToolBar();
-    void SetupDockWidgets();
+	void SetupToolBars();
+    void SetupDocks();
+
     void SetupCustomColorsDock();
 	void SetupVisibilityToolDock();
     
-	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
     void SetCustomColorsDockControlsEnabled(bool enabled);
 
 	void UpdateLibraryFileTypes();
 	void UpdateLibraryFileTypes(bool showDAEFiles, bool showSC2Files);
 
 public slots:
-	
+	void ShowActionWithText(QToolBar *toolbar, QAction *action, bool showText);
+
+
 	void ChangeParticleDockVisible(bool visible);
 	void ChangeParticleDockTimeLineVisible(bool visible);
 	void returnToOldMaxMinSizesForDockSceneGraph();
@@ -72,8 +74,6 @@ private:
 	QProgressDialog *convertWaitDialog;
 	QProgressDialog *repackSpritesWaitDialog;
     
-    //LibraryModel *libraryModel;
-	
 	QSize oldDockSceneGraphMaxSize;
 	QSize oldDockSceneGraphMinSize;
 
@@ -109,7 +109,7 @@ private:
 	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
 
     void OpenLastProject();
-    void SetupDockWidgets();
+    void SetupDocks();
         
 private slots:
 

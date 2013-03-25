@@ -136,7 +136,16 @@ namespace DAVA
 		}
 
 		virtual void* Pointer(void *object) const { return NULL; };
-		virtual void* Data(void *object) const { return NULL; };
+		virtual void* Data(void *object) const 
+		{ 
+			if(type->IsPointer())
+			{
+				T* realObj = (T *) object;
+				return (realObj->*getter)();
+			}
+
+			return NULL;
+		};
 
 	protected:
 		const GetterPtr getter;

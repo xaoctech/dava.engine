@@ -2,6 +2,7 @@
 #define __Q_RESOURSE_EDITOR_PROGRESS_DIALOG_H__
 
 #include <QtGui/qprogressdialog.h>
+#include <qtimer.h>
 
 class QProgressBar;
 
@@ -35,6 +36,7 @@ protected:
 
 	bool				isCycled;
 	unsigned int		timeIntervalForPercent;
+	QTimer				timer;
 
 private slots:
 	
