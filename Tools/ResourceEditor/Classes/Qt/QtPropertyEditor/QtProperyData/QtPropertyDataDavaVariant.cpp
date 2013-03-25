@@ -217,8 +217,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 				ChildAdd(i->first.c_str(), new QtPropertyDataDavaVariant(*(i->second)));
 			}
 
-			QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/add.png"), "");
-			addButton->setIconSize(QSize(12, 12));
+			QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
 			addButton->setFlat(true);
 
 			SetOptionalWidget(addButton);
