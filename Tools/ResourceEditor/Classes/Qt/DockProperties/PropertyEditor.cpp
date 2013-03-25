@@ -127,18 +127,18 @@ QtPropertyData* PropertyEditor::AppendIntrospectionInfo(void *object, const DAVA
 
 			propData = new QtPropertyDataIntrospection(object, currentInfo, hasFlags, hasNotFlags);
 
-			//if(propData->ChildCount() > 0)
+			if(propData->ChildCount() > 0)
 			{
 				QPair<QtPropertyItem*, QtPropertyItem*> prop = AppendProperty(currentInfo->Name(), propData);
             
 	            prop.first->setBackground(QBrush(QColor(Qt::lightGray)));
 		        prop.second->setBackground(QBrush(QColor(Qt::lightGray)));
 			}
-			//else
-			//{
-			//	delete propData;
-			//	propData = NULL;
-			//}
+			else
+			{
+				delete propData;
+				propData = NULL;
+			}
         }
     }
 

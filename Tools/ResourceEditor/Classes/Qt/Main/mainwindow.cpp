@@ -231,6 +231,16 @@ void QtMainWindow::SetupMainMenu()
 
 void QtMainWindow::SetupToolBars()
 {
+	// add combobox to select current view mode
+	// TODO:
+	// ... ->
+	QComboBox *cbox = new QComboBox(NULL);
+	cbox->addItem("Normal mode");
+	cbox->addItem("Particles mode");
+	cbox->addItem("Landscape mode");
+	ui->viewModeToolBar->addWidget(cbox);
+	// <-
+
 	// add special modifications widget into modificationToolBar
 	ModificationWidget* modificationWidget = new ModificationWidget(this);
 	ui->modificationToolBar->insertWidget(ui->actionModifyReset, modificationWidget);
