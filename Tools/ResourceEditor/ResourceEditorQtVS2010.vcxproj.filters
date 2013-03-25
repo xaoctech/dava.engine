@@ -1329,9 +1329,6 @@
     <ClCompile Include="_GeneratedQt\DockParticleEditor\TimeLineWidget_moc.cpp">
       <Filter>QtGenerated\DockParticleEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Main\ExtraUserData.cpp">
-      <Filter>Sources\Qt\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.cpp">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
     </ClCompile>
@@ -2590,9 +2587,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\TimeLineWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Main\ExtraUserData.h">
-      <Filter>Sources\Qt\Main</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockParticleEditor\ParticleTimeLineWidget.h">
       <Filter>Sources\Qt\DockParticleEditor</Filter>
