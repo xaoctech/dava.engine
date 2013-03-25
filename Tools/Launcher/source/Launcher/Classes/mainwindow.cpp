@@ -93,8 +93,11 @@ void MainWindow::FillTableSoft(QTableWidget* table, const AvailableSoftWare::Sof
                     this,
                     SLOT(OnComboBoxValueChanged(QString)));
 
-            for (QSet<QString>::const_iterator iter = config.m_AvailableVersion.begin();
-                 iter != config.m_AvailableVersion.end();
+            QList<QString> versionsList = config.m_AvailableVersion.toList();
+            qSort(versionsList);
+
+            for (QList<QString>::const_iterator iter = versionsList.begin();
+                 iter != versionsList.end();
                  ++iter) {
                 pComboBox->addItem(*iter);
             }
