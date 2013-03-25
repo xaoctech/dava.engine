@@ -1542,9 +1542,6 @@
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyData_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon_moc.cpp">
-      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp">
       <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
@@ -1559,6 +1556,12 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\DockSceneGraph\PointerHolder.cpp">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.cpp">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp">
+      <Filter>QtGenerated\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2746,6 +2749,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DockSceneGraph\PointerHolder.h">
       <Filter>Sources\Qt\DockSceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.h">
+      <Filter>Sources\Qt\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

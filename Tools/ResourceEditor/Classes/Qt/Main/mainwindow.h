@@ -52,7 +52,6 @@ public slots:
 
 private slots:
 	void ProjectOpened(const QString &path);
-    void MenuFileWillShow();
 	void LibraryFileTypesChanged();
 	
 	//reference
@@ -78,49 +77,6 @@ private:
 	QSize oldDockSceneGraphMinSize;
 
 	bool emitRepackAndReloadFinished;
-};
-
-
-#endif // MAINWINDOW_H
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
-#include "QtPosSaver/QtPosSaver.h"
-
-namespace Ui {
-class MainWindow;
-}
-
-class QtMainWindow : public QMainWindow
-{
-    Q_OBJECT
-    
-public:
-   explicit QtMainWindow(QWidget *parent = 0);
-   ~QtMainWindow();
-    
-    virtual bool eventFilter(QObject *, QEvent *);
-    
-private:
-    void SetupMainMenu();
-    
-	void SetupToolBar();
-	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
-
-    void OpenLastProject();
-    void SetupDocks();
-        
-private slots:
-
-    void MenuFileWillShow();
-	
-	//reference
-	void ApplyReferenceNodeSuffix();
-        
-private:
-    Ui::MainWindow *ui;
-	QtPosSaver posSaver;
 };
 
 

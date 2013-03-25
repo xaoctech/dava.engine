@@ -346,7 +346,7 @@
            <bool>true</bool>
           </property>
           <property name="selectionMode">
-           <enum>QAbstractItemView::NoSelection</enum>
+           <enum>QAbstractItemView::SingleSelection</enum>
           </property>
           <property name="indentation">
            <number>16</number>
@@ -532,40 +532,17 @@
     <addaction name="separator"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
+    <addaction name="actionShowNotPassableLandscape"/>
     <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
     <addaction name="actionBeast"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
-   <widget class="QMenu" name="menuViewPort">
-    <property name="title">
-     <string>View Port</string>
-    </property>
-    <addaction name="actionIPhone"/>
-    <addaction name="actionRetina"/>
-    <addaction name="actionIPad"/>
-    <addaction name="actionDefault"/>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="actionRestoreViews"/>
-    <addaction name="separator"/>
-    <addaction name="actionSceneInfo"/>
-   </widget>
-   <widget class="QMenu" name="menuViewOptions">
-    <property name="title">
-     <string>View Options</string>
-    </property>
-    <widget class="QMenu" name="menuLandscape">
-     <property name="title">
-      <string>Landscape</string>
-     </property>
-     <addaction name="actionShowNotPassableLandscape"/>
-    </widget>
     <widget class="QMenu" name="menuTextureFromat">
      <property name="title">
       <string>Texture Fromat</string>
@@ -574,8 +551,21 @@
      <addaction name="actionReloadAsPVR"/>
      <addaction name="actionReloadAsDXT"/>
     </widget>
-    <addaction name="menuLandscape"/>
+    <widget class="QMenu" name="menuViewPort">
+     <property name="title">
+      <string>View Port</string>
+     </property>
+     <addaction name="actionIPhone"/>
+     <addaction name="actionRetina"/>
+     <addaction name="actionIPad"/>
+     <addaction name="actionDefault"/>
+    </widget>
+    <addaction name="menuViewPort"/>
     <addaction name="menuTextureFromat"/>
+    <addaction name="separator"/>
+    <addaction name="actionRestoreViews"/>
+    <addaction name="separator"/>
+    <addaction name="actionSceneInfo"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -605,8 +595,6 @@
    <addaction name="menuCreateNode"/>
    <addaction name="menuComponent"/>
    <addaction name="menuTools"/>
-   <addaction name="menuViewPort"/>
-   <addaction name="menuViewOptions"/>
   </widget>
   <widget class="QDockWidget" name="dockCustomColors">
    <property name="floating">
@@ -954,7 +942,7 @@
      <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
    </property>
    <property name="text">
-    <string>Texture Converter</string>
+    <string>Texture Convertor</string>
    </property>
   </action>
   <action name="actionIPhone">
@@ -1019,7 +1007,10 @@
      <normaloff>:/QtIcons/notpassableterrain.png</normaloff>:/QtIcons/notpassableterrain.png</iconset>
    </property>
    <property name="text">
-    <string>Show Not Passable Landscape</string>
+    <string>Not Passable Landscape</string>
+   </property>
+   <property name="toolTip">
+    <string>Impassable Landscape</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>

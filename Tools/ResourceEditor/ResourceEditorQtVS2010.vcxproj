@@ -420,6 +420,7 @@
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp" />
+    <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.cpp" />
     <ClCompile Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.cpp" />
@@ -564,7 +565,7 @@
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataCommon_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection_moc.cpp" />
     <ClCompile Include="_GeneratedQt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection_moc.cpp" />
@@ -909,6 +910,7 @@
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyModel.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h" />
+    <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaKeyedArchive.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataDavaVariant.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntoCollection.h" />
     <ClInclude Include="Classes\Qt\QtPropertyEditor\QtProperyData\QtPropertyDataIntrospection.h" />

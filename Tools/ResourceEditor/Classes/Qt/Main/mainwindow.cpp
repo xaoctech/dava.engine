@@ -43,24 +43,19 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	ui->davaGLWidget->setFocus();
  
     qApp->installEventFilter(this);
-
-	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
 
 	QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->davaGLWidget);
+	QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
+	QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 
     RegisterBasePointerTypes();
    
-	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
-    
 	SetupActions();
     SetupMainMenu();
     SetupToolBars();
     SetupDocks();
-
-    QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
-    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
-
-	OpenLastProject();
 
 	posSaver.Attach(this);
 	posSaver.LoadState(this);
@@ -68,6 +63,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	ui->dockParticleEditor->installEventFilter(this);
 	ChangeParticleDockVisible(false); //hide particle editor dock on start up
 	ui->dockParticleEditorTimeLine->hide();
+
+	// Open last project
+	QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(ProjectOpened(const QString &)));
+	OpenLastProject();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -200,7 +199,6 @@ void QtMainWindow::SetupMainMenu()
 	actionHandler->RegisterEditActions(ResourceEditor::EDIT_COUNT, ui->actionUndo, ui->actionRedo);
 
     //View Options
-    connect(ui->menuViewOptions, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuViewOptionsWillShow()));
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
     connect(ui->actionReloadAsPNG, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPNG()));
     connect(ui->actionReloadAsPVR, SIGNAL(triggered()), actionHandler, SLOT(ReloadAsPVR()));
@@ -362,13 +360,6 @@ void QtMainWindow::returnToOldMaxMinSizesForDockSceneGraph()
 void QtMainWindow::ChangeParticleDockTimeLineVisible(bool visible)
 {
 	ui->dockParticleEditorTimeLine->setVisible(visible);
-}
-
-void QtMainWindow::MenuFileWillShow()
-{
-    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
-    QtMainWindowHandler::Instance()->SetResentAncorAction(ui->actionSaveScene);
-    QtMainWindowHandler::Instance()->MenuFileWillShow();
 }
 
 void QtMainWindow::ApplyReferenceNodeSuffix()
