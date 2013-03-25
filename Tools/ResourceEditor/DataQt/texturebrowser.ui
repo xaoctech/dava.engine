@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="QtIcons.qrc">
-    <normaloff>:/QtIconsTextureDialog/view_pictures.png</normaloff>:/QtIconsTextureDialog/view_pictures.png</iconset>
+    <normaloff>:/QtIcons/textureeditor.png</normaloff>:/QtIcons/textureeditor.png</iconset>
   </property>
   <property name="statusTip">
    <string/>

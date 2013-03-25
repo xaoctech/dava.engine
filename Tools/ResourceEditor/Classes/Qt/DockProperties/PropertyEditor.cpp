@@ -66,8 +66,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 				if(NULL != componentData)
 				{
 					// Add optional button to track "remove this component" command
-					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/remove.png"), "");
-					removeButton->setIconSize(QSize(12, 12));
+					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
 					removeButton->setFlat(true);
 
 					componentData->SetOptionalWidget(removeButton);

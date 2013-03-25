@@ -100,6 +100,7 @@
        </property>
        <addaction name="actionRefreshSceneGraph"/>
        <addaction name="actionAddNewEntity"/>
+       <addaction name="actionRemoveEntity"/>
       </widget>
      </item>
      <item>
@@ -261,6 +262,13 @@
      <height>200</height>
     </size>
    </property>
+   <property name="windowIcon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
    <property name="windowTitle">
     <string>Properties</string>
    </property>
@@ -309,6 +317,7 @@
           </property>
           <addaction name="actionShowAdvancedProp"/>
           <addaction name="actionAddNewComponent"/>
+          <addaction name="actionRemoveComponent"/>
          </widget>
         </item>
         <item>
@@ -494,18 +503,25 @@
    </widget>
    <widget class="QMenu" name="menuCreateNode">
     <property name="title">
-     <string>Create Node</string>
+     <string>Entity</string>
     </property>
-    <addaction name="actionLandscape"/>
-    <addaction name="actionLight"/>
-    <addaction name="actionServiceNode"/>
-    <addaction name="actionCamera"/>
-    <addaction name="actionImposter"/>
+    <widget class="QMenu" name="menuAdd">
+     <property name="title">
+      <string>Add entity</string>
+     </property>
+     <addaction name="actionLandscape"/>
+     <addaction name="actionLight"/>
+     <addaction name="actionServiceNode"/>
+     <addaction name="actionCamera"/>
+     <addaction name="actionImposter"/>
+     <addaction name="actionUserNode"/>
+     <addaction name="actionSwitchNode"/>
+     <addaction name="actionParticleEffectNode"/>
+    </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
-    <addaction name="actionUserNode"/>
-    <addaction name="actionSwitchNode"/>
-    <addaction name="actionParticleEffectNode"/>
+    <addaction name="menuAdd"/>
+    <addaction name="actionRemoveEntity"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -533,7 +549,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Views</string>
+     <string>View</string>
     </property>
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
@@ -561,12 +577,14 @@
     <addaction name="menuLandscape"/>
     <addaction name="menuTextureFromat"/>
    </widget>
-   <widget class="QMenu" name="menuModifications">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Modifications</string>
+     <string>Edit</string>
     </property>
-    <addaction name="actionModifySelect"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
     <addaction name="separator"/>
+    <addaction name="actionModifySelect"/>
     <addaction name="actionModifyMove"/>
     <addaction name="actionModifyRotate"/>
     <addaction name="actionModifyScale"/>
@@ -574,21 +592,21 @@
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuComponent">
     <property name="title">
-     <string>Edit</string>
+     <string>Component</string>
     </property>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
+    <addaction name="actionAddNewComponent"/>
+    <addaction name="actionRemoveComponent"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
+   <addaction name="menuComponent"/>
    <addaction name="menuTools"/>
    <addaction name="menuViewPort"/>
    <addaction name="menuViewOptions"/>
-   <addaction name="menuModifications"/>
   </widget>
   <widget class="QDockWidget" name="dockCustomColors">
    <property name="floating">
@@ -1170,7 +1188,7 @@
      <normaloff>:/QtIcons/advanced.png</normaloff>:/QtIcons/advanced.png</iconset>
    </property>
    <property name="text">
-    <string>Hide readonly</string>
+    <string>Advanced view</string>
    </property>
   </action>
   <action name="actionRefreshSceneGraph">
@@ -1197,7 +1215,7 @@
   <action name="actionModifyReset">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/modify_reset.png</normaloff>:/QtIcons/modify_reset.png</iconset>
+     <normaloff>:/QtIcons/ccancel.png</normaloff>:/QtIcons/ccancel.png</iconset>
    </property>
    <property name="text">
     <string>ModifyReset</string>
@@ -1225,6 +1243,30 @@
    </property>
    <property name="toolTip">
     <string>Add new entity</string>
+   </property>
+  </action>
+  <action name="actionRemoveEntity">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/remove.png</normaloff>:/QtIcons/remove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove entity</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove entity</string>
+   </property>
+  </action>
+  <action name="actionRemoveComponent">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove component</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove component</string>
    </property>
   </action>
  </widget>

@@ -1,8 +1,14 @@
 <RCC>
   <qresource prefix="/">
-    <file>QtIcons/add.png</file>
+    <file>QtIcons/keyminus.png</file>
+    <file>QtIcons/keyplus.png</file>
+    <file>QtIcons/ccancel.png</file>
+    <file>QtIcons/removecomponent.png</file>
+    <file>QtIcons/settings.png</file>
     <file>QtIcons/remove.png</file>
     <file>QtIcons/addcomponent.png</file>
+    <file>QtIcons/cminus.png</file>
+    <file>QtIcons/cplus.png</file>
     <file>QtIcons/add_blue.png</file>
     <file>QtIcons/advanced.png</file>
     <file>QtIcons/add_green.png</file>
@@ -12,7 +18,6 @@
     <file>QtIcons/refresh.png</file>
     <file>QtIcons/savescenetofolder.png</file>
     <file>QtIcons/modify_select.png</file>
-    <file>QtIcons/modify_reset.png</file>
     <file>QtIcons/modify_move.png</file>
     <file>QtIcons/modify_rotate.png</file>
     <file>QtIcons/modify_placeonland.png</file>

@@ -74,7 +74,6 @@ QtMainWindow::~QtMainWindow()
 {
 	posSaver.SaveState(this);
 
-	//GUIState::Instance()->Release();
 	delete ui;
     
 	QtMainWindowHandler::Instance()->Release();
@@ -267,6 +266,18 @@ void QtMainWindow::SetupToolBars()
 
 	// let "add new component" action from propertiesToolBar be displayed as icon+text
 	ShowActionWithText(ui->propertiesToolBar, ui->actionAddNewComponent, true);
+
+	// TODO:
+	// remove this ->
+	// (is done before merging development to to_master)
+
+	cbox->setEnabled(false);
+	ui->actionAddNewEntity->setEnabled(false);
+	ui->actionRemoveEntity->setEnabled(false);
+	ui->actionAddNewComponent->setEnabled(false);
+	ui->actionRemoveComponent->setEnabled(false);
+
+	// <-
 }
 
 void QtMainWindow::OpenLastProject()
