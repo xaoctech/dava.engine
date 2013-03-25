@@ -105,7 +105,7 @@ void QtPropertyItemDelegate::recalcOptionalWidget(const QModelIndex &index, QSty
 			// TODO: take widget size from QtPropertyData
 			// ...
 			
-			widgetSize = 30;
+			widgetSize = 20;
 
 			// ...
 

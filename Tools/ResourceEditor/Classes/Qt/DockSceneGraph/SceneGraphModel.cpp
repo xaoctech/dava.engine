@@ -8,7 +8,7 @@
 #include "GraphItem.h"
 #include "SceneGraphModelStateHelper.h"
 
-#include "PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/ArrowsNode.h"
 

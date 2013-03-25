@@ -4,6 +4,7 @@
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QColorDialog>
+#include <QPushButton>
 #include <QPainter>
 #include <QLineEdit>
 
@@ -215,6 +216,13 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 			{
 				ChildAdd(i->first.c_str(), new QtPropertyDataDavaVariant(*(i->second)));
 			}
+
+			QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/add.png"), "");
+			addButton->setIconSize(QSize(12, 12));
+			addButton->setFlat(true);
+
+			SetOptionalWidget(addButton);
+			SetOptionalWidgetOverlay(true);
 		}
 		break;
 	case DAVA::VariantType::TYPE_MATRIX2:

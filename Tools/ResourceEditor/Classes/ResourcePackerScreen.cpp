@@ -86,7 +86,9 @@ void ResourcePackerScreen::PackResources()
 	}
 
 
-	if (IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true))
+    FilePath md5path(excludeDirectory + GetProcessFolderName());
+    md5path.MakeDirectoryPathname();
+	if (IsMD5ChangedDir(md5path, outputGfxDirectory, gfxDirName + ".md5", true))
 	{
 		if (Core::Instance()->IsConsoleMode())
 			printf("[Gfx not available or changed - performing full repack]\n");
@@ -107,7 +109,7 @@ void ResourcePackerScreen::PackResources()
 	RecursiveTreeWalk(inputGfxDirectory, outputGfxDirectory);
 
 	// Put latest md5 after convertation
-	IsMD5ChangedDir(excludeDirectory + String("/") + GetProcessFolderName(), outputGfxDirectory, gfxDirName + ".md5", true);
+	IsMD5ChangedDir(md5path, outputGfxDirectory, gfxDirName + ".md5", true);
 }
 
 

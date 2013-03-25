@@ -1,7 +1,16 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/add.png</file>
+    <file>QtIcons/remove.png</file>
+    <file>QtIcons/addcomponent.png</file>
+    <file>QtIcons/add_blue.png</file>
+    <file>QtIcons/advanced.png</file>
+    <file>QtIcons/add_green.png</file>
+    <file>QtIcons/textureeditor.png</file>
     <file>QtIcons/edit_redo.png</file>
     <file>QtIcons/edit_undo.png</file>
+    <file>QtIcons/refresh.png</file>
+    <file>QtIcons/savescenetofolder.png</file>
     <file>QtIcons/modify_select.png</file>
     <file>QtIcons/modify_reset.png</file>
     <file>QtIcons/modify_move.png</file>
@@ -9,14 +18,8 @@
     <file>QtIcons/modify_placeonland.png</file>
     <file>QtIcons/modify_snaptoland.png</file>
     <file>QtIcons/modify_scale.png</file>
-    <file>QtImages/tree-doc.png</file>
-    <file>QtImages/tree-folder.png</file>
-    <file>QtImages/tree-folder-opened.png</file>
     <file>QtImages/tree-closed.png</file>
-    <file>QtImages/tree-end.png</file>
-    <file>QtImages/tree-more.png</file>
     <file>QtImages/tree-open.png</file>
-    <file>QtImages/tree-vline.png</file>
     <file>QtIconsTextureDialog/filter.png</file>
     <file>QtIconsTextureDialog/alpha.png</file>
     <file>QtIconsTextureDialog/editclear.png</file>

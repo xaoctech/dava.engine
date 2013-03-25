@@ -2,8 +2,6 @@
 
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-
-#include "../Qt/Main/GUIState.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../Qt/Main/QtMainWindowHandler.h"

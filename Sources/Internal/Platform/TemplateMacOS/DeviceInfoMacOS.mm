@@ -3,6 +3,7 @@
 #ifdef __DAVAENGINE_MACOS__
 
 #import <Foundation/NSLocale.h>
+#import <Foundation/NSTimeZone.h>
 
 namespace DAVA
 {
@@ -46,10 +47,10 @@ String DeviceInfo::GetRegion()
 
 String DeviceInfo::GetTimeZone()
 {
-//	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
-//	return [[localTime name] UTF8String];
+	NSTimeZone *localTime = [NSTimeZone systemTimeZone];
     
-    return "";
+    String res = Format("%s", [[localTime name] UTF8String]);
+	return res;
 }
 
 }

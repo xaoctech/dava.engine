@@ -78,9 +78,6 @@ public:
 	void UpdateUndoActionsState();
 
 public slots:
-    //menu
-    void MenuToolsWillShow();
-
     void CreateNodeTriggered(QAction *nodeAction);
     void ViewportTriggered(QAction *viewportAction);
     void FileMenuTriggered(QAction *resentScene);

@@ -1,5 +1,6 @@
 #include "Scene/SceneData.h"
 #include "DockSceneGraph/SceneGraphModel.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "../EditorScene.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -19,7 +20,7 @@
 
 
 #include "Main/QtUtils.h"
-#include "../DockSceneGraph/PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "DockLibrary/LibraryModel.h"
 
