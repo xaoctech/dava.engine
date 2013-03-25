@@ -1,5 +1,5 @@
 #include "GraphItem.h"
-#include "PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 GraphItem::GraphItem(GraphItem *parent)
     :   userData(NULL)
