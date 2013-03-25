@@ -20,6 +20,7 @@
 
 
 #include "Main/QtUtils.h"
+#include "DockSceneGraph/PointerHolder.h"
 
 #include "DockLibrary//LibraryModel.h"
 
