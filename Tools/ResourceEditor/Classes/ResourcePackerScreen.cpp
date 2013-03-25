@@ -446,7 +446,7 @@ void ResourcePackerScreen::RecursiveTreeWalk(const FilePath & inputPath, const F
 	{
 		if (!fileList->IsDirectory(fi))
 		{
-			if (fileList->GetPathname(fi).GetFilename() == "flags.txt")
+			if (fileList->GetFilename(fi) == "flags.txt")
 			{
 				FilePath fullname = inputPath + FilePath("flags.txt");
 				ProcessFlags(fullname);
@@ -474,12 +474,13 @@ void ResourcePackerScreen::RecursiveTreeWalk(const FilePath & inputPath, const F
 			if (!fileList->IsDirectory(fi))
 			{
                 String extension = fileList->GetPathname(fi).GetExtension();
-                String filename = fileList->GetPathname(fi).GetFilename();
+                String filename = fileList->GetFilename(fi);
 
 				FilePath fullname = inputPath + FilePath(filename);
                 
 				if (extension == ".psd")
 				{
+                    //TODO: check if we need filename or pathname
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, filename);
 					definitionFileList.push_back(defFile);
 				}
@@ -556,8 +557,8 @@ void ResourcePackerScreen::RecursiveTreeWalk(const FilePath & inputPath, const F
 	{
 		if (fileList->IsDirectory(fi))
 		{
-			String filename = fileList->GetPathname(fi).GetFilename();
-			if ((filename != ".") && (filename != "..") && (filename != "$process") && (filename != ".svn"))
+			String filename = fileList->GetFilename(fi);
+			if (!fileList->IsNavigationDirectory(fi) && (filename != "$process") && (filename != ".svn"))
 			{
 				if ((filename.size() > 0) && (filename[0] != '.'))
 					RecursiveTreeWalk(inputPath + FilePath(filename), outputPath + FilePath(filename));
@@ -594,9 +595,9 @@ UIFileTreeCell *ResourcePackerScreen::CellAtIndex(UIFileTree * tree, UITreeItemI
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
 
-	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetPathname().GetFilename()));
+	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
     c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetPathname().GetFilename()));
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
 	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
 
     c->SetSelected(false, false);

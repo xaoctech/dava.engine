@@ -157,8 +157,9 @@ void DLCSystem::DownloadComplete(FileDownloaderDelegate::DownloadStatusCode stat
             {
                 DLCSource * dlc = dlcs[curInd];
                 // 
-                String fileName = FilePath(dlc->pathOnServer).GetFilename();
-                FilePath fullSavePath = contentPath + FilePath("/" + fileName);
+                FilePath fullSavePath(dlc->pathOnServer);
+                fullSavePath.ReplaceDirectory(contentPath);
+                
                 dlc->fullPath = fullSavePath;
                 bool isDlcFound = false;
                 

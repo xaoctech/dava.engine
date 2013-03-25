@@ -177,7 +177,8 @@ FilePath Sprite::GetScaledName(const FilePath &spriteName)
 
 File * Sprite::LoadLocalizedFile(const FilePath & spritePathname, FilePath & texturePath)
 {
-    FilePath localizedScaledPath = FilePath(spritePathname.GetDirectory()) + FilePath(LocalizationSystem::Instance()->GetCurrentLocale() + "/" + spritePathname.GetFilename());
+    FilePath localizedScaledPath(spritePathname);
+    localizedScaledPath.ReplaceDirectory(spritePathname.GetDirectory() + LocalizationSystem::Instance()->GetCurrentLocale());
     
     texturePath = FilePath();
     File * fp = File::Create(localizedScaledPath, File::READ|File::OPEN);

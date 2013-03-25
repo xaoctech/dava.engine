@@ -107,9 +107,7 @@ void ProcessRecourcePacker()
         return;
     }
     
-    String excludepath = resourcePackerScreen->excludeDirectory.GetAbsolutePathname();
-    FilePath dataSource(excludepath.substr(0, excludepath.length() - 1));
-    if (dataSource.GetFilename() != "DataSource")
+    if (resourcePackerScreen->excludeDirectory.GetLastDirectoryName() != "DataSource")
     {
         printf("[FATAL ERROR: Packer working only inside DataSource directory]");
         return;

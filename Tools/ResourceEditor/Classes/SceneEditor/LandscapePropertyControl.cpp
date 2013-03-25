@@ -219,7 +219,7 @@ void LandscapePropertyControl::OnIntPropertyChanged(PropertyList *forList, const
 	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
 }
 
-void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const FilePath &newValue)
 {
 	Set<String> errorsLog;
 	if("property.landscape.heightmap" == forKey)
@@ -239,7 +239,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 			bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
 			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 
-			if(newValue.length())
+			if(newValue.IsInitalized())
 			{
 				landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
 			}
@@ -247,11 +247,11 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 	}
 	else
 	{
-		bool isValid = (newValue.empty()) ? true: SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
+		bool isValid = (newValue.IsInitalized()) ? SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog) : true;
 		if(isValid)
 		{
             FilePath descriptorPathname;
-            if(!newValue.empty())
+            if(newValue.IsInitalized())
             {
                 descriptorPathname = TextureDescriptor::GetDescriptorPathname(newValue);
             }
@@ -304,7 +304,10 @@ void LandscapePropertyControl::SetLandscapeTexture(Landscape::eTextureLevel leve
 		return;
 
     landscape->SetTexture(level, texturePathname);
-    SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
+    if(texturePathname.IsInitalized())
+    {
+        SceneValidator::Instance()->ValidateTextureAndShowErrors(landscape->GetTexture(level), landscape->GetTextureName(level), Format("Landscape. TextureLevel %d", level));
+    }
 
     if(Landscape::TEXTURE_TILE_FULL != level)
     {

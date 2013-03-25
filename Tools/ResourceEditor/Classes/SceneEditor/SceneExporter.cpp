@@ -199,8 +199,7 @@ void SceneExporter::ExportFolder(const FilePath &folderName, Set<String> &errorL
         FilePath pathname = fileList->GetPathname(i);
 		if(fileList->IsDirectory(i))
 		{
-            String curFolderName = fileList->GetPathname(i).GetFilename();
-            if((String(".") != curFolderName) && (String("..") != curFolderName))
+            if(!fileList->IsNavigationDirectory(i))
             {
                 String workingPathname = sceneUtils.RemoveFolderFromPath(pathname, sceneUtils.dataSourceFolder);
                 ExportFolder(FilePath(workingPathname), errorLog);

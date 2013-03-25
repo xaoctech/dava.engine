@@ -243,7 +243,7 @@ void UIFileSystemDialog::SetCurrentDir(const FilePath &newDirPath)
     //int32 spos = newDirPath.rfind("/");
     //if (ppos != newDirPath.npos && ppos > spos)
     currentDir = FilePath(newDirPath.GetDirectory());
-    selectedFile = FilePath(newDirPath.GetFilename());
+    selectedFileName = newDirPath.GetFilename();
     
     //find current dir at folders history
     bool isInHistory = false;
@@ -377,7 +377,8 @@ void UIFileSystemDialog::RefreshList()
     if(outCnt >= 1)
     {
         DialogFileUnit fud;
-        fud.name = FilePath("..");
+        fud.name = "..";
+        fud.path = currentDir;
         fud.type = FUNIT_DIR_OUTSIDE;
         fud.indexInFileList = -1;
         fileUnits.push_back(fud);
@@ -388,7 +389,8 @@ void UIFileSystemDialog::RefreshList()
         if (!files->IsNavigationDirectory(i))
         {
             DialogFileUnit fu;
-            fu.name = files->GetPathname(i);
+            fu.name = files->GetFilename(i);
+            fu.path = files->GetPathname(i);
             fu.indexInFileList = i;
             fu.type = FUNIT_FILE;
             if (files->IsDirectory(i)) 
@@ -401,13 +403,13 @@ void UIFileSystemDialog::RefreshList()
                 {
                     continue;
                 }
-                if (fu.name == selectedFile) 
+                if (fu.name == selectedFileName)
                 {
                     lastSelectedIndex = fileUnits.size();
                     positiveButton->SetDisabled(false);
-                    textField->SetText(StringToWString(files->GetPathname(fu.indexInFileList).GetFilename()));
+                    textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
                 }
-                String ext = fu.name.GetExtension();
+                String ext = fu.path.GetExtension();
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
                 bool isPresent = false;
@@ -481,11 +483,11 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
     UIStaticText *t = (UIStaticText *)c->FindByName("CellText");
     if (fileUnits[index].type == FUNIT_FILE) 
     {
-        t->SetText(StringToWString(fileUnits[index].name.GetFilename()));
+        t->SetText(StringToWString(fileUnits[index].name));
     }
     else 
     {
-        t->SetText(StringToWString("[" + fileUnits[index].name.GetFilename() + "]"));
+        t->SetText(StringToWString("[" + fileUnits[index].name + "]"));
     }
     
     if (index != lastSelectedIndex) 
@@ -573,11 +575,12 @@ void UIFileSystemDialog::CreateHistoryForPath(const FilePath &pathToFile)
     Split(pathToFile.GetAbsolutePathname(), "/", folders);
 
     foldersHistory.clear();
-    foldersHistory.push_back(FilePath(""));
+    foldersHistory.push_back(FilePath("/"));
     for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
         FilePath f(foldersHistory[iFolder]);
-        f += FilePath("/" + folders[iFolder]);
+        f += FilePath(folders[iFolder]);
+        f.MakeDirectoryPathname();
         foldersHistory.push_back(f);
     }
     historyPosition = foldersHistory.size() - 1;

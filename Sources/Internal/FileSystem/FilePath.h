@@ -146,6 +146,7 @@ public:
         \param[in] directory is new directory
 	 */
     void ReplaceDirectory(const String &directory);
+    void ReplaceDirectory(const FilePath &directory);
     
 	/**
         \brief Function for setup of project path for resolving pathnames such as "~res:/Gfx/image.png"
