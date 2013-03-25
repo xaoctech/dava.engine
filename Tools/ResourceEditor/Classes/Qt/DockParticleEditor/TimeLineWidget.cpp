@@ -340,18 +340,52 @@ void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 	for (uint i = 0; i < lines[lineId].line.size(); ++i)
 	{
 		QPoint point = GetDrawPoint(lines[lineId].line[i]);
-		painter->drawLine(prevPoint, point);
-		
-		if (selectedPoint == i && selectedLine == lineId)
-			painter->fillRect(GetPointRect(point), pointBrush);
-		else
-			painter->drawRect(GetPointRect(point));
-		
+
+		ePositionRelativelyToDrawRect leftPosition = IsPointOutsideDrawingRect(prevPoint);
+		ePositionRelativelyToDrawRect rightPosition = IsPointOutsideDrawingRect(point);
+
+		if( !( (leftPosition == rightPosition) && ( leftPosition != POSITION_INSIDE ) ) )
+		{
+			QPoint firstPoint = prevPoint;
+			QPoint secondPoint = point;
+
+			GetCrossingPoint(prevPoint, point, firstPoint, secondPoint);
+			
+			if(secondPoint.x() < graphRect.x() )
+			{
+				secondPoint.setX(graphRect.x());
+			}
+
+			painter->drawLine(firstPoint, secondPoint);
+			
+
+			//draw rects
+			if(rightPosition == POSITION_INSIDE)
+			{
+				if (selectedPoint == i && selectedLine == lineId)
+				{
+					painter->fillRect(GetPointRect(point), pointBrush);
+				}
+				else
+				{
+					painter->drawRect(GetPointRect(point));
+				}
+			}
+		}
 		prevPoint = point;
 	}
 	
 	QPoint point = GetDrawPoint(lines[lineId].line[lines[lineId].line.size() - 1]);
 	point.setX(graphRect.x() + graphRect.width());
+	if(prevPoint.x() < graphRect.x() )
+	{
+		prevPoint.setX(graphRect.x());
+	}
+	else if(prevPoint.x() > graphRect.x() + graphRect.width() )
+	{
+		prevPoint.setX(graphRect.x() + graphRect.width());
+	}
+	
 	painter->drawLine(prevPoint, point);
 }
 
@@ -366,14 +400,6 @@ QPoint TimeLineWidget::GetDrawPoint(const Vector2& point) const
 	float x = graphRect.x() + graphRect.width() * (point.x - minTime) / time;
 
 	float rectSize =graphRect.x() + graphRect.width();
-	if(x < graphRect.x() )
-	{
-		x = graphRect.x() ;
-	}
-	if(x > rectSize )
-	{
-		x = rectSize ;
-	}
 
 	float y = graphRect.bottom() - graphRect.height() * (point.y - minValue) / value;
 	
@@ -536,9 +562,6 @@ void TimeLineWidget::UpdateLimits()
 		{
 			newMaxValue = Max(iter->second.line[i].y, newMaxValue);
 			newMinValue = Min(iter->second.line[i].y, newMinValue);
-			
-			maxTime = Max(iter->second.line[i].x, maxTime);
-			minTime = Min(iter->second.line[i].x, minTime);
 		}
 	}
 	
@@ -1412,6 +1435,52 @@ void TimeLineWidget::DrawUITriangle(QPainter& painter, QRect& rect, int rotateDe
 	painterPath.addPolygon(polygon);
 	painter.fillPath(painterPath, Qt::black);
 	painter.restore();
+}
+
+void TimeLineWidget::GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint)
+{
+	if( !(firstPoint.x() < secondPoint.x()))
+		return;
+
+	QRect graphRect = GetGraphRect();
+
+	ePositionRelativelyToDrawRect leftPosition	= IsPointOutsideDrawingRect(firstPoint);
+	ePositionRelativelyToDrawRect rightPosition	= IsPointOutsideDrawingRect(secondPoint);
+
+	if(leftPosition == POSITION_LEFT )
+	{
+		float angleRad = atan ((float)(secondPoint.y() - firstPoint.y()) / (secondPoint.x() - firstPoint.x()));
+		float b = graphRect.x() - firstPoint.x();
+
+		float a = tan (angleRad) * b;
+
+		leftBorderCrossPoint.setX(graphRect.x());
+		leftBorderCrossPoint.setY(firstPoint.y() + a);
+	}
+	if(rightPosition == POSITION_RIGHT  )
+	{
+		float angleRad = atan ((float)(firstPoint.y() - secondPoint.y()) / (secondPoint.x() - firstPoint.x()));
+		float b =  secondPoint.x() - (graphRect.x() + graphRect.width());
+
+		float a = tan (angleRad) * b;
+
+		rightBorderCrossPoint.setX(graphRect.x() + graphRect.width());
+		rightBorderCrossPoint.setY(secondPoint.y() + a);
+	}
+}
+
+TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::IsPointOutsideDrawingRect(QPoint point)
+{
+	QRect graphRect = GetGraphRect();
+	if(point.x() < graphRect.x() )
+	{
+		return POSITION_LEFT;
+	}
+	else if( point.x() > ( graphRect.x() + graphRect.width() ) )
+	{
+		return POSITION_RIGHT;
+	}
+	return TimeLineWidget::POSITION_INSIDE;
 }
 
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):
