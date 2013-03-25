@@ -100,6 +100,16 @@ private:
 	void PerformOffset(int value);
 	void DrawUITriangle(QPainter& painter, QRect& rect, int rotateDegree);
 
+	void GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint);
+
+	enum ePositionRelativelyToDrawRect
+	{
+		POSITION_LEFT,
+		POSITION_RIGHT,
+		POSITION_INSIDE
+	};
+	ePositionRelativelyToDrawRect IsPointOutsideDrawingRect(QPoint point); 
+
 private:
 	QPoint mouseStartPos;
 	
