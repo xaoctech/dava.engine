@@ -48,7 +48,7 @@ public:
     virtual void Input(UIEvent * touch);
 
     void SetScene(EditorScene *scene);
-    void NodeSelected(SceneNode *newNode);
+    void NodeSelected(Entity *newNode);
     
     Vector3 GetPlaneNormal();
     
@@ -77,7 +77,7 @@ protected:
 
 	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
-	void ChangeCollisionModeShow(SceneNode * node);
+	void ChangeCollisionModeShow(Entity * node);
 
 	UIButton *btnMod[3];
 	UIButton *btnAxis[3];

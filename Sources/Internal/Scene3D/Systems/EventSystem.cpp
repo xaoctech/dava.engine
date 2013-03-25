@@ -24,7 +24,7 @@ void EventSystem::UnregisterSystemForEvent(SceneSystem * system, uint32 event)
 	}
 }
 
-void EventSystem::NotifySystem(SceneSystem * system, SceneNode * entity, uint32 event)
+void EventSystem::NotifySystem(SceneSystem * system, Entity * entity, uint32 event)
 {
 	Vector<SceneSystem*> & container = registeredSystems[event];
 	uint32 size = container.size();

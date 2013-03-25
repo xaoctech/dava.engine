@@ -89,17 +89,6 @@ bool DefinitionFile::LoadPNGDef(const std::string & _filename, const std::string
 		frameX.FindNonOpaqueRect(reducedRect);
 		if (CommandLineParser::Instance()->GetVerbose())printf("%s - reduced_rect(%d %d %d %d)\n", nameWithoutExt.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 		
-		/*if (k == 1)
-		{
-			for (int y = 0; y < spriteWidth; ++y)
-			{
-				for (int x = 0; x < spriteWidth; ++x)
-				{
-					printf("%02x ", frameX.GetPixel(x, y)[3]);
-				}
-				printf("\n");
-			}
-		}*/
 		
 		PngImageExt frameX2;
 		frameX2.Create(reducedRect.dx, reducedRect.dy);

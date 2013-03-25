@@ -24,7 +24,7 @@ void ParticleEffectSystem::Process()
 	}
 }
 
-void ParticleEffectSystem::RemoveEntity(SceneNode * entity)
+void ParticleEffectSystem::RemoveEntity(Entity * entity)
 {
 	BaseProcessSystem::RemoveEntity(entity);
 	--size;

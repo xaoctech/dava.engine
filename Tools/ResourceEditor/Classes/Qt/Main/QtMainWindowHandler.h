@@ -24,6 +24,7 @@ class QPushButton;
 class QSlider;
 class QComboBox;
 class ModificationWidget;
+class QSpinBox;
 
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
@@ -59,7 +60,7 @@ public:
     void SetCustomColorsWidgetsState(bool state);
 
 	//set switch index
-	void RegisterSetSwitchIndexWidgets(QLineEdit*, QRadioButton*, QRadioButton*, QPushButton*);
+	void RegisterSetSwitchIndexWidgets(QSpinBox*, QRadioButton*, QRadioButton*, QPushButton*);
     void SetSwitchIndexWidgetsState(bool state);
 
 	//visibility check tool
@@ -135,7 +136,7 @@ public slots:
 	void SetVisibilityAreaVisibilityTool();
 
     //
-    void ReloadTexturesFromFileSystem();
+    void RepackAndReloadTextures();
 
 	//particles editor
 	void CreateParticleEmitterNode();
@@ -153,8 +154,10 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
-signals:
 
+	void ReloadSceneTextures();
+
+signals:
 	void ProjectChanged();
 
 private:
@@ -172,7 +175,7 @@ private:
 private:
 	//set switch index
 	QPushButton*	setSwitchIndexToggleButton;
-	QLineEdit*		editSwitchIndexValue;
+	QSpinBox*		editSwitchIndexValue;
 	QRadioButton*	rBtnSelection;
 	QRadioButton*	rBtnScene;
 

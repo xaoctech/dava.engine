@@ -60,7 +60,7 @@ protected:
     DAVA::int32 uniformFogColor;
     DAVA::Shader * shader;
     
-    DAVA::Vector<DAVA::LandscapeNode::LandscapeVertex> vertices;
+    DAVA::Vector<DAVA::Landscape::LandscapeVertex> vertices;
     DAVA::Vector<DAVA::uint32> indices;
     DAVA::RenderDataObject * landscapeRenderObject;
     

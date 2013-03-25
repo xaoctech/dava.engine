@@ -10,10 +10,10 @@ void SetSwitchIndexHelper::ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_IN
 	{
 		SceneData *sceneData = SceneDataManager::Instance()->SceneGet(i);
 		
-		List<SceneNode*> switchComponents;
+		List<Entity*> switchComponents;
 		if( SetSwitchIndexHelper::FOR_SELECTED == state)
 		{
-			SceneNode *selectedNode = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
+			Entity *selectedNode = SceneDataManager::Instance()->SceneGetSelectedNode(sceneData);
 			if(NULL != selectedNode)
 			{
 				selectedNode->FindAllSwitchComponentsRecursive(switchComponents);
@@ -21,10 +21,10 @@ void SetSwitchIndexHelper::ProcessSwitchIndexUpdate(uint32 value, eSET_SWITCH_IN
 		}
 		if( SetSwitchIndexHelper::FOR_SCENE == state)
 		{
-			sceneData->GetAllSwitchComponents(switchComponents);
+			sceneData->GetScene()->FindAllSwitchComponentsRecursive( switchComponents);
 		}
 		
-		for(List<SceneNode*>::const_iterator it = switchComponents.begin(); it != switchComponents.end(); ++it)
+		for(List<Entity*>::const_iterator it = switchComponents.begin(); it != switchComponents.end(); ++it)
 		{
 			
 			SwitchComponent * switchComponent = cast_if_equal<SwitchComponent*>((*it)->GetComponent(Component::SWITCH_COMPONENT));

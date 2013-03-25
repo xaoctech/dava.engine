@@ -1,5 +1,5 @@
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -22,7 +22,7 @@ TransformComponent::~TransformComponent()
     
 }
 
-Component * TransformComponent::Clone(SceneNode * toEntity)
+Component * TransformComponent::Clone(Entity * toEntity)
 {
     TransformComponent * newTransform = new TransformComponent();
 	newTransform->SetEntity(toEntity);
@@ -45,7 +45,7 @@ void TransformComponent::SetLocalTransform(const Matrix4 * transform)
 	GlobalEventSystem::Instance()->Event(entity, this, EventSystem::LOCAL_TRANSFORM_CHANGED);
 }
 
-void TransformComponent::SetParent(SceneNode * node)
+void TransformComponent::SetParent(Entity * node)
 {
 	parent = node;
 

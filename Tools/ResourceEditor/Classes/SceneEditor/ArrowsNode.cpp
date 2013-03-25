@@ -260,7 +260,7 @@ void ArrowsRenderBatch::Draw(Camera* camera)
 	manager->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
 
 	uint32 oldState = manager->GetState();
-	manager->SetState(RenderStateBlock::STATE_COLORMASK_ALL);
+	manager->SetState(RenderState::STATE_COLORMASK_ALL);
 
 	Color colors[COLORS_COUNT];
 	PrepareColors(colors);

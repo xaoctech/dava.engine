@@ -1,19 +1,19 @@
 #ifndef __DAVAENGINE_SWITCH_NODE_H__
 #define __DAVAENGINE_SWITCH_NODE_H__
 
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
 
-class SwitchNode : public SceneNode
+class SwitchNode : public Entity
 {
 public:
 	SwitchNode();
 
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual Entity* Clone(Entity *dstNode = NULL);
 	virtual void Update(float32 timeElapsed);
-	virtual void AddNode(SceneNode * node);
+	virtual void AddNode(Entity * node);
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 

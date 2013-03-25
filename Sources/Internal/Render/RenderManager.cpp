@@ -76,7 +76,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 //	oldTextureEnabled = 0;
 	oldVertexArrayEnabled = 0;
     oldNormalArrayEnabled = 0;
-    for (uint32 idx = 0; idx < RenderStateBlock::MAX_TEXTURE_LEVELS; ++idx)
+    for (uint32 idx = 0; idx < RenderState::MAX_TEXTURE_LEVELS; ++idx)
         oldTextureCoordArrayEnabled[idx] = 0;
 	oldColorArrayEnabled = 0;
 
@@ -210,7 +210,7 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 
     glDisableClientState(GL_NORMAL_ARRAY);
     oldNormalArrayEnabled = 0;                      
-	for (int k = 0; k < RenderStateBlock::MAX_TEXTURE_LEVELS; ++k)
+	for (int k = 0; k < RenderState::MAX_TEXTURE_LEVELS; ++k)
     {
         glClientActiveTexture(GL_TEXTURE0 + k);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -360,7 +360,7 @@ void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
 	
 Texture *RenderManager::GetTexture(uint32 textureLevel)
 {
-    DVASSERT(textureLevel < RenderStateBlock::MAX_TEXTURE_LEVELS);
+    DVASSERT(textureLevel < RenderState::MAX_TEXTURE_LEVELS);
 	return currentState.currentTexture[textureLevel];	
 }
     
@@ -836,7 +836,7 @@ void RenderManager::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
     currentState.SetAlphaFunc(func, cmpValue);
 }
 
-RenderStateBlock * RenderManager::State()
+RenderState * RenderManager::State()
 {
 	return &RenderManager::Instance()->currentState;
 }

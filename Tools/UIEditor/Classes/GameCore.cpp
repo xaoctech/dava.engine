@@ -69,6 +69,7 @@ GameCore::GameCore()
 	tempControls.insert(new UIStaticText());
 	tempControls.insert(new UIList());
 	tempControls.insert(new UIScrollBar());
+	tempControls.insert(new UISpinner());
 }
 
 GameCore::~GameCore()

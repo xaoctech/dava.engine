@@ -37,7 +37,7 @@ namespace DAVA
 
 class PolygonGroup;
 
-class ShadowVolumeNode : public SceneNode
+class ShadowVolumeNode : public Entity
 {
 public:
 	ShadowVolumeNode();
@@ -53,7 +53,7 @@ public:
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual Entity* Clone(Entity *dstNode = NULL);
 
     PolygonGroup * GetPolygonGroup() { return shadowPolygonGroup; };
 private:

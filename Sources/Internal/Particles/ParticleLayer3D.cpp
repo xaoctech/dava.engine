@@ -58,7 +58,7 @@ void ParticleLayer3D::Draw(Camera * camera)
 	Particle * current = head;
 	if(current)
 	{
-		renderBatch->GetMaterial()->GetRenderStateBlock()->SetTexture(sprite->GetTexture(current->frame));
+		renderBatch->GetMaterial()->GetRenderState()->SetTexture(sprite->GetTexture(current->frame));
 	}
 
 	while(current != 0)
