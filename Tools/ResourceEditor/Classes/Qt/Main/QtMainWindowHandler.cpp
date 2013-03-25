@@ -49,7 +49,6 @@ using namespace DAVA;
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
 	,	menuResentScenes(NULL)
-    ,   resentAncorAction(NULL)
 	,	defaultFocusWidget(NULL)
     ,   statusBar(NULL)
 {
@@ -235,13 +234,7 @@ void QtMainWindowHandler::SetResentMenu(QMenu *menu)
     menuResentScenes = menu;
 }
 
-void QtMainWindowHandler::SetResentAncorAction(QAction *ancorAction)
-{
-    resentAncorAction = ancorAction;
-}
-
-
-void QtMainWindowHandler::MenuFileWillShow()
+void QtMainWindowHandler::UpdateRecentScenesList()
 {
     //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
@@ -265,8 +258,8 @@ void QtMainWindowHandler::MenuFileWillShow()
             resentActions.push_back(resentSceneActions[i]);
         }
         
-        menuResentScenes->insertActions(resentAncorAction, resentActions);
-        menuResentScenes->insertSeparator(resentAncorAction);
+		menuResentScenes->addSeparator();
+        menuResentScenes->addActions(resentActions);
     }
 }
 
@@ -857,9 +850,12 @@ void QtMainWindowHandler::OnSceneActivated(SceneData *scene)
 
 	UpdateUndoActionsState();
 	UpdateModificationActions();
+	UpdateRecentScenesList();
 }
 
 void QtMainWindowHandler::OnSceneReleased(SceneData *scene)
 {
 	CommandsManager::Instance()->SceneReleased(scene);
+
+	UpdateRecentScenesList();
 }
