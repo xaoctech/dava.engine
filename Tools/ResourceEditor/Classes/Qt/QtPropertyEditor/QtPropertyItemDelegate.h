@@ -18,7 +18,7 @@ public:
 	void updateEditorGeometry(QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
 protected:
-	void recalcOptionalWidget(const QModelIndex &index, QStyleOptionViewItem *option) const;
+	void recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const;
 
 	void TryEditorWorkarounds(QWidget * editor) const;
 };

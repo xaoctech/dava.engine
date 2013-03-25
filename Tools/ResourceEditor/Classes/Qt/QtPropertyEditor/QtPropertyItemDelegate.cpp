@@ -11,7 +11,7 @@ QtPropertyItemDelegate::QtPropertyItemDelegate(QWidget *parent /* = 0 */)
 
 void QtPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
+	recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
 	QStyledItemDelegate::paint(painter, option, index);
 }
 
@@ -25,7 +25,7 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 	QWidget* editWidget = NULL;
 	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
 	
-	recalcOptionalWidget(index, (QStyleOptionViewItem *) &option);
+	recalcOptionalWidgets(index, (QStyleOptionViewItem *) &option);
 
 	if(NULL != data)
 	{
@@ -88,42 +88,45 @@ void QtPropertyItemDelegate::updateEditorGeometry(QWidget * editor, const QStyle
 	}
 }
 
-void QtPropertyItemDelegate::recalcOptionalWidget(const QModelIndex &index, QStyleOptionViewItem *option) const
+void QtPropertyItemDelegate::recalcOptionalWidgets(const QModelIndex &index, QStyleOptionViewItem *option) const
 {
 	QtPropertyData* data = index.data(QtPropertyItem::PropertyDataRole).value<QtPropertyData*>();
 
 	if(NULL != data)
 	{
-		QWidget *optionalWidget = data->GetOptionalWidget();
-		QWidget *optionalWidgetViewport = data->GetOptionalWidgetViewport();
+		QWidget *owViewport = data->GetOWViewport();
 
-		if(NULL != optionalWidget && NULL != optionalWidgetViewport)
+		for (int i = 0; i < data->GetOWCount(); i++)
 		{
-			int widgetSize = 0;
-			QRect newWidgetRect = option->rect;
+			int prevOWSpace = 0;
+			int owSpacing = 1;
 
-			// TODO: take widget size from QtPropertyData
-			// ...
-			
-			widgetSize = 20;
-
-			// ...
-
-			if(0 != widgetSize)
+			const QtPropertyOW *ow = data->GetOW(i);
+			if(NULL != ow && NULL != owViewport && NULL != ow->widget)
 			{
-				newWidgetRect.setLeft(newWidgetRect.right() - widgetSize);
-				optionalWidget->setGeometry(newWidgetRect);
-				optionalWidget->show();
+				QWidget *owWidget = ow->widget;
+				int owWidth = ow->size.width();
 
-				// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
-				if(!data->GetOptionalWidgetOverlay())
+				if(0 != owWidth)
 				{
-					option->rect.setRight(newWidgetRect.left());
+					QRect owRect = option->rect;
+					owRect.setLeft(owRect.right() - owWidth - prevOWSpace);
+
+					owWidget->setGeometry(owRect);
+					owWidget->show();
+
+					// if this widget isn't overlayed we should modify rect for tree view cell to be drawn in.
+					if(!ow->overlay)
+					{
+						option->rect.setRight(owRect.left());
+					}
+
+					prevOWSpace += (owWidth + owSpacing);
 				}
-			}
-			else
-			{
-				optionalWidget->hide();
+				else
+				{
+					owWidget->hide();
+				}
 			}
 		}
 	}

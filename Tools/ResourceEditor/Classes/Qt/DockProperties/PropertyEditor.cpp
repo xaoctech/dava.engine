@@ -69,8 +69,7 @@ void PropertyEditor::SetNode(DAVA::Entity *node)
 					QPushButton *removeButton = new QPushButton(QIcon(":/QtIcons/removecomponent.png"), "");
 					removeButton->setFlat(true);
 
-					componentData->SetOptionalWidget(removeButton);
-					componentData->SetOptionalWidgetOverlay(true);
+					componentData->AddOW(QtPropertyOW(removeButton, true));
 				}
             }
         }

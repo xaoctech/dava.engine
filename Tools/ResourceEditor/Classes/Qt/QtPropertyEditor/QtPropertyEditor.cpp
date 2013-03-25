@@ -22,7 +22,7 @@ QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const Q
 {
 	if(NULL != data)
 	{
-		data->SetOptionalWidgetViewport(viewport());
+		data->SetOWViewport(viewport());
 	}
 
 	return curModel->AppendProperty(name, data, parent);

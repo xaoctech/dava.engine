@@ -4,18 +4,14 @@
 QtPropertyData::QtPropertyData()
 	: curFlags(0)
 	, parent(NULL)
-	, optionalWidget()
 	, optionalWidgetViewport(NULL)
-	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value)
 	: curValue(value)
 	, curFlags(0)
 	, parent(NULL)
-	, optionalWidget()
 	, optionalWidgetViewport(NULL)
-	, optionalWidgetOverlay(false)
 { }
 
 QtPropertyData::~QtPropertyData() 
@@ -32,9 +28,12 @@ QtPropertyData::~QtPropertyData()
 		}
 	}
 
-	if(NULL != optionalWidget)
+	for (int i = 0; i < optionalWidgets.size(); i++)
 	{
-		delete optionalWidget;
+		if(NULL != optionalWidgets.at(i).widget)
+		{
+			delete optionalWidgets.at(i).widget;
+		}
 	}
 }
 
@@ -152,58 +151,70 @@ QtPropertyData * QtPropertyData::ChildGet(const QString &key)
 	return data;
 }
 
-QWidget* QtPropertyData::GetOptionalWidget()
+int QtPropertyData::GetOWCount()
 {
-	return optionalWidget;
+	return optionalWidgets.size();
 }
 
-void QtPropertyData::SetOptionalWidget(QWidget* widget)
+const QtPropertyOW* QtPropertyData::GetOW(int index)
 {
-	if(NULL != optionalWidget)
+	const QtPropertyOW *ret = NULL;
+
+	if(index >= 0 && index < optionalWidgets.size())
 	{
-		delete optionalWidget;
+		ret = &optionalWidgets.at(index);
 	}
 
-	optionalWidget = widget;
+	return ret;
+}
 
-	if(NULL != optionalWidget)
+void QtPropertyData::AddOW(const QtPropertyOW &ow)
+{
+	optionalWidgets.append(ow);
+
+	if(NULL != ow.widget)
 	{
-		optionalWidget->setParent(optionalWidgetViewport);
+		ow.widget->setParent(optionalWidgetViewport);
 	}
 }
 
-void QtPropertyData::SetOptionalWidgetViewport(QWidget *viewport)
+void QtPropertyData::RemOW(int index)
+{
+	if(index >= 0 && index < optionalWidgets.size())
+	{
+		if(NULL != optionalWidgets.at(index).widget)
+		{
+			delete optionalWidgets.at(index).widget;
+		}
+
+		optionalWidgets.remove(index);
+	}
+}
+
+QWidget* QtPropertyData::GetOWViewport()
+{
+	return optionalWidgetViewport;
+}
+
+void QtPropertyData::SetOWViewport(QWidget *viewport)
 {
 	optionalWidgetViewport = viewport;
 
-	if(NULL != optionalWidget)
+	for(int i = 0; i < optionalWidgets.size(); ++i)
 	{
-		optionalWidget->setParent(viewport);
+		if(NULL != optionalWidgets.at(i).widget)
+		{
+			optionalWidgets.at(i).widget->setParent(viewport);
+		}
 	}
 
 	QHashIterator<QString, QtPropertyData*> i(children);
 	while (i.hasNext()) 
 	{
 		i.next();
-		i.value()->SetOptionalWidgetViewport(viewport);
+		i.value()->SetOWViewport(viewport);
 	}
 }
-
-QWidget* QtPropertyData::GetOptionalWidgetViewport()
-{
-	return optionalWidgetViewport;
-}
-
-bool QtPropertyData::GetOptionalWidgetOverlay()
-{
-	return optionalWidgetOverlay;
-}
-
-void QtPropertyData::SetOptionalWidgetOverlay(bool overlay)
-{
-	optionalWidgetOverlay = overlay;
-}
-
 
 QVariant QtPropertyData::GetValueInternal()
 {
