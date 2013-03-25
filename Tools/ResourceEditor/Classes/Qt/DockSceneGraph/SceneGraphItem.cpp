@@ -20,7 +20,7 @@ QVariant SceneGraphItem::Data(int32 column)
 
 	if(userData)
 	{
-		SceneNode *node = (SceneNode *)userData;
+		Entity *node = (Entity *)userData;
 		return QVariant(QString(node->GetName().c_str()));
 	}
 
@@ -36,7 +36,7 @@ void SceneGraphItem::SetUserData(void *data)
 {
     ReleaseUserData();
     
-	SceneNode *node = (SceneNode *)data;
+	Entity *node = (Entity *)data;
 	userData = SafeRetain(node);
 }
 
@@ -52,7 +52,7 @@ ExtraUserData* SceneGraphItem::GetExtraUserData() const
 
 void SceneGraphItem::ReleaseUserData()
 {
-	SceneNode *node = (SceneNode *)userData;
+	Entity *node = (Entity *)userData;
 	SafeRelease(node);
 	userData = NULL;
 }

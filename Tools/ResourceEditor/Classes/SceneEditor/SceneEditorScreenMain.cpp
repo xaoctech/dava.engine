@@ -185,6 +185,17 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
 }
 
+void SceneEditorScreenMain::ActivateLevelBodyItem()
+{
+	// "Level" body item is always first.
+	static const int32 LEVEL_BODY_ITEM_INDEX = 0;
+	if (bodies.empty() || !bodies[LEVEL_BODY_ITEM_INDEX]->headerButton)
+	{
+		return;
+	}
+	
+	OnSelectBody(bodies[LEVEL_BODY_ITEM_INDEX]->headerButton, NULL, NULL);
+}
 
 void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
 {
@@ -377,7 +388,7 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             if(0 <= key && key < 8)
             {
                 BodyItem *iBody = FindCurrentBody();
-                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                Entity *node = iBody->bodyControl->GetSelectedSGNode();
                 EditorScene *editorScene = iBody->bodyControl->GetScene();
                 editorScene->SetForceLodLayer(node, key);
             }
@@ -419,6 +430,12 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
 
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
+	// In case the current scene isn't the "level" one, switch to it firstly.
+	if (SceneDataManager::Instance()->SceneGetActive() != SceneDataManager::Instance()->SceneGetLevel())
+	{
+		ActivateLevelBodyItem();
+	}
+
     //опен всегда загружает только уровень, но не отдельные части сцены
     SceneDataManager::Instance()->EditLevelScene(pathToFile);
 }
@@ -520,7 +537,7 @@ void SceneEditorScreenMain::CopyFile(const String & file)
 	}
 }
 
-void SceneEditorScreenMain::CheckNodes(SceneNode * node)
+void SceneEditorScreenMain::CheckNodes(Entity * node)
 {
     KeyedArchive *customProperties = node->GetCustomProperties();
 	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
@@ -749,7 +766,7 @@ String SceneEditorScreenMain::CustomColorsGetCurrentSaveFileName()
 	return iBody->bodyControl->CustomColorsGetCurrentSaveFileName();
 }
 
-void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
+void SceneEditorScreenMain::SelectNodeQt(DAVA::Entity *node)
 {
     BodyItem *iBody = FindCurrentBody();
 	if (iBody)

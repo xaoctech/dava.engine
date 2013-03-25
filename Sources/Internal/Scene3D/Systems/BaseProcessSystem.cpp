@@ -1,5 +1,5 @@
 #include "Scene3D/Systems/BaseProcessSystem.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 #include "Debug/DVAssert.h"
 
 namespace DAVA
@@ -12,12 +12,12 @@ BaseProcessSystem::BaseProcessSystem(uint32 componentId, Scene * scene)
 
 }
 
-void BaseProcessSystem::AddEntity(SceneNode * entity)
+void BaseProcessSystem::AddEntity(Entity * entity)
 {
 	components.push_back(entity->GetComponent(processingComponentId));
 }
 
-void BaseProcessSystem::RemoveEntity(SceneNode * entity)
+void BaseProcessSystem::RemoveEntity(Entity * entity)
 {
 	uint32 size = components.size();
 	Component * deletingComponent = entity->GetComponent(processingComponentId);

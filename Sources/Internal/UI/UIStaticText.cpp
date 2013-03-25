@@ -46,7 +46,7 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	, textColor(1.0f, 1.0f, 1.0f, 1.0f)
 	, tempSize(0, 0)
 	, shadowOffset(0, 0)
-	, shadowColor(0, 0, 0, 0)
+	, shadowColor(0, 0, 0, 1)
 {
 	inputEnabled = false;
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
@@ -72,6 +72,9 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
 	UIControl::CopyDataFrom(srcControl);
     UIStaticText *t = (UIStaticText *)srcControl;
     textBlock = t->textBlock->Clone();
+    textColor = t->textColor;
+    shadowColor = t->shadowColor;
+    shadowOffset = t->shadowOffset;
 }
 	
 UIStaticText *UIStaticText::CloneStaticText()
@@ -151,17 +154,17 @@ const Vector2 &UIStaticText::GetTextSize()
 	return tempSize;
 }
 
-Color UIStaticText::GetTextColor()
+const Color &UIStaticText::GetTextColor() const
 {
 	return textColor;
 }
 
-Color UIStaticText::GetShadowColor()
+const Color &UIStaticText::GetShadowColor() const
 {
 	return shadowColor;
 }
 
-Vector2 UIStaticText::GetShadowOffset()
+const Vector2 &UIStaticText::GetShadowOffset() const
 {
 	return shadowOffset;
 }

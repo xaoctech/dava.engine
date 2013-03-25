@@ -91,7 +91,24 @@ void UISpinner::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     UIControl::LoadFromYamlNode(node, loader);
 }
 
-void UISpinner::LoadFromYamlNodeCompleted()
+void UISpinner::CopyDataFrom(UIControl *srcControl)
+{
+    //release default buttons - they have to be copied from srcControl
+    RemoveControl(buttonNext);
+    RemoveControl(buttonPrevious);
+    ReleaseButtons();
+    UIControl::CopyDataFrom(srcControl);
+    FindRequiredControls();
+    if (IsPointerToExactClass<UISpinner>(srcControl)) //we can also copy other controls, that's why we check
+    {
+        UISpinner * srcSpinner = static_cast<UISpinner*>(srcControl);
+        buttonNext->RemoveEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(srcSpinner, &UISpinner::OnNextPressed));
+        buttonPrevious->RemoveEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(srcSpinner, &UISpinner::OnPreviousPressed));
+    }
+    InitButtons();
+}
+
+void UISpinner::FindRequiredControls()
 {
     UIControl * nextButtonControl = FindByName(BUTTON_NEXT_NAME);
     UIControl * previousButtonControl = FindByName(BUTTON_PREVIOUS_NAME);
@@ -99,7 +116,40 @@ void UISpinner::LoadFromYamlNodeCompleted()
     DVASSERT(previousButtonControl);
     buttonNext = SafeRetain(DynamicTypeCheck<UIButton*>(nextButtonControl));
     buttonPrevious = SafeRetain(DynamicTypeCheck<UIButton*>(previousButtonControl));
+    DVASSERT(buttonNext);
+    DVASSERT(buttonPrevious);
+}
+
+void UISpinner::LoadFromYamlNodeCompleted()
+{
+    FindRequiredControls();
     InitButtons();
+}
+
+YamlNode * UISpinner::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode *node = UIControl::SaveToYamlNode(loader);
+
+	//Control Type
+	node->Set("type", "UISpinner");
+	
+	// "Prev/Next" buttons have to be saved too.
+	YamlNode* prevButtonNode = buttonPrevious->SaveToYamlNode(loader);
+	YamlNode* nextButtonNode = buttonNext->SaveToYamlNode(loader);
+	
+	node->AddNodeToMap(BUTTON_PREVIOUS_NAME, prevButtonNode);
+	node->AddNodeToMap(BUTTON_NEXT_NAME, nextButtonNode);
+
+	return node;
+}
+
+List<UIControl* >& UISpinner::GetRealChildren()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(buttonPrevious);
+	realChildren.remove(buttonNext);
+
+	return realChildren;
 }
 
 void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)
@@ -107,8 +157,8 @@ void UISpinner::SetAdapter(SpinnerAdapter * anAdapter)
     if (adapter)
     {
         adapter->RemoveObserver(this);
+        SafeRelease(adapter);
     }
-    SafeRelease(adapter);
 
     adapter = SafeRetain(anAdapter);
     if (adapter)
@@ -144,6 +194,7 @@ void UISpinner::OnSelectedChanged(bool isSelectedFirst, bool isSelectedLast, boo
     if (isSelectedChanged)
     {
         adapter->DisplaySelectedData(this);
+        PerformEvent(UIControl::EVENT_VALUE_CHANGED);
     }
 }
 

@@ -501,9 +501,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -585,9 +582,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -595,9 +589,6 @@
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h">
@@ -837,9 +828,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderDataObject.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.h">
       <Filter>Internal\Render\Effects</Filter>
     </ClInclude>
@@ -866,9 +854,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
       <Filter>Internal\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h">
-      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h">
       <Filter>Internal\Scene3D</Filter>
@@ -900,14 +885,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
       <Filter>Internal\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h">
-      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
       <Filter>Internal\Scene3D\Imposter</Filter>
@@ -983,9 +962,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
       <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h">
-      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h">
       <Filter>Internal\Scene3D</Filter>
@@ -1125,12 +1101,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1169,9 +1139,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.h">
-      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -1271,6 +1238,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\VectorSpinnerAdapter.h">
       <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UISwitch.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Landscape.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Entity.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Frustum.h">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1544,9 +1529,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -1628,9 +1610,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -1638,9 +1617,6 @@
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp">
@@ -1850,9 +1826,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.cpp">
       <Filter>Internal\Render\Effects</Filter>
     </ClCompile>
@@ -1919,17 +1892,11 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp">
       <Filter>Internal\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
       <Filter>Internal\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp">
-      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp">
       <Filter>Internal\Scene3D\Imposter</Filter>
@@ -1999,9 +1966,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
       <Filter>Internal\Platform\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp">
-      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp">
       <Filter>Internal\Scene3D</Filter>
@@ -2108,12 +2072,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeDebugNode.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeNode.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2137,9 +2095,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdatableSystem.cpp">
-      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -2218,6 +2173,39 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
       <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp">
+      <Filter>Internal\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UISpinner.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UISwitch.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderState.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Entity.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Frustum.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

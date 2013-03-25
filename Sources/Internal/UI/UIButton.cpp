@@ -124,7 +124,10 @@ namespace DAVA
 	void UIButton::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	{
 		UIControl::SetRect(rect, rectInAbsoluteCoordinates);
-		for(int i = 1; i < DRAW_STATE_COUNT; i++)
+		
+		// Have to update all the stateTexts here to update the position of the text for all states.
+		// Start loop from zero.
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
 			if(stateTexts[i])
 			{
@@ -263,6 +266,30 @@ namespace DAVA
 			if(state & 0x01)
 			{
 				CreateTextForState((eButtonDrawState)i)->SetTextColor(fontColor);
+			}
+			state >>= 1;
+		}
+    }
+	
+	void UIButton::SetStateShadowColor(int32 state, const Color& shadowColor)
+    {
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateTextForState((eButtonDrawState)i)->SetShadowColor(shadowColor);
+			}
+			state >>= 1;
+		}
+    }
+	
+	void UIButton::SetStateShadowOffset(int32 state, const Vector2& offset)
+    {
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateTextForState((eButtonDrawState)i)->SetShadowOffset(offset);
 			}
 			state >>= 1;
 		}
@@ -686,6 +713,25 @@ namespace DAVA
 				SetStateText(stateArray[k], LocalizedString(stateTextNode->AsWString()));
 			}
 			
+			YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
+			if (stateTextColorNode)
+			{
+				Vector4 c = stateTextColorNode->AsVector4();
+				SetStateFontColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
+			}
+			
+			YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
+			if (stateShadowColorNode)
+			{
+				Vector4 c = stateShadowColorNode->AsVector4();
+				SetStateShadowColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
+			}			
+			
+			YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
+			if (stateShadowOffsetNode)
+			{
+				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
+			}
 		}
 		for (int k = 0; k < STATE_COUNT; ++k)
 		{
@@ -791,15 +837,27 @@ namespace DAVA
 			if (baseStateAlign != stateAlign)
 			{
 				node->AddNodeToMap(Format("stateAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(stateAlign));
-			}			
-			//State font
-			Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
-			node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
-			//StateText
+			}
+			//State font, state text, text color, shadow color and shadow offset
 			if (this->GetStateTextControl(stateArray[i]))
 			{
+				Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
+				node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
+
 				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
 				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
+				
+				Color textColor = this->GetStateTextControl(stateArray[i])->GetTextColor();
+				nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
+				node->Set(Format("stateTextcolor%s", statePostfix[i].c_str()), nodeValue);
+				
+				Color shadowColor = this->GetStateTextControl(stateArray[i])->GetShadowColor();
+				nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
+				node->Set(Format("stateShadowcolor%s", statePostfix[i].c_str()), nodeValue);
+				
+				Vector2 shadowOffset = this->GetStateTextControl(stateArray[i])->GetShadowOffset();
+				nodeValue->SetVector2(shadowOffset);
+				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
 			}
             
 			//colorInherit ???? For different states?
