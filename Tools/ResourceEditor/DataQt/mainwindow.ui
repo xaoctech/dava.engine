@@ -110,6 +110,20 @@
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+       </property>
        <property name="dragEnabled">
         <bool>true</bool>
        </property>
@@ -118,6 +132,9 @@
        </property>
        <property name="defaultDropAction">
         <enum>Qt::MoveAction</enum>
+       </property>
+       <property name="indentation">
+        <number>16</number>
        </property>
        <attribute name="headerVisible">
         <bool>false</bool>
@@ -218,6 +235,20 @@
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
+       <property name="styleSheet">
+        <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+         border-image: none;
+         image: url(:/QtImages/tree-closed.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+         border-image: none;
+         image: url(:/QtImages/tree-open.png);
+ }
+</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -286,19 +317,7 @@
            <bool>false</bool>
           </property>
           <property name="styleSheet">
-           <string notr="true">QTreeView::branch:has-siblings:!adjoins-item {
-/*     border-image: url(:/QtImages/tree-vline.png) 0; */
- }
-
- QTreeView::branch:has-siblings:adjoins-item {
-/*     border-image: url(:/QtImages/tree-more.png) 0; */
- }
-
- QTreeView::branch:!has-children:!has-siblings:adjoins-item {
-/*     border-image: url(:/QtImages/tree-end.png) 0; */
- }
-
- QTreeView::branch:has-children:!has-siblings:closed,
+           <string notr="true"> QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
          border-image: none;
          image: url(:/QtImages/tree-closed.png);
@@ -571,7 +590,6 @@
    <addaction name="menuViewOptions"/>
    <addaction name="menuModifications"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockCustomColors">
    <property name="floating">
     <bool>false</bool>
@@ -747,6 +765,30 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="viewModeToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewScene">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
