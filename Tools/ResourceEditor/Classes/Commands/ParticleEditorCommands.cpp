@@ -11,7 +11,6 @@
 #include "ParticlesEditorQT/Nodes/LayerParticleEditorNode.h"
 
 #include "../Qt/Main/QtUtils.h"
-#include "../Qt/Main/GUIState.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"

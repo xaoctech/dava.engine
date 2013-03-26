@@ -1,6 +1,5 @@
 #include "TilemapEditorCommands.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/Main/GUIState.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
 #include "../Qt/Scene/SceneData.h"
@@ -21,8 +20,6 @@ void CommandTilemapEditor::Execute()
     if(screen)
     {
         screen->TilemapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 	
 	//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
