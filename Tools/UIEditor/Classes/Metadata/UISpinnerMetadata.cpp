@@ -141,9 +141,6 @@ void UISpinnerMetadata::RecalculateSpinnerButtons()
 	newPrevButtonRect.dy = controlRect.y / 2;
 	GetPrevButton()->SetRect(newPrevButtonRect);
 
-	GetPrevButton()->SetRect(Rect(0,0,100,100));
-	GetPrevButton()->SetStateText(0, L"mimimi");
-
 	// The rect for "Next" button is the same, but shifted down.
 	Rect newNextButtonRect = newPrevButtonRect;
 	newNextButtonRect.y = controlRect.dy / 2;

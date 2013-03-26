@@ -36,7 +36,7 @@ public:
 	virtual void RemoveSelection();
 	
 	bool Load(YamlNode* node, const QString& path);
-	bool Save(YamlNode* node, const QString& path);
+	bool Save(YamlNode* node, const QString& path, bool saveAll);
 	
 	virtual void SetName(const QString& name);
 	
