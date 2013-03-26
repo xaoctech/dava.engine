@@ -1,6 +1,5 @@
 #include "HeightmapEditorCommands.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/Main/GUIState.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
 #include "../SceneEditor/EditorBodyControl.h"
@@ -21,8 +20,6 @@ void CommandHeightmapEditor::Execute()
     if(screen)
     {
         screen->HeightmapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 
     SceneData *activeScene = SceneDataManager::Instance()->SceneGetActive();

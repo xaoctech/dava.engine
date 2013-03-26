@@ -1,3 +1,4 @@
+#include <QMouseEvent>
 #include "QtPropertyEditor/QtPropertyEditor.h"
 #include "QtPropertyEditor/QtPropertyModel.h"
 #include "QtPropertyEditor/QtPropertyItemDelegate.h"
@@ -19,7 +20,11 @@ QtPropertyEditor::~QtPropertyEditor()
 
 QPair<QtPropertyItem*, QtPropertyItem*> QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData* data, QtPropertyItem* parent /*= NULL*/)
 {
-	setSortingEnabled(false);
+	if(NULL != data)
+	{
+		data->SetOWViewport(viewport());
+	}
+
 	return curModel->AppendProperty(name, data, parent);
 }
 

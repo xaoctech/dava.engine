@@ -14,7 +14,7 @@
 class ResourcePackerScreen;
 class SceneEditorScreen;
 class SceneEditorScreenMain;
-class ExporterScreen;
+class SceneUtilsScreen;
 class ImageSplitterScreen;
 
 class GameCore : public DAVA::ApplicationCore
@@ -42,7 +42,7 @@ private:
 	ResourcePackerScreen * resourcePackerScreen;
     SceneEditorScreenMain * sceneEditorScreenMain;
     
-    ExporterScreen *exporterScreen;
+    SceneUtilsScreen *sceneUtilsScreen;
     
     ImageSplitterScreen *imageSplitterScreen;
 };

@@ -42,7 +42,7 @@ private:
     GraphItem *parentItem;
 };
 
-#include "Main/PointerHolder.h"
+#include "DockSceneGraph/PointerHolder.h"
 DECLARE_POINTER_TYPE(GraphItem *);
 
 

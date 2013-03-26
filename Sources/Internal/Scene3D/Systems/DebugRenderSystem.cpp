@@ -54,7 +54,7 @@ void DebugRenderSystem::Process()
 				{
 					Color camColor(0.0f, 1.0f, 0.0f, 1.0f);
 					Vector3 camPos = entityCamera->GetPosition();
-					Vector3 camDirect = entityCamera->GetDirection();
+					//Vector3 camDirect = entityCamera->GetDirection();
 					AABBox3 camBox(camPos, 2.5f);
 
 					// If this is clip camera - show it as red camera
