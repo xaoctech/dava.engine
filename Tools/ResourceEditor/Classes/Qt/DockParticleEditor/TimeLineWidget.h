@@ -98,7 +98,7 @@ private:
 	void PerformZoom(float newScale);
 
 	void PerformOffset(int value);
-	void DrawUITriangle(QPainter& painter, QRect& rect, int rotateDegree);
+	void DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree);
 
 	void GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint);
 

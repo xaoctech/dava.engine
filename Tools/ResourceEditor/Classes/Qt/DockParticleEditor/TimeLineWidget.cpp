@@ -1390,7 +1390,7 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 
 void TimeLineWidget::PerformZoom(float newScale)
 {
-	if(newScale < 0)
+	if(newScale < 0 || FLOAT_EQUAL(newScale, 0.0f))
 	{
 		return;
 	}
@@ -1417,7 +1417,7 @@ void TimeLineWidget::PerformOffset(int value)
 	minTime += offsetFactor;
 }
 
-void TimeLineWidget::DrawUITriangle(QPainter& painter, QRect& rect, int rotateDegree)
+void TimeLineWidget::DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree)
 {
 	painter.setPen(Qt::black);
 	//QRect rect = GetOffsetRightRect();
