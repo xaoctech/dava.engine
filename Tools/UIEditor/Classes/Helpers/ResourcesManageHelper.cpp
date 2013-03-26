@@ -82,6 +82,8 @@ static const QStringList FONTS_EXTENSIONS_FILTER = (QStringList() << "*.ttf" << 
 QString ResourcesManageHelper::buttonBackgroundImagePath;
 QString ResourcesManageHelper::helpContentsPath;
 QString ResourcesManageHelper::projectTitle;
+QString ResourcesManageHelper::defaultSpritesPath;
+QString ResourcesManageHelper::defaultFontSpritesPath;
 
 QString ResourcesManageHelper::GetFontAbsolutePath(const QString& resourceFileName, bool graphicsFont)
 {	
@@ -106,6 +108,40 @@ bool ResourcesManageHelper::ValidateResourcePath(const QString& resourcePath)
 	const QString& resourceFolder = GetResourceRootDirectory();
 	// Check if given resource is located inside resource folder
 	return resourcePath.contains(resourceFolder);
+}
+
+QString ResourcesManageHelper::GetDefaultSpritesPath(bool spritesPathForSave)
+{
+	if (defaultSpritesPath.isEmpty() && !spritesPathForSave)
+	{
+		return GetSpritesDirectory();
+	}
+	else
+	{
+		return defaultSpritesPath;
+	}
+}
+
+void ResourcesManageHelper::SetDefaultSpritesPath(const QString& spritesPath)
+{
+	defaultSpritesPath = spritesPath;
+}
+
+QString ResourcesManageHelper::GetDefaultFontSpritesPath(bool spritesPathForSave)
+{
+	if (defaultFontSpritesPath.isEmpty() && !spritesPathForSave)
+	{
+		return GetFontSpritesDirectory();
+	}
+	else
+	{
+		return defaultFontSpritesPath;
+	}
+}
+
+void ResourcesManageHelper::SetDefaultFontSpritesPath(const QString& spritesPath)
+{
+	defaultFontSpritesPath = spritesPath;
 }
 
 QString ResourcesManageHelper::GetResourceRelativePath(const QString& resourceAbsolutePath, bool keepFileExtension)
