@@ -15,9 +15,14 @@
 
 #define LOCK_TEXT "Lock "
 #define LOCK_WIDTH 45
+#define SCALE_WIDTH 35
 
 #define GRAPH_HEIGHT 150
-#define GRAPG_OFFSET_STEP 10
+#define GRAPH_OFFSET_STEP 10
+
+#define MINIMUM_DISPLAYED_TIME 0.02f
+#define ZOOM_STEP 0.1f
+#define UI_RECTANGLE_OFFSET 1.5
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -28,6 +33,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
+	initialTimeInterval = 1;
 	
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
@@ -51,6 +57,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	UpdateSizePolicy();
 
 	isCtrlPressed = false;
+	scale = 1.0f;
 }
 
 TimeLineWidget::~TimeLineWidget()
@@ -159,6 +166,17 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		int horLineX2 = increaseRectX1 + increaseRectX2;
 		int horLineY2 = horLineY1;
 		painter.drawLine(horLineX1, horLineY1, horLineX2, horLineY2);
+	}
+
+	//draw scale value
+	{
+		char scaleChar[10];
+		sprintf(scaleChar, "%.0f", scale * 100);
+		QString scale(scaleChar);
+		painter.setPen(Qt::black);
+		QRect scaleRect(GetScaleRect());
+		scaleRect.setWidth(SCALE_WIDTH);
+		painter.drawText(scaleRect.bottomLeft(), scale);
 	}
 
 	//draw decrease box
@@ -341,9 +359,10 @@ void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 	{
 		QPoint point = GetDrawPoint(lines[lineId].line[i]);
 
-		ePositionRelativelyToDrawRect leftPosition = IsPointOutsideDrawingRect(prevPoint);
-		ePositionRelativelyToDrawRect rightPosition = IsPointOutsideDrawingRect(point);
+		ePositionRelativelyToDrawRect leftPosition = GetPointPositionFromDrawingRect(prevPoint);
+		ePositionRelativelyToDrawRect rightPosition = GetPointPositionFromDrawingRect(point);
 
+		// if line(leftPosition, rightPosition) is outside of drawing rect skip it
 		if( !( (leftPosition == rightPosition) && ( leftPosition != POSITION_INSIDE ) ) )
 		{
 			QPoint firstPoint = prevPoint;
@@ -351,15 +370,9 @@ void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 
 			GetCrossingPoint(prevPoint, point, firstPoint, secondPoint);
 			
-			if(secondPoint.x() < graphRect.x() )
-			{
-				secondPoint.setX(graphRect.x());
-			}
-
 			painter->drawLine(firstPoint, secondPoint);
 			
-
-			//draw rects
+			//draw rects only if they are inside of drawingRect
 			if(rightPosition == POSITION_INSIDE)
 			{
 				if (selectedPoint == i && selectedLine == lineId)
@@ -377,6 +390,8 @@ void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 	
 	QPoint point = GetDrawPoint(lines[lineId].line[lines[lineId].line.size() - 1]);
 	point.setX(graphRect.x() + graphRect.width());
+	
+	//cut horizontal axis to boundaries
 	if(prevPoint.x() < graphRect.x() )
 	{
 		prevPoint.setX(graphRect.x());
@@ -439,7 +454,7 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 
 	this->minTime = minT;
 	this->maxTime = maxT;
-	
+	this->initialTimeInterval = maxTime - minTime;
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
@@ -810,23 +825,23 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 		}
 		else if (GetIncreaseRect().contains(event->pos()))
 		{
-			PerformZoomIn();
+			PerformZoom(scale + ZOOM_STEP);
 			return;
 		}
 		else if (GetDecreaseRect().contains(event->pos()))
 		{
-			PerformZoomOut();
+			PerformZoom(scale - ZOOM_STEP);
 			return;
 		}
 		else if (GetOffsetLeftRect().contains(event->pos()))
 		{
-			PerformOffset(GRAPG_OFFSET_STEP);
+			PerformOffset(GRAPH_OFFSET_STEP);
 			return;
 		}
 
 		else if (GetOffsetRightRect().contains(event->pos()))
 		{
-			PerformOffset(-GRAPG_OFFSET_STEP);
+			PerformOffset(-GRAPH_OFFSET_STEP);
 			return;
 		}
 
@@ -1122,6 +1137,7 @@ void TimeLineWidget::wheelEvent(QWheelEvent* event)
 {
 	if(isCtrlPressed)
 	{
+		// get wheel steps according qt documentation
 		int numDegrees = event->delta() / 8;
 		int numSteps = numDegrees / 15;
 
@@ -1132,14 +1148,8 @@ void TimeLineWidget::wheelEvent(QWheelEvent* event)
 			float interval = maxTime - minTime;	
 			for(int i = 0; i < numSteps; ++i)
 			{
-				if(zoomDirection)
-				{
-					PerformZoomIn();
-				}
-				else
-				{
-					PerformZoomOut();
-				}
+				float newZoom = zoomDirection ? scale + ZOOM_STEP : scale - ZOOM_STEP;
+				PerformZoom(newZoom);
 			}
 		}
 		setFocus();
@@ -1215,35 +1225,42 @@ QRect TimeLineWidget::GetLineDrawRect() const
 QRect TimeLineWidget::GetMinimizeRect() const
 {
 	QRect rect = GetMaximizeRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetIncreaseRect() const
 {
 	QRect rect = GetLockRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetScaleRect() const
+{
+	QRect rect(GetIncreaseRect());
+	rect.translate(-SCALE_WIDTH, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetDecreaseRect() const
 {
-	QRect rect = GetIncreaseRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	QRect rect = GetScaleRect();
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetOffsetRightRect() const
 {
 	QRect rect = GetDecreaseRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
 QRect TimeLineWidget::GetOffsetLeftRect() const
 {
 	QRect rect = GetOffsetRightRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
@@ -1371,49 +1388,33 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 	return (int32)(value + 0.5f * sign);
 }
 
-void TimeLineWidget::PerformZoomIn()
+void TimeLineWidget::PerformZoom(float newScale)
 {
-/*
-	eSizeState currentState = sizeState;
-	sizeState = SIZE_STATE_INCREASE;
-	UpdateSizePolicy();
-	sizeState = currentState;
-	*/
-
-	//zoon in 2x
-	float interval = maxTime - minTime;
-
-	if( interval > 0.02f )
+	if(newScale < 0)
 	{
-		maxTime -= interval / 4;
-		minTime += interval / 4;
+		return;
 	}
-}
 
-void TimeLineWidget::PerformZoomOut()
-{
-	/*eSizeState currentState = sizeState;
-	sizeState = SIZE_STATE_DECREASE;
-	UpdateSizePolicy();
-	sizeState = currentState;*/
-	
-	//zoon out 2x
 	float interval = maxTime - minTime;
-	if( interval < std::numeric_limits<int>::max() )
+	
+	if( interval > MINIMUM_DISPLAYED_TIME && interval < std::numeric_limits<int>::max() ) 
 	{
-		maxTime += interval / 2;
-		minTime -= interval / 2;
+		float oldCenter =  minTime + interval / 2;
+		interval = initialTimeInterval / newScale;
+		minTime = oldCenter - (interval / 2);
+		maxTime = oldCenter + (interval / 2);
+		scale = newScale;
 	}
 }
 
 void TimeLineWidget::PerformOffset(int value)
 {
-	//DAVA::Logger().Debug("*** diff: %d", diff);
+	//calculate new values of boundaries (in seconds) from given parametr(in pixels)
 	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
-	float correction =  value / pixelsPerTime ;
+	float offsetFactor =  value / pixelsPerTime ;
 	
-	maxTime += correction;
-	minTime += correction;
+	maxTime += offsetFactor;
+	minTime += offsetFactor;
 }
 
 void TimeLineWidget::DrawUITriangle(QPainter& painter, QRect& rect, int rotateDegree)
@@ -1437,16 +1438,30 @@ void TimeLineWidget::DrawUITriangle(QPainter& painter, QRect& rect, int rotateDe
 	painter.restore();
 }
 
+//find out two points (leftBorderCrossPoint, rightBorderCrossPoint) in wich 
+// line(firstPoint;secondPoint) cross left and right boundariaes of drawing rectangle
 void TimeLineWidget::GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint)
 {
-	if( !(firstPoint.x() < secondPoint.x()))
-		return;
-
 	QRect graphRect = GetGraphRect();
+	if(rightBorderCrossPoint.x() < graphRect.x() )
+	{
+		rightBorderCrossPoint.setX(graphRect.x());
+	}
 
-	ePositionRelativelyToDrawRect leftPosition	= IsPointOutsideDrawingRect(firstPoint);
-	ePositionRelativelyToDrawRect rightPosition	= IsPointOutsideDrawingRect(secondPoint);
+	if( !(firstPoint.x() < secondPoint.x()))
+	{
+		return;
+	}
 
+	if( FLOAT_EQUAL( secondPoint.x() - firstPoint.x(), 0.0f ) ) 
+	{
+		return;
+	}
+	
+	ePositionRelativelyToDrawRect leftPosition	= GetPointPositionFromDrawingRect(firstPoint);
+	ePositionRelativelyToDrawRect rightPosition	= GetPointPositionFromDrawingRect(secondPoint);
+
+	//calc Y value of points through arctangens
 	if(leftPosition == POSITION_LEFT )
 	{
 		float angleRad = atan ((float)(secondPoint.y() - firstPoint.y()) / (secondPoint.x() - firstPoint.x()));
@@ -1469,8 +1484,9 @@ void TimeLineWidget::GetCrossingPoint(const QPoint& firstPoint, const QPoint& se
 	}
 }
 
-TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::IsPointOutsideDrawingRect(QPoint point)
+TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::GetPointPositionFromDrawingRect(QPoint point)
 {
+	//check if point is situated inside or outside of drawing rectangle
 	QRect graphRect = GetGraphRect();
 	if(point.x() < graphRect.x() )
 	{

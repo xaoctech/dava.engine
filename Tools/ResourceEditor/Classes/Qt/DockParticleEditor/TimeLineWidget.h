@@ -68,6 +68,7 @@ private:
 	QRect GetMaximizeRect() const;
 	QRect GetLockRect() const;
 	QRect GetIncreaseRect() const;
+	QRect GetScaleRect() const;
 	QRect GetDecreaseRect() const;
 	QRect GetOffsetRightRect() const;
 	QRect GetOffsetLeftRect() const;
@@ -94,8 +95,7 @@ private:
 	
 	int32 GetIntValue(float32 value) const;
 
-	void PerformZoomIn();
-	void PerformZoomOut();
+	void PerformZoom(float newScale);
 
 	void PerformOffset(int value);
 	void DrawUITriangle(QPainter& painter, QRect& rect, int rotateDegree);
@@ -108,7 +108,7 @@ private:
 		POSITION_RIGHT,
 		POSITION_INSIDE
 	};
-	ePositionRelativelyToDrawRect IsPointOutsideDrawingRect(QPoint point); 
+	ePositionRelativelyToDrawRect GetPointPositionFromDrawingRect(QPoint point); 
 
 private:
 	QPoint mouseStartPos;
@@ -156,9 +156,12 @@ private:
 	
 	QBrush backgroundBrush;
 	
-	Vector2 newPoint;
+	Vector2	newPoint;
 
-	bool isCtrlPressed;
+	bool	isCtrlPressed;
+
+	float32	scale;
+	float32	initialTimeInterval;
 };
 
 class SetPointValueDlg: public QDialog
