@@ -62,6 +62,7 @@ bool UndoRedoController::Undo()
 	AddCommandToStack(redoStack, command);
 	undoStack.pop_front();
 
+	command->ActivateCommandScreen();
 	command->Rollback();
 	return true;
 }
@@ -78,6 +79,7 @@ bool UndoRedoController::Redo()
 	AddCommandToStack(undoStack, command);
 	redoStack.pop_front();
 	
+	command->ActivateCommandScreen();
 	command->Execute();
 	return true;
 }

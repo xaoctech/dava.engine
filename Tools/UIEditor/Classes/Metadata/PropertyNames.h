@@ -64,6 +64,10 @@ namespace PropertyNames
 	static const char* VCENTER_ALIGN_ENABLED = "VCenterAlignEnabled";
 	static const char* BOTTOM_ALIGN = "BottomAlign";
 	static const char* BOTTOM_ALIGN_ENABLED = "BottomAlignEnabled";
+	
+	// UI Spinner properties.
+	static const char* UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
+	static const char* UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";
 }
 };
 

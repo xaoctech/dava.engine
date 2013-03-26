@@ -39,6 +39,7 @@ private slots:
 	
 	void OnNewPlatform();
 	void OnNewScreen(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
+	void OnNewAggregator(HierarchyTreeNode::HIERARCHYTREENODEID id = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY);
 	
 	void OnProjectCreated();
 	void OnSelectedScreenChanged();

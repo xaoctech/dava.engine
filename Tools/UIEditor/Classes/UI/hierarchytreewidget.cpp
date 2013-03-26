@@ -4,11 +4,14 @@
 #include "HierarchyTree.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
 #include <QVariant>
 #include <QMenu>
+#include <QMessageBox>
+#include "IconHelper.h"
 
 #define ITEM_ID 0, Qt::UserRole
 
@@ -74,12 +77,16 @@ void HierarchyTreeWidget::OnTreeUpdated()
 			 iter != platformNode->GetChildNodes().end();
 			 ++iter)
 		{
-			const HierarchyTreeScreenNode* screenNode = (const HierarchyTreeScreenNode*)(*iter);
+			const HierarchyTreeScreenNode* screenNode = dynamic_cast<const HierarchyTreeScreenNode*>(*iter);
+			DVASSERT(screenNode);
 
 			QTreeWidgetItem* screenItem = new QTreeWidgetItem();
 			screenItem->setData(ITEM_ID, screenNode->GetId());
 			screenItem->setText(0, screenNode->GetName());
-			screenItem->setIcon(0, QIcon(":/icons/068.png"));
+			if (dynamic_cast<const HierarchyTreeAggregatorNode*>(screenNode))
+				screenItem->setIcon(0, QIcon(":/icons/170.png"));
+			else
+				screenItem->setIcon(0, QIcon(":/icons/068.png"));
 			platformItem->insertChild(platformItem->childCount(), screenItem);
 			
 			AddControlItem(screenItem, expandedItems, screenNode->GetChildNodes());
@@ -105,6 +112,9 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		QTreeWidgetItem* controlItem = new QTreeWidgetItem();
 		controlItem->setData(ITEM_ID, controlNode->GetId());
 		controlItem->setText(0, controlNode->GetName());
+
+		DecorateWithIcon(controlItem, controlNode->GetUIObject());
+
 		parent->insertChild(parent->childCount(), controlItem);
 		
 		AddControlItem(controlItem, expandedItems, controlNode->GetChildNodes());
@@ -112,6 +122,17 @@ void HierarchyTreeWidget::AddControlItem(QTreeWidgetItem* parent, const EXPANDED
 		if (expandedItems.find(controlNode->GetId()) != expandedItems.end())
 			controlItem->setExpanded(true);
 	}
+}
+
+void HierarchyTreeWidget::DecorateWithIcon(QTreeWidgetItem *item, DAVA::UIControl *uiControl)
+{
+	if (!item || !uiControl)
+	{
+		return;
+	}
+
+	QString iconPath = IconHelper::GetIconPathForUIControl(uiControl);
+	item->setIcon(0, QIcon(iconPath));
 }
 
 void HierarchyTreeWidget::on_treeWidget_itemSelectionChanged()
@@ -300,6 +321,7 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 	if (!items.size())
 		return;
 
+	bool needConfirm = false;
 	HierarchyTreeNode::HIERARCHYTREENODESLIST nodes;
 	for (QList<QTreeWidgetItem*>::iterator iter = items.begin(); iter != items.end(); ++iter)
 	{
@@ -307,8 +329,30 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 		QVariant data = item->data(ITEM_ID);
 		HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
 		HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(id);
+		
+		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (aggregatorNode)
+		{
+			const HierarchyTreeAggregatorNode::CHILDS& childs = aggregatorNode->GetChilds();
+			needConfirm |= (childs.size() > 0);
+			for (HierarchyTreeAggregatorNode::CHILDS::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
+			{
+				nodes.push_back((*iter));
+			}
+		}
+		
 		nodes.push_back(node);
 	}
+	
+	if (needConfirm)
+	{
+		if (QMessageBox::No == QMessageBox::information(this,
+								 "",
+								 "Selected aggregator control has child controls. Do you want delete aggregator with all child controls?",
+								 QMessageBox::Yes | QMessageBox::No))
+			return;
+	}
+	
 	DeleteSelectedNodeCommand* cmd = new DeleteSelectedNodeCommand(nodes);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);

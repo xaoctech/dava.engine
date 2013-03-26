@@ -73,6 +73,7 @@ public:
 			if (background->GetSprite() != textBlock->GetSprite()) 
 			{
 				SetSprite(textBlock->GetSprite(), 0);
+				shadowBg->SetSprite(textBlock->GetSprite(), 0);
 			}
 		}
 		else 
@@ -101,6 +102,7 @@ protected:
 	Vector2 tempSize;
 	Vector2 shadowOffset;
 	Color shadowColor;
+	UIControlBackground *shadowBg;
 	
 	virtual void Draw(const UIGeometricData &geometricData);
 	

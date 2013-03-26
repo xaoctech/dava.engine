@@ -27,6 +27,13 @@ TexturePacker::TexturePacker()
 	}
 
 	onlySquareTextures = false;
+
+    new PVRConverter();
+}
+
+TexturePacker::~TexturePacker()
+{
+    PVRConverter::Instance()->Release();
 }
 
 bool TexturePacker::TryToPack(const Rect2i & textureRect, std::list<DefinitionFile*> & defsList)

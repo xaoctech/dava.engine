@@ -28,90 +28,47 @@
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
 
-#include "ExporterScreen.h"
+#include "SceneUtilsScreen.h"
 
 #include "CommandLineTool.h"
 #include "SceneExporter.h"
+#include "SceneSaver.h"
 
 #include "../Qt/Main/QtUtils.h"
 
-void ExporterScreen::LoadResources()
+void SceneUtilsScreen::LoadResources()
 {
     GetBackground()->SetColor(Color::White());
 }
 
-void ExporterScreen::UnloadResources()
+void SceneUtilsScreen::UnloadResources()
 {
     
 }
 
-void ExporterScreen::WillAppear()
+void SceneUtilsScreen::WillAppear()
 {
-    if(!SceneExporter::Instance())  new SceneExporter();
-    
     errorLog.clear();
     
-    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
-    if(CommandLineTool::Instance()->CommandIsFound(String("-export")))
+    if(CommandLineTool::Instance()->CommandIsFound(String("-clean")))
     {
-        
-        int32 outPosition = CommandLineTool::Instance()->CommandPosition(String("-outdir"));
-        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-indir"));
-        
-        if(     CommandLineTool::Instance()->CheckPosition(outPosition) 
-           &&   CommandLineTool::Instance()->CheckPosition(inPosition))
-        {
-            SceneExporter::Instance()->SetOutFolder(commandLine[outPosition + 1]);
-            SceneExporter::Instance()->SetInFolder(commandLine[inPosition + 1]);
-
-            int32 formatPosition = CommandLineTool::Instance()->CommandPosition(String("-format"));
-            if(CommandLineTool::Instance()->CheckPosition(formatPosition))
-            {
-                SceneExporter::Instance()->SetExportingFormat(commandLine[formatPosition + 1]);
-            }
-            else 
-            {
-                SceneExporter::Instance()->SetExportingFormat(String(".png"));
-            }
-            
-            int32 filePosition = CommandLineTool::Instance()->CommandPosition(String("-processfile"));
-            int32 folderPosition = CommandLineTool::Instance()->CommandPosition(String("-processdir"));
-            if(CommandLineTool::INVALID_POSITION != filePosition)
-            {
-                if(CommandLineTool::Instance()->CheckPosition(filePosition))
-                {
-                    SceneExporter::Instance()->ExportFile(commandLine[filePosition + 1], errorLog);
-                    
-                    //TODO: process errors
-                }
-            }
-            else if(CommandLineTool::INVALID_POSITION != folderPosition)
-            {
-                if(CommandLineTool::Instance()->CheckPosition(folderPosition))
-                {
-                    SceneExporter::Instance()->ExportFolder(commandLine[folderPosition + 1], errorLog);
-
-                    //TODO: process errors
-                }
-            }
-            else 
-            {
-//                printf("Wrong arguments\n");
-//                PrintUsage();
-            }
-        }
-    }    
-    else if(CommandLineTool::Instance()->CommandIsFound(String("-clean")))
+        CleanFolder();
+    }
+    else if(CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
     {
-        int32 position = CommandLineTool::Instance()->CommandPosition(String("-clean"));
-        if(CommandLineTool::Instance()->CheckPosition(position))
-        {
-            SceneExporter::Instance()->CleanFolder(commandLine[position + 1], errorLog);
-        }
+        Export();
+    }
+    else if(CommandLineTool::Instance()->CommandIsFound(String("-scenesaver")))
+    {
+        Save();
+    }
+    else
+    {
+        DVASSERT(false);
     }
 }
 
-void ExporterScreen::DidAppear()
+void SceneUtilsScreen::DidAppear()
 {
     if(0 < errorLog.size())
     {
@@ -135,5 +92,115 @@ void ExporterScreen::DidAppear()
     if(forceMode || 0 == errorLog.size())
     {
         Core::Instance()->Quit();
+    }
+}
+
+void SceneUtilsScreen::CleanFolder()
+{
+    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+    
+    int32 position = CommandLineTool::Instance()->CommandPosition(String("-clean"));
+    if(CommandLineTool::Instance()->CheckPosition(position))
+    {
+        SceneUtils sceneUtils;
+        sceneUtils.CleanFolder(commandLine[position + 1], errorLog);
+    }
+}
+
+void SceneUtilsScreen::Export()
+{
+    if(!SceneExporter::Instance())  new SceneExporter();
+
+    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+    if(CommandLineTool::Instance()->CommandIsFound(String("-export")))
+    {
+        int32 outPosition = CommandLineTool::Instance()->CommandPosition(String("-outdir"));
+        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-indir"));
+        
+        if(     CommandLineTool::Instance()->CheckPosition(outPosition)
+           &&   CommandLineTool::Instance()->CheckPosition(inPosition))
+        {
+            SceneExporter::Instance()->SetOutFolder(commandLine[outPosition + 1]);
+            SceneExporter::Instance()->SetInFolder(commandLine[inPosition + 1]);
+            
+            int32 formatPosition = CommandLineTool::Instance()->CommandPosition(String("-format"));
+            if(CommandLineTool::Instance()->CheckPosition(formatPosition))
+            {
+                SceneExporter::Instance()->SetExportingFormat(commandLine[formatPosition + 1]);
+            }
+            else
+            {
+                SceneExporter::Instance()->SetExportingFormat(String(".png"));
+            }
+            
+            int32 filePosition = CommandLineTool::Instance()->CommandPosition(String("-processfile"));
+            int32 folderPosition = CommandLineTool::Instance()->CommandPosition(String("-processdir"));
+            if(CommandLineTool::INVALID_POSITION != filePosition)
+            {
+                if(CommandLineTool::Instance()->CheckPosition(filePosition))
+                {
+                    SceneExporter::Instance()->ExportFile(commandLine[filePosition + 1], errorLog);
+                    
+                    //TODO: process errors
+                }
+            }
+            else if(CommandLineTool::INVALID_POSITION != folderPosition)
+            {
+                if(CommandLineTool::Instance()->CheckPosition(folderPosition))
+                {
+                    SceneExporter::Instance()->ExportFolder(commandLine[folderPosition + 1], errorLog);
+                    
+                    //TODO: process errors
+                }
+            }
+            else
+            {
+                //                printf("Wrong arguments\n");
+                //                PrintUsage();
+            }
+        }
+    }
+    else
+    {
+        DVASSERT(false);
+    }
+}
+
+void SceneUtilsScreen::Save()
+{
+    if(!SceneSaver::Instance())  new SceneSaver();
+
+    Vector<String> & commandLine = Core::Instance()->GetCommandLine();
+    if(CommandLineTool::Instance()->CommandIsFound(String("-save")))
+    {
+        int32 outPosition = CommandLineTool::Instance()->CommandPosition(String("-outdir"));
+        int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-indir"));
+        
+        if(     CommandLineTool::Instance()->CheckPosition(outPosition)
+           &&   CommandLineTool::Instance()->CheckPosition(inPosition))
+        {
+            SceneSaver::Instance()->SetOutFolder(commandLine[outPosition + 1]);
+            SceneSaver::Instance()->SetInFolder(commandLine[inPosition + 1]);
+            
+            int32 filePosition = CommandLineTool::Instance()->CommandPosition(String("-processfile"));
+            if(CommandLineTool::INVALID_POSITION != filePosition)
+            {
+                if(CommandLineTool::Instance()->CheckPosition(filePosition))
+                {
+                    SceneSaver::Instance()->SaveFile(commandLine[filePosition + 1], errorLog);
+                    
+                    //TODO: process errors
+                }
+            }
+            else
+            {
+                //                printf("Wrong arguments\n");
+                //                PrintUsage();
+            }
+        }
+    }
+    else
+    {
+        DVASSERT(false);
     }
 }
