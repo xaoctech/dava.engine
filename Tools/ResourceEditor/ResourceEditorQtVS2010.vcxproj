@@ -541,10 +541,8 @@
     <ClCompile Include="_GeneratedQt\DockSetSwitchIndex\SetSwitchIndexView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockVisibilityTool\VisibilityToolView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Main\PointerHolder_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\QtUtils_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ScenePreviewDialog_moc.cpp" />
