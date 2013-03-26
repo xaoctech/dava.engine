@@ -161,8 +161,9 @@ void ParticleEmitter3D::PrepareEmitterParameters(Particle * particle, float32 ve
         if(radius)
             particle->position += qvq1_v * radius->GetValue(time);
     }
-	
-	// TODO! ARCTANGENS 0 != ARCTANGENS -0, EPSILON HERE!!!
+
+	// Yuri Coder, 2013/03/26. After discussion with Ivan it appears this angle
+	// calculation is incorrect. TODO: return to this code later on.
     particle->angle = atanf(particle->direction.z/particle->direction.x);
 
 	if(worldTransformPtr)
