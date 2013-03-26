@@ -66,7 +66,7 @@ public:
 	bool ReadMaterial();
 	bool ReadStaticMesh();
 	bool ReadAnimatedMesh();
-	bool ReadSceneNode(SceneNode * parentNode, int level);
+	bool ReadSceneNode(Entity * parentNode, int level);
 	
 	bool ReadCamera();
 	bool ReadAnimation();
@@ -217,10 +217,10 @@ public:
 
 private:
     
-    void ProcessLOD(SceneNode *forRootNode);
+    void ProcessLOD(Entity *forRootNode);
 	String scenePath;
     String rootNodePath;
-    SceneNode *rootNode;
+    Entity *rootNode;
     
     //int32 textureIndexOffset;
 	//int32 staticMeshIndexOffset;

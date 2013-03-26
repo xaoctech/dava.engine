@@ -10,7 +10,7 @@
 #define __ResourceEditorQt__BaseParticleEditorNode__
 
 #include "Scene3D/ParticleEffectNode.h"
-#include "Main/ExtraUserData.h"
+#include "DockSceneGraph/ExtraUserData.h"
 
 namespace DAVA {
 
@@ -20,7 +20,7 @@ class ParticleEffectComponent;
 class BaseParticleEditorNode : public ExtraUserData
 {
 public:
-    BaseParticleEditorNode(SceneNode* rootNode);
+    BaseParticleEditorNode(Entity* rootNode);
     virtual ~BaseParticleEditorNode();
     
     // Add/remove child node.
@@ -33,7 +33,7 @@ public:
 	void MoveChildNode(BaseParticleEditorNode* childNode, BaseParticleEditorNode* childNodeToMoveAbove);
 	
     // Access to the root node.
-    SceneNode* GetRootNode() const {return rootNode;};
+    Entity* GetRootNode() const {return rootNode;};
 
 	// Access to the parent node.
 	BaseParticleEditorNode* GetParentNode() const {return parentNode;};
@@ -64,7 +64,7 @@ protected:
     void Cleanup();
 
     // Root effect node.
-    SceneNode* rootNode;
+    Entity* rootNode;
 
 	// Our parent.
 	BaseParticleEditorNode* parentNode;

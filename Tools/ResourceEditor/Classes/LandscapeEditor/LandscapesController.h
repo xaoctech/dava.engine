@@ -33,7 +33,7 @@
 class LandscapeRenderer;
 class NotPassableTerrain;
 class EditorHeightmap;
-class EditorLandscapeNode;
+class EditorLandscape;
 class RulerToolLandscape;
 class LandscapesController: public DAVA::BaseObject
 {
@@ -43,21 +43,21 @@ public:
 	virtual ~LandscapesController();
 
     void SetScene(DAVA::Scene *scene);
-    void SaveLandscape(DAVA::LandscapeNode *landscape);
+    void SaveLandscape(DAVA::Landscape *landscape);
     
     void ToggleNotPassableLandscape();
 
     bool EditorLandscapeIsActive();
     
-    EditorLandscapeNode *CreateEditorLandscapeNode();
-    void ReleaseEditorLandscapeNode();
+	EditorLandscape *CreateEditorLandscape();
+	void ReleaseEditorLandscape();
 
     RulerToolLandscape *CreateRulerToolLandscape();
     void ReleaseRulerToolLandscape();
 
     
     
-    DAVA::LandscapeNode *GetCurrentLandscape();
+    DAVA::Landscape *GetCurrentLandscape();
     DAVA::Heightmap *GetCurrentHeightmap();
     
     
@@ -69,14 +69,14 @@ public:
     
 protected:
 
-    bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
-    bool HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
+    bool ShowEditorLandscape(EditorLandscape *displayingLandscape);
+    bool HideEditorLandscape(EditorLandscape *hiddingLandscape);
     
-    bool NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection);
+    bool NeedToKillRenderer(DAVA::Landscape *landscapeForDetection);
     
     void ReleaseScene();
     
-    void ReleaseLandscape(EditorLandscapeNode *landscapeNode);
+    void ReleaseLandscape(EditorLandscape *landscapeNode);
     
     
     DAVA::Scene *scene;
@@ -84,13 +84,13 @@ protected:
     EditorHeightmap *renderedHeightmap;
     NotPassableTerrain *notPassableTerrain;
     LandscapeRenderer *landscapeRenderer;
-    EditorLandscapeNode *editorLandscape;
+    EditorLandscape *editorLandscape;
     RulerToolLandscape *rulerToolLandscape;
     
-    DAVA::LandscapeNode *currentLandscape;
+    DAVA::Landscape *currentLandscape;
     
     
-    DAVA::LandscapeNode *savedLandscape;
+    DAVA::Landscape *savedLandscape;
     DAVA::Heightmap *savedHeightmap;
 };
 

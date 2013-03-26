@@ -19,6 +19,10 @@ class UITextControlMetadata : public UIControlMetadata
     Q_PROPERTY(QColor FontColor READ GetFontColor WRITE SetFontColor);
 
     Q_PROPERTY(QString LocalizedTextKey READ GetLocalizedTextKey WRITE SetLocalizedTextKey);
+	
+	Q_PROPERTY(float ShadowOffsetX READ GetShadowOffsetX WRITE SetShadowOffsetX);
+	Q_PROPERTY(float ShadowOffsetY READ GetShadowOffsetY WRITE SetShadowOffsetY);
+	Q_PROPERTY(QColor ShadowColor READ GetShadowColor WRITE SetShadowColor);
 
 public:
     UITextControlMetadata(QObject* parent = 0);
@@ -37,6 +41,18 @@ protected:
 
     virtual QColor GetFontColor() const = 0;
     virtual void SetFontColor(const QColor& value) = 0;
+	
+	virtual float GetShadowOffsetX() const = 0;
+	virtual void SetShadowOffsetX(float offset) = 0;
+	
+	virtual float GetShadowOffsetY() const = 0;
+	virtual void SetShadowOffsetY(float offset) = 0;
+	
+	virtual QColor GetShadowColor() const = 0;
+	virtual void SetShadowColor(const QColor& value) = 0;
+	
+	Vector2 GetOffsetX(const Vector2& currentOffset, float offsetX);
+	Vector2 GetOffsetY(const Vector2& currentOffset, float offsetY);
 
     // Get the localized text for particular control state.
     QString GetLocalizedTextKeyForState(UIControl::eControlState controlState) const;

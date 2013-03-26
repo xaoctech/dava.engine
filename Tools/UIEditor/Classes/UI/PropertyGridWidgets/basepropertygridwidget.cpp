@@ -477,7 +477,7 @@ void BasePropertyGridWidget::OnColorButtonClicked()
 
 	QColor propertyValue = PropertiesHelper::GetPropertyValue<QColor>(this->activeMetadata, iter->second.getProperty().name(), false);
 
-    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog);
+    QColor color = QColorDialog::getColor(propertyValue, this, "Select a color",  QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
     if (color.isValid() == false)
     {
         return;
@@ -608,7 +608,6 @@ void BasePropertyGridWidget::UpdateLineEditWidgetWithPropertyValue(QLineEdit* li
         else
         {
             // Get the current value.
-            Logger::Debug(propertyValue.toStdString().c_str());
             lineEditWidget->setText(propertyValue);
         }
     }

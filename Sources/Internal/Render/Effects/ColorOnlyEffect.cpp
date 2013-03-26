@@ -54,7 +54,7 @@ RenderEffect * ColorOnlyEffect::Create(Core::eRenderer renderer)
 
 void ColorOnlyEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
+    RenderManager::Instance()->RemoveState(RenderState::STATE_TEXTURE0);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -63,7 +63,7 @@ void ColorOnlyEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count
     
 void ColorOnlyEffectGL::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
+    RenderManager::Instance()->RemoveState(RenderState::STATE_TEXTURE0);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -105,7 +105,7 @@ void ColorOnlyEffectGL20::DrawElements(ePrimitiveType type, int32 count, eIndexF
     
 void ColorOnlyEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int32 count)
 {
-	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
+	RenderManager::Instance()->RemoveState(RenderState::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -114,7 +114,7 @@ void ColorOnlyEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int32 coun
 
 void ColorOnlyEffectDX9::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
+	RenderManager::Instance()->RemoveState(RenderState::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();

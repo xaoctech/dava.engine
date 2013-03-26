@@ -38,7 +38,6 @@ void ResourcePacker::PackResources(const String & inputDir, const String & outpu
 
 	CommandLineParser::Instance()->ClearFlags();
 
-	clearProcessDirectory = true;
 	inputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(inputDir);
 	outputGfxDirectory = DAVA::FileSystem::GetCanonicalPath(outputDir);
 	excludeDirectory = FileSystem::Instance()->RealPath(inputDir + "/../");

@@ -198,6 +198,7 @@ public:
 	 \param[in] layer layer to be removed
 	 */
 	void RemoveLayer(ParticleLayer * layer);
+	void RemoveLayer(int32 index);
 
 	/**
 	 \brief Function change the layer's order inside the same emitter.

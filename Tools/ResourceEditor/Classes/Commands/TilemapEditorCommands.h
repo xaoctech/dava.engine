@@ -18,7 +18,7 @@ protected:
 class CommandDrawTilemap: public Command
 {
 public:
-	CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, LandscapeNode* landscape);
+	CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape);
 	virtual ~CommandDrawTilemap();
 
 protected:
@@ -26,7 +26,7 @@ protected:
 	Image* redoImage;
 	String savedPathname;
 
-	LandscapeNode* landscape;
+	Landscape* landscape;
 
 	virtual void Execute();
 	virtual void Cancel();

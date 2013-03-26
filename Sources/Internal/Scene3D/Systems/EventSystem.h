@@ -7,7 +7,7 @@ namespace DAVA
 {
 
 class SceneSystem;
-class SceneNode;
+class Entity;
 class EventSystem
 {
 public:
@@ -23,7 +23,7 @@ public:
 
 	void RegisterSystemForEvent(SceneSystem * system, uint32 event);
 	void UnregisterSystemForEvent(SceneSystem * system, uint32 event);
-	void NotifySystem(SceneSystem * system, SceneNode * entity, uint32 event);
+	void NotifySystem(SceneSystem * system, Entity * entity, uint32 event);
 
 private:
 	Vector<SceneSystem*> registeredSystems[EVENTS_COUNT];

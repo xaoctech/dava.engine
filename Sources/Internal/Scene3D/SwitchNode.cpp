@@ -13,14 +13,14 @@ SwitchNode::SwitchNode()
 
 }
 
-SceneNode* SwitchNode::Clone(SceneNode *dstNode /*= NULL*/)
+Entity* SwitchNode::Clone(Entity *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
 		dstNode = new SwitchNode();
 	}
 
-	return SceneNode::Clone(dstNode);
+	return Entity::Clone(dstNode);
 }
 
 void SwitchNode::SetSwitchIndex(int32 _switchIndex)
@@ -47,9 +47,9 @@ void SwitchNode::Update(float32 timeElapsed)
 	}
 }
 
-void SwitchNode::AddNode(SceneNode * node)
+void SwitchNode::AddNode(Entity * node)
 {
-	SceneNode::AddNode(node);
+	Entity::AddNode(node);
 
 	ReapplySwitch();
 }
@@ -61,14 +61,14 @@ void SwitchNode::ReapplySwitch()
 
 void SwitchNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
-	SceneNode::Save(archive, sceneFileV2);
+	Entity::Save(archive, sceneFileV2);
 
 	archive->SetInt32("switchIndex", newSwitchIndex);
 }
 
 void SwitchNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
-	SceneNode::Load(archive, sceneFileV2);
+	Entity::Load(archive, sceneFileV2);
 
 	int32 loadedSwitchIndex = archive->GetInt32("switchIndex");
 	SetSwitchIndex(loadedSwitchIndex);
