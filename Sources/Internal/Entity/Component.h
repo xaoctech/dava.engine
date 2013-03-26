@@ -38,7 +38,7 @@ namespace DAVA
 {
     
 class DataNode;
-class SceneNode;
+class Entity;
 class Component : public Serializable
 {
 public:
@@ -70,12 +70,12 @@ public:
     virtual ~Component();
 
     virtual uint32 GetType() = 0;
-    virtual Component* Clone(SceneNode * toEntity) = 0;
+    virtual Component* Clone(Entity * toEntity) = 0;
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
-	SceneNode* GetEntity();
-	virtual void SetEntity(SceneNode * entity);
+	Entity* GetEntity();
+	virtual void SetEntity(Entity * entity);
     
     /**
          \brief This function should be implemented in each node that have data nodes inside it.
@@ -89,7 +89,7 @@ public:
 	void GetDataNodes(Container<T> & container);
 
 protected:
-    SceneNode * entity; // entity is a SceneNode, that this component belongs to
+    Entity * entity; // entity is a Entity, that this component belongs to
 
 public:
 	INTROSPECTION(Component, 

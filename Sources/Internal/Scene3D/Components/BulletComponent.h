@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -20,7 +20,7 @@ public:
 	void SetBulletObject(BaseObject * bulletObject);
 	BaseObject * GetBulletObject();
 
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -29,7 +29,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(BulletComponent, Component,
-        PROPERTY(bulletObject, "Bullet Object", GetBulletObject, SetBulletObject, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("bulletObject", "Bullet Object", GetBulletObject, SetBulletObject, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
 };
 

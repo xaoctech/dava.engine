@@ -39,7 +39,7 @@ namespace DAVA
 
 SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
                        , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode()
+:   Entity()
 {
     sprite = Sprite::Create(pathToSprite);
     sprScale = reqScale;
@@ -57,7 +57,7 @@ SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
 
 SpriteNode::SpriteNode(Sprite *spr, int32 _frame
            , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode()
+:   Entity()
 {
     sprScale = reqScale;
     sprPivot = pivotPoint;
@@ -155,7 +155,7 @@ SpriteNode::eType SpriteNode::GetType()
 
 void SpriteNode::Draw()
 {
-	if (!(flags&SceneNode::NODE_VISIBLE))return;
+	if (!(flags&Entity::NODE_VISIBLE))return;
 
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
 	{
@@ -275,8 +275,8 @@ void SpriteNode::Draw()
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+	RenderManager::Instance()->AppendState(RenderState::STATE_BLEND);
+	RenderManager::Instance()->RemoveState(RenderState::STATE_DEPTH_WRITE);
 //    RenderManager::Instance()->EnableBlending(true);
 //    RenderManager::Instance()->EnableTexturing(true);//TODO: Move all this code to the RenderState node
 //    RenderManager::Instance()->EnableDepthTest(false);
@@ -294,7 +294,7 @@ void SpriteNode::Draw()
 
     
 //    glDisableClientState(GL_COLOR_ARRAY);
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+    RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 //    RenderManager::Instance()->EnableTexturing(true);
 //    RenderManager::Instance()->EnableBlending(false);
 //    RenderManager::Instance()->EnableDepthTest(true);

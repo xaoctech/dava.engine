@@ -12,7 +12,7 @@ LodNodePropertyControl::~LodNodePropertyControl()
 }
 
 
-void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
+void LodNodePropertyControl::ReadFrom(Entity * sceneNode)
 {
 	NodesPropertyControl::ReadFrom(sceneNode);
 

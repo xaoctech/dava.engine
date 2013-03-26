@@ -83,6 +83,37 @@ public:
     static FixedSizePoolAllocator allocator;
 };
 
+//class EntityCustomAllocator : public BaseObject
+//{
+//public:
+//    Component * components[Component::COMPONENT_COUNT];
+//    Vector<EntityCustomAllocator*> children;
+//    
+//    void * operator new(size_t size)
+//    {
+//        return allocator.New();
+//    }
+//    
+//    void operator delete(void * p)
+//    {
+//        return allocator.Delete(p);
+//    }
+//    
+//    static FixedSizePoolAllocator allocator;
+//};
+//
+//
+//class EntityFactory
+//{
+//public:
+//    Vector<Entity
+//    
+//    
+//    
+//    
+//};
+
+
 class MemoryAllocationTraverseTest: public TestTemplate<MemoryAllocationTraverseTest>
 {
 public:

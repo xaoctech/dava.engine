@@ -2,12 +2,20 @@
 #define __QT_PROPERTY_ITEM_H__
 
 #include <QStandardItem>
+#include <QPushButton>
 
 class QtPropertyData;
+
+Q_DECLARE_METATYPE(QtPropertyData *);
 
 class QtPropertyItem : public QStandardItem
 {
 public:
+	enum PropertyItemDataRole
+	{
+		PropertyDataRole = Qt::UserRole,
+	};
+
 	QtPropertyItem();
 	QtPropertyItem(QtPropertyData* data, QtPropertyItem *name);
 	QtPropertyItem(const QVariant &value);
@@ -21,6 +29,7 @@ public:
 	
 protected:
 	QtPropertyData* itemData;
+
 	bool itemDataDeleteByParent;
 
 	void ApplyDataFlags();

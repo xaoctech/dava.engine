@@ -53,11 +53,11 @@ uint32 TextureHelper::EnumerateSceneTextures(DAVA::Scene* scene, const String& s
 	return sceneTextureMemory;
 }
 
-void TextureHelper::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, Texture *> &textures)
+void TextureHelper::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
 {
 	if(!forNode)  return;
 
-	Vector<SceneNode *> nodes;
+	Vector<Entity *> nodes;
 	forNode->GetChildNodes(nodes);
 
 	nodes.push_back(forNode);
@@ -91,7 +91,7 @@ void TextureHelper::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, Text
 			}
 		}
 
-		LandscapeNode *land = dynamic_cast<LandscapeNode *>(ro);
+		Landscape *land = dynamic_cast<Landscape *>(ro);
 		if(land)
 		{
 			CollectLandscapeTextures(textures, land);
@@ -99,11 +99,11 @@ void TextureHelper::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, Text
 	}
 }
 
-void TextureHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
+void TextureHelper::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode)
 {
-	for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTextureName((LandscapeNode::eTextureLevel)t), forNode->GetTexture((LandscapeNode::eTextureLevel)t));
+		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
 

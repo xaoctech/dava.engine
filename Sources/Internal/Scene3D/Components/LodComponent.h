@@ -8,7 +8,7 @@
 namespace DAVA
 {
 
-class SceneNode;
+class Entity;
 class LodComponent : public Component
 {
 public:
@@ -46,9 +46,9 @@ public:
         float32 GetFarDistance() const {return farDistance; };
         
         INTROSPECTION(LodDistance,
-            PROPERTY(distance, "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-            PROPERTY(nearDistance, "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_EDITOR_READONLY)
-            PROPERTY(farDistance, "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_EDITOR_READONLY)
+            PROPERTY("distance", "Distance", GetDistance, SetDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+            PROPERTY("nearDistance", "Near Distance", GetNearDistance, SetNearDistance, INTROSPECTION_EDITOR_READONLY)
+            PROPERTY("farDistance", "Far Distance", GetFarDistance, SetFarDistance, INTROSPECTION_EDITOR_READONLY)
         );
 	};
 
@@ -59,14 +59,14 @@ public:
 			isDummy(false)
 		{ }
 
-		Vector<SceneNode*> nodes;
+		Vector<Entity*> nodes;
 		Vector<int32> indexes;
 		int32 layer;
 		bool isDummy;
 	};
 
 	LodComponent();
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -116,11 +116,11 @@ public:
     INTROSPECTION_EXTEND(LodComponent, Component,
         COLLECTION(lodLayersArray, "Lod Layers Array", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(forceLodLayer, "Force Lod Layer", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
-        PROPERTY(forceDistance, "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
+        PROPERTY("forceDistance", "Force Distance", GetForceDistance, SetForceDistance, INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
         MEMBER(flags, "Flags", INTROSPECTION_SERIALIZABLE | INTROSPECTION_EDITOR)
     );
     
-//    SceneNode::Save(archive, sceneFile);
+//    Entity::Save(archive, sceneFile);
 //    archive->SetInt32("lodCount", (int32)lodLayers.size());
 //    
 //    int32 lodIdx = 0;

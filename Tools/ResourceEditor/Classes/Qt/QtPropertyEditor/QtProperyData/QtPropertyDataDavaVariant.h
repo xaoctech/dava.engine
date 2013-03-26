@@ -28,7 +28,7 @@ protected:
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
 	virtual void EditorDoneInternal(QWidget *editor);
     virtual void SetEditorDataInternal(QWidget *editor);
-    
+
 private:
 	void ChildsCreate();
 	void ChildsSetFromMe();

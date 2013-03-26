@@ -5,8 +5,26 @@
 #include <QHash>
 #include <QIcon>
 
-class QtPropertyData
+// Optional widget
+struct QtPropertyOW
 {
+	QtPropertyOW() : widget(NULL), overlay(false), size(0, 0)
+	{ }
+
+	QtPropertyOW(QWidget *_widget, bool _overlay = false, QSize _size = QSize(16, 16))
+		: widget(_widget), overlay(_overlay), size(_size)
+	{ }
+
+	QWidget *widget;
+	QSize size;
+	bool overlay;
+};
+
+// PropertyData class
+class QtPropertyData : public QObject
+{
+	Q_OBJECT
+
 	friend class QtPropertyItem;
 
 public:
@@ -41,34 +59,18 @@ public:
 	int ChildCount();
 	QtPropertyData* ChildGet(const QString &key);
 	QPair<QString, QtPropertyData*> ChildGet(int i);
+
     
 protected:
 	void ParentUpdate();
 
-	//QHashIterator<QString, QtPropertyData*> ChildIterator();
-
-protected:
-	bool childrenItemsCreated;
-
-	// Function should be re-implemented by sub-class
+	// Functions should be re-implemented by sub-class
 	virtual QVariant GetValueInternal();
-
-	// Function should be re-implemented by sub-class
 	virtual void SetValueInternal(const QVariant &value);
-
-	// Function should be re-implemented by sub-class
 	virtual QWidget* CreateEditorInternal(QWidget *parent, const QStyleOptionViewItem& option);
-
-    // Function should be re-implemented by sub-class
 	virtual void EditorDoneInternal(QWidget *editor);
-
-    // Function should be re-implemented by sub-class
 	virtual void SetEditorDataInternal(QWidget *editor);
-
-	// Function should be re-implemented by sub-class
 	virtual void ChildChanged(const QString &key, QtPropertyData *data);
-
-	// Function should be re-implemented by sub-class
 	virtual void ChildNeedUpdate();
 
 private:
@@ -79,6 +81,21 @@ private:
 	QtPropertyData *parent;
 	QHash<QString, QtPropertyData *> children;
 	QHash<QString, int> childrenOrder;
+	
+public:
+	// Option widgets
+	int GetOWCount();
+	const QtPropertyOW* GetOW(int index = 0);
+	void AddOW(const QtPropertyOW &ow);
+	void RemOW(int index);
+
+	QWidget* GetOWViewport();
+	void SetOWViewport(QWidget *viewport);
+
+private:
+	// Optional widgets data struct and memebers
+	QVector<QtPropertyOW> optionalWidgets;
+	QWidget *optionalWidgetViewport;
 };
 
 #endif // __QT_PROPERTY_DATA_H__

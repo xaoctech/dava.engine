@@ -42,7 +42,7 @@ namespace DAVA
 		// 
 		// см. так же функцию Object()
 		// 
-		void* Pointer(void *object) const;
+		virtual void* Pointer(void *object) const;
 
 		// Вернет указатель на объек данного члена интроспекции. 
 		// Функция сама проверит, является ли данный член интроспекции указателем и
@@ -54,7 +54,7 @@ namespace DAVA
 		// для classC  c - функция вернет &c, тип classC *
 		// для classC* c - функция вернет c,  тип classC *
 		// 
-		void* Data(void *object) const;
+		virtual void* Data(void *object) const;
 
 		// Возвращает вариант данных члена интроспекции. Имлементация варианта должна поддерживать
 		// создание из данных, определяемыт мета-типом данного члена интроспекции.

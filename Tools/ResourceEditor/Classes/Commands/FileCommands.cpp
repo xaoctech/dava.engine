@@ -7,7 +7,6 @@
 #include "../SceneEditor/SceneValidator.h"
 
 #include "../Qt/Main/QtUtils.h"
-#include "../Qt/Main/GUIState.h"
 #include "../Qt/Main/QtMainWindowHandler.h"
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
@@ -93,7 +92,7 @@ void CommandOpenScene::Execute()
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
             
-            GUIState::Instance()->SetNeedUpdatedFileMenu(true);
+            //GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
         
         QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname);
@@ -153,8 +152,6 @@ void CommandSaveScene::Execute()
 
 			SaveParticleEmitterNodes(activeScene->GetScene());
             screen->SaveSceneToFile(normalizedPathname);
-
-            GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
 
@@ -175,7 +172,7 @@ void CommandSaveScene::SaveParticleEmitterNodes(EditorScene* scene)
 	}
 }
 
-void CommandSaveScene::SaveParticleEmitterNodeRecursive(SceneNode* parentNode)
+void CommandSaveScene::SaveParticleEmitterNodeRecursive(Entity* parentNode)
 {
 	bool needSaveThisLevelNode = true;
 	ParticleEmitter * emitter = GetEmitter(parentNode);

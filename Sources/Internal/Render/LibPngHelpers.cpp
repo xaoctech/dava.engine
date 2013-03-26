@@ -95,7 +95,7 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-int LibPngWrapper::ReadPngFile(const char *file, Image * image)
+int LibPngWrapper::ReadPngFile(const String & file, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
 {
 	File * infile = File::Create(file, File::OPEN | File::READ);
 	if (!infile)
@@ -103,14 +103,16 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 		return 0;
 	}
 
-    int retCode = ReadPngFile(infile, image);
+    int retCode = ReadPngFile(infile, image, targetFormat);
     SafeRelease(infile);
     
     return retCode;
 }
 
-int LibPngWrapper::ReadPngFile(File *infile, Image * image)
+int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
 {
+    DVASSERT(targetFormat == FORMAT_INVALID || targetFormat == FORMAT_RGBA8888);
+    
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
@@ -173,35 +175,23 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
 		png_set_expand_gray_1_2_4_to_8(png_ptr);
     
-    //	if(bit_depth > 8)
-    //	{
-    //		DVASSERT_MSG(0, "bit_depth > 8");
-    //		png_set_strip_16(png_ptr);
-    //	}
-    
 	image->format = FORMAT_RGBA8888;
-	if(color_type == PNG_COLOR_TYPE_GRAY)
-	{
-        if(16 == bit_depth)
+	if (color_type == PNG_COLOR_TYPE_GRAY ||
+		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+    {
+        if(targetFormat == FORMAT_RGBA8888)
         {
-            image->format = FORMAT_A16;
+            png_set_gray_to_rgb(png_ptr);
+            png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
         }
         else
         {
-            image->format = FORMAT_A8;
+            image->format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
+            if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+            {
+                png_set_strip_alpha(png_ptr);
+            }
         }
-	}
-	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-	{
-        if(16 == bit_depth)
-        {
-            image->format = FORMAT_A16;
-        }
-        else
-        {
-            image->format = FORMAT_A8;
-        }
-		png_set_strip_alpha(png_ptr);
 	}
 	else if(color_type == PNG_COLOR_TYPE_PALETTE)
 	{
@@ -272,7 +262,7 @@ bool LibPngWrapper::IsPngFile(File *file)
 
 
 
-void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
+void LibPngWrapper::WritePngFile(const String & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
@@ -308,10 +298,10 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 	
 	
 	/* create file */
-	FILE *fp = fopen(file_name, "wb");
+	FILE *fp = fopen(file_name.c_str(), "wb");
 	if (!fp)
 	{
-		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name);
+		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name.c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
 		return;
 	}

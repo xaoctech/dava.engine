@@ -1,6 +1,6 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/RenderManager.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/YamlParser.h"
@@ -65,7 +65,7 @@ NMaterialInstance::NMaterialInstance()
         lightNodes[k] = 0;
     }
     
-    renderState.state = RenderStateBlock::DEFAULT_3D_STATE;
+    renderState.state = RenderState::DEFAULT_3D_STATE;
     shader = 0;
 }
     

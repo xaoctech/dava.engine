@@ -43,7 +43,7 @@ public slots:
 	void sceneActivated(SceneData *scene);
 	void sceneChanged(SceneData *scene);
 	void sceneReleased(SceneData *scene);
-	void sceneNodeSelected(SceneData *scene, DAVA::SceneNode *node);
+	void sceneNodeSelected(SceneData *scene, DAVA::Entity *node);
 
 private:
     Ui::TextureBrowser *ui;
