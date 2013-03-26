@@ -72,6 +72,7 @@ CommandUpdateParticleLayer::CommandUpdateParticleLayer(ParticleEmitter* emitter,
 }
 
 void CommandUpdateParticleLayer::Init(const QString& layerName,
+									  ParticleLayer::eType layerType,
 									  bool isDisabled,
 									  bool additive,
 									  Sprite* sprite,
@@ -106,6 +107,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 									  float32 frameOverLifeFPS)
 {
 	this->layerName = layerName;
+	this->layerType = layerType;
 	this->isDisabled = isDisabled;
 	this->additive = additive;
 	this->sprite = sprite;
@@ -145,6 +147,7 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
+	layer->type = layerType;
 	layer->isDisabled = isDisabled;
 	layer->SetAdditive(additive);
 	layer->life = life;
