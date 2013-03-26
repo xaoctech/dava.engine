@@ -1020,13 +1020,7 @@
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\GUIState_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp">
-      <Filter>QtGenerated\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Main\PointerHolder_moc.cpp">
       <Filter>QtGenerated\Main</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Main\QtMainWindowHandler_moc.cpp">
