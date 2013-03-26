@@ -204,6 +204,8 @@ protected:
 	
 	bool GetBottomAlignEnabled() const;
 	void SetBottomAlignEnabled(const bool value);
+	
+	virtual void SetActiveControlRect(const Rect& rect);
 };
     
 }

@@ -9,6 +9,8 @@
 #include "HierarchyTreeScreenNode.h"
 #include "ScreenManager.h"
 #include "HierarchyTreeControlNode.h"
+#include "HierarchyTreePlatformNode.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 #include <QFile>
 #include "Render/2D/FontManager.h"
 
@@ -159,7 +161,11 @@ void HierarchyTreeScreenNode::BuildHierarchyTree(HierarchyTreeNode* parent, List
 	{
 		UIControl* uiControl = (*iter);
 		
-		HierarchyTreeControlNode* node = new HierarchyTreeControlNode(parent, uiControl, QString::fromStdString(uiControl->GetName()));
+		HierarchyTreeControlNode* node = NULL;
+		if (dynamic_cast<UIAggregatorControl*>(uiControl))
+			node = new HierarchyTreeAggregatorControlNode(NULL, parent, uiControl, QString::fromStdString(uiControl->GetName()));
+		else
+			node = new HierarchyTreeControlNode(parent, uiControl, QString::fromStdString(uiControl->GetName()));
 
 		// Use the "real" children list here to avoid loading of (for example) separate Static Text for UITextControls.
 		BuildHierarchyTree(node, uiControl->GetRealChildren());
@@ -184,10 +190,8 @@ void HierarchyTreeScreenNode::ReturnTreeNodeToScene()
 	this->redoParentNode->AddTreeNode(this, redoPreviousNode);
 }
 
-Rect HierarchyTreeScreenNode::GetRect() const
+void HierarchyTreeScreenNode::CombineRectWithChild(Rect& rect) const
 {
-	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
-	
 	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
 	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
 	{
@@ -199,6 +203,13 @@ Rect HierarchyTreeScreenNode::GetRect() const
 		
 		rect = rect.Combine(controlRect);
 	}
+}
+
+Rect HierarchyTreeScreenNode::GetRect() const
+{
+	Rect rect(0, 0, GetPlatform()->GetWidth(), GetPlatform()->GetHeight());
+	
+	CombineRectWithChild(rect);
 	
 	return rect;
 }
