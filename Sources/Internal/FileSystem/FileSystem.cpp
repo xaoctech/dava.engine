@@ -445,8 +445,9 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
 
 #if defined (__DAVAENGINE_WIN32__)
 	DWORD stats = GetFileAttributesA(pathname.c_str());
-	return FILE_ATTRIBUTE_DIRECTORY == stats;
+	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
 #else //#if defined (__DAVAENGINE_WIN32__)
+
 	struct stat s;
 	if(stat(pathname.c_str(), &s) == 0)
 	{
