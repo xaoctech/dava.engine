@@ -53,6 +53,13 @@ void DirectoryManager::InitBaseDir() {
 #endif
 }
 
+QString DirectoryManager::GetDocumentsDirectory() const {
+    QString path = QDir::homePath() + "/Documents/DAVAProject/Launcher/";
+    if(!QDir(path).exists())
+        QDir().mkdir(path);
+    return path;
+}
+
 QString DirectoryManager::GetBaseDirectory() const {
     return m_appDir;
 }
