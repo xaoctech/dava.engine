@@ -28,6 +28,7 @@ public:
     QString GetDependencies() const;
     QString GetConfigDir() const;
 
+    QString GetDocumentsDirectory() const;
 
 signals:
     
