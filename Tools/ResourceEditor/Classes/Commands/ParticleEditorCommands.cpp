@@ -147,7 +147,6 @@ void CommandUpdateParticleLayer::Init(const QString& layerName,
 void CommandUpdateParticleLayer::Execute()
 {
 	layer->layerName = layerName.toStdString();
-	layer->type = layerType;
 	layer->isDisabled = isDisabled;
 	layer->SetAdditive(additive);
 	layer->life = life;
@@ -188,6 +187,14 @@ void CommandUpdateParticleLayer::Execute()
 	{
 		emitter->Stop();
 		layer->SetSprite(sprite);
+		emitter->Play();
+	}
+	
+	// The same is for emitter type.
+	if (layer->type != layerType)
+	{
+		emitter->Stop();
+		layer->type = layerType;
 		emitter->Play();
 	}
 
@@ -549,4 +556,3 @@ void CommandSaveParticleEmitterToYaml::Execute()
 
     emitter->SaveToYaml(yamlPath);
 }
-
