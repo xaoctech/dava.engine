@@ -1,9 +1,11 @@
 #include "DAVAEngine.h"
+#include "Debug/DVAssert.h"
 #include "Main/QtUtils.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
 #include "QtPropertyEditor/QtPropertyWidgets/QtColorLineEdit.h"
 
 #include <QColorDialog>
+#include <QPushButton>
 #include <QPainter>
 #include <QLineEdit>
 
@@ -206,16 +208,6 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 	switch(curVariantValue.type)
 	{
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
-		{
-			DAVA::KeyedArchive *archive = curVariantValue.AsKeyedArchive();
-			DAVA::Map<DAVA::String, DAVA::VariantType*> data = archive->GetArchieveData();
-			DAVA::Map<DAVA::String, DAVA::VariantType*>::iterator i = data.begin();
-
-			for(; i != data.end(); ++i)
-			{
-				ChildAdd(i->first.c_str(), new QtPropertyDataDavaVariant(*(i->second)));
-			}
-		}
 		break;
 	case DAVA::VariantType::TYPE_MATRIX2:
 		break;
@@ -353,15 +345,6 @@ void QtPropertyDataDavaVariant::MeSetFromChilds(const QString &lastChangedChildK
 	switch(curVariantValue.type)
 	{
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
-		{
-			QtPropertyDataDavaVariant *childVariantData = (QtPropertyDataDavaVariant *) lastChangedChildData;
-			DAVA::KeyedArchive *archive = curVariantValue.AsKeyedArchive();
-
-			if(NULL != archive && NULL != childVariantData)
-			{
-				archive->SetVariant(lastChangedChildKey.toStdString(), childVariantData->curVariantValue);
-			}
-		}
 		break;
 	case DAVA::VariantType::TYPE_MATRIX2:
 		break;

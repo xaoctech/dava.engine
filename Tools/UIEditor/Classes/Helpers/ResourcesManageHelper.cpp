@@ -192,11 +192,7 @@ QString ResourcesManageHelper::GetHelpContentsPath()
 
 QString ResourcesManageHelper::GetProjectPath()
 {
-	HierarchyTreePlatformNode* platformNode = HierarchyTreeController::Instance()->GetActivePlatform();
-	if (!platformNode)
-		return QString();
-
-	HierarchyTreeRootNode *rootNode = (HierarchyTreeRootNode *)platformNode->GetRoot();
+	const HierarchyTreeRootNode *rootNode = HierarchyTreeController::Instance()->GetTree().GetRootNode();
 	if (!rootNode)
 		return QString();
 	

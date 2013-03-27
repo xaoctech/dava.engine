@@ -26,7 +26,7 @@ public:
     MaterialEditor();
     virtual ~MaterialEditor();
     
-    void SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode);
+    void SetWorkingScene(Scene *newWorkingScene, Entity *newWorkingSceneNode);
     void EditMaterial(Scene *newWorkingScene, Material *newWorkingMaterial);
     
     void OnButton(BaseObject * object, void * userData, void * callerData);
@@ -64,7 +64,7 @@ protected:
     MaterialPropertyControl *materialProps;
     
     Scene *workingScene;
-    SceneNode *workingSceneNode;
+    Entity *workingSceneNode;
     Material *workingMaterial;
     Vector<Material*> workingNodeMaterials;
     

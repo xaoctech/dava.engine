@@ -158,7 +158,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	endResetModel();
 }
 
-void TextureListModel::setHighlight(DAVA::SceneNode *node)
+void TextureListModel::setHighlight(DAVA::Entity *node)
 {
 	beginResetModel();
 

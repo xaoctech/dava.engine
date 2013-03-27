@@ -33,7 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
-#include "Render/RenderStateBlock.h"
+#include "Render/RenderState.h"
 #include "Render/ShaderUniformArray.h"
 #include "Render/Material/NMaterialConsts.h"
 
@@ -47,7 +47,7 @@ class SceneFileV2;
 class Light;
 class PolygonGroup;
 class RenderDataObject;
-class RenderStateBlock;
+class RenderState;
 class Light;
 
 class NMaterialDescriptor : public BaseObject
@@ -79,7 +79,7 @@ public:
     bool LoadFromYaml(const String & pathname);
     uint32 GetLightCount() { return lightCount; };
     void SetLightNode(uint32 index, Light * lightNode) { lightNodes[index] = lightNode; };
-    RenderStateBlock * GetRenderState() { return &renderState; };
+    RenderState * GetRenderState() { return &renderState; };
 
     void PrepareInstanceForShader(Shader * shader);
 
@@ -106,7 +106,7 @@ private:
     uint8 *                 uniformData;
     uint32                  lightCount;
     Light              *lightNodes[8];
-    RenderStateBlock        renderState;
+    RenderState        renderState;
     Shader *                shader;
     friend class NMaterial;
 };

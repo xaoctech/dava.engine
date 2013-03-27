@@ -170,6 +170,7 @@
      </property>
      <addaction name="actionNew_platform"/>
      <addaction name="actionNew_screen"/>
+     <addaction name="actionNew_aggregator"/>
     </widget>
     <addaction name="actionNew_project"/>
     <addaction name="actionSave_project"/>
@@ -468,6 +469,15 @@
    </property>
    <property name="visible">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionNew_aggregator">
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/icons/170.png</normaloff>:/icons/170.png</iconset>
+   </property>
+   <property name="text">
+    <string>New aggregator</string>
    </property>
   </action>
  </widget>

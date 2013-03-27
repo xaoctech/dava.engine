@@ -43,7 +43,9 @@ private:
 	TREEITEMS GetAllItems();
 	void GetChildItems(const QTreeWidgetItem* parent, Map<int, QTreeWidgetItem*> &items);
 	void ResetSelection();
-	
+
+	void DecorateWithIcon(QTreeWidgetItem* item, UIControl* uiControl);
+
 private:
 	bool internalSelectionChanged;
     Ui::HierarchyTreeWidget *ui;

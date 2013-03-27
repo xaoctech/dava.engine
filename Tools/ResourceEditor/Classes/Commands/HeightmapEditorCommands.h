@@ -55,7 +55,7 @@ protected:
 	Image* tilemapRedoImage;
 	String tilemapSavedPathname;
 
-	LandscapeNode* landscape;
+	Landscape* landscape;
 
 	bool heightmap;
 	bool tilemap;

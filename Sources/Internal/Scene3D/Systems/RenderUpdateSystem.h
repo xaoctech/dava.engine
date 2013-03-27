@@ -41,7 +41,7 @@ class RenderPass;
 class RenderLayer;
 class RenderObject;
 class RenderBatch;
-class SceneNode;
+class Entity;
 class Camera;
     
     
@@ -54,14 +54,14 @@ public:
     RenderUpdateSystem(Scene * scene);
     virtual ~RenderUpdateSystem();
     
-    virtual void AddEntity(SceneNode * entity);
-    virtual void RemoveEntity(SceneNode * entity);
-    virtual void ImmediateEvent(SceneNode * entity, uint32 event);
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
 
     virtual void Process();
     
 private:
-    HashMap<SceneNode*, RenderObject*> entityObjectMap;
+    HashMap<Entity*, RenderObject*> entityObjectMap;
 };
     
 } // ns

@@ -226,7 +226,7 @@ namespace DAVA
 
 // Определение члена интроспекции, как свойства. Доступ к нему осуществляется через функци Get/Set. 
 #define PROPERTY(_name, _desc, _getter, _setter, _flags) \
-	DAVA::CreateIntrospectionProperty(#_name, _desc, (int) ((long int) &((ObjectT *) 0)->_name), DAVA::MetaInfo::Instance(&ObjectT::_name), &ObjectT::_getter, &ObjectT::_setter, _flags),
+	DAVA::CreateIntrospectionProperty(_name, _desc, &ObjectT::_getter, &ObjectT::_setter, _flags),
 
 // Определение члена интроспекции, как коллекции. Доступ - см. IntrospectionCollection
 #define COLLECTION(_name, _desc, _flags) \

@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>200</height>
+    <height>233</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>200</height>
+    <height>233</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <x>1</x>
      <y>1</y>
      <width>299</width>
-     <height>199</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="title">
@@ -196,7 +196,7 @@ inherit:</string>
      <rect>
       <x>81</x>
       <y>84</y>
-      <width>57</width>
+      <width>41</width>
       <height>25</height>
      </rect>
     </property>
@@ -212,6 +212,87 @@ inherit:</string>
     </property>
     <property name="text">
      <string>x</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lrStretchLabel">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>204</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hor. Stretch:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="tbStretchLabel">
+    <property name="geometry">
+     <rect>
+      <x>154</x>
+      <y>204</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vert. Stretch:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="lrSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>200</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>999</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="tbSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>238</x>
+      <y>200</y>
+      <width>46</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>999</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="modificationLabel">
+    <property name="geometry">
+     <rect>
+      <x>129</x>
+      <y>90</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reflection:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="modificationComboBox">
+    <property name="geometry">
+     <rect>
+      <x>197</x>
+      <y>86</y>
+      <width>86</width>
+      <height>21</height>
+     </rect>
     </property>
    </widget>
   </widget>

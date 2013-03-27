@@ -240,9 +240,7 @@ YamlNode* PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(YamlNode* par
     YamlNode* childNode = new YamlNode(YamlNode::TYPE_ARRAY);
     for (Vector<PropValue<Color> >::iterator iter = wrappedPropertyValues.begin();
          iter != wrappedPropertyValues.end(); iter ++)
-    {
-        const PropValue<Color>& curValue = *iter;
-        
+    {        
         childNode->AddValueToArray((*iter).t);
         childNode->AddValueToArray(ColorToVector((*iter).v));
     }

@@ -35,7 +35,7 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/DataNode.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA
 {
@@ -49,14 +49,14 @@ public:
 	ProxyNode();
 	virtual ~ProxyNode();
 	
-    virtual void SetNode(SceneNode * node);
-    virtual SceneNode * GetNode();
+    virtual void SetNode(Entity * node);
+    virtual Entity * GetNode();
     
     // virtual updates
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 protected:
-    SceneNode * node;
+    Entity * node;
 };
 
 };

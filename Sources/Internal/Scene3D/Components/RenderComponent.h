@@ -19,7 +19,7 @@ public:
     void SetRenderObject(RenderObject * object);
     RenderObject * GetRenderObject();
     
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);

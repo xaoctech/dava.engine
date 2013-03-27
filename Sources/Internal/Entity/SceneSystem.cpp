@@ -53,17 +53,17 @@ uint32 SceneSystem::GetRequiredComponents()
     return requiredComponents;
 }
 
-void SceneSystem::AddEntity(SceneNode * entity)
+void SceneSystem::AddEntity(Entity * entity)
 {
     
 }
 
-void SceneSystem::RemoveEntity(SceneNode * entity)
+void SceneSystem::RemoveEntity(Entity * entity)
 {
     
 }
     
-void SceneSystem::ImmediateEvent(SceneNode * entity, uint32 event)
+void SceneSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     
 }

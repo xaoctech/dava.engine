@@ -12,6 +12,31 @@ using namespace DAVA;
 
 static const float INPUT_TEST_AUTO_CLOSE_TIME = 30.0f;
 
+
+class UIWebViewDelegate: public IUIWebViewDelegate
+{
+	virtual eAction URLChanged(UIWebView* webview, const String& newURL);
+};
+
+IUIWebViewDelegate::eAction UIWebViewDelegate::URLChanged(UIWebView* webview, const String& newURL)
+{
+	if (newURL.find("google.com.ua") != String::npos)
+	{
+		return IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER;
+	}
+	else if (newURL.find("bash.im") != String::npos)
+	{
+		return IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER;
+	}
+	else if (newURL.find("microsoft.com") != String::npos)
+	{
+		return IUIWebViewDelegate::NO_PROCESS;
+	}
+
+	return IUIWebViewDelegate::PROCESS_IN_WEBVIEW;
+}
+
+
 InputTest::InputTest() :
  TestTemplate<InputTest>("InputTest")
 {
@@ -36,7 +61,8 @@ void InputTest::LoadResources()
 	
 	textField = new UITextField(Rect(0, 0, 512, 100));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	Color color(1.f, 1.f, 1.f, 1.f);
+	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
@@ -47,7 +73,7 @@ void InputTest::LoadResources()
 	
 	textField = new UITextField(Rect(600, 10, 100, 100));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
@@ -57,7 +83,7 @@ void InputTest::LoadResources()
 
 	textField = new UITextField(Rect(750, 10, 100, 500));
 #ifdef __DAVAENGINE_IPHONE__
-	textField->SetFontColor(1.f, 1.f, 1.f, 1.f);
+	textField->SetFontColor(color);
 #else
 	textField->SetFont(font);
 #endif
@@ -79,6 +105,21 @@ void InputTest::LoadResources()
 	webView2->OpenURL("http://www.apple.com");
 	AddControl(webView2);
 
+	String srcDir = FileSystem::Instance()->FileSystem::SystemPathForFrameworkPath("~res:/TestData/InputTest/");
+	String cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "InputTest/";
+	FileSystem::Instance()->DeleteDirectory(cpyDir);
+	FileSystem::Instance()->CreateDirectory(cpyDir);
+	String srcFile = srcDir + "test.html";
+	String cpyFile = cpyDir + "test.html";
+	FileSystem::Instance()->CopyFile(srcFile, cpyFile);
+	String url = "file:///" + cpyFile;
+
+	delegate = new UIWebViewDelegate();
+	webView3 = new UIWebView(Rect(520, 130, 215, 135));
+	webView3->OpenURL(url);
+	webView3->SetDelegate((UIWebViewDelegate*)delegate);
+	AddControl(webView3);
+
 	AddControl(testButton);
 }
 
@@ -92,6 +133,10 @@ void InputTest::UnloadResources()
 	
 	SafeRelease(webView1);
 	SafeRelease(webView2);
+	SafeRelease(webView3);
+	
+	UIWebViewDelegate* d = (UIWebViewDelegate*)delegate;
+	delete d;
 }
 
 void InputTest::TestFunction(PerfFuncData * data)

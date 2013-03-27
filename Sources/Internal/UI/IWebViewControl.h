@@ -16,6 +16,22 @@
 
 namespace DAVA {
 
+class UIWebView;
+class IUIWebViewDelegate
+{
+public:
+	enum eAction
+	{
+		PROCESS_IN_WEBVIEW = 0,
+		PROCESS_IN_SYSTEM_BROWSER,
+		NO_PROCESS,
+		ACTIONS_COUNT
+	};
+
+	virtual eAction URLChanged(DAVA::UIWebView* webview, const String& newURL) = 0;
+};
+
+
 // Common interface for Web View Controls for different platforms.
 class IWebViewControl
 {
@@ -31,6 +47,8 @@ public:
 	// Size/pos/visibility changes.
 	virtual void SetRect(const Rect& rect) = 0;
 	virtual void SetVisible(bool isVisible, bool hierarchic) = 0;
+	
+	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView) = 0;
 };
 
 };
