@@ -19,6 +19,7 @@
 #define MENU_ITEM_COPY tr("Copy")
 #define MENU_ITEM_PASTE tr("Paste")
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
+#define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
 
 
 HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
@@ -304,6 +305,10 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		connect(createScreenAction, SIGNAL(triggered()), this, SLOT(OnCreateScreenAction()));
 		menu.addAction(createScreenAction);
 		
+		QAction* createAggregatorAction = new QAction(MENU_ITEM_CREATE_AGGREGATOR, &menu);
+		connect(createAggregatorAction, SIGNAL(triggered()), this, SLOT(OnCreateAggregatorAction()));
+		menu.addAction(createAggregatorAction);
+		
 		if (CopyPasteController::Instance()->GetCopyType() == CopyPasteController::CopyTypeScreen)
 		{
 			QAction* pasteScreenAction = new QAction(MENU_ITEM_PASTE, &menu);
@@ -368,13 +373,12 @@ void HierarchyTreeWidget::OnDeleteControlAction()
 
 void HierarchyTreeWidget::OnCreateScreenAction()
 {
-	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-	if (!items.size())
-		return;
-	QTreeWidgetItem* item = items.at(0);
-	QVariant data = item->data(ITEM_ID);
-	HierarchyTreeNode::HIERARCHYTREENODEID id = data.toInt();
-	emit CreateNewScreen(id);
+	emit CreateNewScreen();
+}
+
+void HierarchyTreeWidget::OnCreateAggregatorAction()
+{
+	emit CreateNewAggregator();
 }
 
 void HierarchyTreeWidget::OnCopyAction()
