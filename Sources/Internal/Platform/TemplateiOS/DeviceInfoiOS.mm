@@ -1,4 +1,4 @@
-#include "../../Utils/DeviceInfo.h"
+#include "../../Platform/DeviceInfo.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 
