@@ -456,11 +456,11 @@ public:
 
 	static VariantType LoadData(const void *src, const MetaInfo *meta);
 	static void SaveData(void *dst, const MetaInfo *meta, const VariantType &val);
+
+	static VariantType FromType(int type);
     
 private:
     void ReleasePointer();
-
-	VariantType(void *);
 };
 	
 VariantType::eVariantType VariantType::GetType()
