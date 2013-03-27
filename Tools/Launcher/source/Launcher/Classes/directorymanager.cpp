@@ -37,19 +37,16 @@ void DirectoryManager::InitBaseDir() {
 
     m_configDir = m_appDir;
 
-    int nPos = -1;
-    do {
-        int pos = m_appDir.indexOf("/", nPos + 1);
-        if (pos != -1)
-            nPos = pos;
-        else
-            break;
-    }while (true);
+    int nPos = m_appDir.lastIndexOf("/");
     if (nPos != -1)
         m_appDir.chop(m_appDir.size() - nPos);
 
 #ifdef Q_OS_DARWIN
      m_configDir = m_appDir;
+
+     nPos = m_appDir.lastIndexOf("/");
+     if (nPos != -1)
+         m_appDir.chop(m_appDir.size() - nPos);
 #endif
 }
 
