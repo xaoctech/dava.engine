@@ -15,8 +15,14 @@
 
 #define LOCK_TEXT "Lock "
 #define LOCK_WIDTH 45
+#define SCALE_WIDTH 35
 
 #define GRAPH_HEIGHT 150
+#define GRAPH_OFFSET_STEP 10
+
+#define MINIMUM_DISPLAYED_TIME 0.02f
+#define ZOOM_STEP 0.1f
+#define UI_RECTANGLE_OFFSET 1.5
 
 TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	QWidget(parent)
@@ -27,6 +33,7 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	maxValueLimit = std::numeric_limits<float32>::infinity();
 	minTime = 0.0;
 	maxTime = 1;
+	initialTimeInterval = 1;
 	
 	backgroundBrush.setColor(Qt::white);
 	backgroundBrush.setStyle(Qt::SolidPattern);
@@ -48,6 +55,9 @@ TimeLineWidget::TimeLineWidget(QWidget *parent) :
 	
 	setMouseTracking(true);
 	UpdateSizePolicy();
+
+	isCtrlPressed = false;
+	scale = 1.0f;
 }
 
 TimeLineWidget::~TimeLineWidget()
@@ -117,26 +127,15 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 	}
 	
 	//draw minimizebox
+	if (sizeState == SIZE_STATE_MINIMIZED)
 	{
-		painter.setPen(Qt::black);
-		QRect minimizeRect = GetMinimizeRect();
-		painter.drawRect(minimizeRect);
-		painter.save();
-		painter.translate(minimizeRect.center() + QPoint(1, 1));
-		QPolygon polygon;
-		
-		if (sizeState == SIZE_STATE_MINIMIZED)
-			painter.rotate(180);
-		
-		polygon.append(QPoint(0, -minimizeRect.height() * 0.25 - 1));
-		polygon.append(QPoint(minimizeRect.width() * 0.25 + 1, minimizeRect.height() * 0.25 + 1));
-		polygon.append(QPoint(-minimizeRect.width() * 0.25 - 1, minimizeRect.height() * 0.25 + 1));
-		
-		QPainterPath painterPath;
-		painterPath.addPolygon(polygon);
-		painter.fillPath(painterPath, Qt::black);
-		painter.restore();
+		DrawUITriangle( painter, GetMinimizeRect(), 180);
 	}
+	else
+	{
+		DrawUITriangle( painter, GetMinimizeRect(), 0);
+	}
+	
 	
 	//draw maximize box
 	{
@@ -146,7 +145,63 @@ void TimeLineWidget::paintEvent(QPaintEvent * /*paintEvent*/)
 		maximizeRect.adjust(2, 2, -2, -2);
 		painter.drawRect(maximizeRect);
 	}
-		
+
+	//draw increase box
+	{
+		painter.setPen(Qt::black);
+		QRect increaseRect = GetIncreaseRect();
+		painter.drawRect(increaseRect);
+		int increaseRectX1;
+		int increaseRectY1;
+		int increaseRectX2;
+		int increaseRectY2;
+		increaseRect.getRect(&increaseRectX1, &increaseRectY1, &increaseRectX2, &increaseRectY2);
+		int vertLineX1 = increaseRectX1 + increaseRect.width()/2;
+		int vertLineY1 = increaseRectY1;
+		int vertLineX2 = vertLineX1;
+		int vertLineY2 = increaseRectY1+ increaseRectY2;
+		painter.drawLine(vertLineX1, vertLineY1, vertLineX2, vertLineY2);
+		int horLineX1 = increaseRectX1 ;
+		int horLineY1 = increaseRectY1 + increaseRect.height()/2;
+		int horLineX2 = increaseRectX1 + increaseRectX2;
+		int horLineY2 = horLineY1;
+		painter.drawLine(horLineX1, horLineY1, horLineX2, horLineY2);
+	}
+
+	//draw scale value
+	{
+		char scaleChar[10];
+		sprintf(scaleChar, "%.0f", scale * 100);
+		QString scale(scaleChar);
+		painter.setPen(Qt::black);
+		QRect scaleRect(GetScaleRect());
+		scaleRect.setWidth(SCALE_WIDTH);
+		painter.drawText(scaleRect.bottomLeft(), scale);
+	}
+
+	//draw decrease box
+	{
+		painter.setPen(Qt::black);
+		QRect decreaseRect = GetDecreaseRect();
+		painter.drawRect(decreaseRect);
+		int decreaseRectX1;
+		int decreaseRectY1;
+		int decreaseRectX2;
+		int decreaseRectY2;
+		decreaseRect.getRect(&decreaseRectX1, &decreaseRectY1, &decreaseRectX2, &decreaseRectY2);
+		int horLineX1 = decreaseRectX1 ;
+		int horLineY1 = decreaseRectY1 + decreaseRect.height()/2;
+		int horLineX2 = decreaseRectX1 + decreaseRectX2;
+		int horLineY2 = horLineY1;
+		painter.drawLine(horLineX1, horLineY1, horLineX2, horLineY2);
+	}
+
+	//draw offsetRight box
+	DrawUITriangle( painter, GetOffsetRightRect(), 90);
+
+	//draw offsetLeft box
+	DrawUITriangle( painter, GetOffsetLeftRect(), 270);
+	
 	if (sizeState != SIZE_STATE_MINIMIZED)
 	{
 		//draw lock
@@ -303,18 +358,49 @@ void TimeLineWidget::DrawLine(QPainter* painter, uint32 lineId)
 	for (uint i = 0; i < lines[lineId].line.size(); ++i)
 	{
 		QPoint point = GetDrawPoint(lines[lineId].line[i]);
-		painter->drawLine(prevPoint, point);
-		
-		if (selectedPoint == i && selectedLine == lineId)
-			painter->fillRect(GetPointRect(point), pointBrush);
-		else
-			painter->drawRect(GetPointRect(point));
-		
+
+		ePositionRelativelyToDrawRect leftPosition = GetPointPositionFromDrawingRect(prevPoint);
+		ePositionRelativelyToDrawRect rightPosition = GetPointPositionFromDrawingRect(point);
+
+		// if line(leftPosition, rightPosition) is outside of drawing rect skip it
+		if( !( (leftPosition == rightPosition) && ( leftPosition != POSITION_INSIDE ) ) )
+		{
+			QPoint firstPoint = prevPoint;
+			QPoint secondPoint = point;
+
+			GetCrossingPoint(prevPoint, point, firstPoint, secondPoint);
+			
+			painter->drawLine(firstPoint, secondPoint);
+			
+			//draw rects only if they are inside of drawingRect
+			if(rightPosition == POSITION_INSIDE)
+			{
+				if (selectedPoint == i && selectedLine == lineId)
+				{
+					painter->fillRect(GetPointRect(point), pointBrush);
+				}
+				else
+				{
+					painter->drawRect(GetPointRect(point));
+				}
+			}
+		}
 		prevPoint = point;
 	}
 	
 	QPoint point = GetDrawPoint(lines[lineId].line[lines[lineId].line.size() - 1]);
 	point.setX(graphRect.x() + graphRect.width());
+	
+	//cut horizontal axis to boundaries
+	if(prevPoint.x() < graphRect.x() )
+	{
+		prevPoint.setX(graphRect.x());
+	}
+	else if(prevPoint.x() > graphRect.x() + graphRect.width() )
+	{
+		prevPoint.setX(graphRect.x() + graphRect.width());
+	}
+	
 	painter->drawLine(prevPoint, point);
 }
 
@@ -327,6 +413,9 @@ QPoint TimeLineWidget::GetDrawPoint(const Vector2& point) const
 	
 	QRect graphRect = GetGraphRect();
 	float x = graphRect.x() + graphRect.width() * (point.x - minTime) / time;
+
+	float rectSize =graphRect.x() + graphRect.width();
+
 	float y = graphRect.bottom() - graphRect.height() * (point.y - minValue) / value;
 	
 	return QPoint(x, y);
@@ -365,7 +454,7 @@ void TimeLineWidget::Init(float32 minT, float32 maxT, bool updateSizeState, bool
 
 	this->minTime = minT;
 	this->maxTime = maxT;
-	
+	this->initialTimeInterval = maxTime - minTime;
 	this->updateSizeState = updateSizeState;
 	this->aliasLinePoint = aliasLinePoint;
 	this->allowDeleteLine = allowDeleteLine;
@@ -381,6 +470,15 @@ void TimeLineWidget::SetMinLimits(float32 minV)
 void TimeLineWidget::SetMaxLimits(float32 maxV)
 {
 	maxValueLimit = maxV;
+}
+
+float32 TimeLineWidget::GetMinBoundary()
+{
+	return minTime;
+}
+float32 TimeLineWidget::GetMaxBoundary()
+{
+	return maxTime;
 }
 
 void TimeLineWidget::AddLine(uint32 lineId, const Vector< PropValue<float32> >& line, const QColor& color, const QString& legend)
@@ -479,9 +577,6 @@ void TimeLineWidget::UpdateLimits()
 		{
 			newMaxValue = Max(iter->second.line[i].y, newMaxValue);
 			newMinValue = Min(iter->second.line[i].y, newMinValue);
-			
-			maxTime = Max(iter->second.line[i].x, maxTime);
-			minTime = Min(iter->second.line[i].x, minTime);
 		}
 	}
 	
@@ -700,7 +795,7 @@ QRect TimeLineWidget::GetGraphRect() const
 void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 {
 	QWidget::mousePressEvent(event);
-	
+	setFocus();
 	mouseStartPos = event->pos();
 		
 	//check click on draw color rect
@@ -728,6 +823,28 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 			UpdateSizePolicy();
 			return;
 		}
+		else if (GetIncreaseRect().contains(event->pos()))
+		{
+			PerformZoom(scale + ZOOM_STEP);
+			return;
+		}
+		else if (GetDecreaseRect().contains(event->pos()))
+		{
+			PerformZoom(scale - ZOOM_STEP);
+			return;
+		}
+		else if (GetOffsetLeftRect().contains(event->pos()))
+		{
+			PerformOffset(GRAPH_OFFSET_STEP);
+			return;
+		}
+
+		else if (GetOffsetRightRect().contains(event->pos()))
+		{
+			PerformOffset(-GRAPH_OFFSET_STEP);
+			return;
+		}
+
 		else if (GetLineDrawRect().contains(event->pos()))
 		{
 			drawLine++;
@@ -762,6 +879,10 @@ void TimeLineWidget::mousePressEvent(QMouseEvent *event)
 				}
 			}
 		}
+	}
+	else
+	{
+		mouseStartPos.setX(0);
 	}
 
 	if (sizeState != SIZE_STATE_MINIMIZED)
@@ -866,6 +987,11 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent *event)
 						selectedLine = lineId;
 						break;
 					}
+					else if(mouseStartPos.x() != 0)
+					{
+						PerformOffset(mouseStartPos.x() - event->pos().x());
+						mouseStartPos = event->pos();
+					}
 				}
 				prevPoint = nextPoint;
 			}
@@ -900,6 +1026,8 @@ void TimeLineWidget::mouseReleaseEvent(QMouseEvent * event)
 	}
 	selectedPoint = -1;
 	selectedLine = -1;
+	
+	mouseStartPos.setX(0);
 }
 
 void TimeLineWidget::mouseDoubleClickEvent(QMouseEvent * event)
@@ -1005,6 +1133,53 @@ void TimeLineWidget::leaveEvent(QEvent *)
 	update();
 }
 
+void TimeLineWidget::wheelEvent(QWheelEvent* event)
+{
+	if(isCtrlPressed)
+	{
+		// get wheel steps according qt documentation
+		int numDegrees = event->delta() / 8;
+		int numSteps = numDegrees / 15;
+
+		bool zoomDirection = numSteps > 0 ? true : false;
+		numSteps = abs(numSteps);
+		if (event->orientation() == Qt::Vertical ) 
+		{
+			float interval = maxTime - minTime;	
+			for(int i = 0; i < numSteps; ++i)
+			{
+				float newZoom = zoomDirection ? scale + ZOOM_STEP : scale - ZOOM_STEP;
+				PerformZoom(newZoom);
+			}
+		}
+		setFocus();
+		event->accept();
+	}
+	else
+	{
+		QWidget::wheelEvent(event);
+	}
+}
+
+void TimeLineWidget::keyPressEvent (QKeyEvent * event)
+{
+	QWidget::keyPressEvent(event);
+	if (event->modifiers()==Qt::ControlModifier)
+	{
+		isCtrlPressed = true;
+	}
+}
+
+void TimeLineWidget::keyReleaseEvent (QKeyEvent *event)
+{
+	QWidget::keyPressEvent(event);
+	if (event->key() == Qt::Key_Control)
+	{
+		isCtrlPressed = false;
+		setFocus();
+	}
+}
+
 QRect TimeLineWidget::GetLineEnableRect(uint32 lineId) const
 {
 	/*uint32 lineCount = 0;
@@ -1050,7 +1225,42 @@ QRect TimeLineWidget::GetLineDrawRect() const
 QRect TimeLineWidget::GetMinimizeRect() const
 {
 	QRect rect = GetMaximizeRect();
-	rect.translate(-rect.width() * 1.5, 0);
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetIncreaseRect() const
+{
+	QRect rect = GetLockRect();
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetScaleRect() const
+{
+	QRect rect(GetIncreaseRect());
+	rect.translate(-SCALE_WIDTH, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetDecreaseRect() const
+{
+	QRect rect = GetScaleRect();
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetOffsetRightRect() const
+{
+	QRect rect = GetDecreaseRect();
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
+	return rect;
+}
+
+QRect TimeLineWidget::GetOffsetLeftRect() const
+{
+	QRect rect = GetOffsetRightRect();
+	rect.translate(-rect.width() * UI_RECTANGLE_OFFSET, 0);
 	return rect;
 }
 
@@ -1176,6 +1386,117 @@ int32 TimeLineWidget::GetIntValue(float32 value) const
 {
 	float32 sign =	(value < 0) ? -1.f : 1.f;
 	return (int32)(value + 0.5f * sign);
+}
+
+void TimeLineWidget::PerformZoom(float newScale)
+{
+	if(newScale < 0 || FLOAT_EQUAL(newScale, 0.0f))
+	{
+		return;
+	}
+
+	float interval = maxTime - minTime;
+	
+	if( interval > MINIMUM_DISPLAYED_TIME && interval < std::numeric_limits<int>::max() ) 
+	{
+		float oldCenter =  minTime + interval / 2;
+		interval = initialTimeInterval / newScale;
+		minTime = oldCenter - (interval / 2);
+		maxTime = oldCenter + (interval / 2);
+		scale = newScale;
+	}
+}
+
+void TimeLineWidget::PerformOffset(int value)
+{
+	//calculate new values of boundaries (in seconds) from given parametr(in pixels)
+	float pixelsPerTime = GetGraphRect().width() / (maxTime - minTime);
+	float offsetFactor =  value / pixelsPerTime ;
+	
+	maxTime += offsetFactor;
+	minTime += offsetFactor;
+}
+
+void TimeLineWidget::DrawUITriangle(QPainter& painter, const QRect& rect, int rotateDegree)
+{
+	painter.setPen(Qt::black);
+	//QRect rect = GetOffsetRightRect();
+	painter.drawRect(rect);
+	painter.save();
+	painter.translate(rect.center() + QPoint(1, 1));
+	QPolygon polygon;
+
+	painter.rotate(rotateDegree);
+	
+	polygon.append(QPoint(0, -rect.height() * 0.25 - 1));
+	polygon.append(QPoint(rect.width() * 0.25 + 1, rect.height() * 0.25 + 1));
+	polygon.append(QPoint(-rect.width() * 0.25 - 1, rect.height() * 0.25 + 1));
+	
+	QPainterPath painterPath;
+	painterPath.addPolygon(polygon);
+	painter.fillPath(painterPath, Qt::black);
+	painter.restore();
+}
+
+//find out two points (leftBorderCrossPoint, rightBorderCrossPoint) in wich 
+// line(firstPoint;secondPoint) cross left and right boundariaes of drawing rectangle
+void TimeLineWidget::GetCrossingPoint(const QPoint& firstPoint, const QPoint& secondPoint, QPoint & leftBorderCrossPoint, QPoint & rightBorderCrossPoint)
+{
+	QRect graphRect = GetGraphRect();
+	if(rightBorderCrossPoint.x() < graphRect.x() )
+	{
+		rightBorderCrossPoint.setX(graphRect.x());
+	}
+
+	if( !(firstPoint.x() < secondPoint.x()))
+	{
+		return;
+	}
+
+	if( FLOAT_EQUAL( secondPoint.x() - firstPoint.x(), 0.0f ) ) 
+	{
+		return;
+	}
+	
+	ePositionRelativelyToDrawRect leftPosition	= GetPointPositionFromDrawingRect(firstPoint);
+	ePositionRelativelyToDrawRect rightPosition	= GetPointPositionFromDrawingRect(secondPoint);
+
+	//calc Y value of points through arctangens
+	if(leftPosition == POSITION_LEFT )
+	{
+		float angleRad = atan ((float)(secondPoint.y() - firstPoint.y()) / (secondPoint.x() - firstPoint.x()));
+		float b = graphRect.x() - firstPoint.x();
+
+		float a = tan (angleRad) * b;
+
+		leftBorderCrossPoint.setX(graphRect.x());
+		leftBorderCrossPoint.setY(firstPoint.y() + a);
+	}
+	if(rightPosition == POSITION_RIGHT  )
+	{
+		float angleRad = atan ((float)(firstPoint.y() - secondPoint.y()) / (secondPoint.x() - firstPoint.x()));
+		float b =  secondPoint.x() - (graphRect.x() + graphRect.width());
+
+		float a = tan (angleRad) * b;
+
+		rightBorderCrossPoint.setX(graphRect.x() + graphRect.width());
+		rightBorderCrossPoint.setY(secondPoint.y() + a);
+	}
+}
+
+TimeLineWidget::ePositionRelativelyToDrawRect TimeLineWidget::GetPointPositionFromDrawingRect(QPoint point)
+{
+	//check if point is situated inside or outside of drawing rectangle
+	QRect graphRect = GetGraphRect();
+	if(point.x() < graphRect.x() )
+	{
+		return POSITION_LEFT;
+	}
+	else if( point.x() > ( graphRect.x() + graphRect.width() ) )
+	{
+		return POSITION_RIGHT;
+	}
+	return TimeLineWidget::POSITION_INSIDE;
 }
 
 SetPointValueDlg::SetPointValueDlg(float32 time, float32 minTime, float32 maxTime, float32 value, float32 minValue, float32 maxValue, QWidget *parent, bool integer):

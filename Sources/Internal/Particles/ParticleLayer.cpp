@@ -398,7 +398,9 @@ void ParticleLayer::GenerateSingleParticle()
 {
 	GenerateNewParticle(-1);
 	
-	head->angle = 0.0f;
+	// Yuri Coder, 2013/03/26. head->angle = 0.0f commented out because of DF-877.
+	//head->angle = 0.0f;
+
 	//particle->velocity.x = 0.0f;
 	//particle->velocity.y = 0.0f;
 }
