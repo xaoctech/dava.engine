@@ -3,7 +3,14 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaKeyedArchive.h"
 #include "QtPropertyEditor/QtProperyData/QtPropertyDataDavaVariant.h"
-#include <QPushButton>
+
+#include <QSet>
+#include <QMenu>
+#include <QGridLayout>
+#include <QAction>
+#include <QLabel>
+#include <QMessageBox>
+#include <QKeyEvent>
 
 QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive)
 	: curArchive(archive)
@@ -14,7 +21,13 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 	}
 
 	SetFlags(FLAG_IS_DISABLED);
-	ChildsCreate();
+	ChildsSync();
+
+	// add optional widget (button) to add new key
+	QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
+	addButton->setIconSize(QSize(12, 12));
+	AddOW(QtPropertyOW(addButton));
+	QObject::connect(addButton, SIGNAL(pressed()), this, SLOT(AddKeyedArchiveField()));
 }
 
 QtPropertyDataDavaKeyedArcive::~QtPropertyDataDavaKeyedArcive()
@@ -56,8 +69,22 @@ void QtPropertyDataDavaKeyedArcive::ChildChanged(const QString &key, QtPropertyD
 	}
 }
 
-void QtPropertyDataDavaKeyedArcive::ChildsCreate()
+void QtPropertyDataDavaKeyedArcive::ChildsSync()
 {
+	QSet<QtPropertyData *> dataToRemove;
+
+	// at first step of sync we mark (placing to vector) items to remove
+	for(int i = 0; i < ChildCount(); ++i)
+	{
+		QPair<QString, QtPropertyData *> pair = ChildGet(i);
+		if(NULL != pair.second)
+		{
+			dataToRemove.insert(pair.second);
+		}
+	}
+
+	// as second step we go throught keyed archive and add new data items,
+	// and remove deleting mark from items that are still in archive
 	if(NULL != curArchive)
 	{
 		DAVA::Map<DAVA::String, DAVA::VariantType*> data = curArchive->GetArchieveData();
@@ -65,37 +92,71 @@ void QtPropertyDataDavaKeyedArcive::ChildsCreate()
 
 		for(; i != data.end(); ++i)
 		{
-			QtPropertyData *childValueData;
+			QtPropertyData *childData = ChildGet(i->first.c_str());
 
-			if(i->second->type == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+			// this key already in items list
+			if(NULL != childData)
 			{
-				childValueData = new QtPropertyDataDavaKeyedArcive(i->second->AsKeyedArchive());
+				// remove deleting mark
+				dataToRemove.remove(childData);
 			}
+			// create new child data
 			else
 			{
-				childValueData = new QtPropertyDataDavaVariant(*(i->second));
+				ChildCreate(i->first.c_str(), i->second);
 			}
-
-			ChildAdd(i->first.c_str(), childValueData);
-
-			// add optional widget (button) to remove this key
-			QPushButton *remButton = new QPushButton(QIcon(":/QtIcons/keyminus.png"), "");
-			remButton->setIconSize(QSize(12, 12));
-			childValueData->AddOW(QtPropertyOW(remButton));
 		}
-
-		// add optional widget (button) to add new key
-		QPushButton *addButton = new QPushButton(QIcon(":/QtIcons/keyplus.png"), "");
-		addButton->setIconSize(QSize(12, 12));
-		AddOW(QtPropertyOW(addButton));
 	}
+
+	// delete all marked items
+	QSetIterator<QtPropertyData *> it(dataToRemove);
+	while(it.hasNext())
+	{
+		ChildRemove(it.next());
+	}
+}
+
+void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::VariantType *value)
+{
+	QtPropertyData *childData = NULL;
+
+	if(value->type == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+	{
+		childData = new QtPropertyDataDavaKeyedArcive(value->AsKeyedArchive());
+	}
+	else
+	{
+		childData = new QtPropertyDataDavaVariant(*value);
+	}
+
+	ChildAdd(key, childData);
+
+	// add optional widget (button) to remove this key
+	QPushButton *remButton = new QPushButton(QIcon(":/QtIcons/keyminus.png"), "");
+	remButton->setIconSize(QSize(12, 12));
+	childData->AddOW(QtPropertyOW(remButton));
+	childData->SetOWViewport(GetOWViewport());
+
+	QObject::connect(remButton, SIGNAL(pressed()), this, SLOT(RemKeyedArchiveField()));
 }
 
 void QtPropertyDataDavaKeyedArcive::AddKeyedArchiveField()
 {
-	if(NULL != curArchive)
+	QPushButton* btn = dynamic_cast<QPushButton*>(QObject::sender());
+	if(NULL != curArchive && NULL != btn)
 	{
-		curArchive->SetString("test", "string");
+		KeyedArchiveItemWidget *w = new KeyedArchiveItemWidget(curArchive);
+		QObject::connect(w, SIGNAL(ValueReady(const DAVA::String&, const DAVA::VariantType&)), this, SLOT(NewKeyedArchiveFieldReady(const DAVA::String&, const DAVA::VariantType&)));
+
+		w->show();
+
+		QRect bRect = btn->geometry();
+		QPoint bPos = btn->mapToGlobal(btn->mapFromParent(bRect.topLeft()));
+
+		QRect wRect = w->geometry();
+		QPoint wPos = QPoint(bPos.x() - wRect.width() + bRect.width(), bPos.y() + bRect.height());
+
+		w->move(wPos);
 	}
 }
 
@@ -105,6 +166,148 @@ void QtPropertyDataDavaKeyedArcive::RemKeyedArchiveField()
 	if(NULL != btn && NULL != curArchive)
 	{
 		// search for child data with such button
+		for(int i = 0; i < ChildCount(); ++i)
+		{
+			QPair<QString, QtPropertyData *> child = ChildGet(i);
+			QtPropertyData *childData = child.second;
 
+			if(NULL != childData)
+			{
+				// search btn thought this child optional widgets
+				for (int j = 0; j < childData->GetOWCount(); j++)
+				{
+					const QtPropertyOW *ow = childData->GetOW(j);
+					if(NULL != ow && ow->widget == btn)
+					{
+						curArchive->DeleteKey(child.first.toStdString());
+						ChildsSync();
+						break;
+					}
+				}
+				
+			}
+		}
 	}
 }
+
+void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value)
+{
+	if(NULL != curArchive)
+	{
+		curArchive->SetVariant(key, value);
+		ChildsSync();
+	}
+}
+
+
+KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, QWidget *parent /* = NULL */) 
+	: QWidget(parent)
+	, arch(_arch)
+{
+	QGridLayout *gl = new QGridLayout();
+
+	if(NULL != arch)
+	{
+		arch->Retain();
+	}
+
+	defaultBtn = new QPushButton("Ok", this);
+	keyWidget = new QLineEdit(this);
+	valueWidget = new QComboBox(this);
+
+	for (int i = (DAVA::VariantType::TYPE_NONE + 1); i < DAVA::VariantType::TYPES_COUNT; i++)
+	{
+		valueWidget->addItem(DAVA::VariantType::variantNamesMap[i].variantName.c_str(), i);
+	}
+	valueWidget->setCurrentIndex(DAVA::VariantType::TYPE_STRING - (DAVA::VariantType::TYPE_NONE + 1));
+
+	gl->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
+	gl->addWidget(keyWidget, 0, 1, 1, 2);
+	gl->addWidget(new QLabel("Value type:", this), 1, 0, 1, 1);
+	gl->addWidget(valueWidget, 1, 1, 1, 2);
+	gl->addWidget(defaultBtn, 2, 2, 1, 1);
+
+	gl->setMargin(5);
+	gl->setSpacing(3);
+	setLayout(gl);
+
+	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
+
+	QObject::connect(defaultBtn, SIGNAL(pressed()), this, SLOT(OkKeyPressed()));
+}
+
+KeyedArchiveItemWidget::~KeyedArchiveItemWidget()
+{
+	if(NULL != arch)
+	{
+		arch->Release();
+	} 
+}
+
+void KeyedArchiveItemWidget::showEvent(QShowEvent * event)
+{
+	QWidget::showEvent(event);
+	keyWidget->setFocus();
+}
+
+void KeyedArchiveItemWidget::keyPressEvent(QKeyEvent *e)
+{
+	if (!e->modifiers() || (e->modifiers() & Qt::KeypadModifier && e->key() == Qt::Key_Enter)) 
+	{
+		switch(e->key())
+		{
+		case Qt::Key_Enter:
+		case Qt::Key_Return:
+			defaultBtn->click();
+			break;
+		case Qt::Key_Escape:
+			this->deleteLater();
+			break;
+		default:
+			e->ignore();
+			return;
+		}
+	} 
+	else 
+	{
+		e->ignore();
+	}
+}
+
+void KeyedArchiveItemWidget::OkKeyPressed()
+{
+	if(NULL != arch)
+	{
+		DAVA::String key = keyWidget->text().toStdString();
+
+		if(key.empty())
+		{
+			// TODO:
+			// other way to report error without losing focus
+			// ...
+			// 
+
+			QMessageBox::warning(NULL, "Wrong key value", "Key value can't be empty");
+		}
+		else if(arch->IsKeyExists(key))
+		{
+			// TODO:
+			// other way to report error without losing focus
+			// ...
+			// 
+
+			QMessageBox::warning(NULL, "Wrong key value", "That key already exists");
+		}
+		else
+		{
+			emit ValueReady(key, DAVA::VariantType::FromType(valueWidget->itemData(valueWidget->currentIndex()).toInt()));
+			this->deleteLater();
+		}
+	}
+	else
+	{
+		this->deleteLater();
+	}
+}
+
