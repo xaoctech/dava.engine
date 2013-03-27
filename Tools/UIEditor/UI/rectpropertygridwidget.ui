@@ -72,6 +72,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>-10000</number>
+    </property>
     <property name="maximum">
      <number>10000</number>
     </property>
@@ -151,6 +154,9 @@
       <width>80</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>-10000</number>
     </property>
     <property name="maximum">
      <number>10000</number>

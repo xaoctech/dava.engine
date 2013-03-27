@@ -54,9 +54,9 @@ void Test::LoadResources()
 	AddControl(sceneView);
 	SafeRelease(sceneView);
 
-	LandscapeNode* landscape = GetLandscape();
+	Landscape* landscape = GetLandscape();
 	DVASSERT_MSG(scene, "There is no landscape in a scene");
-	landscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TEXTURE);
+	landscape->SetTiledShaderMode(Landscape::TILED_MODE_TEXTURE);
 
 	uint32 textureMemory = TextureHelper::GetSceneTextureMemory(scene, GetFilePath());
 	testData.SetTextureMemorySize(textureMemory);
@@ -154,7 +154,7 @@ void Test::PreparePath()
 	int32 partX = settings->GetLandscapePartitioning().x;
 	int32 partY = settings->GetLandscapePartitioning().y;
 	
-    LandscapeNode *land = GetLandscape();
+    Landscape *land = GetLandscape();
 	AABBox3 boundingBox = land->GetBoundingBox();
 	Vector3 min = boundingBox.min;
 	Vector3 max = boundingBox.max;
@@ -230,7 +230,7 @@ void Test::PrepareFpsStat()
 	testData.Clear();
 	fpsStatItem.rect = rectSequence[testData.GetItemCount()];
 
-    LandscapeNode *land = GetLandscape();
+    Landscape *land = GetLandscape();
 	AABBox3 boundingBox = land->GetBoundingBox();
 	
 	Vector2 landPos(boundingBox.min.x, boundingBox.min.y);
@@ -244,7 +244,7 @@ Vector3 Test::GetRealPoint(const Vector2& point)
 {
     Vector3 realPoint(point);
 
-	LandscapeNode *land = GetLandscape();
+	Landscape *land = GetLandscape();
     land->PlacePoint(realPoint, realPoint);
 
     realPoint.z += SettingsManager::Instance()->GetCameraElevation();
@@ -294,17 +294,17 @@ inline Camera* Test::GetCamera()
 	return GetScene()->GetCurrentCamera();
 }
 
-inline LandscapeNode* Test::GetLandscape()
+inline Landscape* Test::GetLandscape()
 {
 	SettingsManager* settings = SettingsManager::Instance();
-	SceneNode* landscapeNode = GetScene()->FindByName(settings->GetLandscapeNodeName());
-	LandscapeNode* landscape = NULL;
+	Entity* landscapeNode = GetScene()->FindByName(settings->GetLandscapeNodeName());
+	Landscape* landscape = NULL;
 	if (landscapeNode)
 	{
 		RenderComponent* renderComponent = cast_if_equal<RenderComponent*>(landscapeNode->GetComponent(Component::RENDER_COMPONENT));
 		if (renderComponent)
 		{
-			landscape = dynamic_cast<LandscapeNode*>(renderComponent->GetRenderObject());
+			landscape = dynamic_cast<Landscape*>(renderComponent->GetRenderObject());
 		}
 	}
 
@@ -313,7 +313,7 @@ inline LandscapeNode* Test::GetLandscape()
 
 Texture* Test::GetLandscapeTexture()
 {
-	LandscapeNode* landscape = GetLandscape();
-	return landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+	Landscape* landscape = GetLandscape();
+	return landscape->GetTexture(Landscape::TEXTURE_TILE_FULL);
 };
 

@@ -44,6 +44,16 @@ protected:
     
     virtual QColor GetFontColor() const;
     virtual void SetFontColor(const QColor& value);
+	
+	// Shadow offset and color getters/setters
+	virtual float GetShadowOffsetX() const;
+	virtual void SetShadowOffsetX(float offset);
+	
+	virtual float GetShadowOffsetY() const;
+	virtual void SetShadowOffsetY(float offset);
+	
+	virtual QColor GetShadowColor() const;
+	virtual void SetShadowColor(const QColor& value);
 
     // Color getter/setter. Also virtual.
     virtual QColor GetColor();

@@ -10,6 +10,7 @@
 #include "MainWindowController.h"
 
 #import <WebKit/WebKit.h>
+#import <AppKit/NSWorkspace.h>
 
 using namespace DAVA;
 
@@ -35,9 +36,92 @@ using namespace DAVA;
 @end
 
 
+@interface WebViewPolicyDelegate : NSObject
+{
+	IUIWebViewDelegate* delegate;
+	UIWebView* webView;
+}
+
+- (id)init;
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener;
+
+- (void)setDelegate:(IUIWebViewDelegate*)d andWebView:(UIWebView*)w;
+
+@end
+
+@implementation WebViewPolicyDelegate
+
+- (id)init
+{
+	self = [super init];
+	if (self)
+	{
+		delegate = NULL;
+		webView = NULL;
+	}
+	return self;
+}
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	BOOL process = YES;
+	
+	if (delegate && self->webView)
+	{
+		NSString* url = [[request URL] absoluteString];
+		
+		if (url)
+		{
+			IUIWebViewDelegate::eAction action = delegate->URLChanged(self->webView, [url UTF8String]);
+			
+			switch (action)
+			{
+				case IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
+					Logger::Debug("PROCESS_IN_WEBVIEW");
+					break;
+					
+				case IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
+					Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					process = NO;
+					[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+					break;
+					
+				case IUIWebViewDelegate::NO_PROCESS:
+					Logger::Debug("NO_PROCESS");
+					
+				default:
+					process = NO;
+					break;
+			}
+		}
+	}
+	
+	if (process)
+	{
+		[listener use];
+	}
+	else
+	{
+		[listener ignore];
+	}
+}
+
+- (void)setDelegate:(DAVA::IUIWebViewDelegate *)d andWebView:(DAVA::UIWebView *)w
+{
+	if (d && w)
+	{
+		delegate = d;
+		webView = w;
+	}
+}
+
+@end
+
+
 WebViewControl::WebViewControl()
 {
-	NSRect emptyRect;// = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+	NSRect emptyRect = NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f);	
 	webViewPtr = [[WebView alloc] initWithFrame:emptyRect frameName:nil groupName:nil];
 
 	WebView* localWebView = (WebView*)webViewPtr;
@@ -45,6 +129,9 @@ WebViewControl::WebViewControl()
 	
 	webViewDelegatePtr = [[WebViewControlUIDelegate alloc] init];
 	[localWebView setUIDelegate:(WebViewControlUIDelegate*)webViewDelegatePtr];
+
+	webViewPolicyDelegatePtr = [[WebViewPolicyDelegate alloc] init];
+	[localWebView setPolicyDelegate:(WebViewPolicyDelegate*)webViewPolicyDelegatePtr];
 
 	NSView* openGLView = (NSView*)Core::Instance()->GetOpenGLView();
 	[openGLView addSubview:localWebView];
@@ -60,6 +147,16 @@ WebViewControl::~WebViewControl()
 	[innerWebView close];
 	[innerWebView release];
 	webViewPtr = nil;
+
+	WebViewPolicyDelegate* w = (WebViewPolicyDelegate*)webViewPolicyDelegatePtr;
+	[w release];
+	webViewPolicyDelegatePtr = nil;
+}
+
+void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+{
+	WebViewPolicyDelegate* w = (WebViewPolicyDelegate*)webViewPolicyDelegatePtr;
+	[w setDelegate:delegate andWebView:webView];
 }
 
 void WebViewControl::Initialize(const Rect& rect)

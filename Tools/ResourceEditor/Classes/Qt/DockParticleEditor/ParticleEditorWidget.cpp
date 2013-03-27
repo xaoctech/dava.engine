@@ -23,17 +23,17 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget *parent/* = 0*/) :
 	emitterPropertiesWidget = NULL;
 	
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(EmitterSelected(SceneNode*, BaseParticleEditorNode*)),
+			SIGNAL(EmitterSelected(Entity*, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnEmitterSelected(SceneNode*, BaseParticleEditorNode*)));
+			SLOT(OnEmitterSelected(Entity*, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(LayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)),
+			SIGNAL(LayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)),
 			this,
-			SLOT(OnLayerSelected(SceneNode*, ParticleLayer*, BaseParticleEditorNode*, bool)));
+			SLOT(OnLayerSelected(Entity*, ParticleLayer*, BaseParticleEditorNode*, bool)));
 	connect(ParticlesEditorController::Instance(),
-			SIGNAL(ForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)),
+			SIGNAL(ForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)),
 			this,
-			SLOT(OnForceSelected(SceneNode*, ParticleLayer*, int32, BaseParticleEditorNode*)));
+			SLOT(OnForceSelected(Entity*, ParticleLayer*, int32, BaseParticleEditorNode*)));
 	connect(ParticlesEditorController::Instance(),
 			SIGNAL(NodeDeselected(BaseParticleEditorNode*)),
 			this,
@@ -52,7 +52,7 @@ void ParticleEditorWidget::DeleteOldWidget()
 	SAFE_DELETE(emitterPropertiesWidget);
 }
 
-void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnEmitterSelected(Entity* emitterNode, BaseParticleEditorNode* editorNode)
 {
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
@@ -99,7 +99,7 @@ void ParticleEditorWidget::OnEmitterSelected(SceneNode* emitterNode, BaseParticl
 	}
 }
 
-void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
+void ParticleEditorWidget::OnLayerSelected(Entity* emitterNode, ParticleLayer* layer, BaseParticleEditorNode* editorNode, bool forceRefresh)
 {
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)
@@ -147,7 +147,7 @@ void ParticleEditorWidget::OnLayerSelected(SceneNode* emitterNode, ParticleLayer
 	}
 }
 
-void ParticleEditorWidget::OnForceSelected(SceneNode* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
+void ParticleEditorWidget::OnForceSelected(Entity* emitterNode, ParticleLayer* layer, int32 forceIndex, BaseParticleEditorNode* editorNode)
 {
 	ParticleEmitter* emitter = NULL;
 	if (emitterNode)

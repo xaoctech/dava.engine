@@ -36,16 +36,16 @@ public:
     bool ProcessSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
     // Custom node selection.
-    SceneGraphItem* GetGraphItemToBeSelected(GraphItem* rootItem, SceneNode* node);
+    SceneGraphItem* GetGraphItemToBeSelected(GraphItem* rootItem, Entity* node);
 	
 	// Reset the selected item.
 	void ResetSelection();
 
     // Preprocess the Scene Node during adding, change its type if needed.
-    SceneNode* PreprocessSceneNode(SceneNode* rawNode);
+    Entity* PreprocessSceneNode(Entity* rawNode);
 
     // Add the node and all its children to the Scene Graph.
-    bool AddNodeToSceneGraph(SceneGraphItem *graphItem, SceneNode *node);
+    bool AddNodeToSceneGraph(SceneGraphItem *graphItem, Entity *node);
 
     // Whether we need to display "standard" Scene Editor Popup Menu for this node?
     bool NeedDisplaySceneEditorPopupMenuItems(const QModelIndex &index) const;
@@ -82,7 +82,7 @@ protected:
     void BuildSceneGraphRecursive(BaseParticleEditorNode* rootNode, SceneGraphItem* rootItem);
 
     // Determine whether we need to select Editor Tree Node in a recursive way.
-    SceneGraphItem* GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, SceneNode* node);
+    SceneGraphItem* GetGraphItemToBeSelectedRecursive(GraphItem* rootItem, Entity* node);
 
     // Do the checks needed and return ExtraUserData from model index. or from the item.
     ExtraUserData* GetExtraUserData(const QModelIndex& modelIndex) const;
@@ -92,9 +92,15 @@ protected:
     // Synchronization of the whole Particle Editor Tree and different types of Nodes.
     void SynchronizeParticleEditorTree(BaseParticleEditorNode* node);
 
-    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, SceneNode* effectRootNode);
+    void SynchronizeEffectParticleEditorNode(EffectParticleEditorNode* node, Entity* effectRootNode);
     void SynchronizeEmitterParticleEditorNode(EmitterParticleEditorNode* node);
     void SynchronizeLayerParticleEditorNode(LayerParticleEditorNode* node);
+
+	void BuildEntitiesSets(EffectParticleEditorNode* node, Entity* effectRootNode,
+						   Set<Entity*>& entitiesInParticleEditor,
+						   Set<Entity*>& entitiesInSceneGraph);
+	void AddNewNodesToSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode);
+	void RemoveExcessiveNodesFromSceneGraph(EffectParticleEditorNode* node, Entity* effectRootNode);
 
 	// Move item to parent functionality.
 	bool IsItemBelongToParticleEditor(GraphItem* item);
@@ -102,7 +108,7 @@ protected:
 	// Whether this move is forbidden?
 	bool IsMoveItemToParentForbidden(GraphItem* movedItem, GraphItem* newParentItem);
 
-	SceneNode* CreateParticleEffectNode();
+	Entity* CreateParticleEffectNode();
 	
 	// Get the particular type of node by the graph item. Return NULL if the graph item
 	// belongs to another kind of node.

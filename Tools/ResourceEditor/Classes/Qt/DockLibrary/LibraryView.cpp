@@ -56,7 +56,6 @@ void LibraryView::ShowContextMenu(const QPoint &point)
 			{
 				contextMenu.addAction(new ContextMenuAction(QString("Add"), new CommandAddScene(fileInfo.filePath().toStdString())));
 				contextMenu.addAction(new ContextMenuAction(QString("Edit"), new CommandEditScene(fileInfo.filePath().toStdString())));
-				contextMenu.addAction(new ContextMenuAction(QString("Add reference"), new CommandAddReferenceScene(fileInfo.filePath().toStdString())));
 				contextMenu.addAction(new ContextMenuAction(QString("Reload"), new CommandReloadScene(fileInfo.filePath().toStdString())));
 			}
 			else if(0 == fileExtension.compare("dae", Qt::CaseInsensitive))

@@ -47,7 +47,7 @@ public:
 		
 	DefaultScreen* GetActiveScreen();
 	
-	void BacklightControl(const QPoint& pos);
+	bool IsDropEnable(const QPoint& pos);
 	
 	void RequestUpdateCursor();
 	void SetCursor(Qt::CursorShape cursor);

@@ -10,7 +10,7 @@
 #include "EmitterParticleEditorNode.h"
 using namespace DAVA;
 
-EffectParticleEditorNode::EffectParticleEditorNode(SceneNode* rootNode) :
+EffectParticleEditorNode::EffectParticleEditorNode(Entity* rootNode) :
     BaseParticleEditorNode(rootNode)
 {
 }

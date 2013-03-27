@@ -146,9 +146,16 @@ void ScreenWrapper::RequestUpdateCursor()
 	QCursor::setPos(QCursor::pos()); //emulate mouse move for update cursor
 }
 
-void ScreenWrapper::BacklightControl(const QPoint& pos)
+bool ScreenWrapper::IsDropEnable(const QPoint& pos)
 {
-	GetActiveScreen()->BacklightControl(Vector2(pos.x(), pos.y()));
+	DefaultScreen* activeScreen = GetActiveScreen();
+	if (!activeScreen)
+		return false;
+	
+	Vector2 _pos = Vector2(pos.x(), pos.y());
+	bool res = activeScreen->IsDropEnable(_pos);
+	activeScreen->BacklightControl(_pos);
+	return res;
 }
 
 void ScreenWrapper::RequestUpdateView()

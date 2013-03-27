@@ -260,7 +260,7 @@ Material::Material()
     names.resize(TEXTURE_COUNT);
     
     
-	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
+	renderStateBlock.state = RenderState::DEFAULT_3D_STATE;
 
 //    if (scene)
 //    {
@@ -780,27 +780,27 @@ void Material::PrepareRenderState(InstanceMaterialState * instanceMaterialState)
 
 	if (isTranslucent || isTwoSided)
 	{
-		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
+		renderStateBlock.state &= ~RenderState::STATE_CULL;
 	}
 	else
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_CULL;
+		renderStateBlock.state |= RenderState::STATE_CULL;
 	}
 
 
 	if(isAlphablend)
 	{
-		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_BLEND;
 		//Dizz: temporary solution
-		renderStateBlock.state &= ~RenderStateBlock::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_DEPTH_WRITE;
 
 		renderStateBlock.SetBlendMode((eBlendMode)blendSrc, (eBlendMode)blendDst);
 	}
 	else
 	{
 		//Dizz: temporary solution
-		renderStateBlock.state |= RenderStateBlock::STATE_DEPTH_WRITE;
-		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
+		renderStateBlock.state |= RenderState::STATE_DEPTH_WRITE;
+		renderStateBlock.state &= ~RenderState::STATE_BLEND;
 	}
 
 	if(isWireframe)
@@ -1035,7 +1035,7 @@ bool Material::GetAlphablend()
 	return isAlphablend;
 }
 
-RenderStateBlock * Material::GetRenderStateBlock()
+RenderState * Material::GetRenderState()
 {
 	return &renderStateBlock;
 }
