@@ -1,9 +1,10 @@
-#include "../../Utils/DeviceInfo.h"
+#include "../../Platform/DeviceInfo.h"
 
 #ifdef __DAVAENGINE_MACOS__
 
 #import <Foundation/NSLocale.h>
 #import <Foundation/NSTimeZone.h>
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
