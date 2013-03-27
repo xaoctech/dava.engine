@@ -183,7 +183,7 @@ public:
 	// Functions
     
     
-    inline eVariantType GetType();
+    inline eVariantType GetType() const;
 	
 	/**
 		\brief Function to set bool value to variant type variable
@@ -463,7 +463,7 @@ private:
     void ReleasePointer();
 };
 	
-VariantType::eVariantType VariantType::GetType()
+VariantType::eVariantType VariantType::GetType() const
 {
     return (eVariantType)type;
 }

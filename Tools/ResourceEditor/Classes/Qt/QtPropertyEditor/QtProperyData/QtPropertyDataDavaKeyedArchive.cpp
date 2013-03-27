@@ -14,6 +14,7 @@
 
 QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive *archive)
 	: curArchive(archive)
+	, lastAddedType(DAVA::VariantType::TYPE_STRING)
 {
 	if(NULL != curArchive)
 	{
@@ -145,7 +146,7 @@ void QtPropertyDataDavaKeyedArcive::AddKeyedArchiveField()
 	QPushButton* btn = dynamic_cast<QPushButton*>(QObject::sender());
 	if(NULL != curArchive && NULL != btn)
 	{
-		KeyedArchiveItemWidget *w = new KeyedArchiveItemWidget(curArchive);
+		KeyedArchiveItemWidget *w = new KeyedArchiveItemWidget(curArchive, lastAddedType);
 		QObject::connect(w, SIGNAL(ValueReady(const DAVA::String&, const DAVA::VariantType&)), this, SLOT(NewKeyedArchiveFieldReady(const DAVA::String&, const DAVA::VariantType&)));
 
 		w->show();
@@ -195,16 +196,18 @@ void QtPropertyDataDavaKeyedArcive::NewKeyedArchiveFieldReady(const DAVA::String
 	if(NULL != curArchive)
 	{
 		curArchive->SetVariant(key, value);
+		lastAddedType = value.type;
 		ChildsSync();
 	}
 }
 
 
-KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, QWidget *parent /* = NULL */) 
+KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, int defaultType, QWidget *parent /* = NULL */) 
 	: QWidget(parent)
 	, arch(_arch)
 {
 	QGridLayout *gl = new QGridLayout();
+	int delautTypeIndex = 0;
 
 	if(NULL != arch)
 	{
@@ -215,11 +218,23 @@ KeyedArchiveItemWidget::KeyedArchiveItemWidget(DAVA::KeyedArchive *_arch, QWidge
 	keyWidget = new QLineEdit(this);
 	valueWidget = new QComboBox(this);
 
-	for (int i = (DAVA::VariantType::TYPE_NONE + 1); i < DAVA::VariantType::TYPES_COUNT; i++)
+	int j = 0;
+	for (int type = (DAVA::VariantType::TYPE_NONE + 1); type < DAVA::VariantType::TYPES_COUNT; type++)
 	{
-		valueWidget->addItem(DAVA::VariantType::variantNamesMap[i].variantName.c_str(), i);
+		// don't allow byte array
+		if(type != DAVA::VariantType::TYPE_BYTE_ARRAY)
+		{
+			valueWidget->addItem(DAVA::VariantType::variantNamesMap[type].variantName.c_str(), type);
+
+			if(type == defaultType)
+			{
+				delautTypeIndex = j;
+			}
+
+			j++;
+		}
 	}
-	valueWidget->setCurrentIndex(DAVA::VariantType::TYPE_STRING - (DAVA::VariantType::TYPE_NONE + 1));
+	valueWidget->setCurrentIndex(delautTypeIndex);
 
 	gl->addWidget(new QLabel("Key:", this), 0, 0, 1, 1);
 	gl->addWidget(keyWidget, 0, 1, 1, 2);
