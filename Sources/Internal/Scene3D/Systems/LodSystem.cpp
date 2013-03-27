@@ -203,7 +203,7 @@ void LodSystem::LodMerger::MergeChildLods()
 	{
 		LodComponent * fromLod = GetLodComponent(allLods[i]);
 		int32 fromLodsCount = fromLod->GetMaxLodLayer();
-		for(int32 l = 0; l < fromLodsCount; ++l)
+		for(int32 l = 0; l <= fromLodsCount; ++l)
 		{
 			LodComponent::LodData & fromData = fromLod->lodLayers[l];
 			int32 lodLayerIndex = fromData.layer;
