@@ -63,12 +63,14 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 
 	String sc2Filename = sceneUtils.dataSourceFolder + fileName;
 
+
 	//Load scene with *.sc2
 	Scene *scene = new Scene();
 	Entity *rootNode = scene->GetRootNode(sc2Filename);
 	if(rootNode)
 	{
 		int32 count = rootNode->GetChildrenCount();
+
 		Vector<Entity*> tempV;
 		tempV.reserve((count));
 		for(int32 i = 0; i < count; ++i)
@@ -79,6 +81,8 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 		{
 			scene->AddNode(tempV[i]);
 		}
+
+		scene->Update(0.f);
 
 		SceneFileV2 * outFile = new SceneFileV2();
 		outFile->EnableDebugLog(false);
