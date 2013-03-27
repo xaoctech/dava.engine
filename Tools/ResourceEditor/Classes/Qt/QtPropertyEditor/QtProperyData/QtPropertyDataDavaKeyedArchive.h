@@ -18,6 +18,7 @@ public:
 
 protected:
 	DAVA::KeyedArchive* curArchive;
+	int lastAddedType;
 
 	virtual QVariant GetValueInternal();
 	virtual void SetValueInternal(const QVariant &value);
@@ -31,7 +32,6 @@ protected slots:
 	void AddKeyedArchiveField();
 	void RemKeyedArchiveField();
 	void NewKeyedArchiveFieldReady(const DAVA::String &key, const DAVA::VariantType &value);
-
 };
 
 class KeyedArchiveItemWidget : public QWidget
@@ -39,7 +39,7 @@ class KeyedArchiveItemWidget : public QWidget
 	Q_OBJECT;
 
 public:
-	KeyedArchiveItemWidget(DAVA::KeyedArchive *arch, QWidget *parent = NULL);
+	KeyedArchiveItemWidget(DAVA::KeyedArchive *arch, int defaultType = DAVA::VariantType::TYPE_STRING, QWidget *parent = NULL);
 	~KeyedArchiveItemWidget();
 
 signals:
