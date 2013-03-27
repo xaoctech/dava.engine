@@ -168,7 +168,8 @@ void UIControlMetadata::SetSizeX(float value)
 	
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dx = value;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 float UIControlMetadata::GetSizeY() const
@@ -190,7 +191,8 @@ void UIControlMetadata::SetSizeY(float value)
 
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.dy = value;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 float UIControlMetadata::GetPivotX() const
@@ -371,7 +373,8 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
 	Rect rect = GetActiveUIControl()->GetRect();
 	rect.x = controlPosition.x;
 	rect.y = controlPosition.y;
-	GetActiveUIControl()->SetRect(rect);
+	
+	SetActiveControlRect(rect);
 }
 
 void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& newRect)
@@ -381,7 +384,7 @@ void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& ne
         return;
     }
     
-    GetActiveUIControl()->SetRect(newRect);
+	SetActiveControlRect(newRect);
 }
                  
 QColor UIControlMetadata::GetColor()
@@ -464,6 +467,45 @@ void UIControlMetadata::SetAlign(int value)
     GetActiveUIControl()->GetBackground()->SetAlign((eAlign)value);
 }
 
+float UIControlMetadata::GetLeftRightStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1.0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetLeftRightStretchCap();
+}
+
+float UIControlMetadata::GetTopBottomStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1.0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetTopBottomStretchCap();
+}
+
+void UIControlMetadata::SetLeftRightStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->GetBackground()->SetLeftRightStretchCap(value);
+}
+
+void UIControlMetadata::SetTopBottomStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->GetBackground()->SetTopBottomStretchCap(value);
+}
     
 void UIControlMetadata::SetSprite(const QString& value)
 {
@@ -540,6 +582,38 @@ int UIControlMetadata::GetSpriteFrame()
     }
     
     return GetActiveUIControl()->GetBackground()->GetFrame();
+}
+
+void UIControlMetadata::SetSpriteModification(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
+    if (sprite == NULL)
+    {
+        return;
+    }
+
+    GetActiveUIControl()->GetBackground()->SetModification(value);
+}
+
+int UIControlMetadata::GetSpriteModification()
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1;
+    }
+    
+    Sprite* sprite = GetActiveUIControl()->GetBackground()->GetSprite();
+    if (sprite == NULL)
+    {
+        return 0;
+    }
+    
+    return GetActiveUIControl()->GetBackground()->GetModification();
 }
 
 int UIControlMetadata::GetLeftAlign()
@@ -779,6 +853,11 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetBottomAlignEnabled(value);
+}
+
+void UIControlMetadata::SetActiveControlRect(const Rect& rect)
+{
+	GetActiveUIControl()->SetRect(rect);
 }
 
 };

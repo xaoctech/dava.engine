@@ -41,7 +41,7 @@ public:
 	};
 
 	UpdatableComponent();
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 
 	void SetUpdatableObject(IUpdatable * updatableObject);
 	IUpdatable * GetUpdatableObject();

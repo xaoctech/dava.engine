@@ -145,23 +145,23 @@ void LandscapeEditorPropertyControl::SetValuesFromSettings()
     if(MASK_EDITOR_MODE == editorMode)
     {
         //LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-		LandscapeNode *landscape = GetLandscape();
+		Landscape *landscape = GetLandscape();
 		if (landscape)
         {
 			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskred", settings->redMask,
-														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE0));
+														 landscape->GetTexture(Landscape::TEXTURE_TILE0));
 			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskgreen", settings->greenMask,
-														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE1));
+														 landscape->GetTexture(Landscape::TEXTURE_TILE1));
 			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskblue", settings->blueMask,
-														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE2));
+														 landscape->GetTexture(Landscape::TEXTURE_TILE2));
 			propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskalpha", settings->alphaMask,
-														 landscape->GetTexture(LandscapeNode::TEXTURE_TILE3));
+														 landscape->GetTexture(Landscape::TEXTURE_TILE3));
 		}
     }
 }
 
 
-void LandscapeEditorPropertyControl::ReadFrom(DAVA::SceneNode *sceneNode)
+void LandscapeEditorPropertyControl::ReadFrom(DAVA::Entity *sceneNode)
 {
     LandscapePropertyControl::ReadFrom(sceneNode);
     

@@ -49,6 +49,7 @@
 #include "DPITest.h"
 #include "EMailTest.h"
 #include "InputTest.h"
+#include "DeviceInfoTest.h"
 
 using namespace DAVA;
 
@@ -74,6 +75,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new DeviceInfoTest();
 //    new SampleTest();
 //    new EntityTest(); 
 //    new MemoryAllocatorsTest();

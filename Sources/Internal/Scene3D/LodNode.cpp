@@ -71,7 +71,7 @@ const float32 LodNode::MAX_LOD_DISTANCE = 500;
 
 
 LodNode::LodNode()
-:	SceneNode()
+:	Entity()
 ,   currentLod(NULL)
 ,   lastLodUpdateFrame(0)
 ,   forceLodLayer(INVALID_LOD_LAYER)
@@ -104,7 +104,7 @@ LodNode::~LodNode()
 //    }
 }
 
-void LodNode::AddNodeInLayer(SceneNode * node, int32 layer)
+void LodNode::AddNodeInLayer(Entity * node, int32 layer)
 {
     AddNode(node);
     RegisterNodeInLayer(node, layer);
@@ -154,7 +154,7 @@ LodNode::LodData	*LodNode::CreateNewLayer(int32 layer)
     return ld;
 }
 
-void LodNode::RegisterNodeInLayer(SceneNode * node, int32 layer)
+void LodNode::RegisterNodeInLayer(Entity * node, int32 layer)
 {
     LodData *ld = CreateNewLayer(layer);
     if (node->GetName().find("dummy") != String::npos) 
@@ -170,7 +170,7 @@ void LodNode::RegisterNodeInLayer(SceneNode * node, int32 layer)
     }
 
     ld->nodes.push_back(node);
-    node->AddFlagRecursive(SceneNode::NODE_IS_LOD_PART);
+    node->AddFlagRecursive(Entity::NODE_IS_LOD_PART);
     if (ld != currentLod) 
     {
         node->SetUpdatable(false);
@@ -187,18 +187,18 @@ void LodNode::RegisterIndexInLayer(int32 nodeIndex, int32 layer)
 	}
 }
 
-void LodNode::RemoveNode(SceneNode * node)
+void LodNode::RemoveNode(Entity * node)
 {
-    SceneNode::RemoveNode(node);
+    Entity::RemoveNode(node);
     List<LodData>::iterator ei = lodLayers.end();
     for (List<LodData>::iterator i = lodLayers.begin(); i != ei; i++) 
     {
-        Vector<SceneNode*>::iterator eit = i->nodes.end();
-        for (Vector<SceneNode*>::iterator it = i->nodes.begin(); it != eit; it++) 
+        Vector<Entity*>::iterator eit = i->nodes.end();
+        for (Vector<Entity*>::iterator it = i->nodes.begin(); it != eit; it++) 
         {
             if (*it == node) 
             {
-                node->RemoveFlagRecursive(SceneNode::NODE_IS_LOD_PART);
+                node->RemoveFlagRecursive(Entity::NODE_IS_LOD_PART);
                 i->nodes.erase(it);
                 
                 return;
@@ -209,13 +209,13 @@ void LodNode::RemoveNode(SceneNode * node)
     
 void LodNode::RemoveAllChildren()
 {
-    SceneNode::RemoveAllChildren();
-    RemoveFlagRecursive(SceneNode::NODE_IS_LOD_PART);
+    Entity::RemoveAllChildren();
+    RemoveFlagRecursive(Entity::NODE_IS_LOD_PART);
     lodLayers.clear();
     currentLod = NULL;
 }
     
-bool LodNode::IsLodMain(SceneNode *childToCheck)
+bool LodNode::IsLodMain(Entity *childToCheck)
 {
     if (!childToCheck) 
     {
@@ -233,8 +233,8 @@ bool LodNode::IsLodMain(SceneNode *childToCheck)
         {
             continue;
         }
-        Vector<SceneNode*>::iterator eit = i->nodes.end();
-        for (Vector<SceneNode*>::iterator it = i->nodes.begin(); it != eit; it++) 
+        Vector<Entity*>::iterator eit = i->nodes.end();
+        for (Vector<Entity*>::iterator it = i->nodes.begin(); it != eit; it++) 
         {
             if (*it == childToCheck) 
             {
@@ -337,7 +337,7 @@ void LodNode::SetCurrentLod(LodData *newLod)
 void LodNode::Update(float32 timeElapsed)
 {
     
-    if (flags&SceneNode::NODE_VISIBLE)
+    if (flags&Entity::NODE_VISIBLE)
     {
         lastLodUpdateFrame++;
         if (lastLodUpdateFrame > RECHECK_LOD_EVERY_FRAME)
@@ -370,7 +370,7 @@ void LodNode::Update(float32 timeElapsed)
 }
 
 	
-SceneNode* LodNode::Clone(SceneNode *dstNode)
+Entity* LodNode::Clone(Entity *dstNode)
 {
     if (!dstNode) 
     {
@@ -378,7 +378,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
         dstNode = new LodNode();
     }
     
-    SceneNode::Clone(dstNode);
+    Entity::Clone(dstNode);
     LodNode *nd = (LodNode *)dstNode;
 
     nd->lodLayers = lodLayers;
@@ -436,7 +436,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
      */
 void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive, sceneFile);
+    Entity::Save(archive, sceneFile);
     archive->SetInt32("lodCount", (int32)lodLayers.size());
     
     int32 lodIdx = 0;
@@ -469,7 +469,7 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
      */
 void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive, sceneFile);
+    Entity::Load(archive, sceneFile);
 
     int32 lodCount = archive->GetInt32("lodCount", 0);
     
@@ -501,7 +501,7 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
 void LodNode::SceneDidLoaded()
 {
-    SceneNode::SceneDidLoaded();
+    Entity::SceneDidLoaded();
     const List<LodData>::const_iterator &end = lodLayers.end();
     for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
     {

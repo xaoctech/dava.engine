@@ -74,7 +74,7 @@ void ApplicationCore::BeginFrame()
 {
 	RenderManager::Instance()->BeginFrame();
 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 }
 

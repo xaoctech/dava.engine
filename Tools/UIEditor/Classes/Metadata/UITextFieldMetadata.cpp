@@ -95,14 +95,8 @@ QColor UITextFieldMetadata::GetTextColor() const
     {
         return QColor();
     }
-    
-    Font* font = GetActiveUITextField()->GetFont();
-    if (!font)
-    {
-        return QColor();
-    }
-
-    return DAVAColorToQTColor(font->GetColor());
+	
+	return DAVAColorToQTColor(GetActiveUITextField()->GetTextColor());
 }
 
 void UITextFieldMetadata::SetTextColor(const QColor &color)
@@ -111,18 +105,80 @@ void UITextFieldMetadata::SetTextColor(const QColor &color)
     {
         return;
     }
-    
-    GetActiveUITextField()->SetFontColor(QTColorToDAVAColor(color));
+	
+    GetActiveUITextField()->SetTextColor(QTColorToDAVAColor(color));
 }
 
 QColor UITextFieldMetadata::GetFontColor() const
 {
-    return GetTextColor();
+	return GetTextColor();
 }
 
 void UITextFieldMetadata::SetFontColor(const QColor& value)
 {
-    SetTextColor(value);
+	SetTextColor(value);
+}
+
+float UITextFieldMetadata::GetShadowOffsetX() const
+{
+	if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	return GetActiveUITextField()->GetShadowOffset().x;	
+}
+
+void UITextFieldMetadata::SetShadowOffsetX(float offset)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	Vector2 shadowOffset = GetOffsetX(GetActiveUITextField()->GetShadowOffset(), offset);
+	GetActiveUITextField()->SetShadowOffset(shadowOffset);
+}
+
+float UITextFieldMetadata::GetShadowOffsetY() const
+{
+	if (!VerifyActiveParamID())
+    {
+        return -1.0f;
+    }
+	
+	return GetActiveUITextField()->GetShadowOffset().y;
+}
+
+void UITextFieldMetadata::SetShadowOffsetY(float offset)
+{
+	if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	Vector2 shadowOffset = GetOffsetY(GetActiveUITextField()->GetShadowOffset(), offset);
+	GetActiveUITextField()->SetShadowOffset(shadowOffset);
+}
+
+QColor UITextFieldMetadata::GetShadowColor() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return QColor();
+    }
+	
+	return DAVAColorToQTColor(GetActiveUITextField()->GetShadowColor());
+}
+
+void UITextFieldMetadata::SetShadowColor(const QColor& value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+	
+	GetActiveUITextField()->SetShadowColor(QTColorToDAVAColor(value));
 }
 
 // Initialize the control(s) attached.

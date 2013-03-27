@@ -16,13 +16,13 @@ public:
     ~DebugRenderSystem();
 
 	virtual void Process();
-	virtual void AddEntity(SceneNode * entity);
-	virtual void RemoveEntity(SceneNode * entity);
+	virtual void AddEntity(Entity * entity);
+	virtual void RemoveEntity(Entity * entity);
     
     void SetCamera(Camera * camera);
 
 private:
-	Vector<SceneNode*> entities;
+	Vector<Entity*> entities;
     Camera * camera;
 };
 

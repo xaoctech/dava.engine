@@ -53,7 +53,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
 		return;
 	}
 
-    SceneNode * rootNode = scene->GetRootNode(scenePathname)->Clone();
+    Entity * rootNode = scene->GetRootNode(scenePathname)->Clone();
 
     KeyedArchive * customProperties = rootNode->GetCustomProperties();
     customProperties->SetString("editor.referenceToOwner", scenePathname);
@@ -70,7 +70,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
         Vector3 nodePos = pos + 10 * direction;
         nodePos.z = 0;
         
-        LandscapeNode * ls = scene->GetLandscape(scene);
+        Landscape * ls = scene->GetLandscape(scene);
         if(ls)
         {
             Vector3 result;
@@ -87,7 +87,7 @@ void SceneDataManager::AddScene(const String &scenePathname)
     }
 
 	
-    LandscapeNode *landscape = scene->GetLandscape(scene);
+    Landscape *landscape = scene->GetLandscape(scene);
     bool needUpdateLandscapeController = (landscape != NULL);
 
 	
@@ -143,11 +143,11 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
     String extension = FileSystem::Instance()->GetExtension(scenePathname);
     DVASSERT((".sc2" == extension) && "Wrong file extension.");
 	
-    SceneNode * rootNode = scene->GetRootNode(scenePathname);
+    Entity * rootNode = scene->GetRootNode(scenePathname);
     if(rootNode)
     {
         sceneData->SetScenePathname(scenePathname);
-		Vector<SceneNode*> tempV;
+		Vector<Entity*> tempV;
 		tempV.reserve(rootNode->GetChildrenCount());
 		
 		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
@@ -172,74 +172,6 @@ void SceneDataManager::EditScene(SceneData* sceneData, const String &scenePathna
 
 	UpdateParticleSprites();
     emit SceneGraphNeedRebuild();
-}
-
-void SceneDataManager::AddReferenceScene(const String &scenePathname)
-{
-	String extension = FileSystem::Instance()->GetExtension(scenePathname);
-	DVASSERT((".sc2" == extension) && "Wrong file extension.");
-
-	SceneData* sceneData = SceneGetActive();
-	if (!sceneData)
-	{
-		DVASSERT(false && "No way to add reference scene when SceneGetActive() returns NULL!");
-		return;
-	}
-
-	EditorScene* scene = sceneData->GetScene();
-	if (!scene)
-	{
-		DVASSERT(false && "sceneData->GetScene() returned NULL!");
-		return;
-	}
-
-	SceneNode * rootNode = scene->GetRootNode(scenePathname);
-	
-	DVASSERT(rootNode->GetChildrenCount() == 1);
-	ReferenceNode * refNode = new ReferenceNode();
-	SceneNode * clone = rootNode->GetChild(0)->Clone();
-	refNode->AddNode(clone);
-	refNode->SetName(rootNode->GetName());
-	SafeRelease(clone);
-	
-	KeyedArchive * customProperties = refNode->GetCustomProperties();
-	customProperties->SetString("reference.path", scenePathname);
-	
-	refNode->SetSolid(true);
-	scene->AddNode(refNode);
-	
-	Camera *currCamera = scene->GetCurrentCamera();
-	if(currCamera)
-	{
-		Vector3 pos = currCamera->GetPosition();
-		Vector3 direction  = currCamera->GetDirection();
-		
-		Vector3 nodePos = pos + 10 * direction;
-		nodePos.z = 0;
-		
-		LandscapeNode * ls = scene->GetLandscape(scene);
-		if(ls)
-		{
-			Vector3 result;
-			bool res = ls->PlacePoint(nodePos, result);
-			if(res)
-			{
-				nodePos = result;
-			}
-		}
-		
-		Matrix4 mod;
-		mod.CreateTranslation(nodePos);
-		refNode->SetLocalTransform(refNode->GetLocalTransform() * mod);
-	}
-	SafeRelease(refNode);
-	
-	UpdateParticleSprites();
-	emit SceneGraphNeedRebuild();
-	
-    //TODO: need save scene automatically?
-    bool changesWereMade = SceneValidator::Instance()->ValidateSceneAndShowErrors(scene);
-	SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
 void SceneDataManager::ReloadScene(const String &scenePathname)
@@ -284,18 +216,18 @@ void SceneDataManager::ReloadScene(const String &scenePathname)
 	sceneData->SetLandscapesControllerScene(scene);
 }
 
-void SceneDataManager::ReloadNode(EditorScene* scene, SceneNode *node, const String &nodePathname)
+void SceneDataManager::ReloadNode(EditorScene* scene, Entity *node, const String &nodePathname)
 {
 	//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
     KeyedArchive *customProperties = node->GetCustomProperties();
     if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
     {
-        SceneNode *newNode = scene->GetRootNode(nodePathname)->Clone();
+        Entity *newNode = scene->GetRootNode(nodePathname)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
         newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
         newNode->SetSolid(true);
         
-        SceneNode *parent = node->GetParent();
+        Entity *parent = node->GetParent();
         AddedNode addN;
         addN.nodeToAdd = newNode;
         addN.nodeToRemove = node;
@@ -308,7 +240,7 @@ void SceneDataManager::ReloadNode(EditorScene* scene, SceneNode *node, const Str
     int32 csz = node->GetChildrenCount();
     for (int ci = 0; ci < csz; ++ci)
     {
-        SceneNode * child = node->GetChild(ci);
+        Entity * child = node->GetChild(ci);
         ReloadNode(scene, child, nodePathname);
     }
 }
@@ -360,9 +292,9 @@ SceneData *SceneDataManager::SceneGetLevel()
     return NULL;
 }
 
-DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
+DAVA::Entity* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 {
-	DAVA::SceneNode *node = NULL;
+	DAVA::Entity *node = NULL;
 
 	if(NULL != scene)
 	{
@@ -372,9 +304,9 @@ DAVA::SceneNode* SceneDataManager::SceneGetSelectedNode(SceneData *scene)
 	return node;
 }
 
-DAVA::SceneNode* SceneDataManager::SceneGetRootNode(SceneData *scene)
+DAVA::Entity* SceneDataManager::SceneGetRootNode(SceneData *scene)
 {
-	DAVA::SceneNode *node = NULL;
+	DAVA::Entity *node = NULL;
 
 	if(NULL != scene)
 	{
@@ -420,13 +352,13 @@ EditorScene * SceneDataManager::RegisterNewScene()
 	emit SceneCreated(data);
 
 	connect(data, SIGNAL(SceneChanged(EditorScene *)), this, SLOT(InSceneData_SceneChanged(EditorScene *)));
-	connect(data, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::SceneNode *)));
+	connect(data, SIGNAL(SceneNodeSelected(DAVA::Entity *)), this, SLOT(InSceneData_SceneNodeSelected(DAVA::Entity *)));
 
-	connect(data, SIGNAL(SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)), this, SLOT(InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *)));
+	connect(data, SIGNAL(SceneGraphModelNeedsRebuildNode(DAVA::Entity *)), this, SLOT(InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::Entity *)));
 	connect(data, SIGNAL(SceneGraphModelNeedsRebuild()), this, SLOT(InSceneData_SceneGraphModelNeedsRebuild()));
 	
 	connect(data, SIGNAL(SceneGraphModelNeedSetScene(EditorScene *)), this, SLOT(InSceneData_SceneGraphModelNeedSetScene(EditorScene *)));
-	connect(data, SIGNAL(SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)), this, SLOT(InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode*)));
+	connect(data, SIGNAL(SceneGraphModelNeedsSelectNode(DAVA::Entity*)), this, SLOT(InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity*)));
 
     return data->GetScene();
 }
@@ -476,13 +408,13 @@ void SceneDataManager::InSceneData_SceneChanged(EditorScene *scene)
 	emit SceneChanged(sceneData);
 }
 
-void SceneDataManager::InSceneData_SceneNodeSelected(SceneNode *node)
+void SceneDataManager::InSceneData_SceneNodeSelected(Entity *node)
 {
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneNodeSelected(sceneData, node);
 }
 
-void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::SceneNode *node)
+void SceneDataManager::InSceneData_SceneGraphModelNeedsRebuildNode(DAVA::Entity *node)
 {
 	// Re-emit the signal from the "inner" Scene Data to all SceneDataManager subscribers.
 	emit SceneGraphNeedRebuildNode(node);
@@ -500,17 +432,17 @@ void SceneDataManager::InSceneData_SceneGraphModelNeedSetScene(EditorScene *scen
 	emit SceneGraphNeedSetScene(sceneData, scene);
 }
 
-void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::SceneNode* node)
+void SceneDataManager::InSceneData_SceneGraphModelNeedsSelectNode(DAVA::Entity* node)
 {
 	SceneData *sceneData = (SceneData *) QObject::sender();
 	emit SceneGraphNeedSelectNode(sceneData, node);
 }
 
-void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, Texture *> &textures)
+void SceneDataManager::EnumerateTextures(DAVA::Entity *forNode, Map<String, Texture *> &textures)
 {
 	if(!forNode)  return;
 
-    Vector<SceneNode *> nodes;
+    Vector<Entity *> nodes;
     forNode->GetChildNodes(nodes);
     
     nodes.push_back(forNode);
@@ -544,7 +476,7 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
             }
         }
 
-        LandscapeNode *land = dynamic_cast<LandscapeNode *>(ro);
+        Landscape *land = dynamic_cast<Landscape *>(ro);
         if(land)
         {
             CollectLandscapeTextures(textures, land);
@@ -552,11 +484,11 @@ void SceneDataManager::EnumerateTextures(DAVA::SceneNode *forNode, Map<String, T
     }
 }
 
-void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, LandscapeNode *forNode)
+void SceneDataManager::CollectLandscapeTextures(DAVA::Map<DAVA::String, DAVA::Texture *> &textures, Landscape *forNode)
 {
-	for(int32 t = 0; t < LandscapeNode::TEXTURE_COUNT; t++)
+	for(int32 t = 0; t < Landscape::TEXTURE_COUNT; t++)
 	{
-		CollectTexture(textures, forNode->GetTextureName((LandscapeNode::eTextureLevel)t), forNode->GetTexture((LandscapeNode::eTextureLevel)t));
+		CollectTexture(textures, forNode->GetTextureName((Landscape::eTextureLevel)t), forNode->GetTexture((Landscape::eTextureLevel)t));
 	}
 }
 
@@ -688,7 +620,7 @@ void SceneDataManager::RestoreTexture( const DAVA::String &descriptorPathname, D
 	}
 }
 
-void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Material *> &materials)
+void SceneDataManager::EnumerateMaterials(DAVA::Entity *forNode, Vector<Material *> &materials)
 {
 	if(forNode)
 	{
@@ -696,7 +628,7 @@ void SceneDataManager::EnumerateMaterials(DAVA::SceneNode *forNode, Vector<Mater
 	}
 }
 
-void SceneDataManager::SceneNodeSelectedInSceneGraph(SceneNode* node)
+void SceneDataManager::SceneNodeSelectedInSceneGraph(Entity* node)
 {
 	SceneData *activeScene = SceneGetActive();
 	

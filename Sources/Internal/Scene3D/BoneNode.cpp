@@ -36,7 +36,7 @@ namespace DAVA
 REGISTER_CLASS(BoneNode);
 
 BoneNode::BoneNode(SkeletonNode * owner)
-	: SceneNode()
+	: Entity()
 {
 	
 	
@@ -50,7 +50,7 @@ BoneNode::~BoneNode()
 	
 void BoneNode::Draw()
 {
-	SceneNode::Draw();
+	Entity::Draw();
 
 //	glPushMatrix();
 //	glMultMatrixf(worldTransform.data);

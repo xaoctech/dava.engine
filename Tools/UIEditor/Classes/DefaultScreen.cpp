@@ -4,6 +4,7 @@
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
+#include "HierarchyTreeAggregatorControlNode.h"
 
 #define SIZE_CURSOR_DELTA 4
 #define MIN_DRAG_DELTA 3
@@ -86,7 +87,7 @@ bool DefaultScreen::IsPointInside(const Vector2& /*point*/, bool /*expandWithFoc
 }
 
 
-Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint)
+Vector2 DefaultScreen::LocalToInternal(const Vector2& localPoint) const
 {
 	Vector2 point = -pos;
 	point.x += localPoint.x / scale.x;
@@ -1031,6 +1032,15 @@ void DefaultScreen::BacklightControl(const Vector2& position)
 	{
 		HierarchyTreeController::Instance()->ResetSelectedControl();
 	}
+}
+
+bool DefaultScreen::IsDropEnable(const DAVA::Vector2 &position) const
+{
+	Vector2 pos = LocalToInternal(position);
+	HierarchyTreeAggregatorControlNode* newSelectedNode = dynamic_cast<HierarchyTreeAggregatorControlNode*>(GetSelectedControl(pos, HierarchyTreeController::Instance()->GetActiveScreen()));
+	if (newSelectedNode)
+		return false;
+	return true;
 }
 
 Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode) const

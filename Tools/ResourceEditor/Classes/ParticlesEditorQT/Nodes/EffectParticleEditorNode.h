@@ -17,7 +17,7 @@ namespace DAVA {
 class EffectParticleEditorNode : public BaseParticleEditorNode
 {
 public:
-    EffectParticleEditorNode(SceneNode* rootNode);
+    EffectParticleEditorNode(Entity* rootNode);
     virtual ~EffectParticleEditorNode();
     
     // Get the count of emitters in the root node.

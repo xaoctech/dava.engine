@@ -114,7 +114,7 @@ void LodDistanceControl::UpdateDistanceToCamera()
     EditorScene *scene = activeScene->GetScene();
     DVASSERT(scene);
 
-    SceneNode *selection = scene->GetSelection();
+    Entity *selection = scene->GetSelection();
     if(selection)
     {
         Camera *activeCamera = scene->GetCurrentCamera();

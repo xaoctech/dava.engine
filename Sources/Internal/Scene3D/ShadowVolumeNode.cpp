@@ -449,14 +449,14 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 
 void ShadowVolumeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
-	SceneNode::Save(archive, sceneFileV2);
+	Entity::Save(archive, sceneFileV2);
 
 	archive->SetByteArrayAsType("pg", (uint64)shadowPolygonGroup);
 }
 
 void ShadowVolumeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
-	SceneNode::Load(archive, sceneFileV2);
+	Entity::Load(archive, sceneFileV2);
 
 	uint64 ptr = archive->GetByteArrayAsType("pg", (uint64)0);
 	shadowPolygonGroup = dynamic_cast<PolygonGroup*>(sceneFileV2->GetNodeByPointer(ptr));
@@ -468,7 +468,7 @@ void ShadowVolumeNode::GetDataNodes(Set<DataNode*> & dataNodes)
 	dataNodes.insert(shadowPolygonGroup);
 }
 
-SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
+Entity* ShadowVolumeNode::Clone(Entity *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
@@ -476,7 +476,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 		dstNode = new ShadowVolumeNode();
 	}
 
-	SceneNode::Clone(dstNode);
+	Entity::Clone(dstNode);
 	ShadowVolumeNode *nd = (ShadowVolumeNode *)dstNode;
 
 	nd->shadowPolygonGroup = shadowPolygonGroup;
