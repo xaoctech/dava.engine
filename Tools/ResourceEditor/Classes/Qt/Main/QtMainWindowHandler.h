@@ -159,6 +159,7 @@ public slots:
 
 	void OnSceneActivated(SceneData *scene);
 	void OnSceneReleased(SceneData *scene);
+	void OnSceneCreated(SceneData *scene);
 
 	void ReloadSceneTextures();
 
