@@ -51,7 +51,7 @@ protected:
     
     virtual void Execute();
 	void SaveParticleEmitterNodes(EditorScene* scene);
-	void SaveParticleEmitterNodeRecursive(SceneNode* parentNode);
+	void SaveParticleEmitterNodeRecursive(Entity* parentNode);
 };
 
 class CommandExport: public Command

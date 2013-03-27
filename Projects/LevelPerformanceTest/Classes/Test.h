@@ -68,7 +68,7 @@ private:
 	inline UI3DView* GetSceneView();
 	inline Scene* GetScene();
 	inline Camera* GetCamera();
-	inline LandscapeNode* GetLandscape();
+	inline Landscape* GetLandscape();
 };
 
 #endif

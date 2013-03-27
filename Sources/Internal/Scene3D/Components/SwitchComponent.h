@@ -15,7 +15,7 @@ public:
 	IMPLEMENT_COMPONENT_TYPE(SWITCH_COMPONENT);
 
 	SwitchComponent();
-	virtual Component * Clone(SceneNode * toEntity);
+	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
 
@@ -30,7 +30,7 @@ private:
 
 public:
 	INTROSPECTION_EXTEND(SwitchComponent, Component,
-		PROPERTY(newSwitchIndex, "Switch index", GetSwitchIndex, SetSwitchIndex, INTROSPECTION_EDITOR)
+		PROPERTY("newSwitchIndex", "Switch index", GetSwitchIndex, SetSwitchIndex, INTROSPECTION_EDITOR)
 		);
 };
 

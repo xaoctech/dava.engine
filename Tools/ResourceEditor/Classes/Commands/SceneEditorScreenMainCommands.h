@@ -4,16 +4,16 @@
 #include "DAVAEngine.h"
 #include "Command.h"
 
-class DAVA::SceneNode;
+class DAVA::Entity;
 
 class CommandCreateNodeSceneEditor: public Command
 {
 public:
-	CommandCreateNodeSceneEditor(DAVA::SceneNode* node);
+	CommandCreateNodeSceneEditor(DAVA::Entity* node);
 	virtual ~CommandCreateNodeSceneEditor();
 
 protected:
-	DAVA::SceneNode* node;
+	DAVA::Entity* node;
 
 	virtual void Execute();
 	virtual void Cancel();

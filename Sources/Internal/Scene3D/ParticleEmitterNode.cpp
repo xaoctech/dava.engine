@@ -40,7 +40,7 @@ void ParticleEmitterNode::Draw()
 	{
 		eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 
 //		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
 //		emitter3D->Draw(scene->GetCurrentCamera());
@@ -63,7 +63,7 @@ ParticleEmitter * ParticleEmitterNode::GetEmitter()
 	return emitter;
 }
 
-SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
+Entity* ParticleEmitterNode::Clone(Entity *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
@@ -71,7 +71,7 @@ SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 		dstNode = new ParticleEmitterNode();
 	}
 
-	SceneNode::Clone(dstNode);
+	Entity::Clone(dstNode);
 	ParticleEmitterNode *nd = (ParticleEmitterNode *)dstNode;
 
 	nd->yamlPath = yamlPath;
@@ -82,14 +82,14 @@ SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
 
 void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	SceneNode::Save(archive, sceneFile);
+	Entity::Save(archive, sceneFile);
 
 	archive->SetString("yamlPath", sceneFile->AbsoluteToRelative(yamlPath));
 }
 
 void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	SceneNode::Load(archive, sceneFile);
+	Entity::Load(archive, sceneFile);
 	
 	yamlPath = archive->GetString("yamlPath");
 	yamlPath = sceneFile->RelativeToAbsolute(yamlPath);
@@ -109,7 +109,7 @@ void ParticleEmitterNode::GetDataNodes(Set<DataNode*> & dataNodes)
 	}
 	
 
-	SceneNode::GetDataNodes(dataNodes);
+	Entity::GetDataNodes(dataNodes);
 }
 
 };

@@ -11,7 +11,7 @@ public:
 	MeshInstancePropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~MeshInstancePropertyControl();
 
-	virtual void ReadFrom(SceneNode * sceneNode);
+	virtual void ReadFrom(Entity * sceneNode);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);

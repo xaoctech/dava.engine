@@ -1,11 +1,10 @@
 #include "TilemapEditorCommands.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
-#include "../Qt/Main/GUIState.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
 #include "../Qt/Scene/SceneData.h"
 #include "../Qt/Scene/SceneDataManager.h"
-#include "../LandscapeEditor/EditorLandscapeNode.h"
+#include "../LandscapeEditor/EditorLandscape.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
 //Show/Hide Tilemap Editor
@@ -21,8 +20,6 @@ void CommandTilemapEditor::Execute()
     if(screen)
     {
         screen->TilemapTriggered();
-        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
-        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 	
 	//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
@@ -30,7 +27,7 @@ void CommandTilemapEditor::Execute()
 }
 
 
-CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, LandscapeNode* landscape)
+CommandDrawTilemap::CommandDrawTilemap(Image* originalImage, Image* newImage, const String& pathname, Landscape* landscape)
 :	Command(COMMAND_UNDO_REDO)
 ,	landscape(landscape)
 {
@@ -78,7 +75,7 @@ void CommandDrawTilemap::UpdateLandscapeTilemap(DAVA::Image *image)
 	}
 	else if (landscape)
 	{
-		landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, texture);
+		landscape->SetTexture(Landscape::TEXTURE_TILE_MASK, texture);
 		landscape->UpdateFullTiledTexture();
 		ImageLoader::Save(image, savedPathname);
 	}

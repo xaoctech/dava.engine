@@ -90,6 +90,9 @@ void LocalizationEditorDialog::ConnectToSignals()
 	// Connect to the table view to show custom menu.
 	ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(ui->tableView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(OnShowCustomMenu(const QPoint&)));
+	
+	connect(ui->addStringButton, SIGNAL(clicked()), this, SLOT(OnAddNewLocalizationString()));
+	connect(ui->removeStringButton, SIGNAL(clicked()), this, SLOT(OnRemoveSelectedLocalizationString()));
 }
 
 void LocalizationEditorDialog::SetLocalizationDirectoryPath()
@@ -404,9 +407,14 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 													   QStringToWideString(newLocalizationValue));
 		SaveLocalization();
 		ReloadLocalizationTable();
-	}
 
-	SelectItemByKey(newLocalizationKey);
+		SelectItemByKey(newLocalizationKey);
+	}
+	else
+	{
+		// String ID wasn't used, return it.
+		addedStringsCount --;
+	}
 }
 
 void LocalizationEditorDialog::RemoveSelectedLocalizationString()
@@ -475,4 +483,14 @@ DAVA::WideString LocalizationEditorDialog::QStringToWideString(const QString& st
 	UTF8Utils::EncodeToWideString((uint8*)utf8Array.data(), utf8Array.size(), resultString);
 
 	return resultString;
+}
+
+void LocalizationEditorDialog::OnAddNewLocalizationString()
+{
+	AddNewLocalizationString();
+}
+
+void LocalizationEditorDialog::OnRemoveSelectedLocalizationString()
+{
+	RemoveSelectedLocalizationString();
 }

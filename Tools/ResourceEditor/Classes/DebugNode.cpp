@@ -11,7 +11,7 @@
 
 
 DebugNode::DebugNode(std::vector<float32> &data)
-    : SceneNode()
+    : Entity()
 {
 	verts = data;
 	
@@ -34,7 +34,7 @@ DebugNode::~DebugNode()
 
 void DebugNode::Draw()
 {
-	SceneNode::Draw();
+	Entity::Draw();
 	if (!isDraw)
 		return;
 	if (verts.size() == 0)

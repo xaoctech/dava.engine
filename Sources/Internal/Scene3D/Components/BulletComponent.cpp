@@ -15,7 +15,7 @@ BulletComponent::~BulletComponent()
 	SafeRelease(bulletObject);
 }
 
-Component * BulletComponent::Clone(SceneNode * toEntity)
+Component * BulletComponent::Clone(Entity * toEntity)
 {
 	BulletComponent * newComponent = new BulletComponent();
 	newComponent->SetEntity(toEntity);

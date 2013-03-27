@@ -18,49 +18,54 @@ public:
 	PngImageExt();
 	~PngImageExt();
 	
-	bool Create(int32 _width, int32 _height);
+	bool Create(uint32 width, uint32 height);
 	
-	bool Read(const char * filename);
-	bool Write(const char * filename);
+	bool Read(const String & filename);
+	void Write(const String & filename);
 	
-	void DrawImage(int sx, int sy, PngImageExt * image);
-	void DrawImage(int sx, int sy, PngImageExt * image, const Rect2i & srcRect);
+	void DrawImage(int32 sx, int32 sy, PngImageExt * image);
+	void DrawImage(int32 sx, int32 sy, PngImageExt * image, const Rect2i & srcRect);
 
 	void DrawRect(const Rect2i & rect, uint32 color);
 	
-	bool IsHorzLineOpaque(int y);
-	bool IsVertLineOpaque(int x);
-	
 	void FindNonOpaqueRect(Rect2i & rect);
 	
-	uint8 * GetPixel(int32 x, int32 y) { return &data[(y * width + x) * 4]; };
-	
-	inline int32 GetWidth();
-	inline int32 GetHeight();
-    
     void DitherAlpha();
     
-private:
+    inline uint32 GetWidth() const;
+	inline uint32 GetHeight() const;
     
+private:
+
+    inline uint8 * GetData() const;
+
+    bool IsHorzLineOpaque(int32 y);
+	bool IsVertLineOpaque(int32 x);
+
     Color GetDitheredColorForPoint(int32 x, int32 y);
     
-	int32		width;
-	int32		height;
-	uint8  *	data;
+    Image *internalData;
 };
 
-
-
-
-int32 PngImageExt::GetWidth()
+inline uint8 * PngImageExt::GetData() const
 {
-	return width;
+    DVASSERT(internalData);
+    return internalData->GetData();
 }
 
-int32 PngImageExt::GetHeight()
+
+inline uint32 PngImageExt::GetWidth() const
 {
-	return height;
+    DVASSERT(internalData);
+	return internalData->GetWidth();
 }
+
+inline uint32 PngImageExt::GetHeight() const
+{
+    DVASSERT(internalData);
+	return internalData->GetHeight();
+}
+
 
 
 #endif // __DAVAENGINE_PNGIMAGEEXT_H__

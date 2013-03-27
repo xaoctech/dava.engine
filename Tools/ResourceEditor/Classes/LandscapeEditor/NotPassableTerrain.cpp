@@ -33,7 +33,7 @@
 using namespace DAVA;
 
 NotPassableTerrain::NotPassableTerrain()
-    : EditorLandscapeNode()
+    : EditorLandscape()
 {
     // RETURN TO THIS CODE LATER
     //SetName(String("Landscape_NotPassable"));
@@ -51,7 +51,7 @@ NotPassableTerrain::~NotPassableTerrain()
 
 void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
-    EditorLandscapeNode::HeihghtmapUpdated(forRect);
+    EditorLandscape::HeihghtmapUpdated(forRect);
     
     AABBox3 boundingBox = nestedLandscape->GetBoundingBox();
     Vector3 landSize = boundingBox.max - boundingBox.min;
@@ -123,7 +123,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 
 void NotPassableTerrain::SetDisplayedTexture()
 {
-    SetTexture(LandscapeNode::TEXTURE_TILE_FULL, notPassableMapSprite->GetTexture());
+    SetTexture(Landscape::TEXTURE_TILE_FULL, notPassableMapSprite->GetTexture());
 }
 
 void NotPassableTerrain::LoadColorsArray()
