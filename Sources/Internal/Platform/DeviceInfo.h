@@ -1,7 +1,7 @@
 #ifndef __FRAMEWORK__DEVICEINFO__
 #define __FRAMEWORK__DEVICEINFO__
 
-#include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
