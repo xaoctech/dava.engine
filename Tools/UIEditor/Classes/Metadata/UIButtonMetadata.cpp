@@ -633,6 +633,63 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForAlign()
     }
 }
 
+
+int UIButtonMetadata::GetSpriteModification()
+{
+	if (!VerifyActiveParamID())
+	{
+		return UIControlBackground::DRAW_ALIGNED;
+	}
+
+	return GetSpriteModificationForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetSpriteModification(int value)
+{
+	if (!VerifyActiveParamID())
+	{
+		return;
+	}
+
+	for (uint32 i = 0; i < GetStatesCount(); ++i)
+	{
+		UIControlBackground* background = GetActiveUIButton()->GetStateBackground(uiControlStates[i]);
+		if (!background)
+		{
+			continue;
+		}
+
+		background->SetModification(value);
+	}
+	UpdatePropertyDirtyFlagForSpriteModification();
+}
+
+int UIButtonMetadata::GetSpriteModificationForState(UIControl::eControlState state) const
+{
+	UIControlBackground* background = GetActiveUIButton()->GetStateBackground(state);
+
+	if (!background)
+	{
+		return UIControlBackground::DRAW_ALIGNED;
+	}
+
+	return background->GetModification();
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForSpriteModification()
+{
+	int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+	for (int i = 0; i < statesCount; i ++)
+	{
+		UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+
+		bool curStateDirty = (GetSpriteModificationForState(curState) !=
+							  GetSpriteModificationForState(GetReferenceState()));
+		SetStateDirtyForProperty(curState, PropertyNames::SPRITE_MODIFICATION_PROPERTY_NAME, curStateDirty);
+	}
+}
+
+
 // Initialize the control(s) attached.
 void UIButtonMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
