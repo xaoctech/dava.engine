@@ -16,6 +16,7 @@
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\LandscapeTest.h" />
+    <ClInclude Include="Classes\MemoryAllocationTraverseTest.h" />
     <ClInclude Include="Classes\SpriteTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
     <ClInclude Include="Classes\TreeTest.h" />
@@ -26,6 +27,7 @@
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\LandscapeTest.cpp" />
+    <ClCompile Include="Classes\MemoryAllocationTraverseTest.cpp" />
     <ClCompile Include="Classes\SpriteTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Classes\TreeTest.cpp" />
