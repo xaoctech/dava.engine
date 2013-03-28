@@ -199,6 +199,31 @@ void SceneUtilsScreen::Save()
             }
         }
     }
+	else if(CommandLineTool::Instance()->CommandIsFound(String("-resave")))
+	{
+		int32 inPosition = CommandLineTool::Instance()->CommandPosition(String("-indir"));
+
+		if(CommandLineTool::Instance()->CheckPosition(inPosition))
+		{
+			SceneSaver::Instance()->SetInFolder(commandLine[inPosition + 1]);
+
+			int32 filePosition = CommandLineTool::Instance()->CommandPosition(String("-processfile"));
+			if(CommandLineTool::INVALID_POSITION != filePosition)
+			{
+				if(CommandLineTool::Instance()->CheckPosition(filePosition))
+				{
+					SceneSaver::Instance()->ResaveFile(commandLine[filePosition + 1], errorLog);
+
+					//TODO: process errors
+				}
+			}
+			else
+			{
+				//                printf("Wrong arguments\n");
+				//                PrintUsage();
+			}
+		}
+	}
     else
     {
         DVASSERT(false);
