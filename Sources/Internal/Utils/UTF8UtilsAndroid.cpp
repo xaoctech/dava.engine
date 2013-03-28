@@ -32,17 +32,21 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
+#include "Utils/Utils.h"
+
 namespace DAVA 
 {
 
 void  UTF8Utils::EncodeToWideString(uint8 * string, int32 size, WideString & resultString)
 {
-	resultString = L"";
+    String s((char *)string, size);
+    
+	resultString = StringToWString(s);
 };
 
 String UTF8Utils::EncodeToUTF8(const WideString& wstring)
 {
-	String resStr = "";
+	String resStr = WStringToString(wstring);
 	return resStr;
 };
 
