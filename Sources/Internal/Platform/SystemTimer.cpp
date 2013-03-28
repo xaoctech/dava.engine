@@ -269,7 +269,7 @@ uint64 SystemTimer::GetAbsoluteNano()
     //clock_gettime(
 
     //TODO: Implement precision timer for Android using clock_gettime
-    DVASSERT(0 && "Implement precision timer for Android using clock_gettime");
+//    DVASSERT(0 && "Implement precision timer for Android using clock_gettime");
     return 0;
 
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
