@@ -11,7 +11,8 @@
 
 #define COPY_DELTA Vector2(5, 5)
 
-PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType, const HierarchyTreeNode::HIERARCHYTREENODESLIST* items)
+PasteCommand::PasteCommand(HierarchyTreeNode* parentNode, CopyPasteController::CopyType copyType,
+							const HierarchyTreeNode::HIERARCHYTREECOPYNODESLIST* items)
 {
 	this->parentNode = parentNode;
 	this->copyType = copyType;
@@ -145,12 +146,12 @@ void PasteCommand::Rollback()
 int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newControls, HierarchyTreeNode *parent)
 {
 	int count = 0;
-	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+	for (HierarchyTreeNode::HIERARCHYTREECOPYNODESCONSTITER iter = items->begin();
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
-		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>(node);
+		HierarchyTreeNode::CopyItems copyItem = (*iter);
+		HierarchyTreeControlNode* control = dynamic_cast<HierarchyTreeControlNode*>(copyItem.copyControlNode);
 		if (!control)
 			continue;
 		
@@ -160,10 +161,29 @@ int PasteCommand::PasteControls(HierarchyTreeNode::HIERARCHYTREENODESLIST* newCo
 			copy = new HierarchyTreeAggregatorControlNode(parent, aggregatorControl);
 		else
 			copy = new HierarchyTreeControlNode(parent, control);
-		UpdateControlName(parent, copy, true);
-		//copy->SetName(FormatCopyName(control->GetName(), parent));
+			
+		// Get source control ID
+		HierarchyTreeNode::HIERARCHYTREENODEID controlId = copyItem.sourceControlId;
+		// Get copied control parent ID
+		HierarchyTreeNode::HIERARCHYTREENODEID copyParentId = copy->GetParent()->GetId();
+		// Get source control complete node
+	   	HierarchyTreeNode* treeNode = HierarchyTreeController::Instance()->GetTree().GetNode(controlId);
+		// We should change control name and apply copy delta only if copy control and source control has
+		// the same parent or copy control is a child of source control
+		bool bUpdateNameAndShiftPosition = (controlId == copyParentId);
+
+		if (treeNode)
+		{
+			// Get source control parent ID
+			HierarchyTreeNode::HIERARCHYTREENODEID controlParentId = treeNode->GetParent()->GetId();
+			
+			bUpdateNameAndShiftPosition = (controlId == copyParentId) || (controlParentId == copyParentId);
+		}
+			
+		UpdateControlName(parent, copy, bUpdateNameAndShiftPosition);
+
 		UIControl* clone = copy->GetUIObject();
-		if (clone)
+		if (clone && bUpdateNameAndShiftPosition)
 			clone->SetPosition(clone->GetPosition() + COPY_DELTA);
 				
 		count++;
@@ -200,12 +220,12 @@ void PasteCommand::UpdateControlName(const HierarchyTreeNode* parent, HierarchyT
 int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreePlatformNode* parent)
 {
 	int count = 0;
-	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+	for (HierarchyTreeNode::HIERARCHYTREECOPYNODESCONSTITER iter = items->begin();
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
-		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(node);
+		HierarchyTreeNode::CopyItems copyItem = (*iter);
+		HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(copyItem.copyControlNode);
 		if (!screen)
 			continue;
 		
@@ -223,12 +243,12 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 int PasteCommand::PastePlatforms(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScreens, HierarchyTreeRootNode* parent)
 {
 	int count = 0;
-	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items->begin();
+	for (HierarchyTreeNode::HIERARCHYTREECOPYNODESCONSTITER iter = items->begin();
 		 iter != items->end();
 		 ++iter)
 	{
-		HierarchyTreeNode* node = (*iter);
-		HierarchyTreePlatformNode* platform = dynamic_cast<HierarchyTreePlatformNode*>(node);
+		HierarchyTreeNode::CopyItems copyItem = (*iter);
+		HierarchyTreePlatformNode* platform = dynamic_cast<HierarchyTreePlatformNode*>(copyItem.copyControlNode);
 		if (!platform)
 			continue;
 		
@@ -281,7 +301,7 @@ QString PasteCommand::FormatCopyName(QString baseName, const HierarchyTreeNode* 
 		
 		if (parentPlatform || parentRoot)
 		{
-			//chekc name only for one child level for screen and platform copy
+			// check name only for one child level for screen and platform copy
 			const HierarchyTreeNode::HIERARCHYTREENODESLIST& child = parent->GetChildNodes();
 			for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = child.begin();
 				 iter != child.end();
