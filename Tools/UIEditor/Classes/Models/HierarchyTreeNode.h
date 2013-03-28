@@ -27,6 +27,22 @@ public:
     
 	typedef int HIERARCHYTREENODEID;
 	typedef std::list<HIERARCHYTREENODEID> HIERARCHYTREENODESIDLIST;
+	
+	struct CopyItems
+	{
+		HierarchyTreeNode* copyControlNode;
+		HIERARCHYTREENODEID sourceControlId;		
+		
+		CopyItems(HierarchyTreeNode* copyControlNode, HIERARCHYTREENODEID sourceControlId)
+		{
+			this->copyControlNode = copyControlNode;
+			this->sourceControlId = sourceControlId;
+		}
+	};
+	
+	typedef std::list<CopyItems> HIERARCHYTREECOPYNODESLIST;
+	typedef HIERARCHYTREECOPYNODESLIST::iterator HIERARCHYTREECOPYNODESITER;
+    typedef HIERARCHYTREECOPYNODESLIST::const_iterator HIERARCHYTREECOPYNODESCONSTITER;
 
   	static const HIERARCHYTREENODEID HIERARCHYTREENODEID_EMPTY = -1;
 
