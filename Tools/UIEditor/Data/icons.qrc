@@ -17,5 +17,7 @@
         <file>icons/openproject.png</file>
         <file>icons/savescene.png</file>
         <file>Icons/savesceneall.png</file>
+        <file>Icons/uicustomcontrol.png</file>
+        <file>Icons/uitextfield.png</file>
     </qresource>
 </RCC>
